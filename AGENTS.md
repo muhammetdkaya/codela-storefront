@@ -85,3 +85,10 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - Kullanıcı iPhone ekranlarında Arama inputunun ve Sepet/Menü X butonunun etrafında kalın siyah çerçeve gördü. 0.1.3 kaynak düzeltmesi: panel kontrollerinde tarayıcı/tema kenarlıkları ve otomatik odaktaki siyah halka temizlendi; manuel klavye Tab odak göstergesi korunuyor. Arama formunun ince gri çizgisi bilerek korundu.
 - Tema 0.1.2 → 0.1.3, JS/CSS önbellek sürümü beraber yükseltildi. Değişiklik `assets/storefront.css`, `assets/storefront.js`, `functions.php`, `style.css` ve testlerde; AGENTS ve teknik dokümana da kaydedildi.
 - Commit sonrası CI, bağımsız FTPS ve gerçek iPhone/Safari kontrolleri ayrıca doğrulanacak. Sonraki iş bu üç panelin çerçevesiz açılışını ve klavye erişilebilirliğini canlı ortamda test etmek.
+
+
+## 0.1.3 doğrulanmış dağıtım — 10 Ekim 2026
+- Tema 0.1.2 → 0.1.3 kaynak commit'i: [2475210](https://github.com/muhammetdkaya/codela-storefront/commit/24752104aca41fe8e70cfae14537add464bd1d73).
+- [GitHub Actions 38080286355](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38080286355) `validate` ve `deploy` başarıyla tamamlandı. CSS/JS sürümleri 0.1.3; yeni ZIP/manifest dağıtımı otomatik yapıldı.
+- Gerçek iPhone/Safari'de açılan Search/Cart/Menu görsel testi **henüz tekrar yapılmadı**. Sonraki somut adım: telefonda üç paneli tekrar açıp ilk odakta siyah çerçeve kalmadığını teyit etmek. Klavye Tab odak göstergesinin korunmasını da kontrol et.
+- Tema kaynağı bağımsız depoda kalır; Codela eklentisinin tamamının tekrar yayımlanmasına gerek yoktur.

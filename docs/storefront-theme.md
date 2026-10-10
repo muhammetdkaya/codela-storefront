@@ -229,3 +229,10 @@ Dosyalar doğrulanarak yüklendi; public style/CSS/JS/manifest ve mağaza/REST s
 - Version 0.1.2 → 0.1.3; CSS and JS asset versions updated to ensure cache busting. Added static regression checks to `tests/package.py`.
 - Status at commit authoring: source prepared, CI/deploy **not yet verified**. Do not claim visually verified on iPhone/Safari; user-supplied screenshots document the old issue.
 - After CI and FTP: verify the installed source is 0.1.3; open Search, Cart and Menu on actual iPhone/Safari; check no black auto-focus frames, the subtle search-container border, reduced-motion support, keyboard Tab focus, admin toolbar offset, and panel opening/closing.
+
+
+## 0.1.3 doğrulanmış dağıtım — 10 Ekim 2026
+- Tema 0.1.2 → 0.1.3 kaynak commit'i: [2475210](https://github.com/muhammetdkaya/codela-storefront/commit/24752104aca41fe8e70cfae14537add464bd1d73).
+- [GitHub Actions 38080286355](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38080286355) `validate` ve `deploy` başarıyla tamamlandı. CSS/JS sürümleri 0.1.3; yeni ZIP/manifest dağıtımı otomatik yapıldı.
+- Gerçek iPhone/Safari'de açılan Search/Cart/Menu görsel testi **henüz tekrar yapılmadı**. Sonraki somut adım: telefonda üç paneli tekrar açıp ilk odakta siyah çerçeve kalmadığını teyit etmek. Klavye Tab odak göstergesinin korunmasını da kontrol et.
+- Tema kaynağı bağımsız depoda kalır; Codela eklentisinin tamamının tekrar yayımlanmasına gerek yoktur.
