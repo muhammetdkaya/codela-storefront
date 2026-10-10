@@ -62,3 +62,5 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - Sıradaki iş: secret eklendikten sonra bağımsız dağıtımı doğrula; kurulu 0.1.1, admin barlı üç panel ve ortak köşe ayarlarını gerçek tarayıcıda kontrol et.
 
 - Eklenti köprü doğrulaması: 564761563339c268fc3a1a8e07a0fbb51fc05969, Actions 38051382397 validate başarılı (manifest doğrulaması, offline yedek, PHP lint ve mevcut eklenti kontrolleri). Eklenti dağıtımı kuyruğa alındı; tamamlandı diye kaydedilmedi.
+
+- 10 Ekim bağlantı farkı: codela-site başarılı Actions 37810396274 workflow'u FTP_SERVER secret'ını kullanmadan server38.shared.spaceship.host adresine bağlanıyor. Storefront workflow da aynı kanıtlanmış adrese sabitlendi; FTP_USERNAME ve FTP_PASSWORD secret'lardan okunur. Önceki connect (gaierror) FTP_SERVER değerinin DNS çözümlemesinde oluştu. Yeni dağıtım sonucu bekleniyor; mevcut FTP_SERVER secret'ının silinmesi gerekmez.

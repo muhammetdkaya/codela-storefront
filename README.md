@@ -9,7 +9,7 @@ The theme requires the Codela plugin. Settings stay under Codela > Ayarlar > Tem
 
 Push theme/scripts/tests changes to main to validate, build a standalone ZIP and deploy only codela-storefront to codela.dev. Plugin releases and codela-site marketing theme deployments are independent.
 
-Add repository Actions secrets `FTP_PASSWORD`, `FTP_SERVER` and `FTP_USERNAME` for the existing **theme FTP account** used by codela-site. FTP_SERVER is a hostname (no ftp:// prefix or path); explicit verified FTPS, port 21. Account must expose wp-content/themes, or codela-storefront itself.
+Add repository Actions secrets `FTP_PASSWORD` and `FTP_USERNAME` for the **theme FTP account**. The deployment uses server38.shared.spaceship.host, the same verified endpoint as codela-site's successful workflow. An existing FTP_SERVER secret can stay, but is not read. Explicit verified FTPS, port 21. Account must expose wp-content/themes, or codela-storefront itself.
 
 After setting the secret, use Actions > Deploy Codela Storefront > Run workflow on main. Older runs may be skipped after documentation commits move main. Never paste passwords into issues or chats.
 
