@@ -1,7 +1,6 @@
 """Fixed theme-only FTPS deployment with verified staging and rollback."""
 import ftplib,hashlib,io,json,os,re,ssl,urllib.parse,urllib.request,uuid
 from pathlib import Path
-HOST="server38.shared.spaceship.host"
 TARGET="codela-storefront"
 PUBLIC="https://codela.dev/wp-content/themes/codela-storefront/"
 def read_url(url):
@@ -28,15 +27,17 @@ def package_files():
     return files
 def main():
     password=os.environ.get("FTP_PASSWORD","")
-    if not password:
-        print("Missing CODELA_FTP_PASSWORD; no connection attempted.");return 1
+    server=os.environ.get("FTP_SERVER","").strip()
+    username=os.environ.get("FTP_USERNAME","")
+    if not password or not server or not username:
+        print("Missing FTP_PASSWORD, FTP_SERVER or FTP_USERNAME; no connection attempted.");return 1
     files=package_files()
     ftp=ftplib.FTP_TLS(context=ssl.create_default_context(),timeout=30)
     stage="connect";originals={};changed=[];temporary=[]
     backup=Path(os.environ["RUNNER_TEMP"])/"storefront-rollback";backup.mkdir(exist_ok=True)
     try:
-        ftp.connect(HOST,21);stage="TLS/authentication"
-        ftp.auth();ftp.login(os.environ.get("FTP_USERNAME") or "codelatheme@codela.dev",password);ftp.prot_p();ftp.set_pasv(True)
+        ftp.connect(server,21);stage="TLS/authentication"
+        ftp.auth();ftp.login(username,password);ftp.prot_p();ftp.set_pasv(True)
         stage="select fixed theme directory"
         if not ftp.pwd().rstrip("/").endswith("/"+TARGET):
             try:ftp.cwd(TARGET)

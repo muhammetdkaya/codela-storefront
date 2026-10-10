@@ -4,7 +4,7 @@
 
 Tema dağıtımı artık eklentinin tamamının yayınlanmasını beklemez. Eklenti tarafında ayarlar ve yükleyici kalır; remote manifest/ZIP köprüsü ayrı codela deposunda tutulur. Eski tema paketi yalnız dondurulmuş 0.1.1 ilk kurulum yedeğidir.
 
-Doğrulama: altı yerel paket/dağıtım testi geçti; kimlik, yanlış FTP mapping, eksik secret, başarılı dağıtım, sağlık kontrolü hatasında geri alma ve tekrarlanabilir ZIP. PHP/JS kontrolleri CI'da. Canlı yayın için yeni depo secret'ı CODELA_FTP_PASSWORD gereklidir; yayın başarılı sayılmadı.
+Doğrulama: altı yerel paket/dağıtım testi geçti; kimlik, yanlış FTP mapping, eksik secret, başarılı dağıtım, sağlık kontrolü hatasında geri alma ve tekrarlanabilir ZIP. PHP/JS kontrolleri de CI'da geçti. Kullanıcının eklediği FTP_PASSWORD, FTP_SERVER ve FTP_USERNAME secret adları workflow ve FTPS koduna bağlandı; dağıtım sonucu bekleniyor.
 
 Kalan işler: canlı bağımsız dağıtım; gerçek tarayıcıda admin bar/sepet/menü/arama; Header/Footer alt menülerinin uygulanması; içerik sayfalarını kolay düzenleme; gerçek cihaz hız ölçümleri.
 
@@ -189,3 +189,7 @@ Theme 0.1.0 → 0.1.1; plugin remains 1.1.1. Theme asset versions also move to
   submenus remain required future work.
 
 Eklenti köprü CI: Actions 38051382397 validate başarılı. Eklenti deploy kuyruğa alındı; bağımsız tema deploy eksik secret nedeniyle bekliyor. Secret sonrası main dalında yeni Run workflow başlat; eski run kaynak revizyonu kontrolünde atlanabilir.
+
+## FTP secret adları — 10 Ekim 2026
+
+Workflow artık kullanıcının eklediği FTP_PASSWORD, FTP_SERVER ve FTP_USERNAME secret'larını kullanır. Sunucu ve kullanıcı doğrudan bu secret'lardan gelir; TLS doğrulaması ve sabit tema hedefi korunur. Bu değişiklik bağımsız tema dağıtımını tetikler; sonuç sonradan kaydedilecek.

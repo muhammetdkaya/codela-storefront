@@ -52,7 +52,7 @@ class DeploymentTests(unittest.TestCase):
             if failure=="mapping" and path.startswith("codela-theme-probe-"):return b"wrong"
             if failure=="health" and url.startswith("https://codela.dev/?"):raise RuntimeError("health")
             return files[path] if url.startswith(deploy.PUBLIC) else b"ok"
-        with tempfile.TemporaryDirectory() as temp,patch.dict(os.environ,{"FTP_PASSWORD":"test","RUNNER_TEMP":temp}),patch.object(deploy.ftplib,"FTP_TLS",return_value=ftp),patch.object(deploy,"package_files",return_value=new),patch.object(deploy,"read_url",side_effect=read):
+        with tempfile.TemporaryDirectory() as temp,patch.dict(os.environ,{"FTP_PASSWORD":"test","FTP_SERVER":"example.test","FTP_USERNAME":"theme-user","RUNNER_TEMP":temp}),patch.object(deploy.ftplib,"FTP_TLS",return_value=ftp),patch.object(deploy,"package_files",return_value=new),patch.object(deploy,"read_url",side_effect=read):
             result=deploy.main()
         self.assertFalse(any(".stage-" in n or n.startswith("codela-theme-probe-") for n in files))
         self.assertEqual(files["custom.txt"],b"keep")
