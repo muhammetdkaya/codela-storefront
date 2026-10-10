@@ -92,3 +92,11 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - [GitHub Actions 38080286355](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38080286355) `validate` ve `deploy` başarıyla tamamlandı. CSS/JS sürümleri 0.1.3; yeni ZIP/manifest dağıtımı otomatik yapıldı.
 - Gerçek iPhone/Safari'de açılan Search/Cart/Menu görsel testi **henüz tekrar yapılmadı**. Sonraki somut adım: telefonda üç paneli tekrar açıp ilk odakta siyah çerçeve kalmadığını teyit etmek. Klavye Tab odak göstergesinin korunmasını da kontrol et.
 - Tema kaynağı bağımsız depoda kalır; Codela eklentisinin tamamının tekrar yayımlanmasına gerek yoktur.
+
+## Storefront 0.1.4 kaynak güncellemesi — 11 Ekim 2026
+
+- Arama ve sepet tam ekran panellerinde gereksiz tekrarlar temizlendi. Arama panelindeki görünür üst başlık gizlendi; diyalogun erişilebilir etiketi korundu. Arama alanının placeholder'ı yalnızca mevcut yerelleştirmedeki **Ürün ara** ("Search products") oldu. İlk açılışta ve 1 karakterde gösterilen "En az iki karakter yazın" mesajı kaldırıldı; 2 karakter eşiği ve gerçek ürün araması korunuyor.
+- Sepette zaten sepet içinde görüntülenen içeriğin altında tekrar eden **Sepeti görüntüle** bağlantısı kaldırıldı. Ara toplam, ödeme bağlantısı ve kargo bilgilendirmesi korunuyor. Menü paneli değişmedi.
+- Sürüm 0.1.3 → **0.1.4**; tema JS/CSS önbellek sürümleri beraber güncellendi. Sadece `codela-storefront` kaynağı değişir; `codela` eklentisi ve tanıtım sitesi bu çalışma kapsamında değişmez.
+- Doğrulama: paket testlerine başlık/placeholder/boş durum/sepet linki regresyonu eklendi. **CI ve FTPS dağıtım sonuçları henüz kontrol edilmedi; gerçek iPhone/Safari görsel kabul testi yapılmadı.**
+- İlk sıradaki iş: 0.1.4 Actions validate/deploy sonucunu doğrula; telefonda arama ve sepeti açarak tekrarların gitmesini ve ödeme/aramanın çalışmasını kontrol et. Önceki 0.1.3 odak çerçevesi hatasının tekrarlamadığını da kontrol et.

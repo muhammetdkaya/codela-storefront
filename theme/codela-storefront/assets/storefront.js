@@ -62,6 +62,7 @@ function open(name, event) {
         dialog.showModal();
     }
     current = name;
+    dialog.classList.toggle('is-search-panel', name === 'search');
     for (const section of ['menu','search','cart']) $(`#sf-${section}`).hidden = name !== section;
     $('.sf-cart-bottom').hidden = true;
     $('#sf-status').textContent = '';
@@ -115,7 +116,7 @@ async function search() {
     searchController?.abort();
     const results = $('#sf-results');
     results.setAttribute('aria-busy','false');
-    if (query.length < 2) { results.textContent = t('Type at least two characters.'); return; }
+    if (query.length < 2) { results.textContent = ''; return; }
     searchController = new AbortController();
     results.setAttribute('aria-busy','true');
     // Retain the previous results while loading to avoid layout jumps.

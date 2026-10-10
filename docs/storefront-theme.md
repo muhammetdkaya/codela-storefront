@@ -236,3 +236,11 @@ Dosyalar doğrulanarak yüklendi; public style/CSS/JS/manifest ve mağaza/REST s
 - [GitHub Actions 38080286355](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38080286355) `validate` ve `deploy` başarıyla tamamlandı. CSS/JS sürümleri 0.1.3; yeni ZIP/manifest dağıtımı otomatik yapıldı.
 - Gerçek iPhone/Safari'de açılan Search/Cart/Menu görsel testi **henüz tekrar yapılmadı**. Sonraki somut adım: telefonda üç paneli tekrar açıp ilk odakta siyah çerçeve kalmadığını teyit etmek. Klavye Tab odak göstergesinin korunmasını da kontrol et.
 - Tema kaynağı bağımsız depoda kalır; Codela eklentisinin tamamının tekrar yayımlanmasına gerek yoktur.
+
+## Storefront 0.1.4 — duplicate copy removed from Search and Cart — 11 October 2026
+
+- Search: use the existing localized "Search products" label as the **sole visible input placeholder** (Turkish UI: "Ürün ara"). Hide the duplicated visible Search panel heading visually, but preserve its text for the dialog's `aria-labelledby`. The minimum-two-characters notice no longer appears in the empty/one-character state; requests still require two characters.
+- Cart: remove the "View cart" link from a panel that already shows the cart. Keep the subtotal, shipping/discount explanation, Checkout CTA and the error-state fallback link.
+- No changes to menu-panel content, search matching logic, cart calculations or API integration. Asset and theme versions advance 0.1.3 → 0.1.4. `tests/package.py` now checks the labels and UI structure.
+- **At implementation:** code staged, CI/deploy confirmation outstanding. Last verified live release was 0.1.3. Real Safari/iPhone view still needs user-side acceptance, including keyboard access, empty search input and checkout.
+- **Next:** verify 0.1.4 Actions success, then visually confirm Search/Cart on iPhone; afterwards continue broader Header/Homepage/Footer styling and acceptance.

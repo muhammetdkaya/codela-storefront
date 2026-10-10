@@ -21,7 +21,7 @@ class Tests(unittest.TestCase):
         self.assertTrue(all(field["type"] in {"text","menu","product"} for section in schema["sections"] for field in section["fields"]))
         self.assertIn("wp:codela/storefront-footer", (build.ROOT/"parts/footer.html").read_text())
         self.assertIn("codela_sf_footer", (build.ROOT/"inc/render.php").read_text())
-        self.assertIn("Version: 0.1.3", (build.ROOT/"style.css").read_text())
+        self.assertIn("Version: 0.1.4", (build.ROOT/"style.css").read_text())
     def test_fullscreen_panel_controls_do_not_show_automatic_focus_rings(self):
         css=(build.ROOT/"assets/storefront.css").read_text()
         js=(build.ROOT/"assets/storefront.js").read_text()
@@ -33,6 +33,19 @@ class Tests(unittest.TestCase):
         self.assertIn("initialFocus.classList.add('sf-initial-focus')",js)
         self.assertIn("event.key === 'Tab'",js)
         self.assertIn("dialog.querySelectorAll('.sf-initial-focus').forEach",js)
+    def test_search_and_cart_panels_have_no_repeated_copy(self):
+        render=(build.ROOT/"inc/render.php").read_text()
+        js=(build.ROOT/"assets/storefront.js").read_text()
+        css=(build.ROOT/"assets/storefront.css").read_text()
+        self.assertIn("placeholder=\"<?php esc_attr_e( 'Search products', 'codela-storefront' ); ?>\"",render)
+        self.assertNotIn("Search by product name or SKU",render)
+        self.assertNotIn("Type at least two characters.",render)
+        self.assertNotIn("sf-cart-link",render)
+        self.assertIn("results.textContent = ''; return;",js)
+        self.assertIn("dialog.classList.toggle('is-search-panel', name === 'search')",js)
+        self.assertIn("#sf-panel.is-search-panel #sf-panel-title",css)
+        self.assertNotIn(".sf-cart-link{",css)
+        self.assertIn("Version: 0.1.4", (build.ROOT/"style.css").read_text())
     def test_missing_secret_never_connects(self):
         with patch.dict(os.environ,{"FTP_PASSWORD":""}),patch.object(deploy.ftplib,"FTP_TLS") as ftp:
             self.assertEqual(deploy.main(),1);ftp.assert_not_called()
