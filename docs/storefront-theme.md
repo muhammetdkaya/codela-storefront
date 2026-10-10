@@ -4,7 +4,7 @@
 
 Tema dağıtımı artık eklentinin tamamının yayınlanmasını beklemez. Eklenti tarafında ayarlar ve yükleyici kalır; remote manifest/ZIP köprüsü ayrı codela deposunda tutulur. Eski tema paketi yalnız dondurulmuş 0.1.1 ilk kurulum yedeğidir.
 
-Doğrulama: altı yerel paket/dağıtım testi geçti; kimlik, yanlış FTP mapping, eksik secret, başarılı dağıtım, sağlık kontrolü hatasında geri alma ve tekrarlanabilir ZIP. PHP/JS kontrolleri ve ZIP üretimi de CI'da geçti. Canlı yayın için yeni depo secret'ı CODELA_FTP_PASSWORD gereklidir; yayın başarılı sayılmadı.
+Doğrulama: altı yerel paket/dağıtım testi geçti; kimlik, yanlış FTP mapping, eksik secret, başarılı dağıtım, sağlık kontrolü hatasında geri alma ve tekrarlanabilir ZIP. PHP/JS kontrolleri CI'da. Canlı yayın için yeni depo secret'ı CODELA_FTP_PASSWORD gereklidir; yayın başarılı sayılmadı.
 
 Kalan işler: canlı bağımsız dağıtım; gerçek tarayıcıda admin bar/sepet/menü/arama; Header/Footer alt menülerinin uygulanması; içerik sayfalarını kolay düzenleme; gerçek cihaz hız ölçümleri.
 
@@ -188,6 +188,4 @@ Theme 0.1.0 → 0.1.1; plugin remains 1.1.1. Theme asset versions also move to
   panels logged in/out and on a scrolled mobile page. Header/Footer settings
   submenus remain required future work.
 
-## Taşıma kanıtı
-
-Tema commit: 3c6fabf3684aca41997c1df1ddaf63baec10941a; Actions 38051320461 validate başarılı, deploy eksik CODELA_FTP_PASSWORD adımında durdu. Eklenti remote paket köprüsü commit: 564761563339c268fc3a1a8e07a0fbb51fc05969. Canlı tema dağıtımı yapılmış sayılmadı.
+Eklenti köprü CI: Actions 38051382397 validate başarılı. Eklenti deploy kuyruğa alındı; bağımsız tema deploy eksik secret nedeniyle bekliyor. Secret sonrası main dalında yeni Run workflow başlat; eski run kaynak revizyonu kontrolünde atlanabilir.

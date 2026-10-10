@@ -56,7 +56,9 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 
 - Tema 0.1.1 kaynakları değişmeden ayrı depoya taşındı; eklenti 1.1.1.
 - Bağımsız FTPS dağıtımı, ZIP/manifest ve geri alma hazırlandı.
-- Altı yerel paket/dağıtım testi ve CI PHP lint, JS sözdizimi, ZIP üretimi geçti.
-- Tema taşıma commit'i 3c6fabf3684aca41997c1df1ddaf63baec10941a; Actions 38051320461 validate başarılı. Deploy CODELA_FTP_PASSWORD eksik olduğu için bağlantı kurulmadan durdu. Eklenti köprü commit'i 564761563339c268fc3a1a8e07a0fbb51fc05969; canlı bağımsız dağıtım bekliyor.
+- Altı yerel paket/dağıtım testi geçti. PHP lint ve JS sözdizimi CI tarafından doğrulanacak.
+- Yeni depoda CODELA_FTP_PASSWORD secret'ı gerekli; canlı dağıtım henüz doğrulanmadı.
 - Header/Footer ayrı ayar alt menüleri henüz uygulanmadı; sonraki tasarım çalışmasında ilgili ayarları bu menülerde ekle.
 - Sıradaki iş: secret eklendikten sonra bağımsız dağıtımı doğrula; kurulu 0.1.1, admin barlı üç panel ve ortak köşe ayarlarını gerçek tarayıcıda kontrol et.
+
+- Eklenti köprü doğrulaması: 564761563339c268fc3a1a8e07a0fbb51fc05969, Actions 38051382397 validate başarılı (manifest doğrulaması, offline yedek, PHP lint ve mevcut eklenti kontrolleri). Eklenti dağıtımı kuyruğa alındı; tamamlandı diye kaydedilmedi.
