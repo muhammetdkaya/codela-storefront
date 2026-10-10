@@ -61,7 +61,22 @@ function codela_sf_header(): string {
         <dialog class="sf-panel" id="sf-panel" aria-labelledby="sf-panel-title">
             <div class="sf-panel-top"><h2 id="sf-panel-title" tabindex="-1"></h2><button class="sf-icon-button sf-close" data-wp-on--click="actions.close" aria-label="<?php esc_attr_e( 'Close', 'codela-storefront' ); ?>"><?php echo codela_sf_icon( 'x' ); ?></button></div>
             <section class="sf-panel-body" id="sf-menu" hidden><button class="sf-back" hidden><?php echo codela_sf_icon( 'arrow-left' ); ?><?php esc_html_e( 'Back', 'codela-storefront' ); ?></button><nav aria-label="<?php esc_attr_e( 'Main menu', 'codela-storefront' ); ?>"><?php echo codela_sf_menu(); ?></nav><div class="sf-menu-secondary"><a href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>"><?php esc_html_e( 'My account', 'codela-storefront' ); ?></a><?php if ( get_privacy_policy_url() ) { ?><a href="<?php echo esc_url( get_privacy_policy_url() ); ?>"><?php esc_html_e( 'Privacy', 'codela-storefront' ); ?></a><?php } ?></div></section>
-            <section class="sf-panel-body" id="sf-search" hidden><form class="sf-search-form" action="<?php echo esc_url( home_url( '/' ) ); ?>" method="get"><input type="hidden" name="post_type" value="product"><label class="screen-reader-text" for="sf-query"><?php esc_html_e( 'Search products', 'codela-storefront' ); ?></label><input id="sf-query" type="search" name="s" maxlength="80" autocomplete="off" placeholder="<?php esc_attr_e( 'Search products', 'codela-storefront' ); ?>"><button class="sf-icon-button" type="submit" aria-label="<?php esc_attr_e( 'Search', 'codela-storefront' ); ?>"><?php echo codela_sf_icon( 'arrow-right' ); ?></button></form><div id="sf-results" aria-live="polite"></div></section>
+            <section class="sf-panel-body sf-search-body" id="sf-search" hidden>
+                <div class="sf-search-toolbar">
+                    <form class="sf-search-form" action="<?php echo esc_url( home_url( '/' ) ); ?>" method="get" role="search">
+                        <input type="hidden" name="post_type" value="product">
+                        <span class="sf-search-leading" aria-hidden="true"><?php echo codela_sf_icon( 'search' ); ?></span>
+                        <label class="screen-reader-text" for="sf-query"><?php esc_html_e( 'Search products', 'codela-storefront' ); ?></label>
+                        <input id="sf-query" type="search" name="s" maxlength="80" autocomplete="off" enterkeyhint="search" placeholder="<?php esc_attr_e( 'Search', 'codela-storefront' ); ?>">
+                        <button type="button" class="sf-search-clear" aria-label="<?php esc_attr_e( 'Clear search', 'codela-storefront' ); ?>" hidden><?php echo codela_sf_icon( 'x' ); ?></button>
+                    </form>
+                    <button type="button" class="sf-search-cancel sf-close" data-wp-on--click="actions.close" aria-label="<?php esc_attr_e( 'Close', 'codela-storefront' ); ?>"><?php echo codela_sf_icon( 'x' ); ?></button>
+                </div>
+                <div class="sf-search-content">
+                    <button type="button" class="sf-search-suggestion" hidden><span class="sf-suggestion-symbol" aria-hidden="true"><?php echo codela_sf_icon( 'search' ); ?></span><span class="sf-search-term"></span></button>
+                    <div id="sf-results" aria-live="polite"></div>
+                </div>
+            </section>
             <section class="sf-panel-body" id="sf-cart" hidden><div id="sf-cart-items"></div></section>
             <div class="sf-cart-bottom" hidden><div class="sf-subtotal"><span><?php esc_html_e( 'Subtotal', 'codela-storefront' ); ?></span><strong id="sf-subtotal"></strong></div><p><?php esc_html_e( 'Shipping and discounts are calculated at checkout.', 'codela-storefront' ); ?></p><a class="sf-primary" href="<?php echo esc_url( wc_get_checkout_url() ); ?>"><?php esc_html_e( 'Checkout', 'codela-storefront' ); ?> <?php echo codela_sf_icon( 'arrow-right' ); ?></a></div>
             <p class="sf-status" id="sf-status" role="status" aria-live="polite"></p>

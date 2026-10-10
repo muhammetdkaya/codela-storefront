@@ -1,11 +1,9 @@
 import { store } from '@wordpress/interactivity';
 
-let dialog, current = null, closing = null, opener, savedY = 0, savedBodyStyle = null, savedAdminStyle = null;
+let dialog, current = null, opener, savedY = 0, savedBodyStyle = null, savedAdminStyle = null;
 let searchTimer, searchController, searchSequence = 0;
 let cartNonce = '', cartData = null, cartPending = null, mutating = false;
 let menuPath = [];
-let revealRect = null;
-const PANEL_MOTION_MS = 420;
 const $ = s => document.querySelector(s);
 const { state } = store('codela/storefront', {
     actions: {
@@ -40,34 +38,11 @@ function restoreStyle(element, values) {
         else element.style.removeProperty(name);
     }
 }
-/**
- * Expand the modal from the actual launcher rectangle (menu left, search/cart right).
- * The dialog is in the top layer and may begin below a visible WP admin toolbar.
- * Insets are measured relative to the dialog, not the document or viewport.
- */
-function placePanelReveal(source) {
-    if (!dialog || !source) return;
-    const panel = dialog.getBoundingClientRect();
-    const clamp = (n, min, max) => Math.min(Math.max(n, min), max);
-    const w = clamp(source.width || 44, 1, panel.width);
-    const h = clamp(source.height || 44, 1, panel.height);
-    const left = clamp(source.left - panel.left, 0, Math.max(0, panel.width - w));
-    const top = clamp(source.top - panel.top, 0, Math.max(0, panel.height - h));
-    dialog.style.setProperty('--sf-reveal-left', `${left}px`);
-    dialog.style.setProperty('--sf-reveal-top', `${top}px`);
-    dialog.style.setProperty('--sf-reveal-right', `${Math.max(0, panel.width - left - w)}px`);
-    dialog.style.setProperty('--sf-reveal-bottom', `${Math.max(0, panel.height - top - h)}px`);
-}
 function open(name, event) {
     if (event && (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) return;
-    const trigger = event?.currentTarget?.closest?.('[data-panel]')
-        || event?.target?.closest?.('[data-panel]')
-        || document.querySelector(`[data-panel="${name}"]`);
-    const sourceRect = trigger?.getBoundingClientRect();
     event?.preventDefault();
     dialog ||= $('#sf-panel');
     if (!dialog || typeof dialog.showModal !== 'function') { if (name !== 'menu') location.href = config()[name] || config().shop; return; }
-    clearTimeout(closing); closing = null;
     if (!dialog.open) {
         opener = document.activeElement; savedY = window.scrollY;
         const bodyRect = document.body.getBoundingClientRect();
@@ -83,19 +58,19 @@ function open(name, event) {
         // Preserve the rendered body origin, including WordPress's html top margin.
         document.body.style.position = 'fixed'; document.body.style.top = `${bodyRect.top}px`; document.body.style.width = `${bodyRect.width}px`;
         adminOffset();
-        revealRect = sourceRect || null;
         dialog.showModal();
-        // Synchronous setup prevents a flash of an unmasked modal on first paint.
-        placePanelReveal(revealRect);
     }
     current = name;
     dialog.classList.toggle('is-search-panel', name === 'search');
+    const menuTrigger = document.querySelector('[data-panel="menu"]');
+    dialog.setAttribute('aria-label', name === 'menu' ? (menuTrigger?.getAttribute('aria-label') || 'Menu') : name === 'search' ? t('Search products') : t('Your cart'));
+    dialog.removeAttribute('aria-labelledby');
     for (const section of ['menu','search','cart']) $(`#sf-${section}`).hidden = name !== section;
     $('.sf-cart-bottom').hidden = true;
     $('#sf-status').textContent = '';
     $('#sf-panel-title').textContent = name === 'menu' ? '' : name === 'search' ? t('Search products') : t('Your cart');
     document.querySelectorAll('[data-panel]').forEach(el => el.setAttribute('aria-expanded', String(el.dataset.panel === name)));
-    requestAnimationFrame(() => requestAnimationFrame(() => { if (dialog.open && current && !closing) dialog.classList.add('is-open'); }));
+    dialog.classList.add('is-open');
     // Automatically focused controls should not display a giant focus ring
     // when opening a panel; keyboard navigation must still show its indicator.
     dialog.querySelectorAll('.sf-initial-focus').forEach(el => el.classList.remove('sf-initial-focus'));
@@ -103,25 +78,19 @@ function open(name, event) {
     initialFocus.classList.add('sf-initial-focus');
     initialFocus.focus({preventScroll:true});
     if (name === 'menu') { menuPath = []; paintMenu(); }
-    if (name === 'search') search();
+    if (name === 'search') { syncSearchControls(); search(); }
     if (name === 'cart') refreshCart();
 }
 function close() {
-    if (!dialog?.open || closing !== null) return;
+    if (!dialog?.open) return;
     dialog.classList.remove('is-open');
     document.querySelectorAll('[data-panel]').forEach(el => el.setAttribute('aria-expanded','false'));
     searchController?.abort(); ++searchSequence; clearTimeout(searchTimer);
-    const finish = () => {
-        dialog.close(); current = null; closing = null;
-        restoreStyle(document.body, savedBodyStyle); savedBodyStyle = null;
-        const bar = $('#wpadminbar'); if (bar) restoreStyle(bar, savedAdminStyle);
-        savedAdminStyle = null; dialog.style.removeProperty('--sf-admin-offset');
-        for (const prop of ['top','right','bottom','left']) dialog.style.removeProperty('--sf-reveal-' + prop);
-        revealRect = null;
-        window.scrollTo(0, savedY); opener?.focus({preventScroll:true});
-    };
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) finish();
-    else closing = setTimeout(finish, PANEL_MOTION_MS);
+    dialog.close(); current = null;
+    restoreStyle(document.body, savedBodyStyle); savedBodyStyle = null;
+    const bar = $('#wpadminbar'); if (bar) restoreStyle(bar, savedAdminStyle);
+    savedAdminStyle = null; dialog.style.removeProperty('--sf-admin-offset');
+    window.scrollTo(0, savedY); opener?.focus({preventScroll:true});
 }
 function paintMenu() {
     const root = $('#sf-menu .sf-menu-list');
@@ -139,8 +108,16 @@ function paintMenu() {
     $('#sf-menu .sf-back').hidden = !menuPath.length;
     $('#sf-menu .sf-menu-secondary').hidden = !!menuPath.length;
 }
+function syncSearchControls() {
+    const input = $('#sf-query');
+    const query = input.value.trim();
+    $('.sf-search-clear').hidden = input.value.length === 0;
+    $('.sf-search-suggestion').hidden = query.length < 2;
+    $('.sf-search-term').textContent = query;
+}
 async function search() {
     const query = $('#sf-query').value.trim();
+    syncSearchControls();
     const sequence = ++searchSequence;
     searchController?.abort();
     const results = $('#sf-results');
@@ -148,8 +125,10 @@ async function search() {
     if (query.length < 2) { results.textContent = ''; return; }
     searchController = new AbortController();
     results.setAttribute('aria-busy','true');
-    // Retain the previous results while loading to avoid layout jumps.
-    if (!results.children.length) results.textContent = t('Loading…');
+    // Skeleton appears only during a real in-flight product search; never invent suggestions or products.
+    const row = '<div class="sf-skeleton-row"><i></i><span><b></b><b></b></span></div>';
+    results.innerHTML = '<div class="sf-search-skeleton" aria-hidden="true">' + row.repeat(6) + '</div>' +
+        '<span class="screen-reader-text">' + escape(t('Loading…')) + '</span>';
     try {
         const url = new URL(config().search); url.searchParams.set('q',query);
         const response = await fetch(url, {credentials:'same-origin', signal:searchController.signal, cache:'no-store'});
@@ -158,7 +137,7 @@ async function search() {
         if (sequence !== searchSequence || current !== 'search') return;
         results.innerHTML = products.length ? products.map(p => `<a class="sf-result" href="${safeURL(p.url)}"><img src="${safeURL(p.image)}" alt="" width="80" height="100"><div><h3>${escape(decode(p.name))}</h3><p>${escape(decode(p.price))}</p><small>${escape(p.sku)}</small></div></a>`).join('') : `<p>${escape(t('No matching products.'))}</p>`;
     } catch (error) {
-        if (error.name !== 'AbortError' && sequence === searchSequence) results.innerHTML = `<p>${escape(t('Something went wrong. Please try again.'))}</p><button class="sf-retry-search">${escape(t('Retry'))}</button>`;
+        if (error.name !== 'AbortError' && sequence === searchSequence && current === 'search') results.innerHTML = `<p>${escape(t('Something went wrong. Please try again.'))}</p><button class="sf-retry-search">${escape(t('Retry'))}</button>`;
     } finally { if (sequence === searchSequence) results.setAttribute('aria-busy','false'); }
 }
 async function requestCart(path = '', payload = null) {
@@ -225,7 +204,7 @@ async function changeCart(button) {
         $('#sf-status').textContent = error.message;
     } finally {
         mutating = false; $('#sf-cart').setAttribute('aria-busy','false'); $('.sf-cart-bottom').inert = false;
-        if (current === 'cart' && dialog.open && !closing) {
+        if (current === 'cart' && dialog.open) {
             const candidate = [...$('#sf-cart').querySelectorAll('[data-key]')].find(b => b.dataset.key === key && b.dataset.qty === focusQuantity && !b.disabled) || $('#sf-cart button:not(:disabled)') || $('.sf-close');
             candidate.focus({preventScroll:true});
         }
@@ -234,7 +213,7 @@ async function changeCart(button) {
 function init() {
     dialog = $('#sf-panel'); if (!dialog) return;
     window.addEventListener('resize', () => {
-        if (dialog.open) { adminOffset(); placePanelReveal(revealRect); }
+        if (dialog.open) adminOffset();
     });
     dialog.addEventListener('cancel',event => {event.preventDefault();close();});
     dialog.addEventListener('keydown',event => {
@@ -242,8 +221,26 @@ function init() {
             dialog.querySelectorAll('.sf-initial-focus').forEach(el => el.classList.remove('sf-initial-focus'));
         }
     });
-    $('#sf-query').addEventListener('input', () => {clearTimeout(searchTimer); searchController?.abort(); ++searchSequence; searchTimer = setTimeout(search,180);});
+    $('#sf-query').addEventListener('input', () => {
+        clearTimeout(searchTimer); searchController?.abort(); ++searchSequence;
+        $('#sf-results').textContent = '';
+        $('#sf-results').setAttribute('aria-busy','false');
+        syncSearchControls();
+        searchTimer = setTimeout(search,180);
+    });
     $('#sf-search form').addEventListener('submit',event => {event.preventDefault();clearTimeout(searchTimer);search();});
+    $('.sf-search-clear').addEventListener('click', () => {
+        $('#sf-query').value = '';
+        clearTimeout(searchTimer); searchController?.abort(); ++searchSequence;
+        $('#sf-results').textContent = '';
+        $('#sf-results').setAttribute('aria-busy','false');
+        syncSearchControls();
+        $('#sf-query').focus({preventScroll:true});
+    });
+    $('.sf-search-suggestion').addEventListener('click', () => {
+        clearTimeout(searchTimer); search();
+        $('#sf-query').focus({preventScroll:true});
+    });
     const menu = $('#sf-menu .sf-menu-list');
     menu?.classList.add('enhanced');
     menu?.querySelectorAll('.sub-menu').forEach(sub => {
