@@ -213,3 +213,11 @@ Dosyalar doğrulanarak yüklendi; public style/CSS/JS/manifest ve mağaza/REST s
 - Versioned CSS/JS assets move to 0.1.2. Schema/package contract has automated test assertions.
 - Publication: source prepared; CI, independent FTPS and real mobile/admin visual verification **must be checked separately**, and the installed theme must be updated to 0.1.2 where necessary.
 - Next: verify both repositories' CI and deployment; inspect the installed Theme > Header/Homepage/Footer pages, saved option persistence, Footer display, then actual mobile/desktop menu/search/cart with and without admin bar.
+
+
+## 0.1.2 doğrulanmış dağıtım — 10 Ekim 2026
+
+- `f8e6200a1b274326ebf516d9da3e3c515945fe38` teması için [Actions 38078468464](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38078468464) **validate + deploy success**; tema kaynakları, ZIP ve manifest sunucuya yüklendi. Bu, WordPress'in temayı etkinleştirdiği veya gerçek cihazda bütün görsellerin doğrulandığı anlamına gelmez.
+- Eklenti ayar motoru `muhammetdkaya/codela@c5a383d` için [Actions 38078271353](https://github.com/muhammetdkaya/codela/actions/runs/38078271353) başarılı; yükleme günlüğü 983 dosyanın doğrulandığını bildiriyor. Eklenti sürümü 1.1.1 olarak kaldı.
+- Tema kaydetme/şema izole testleri `tools/test-theme-support.php` içine eklendi, [Actions 38078903175](https://github.com/muhammetdkaya/codela/actions/runs/38078903175) başarılı. Alt menünün tema ana sekmesinde açık kalması için eklenti kaynak düzeltmesi `3cded41` yapıldı; **ayrı doğrulama/dağıtımı kontrol edilecek**, tamamlandı denmez.
+- Sıradaki ilk iş: Codela 3cded41 kaynak doğrulama/dağıtımının sonucunu al, WordPress içinde aktif tema sürümünü doğrula, tema Header/Homepage/Footer ayarlarını kaydet/yeniden aç ile test et; mobil/admin bar ve sepet-arama-menü canlı tarayıcı kontrollerini ayrıca gerçekleştir.

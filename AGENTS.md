@@ -73,3 +73,10 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - Tema Header, Homepage ve Footer seçeneklerini `config/settings.json` dosyasında kendisi tanımlar. Genel ayar formu ve iç içe alt menüler Codela eklentisinde otomatik oluşturulur; alan tanımları Codela eklentisinde tekrar edilmez.
 - Eklenti değişikliği `c5a383df1c8cf786c583e73daf5c93ad95654e34`; tema sürümünün 0.1.1 → 0.1.2 kaynak değişikliği bu depodadır. Mevcut ayarlar korunur; Footer notu isteğe bağlıdır.
 - Bu kayıt canlı yayın veya gerçek cihaz testi tamamlandı anlamına gelmez. İlk iş: plugin + tema Actions sonuçlarını doğrula; kurulu temayı 0.1.2'ye güncelle; alt menü ve üç tam ekran paneli gerçek tarayıcıda kontrol et. Sonra sayfa tasarımına geç.
+
+
+## Doğrulanmış 0.1.2 dağıtım sonucu — 10 Ekim 2026
+- [Storefront Actions 38078468464](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38078468464): 0.1.2 tema dağıtımı başarılı; commit `f8e6200`.
+- [Codela Actions 38078271353](https://github.com/muhammetdkaya/codela/actions/runs/38078271353): tema ayar köprüsü eklenti dağıtımı başarılı; `c5a383d`. Eklenti sürümü 1.1.1.
+- Yeni settings şema/kaydetme regresyon testleri [Actions 38078903175](https://github.com/muhammetdkaya/codela/actions/runs/38078903175) ile geçti. Tema ana menüsünün açılır kalması `codela@3cded41` commit'inde düzeltildi; bu küçük düzeltmenin CI/deploy doğrulaması bekleniyor.
+- Sıradaki iş CI/deploy doğrulaması, canlı kurulum/etkinlik kontrolü ve gerçek yönetim ekranı+mobil testleri. Belgelendirilmiş otomatik başarıları gerçek tarayıcı/cihaz kabul testiyle karıştırma.
