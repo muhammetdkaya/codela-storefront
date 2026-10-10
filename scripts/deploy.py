@@ -39,6 +39,8 @@ def main():
         ftp.connect(server,21);stage="TLS/authentication"
         ftp.auth();ftp.login(username,password);ftp.prot_p();ftp.set_pasv(True)
         stage="select fixed theme directory"
+        base_entries={name for name,facts in ftp.mlsd()}
+        print("FTP scope markers: "+",".join(name for name in ("codela-site","codela-storefront","wp-content","public_html","codela-commerce-toolkit.php") if name in base_entries))
         if not ftp.pwd().rstrip("/").endswith("/"+TARGET):
             try:ftp.cwd(TARGET)
             except ftplib.error_perm:ftp.mkd(TARGET);ftp.cwd(TARGET)
@@ -82,6 +84,7 @@ def main():
         read_url("https://codela.dev/?storefront_check="+uuid.uuid4().hex);read_url("https://codela.dev/wp-json/")
         print("Storefront deployed; checks passed.");return 0
     except Exception as error:
+        if isinstance(error,urllib.error.HTTPError):print("Public mapping/health HTTP status: "+str(error.code))
         restored=True
         for path in reversed(changed):
             try:
