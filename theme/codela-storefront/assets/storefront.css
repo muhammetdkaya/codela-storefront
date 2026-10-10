@@ -33,3 +33,66 @@
 
 /* Search keeps an accessible dialog title without repeating it visually. Keep a 1px flex item so Close stays at right. */
 #sf-panel.is-search-panel #sf-panel-title{flex:0 0 1px;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* 0.1.5 — Balanced storefront header: menu | centered brand | search + cart. */
+.sf-shell .sf-header{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,auto) minmax(0,1fr);
+  align-items:center;
+  column-gap:8px;
+}
+.sf-header-menu{display:flex;align-items:center;justify-self:start}
+.sf-header .sf-brand{
+  justify-self:center;
+  max-width:min(220px,38vw);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  text-align:center;
+}
+.sf-header .sf-brand a{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sf-header .sf-actions{justify-self:end;display:flex;align-items:center;gap:4px}
+.sf-header [data-panel] .sf-icon{transition:transform 300ms var(--sf-ease),opacity 200ms}
+.sf-header [data-panel][aria-expanded="true"] .sf-icon{transform:scale(.86);opacity:.35}
+
+/* Native dialog stays modal; animate a rounded inset from the tapped icon
+   to a true fullscreen sheet. Insets are based on its screen position. */
+.sf-panel{
+  transform:none;
+  clip-path:inset(var(--sf-reveal-top,0px) var(--sf-reveal-right,0px) var(--sf-reveal-bottom,0px) var(--sf-reveal-left,0px) round 22px);
+  transition:clip-path 420ms var(--sf-ease);
+  will-change:clip-path;
+}
+.sf-panel.is-open{transform:none;clip-path:inset(0px round 0px)}
+/* Fallback for engines without clipping support: original vertical slide. */
+@supports not (clip-path:inset(0px round 0px)){
+  .sf-panel{transform:translate3d(0,-100%,0);transition:transform var(--sf-motion) var(--sf-ease)}
+  .sf-panel.is-open{transform:none}
+}
+/* A compact, one-line iOS-like search bar just below the panel toolbar. */
+#sf-panel #sf-search{padding-top:8px}
+#sf-panel .sf-search-form{
+  max-width:760px;
+  min-height:50px;
+  margin:0 auto 16px;
+  gap:8px;
+  padding:0 12px;
+  border-radius:var(--cdl-ct-box-radius,12px);
+}
+#sf-panel #sf-query{
+  min-height:46px;
+  padding:10px 0;
+  font-size:16px;
+  line-height:24px;
+}
+#sf-panel .sf-search-form .sf-icon-button{width:40px;height:40px;flex:0 0 40px}
+#sf-panel #sf-results{max-width:760px}
+@media(max-width:700px){
+  .sf-header .sf-brand{font-size:clamp(19px,5vw,27px);max-width:36vw}
+  .sf-header .sf-actions{gap:0}
+  #sf-panel #sf-search{padding-top:6px}
+  #sf-panel .sf-search-form{margin-bottom:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  .sf-panel,.sf-panel.is-open{clip-path:none;will-change:auto;transition:none}
+}

@@ -49,11 +49,13 @@ function codela_sf_header(): string {
     <div data-wp-interactive="codela/storefront" class="sf-shell">
         <a class="sf-skip" href="#sf-content"><?php esc_html_e( 'Skip to content', 'codela-storefront' ); ?></a>
         <header class="sf-header">
+            <nav class="sf-header-menu" aria-label="<?php esc_attr_e( 'Main menu', 'codela-storefront' ); ?>">
+                <a class="sf-icon-button" href="#sf-menu-fallback" data-wp-on--click="actions.menu" data-panel="menu" aria-label="<?php esc_attr_e( 'Menu', 'codela-storefront' ); ?>" aria-haspopup="dialog" aria-expanded="false"><?php echo codela_sf_icon( 'menu' ); ?></a>
+            </nav>
             <div class="sf-brand"><?php if ( has_custom_logo() ) { the_custom_logo(); } else { ?><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( $settings['brand'] ?: get_bloginfo( 'name' ) ); ?></a><?php } ?></div>
             <nav class="sf-actions" aria-label="<?php esc_attr_e( 'Store tools', 'codela-storefront' ); ?>">
                 <a class="sf-icon-button" href="<?php echo esc_url( add_query_arg( [ 's' => '', 'post_type' => 'product' ], home_url( '/' ) ) ); ?>" data-wp-on--click="actions.search" data-panel="search" aria-label="<?php esc_attr_e( 'Search', 'codela-storefront' ); ?>" aria-haspopup="dialog" aria-expanded="false"><?php echo codela_sf_icon( 'search' ); ?></a>
                 <a class="sf-icon-button" href="<?php echo esc_url( wc_get_cart_url() ); ?>" data-wp-on--click="actions.cart" data-panel="cart" aria-label="<?php esc_attr_e( 'Your cart', 'codela-storefront' ); ?>" aria-haspopup="dialog" aria-expanded="false"><?php echo codela_sf_icon( 'shopping-bag' ); ?><span class="sf-badge" aria-hidden="true"></span></a>
-                <a class="sf-icon-button" href="#sf-menu-fallback" data-wp-on--click="actions.menu" data-panel="menu" aria-label="<?php esc_attr_e( 'Menu', 'codela-storefront' ); ?>" aria-haspopup="dialog" aria-expanded="false"><?php echo codela_sf_icon( 'menu' ); ?></a>
             </nav>
         </header>
         <dialog class="sf-panel" id="sf-panel" aria-labelledby="sf-panel-title">

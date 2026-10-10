@@ -252,3 +252,13 @@ Dosyalar doğrulanarak yüklendi; public style/CSS/JS/manifest ve mağaza/REST s
 - Biten: Arama kutusu görünür placeholder'ı "Ürün ara"; görsel tekrarlayan arama başlığı gizli ancak ekran okuyucu başlığı var; başlangıç iki karakter uyarısı kaldırıldı (minimum arama 2 karakter olmaya devam eder); sepet panelindeki "Sepeti görüntüle" bağlantısı kaldırıldı. Testler CI'da başarılı.
 - Kalan: Kullanıcı iPhone/Safari'de canlı görsel kontrol ve arama/ödeme tıklama testleri; klavyeyle erişim; WordPress etkin tema bilgisi ayrıca doğrulanmadı.
 - Sıradaki somut iş: Canlı iPhone'da arama panelini açıp "Ürün ara" yazısını, ilk durumun boş olmasını, iki harfle sonuç gelmesini; sepet panelinde "Sepeti görüntüle" yerine doğrudan ödemeyi; menü/arama/sepet X çerçevesinin temiz kaldığını doğrula.
+
+## Storefront 0.1.5 — header + expanding fullscreen panels (11 October 2026)
+
+- Supersedes the old brand-left header: grid with Menu left, true centered brand/logo and Search/Cart paired right (44px touch targets, narrow-mobile responsive logo).
+- All three existing **native modal dialogs** animate their clipping rectangle from the real tapped launcher coordinates to fullscreen, with rounded corners on entry and reverse contraction on close. Geometry is relative to the dialog viewport and accounts for the WordPress admin bar offset; saved body, toolbar and scroll behavior retained. 420ms CSS/JS durations match; reduced-motion explicitly removes the clip transition; unsupported `clip-path` engines retain the previous top slide.
+- Search stays full screen, but its bar is top-aligned, narrower (max 760px), 50px tall and 16px for no iOS auto zoom. "Ürün ara" placeholder and existing 2-character search behavior persist. Search results still appear beneath the bar.
+- No changes to WooCommerce Store API cart logic, menu links, settings schema or Codela plugin. Source/asset version 0.1.4 → 0.1.5.
+- Validation: existing Python package checks extended for order, anchors and compact search; `tests/panel-origin.cjs` executes actual origin geometry with right action, left menu, admin bar and clamped positions in Node CI.
+- **Status at change preparation:** committed code not yet live-verified. Validate + deploy actions and actual iPhone Safari interactions require separate confirmation. No real-device screenshots/test claims until performed.
+- Next: verify Actions status and then live header position and panel behavior across iPhone/desktop, scroll/admin bar, focus and reduced motion.

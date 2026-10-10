@@ -18,6 +18,7 @@ jobs:
         run: |
           find theme -name '*.php' -type f -print0 | xargs -0 -n1 php -l
           node --input-type=module --check < theme/codela-storefront/assets/storefront.js
+          node tests/panel-origin.cjs
           python3 tests/package.py
           python3 scripts/build-package.py
       - uses: actions/upload-artifact@v4

@@ -35,9 +35,9 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - Tema ayarlarının altında Header (Üst alan), Footer (Alt alan) ve geliştirilen diğer bölümler için ayrı alt menüler bulunmalı; tüm ayarları tek uzun forma yığma. Bir tema bölümü geliştirilirken gerekli ayarları aynı çalışmada ilgili alt menüye ekle; temanın tamamlanmasını bekleme.
 - Küçük değişikliklerde de mevcut codela.dev otomatik dağıtımı açık kalır. Bağlantılı değişiklikleri topluca yap, yalnız ilgili dosyaları incele ve dağıtım sonuçlarını gereksiz tekrarlarla sorgulama. WordPress.org yayını ayrı yetki gerektirir.
 - Tasarım sade ve ürün odaklıdır. Kullanıcının aradığı özgünlük, karmaşık veya bilim kurgu dekorları eklemek anlamına gelmez. Sayfaları kullanım amacı ve örneklerle değerlendirerek tek tek geliştir.
-- Header: logo solda; arama, sepet ve menü sağda.
+- Header: menü solda, logo merkezde; arama ve sepet sağda yan yana.
 - Menü, arama ve sepet aynı görsel/etkileşim dilinde **tam ekran** açılır. Onaylanan yön Apple örneğindeki tam ekran menüdür; sayfayı yana iten menü önceki alternatifti.
-- Açılışta panel aşağı iner, kapanışta yukarı çıkar; ikon hareketi panelle eşzamanlıdır. Hareket azaltma tercihi, klavye, odak ve kaydırma konumu korunur.
+- Menü/arama/sepet tam ekran paneli, tıklanan ikonun yerinden köşeleri yumuşatılmış bir alandan büyür; kapanırken aynı ikona geri toplanır. İkon hareketi panelle eşzamanlıdır. Hareket azaltma tercihi, klavye, odak ve kaydırma konumu korunur.
 - Arama hızlı ve doğru olmalı; gecikmiş eski sonuç yeni sorguyu ezmemeli. Mevcut sürümün yazım hatası toleransı olmayan aramasını gelişmiş arama gibi tanıtma.
 - Tutarlı ikon dili: Lucide temelli 24×24 çizim alanı, 2 birim çizgi, yuvarlatılmış uç/köşe ve tek renk. Temada yalnız kullanılan yerel SVG dosyaları yüklenir; tüm paketi, ikon fontunu, CDN veya ikon JavaScript çalışma zamanını ekleme. Eklentinin mevcut SVG maskeleri korunur; yeni/değişen ikonlar bu standarda kademeli geçirilir. Yönetim ikon CSS dosyasını mağazaya yükleme.
 - Ana sayfa, hakkımızda ve iletişim içerikleri kullanıcı tarafından rahatça düzenlenebilmelidir. İçerik düzenleme deneyimi henüz kesinleşmedi; mevcut WordPress metin/blok alanının tek başına kullanıcı ihtiyacını çözdüğünü varsayma. Elementor veya başka ağır bir sayfa oluşturucuyu kendiliğinden ekleme.
@@ -108,3 +108,9 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - Biten: Arama kutusu görünür placeholder'ı "Ürün ara"; görsel tekrarlayan arama başlığı gizli ancak ekran okuyucu başlığı var; başlangıç iki karakter uyarısı kaldırıldı (minimum arama 2 karakter olmaya devam eder); sepet panelindeki "Sepeti görüntüle" bağlantısı kaldırıldı. Testler CI'da başarılı.
 - Kalan: Kullanıcı iPhone/Safari'de canlı görsel kontrol ve arama/ödeme tıklama testleri; klavyeyle erişim; WordPress etkin tema bilgisi ayrıca doğrulanmadı.
 - Sıradaki somut iş: Canlı iPhone'da arama panelini açıp "Ürün ara" yazısını, ilk durumun boş olmasını, iki harfle sonuç gelmesini; sepet panelinde "Sepeti görüntüle" yerine doğrudan ödemeyi; menü/arama/sepet X çerçevesinin temiz kaldığını doğrula.
+
+## Son doğrulanmış devam noktası — 11 Ekim 2026 / Storefront 0.1.5 kaynağı
+- **Yeni tasarım kararı:** Header: Menü sola, logo tam ortaya, arama ve sepet sağa yan yana. Eski logo-solda/menü-sağda kararı geçersiz. Üç panel hâlâ tam ekran ancak eski yukarıdan kayma animasyonu yerine doğrudan tıklanan ikondan büyüyen/kapanırken ikona dönen `clip-path:inset(... round ...)` geçişi kullanır. Native dialog, arka plan scroll kilidi, admin bar ve klavye odak yönetimi korunur; eski kaydırma desteksiz tarayıcı yedeğidir.
+- Arama inputu üstte 50px kompakt çerçevede, 16px yazı ve "Ürün ara" metniyle. Dinamik sonuçlar altında, başlık tekrarı olmadan gösterilir; arama eşik/Store API etkilenmez.
+- Storefront 0.1.4 → 0.1.5; HTML, JS, CSS, sürüm/asset versiyonu, paket ve yeni JS davranış testi. Uygulama kaynak commit'i ve Actions doğrulaması tamamlandıktan sonra aşağıya kayıt eklenecek; bu hazırlık canlı dağıtım veya gerçek Safari görsel testi sayılmaz.
+- Sıradaki iş: CI + bağımsız deploy sonucu; iPhone'da sol menü, ortalanmış logo, sağ arama/sepet, ikon kökenli açılış/kapanış ve arama ölçüleri, admin bar ile scroll/odak/klavye testleri. Durum kayıtlarını sürümden sonra kesinleştir.
