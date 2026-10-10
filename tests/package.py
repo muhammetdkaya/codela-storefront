@@ -21,7 +21,7 @@ class Tests(unittest.TestCase):
         self.assertTrue(all(field["type"] in {"text","menu","product"} for section in schema["sections"] for field in section["fields"]))
         self.assertIn("wp:codela/storefront-footer", (build.ROOT/"parts/footer.html").read_text())
         self.assertIn("codela_sf_footer", (build.ROOT/"inc/render.php").read_text())
-        self.assertIn("Version: 0.1.7", (build.ROOT/"style.css").read_text())
+        self.assertIn("Version: 0.1.8", (build.ROOT/"style.css").read_text())
     def test_fullscreen_panel_controls_do_not_show_automatic_focus_rings(self):
         css=(build.ROOT/"assets/storefront.css").read_text()
         js=(build.ROOT/"assets/storefront.js").read_text()
@@ -45,7 +45,7 @@ class Tests(unittest.TestCase):
         self.assertIn("dialog.classList.toggle('is-search-panel', name === 'search')",js)
         self.assertIn("#sf-panel.is-search-panel #sf-panel-title",css)
         self.assertNotIn(".sf-cart-link{",css)
-        self.assertIn("Version: 0.1.7", (build.ROOT/"style.css").read_text())
+        self.assertIn("Version: 0.1.8", (build.ROOT/"style.css").read_text())
     def test_balanced_header_static_panels_and_unified_white_search(self):
         render=(build.ROOT/'inc/render.php').read_text()
         js=(build.ROOT/'assets/storefront.js').read_text()
@@ -59,7 +59,13 @@ class Tests(unittest.TestCase):
         self.assertIn('class="sf-search-leading"',render)
         self.assertIn('class="sf-search-cancel sf-close"',render)
         self.assertIn('class="sf-search-clear"',render)
-        self.assertIn('class="sf-search-suggestion"',render)
+        self.assertNotIn('class="sf-search-suggestion"',render)
+        self.assertNotIn('sf-search-term',render)
+        self.assertNotIn("Continue shopping",render)
+        self.assertIn("Your cart is empty.",js)
+        self.assertNotIn("t('Continue shopping')",js)
+        self.assertNotIn('sf-search-suggestion',js)
+        self.assertNotIn('sf-search-suggestion',css)
         self.assertNotIn('sf-reveal',css)
         self.assertNotIn('placePanelReveal',js)
         self.assertNotIn('PANEL_MOTION_MS',js)
@@ -81,7 +87,7 @@ class Tests(unittest.TestCase):
         self.assertIn('syncSearchControls()',js)
         self.assertIn("'Search' => 'Ara'",locale)
         self.assertIn("'Clear search' => 'Aramayı temizle'",locale)
-        self.assertIn('Version: 0.1.7', (build.ROOT/'style.css').read_text())
+        self.assertIn('Version: 0.1.8', (build.ROOT/'style.css').read_text())
     def test_missing_secret_never_connects(self):
         with patch.dict(os.environ,{"FTP_PASSWORD":""}),patch.object(deploy.ftplib,"FTP_TLS") as ftp:
             self.assertEqual(deploy.main(),1);ftp.assert_not_called()

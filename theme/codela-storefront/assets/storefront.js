@@ -110,10 +110,7 @@ function paintMenu() {
 }
 function syncSearchControls() {
     const input = $('#sf-query');
-    const query = input.value.trim();
     $('.sf-search-clear').hidden = input.value.length === 0;
-    $('.sf-search-suggestion').hidden = query.length < 2;
-    $('.sf-search-term').textContent = query;
 }
 async function search() {
     const query = $('#sf-query').value.trim();
@@ -125,7 +122,7 @@ async function search() {
     if (query.length < 2) { results.textContent = ''; return; }
     searchController = new AbortController();
     results.setAttribute('aria-busy','true');
-    // Skeleton appears only during a real in-flight product search; never invent suggestions or products.
+    // Static skeleton appears only during a real in-flight product search.
     const row = '<div class="sf-skeleton-row"><i></i><span><b></b><b></b></span></div>';
     results.innerHTML = '<div class="sf-search-skeleton" aria-hidden="true">' + row.repeat(6) + '</div>' +
         '<span class="screen-reader-text">' + escape(t('Loading…')) + '</span>';
@@ -161,7 +158,7 @@ function paintCart(data) {
         const subtotal = Number(item.totals.line_subtotal) + (config().taxInclusive ? Number(item.totals.line_subtotal_tax) : 0);
         const variants = (item.variation || []).map(v => `${escape(decode(v.attribute))}: ${escape(decode(v.value))}`).join(' · ');
         return `<article class="sf-cart-row"><a href="${safeURL(item.permalink)}">${item.images[0] ? `<img class="sf-cart-photo" src="${safeURL(item.images[0].thumbnail || item.images[0].src)}" alt="${escape(decode(item.name))}" width="110" height="140">` : ''}</a><div><h3><a href="${safeURL(item.permalink)}">${escape(decode(item.name))}</a></h3>${variants ? `<p>${variants}</p>` : ''}<p>${escape(money(subtotal,item.totals))}</p><div class="sf-quantity"><div class="sf-stepper"><button data-key="${escape(item.key)}" data-qty="${item.quantity - limits.multiple_of}" aria-label="${escape(t('Decrease quantity'))}" ${!limits.editable || item.quantity - limits.multiple_of < limits.minimum ? 'disabled':''}>−</button><span aria-label="${escape(t('Quantity'))}">${item.quantity}</span><button data-key="${escape(item.key)}" data-qty="${item.quantity + limits.multiple_of}" aria-label="${escape(t('Increase quantity'))}" ${!limits.editable || item.quantity + limits.multiple_of > limits.maximum ? 'disabled':''}>+</button></div><button class="sf-remove" data-remove="${escape(item.key)}">${escape(t('Remove'))}</button></div></div></article>`;
-    }).join('') : `<div class="sf-empty"><h3>${escape(t('Your cart is empty.'))}</h3><a class="sf-primary" href="${safeURL(config().shop)}">${escape(t('Continue shopping'))}</a></div>`;
+    }).join('') : `<div class="sf-empty"><h3>${escape(t('Your cart is empty.'))}</h3></div>`;
     $('.sf-cart-bottom').hidden = current !== 'cart' || !data.items.length;
     const subtotal = Number(data.totals.total_items) + (config().taxInclusive ? Number(data.totals.total_items_tax) : 0);
     $('#sf-subtotal').textContent = money(subtotal,data.totals);
@@ -235,10 +232,6 @@ function init() {
         $('#sf-results').textContent = '';
         $('#sf-results').setAttribute('aria-busy','false');
         syncSearchControls();
-        $('#sf-query').focus({preventScroll:true});
-    });
-    $('.sf-search-suggestion').addEventListener('click', () => {
-        clearTimeout(searchTimer); search();
         $('#sf-query').focus({preventScroll:true});
     });
     const menu = $('#sf-menu .sf-menu-list');

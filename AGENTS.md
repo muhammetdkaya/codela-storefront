@@ -149,3 +149,12 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - Açılış/kapanış animasyonu **kapalı kalır**. Menü ve sepet işleyişi ile header sıralaması (menü solda, logo ortada, arama+sepet sağda) değişmedi. Eklenti deposuna dokunulmaz.
 - Tema kaynak, CSS ve JS asset versiyonu 0.1.6 → 0.1.7. `tests/package.py` ve `tests/search-panel.cjs` beyaz palette, ortak boyut tokenlarına ve küçük X'e göre güncellendi.
 - Yeni kaynak commit'i sonrası CI/FTPS sonucu doğrulanmadan canlı yayımlandı denmez. Sonraki iş: dağıtımı doğrula, sonra iPhone/Safari'de üç panelin X ölçüsü ve üst satır hizasını, arama odak/temizle/sonuçları ve eski admin bar davranışını kontrol et.
+
+
+## Storefront 0.1.8 — gereksiz iki tekrar kaldırıldı (11 Ekim 2026)
+
+- **Boş sepet:** "Alışverişe devam et" düğmesi kaldırıldı. Boş sepet mesajı kalır, dolu sepetin ürün satırları, toplam ve ödeme işlevleri değişmez.
+- **Arama:** Giriş alanına yazılan sorgunun hemen altında aynen tekrarlandığı `sf-search-suggestion` satırı (ikon+kelime) HTML/JS/CSS'ten tamamen çıkarıldı. Input içindeki temizleme X'i, 2+ karakter sonrası gerçek sonuçlar, sorgu sürerken statik iskelet satırlar korunur.
+- Beyaz Menu/Search/Cart tasarım ölçüleri ve animasyonsuz açılış/kapanış değişmez. Tema, CSS ve JS asset sürümü 0.1.7 → 0.1.8; Codela eklentisi değiştirilmez.
+- Python paket/testler ve Node arama kontrol testi "öneri satırı ve boş-sepet CTA yok" regresyonlarını içerir.
+- **CI/deploy henüz doğrulanmadan canlı yayımlandı kabul edilmez.** Sıradaki iş: Actions doğrula, iPhone'da arama/boş sepeti incele ve arama API / dolu sepet ödeme akışını kontrol et.

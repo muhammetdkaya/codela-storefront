@@ -34,7 +34,7 @@ function codela_sf_header(): string {
     if ( ! codela_sf_ready() ) { return ''; }
     $settings = codela_theme_settings();
     $labels = [];
-    foreach ( [ 'Loading…', 'Search products', 'No matching products.', 'Something went wrong. Please try again.', 'Your cart is empty.', 'Remove', 'Quantity', 'Decrease quantity', 'Increase quantity', 'Back', 'View all', 'Cart updated.', 'Continue shopping', 'Retry', 'Your cart', 'Item added to cart.', 'Subtotal', 'Shipping and discounts are calculated at checkout.' ] as $label ) {
+    foreach ( [ 'Loading…', 'Search products', 'No matching products.', 'Something went wrong. Please try again.', 'Your cart is empty.', 'Remove', 'Quantity', 'Decrease quantity', 'Increase quantity', 'Back', 'View all', 'Cart updated.', 'Retry', 'Your cart', 'Item added to cart.', 'Subtotal', 'Shipping and discounts are calculated at checkout.' ] as $label ) {
         $labels[ $label ] = __( $label, 'codela-storefront' ); // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
     }
     wp_interactivity_state( 'codela/storefront', [ 'config' => [
@@ -73,7 +73,6 @@ function codela_sf_header(): string {
                     <button type="button" class="sf-search-cancel sf-close" data-wp-on--click="actions.close" aria-label="<?php esc_attr_e( 'Close', 'codela-storefront' ); ?>"><?php echo codela_sf_icon( 'x' ); ?></button>
                 </div>
                 <div class="sf-search-content">
-                    <button type="button" class="sf-search-suggestion" hidden><span class="sf-suggestion-symbol" aria-hidden="true"><?php echo codela_sf_icon( 'search' ); ?></span><span class="sf-search-term"></span></button>
                     <div id="sf-results" aria-live="polite"></div>
                 </div>
             </section>

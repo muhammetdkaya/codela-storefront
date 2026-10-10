@@ -296,3 +296,12 @@ Dosyalar doğrulanarak yüklendi; public style/CSS/JS/manifest ve mağaza/REST s
 - Result rows, typed-query suggestion and request-time static skeletons use the light palette. No changes to search endpoint, cart API, WordPress administrative offsets, modal scroll lock or reduced-motion behavior. Fullscreen animation remains disabled as requested.
 - 0.1.6 → 0.1.7 bumps theme header and cached CSS/JS versions, without any Codela plugin or WordPress.org release. CI regression checks now verify unified white styling and sizes.
 - At source authoring: CI / independent FTP deployment result has not yet been observed; real iPhone screenshot acceptance is pending. Next: check Actions deployment success and inspect all three panels on iPhone.
+
+
+## Storefront 0.1.8 — gereksiz iki tekrar kaldırıldı (11 Ekim 2026)
+
+- **Boş sepet:** "Alışverişe devam et" düğmesi kaldırıldı. Boş sepet mesajı kalır, dolu sepetin ürün satırları, toplam ve ödeme işlevleri değişmez.
+- **Arama:** Giriş alanına yazılan sorgunun hemen altında aynen tekrarlandığı `sf-search-suggestion` satırı (ikon+kelime) HTML/JS/CSS'ten tamamen çıkarıldı. Input içindeki temizleme X'i, 2+ karakter sonrası gerçek sonuçlar, sorgu sürerken statik iskelet satırlar korunur.
+- Beyaz Menu/Search/Cart tasarım ölçüleri ve animasyonsuz açılış/kapanış değişmez. Tema, CSS ve JS asset sürümü 0.1.7 → 0.1.8; Codela eklentisi değiştirilmez.
+- Python paket/testler ve Node arama kontrol testi "öneri satırı ve boş-sepet CTA yok" regresyonlarını içerir.
+- **CI/deploy henüz doğrulanmadan canlı yayımlandı kabul edilmez.** Sıradaki iş: Actions doğrula, iPhone'da arama/boş sepeti incele ve arama API / dolu sepet ödeme akışını kontrol et.

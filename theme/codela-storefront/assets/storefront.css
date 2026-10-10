@@ -228,8 +228,7 @@
   opacity:.8;
 }
 #sf-panel.is-search-panel .sf-search-cancel:focus-visible,
-#sf-panel.is-search-panel .sf-search-clear:focus-visible,
-#sf-panel.is-search-panel .sf-search-suggestion:focus-visible{
+#sf-panel.is-search-panel .sf-search-clear:focus-visible{
   outline:2px solid var(--sf-accent,#656e52)!important;
   outline-offset:3px;
 }
@@ -240,44 +239,10 @@
   border:0;
   background:#ffffff;
 }
-#sf-panel.is-search-panel #sf-results,
-#sf-panel.is-search-panel .sf-search-suggestion{
+#sf-panel.is-search-panel #sf-results{
   max-width:950px;
   margin-left:auto;
   margin-right:auto;
-}
-#sf-panel.is-search-panel .sf-search-suggestion{
-  display:flex;
-  width:100%;
-  min-height:72px;
-  align-items:center;
-  gap:14px;
-  padding:0;
-  border:0;
-  background:transparent;
-  color:#22231f;
-  text-align:left;
-  font-size:17px;
-}
-#sf-panel.is-search-panel .sf-suggestion-symbol{
-  display:grid;
-  place-items:center;
-  flex:none;
-  width:48px;
-  height:48px;
-  border:1px solid #e9e9e9;
-  border-radius:50%;
-  background:#fafafa;
-}
-#sf-panel.is-search-panel .sf-suggestion-symbol .sf-icon{
-  width:19px;
-  height:19px;
-  filter:brightness(0);
-}
-#sf-panel.is-search-panel .sf-search-term{
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
 }
 #sf-panel.is-search-panel .sf-result{
   gap:14px;
