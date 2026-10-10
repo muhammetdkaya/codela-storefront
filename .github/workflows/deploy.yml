@@ -1,0 +1,61 @@
+name: Deploy Codela Storefront
+on:
+  push:
+    branches: [main]
+    paths: ['theme/**', 'scripts/**', 'tests/**', '.github/workflows/deploy.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: codela-storefront-production
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate and build theme
+        run: |
+          find theme -name '*.php' -type f -print0 | xargs -0 -n1 php -l
+          node --input-type=module --check < theme/codela-storefront/assets/storefront.js
+          python3 tests/package.py
+          python3 scripts/build-package.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: codela-storefront-package
+          path: dist/
+          retention-days: 14
+  deploy:
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: codela-storefront-package
+          path: dist/
+      - name: Require deployment password
+        env:
+          FTP_PASSWORD: ${{ secrets.CODELA_FTP_PASSWORD }}
+        run: test -n "$FTP_PASSWORD" || { echo "::error::Add CODELA_FTP_PASSWORD to this repository; secrets are not inherited."; exit 1; }
+      - name: Skip superseded revision
+        id: head
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          LATEST=$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)
+          if [ "$LATEST" = "$GITHUB_SHA" ]; then echo 'current=true' >> "$GITHUB_OUTPUT"; else echo 'current=false' >> "$GITHUB_OUTPUT"; fi
+      - name: Deploy Storefront only
+        if: steps.head.outputs.current == 'true'
+        env:
+          FTP_USERNAME: ${{ vars.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.CODELA_FTP_PASSWORD }}
+        run: python3 scripts/deploy.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: codela-storefront-rollback-${{ github.sha }}
+          path: ${{ runner.temp }}/storefront-rollback/
+          if-no-files-found: ignore
+          retention-days: 14
