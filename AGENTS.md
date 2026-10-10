@@ -57,7 +57,7 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - Tema 0.1.1 kaynakları değişmeden ayrı depoya taşındı; eklenti 1.1.1.
 - Bağımsız FTPS dağıtımı, ZIP/manifest ve geri alma hazırlandı.
 - Altı yerel paket/dağıtım testi, CI PHP lint ve JS sözdizimi geçti.
-- Kullanıcının eklediği FTP_PASSWORD, FTP_SERVER ve FTP_USERNAME secret adlarıyla dağıtım akışı eşleştirildi. Yeni dağıtım sonucu bekleniyor; canlı başarı henüz kaydedilmedi.
+- Kullanıcının FTP_PASSWORD, FTP_SERVER ve FTP_USERNAME secret adları eşleştirildi. Commit 4cbcddcbe3a209220dc2f85f9484f8110bafaa00, Actions 38051799079: validate başarılı; üç secret mevcut. Deploy connect (gaierror) ile DNS çözümlemesinde durdu; dosya aktarımı yapılmadı. FTP_SERVER değeri yalnız sunucu hostname'i olmalı; mevcut altyapı adresi server38.shared.spaceship.host.
 - Header/Footer ayrı ayar alt menüleri henüz uygulanmadı; sonraki tasarım çalışmasında ilgili ayarları bu menülerde ekle.
 - Sıradaki iş: secret eklendikten sonra bağımsız dağıtımı doğrula; kurulu 0.1.1, admin barlı üç panel ve ortak köşe ayarlarını gerçek tarayıcıda kontrol et.
 

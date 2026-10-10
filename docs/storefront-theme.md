@@ -193,3 +193,5 @@ Eklenti köprü CI: Actions 38051382397 validate başarılı. Eklenti deploy kuy
 ## FTP secret adları — 10 Ekim 2026
 
 Workflow artık kullanıcının eklediği FTP_PASSWORD, FTP_SERVER ve FTP_USERNAME secret'larını kullanır. Sunucu ve kullanıcı doğrudan bu secret'lardan gelir; TLS doğrulaması ve sabit tema hedefi korunur. Bu değişiklik bağımsız tema dağıtımını tetikler; sonuç sonradan kaydedilecek.
+
+Dağıtım sonucu: commit 4cbcddcbe3a209220dc2f85f9484f8110bafaa00, [Actions 38051799079](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38051799079). Validate başarılı, secret kontrolü başarılı; deploy connect (gaierror) ile durdu. Sunucu DNS adı çözümlenemedi; kimlik doğrulama ve dosya aktarımı başlamadı. FTP_SERVER hostname'i düzeltilmeli (mevcut altyapı: server38.shared.spaceship.host, ftp:// öneki olmadan). Sonrasında main dalında workflow çalıştırılmalı. Eklenti köprü Actions 38051382397 son kontrolde hâlâ çalışıyordu; başarılı diye kaydedilmedi.
