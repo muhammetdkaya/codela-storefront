@@ -36,9 +36,19 @@ def main():
     stage="connect";originals={};changed=[];temporary=[]
     backup=Path(os.environ["RUNNER_TEMP"])/"storefront-rollback";backup.mkdir(exist_ok=True)
     try:
-        ftp.connect(server,21);stage="TLS/authentication"
-        ftp.auth();ftp.login(username,password);ftp.prot_p();ftp.set_pasv(True)
+        for attempt in range(3):
+            try:
+                ftp.connect(server,21);stage="TLS/authentication"
+                ftp.auth();ftp.login(username,password);ftp.prot_p();ftp.set_pasv(True)
+                break
+            except ftplib.error_temp:
+                ftp.close()
+                if attempt==2:raise
+                import time
+                time.sleep(20)
+                ftp=ftplib.FTP_TLS(context=ssl.create_default_context(),timeout=30)
         stage="select fixed theme directory"
+        account_root=ftp.pwd()
         base_entries={name for name,facts in ftp.mlsd()}
         print("FTP scope markers: "+",".join(name for name in ("codela-site","codela-storefront","wp-content","public_html","codela-commerce-toolkit.php") if name in base_entries))
         root_is_theme=False
@@ -60,11 +70,23 @@ def main():
         if "style.css" in root_files:
             if not valid_theme(get("style.css")):raise RuntimeError("Unexpected theme")
         elif root_files-{".ftpquota",".htaccess","index.php","index.html"}:raise RuntimeError("Unexpected target")
-        stage="verify public mapping";probe="codela-theme-probe-"+uuid.uuid4().hex+".txt";nonce=uuid.uuid4().hex.encode()
-        try:
-            put(probe,nonce)
-            if read_url(PUBLIC+probe+"?nocache="+uuid.uuid4().hex)!=nonce:raise RuntimeError("Wrong public mapping")
-        finally:ftp.delete(probe)
+        def probe_mapping():
+            probe="codela-theme-probe-"+uuid.uuid4().hex+".txt";nonce=uuid.uuid4().hex.encode()
+            try:
+                put(probe,nonce)
+                if read_url(PUBLIC+probe+"?nocache="+uuid.uuid4().hex)!=nonce:raise RuntimeError("Wrong public mapping")
+            finally:ftp.delete(probe)
+        stage="verify public mapping"
+        try:probe_mapping()
+        except urllib.error.HTTPError as mapping_error:
+            if mapping_error.code!=404 or ftp.pwd()==account_root:raise
+            # A restricted FTP account may expose the theme itself as "/" even before installation.
+            ftp.cwd(account_root);root_files=names()
+            if "style.css" in root_files:
+                if not valid_theme(get("style.css")):raise RuntimeError("Unexpected account root theme")
+            elif root_files-{".ftpquota",".htaccess","index.php","index.html"}:raise RuntimeError("Unexpected account root")
+            print("Retry public mapping at restricted account root.")
+            probe_mapping()
         stage="stage theme files";directories={"."}
         for path,data in files.items():
             parts=path.split("/")[:-1]
@@ -104,5 +126,6 @@ def main():
             if path not in changed:
                 try:ftp.delete(temp)
                 except Exception:pass
-        ftp.close()
+        try:ftp.quit()
+        except Exception:ftp.close()
 if __name__=="__main__":raise SystemExit(main())
