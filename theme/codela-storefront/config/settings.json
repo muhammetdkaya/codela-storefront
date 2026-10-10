@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "sections": [
+    {
+      "id": "header",
+      "label": "Header",
+      "description": "Branding and navigation in the top bar.",
+      "fields": [
+        {
+          "id": "brand",
+          "type": "text",
+          "label": "Brand name",
+          "description": "Used when there is no custom logo and in the footer.",
+          "maxlength": 100,
+          "placeholder": "Store name"
+        },
+        {
+          "id": "menu_id",
+          "type": "menu",
+          "label": "Main menu",
+          "description": "Choose an existing WordPress menu, or use automatic product categories."
+        }
+      ]
+    },
+    {
+      "id": "homepage",
+      "label": "Homepage",
+      "description": "Featured content on the storefront homepage.",
+      "fields": [
+        {
+          "id": "hero_product_id",
+          "type": "product",
+          "label": "Homepage featured product",
+          "description": "Enter a published product ID, or 0 for the newest visible product. A static homepage uses its own editable page content."
+        }
+      ]
+    },
+    {
+      "id": "footer",
+      "label": "Footer",
+      "description": "Text shown below the storefront content.",
+      "fields": [
+        {
+          "id": "footer_text",
+          "type": "text",
+          "label": "Footer note",
+          "description": "Optional short line below the store name. Leave blank to show only the store name.",
+          "maxlength": 160,
+          "placeholder": ""
+        }
+      ]
+    }
+  ]
+}

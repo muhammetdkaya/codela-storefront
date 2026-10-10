@@ -203,3 +203,13 @@ Dağıtım sonucu: commit 4cbcddcbe3a209220dc2f85f9484f8110bafaa00, [Actions 380
 Commit [4478aef485605e8db5166c7054bddf3a482eaa89](https://github.com/muhammetdkaya/codela-storefront/commit/4478aef485605e8db5166c7054bddf3a482eaa89); [Actions 38052248910](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38052248910). Validate ve deploy başarılı. Tema 0.1.1; sürüm artırılmadı. FTP hesabı temayı doğrudan kökte gösterdiği için klasör adı yerine style.css kimliğiyle mevcut tema kökü tanınır. Boş restricted kök için yalnız 404 halinde, kimlik/izin verilen kök dosyaları ve aynı sabit public probe doğrulamasıyla geri dönüş vardır. Geçici FTP hataları sınırlı yeniden denenir, oturum QUIT ile kapanır.
 
 Dosyalar doğrulanarak yüklendi; public style/CSS/JS/manifest ve mağaza/REST sağlık kontrolleri geçti. Tema etkinliği değişmedi; tüm cihazlarda görsel doğrulama yapıldı denmez. Diğer depoda başarılı bağlantı FTP_SERVER secret'ını kullanmadığından burada da aynı sabit provider hostname'i kullanılır; secret'ın kalması sorun olmaz. Header/Footer alt menüleri hâlâ sonraki geliştirme işidir.
+
+
+## Storefront 0.1.2 — theme-owned settings (10 October 2026)
+
+- Source version 0.1.1 → 0.1.2. Theme now declares its own settings in `theme/codela-storefront/config/settings.json`; Codela dynamically generates the admin sidebar and form from it.
+- Sections: Header (brand and menu), Homepage (featured product), Footer (optional plain-text note). The Footer uses a dynamic server-rendered block. All existing `codela_theme_settings` option keys are retained; values in other sections are preserved on save.
+- Companion plugin change: `muhammetdkaya/codela` commit `c5a383df1c8cf786c583e73daf5c93ad95654e34`. The generic settings reader accepts only a theme-installed, local, bounded JSON schema and supported input types; field values are sanitized and permissions/nonce remain enforced.
+- Versioned CSS/JS assets move to 0.1.2. Schema/package contract has automated test assertions.
+- Publication: source prepared; CI, independent FTPS and real mobile/admin visual verification **must be checked separately**, and the installed theme must be updated to 0.1.2 where necessary.
+- Next: verify both repositories' CI and deployment; inspect the installed Theme > Header/Homepage/Footer pages, saved option persistence, Footer display, then actual mobile/desktop menu/search/cart with and without admin bar.

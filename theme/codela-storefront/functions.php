@@ -27,13 +27,14 @@ add_action( 'template_redirect', function() {
 require_once get_template_directory() . '/inc/render.php';
 add_action( 'init', function() {
     if ( ! codela_sf_ready() ) { return; }
-    wp_register_script_module( 'codela-storefront', get_template_directory_uri() . '/assets/storefront.js', [ '@wordpress/interactivity' ], '0.1.1' );
+    wp_register_script_module( 'codela-storefront', get_template_directory_uri() . '/assets/storefront.js', [ '@wordpress/interactivity' ], '0.1.2' );
     register_block_type( 'codela/storefront-header', [ 'api_version' => 3, 'render_callback' => 'codela_sf_header', 'supports' => [ 'interactivity' => true, 'html' => false, 'inserter' => false ] ] );
     register_block_type( 'codela/storefront-home', [ 'api_version' => 3, 'render_callback' => 'codela_sf_home', 'supports' => [ 'html' => false, 'inserter' => false ] ] );
+    register_block_type( 'codela/storefront-footer', [ 'api_version' => 3, 'render_callback' => 'codela_sf_footer', 'supports' => [ 'html' => false, 'inserter' => false ] ] );
 } );
 add_action( 'wp_enqueue_scripts', function() {
     if ( ! codela_sf_ready() ) { return; }
-    wp_enqueue_style( 'codela-storefront-theme', get_template_directory_uri() . '/assets/storefront.css', [], '0.1.1' );
+    wp_enqueue_style( 'codela-storefront-theme', get_template_directory_uri() . '/assets/storefront.css', [], '0.1.2' );
     wp_enqueue_script_module( 'codela-storefront' );
     if ( function_exists( 'codela_storefront_design_enqueue' ) ) { codela_storefront_design_enqueue( 'codela-storefront-theme' ); }
     if ( class_exists( '\Codela\Includes\StoreAppearance' ) ) {

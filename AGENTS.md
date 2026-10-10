@@ -66,3 +66,10 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - 10 Ekim bağlantı farkı: codela-site başarılı Actions 37810396274 workflow'u FTP_SERVER secret'ını kullanmadan server38.shared.spaceship.host adresine bağlanıyor. Storefront workflow da aynı kanıtlanmış adrese sabitlendi; FTP_USERNAME ve FTP_PASSWORD secret'lardan okunur. Önceki connect (gaierror) FTP_SERVER değerinin DNS çözümlemesinde oluştu. Yeni dağıtım sonucu bekleniyor; mevcut FTP_SERVER secret'ının silinmesi gerekmez.
 
 - **Güncel yayın sonucu:** tema 0.1.1 bağımsız dağıtımı başarılı. Commit 4478aef485605e8db5166c7054bddf3a482eaa89, Actions 38052248910: validate ve deploy başarılı; FTP kökünün doğrudan Storefront olması kimlikle tanındı, public mapping/kaynak/mağaza sağlık kontrolleri geçti. Sunucu codela-site ile aynı sabit server38.shared.spaceship.host; FTP_USERNAME ve FTP_PASSWORD secret'lardan. Gerçek kullanıcı admin bar/panel görsel testi ayrıca yapılmalı. Sıradaki iş: canlı 0.1.1 panel kontrolü ve gerekli Header/Footer ayar alt menüleri.
+
+
+## Sonraki sürüm çalışması — 10 Ekim 2026 (0.1.2 kaynak)
+
+- Tema Header, Homepage ve Footer seçeneklerini `config/settings.json` dosyasında kendisi tanımlar. Genel ayar formu ve iç içe alt menüler Codela eklentisinde otomatik oluşturulur; alan tanımları Codela eklentisinde tekrar edilmez.
+- Eklenti değişikliği `c5a383df1c8cf786c583e73daf5c93ad95654e34`; tema sürümünün 0.1.1 → 0.1.2 kaynak değişikliği bu depodadır. Mevcut ayarlar korunur; Footer notu isteğe bağlıdır.
+- Bu kayıt canlı yayın veya gerçek cihaz testi tamamlandı anlamına gelmez. İlk iş: plugin + tema Actions sonuçlarını doğrula; kurulu temayı 0.1.2'ye güncelle; alt menü ve üç tam ekran paneli gerçek tarayıcıda kontrol et. Sonra sayfa tasarımına geç.

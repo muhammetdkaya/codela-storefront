@@ -85,3 +85,16 @@ function codela_sf_home(): string {
     <?php } else { ?><section class="sf-selection"><h1><?php echo esc_html( get_bloginfo( 'name' ) ); ?></h1><p><?php esc_html_e( 'Our collection is coming soon.', 'codela-storefront' ); ?></p></section><?php }
     return ob_get_clean();
 }
+
+
+/** Optional footer note is declared by the theme's own settings schema. */
+function codela_sf_footer(): string {
+    if ( ! codela_sf_ready() ) { return ''; }
+    $settings = codela_theme_settings();
+    $brand = (string) ( $settings['brand'] ?: get_bloginfo( 'name' ) );
+    $note = sanitize_text_field( (string) ( $settings['footer_text'] ?? '' ) );
+    $html = '<footer class="sf-footer"><div class="sf-footer-inner">';
+    $html .= '<a class="sf-footer-brand" href="' . esc_url( home_url( '/' ) ) . '">' . esc_html( $brand ) . '</a>';
+    if ( '' !== $note ) { $html .= '<p class="sf-footer-note">' . esc_html( $note ) . '</p>'; }
+    return $html . '</div></footer>';
+}

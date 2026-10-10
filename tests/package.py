@@ -9,6 +9,19 @@ class Tests(unittest.TestCase):
         self.assertFalse(deploy.valid_theme(b"Theme Name: Other\nText Domain: codela-storefront\n"))
         self.assertFalse(deploy.valid_theme(b"Theme Name: Codela Storefront\nText Domain: other\n"))
         self.assertTrue(deploy.valid_theme((build.ROOT/"style.css").read_bytes()))
+    def test_theme_owned_settings_schema(self):
+        schema_path=build.ROOT/"config/settings.json"
+        schema=json.loads(schema_path.read_text(encoding="utf-8"))
+        self.assertEqual(schema["schema_version"],1)
+        sections={section["id"]:section for section in schema["sections"]}
+        self.assertEqual(set(sections),{"header","homepage","footer"})
+        fields=[field["id"] for section in schema["sections"] for field in section["fields"]]
+        self.assertEqual(len(fields),len(set(fields)))
+        self.assertEqual(set(fields),{"brand","menu_id","hero_product_id","footer_text"})
+        self.assertTrue(all(field["type"] in {"text","menu","product"} for section in schema["sections"] for field in section["fields"]))
+        self.assertIn("wp:codela/storefront-footer", (build.ROOT/"parts/footer.html").read_text())
+        self.assertIn("codela_sf_footer", (build.ROOT/"inc/render.php").read_text())
+        self.assertIn("Version: 0.1.2", (build.ROOT/"style.css").read_text())
     def test_missing_secret_never_connects(self):
         with patch.dict(os.environ,{"FTP_PASSWORD":""}),patch.object(deploy.ftplib,"FTP_TLS") as ftp:
             self.assertEqual(deploy.main(),1);ftp.assert_not_called()
@@ -22,6 +35,7 @@ class Tests(unittest.TestCase):
                 self.assertEqual(data,archive.read_bytes());self.assertEqual(hashlib.sha256(data).hexdigest(),meta["sha256"])
                 with zipfile.ZipFile(archive) as zip:
                     self.assertIn("codela-storefront/templates/index.html",zip.namelist())
+                    self.assertIn("codela-storefront/config/settings.json",zip.namelist())
                     self.assertTrue(all(n.startswith("codela-storefront/") and ".." not in n.split("/") for n in zip.namelist()))
             finally:os.chdir(previous)
 
