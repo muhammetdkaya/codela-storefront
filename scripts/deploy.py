@@ -41,7 +41,12 @@ def main():
         stage="select fixed theme directory"
         base_entries={name for name,facts in ftp.mlsd()}
         print("FTP scope markers: "+",".join(name for name in ("codela-site","codela-storefront","wp-content","public_html","codela-commerce-toolkit.php") if name in base_entries))
-        if not ftp.pwd().rstrip("/").endswith("/"+TARGET):
+        root_is_theme=False
+        if "style.css" in base_entries:
+            root_style=io.BytesIO();ftp.retrbinary("RETR style.css",root_style.write)
+            root_is_theme=valid_theme(root_style.getvalue())
+        print("Account root is Storefront: "+str(root_is_theme))
+        if not root_is_theme and not ftp.pwd().rstrip("/").endswith("/"+TARGET):
             try:ftp.cwd(TARGET)
             except ftplib.error_perm:ftp.mkd(TARGET);ftp.cwd(TARGET)
         def get(path):
