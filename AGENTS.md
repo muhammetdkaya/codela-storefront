@@ -80,3 +80,8 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - [Codela Actions 38078271353](https://github.com/muhammetdkaya/codela/actions/runs/38078271353): tema ayar köprüsü eklenti dağıtımı başarılı; `c5a383d`. Eklenti sürümü 1.1.1.
 - Yeni settings şema/kaydetme regresyon testleri [Actions 38078903175](https://github.com/muhammetdkaya/codela/actions/runs/38078903175) ile geçti. Tema ana menüsünün açılır kalması `codela@3cded41` commit'inde düzeltildi; bu küçük düzeltmenin CI/deploy doğrulaması bekleniyor.
 - Sıradaki iş CI/deploy doğrulaması, canlı kurulum/etkinlik kontrolü ve gerçek yönetim ekranı+mobil testleri. Belgelendirilmiş otomatik başarıları gerçek tarayıcı/cihaz kabul testiyle karıştırma.
+
+## 0.1.3 sıradaki doğrulama — 10 Ekim 2026
+- Kullanıcı iPhone ekranlarında Arama inputunun ve Sepet/Menü X butonunun etrafında kalın siyah çerçeve gördü. 0.1.3 kaynak düzeltmesi: panel kontrollerinde tarayıcı/tema kenarlıkları ve otomatik odaktaki siyah halka temizlendi; manuel klavye Tab odak göstergesi korunuyor. Arama formunun ince gri çizgisi bilerek korundu.
+- Tema 0.1.2 → 0.1.3, JS/CSS önbellek sürümü beraber yükseltildi. Değişiklik `assets/storefront.css`, `assets/storefront.js`, `functions.php`, `style.css` ve testlerde; AGENTS ve teknik dokümana da kaydedildi.
+- Commit sonrası CI, bağımsız FTPS ve gerçek iPhone/Safari kontrolleri ayrıca doğrulanacak. Sonraki iş bu üç panelin çerçevesiz açılışını ve klavye erişilebilirliğini canlı ortamda test etmek.

@@ -221,3 +221,11 @@ Dosyalar doğrulanarak yüklendi; public style/CSS/JS/manifest ve mağaza/REST s
 - Eklenti ayar motoru `muhammetdkaya/codela@c5a383d` için [Actions 38078271353](https://github.com/muhammetdkaya/codela/actions/runs/38078271353) başarılı; yükleme günlüğü 983 dosyanın doğrulandığını bildiriyor. Eklenti sürümü 1.1.1 olarak kaldı.
 - Tema kaydetme/şema izole testleri `tools/test-theme-support.php` içine eklendi, [Actions 38078903175](https://github.com/muhammetdkaya/codela/actions/runs/38078903175) başarılı. Alt menünün tema ana sekmesinde açık kalması için eklenti kaynak düzeltmesi `3cded41` yapıldı; **ayrı doğrulama/dağıtımı kontrol edilecek**, tamamlandı denmez.
 - Sıradaki ilk iş: Codela 3cded41 kaynak doğrulama/dağıtımının sonucunu al, WordPress içinde aktif tema sürümünü doğrula, tema Header/Homepage/Footer ayarlarını kaydet/yeniden aç ile test et; mobil/admin bar ve sepet-arama-menü canlı tarayıcı kontrollerini ayrıca gerçekleştir.
+
+## Storefront 0.1.3 — fullscreen panel control borders (10 October 2026)
+
+- User screenshots on iPhone show a thick black focus outline around the automatically focused Search input and the Cart/Menu close button. This was caused by a general `:focus-visible` outline combined with programmatic focus in `open()`, not a desired permanent border. The search form's thin, neutral border is intentionally retained.
+- Source change: panel-scoped CSS neutralizes button appearance, button borders, control shadows and search-input outlines, without resetting unrelated checkout/cart/other theme controls. `sf-initial-focus` suppresses the initial programmatic focus ring and is removed on Tab so keyboard navigators still get the normal focus indication for panel buttons. Input caret remains visible.
+- Version 0.1.2 → 0.1.3; CSS and JS asset versions updated to ensure cache busting. Added static regression checks to `tests/package.py`.
+- Status at commit authoring: source prepared, CI/deploy **not yet verified**. Do not claim visually verified on iPhone/Safari; user-supplied screenshots document the old issue.
+- After CI and FTP: verify the installed source is 0.1.3; open Search, Cart and Menu on actual iPhone/Safari; check no black auto-focus frames, the subtle search-container border, reduced-motion support, keyboard Tab focus, admin toolbar offset, and panel opening/closing.

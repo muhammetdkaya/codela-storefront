@@ -68,7 +68,12 @@ function open(name, event) {
     $('#sf-panel-title').textContent = name === 'menu' ? '' : name === 'search' ? t('Search products') : t('Your cart');
     document.querySelectorAll('[data-panel]').forEach(el => el.setAttribute('aria-expanded', String(el.dataset.panel === name)));
     requestAnimationFrame(() => requestAnimationFrame(() => { if (dialog.open && current && !closing) dialog.classList.add('is-open'); }));
-    (name === 'search' ? $('#sf-query') : $('.sf-close')).focus({preventScroll:true});
+    // Automatically focused controls should not display a giant focus ring
+    // when opening a panel; keyboard navigation must still show its indicator.
+    dialog.querySelectorAll('.sf-initial-focus').forEach(el => el.classList.remove('sf-initial-focus'));
+    const initialFocus = name === 'search' ? $('#sf-query') : $('.sf-close');
+    initialFocus.classList.add('sf-initial-focus');
+    initialFocus.focus({preventScroll:true});
     if (name === 'menu') { menuPath = []; paintMenu(); }
     if (name === 'search') search();
     if (name === 'cart') refreshCart();
@@ -200,6 +205,11 @@ function init() {
     dialog = $('#sf-panel'); if (!dialog) return;
     window.addEventListener('resize', () => { if (dialog.open) adminOffset(); });
     dialog.addEventListener('cancel',event => {event.preventDefault();close();});
+    dialog.addEventListener('keydown',event => {
+        if (event.key === 'Tab') {
+            dialog.querySelectorAll('.sf-initial-focus').forEach(el => el.classList.remove('sf-initial-focus'));
+        }
+    });
     $('#sf-query').addEventListener('input', () => {clearTimeout(searchTimer); searchController?.abort(); ++searchSequence; searchTimer = setTimeout(search,180);});
     $('#sf-search form').addEventListener('submit',event => {event.preventDefault();clearTimeout(searchTimer);search();});
     const menu = $('#sf-menu .sf-menu-list');

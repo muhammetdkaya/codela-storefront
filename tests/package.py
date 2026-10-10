@@ -21,7 +21,18 @@ class Tests(unittest.TestCase):
         self.assertTrue(all(field["type"] in {"text","menu","product"} for section in schema["sections"] for field in section["fields"]))
         self.assertIn("wp:codela/storefront-footer", (build.ROOT/"parts/footer.html").read_text())
         self.assertIn("codela_sf_footer", (build.ROOT/"inc/render.php").read_text())
-        self.assertIn("Version: 0.1.2", (build.ROOT/"style.css").read_text())
+        self.assertIn("Version: 0.1.3", (build.ROOT/"style.css").read_text())
+    def test_fullscreen_panel_controls_do_not_show_automatic_focus_rings(self):
+        css=(build.ROOT/"assets/storefront.css").read_text()
+        js=(build.ROOT/"assets/storefront.js").read_text()
+        self.assertIn("#sf-panel button.sf-close",css)
+        self.assertIn("#sf-panel #sf-query",css)
+        self.assertIn("#sf-panel .sf-initial-focus:focus-visible",css)
+        self.assertIn("border:0!important",css)
+        self.assertIn("outline:none!important",css)
+        self.assertIn("initialFocus.classList.add('sf-initial-focus')",js)
+        self.assertIn("event.key === 'Tab'",js)
+        self.assertIn("dialog.querySelectorAll('.sf-initial-focus').forEach",js)
     def test_missing_secret_never_connects(self):
         with patch.dict(os.environ,{"FTP_PASSWORD":""}),patch.object(deploy.ftplib,"FTP_TLS") as ftp:
             self.assertEqual(deploy.main(),1);ftp.assert_not_called()
