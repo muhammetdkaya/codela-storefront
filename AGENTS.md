@@ -140,3 +140,12 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - Kullanıcının son arama ekranı görseli temel alındı: koyu zemin, sol büyüteç, placeholder "Ara", sağda yuvarlak X, dinamik öneri, gerçek sonuçlar ve istek sürerken statik iskelet satırlar. Üç panelde geçiş animasyonları kaldırıldı. Menu/logo/arama/sepet header sıralaması korunur.
 - **Doğrulanması gerekenler:** Canlı WordPress'te etkin tema ve gerçek iPhone Safari görünümü, klavye/odak, admin toolbar ve arama/sepet API etkileşimleri manuel olarak test edilmedi. FTPS deploy ve CI başarısı gerçek tarayıcıda kabul testi değildir.
 - **Sıradaki ilk iş:** iPhone'da arama ekranını açarak son referansa uygun görünümü, X kapamayı, sonuçların gelmesini ve animasyonun olmadığını test et. Sonra menü/sepeti kontrol et ve görsel sorun varsa düzelt.
+
+## GÜNCEL tasarım kararı — Storefront 0.1.7, 11 Ekim 2026
+
+- Kullanıcı 0.1.6 koyu arama panelini **beyaza** çevirmeyi ve Menü, Arama, Sepet panelinin **aynı tasarım dili, ölçüler ve boşluklarla** çalışmasını istedi. Bu karar eski "koyu arama paneli" talimatının yerine geçer.
+- Tüm modal yüzeyler beyaz (#ffffff), metin koyu. Her panelin üst araç çubuğu 68px asgari yüksekliğe, aynı yatay boşluk değişkenine, ince açık gri ayırıcıya ve 44×44px çerçevesiz/açık gri dairesel X düğmesine sahiptir. Görünür X SVG 19px; iPhone'da tıklanabilir alan 44px kalır.
+- Arama formu üstte tek satır, açık gri (#f3f3f3), 46px yüksekliğinde, yumuşak 15px köşeli; sol büyüteç 20px; yazı 16px, placeholder yine "Ara". Input içindeki küçük temizleme X'i ve arama önerisi korunur. Arama sonuçları/iskelet satırlar siyah yazı/beyaz zemine geçirildi.
+- Açılış/kapanış animasyonu **kapalı kalır**. Menü ve sepet işleyişi ile header sıralaması (menü solda, logo ortada, arama+sepet sağda) değişmedi. Eklenti deposuna dokunulmaz.
+- Tema kaynak, CSS ve JS asset versiyonu 0.1.6 → 0.1.7. `tests/package.py` ve `tests/search-panel.cjs` beyaz palette, ortak boyut tokenlarına ve küçük X'e göre güncellendi.
+- Yeni kaynak commit'i sonrası CI/FTPS sonucu doğrulanmadan canlı yayımlandı denmez. Sonraki iş: dağıtımı doğrula, sonra iPhone/Safari'de üç panelin X ölçüsü ve üst satır hizasını, arama odak/temizle/sonuçları ve eski admin bar davranışını kontrol et.

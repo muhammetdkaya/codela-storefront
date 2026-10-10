@@ -30,6 +30,15 @@ assert.ok(js.includes('row.repeat(6)'), 'Six static skeleton rows while a real q
 assert.ok(js.includes("if (sequence !== searchSequence || current !== 'search') return;"),'Stale results must not overwrite new searches');
 assert.ok(!js.includes('placePanelReveal') && !js.includes('PANEL_MOTION_MS'), 'Fullscreen reveal animation removed');
 assert.ok(css.includes('transition:none!important'), 'Panels open and close without transition');
+assert.ok(css.includes('--sf-overlay-control-size:44px'), 'All overlay X controls share a 44px touch target');
+assert.ok(css.includes('--sf-overlay-toolbar-height:68px'), 'All panel headers share the same height');
+assert.ok(css.includes('#sf-panel .sf-panel-top{'), 'Menu and cart have a shared toolbar');
+assert.ok(css.includes('#sf-panel.is-search-panel .sf-search-toolbar{'), 'Search uses matching toolbar tokens');
+assert.ok(css.includes('height:46px'), 'Search field is reduced from 52px to 46px');
+assert.ok(css.includes('width:19px'), 'X glyph is smaller than prior 26px');
+assert.ok(css.includes('background:#ffffff'), 'Panel backgrounds are white');
+assert.ok(css.includes('color-scheme:light'), 'Search uses light input/color controls');
+assert.ok(!css.includes('background:#0b0d12'), 'Dark search background must be removed');
 assert.ok(css.includes('#sf-panel.is-search-panel .sf-panel-top{display:none!important}'),'Only the inline X appears in search');
 assert.ok(markup.includes("placeholder=\"<?php esc_attr_e( 'Search', 'codela-storefront' ); ?>\""),'Search placeholder is Ara in Turkish');
-console.log('Search controls, dark UI contract, and animation removal: passed.');
+console.log('Search controls, consistent white panels, sizing, and animation removal: passed.');

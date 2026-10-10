@@ -288,3 +288,11 @@ Dosyalar doğrulanarak yüklendi; public style/CSS/JS/manifest ve mağaza/REST s
 - Kullanıcının son arama ekranı görseli temel alındı: koyu zemin, sol büyüteç, placeholder "Ara", sağda yuvarlak X, dinamik öneri, gerçek sonuçlar ve istek sürerken statik iskelet satırlar. Üç panelde geçiş animasyonları kaldırıldı. Menu/logo/arama/sepet header sıralaması korunur.
 - **Doğrulanması gerekenler:** Canlı WordPress'te etkin tema ve gerçek iPhone Safari görünümü, klavye/odak, admin toolbar ve arama/sepet API etkileşimleri manuel olarak test edilmedi. FTPS deploy ve CI başarısı gerçek tarayıcıda kabul testi değildir.
 - **Sıradaki ilk iş:** iPhone'da arama ekranını açarak son referansa uygun görünümü, X kapamayı, sonuçların gelmesini ve animasyonun olmadığını test et. Sonra menü/sepeti kontrol et ve görsel sorun varsa düzelt.
+
+## Storefront 0.1.7 — shared white overlay design (11 October 2026)
+
+- The prior dark Search surface is superseded: Menu/Search/Cart share a white background (#ffffff), ink text and subtle light-gray dividers. Search field is gray (#f3f3f3) rather than dark, while retaining the latest screenshot's inline magnifier, "Ara" placeholder, clear affordance, and separate circular close control.
+- Introduced scoped `--sf-overlay-gutter`, `--sf-overlay-toolbar-height:68px`, `--sf-overlay-control-size:44px` shared by the standard Menu/Cart header and the Search toolbar. All close buttons are 44×44px light-gray circles, icon art 19px, borderless and without heavy focus frames; focus-visible is still available to keyboard navigation. Search height reduced 52→46px, magnifier 20px, iOS-safe font-size 16px.
+- Result rows, typed-query suggestion and request-time static skeletons use the light palette. No changes to search endpoint, cart API, WordPress administrative offsets, modal scroll lock or reduced-motion behavior. Fullscreen animation remains disabled as requested.
+- 0.1.6 → 0.1.7 bumps theme header and cached CSS/JS versions, without any Codela plugin or WordPress.org release. CI regression checks now verify unified white styling and sizes.
+- At source authoring: CI / independent FTP deployment result has not yet been observed; real iPhone screenshot acceptance is pending. Next: check Actions deployment success and inspect all three panels on iPhone.
