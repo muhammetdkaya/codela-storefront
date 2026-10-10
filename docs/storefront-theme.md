@@ -279,3 +279,12 @@ Dosyalar doğrulanarak yüklendi; public style/CSS/JS/manifest ve mağaza/REST s
 - The visible menu/cart visuals and the 0.1.5 balanced header layout are unchanged. Search results are live products returned by the existing API: a query suggestion displays only the typed query (2+ characters), a six-row **static** skeleton appears only during a real request, and actual product result rows replace skeleton when the response arrives. Stale-request protection and error/empty responses retained; no fake result entries.
 - Version 0.1.5 → 0.1.6; independent theme deployment only. Added Turkish translation for "Clear search", switched visible placeholder from "Search products" to localized "Search", and replaced the old origin-motion CI test with a runtime search-controls test.
 - Status: source change planned; check CI and deployment before claiming live. User-provided screenshot shows the target design; no claim of real iPhone visual acceptance. **Next**: verify code checks/deploy and live Safari for search UI, menu/cart and admin bar.
+
+
+## Storefront 0.1.6 bağımsız dağıtım sonucu — 11 Ekim 2026
+
+- Kaynak commit: [66c6d40](https://github.com/muhammetdkaya/codela-storefront/commit/66c6d40ed962ee267dd4f497ed04f9d73ce4ad43). Tema sürümü 0.1.6, CSS/JS cache anahtarları da 0.1.6.
+- [GitHub Actions 38094834292](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38094834292): **validate ve deploy başarılı**. Python paket/doğrulama, PHP lint, JS sözdizimi ve `tests/search-panel.cjs` arama durumu testi geçti; bağımsız FTPS tema dağıtımı tamamlandı. Codela eklentisi yeniden yayımlanmadı.
+- Kullanıcının son arama ekranı görseli temel alındı: koyu zemin, sol büyüteç, placeholder "Ara", sağda yuvarlak X, dinamik öneri, gerçek sonuçlar ve istek sürerken statik iskelet satırlar. Üç panelde geçiş animasyonları kaldırıldı. Menu/logo/arama/sepet header sıralaması korunur.
+- **Doğrulanması gerekenler:** Canlı WordPress'te etkin tema ve gerçek iPhone Safari görünümü, klavye/odak, admin toolbar ve arama/sepet API etkileşimleri manuel olarak test edilmedi. FTPS deploy ve CI başarısı gerçek tarayıcıda kabul testi değildir.
+- **Sıradaki ilk iş:** iPhone'da arama ekranını açarak son referansa uygun görünümü, X kapamayı, sonuçların gelmesini ve animasyonun olmadığını test et. Sonra menü/sepeti kontrol et ve görsel sorun varsa düzelt.

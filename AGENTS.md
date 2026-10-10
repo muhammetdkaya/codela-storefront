@@ -131,3 +131,12 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - Kullanıcı yazdığında en az 2 karakterden sonra kendi arama terimi bir öneri satırında görünür; WooCommerce/Codela gerçek ürün sonuçları yüklenirken **animasyonsuz** altı iskelet satırı çıkar. Yanıt gelince iskelet kaldırılır; hayali ürün/sonuç gösterme. Input içi küçük temizleme X'i yalnız yazı varken görünür. Arama kutusundaki X sağda paneli kapatır.
 - Temanın 0.1.5 → 0.1.6 kaynak sürümü, CSS/JS cache versiyonu ve Türkçe çeviri değişti. `tests/panel-origin.cjs` yerine `tests/search-panel.cjs` çalıştırılır. Tamamlandı/sunucuya yüklendi bilgisini yalnız yeni CI/deploy sonucu geldikten sonra kaydet.
 - **Sıradaki iş:** GitHub Actions PHP/JS, paket, yeni arama testi ve FTPS dağıtım sonuçlarını kontrol et. iPhone/Safari'de son görsel gibi üst barı, koyu alanı, "Ara" yazısını, tek X'i ve iki karakterden sonra arama sonuçlarını; animasyonun kalktığını teyit et. En önemlisi eski menü/sepet fonksiyonları ve admin bar kontrolü.
+
+
+## Storefront 0.1.6 bağımsız dağıtım sonucu — 11 Ekim 2026
+
+- Kaynak commit: [66c6d40](https://github.com/muhammetdkaya/codela-storefront/commit/66c6d40ed962ee267dd4f497ed04f9d73ce4ad43). Tema sürümü 0.1.6, CSS/JS cache anahtarları da 0.1.6.
+- [GitHub Actions 38094834292](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38094834292): **validate ve deploy başarılı**. Python paket/doğrulama, PHP lint, JS sözdizimi ve `tests/search-panel.cjs` arama durumu testi geçti; bağımsız FTPS tema dağıtımı tamamlandı. Codela eklentisi yeniden yayımlanmadı.
+- Kullanıcının son arama ekranı görseli temel alındı: koyu zemin, sol büyüteç, placeholder "Ara", sağda yuvarlak X, dinamik öneri, gerçek sonuçlar ve istek sürerken statik iskelet satırlar. Üç panelde geçiş animasyonları kaldırıldı. Menu/logo/arama/sepet header sıralaması korunur.
+- **Doğrulanması gerekenler:** Canlı WordPress'te etkin tema ve gerçek iPhone Safari görünümü, klavye/odak, admin toolbar ve arama/sepet API etkileşimleri manuel olarak test edilmedi. FTPS deploy ve CI başarısı gerçek tarayıcıda kabul testi değildir.
+- **Sıradaki ilk iş:** iPhone'da arama ekranını açarak son referansa uygun görünümü, X kapamayı, sonuçların gelmesini ve animasyonun olmadığını test et. Sonra menü/sepeti kontrol et ve görsel sorun varsa düzelt.
