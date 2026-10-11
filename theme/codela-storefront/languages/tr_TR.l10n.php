@@ -61,6 +61,8 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'Clear search' => 'Aramayı temizle',
 'My account' => 'Hesabım',
 'Privacy' => 'Gizlilik',
+'Terms' => 'Koşullar',
+'Legal links' => 'Yasal bağlantılar',
 'Checkout' => 'Ödemeye geç',
 'View cart' => 'Sepeti görüntüle',
 'All products' => 'Tüm ürünler',

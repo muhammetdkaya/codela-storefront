@@ -126,9 +126,29 @@ function codela_sf_footer(): string {
     $settings = codela_theme_settings();
     $brand = (string) ( $settings['brand'] ?: get_bloginfo( 'name' ) );
     $note = sanitize_text_field( (string) ( $settings['footer_text'] ?? '' ) );
-    $html = '<footer class="sf-footer"><div class="sf-footer-inner">';
+    $privacy_url = get_privacy_policy_url();
+    $terms_id = absint( get_option( 'woocommerce_terms_page_id', 0 ) );
+    $terms_url = $terms_id && 'publish' === get_post_status( $terms_id ) ? get_permalink( $terms_id ) : '';
+
+    $html = '<footer class="sf-footer"><div class="sf-footer-inner"><div class="sf-footer-copy">';
+    $html .= '<span class="sf-footer-copyright">© ' . esc_html( wp_date( 'Y' ) ) . '</span>';
     $html .= '<a class="sf-footer-brand" href="' . esc_url( home_url( '/' ) ) . '">' . esc_html( $brand ) . '</a>';
-    if ( '' !== $note ) { $html .= '<p class="sf-footer-note">' . esc_html( $note ) . '</p>'; }
+    if ( '' !== $note ) {
+        $html .= '<span class="sf-footer-note" title="' . esc_attr( $note ) . '">' . esc_html( $note ) . '</span>';
+    }
+    $html .= '</div>';
+
+    if ( $privacy_url || $terms_url ) {
+        $html .= '<nav class="sf-footer-links" aria-label="' . esc_attr__( 'Legal links', 'codela-storefront' ) . '">';
+        if ( $privacy_url ) {
+            $html .= '<a href="' . esc_url( $privacy_url ) . '">' . esc_html__( 'Privacy', 'codela-storefront' ) . '</a>';
+        }
+        if ( $terms_url ) {
+            $html .= '<a href="' . esc_url( $terms_url ) . '">' . esc_html__( 'Terms', 'codela-storefront' ) . '</a>';
+        }
+        $html .= '</nav>';
+    }
+
     return $html . '</div></footer>';
 }
 

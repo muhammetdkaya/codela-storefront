@@ -1,0 +1,26 @@
+// Real PHP output with optional WordPress/Woo legal pages.
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const {execFileSync}=require('node:child_process');
+const exec=env=>execFileSync(process.env.PHP_BIN||'php',['tests/render-footer.php'],{encoding:'utf8',env:{...process.env,...env}});
+const css=fs.readFileSync('theme/codela-storefront/assets/storefront.css','utf8');
+const plain=exec({});
+assert.match(plain,/^<footer class="sf-footer">/);
+assert.match(plain,/© 2026/);
+assert.match(plain,/<a class="sf-footer-brand" href="https:\/\/store\.test\/">CODELA<\/a>/);
+assert.equal((plain.match(/<footer/g)||[]).length,1,'One semantic footer only');
+assert.equal((plain.match(/<nav/g)||[]).length,0,'No dead legal links when pages are missing');
+assert.equal((plain.match(/<div class="sf-footer-inner"/g)||[]).length,1,'Single row wrapper');
+const populated=exec({FOOTER_PRIVACY:'1',FOOTER_TERMS:'1',FOOTER_NOTE:'1'});
+assert.match(populated,/<nav class="sf-footer-links" aria-label="Legal links">/);
+assert.match(populated,/href="https:\/\/store\.test\/privacy\/">Privacy<\/a>/);
+assert.match(populated,/href="https:\/\/store\.test\/terms\/">Terms<\/a>/);
+assert.match(populated,/sf-footer-note[^>]*>Simple products<\/span>/);
+assert.equal((populated.match(/class="sf-footer-inner"/g)||[]).length,1,'Footer remains a single row');
+const draft=exec({FOOTER_PRIVACY:'1',FOOTER_TERMS:'1',FOOTER_DRAFT:'1'});
+assert.ok(!draft.includes('href="https://store.test/terms/"'),'Never link an unpublished WooCommerce terms page');
+assert.ok(draft.includes('href="https://store.test/privacy/"'),'Valid legal links still display');
+assert.match(css,/\.sf-footer-inner\s*\{[^}]*flex-wrap:nowrap;/s,'Single row enforced on mobile');
+assert.match(css,/\.sf-footer-brand\s*\{[^}]*text-overflow:ellipsis;/s,'Long names truncate rather than overflow');
+assert.ok(css.includes('.sf-footer-note{display:none}'),'Mobile layout prioritizes useful links');
+console.log('One-line footer legal links, publication status, brand, note and responsive layout: passed.');

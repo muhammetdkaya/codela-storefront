@@ -38,13 +38,13 @@
     {
       "id": "footer",
       "label": "Footer",
-      "description": "Text shown below the storefront content.",
+      "description": "Compact, one-line copyright and legal links.",
       "fields": [
         {
           "id": "footer_text",
           "type": "text",
           "label": "Footer note",
-          "description": "Optional short line below the store name. Leave blank to show only the store name.",
+          "description": "Optional short note inline with the brand on desktop. Hidden on narrow mobile screens to keep one row.",
           "maxlength": 160,
           "placeholder": ""
         }

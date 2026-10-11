@@ -244,3 +244,13 @@ Source `fe5d8104a0b102bce5fd899bd9195a011e6f39a3`; Actions 38113974270 passed PH
 
 ### Verified 0.1.13 deployment — 11 October 2026
 [Source b43479d](https://github.com/muhammetdkaya/codela-storefront/commit/b43479da9d52e5e08f7dca34a8eb35534da295e0), [Actions 38114065497](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38114065497): validate and deploy completed successfully. PHP/JS/Node/Python and the new real-rendered-markup Chromium suite passed. Standalone FTPS theme/ZIP/manifest distribution completed; no Codela plugin release. This supersedes the pending status in the CI correction note. Real iPhone Safari and live checkout acceptance remain unverified; next work starts with that device check, not repeating the implemented navigation refactor.
+
+
+## 0.1.14 — Tek satırlık minimal Storefront footer (11 Ekim 2026)
+
+- Kullanıcının istediği tek satırlık, sade/kullanışlı footer hazırlandı: solda **© geçerli yıl + mağaza adı**, sağda yalnızca WordPress'te mevcut/published olan **Gizlilik** ve WooCommerce **Koşullar** sayfaları. Sahte bağlantı veya sabit yıl yok. Mağaza adı ana sayfaya gider.
+- Eski `footer_text` tema ayarı korunur; kısa not masaüstünde aynı satır içinde gösterilip uzun metin kesilir, mobilde tek satırı ve gerekli yasal bağlantıları korumak için gizlenir. WordPress Custom Logo/brand tercihi bozulmaz.
+- Beyaz, ince ayırıcı çizgili, düşük yükseklikte footer; masaüstü ve mobilde `flex-wrap:nowrap` ile bir sıra, marka fazla uzunsa ellipsis; mobilde 11px gövde/bağlantı. Diğer tema bölgeleri ve dört sekmeli alt nav değiştirilmedi.
+- Sürüm **0.1.13 → 0.1.14** (theme + CSS/JS cache). Türkçe `Terms=Koşullar`, `Legal links=Yasal bağlantılar`. Var olan schema field ID'leri değiştirilmedi, footer not açıklaması güncellendi.
+- Test: `tests/render-footer.php` gerçek render callback'i WordPress stub'larıyla çalıştırır; `tests/footer.cjs` boş vs yayımlanmış legal linkleri ve HTML/satır sözleşmesini kontrol eder; `tests/navigation-browser.cjs` gerçek HTML/CSS ile 390px mobilde aynı satırı kontrol eder; Python regresyon ve CI Node footer testi eklendi.
+- Kaynak kaydedilirken CI/deploy henüz doğrulanmış sayılmaz. Sıradaki iş: Actions validate + deploy status, canlı iPhone Safari footer düzeni ve uzun mağaza adları.

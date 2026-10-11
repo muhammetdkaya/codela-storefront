@@ -79,8 +79,7 @@ body{margin:0;-webkit-font-smoothing:antialiased}
 .sf-products img{width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;display:block}
 .sf-products h3{font-size:16px;font-weight:400;margin:12px 0 5px}
 .sf-products article>div{font-size:14px;color:var(--sf-muted)}
-.sf-footer{padding:26px max(5vw,24px);border-top:1px solid var(--sf-line);margin-top:50px}
-.sf-footer .wp-block-site-title{font-size:24px}
+.sf-footer{margin-top:38px;padding:18px max(5vw,24px);background:#fff;border-top:1px solid #e8e8e8;color:#292929}
 .woocommerce a.button,.woocommerce button.button,.woocommerce input.button{border-radius:var(--cdl-ct-radius,12px);background:var(--sf-ink);color:white;padding:16px 22px}
 .woocommerce div.product .product_title{font-weight:400;letter-spacing:-1px}
 .woocommerce ul.products li.product .woocommerce-loop-product__title{font-weight:400}
@@ -109,7 +108,68 @@ body{margin:0;-webkit-font-smoothing:antialiased}
 
 .sf-content>.wp-block-woocommerce-legacy-template{max-width:1200px!important}
 
-.sf-footer-inner{display:flex;align-items:baseline;justify-content:space-between;gap:20px;flex-wrap:wrap}.sf-footer-brand{font-size:24px;letter-spacing:-.5px;color:inherit;text-decoration:none}.sf-footer-note{margin:0;color:var(--sf-muted);font-size:13px;line-height:1.6}@media(max-width:700px){.sf-footer-inner{flex-direction:column;align-items:flex-start;gap:10px}}
+/* 0.1.14: single-row, small, usable store footer. */
+.sf-footer-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:22px;
+  max-width:1200px;
+  min-width:0;
+  margin:0 auto;
+  font-size:12px;
+  line-height:1.4;
+}
+.sf-footer-copy{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  flex:1 1 auto;
+  min-width:0;
+  white-space:nowrap;
+  overflow:hidden;
+}
+.sf-footer-copyright{color:#777;flex:none}
+.sf-footer-brand{
+  display:block;
+  min-width:0;
+  flex:0 1 auto;
+  color:#292929;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:0;
+  text-decoration:none;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.sf-footer-note{
+  min-width:0;
+  flex:1 1 auto;
+  margin:0;
+  color:#878787;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.sf-footer-note::before{content:'·';margin:0 9px 0 4px;color:#aaa}
+.sf-footer-links{display:flex;align-items:center;flex:none;gap:20px;white-space:nowrap}
+.sf-footer-links a{
+  color:#606060;
+  font-size:12px;
+  text-decoration:none;
+  text-underline-offset:3px;
+}
+.sf-footer-links a:hover{text-decoration:underline;color:#242424}
+.sf-footer a:focus-visible{outline:2px solid var(--sf-accent,#656e52);outline-offset:3px}
+@media(max-width:700px){
+  .sf-footer{padding:16px 20px;margin-top:26px}
+  .sf-footer-inner{gap:12px;font-size:11px;flex-wrap:nowrap}
+  .sf-footer-brand{font-size:11px}
+  .sf-footer-note{display:none}
+  .sf-footer-links{gap:11px}
+  .sf-footer-links a{font-size:11px}
+}
 
 /* Fullscreen panels: neutralize native/theme control chrome without removing
    the intentionally subtle outline of the SEARCH FORM itself. */
