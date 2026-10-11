@@ -1,4 +1,6 @@
 
+- **0.1.42 verified deployed:** [GitHub Actions 38167493095](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38167493095), source commit `afb3857554331b409001665bf88c2c1b2b617acb`: `validate` passed including guest/native Account popup + signed-in route + dock gestures, `deploy` passed (Storefront-only FTPS). The original merge needed a null-guard for guest-only section on signed-in pages (`860f7abc`) and correcting the mocked account URL in the browser fixture (`afb38575`); no failing revision was deployed. Remaining production acceptance: iPhone Safari signed-out Account popup, Woo login/registration and redirect with real account, configured Google OAuth (credentials still not provided). Codela plugin unchanged.
+
 ## Storefront 0.1.42 — guest Account uses existing full-screen overlay (11 October 2026)
 
 - The **one native Storefront dialog** now has a fourth view: `account`, alongside Menu, Search, and Cart. On **signed-out users**, both header Account IconButton and mobile dock Account tab open this view *immediately*, without navigation. Menu's secondary Account link switches the open dialog to the account view. Signed-in Account links remain ordinary WP/WooCommerce navigation to the existing Codela account dashboard. A plain Account URL fallback remains for JS-disabled clients.
