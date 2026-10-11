@@ -62,6 +62,28 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  assert.equal(surfaces.brandBg,surfaces.menuBg,'Brand and menu share header surface');
  assert.equal(surfaces.headerBorder,'0px','Header background is not one solid bar');
 
+ // Fixed header leaves text clearance, while the home hero begins at the top.
+ assert.equal(await page.locator('.sf-header').evaluate(el=>getComputedStyle(el).position),'fixed');
+ assert.equal(surfaces.menuBg,'rgba(250, 250, 252, 0.82)','Shared surfaces are light');
+ await page.evaluate(()=>{
+   document.body.classList.add('home');
+   const main=document.querySelector('main');main.classList.add('sf-content');main.style.padding='0';
+   main.innerHTML='<div class="sf-hero"><div class="sf-hero-art" style="height:500px;background:#ddd"></div></div>';
+   const link=document.querySelector('.sf-brand a');
+   link.innerHTML='<img class="custom-logo" alt="Brand" width="95" height="28" src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2295%22 height=%2228%22/%3E">';
+ });
+ assert.equal(await page.locator('.sf-hero').evaluate(el=>el.getBoundingClientRect().top),0,'Hero reaches page top');
+ const logoGeometry=await page.locator('.sf-brand').evaluate(el=>{
+   const box=el.getBoundingClientRect(),img=el.querySelector('img').getBoundingClientRect();
+   return {delta:Math.abs(box.top+box.height/2-img.top-img.height/2),filter:getComputedStyle(el.querySelector('img')).filter};
+ });
+ assert(logoGeometry.delta<1,'Logo is vertically centered without inline baseline gap');
+ assert.equal(logoGeometry.filter,'none','Custom logo colors are preserved');
+ await page.evaluate(()=>window.scrollTo(0,200));
+ assert.equal(await page.locator('.sf-header').evaluate(el=>el.getBoundingClientRect().top),0,'Header stays fixed on scroll');
+ await page.evaluate(()=>{window.scrollTo(0,0);document.body.classList.remove('home');});
+ assert.equal(await page.locator('main').evaluate(el=>el.getBoundingClientRect().top),68,'Text pages retain header clearance');
+
  const footerMetrics = await page.locator('.sf-footer').evaluate(root => {
    const inner = root.querySelector('.sf-footer-inner');
    const copy = root.querySelector('.sf-footer-copy').getBoundingClientRect();
@@ -299,4 +321,5 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  console.log('Browser navigation: real PHP markup, 4 viewport sizes, touch/hold/outside release, scroll/safe-area, focus/reopen, API race, rapid switching and reduced motion passed.');
  } finally {await browser.close();}
 })().catch(e=>{console.error(e);process.exit(1)});
+
 

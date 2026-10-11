@@ -48,7 +48,7 @@
 #sf-panel button.sf-ui-icon-button--soft .sf-icon{
   width:var(--sf-ui-icon);
   height:var(--sf-ui-icon);
-  filter:brightness(0) invert(1);
+  filter:brightness(0);
 }
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   .sf-shell .sf-ui-surface,.sf-shell .sf-ui-icon-button--soft,
@@ -149,3 +149,4 @@
   .sf-shell .sf-ui-pressable{transition:none!important}
   .sf-shell .sf-ui-spinner{animation:none!important}
 }
+

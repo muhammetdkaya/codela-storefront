@@ -191,20 +191,32 @@
 
 
 /* Header composition only. Surface paint and press feedback are shared UI Kit. */
-.sf-shell .sf-header{background:transparent;border-bottom:0;isolation:isolate}
+.sf-shell{padding-top:76px}
+.home .sf-shell{padding-top:0}
+.sf-shell .sf-header{
+  position:fixed;top:var(--sf-header-offset,0px);left:0;right:0;z-index:1000;
+  background:transparent;border-bottom:0;isolation:isolate;pointer-events:none;
+}
+.sf-shell .sf-header>*{pointer-events:auto}
+body.admin-bar{--sf-header-offset:32px}
+@media(max-width:782px){body.admin-bar{--sf-header-offset:46px}}
+@media(max-width:700px){.sf-shell{padding-top:68px}.home .sf-shell{padding-top:0}}
+/* The home hero begins behind the fixed header; text pages keep clearance. */
+.home .sf-content>.sf-hero{margin-top:0}
+@media(min-width:701px){.home .sf-hero-info{padding-top:100px}}
 .sf-shell .sf-header .sf-brand{
   display:flex;align-items:center;justify-content:center;
   min-height:var(--sf-ui-hit);padding:0 18px;
 }
-.sf-shell .sf-header .sf-brand a{color:var(--sf-ui-glass-ink);text-decoration:none}
+.sf-shell .sf-header .sf-brand a{display:flex;align-items:center;justify-content:center;line-height:1;color:var(--sf-ui-glass-ink);text-decoration:none}
 .sf-shell .sf-header .sf-brand .custom-logo{
-  max-height:34px;filter:brightness(0) invert(1);
+  display:block;max-height:34px;filter:none;
 }
 .sf-shell .sf-header .sf-actions{
   gap:0;min-height:var(--sf-ui-hit);padding:0 3px;
 }
 .sf-shell .sf-header .sf-actions .sf-ui-icon-button{border-radius:var(--sf-ui-pill);color:var(--sf-ui-glass-ink)}
-.sf-shell .sf-header .sf-actions .sf-ui-icon-button .sf-icon{filter:brightness(0) invert(1)}
+.sf-shell .sf-header .sf-actions .sf-ui-icon-button .sf-icon{filter:brightness(0)}
 @media(max-width:700px){
   .sf-shell .sf-header{height:68px}
   .sf-shell.has-mobile-dock .sf-header{
@@ -223,3 +235,4 @@
   }
   .sf-shell.has-header-tools .sf-header .sf-actions{gap:0}
 }
+

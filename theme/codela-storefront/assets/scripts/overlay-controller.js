@@ -16,7 +16,9 @@ export function createOverlayController({
         const bar = $('#wpadminbar');
         const rect = bar?.getBoundingClientRect();
         const visible = bar && getComputedStyle(bar).display !== 'none' && getComputedStyle(bar).visibility !== 'hidden';
-        dialog?.style.setProperty('--sf-admin-offset', `${visible ? Math.max(0, Math.min(rect.bottom, rect.height)) : 0}px`);
+        const offset = `${visible ? Math.max(0, Math.min(rect.bottom, rect.height)) : 0}px`;
+        document.querySelector('.sf-header')?.style.setProperty('--sf-header-offset', offset);
+        dialog?.style.setProperty('--sf-admin-offset', offset);
     }
     function rememberStyle(element, properties) {
         return properties.map(name => [name, element.style.getPropertyValue(name), element.style.getPropertyPriority(name)]);
@@ -118,9 +120,15 @@ export function createOverlayController({
         if (dialog && dialog !== element) throw new Error('Overlay controller already bound');
         if (dialog) return;
         dialog = element;
-        window.addEventListener('resize', () => {
-            if (dialog.open) adminOffset();
-        });
+        adminOffset();
+        window.addEventListener('resize', adminOffset);
+        let offsetFrame = 0;
+        window.addEventListener('scroll', () => {
+            if (!offsetFrame) offsetFrame = requestAnimationFrame(() => {
+                offsetFrame = 0;
+                adminOffset();
+            });
+        }, {passive:true});
         dialog.addEventListener('cancel', event => {
             event.preventDefault();
             close();
@@ -141,3 +149,4 @@ export function createOverlayController({
         getDialog: () => dialog,
     };
 }
+
