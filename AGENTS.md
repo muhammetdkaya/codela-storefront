@@ -1,4 +1,6 @@
 
+- **Dağıtım doğrulandı (0.1.36):** [GitHub Actions 38160300948](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38160300948), kaynak commit `10e4047bb89111069af974ac36560ef2d85bc168`: `validate` ve bağımsız Storefront FTPS `deploy` başarılı. Gerçek telefon üzerinde elle kullanım kabulü ayrıca yapılmalı. Sonraki kontrol: Ana Sayfa ↔ Arama/Sepet ve Hesabım alt sayfası ↔ Arama/Sepet, tap ve sürükleme ile anlık kapatma; farklı sayfalara normal gezinme.
+
 ## Storefront 0.1.36 — current-page dock actions dismiss overlays (11 October 2026)
 
 - Home and Account are document links; Search and Cart are overlays. If the current document already matches the tapped Home or Account tab (`aria-current="page"` from WordPress, including account subpages), dismiss the open overlay without navigation/reload. Reselecting the same tab without an overlay is a no-op; selecting a different page keeps full navigation.
