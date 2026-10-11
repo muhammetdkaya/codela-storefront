@@ -4,7 +4,7 @@
 - User request: home product hero reaches the top behind a fixed header; logo is vertically centered; logo/menu/X use light surfaces. This supersedes the 0.1.31 dark surface decision.
 - Shared glass tokens now provide light translucent surfaces and dark controls. Custom logo colors are preserved; block image and centered flex link remove baseline misalignment. Header stays fixed during scrolling; its transparent empty area does not block content interaction.
 - Home hero has no header spacer; text-led pages retain 76px/68px clearance. Existing overlay controller synchronizes fixed header position with visible WordPress toolbar height. Dock and plugin-owned account remain unchanged.
-- Validation/deployment pending. Next: verify CI and independent deployment, then physical mobile acceptance of hero, logo alignment and fixed header.
+- Verified: [Actions 38156144836](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38156144836) validate and standalone deploy succeeded. Source `24db41f5d4073ae2a799aedc5fd24989f7e3b984`; light-color test expectation corrected in `f552501c1f4da237cbb2b7f85d12388216b1a9d6`. Browser checks cover top-edge hero, centered custom logo, fixed scroll position, text-page clearance and existing navigation/account/UI contracts. Next: physical mobile acceptance of hero, logo alignment and fixed header.
 
 ## 0.1.27 — Search and cart controllers
 
