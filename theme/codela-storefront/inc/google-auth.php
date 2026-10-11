@@ -77,7 +77,7 @@ add_action( 'admin_post_codela_sf_google_start', 'codela_sf_google_start' );
 function codela_sf_google_customer( array $identity ) {
     $sub = (string) ( $identity['sub'] ?? '' );
     $email = sanitize_email( (string) ( $identity['email'] ?? '' ) );
-    if ( ! preg_match( '/^[0-9]{1,255}$/D', $sub )
+    if ( ! preg_match( '/^[A-Za-z0-9_-]{1,255}$/D', $sub )
         || ! is_email( $email ) || true !== ( $identity['email_verified'] ?? false ) ) {
         return new WP_Error( 'invalid_google_identity' );
     }
@@ -193,6 +193,19 @@ function codela_sf_google_button(): void {
     <?php
 }
 add_action( 'woocommerce_after_customer_login_form', 'codela_sf_google_button', 15 );
+
+/** Friendly, non-identifying message after a rejected or expired Google login. */
+function codela_sf_google_notice(): void {
+    if ( ! function_exists( 'is_account_page' ) || ! is_account_page()
+        || is_user_logged_in() || ! isset( $_GET['google_login'] )
+        || ! is_string( $_GET['google_login'] ) || 'error' !== $_GET['google_login'] ) {
+        return;
+    }
+    echo '<p class="sf-google-error" role="alert">'
+        . esc_html__( 'Google sign-in was not completed. Try again or use your existing password.', 'codela-storefront' )
+        . '</p>';
+}
+add_action( 'woocommerce_before_customer_login_form', 'codela_sf_google_notice', 4 );
 
 /** Only administrators may configure the exact OAuth web-client credentials. */
 function codela_sf_google_admin_menu(): void {
