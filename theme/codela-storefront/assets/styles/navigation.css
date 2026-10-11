@@ -236,3 +236,15 @@ body.admin-bar{--sf-header-offset:32px}
   .sf-shell.has-header-tools .sf-header .sf-actions{gap:0}
 }
 
+
+/* Single menu control morphs in place while reparented to modal top layer. */
+.sf-shell .sf-menu-trigger.is-in-panel{position:fixed;left:var(--sf-menu-control-x);top:var(--sf-menu-control-y);z-index:30}
+.sf-shell .sf-menu-trigger .sf-menu-mark{display:block;position:relative;width:20px;height:20px;flex:none}
+.sf-shell .sf-menu-trigger .sf-menu-mark>span{position:absolute;top:9px;left:0;width:20px;height:2px;border-radius:2px;background:currentColor;transition:transform 280ms cubic-bezier(.22,.8,.25,1);transform-origin:center}
+.sf-shell .sf-menu-trigger .sf-menu-mark>span:first-child{transform:translateY(-4px)}
+.sf-shell .sf-menu-trigger .sf-menu-mark>span:last-child{transform:translateY(4px)}
+.sf-shell .sf-menu-trigger[aria-expanded="true"] .sf-menu-mark>span:first-child{transform:rotate(45deg)}
+.sf-shell .sf-menu-trigger[aria-expanded="true"] .sf-menu-mark>span:last-child{transform:rotate(-45deg)}
+#sf-panel.is-menu-panel .sf-panel-top{border-bottom:0}
+#sf-panel.is-menu-panel .sf-panel-top .sf-close{display:none!important}
+@media(prefers-reduced-motion:reduce){.sf-shell .sf-menu-trigger .sf-menu-mark>span{transition:none!important}}

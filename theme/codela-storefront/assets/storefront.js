@@ -8,7 +8,7 @@ let menuPath = [];
 const $ = s => document.querySelector(s);
 const { state } = store('codela/storefront', {
     actions: {
-        menu: event => overlay.open('menu', event),
+        menu: event => overlay.toggleMenu(event),
         search: event => overlay.open('search', event),
         cart: event => overlay.open('cart', event),
         close: () => overlay.close(),

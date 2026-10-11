@@ -638,3 +638,9 @@ create parallel stores or second navigation listeners.
 - User still saw the old menu glyph after 0.1.33. SVG source was updated, but shared icon URLs lacked a cache version. Shared renderer now appends a content-derived CRC32 fingerprint, cached per icon within the request. All theme icons refresh when their bytes change; no manual browser cache clearing should be needed after fresh HTML loads.
 - Browser fixture resolves the URL pathname separately from its query. UI Kit contract checks the fingerprint and two-line menu asset.
 - Verified: [Actions 38156858978](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38156858978) validate and standalone deploy succeeded for `d9a3f2aecd09269abf36a9528c8f68d24c139031`. Initial validation caught a fingerprint path error, corrected before deployment. Next: confirm user's visible two-line menu after a fresh page load.
+
+## Storefront 0.1.35 — single-position Menu/X (11 October 2026)
+
+- The same real header menu IconButton is reparented to the native dialog's top layer at its measured viewport x/y. Menu uses two animated CSS strokes rotating to X (280ms); closing rotates back. Its previous duplicate close X is hidden only for Menu, while Search/Cart keep their controls.
+- The header button is restored before focus returns; aria-expanded and accessible label track the actual state. Reduced-motion skips the transition. Styles still belong to shared navigation/UI Kit, not copied per page.
+- Browser regression checks 320/390/700/1024px, DOM-node identity, the same x/y, reverse click, reopen and reduced motion. GitHub validation/deployment and real-device acceptance are separate milestones.

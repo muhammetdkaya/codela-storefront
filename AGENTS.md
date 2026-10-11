@@ -1,4 +1,10 @@
 
+## Storefront 0.1.35 — single-position Menu/X (11 October 2026)
+
+- The same real header menu IconButton is reparented to the native dialog's top layer at its measured viewport x/y. Menu uses two animated CSS strokes rotating to X (280ms); closing rotates back. Its previous duplicate close X is hidden only for Menu, while Search/Cart keep their controls.
+- The header button is restored before focus returns; aria-expanded and accessible label track the actual state. Reduced-motion skips the transition. Styles still belong to shared navigation/UI Kit, not copied per page.
+- Browser regression checks 320/390/700/1024px, DOM-node identity, the same x/y, reverse click, reopen and reduced motion. GitHub validation/deployment and real-device acceptance are separate milestones.
+
 ## Storefront 0.1.34 — icon cache invalidation (11 October 2026)
 
 - User still saw the old menu glyph after 0.1.33. SVG source was updated, but shared icon URLs lacked a cache version. Shared renderer now appends a content-derived CRC32 fingerprint, cached per icon within the request. All theme icons refresh when their bytes change; no manual browser cache clearing should be needed after fresh HTML loads.

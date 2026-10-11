@@ -34,7 +34,7 @@ function codela_sf_ui_icon_button( string $icon, string $label, array $options =
     $attributes['aria-label'] = $label;
     $html = ' class="' . esc_attr( implode( ' ', array_unique( $classes ) ) ) . '"';
     $html .= codela_sf_ui_attributes( $attributes );
-    $content = codela_sf_icon( $icon ) . $after_html;
+    $content = ( 'menu' === $icon ? '<span class="sf-menu-mark" aria-hidden="true"><span></span><span></span></span>' : codela_sf_icon( $icon ) ) . $after_html;
     if ( isset( $options['href'] ) ) {
         return '<a href="' . esc_url( (string) $options['href'] ) . '"' . $html . '>' . $content . '</a>';
     }
