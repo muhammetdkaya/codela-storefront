@@ -4,8 +4,8 @@ require_once __DIR__ . '/ui.php';
 function codela_sf_icon( string $name ): string {
     if ( ! in_array( $name, [ 'search', 'shopping-bag', 'menu', 'x', 'arrow-left', 'arrow-right', 'plus', 'minus', 'house', 'user-round' ], true ) ) { return ''; }
     static $versions = [];
-    $versions[ $name ] ??= hash_file( 'crc32b', __DIR__ . '/../assets/icons/' . $name . '.svg?ver=' . $versions[ $name ] );
-    return '<img class="sf-icon" width="22" height="22" alt="" src="' . esc_url( get_template_directory_uri() . '/assets/icons/' . $name . '.svg' ) . '">';
+    $versions[ $name ] ??= hash_file( 'crc32b', __DIR__ . '/../assets/icons/' . $name . '.svg' );
+    return '<img class="sf-icon" width="22" height="22" alt="" src="' . esc_url( get_template_directory_uri() . '/assets/icons/' . $name . '.svg?ver=' . $versions[ $name ] ) . '">';
 }
 function codela_sf_menu(): string {
     $settings = codela_theme_settings();
