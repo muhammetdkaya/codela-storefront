@@ -2,9 +2,8 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
-const src=fs.readFileSync('theme/codela-storefront/assets/storefront.js','utf8');
-const start=src.indexOf('function mobileDock() {'),end=src.indexOf('\nfunction preventInitialAccountAutoFocus() {',start);
-assert.ok(start>0 && end>start);
+const entry=fs.readFileSync('theme/codela-storefront/assets/storefront.js','utf8');
+const src=fs.readFileSync('theme/codela-storefront/assets/scripts/dock-controller.js','utf8');
 const classList=()=>{
  const set=new Set();
  return {add:k=>set.add(k),remove:(...ks)=>ks.forEach(k=>set.delete(k)),contains:k=>set.has(k),
@@ -28,31 +27,32 @@ const dock={
  addEventListener(name,fn){handlers[name]=fn},
  contains(){return false}
 };
-const dialog={open:false,appendChild(el){el.parentElement=this},before(el){el.parentElement=shell},contains(){return false}};
+const dialogHandlers={};
+const dialog={open:false,appendChild(el){el.parentElement=this},before(el){el.parentElement=shell},contains(){return false},addEventListener(k,fn){dialogHandlers[k]=fn}};
 const docHandlers={};
 const document={
  body:{classList:{contains:()=>false}},
  scrollingElement:{scrollHeight:3000,clientHeight:800},
  createComment:()=>({after(el){el.parentElement=shell}}),
- querySelector:()=>null,querySelectorAll:()=>[],
+ querySelector:sel=>sel==='.sf-mobile-dock'?dock:null,querySelectorAll:()=>[],
  addEventListener:(k,fn)=>{docHandlers[k]=fn},
  removeEventListener:()=>{},activeElement:null
 };
-const win={innerWidth:390,addEventListener(){},scrollY:0,location:{assign:url=>{assigned=url}}};
+const windowHandlers={};let scrollListeners=0;
+const win={innerWidth:390,addEventListener(k,fn){windowHandlers[k]=fn;if(k==='scroll')scrollListeners++},scrollY:0,location:{assign:url=>{assigned=url}}};
 let assigned='',opened=[],seq=0,raf=null;
 const timers=new Map();
 const setTimeoutFake=fn=>{const id=++seq;timers.set(id,fn);return id};
 const context={
- dialog,document,window:win,current:null,dockNode:null,dockHome:null,dockScrollFrame:0,dockScrollTarget:null,
- overlay:{getDialog:()=>dialog,getCurrent:()=>null,open:name=>opened.push(name)},
+ document,window:win,
  requestAnimationFrame:fn=>{raf=fn;return 1},
- $:sel=>sel==='.sf-mobile-dock'?dock:null,
- dockScrollPositions:new WeakMap(),Element:class Element{},
- clearTimeout:id=>timers.delete(id),setTimeout:setTimeoutFake,
- open:name=>opened.push(name),Date,Math,Number
+ Element:class Element{},
+ clearTimeout:id=>timers.delete(id),setTimeout:setTimeoutFake,Date,Math,Number
 };
-const helpers=vm.runInNewContext(src.slice(start,end)+
- '\n({mountDock,restoreDock,markDockActive,dockCandidate,setDockCollapsed,handleDockScroll,installDockGestures})',context);
+const createDockController=vm.runInNewContext(src.replace(/^export /m,'')+'\ncreateDockController',context);
+const helpers=createDockController({
+ getDialog:()=>dialog,getCurrent:()=>null,open:name=>opened.push(name),
+});
 helpers.mountDock();
 assert.equal(dock.parentElement,dialog,'Real dock moves into native modal top layer');
 helpers.markDockActive('search');
@@ -62,18 +62,20 @@ assert.equal(items[2].classList.contains('is-active'),true);
 helpers.restoreDock();
 assert.equal(dock.parentElement,shell);
 assert.equal(items[0].classList.contains('is-active'),true);
-assert.equal(helpers.dockCandidate(dock,165,50),items[2]);
-assert.equal(helpers.dockCandidate(dock,165,400),null);
+// A single installation owns both gesture and scroll listeners, even if init repeats.
+helpers.init(dialog);helpers.init(dialog);
+assert.equal(scrollListeners,1,'Scroll listener installed once');
+assert.equal(typeof dialogHandlers.scroll,'function','Native modal scroll is tracked');
+assert.equal(typeof handlers.touchstart,'function','Touch listeners installed once');
 // Window and modal scroll direction trigger a recoverable collapsed dock.
-helpers.handleDockScroll({target:document});raf();
-win.scrollY=140;helpers.handleDockScroll({target:document});raf();
+windowHandlers.scroll({target:document});raf();
+win.scrollY=140;windowHandlers.scroll({target:document});raf();
 assert.equal(dock.classList.contains('is-collapsed'),true,'Scroll down hides dock');
 assert.equal(handle.tabIndex,0,'Reveal line is keyboard reachable');
 assert.equal(items[0].inert,true,'Hidden dock tabs are inert');
-win.scrollY=98;helpers.handleDockScroll({target:document});raf();
+win.scrollY=98;windowHandlers.scroll({target:document});raf();
 assert.equal(dock.classList.contains('is-collapsed'),false,'Scroll up restores dock');
 assert.equal(items[0].inert,false);
-helpers.installDockGestures(dock);
 const touch=(x,y,id=1)=>({clientX:x,clientY:y,identifier:id});
 const ev=(item,t,kind)=>({
  target:{closest:()=>item},touches:kind==='end'?[]:[t],changedTouches:[t],cancelable:true,
@@ -117,7 +119,7 @@ handle.tabIndex=0;
 assert.ok(src.includes("dock.querySelector('.sf-dock-handle')?.addEventListener('click'"),'Thin handle can reopen dock');
 const overlaySource=fs.readFileSync('theme/codela-storefront/assets/scripts/overlay-controller.js','utf8');
 assert.ok(overlaySource.includes("name === 'search' ? $('.sf-search-cancel')"),'Search opens without auto focusing text input');
-assert.ok(src.includes('preventInitialAccountAutoFocus()'),'Account autofocus guard is installed');
+assert.ok(entry.includes('preventInitialAccountAutoFocus()'),'Account autofocus guard is installed');
 assert.ok(src.includes("dock.addEventListener('touchmove'"),'Native touch support for mobil tarayıcı');
 console.log('Dock modal, scrolling, touch scrubbing, hold and focus tests passed.');
 

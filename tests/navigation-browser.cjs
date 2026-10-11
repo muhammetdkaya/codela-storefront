@@ -18,7 +18,7 @@ const css = ['assets/styles/tokens.css','assets/storefront.css','assets/styles/o
 const moduleSource = name => fs.readFileSync(
  'theme/codela-storefront/assets/scripts/'+name+'.js','utf8'
  ).replace(/^import .*;$/gm,'').replace(/^export /gm,'');
-const inlineControllers = ['format','search-controller','cart-controller','overlay-controller']
+const inlineControllers = ['format','search-controller','cart-controller','overlay-controller','dock-controller']
  .map(moduleSource).join('\n');
 const js = fs.readFileSync('theme/codela-storefront/assets/storefront.js','utf8')
  .replace(/^import .*from '\.\/scripts\/[^']+';$/gm,'')
