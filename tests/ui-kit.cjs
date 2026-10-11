@@ -31,7 +31,7 @@ assert(cssUI.includes('.sf-ui-icon-button--soft'));
 assert(cssUI.includes('.sf-ui-icon-button--soft:is(:active,.is-pressed)'));
 const navigation=fs.readFileSync('theme/codela-storefront/assets/styles/navigation.css','utf8');
 assert(navigation.includes('.sf-shell .sf-header .sf-brand'));
-assert(navigation.includes('sf-ui-surface'));
+assert(cssUI.includes('.sf-shell .sf-ui-surface'));
 assert(tokens.includes('--sf-ui-glass-surface'));
 assert(cssUI.includes('prefers-reduced-transparency:reduce'));
 assert(cssUI.includes('.sf-ui-button--primary'));
