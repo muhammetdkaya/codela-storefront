@@ -40,7 +40,7 @@ const document={
 };
 const windowHandlers={};let scrollListeners=0;
 const win={innerWidth:390,addEventListener(k,fn){windowHandlers[k]=fn;if(k==='scroll')scrollListeners++},scrollY:0,location:{assign:url=>{assigned=url}}};
-let assigned='',opened=[],seq=0,raf=null;
+let assigned='',opened=[],closed=0,seq=0,raf=null;
 const timers=new Map();
 const setTimeoutFake=fn=>{const id=++seq;timers.set(id,fn);return id};
 const context={
@@ -51,7 +51,7 @@ const context={
 };
 const createDockController=vm.runInNewContext(src.replace(/^export /m,'')+'\ncreateDockController',context);
 const helpers=createDockController({
- getDialog:()=>dialog,getCurrent:()=>null,open:name=>opened.push(name),
+ getDialog:()=>dialog,getCurrent:()=>null,open:name=>opened.push(name),close:()=>{closed++;dialog.open=false},
 });
 helpers.mountDock();
 assert.equal(dock.parentElement,dialog,'Real dock moves into native modal top layer');
@@ -86,6 +86,18 @@ handlers.touchstart(e);
 assert.equal(items[0].classList.contains('is-pressed'),true,'Touchstart gives press feedback');
 handlers.touchend(ev(items[0],touch(40,55),'end'));
 assert.equal(opened.length,0,'Simple taps retain native browser navigation');
+// A click on Home while Search is on top must close it, not follow the anchor.
+dialog.open=true;
+let preventedCurrent=false;
+handlers.click({detail:0,target:{closest:()=>items[0]},preventDefault(){preventedCurrent=true}});
+assert.equal(preventedCurrent,true,'Native current-page Home click is intercepted');
+assert.equal(closed,1,'Current-page Home closes the popup through the overlay owner');
+assert.equal(assigned,'','Current-page Home never navigates');
+// With no dialog open, clicking the selected page should still avoid a reload.
+preventedCurrent=false;
+handlers.click({detail:0,target:{closest:()=>items[0]},preventDefault(){preventedCurrent=true}});
+assert.equal(preventedCurrent,true,'Current-page reselect does not reload');
+assert.equal(closed,1,'No extra close when the popup is already closed');
 e=ev(items[0],touch(40,55,2),'start');handlers.touchstart(e);
 let m=ev(items[0],touch(171,55,2),'move');handlers.touchmove(m);
 assert.equal(dock.classList.contains('is-scrubbing'),true,'Horizontal finger motion enters scrub');
@@ -105,6 +117,16 @@ assert.equal(dock.classList.contains('is-scrubbing'),true,'Long press activates 
 handlers.touchmove(ev(items[0],touch(285,55,3),'move'));
 handlers.touchend(ev(items[0],touch(285,55,3),'end'));
 assert.equal(assigned,'https://example.test/account','Release on Account navigates');
+// Horizontal scrubbing back to the underlying Home also dismisses immediately.
+dialog.open=true;
+e=ev(items[1],touch(120,55,9),'start');handlers.touchstart(e);
+handlers.touchmove(ev(items[1],touch(40,55,9),'move'));
+const back=ev(items[1],touch(40,55,9),'end');handlers.touchend(back);
+assert.equal(closed,2,'Scrub to current Home closes the popup');
+assert.equal(assigned,'https://example.test/account','Scrub to current Home does not navigate');
+assert.equal(back.prevented,true,'Scrub event is consumed');
+// Account is not the active page on Home, so external navigation stays native.
+
 const h=ev(items[0],touch(40,55,4),'start');handlers.touchstart(h);
 handlers.touchcancel();
 assert.equal(dock.classList.contains('is-scrubbing'),false,'Cancelled gesture resets styling');

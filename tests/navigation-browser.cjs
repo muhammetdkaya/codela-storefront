@@ -164,6 +164,17 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  await click('search');
  assert(!(await page.evaluate(()=>window.focusLog)).includes('sf-query'),'Reopening must never briefly focus query');
  await page.locator('.sf-search-cancel').click();
+ // On the already-rendered Home page, Search/Cart -> Home must just close.
+ await page.evaluate(()=>{window.samePageDocumentMarker='home';});
+ for(const popup of ['search','cart']){
+  await click(popup);
+  assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),true);
+  await click('home');
+  assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),false,'Current Home closes '+popup);
+  assert.equal(await page.evaluate(()=>window.samePageDocumentMarker),'home','Current Home must not reload after '+popup);
+  assert.equal(page.url(),'https://store.test/');
+  assert.equal(await page.locator('.sf-dock-item.is-active').getAttribute('data-dock-view'),'home');
+ }
  // Gesture dispatch uses real DOM listeners and actual layout, not mock tabs.
  async function scrub(from,to,outside=false,hold=false){
   await page.evaluate(async ({from,to,outside,hold})=>{
@@ -182,6 +193,10 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  await scrub(1,2,true);
  assert.equal(await page.locator('.sf-dock-item.is-active').getAttribute('data-dock-view'),'search','Outside release cancels');
  await page.locator('.sf-search-cancel').click();
+ await click('search');
+ await scrub(1,0);
+ assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),false,'Scrubbing to current Home closes popup');
+ assert.equal(await page.evaluate(()=>window.samePageDocumentMarker),'home','Scrub close never reloads Home');
  // Freeze the real CSS transition mid-flight: it must move AND shrink while still visible.
  await page.evaluate(()=>document.querySelector('.sf-mobile-dock').classList.add('is-collapsed'));
  await page.evaluate(()=>new Promise(requestAnimationFrame));
@@ -299,7 +314,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  assert.equal(await page.locator('#wpadminbar').evaluate(el=>el.style.position),'absolute');
  // Disabled mobile dock uses the very same three header tools as desktop.
  // Full page loads start at their server-rendered selection, before any JavaScript.
- for(const [markup,path,index] of [[accountHeader,'myaccount',3],[header,'home',0]]){
+ for(const [markup,path,index] of [[accountHeader,'myaccount/edit-address',3],[header,'home',0]]){
   activeHeader=markup;
   await page.goto('https://store.test/'+path);
   const initial=await page.locator('.sf-dock-surface').evaluate(el=>{
@@ -311,6 +326,18 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
   await page.addScriptTag({content:js});
   await page.waitForTimeout(30);
   assert.equal(await page.locator('.sf-dock-surface').evaluate(el=>el.getAnimations().filter(a=>a.transitionProperty==='transform').length),0,'JS hydration must not slide the capsule from the left');
+  if(index===3){
+   await page.evaluate(()=>window.samePageDocumentMarker='account-subpage');
+   for(const popup of ['search','cart']){
+    await page.evaluate(popup=>window.sfActions[popup](),popup);
+    assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),true);
+    await page.locator('[data-dock-view="account"]').click();
+    assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),false,'Current Account closes '+popup);
+    assert.equal(await page.evaluate(()=>window.samePageDocumentMarker),'account-subpage','Account subpage must not reload');
+    assert.equal(page.url(),'https://store.test/myaccount/edit-address');
+    assert.equal(await page.locator('.sf-dock-item.is-active').getAttribute('data-dock-view'),'account');
+   }
+  }
  }
  activeHeader=noDockHeader;
  await page.goto('https://store.test/no-dock');

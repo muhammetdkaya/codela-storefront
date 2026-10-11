@@ -252,3 +252,9 @@ create parallel stores or second navigation listeners.
 - The same real header menu IconButton is reparented to the native dialog's top layer at its measured viewport x/y. Menu uses two animated CSS strokes rotating to X (280ms); closing rotates back. Its previous duplicate close X is hidden only for Menu, while Search/Cart keep their controls.
 - The header button is restored before focus returns; aria-expanded and accessible label track the actual state. Reduced-motion skips the transition. Styles still belong to shared navigation/UI Kit, not copied per page.
 - Browser regression checks 320/390/700/1024px, DOM-node identity, the same x/y, reverse click, reopen and reduced motion. GitHub validation/deployment and real-device acceptance are separate milestones.
+
+## Storefront 0.1.36 — current-page dock actions dismiss overlays (11 October 2026)
+
+- Home and Account are document links; Search and Cart are overlays. If the current document already matches the tapped Home or Account tab (`aria-current="page"` from WordPress, including account subpages), dismiss the open overlay without navigation/reload. Reselecting the same tab without an overlay is a no-op; selecting a different page keeps full navigation.
+- `dock-controller.js` owns both native click and hold/scrub release routing; it calls the existing overlay `close()` through an injected callback, never installs a second overlay listener or state. Existing scroll restoration, focus restoration, selected indicator, rapid Search/Cart switches and dock ghost-click handling are preserved.
+- Tests: native tap, current-page reselect, swipe to Home, Home/Search and Home/Cart, Account subpage/Search and Account subpage/Cart, selected tab and same-document markers. Theme + JS/CSS versions 0.1.36. Validate, FTPS deploy and physical-device acceptance must be confirmed independently.

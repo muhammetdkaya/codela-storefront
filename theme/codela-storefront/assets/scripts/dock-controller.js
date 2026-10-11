@@ -3,7 +3,7 @@
  * scrubbing. Uses callbacks to the sole overlay controller, never a second view
  * state. Instantiated once from the Storefront entrypoint.
  */
-export function createDockController({ getDialog, getCurrent, open }) {
+export function createDockController({ getDialog, getCurrent, open, close }) {
     let dockNode, dockHome, dockScrollFrame = 0, dockScrollTarget;
     const dockScrollPositions = new WeakMap();
     const $ = s => document.querySelector(s);
@@ -54,6 +54,19 @@ export function createDockController({ getDialog, getCurrent, open }) {
         });
         dock.style.setProperty('--sf-dock-index', Math.max(0, activeIndex));
         dock.classList.toggle('has-selection', activeIndex !== -1);
+    }
+    // Home/Account are actual pages, but tapping the page already underneath a
+    // popup should only dismiss the popup. WordPress renders aria-current on the
+    // matching page; never infer it from a URL (account subroutes also match).
+    function activateCurrentPage(item, event) {
+        const view = item?.dataset.dockView;
+        if (view !== 'home' && view !== 'account') return false;
+        if (!item.hasAttribute('aria-current')) return false;
+        if (event?.metaKey || event?.ctrlKey || event?.shiftKey || event?.altKey || event?.button > 0) return false;
+        event?.preventDefault?.();
+        if (getDialog()?.open) close();
+        else markDockActive(null);
+        return true;
     }
     // Hit testing uses stable, unscaled layout slots; animated icons cannot move targets.
     function dockCandidate(dock, x, y) {
@@ -157,7 +170,7 @@ export function createDockController({ getDialog, getCurrent, open }) {
             if (!item) return;
             const view = item.dataset.dockView;
             if (view === 'search' || view === 'cart') open(view, {currentTarget:item, preventDefault(){}});
-            else if (item.href) window.location.assign(item.href);
+            else if (!activateCurrentPage(item, event) && item.href) window.location.assign(item.href);
         };
         // Mobile browsers may cancel pointer capture when the finger leaves an <a>.
         // Track the original touch identifier instead and always receive touchend.
@@ -194,10 +207,15 @@ export function createDockController({ getDialog, getCurrent, open }) {
         window.addEventListener('resize',stop);
         dock.addEventListener('contextmenu',event => { if (press) event.preventDefault(); });
         dock.addEventListener('click',event => {
-            if (event.detail === 0 || Date.now() >= blockUntil) return;
-            event.preventDefault();
-            event.stopImmediatePropagation();
-            blockUntil = 0;
+            if (event.detail !== 0 && Date.now() < blockUntil) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                blockUntil = 0;
+                return;
+            }
+            // A native tap or keyboard activation on the current page must not
+            // perform a full document navigation just to close Search/Cart.
+            activateCurrentPage(event.target?.closest?.('.sf-dock-item'), event);
         },true);
         dock.querySelector('.sf-dock-handle')?.addEventListener('click',event => {
             setDockCollapsed(false);

@@ -24,6 +24,7 @@ const dock = createDockController({
     getDialog: () => overlay.getDialog(),
     getCurrent: () => overlay.getCurrent(),
     open: (name, event) => overlay.open(name, event),
+    close: () => overlay.close(),
 });
 const overlay = createOverlayController({
     $, config, t, searchFeature, cartFeature,
