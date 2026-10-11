@@ -1,4 +1,6 @@
 
+- **Storefront 0.1.39 doğrulama ve bağımsız canlı dağıtım başarılı:** Kaynak `b52c9b42d14f816f3f3d4c1d3d965193b5e760f3`, [GitHub Actions 38164126133](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38164126133), `validate=success`, `deploy=success`. Tema görsel yerine gerçek beyaz/gri/antrasit referans sayfasına güncellendi; mevcut Woo formları ve sosyal provider entegrasyonu olmayan durumda sahte social CTA eklenmedi. Fiziksel iPhone Safari ve canlı oturum açma/üyelik işlevlerinin kullanıcı tarafından kabulü halen ayrı aşamadır.
+
 ## Storefront 0.1.39 — reference-based LIGHT login page (11 October 2026)
 
 - User's dark auth screenshot is a **layout reference**, not permission to use dark/orange/tan surfaces. Implemented the actual theme, never generated an image: neutral white/gray UI, black/charcoal shared primary Button, gray input fills, dark neutral text, no orange-like accent. Guest-only CSS variables override store accent locally; store design elsewhere remains unchanged.
