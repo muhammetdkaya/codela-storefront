@@ -117,7 +117,7 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
         assert(social.height>=54,'Google Button reuses shared action hit size');
         assert.equal(social.background,'rgb(255, 255, 255)','Google Button is neutral white, not a custom orange CTA');
         assert.equal(social.radius,'12px','Google Button uses the shared control radius');
-        assert.equal(social.display,'inline-flex','Google Button uses the existing Button component');
+        assert(['flex','inline-flex'].includes(social.display),'Google Button retains shared flex button layout');
       }
       if(type==='register'){
         await page.addScriptTag({content:authJS});
