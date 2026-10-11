@@ -21,7 +21,7 @@ class Tests(unittest.TestCase):
         self.assertTrue(all(field["type"] in {"text","menu","product","checkbox"} for section in schema["sections"] for field in section["fields"]))
         self.assertIn("wp:codela/storefront-footer", (build.ROOT/"parts/footer.html").read_text())
         self.assertIn("codela_sf_footer", (build.ROOT/"inc/render.php").read_text())
-        self.assertIn("Version: 0.1.19", (build.ROOT/"style.css").read_text())
+        self.assertIn("Version: 0.1.20", (build.ROOT/"style.css").read_text())
     def test_fullscreen_panel_controls_do_not_show_automatic_focus_rings(self):
         css=(build.ROOT/"assets/storefront.css").read_text()
         js=(build.ROOT/"assets/storefront.js").read_text()
@@ -45,7 +45,7 @@ class Tests(unittest.TestCase):
         self.assertIn("dialog.classList.toggle('is-search-panel', name === 'search')",js)
         self.assertIn("#sf-panel.is-search-panel #sf-panel-title",css)
         self.assertNotIn(".sf-cart-link{",css)
-        self.assertIn("Version: 0.1.19", (build.ROOT/"style.css").read_text())
+        self.assertIn("Version: 0.1.20", (build.ROOT/"style.css").read_text())
     def test_balanced_header_static_panels_and_unified_white_search(self):
         render=(build.ROOT/'inc/render.php').read_text()
         js=(build.ROOT/'assets/storefront.js').read_text()
@@ -86,7 +86,7 @@ class Tests(unittest.TestCase):
         self.assertIn('syncSearchControls()',js)
         self.assertIn("'Search' => 'Ara'",locale)
         self.assertIn("'Clear search' => 'Aramayı temizle'",locale)
-        self.assertIn('Version: 0.1.19', (build.ROOT/'style.css').read_text())
+        self.assertIn('Version: 0.1.20', (build.ROOT/'style.css').read_text())
     def test_mobile_dock_and_right_header_menu(self):
         render=(build.ROOT/'inc/render.php').read_text()
         css=(build.ROOT/'assets/storefront.css').read_text()
@@ -120,7 +120,7 @@ class Tests(unittest.TestCase):
         self.assertIn('document.querySelectorAll(\'[data-panel="cart"]\')',js)
         self.assertIn("'Home' => 'Ana Sayfa'",locale)
         self.assertIn("'Cart' => 'Sepet'",locale)
-        self.assertIn("Version: 0.1.19", (build.ROOT/'style.css').read_text())
+        self.assertIn("Version: 0.1.20", (build.ROOT/'style.css').read_text())
     def test_dock_stays_interactive_above_search_and_cart(self):
         render=(build.ROOT/'inc/render.php').read_text()
         js=(build.ROOT/'assets/storefront.js').read_text()
@@ -164,7 +164,7 @@ class Tests(unittest.TestCase):
         self.assertIn("dialog.classList.toggle('is-cart-panel', name === 'cart')",js)
         self.assertIn('#sf-panel.is-cart-panel:has(.sf-mobile-dock) .sf-cart-bottom:not([hidden])',css)
         self.assertIn('prefers-reduced-motion:reduce',css)
-        self.assertIn('Version: 0.1.19',(build.ROOT/'style.css').read_text())
+        self.assertIn('Version: 0.1.20',(build.ROOT/'style.css').read_text())
     def test_single_row_footer_with_configured_legal_links(self):
         render=(build.ROOT/'inc/render.php').read_text()
         css=(build.ROOT/'assets/storefront.css').read_text()
@@ -182,7 +182,7 @@ class Tests(unittest.TestCase):
         self.assertIn('.sf-footer-inner{',css)
         self.assertIn('flex-wrap:nowrap',css)
         self.assertIn('.sf-footer-note{display:none}',css)
-        self.assertIn("Version: 0.1.19",(build.ROOT/'style.css').read_text())
+        self.assertIn("Version: 0.1.20",(build.ROOT/'style.css').read_text())
     def test_account_uses_native_woocommerce_authentication(self):
         account=(build.ROOT/'inc/account.php').read_text()
         php=(build.ROOT/'functions.php').read_text()
@@ -208,7 +208,7 @@ class Tests(unittest.TestCase):
         self.assertIn('woocommerce-MyAccount-navigation',css)
         self.assertIn('autocomplete', (build.ROOT/'inc/render.php').read_text())
         self.assertIn("'Welcome back' => 'Tekrar hoş geldiniz'",locale)
-        self.assertIn("Version: 0.1.19",(build.ROOT/'style.css').read_text())
+        self.assertIn("Version: 0.1.20",(build.ROOT/'style.css').read_text())
     def test_missing_secret_never_connects(self):
         with patch.dict(os.environ,{"FTP_PASSWORD":""}),patch.object(deploy.ftplib,"FTP_TLS") as ftp:
             self.assertEqual(deploy.main(),1);ftp.assert_not_called()

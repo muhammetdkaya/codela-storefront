@@ -125,15 +125,15 @@ function installDockGestures(dock) {
     let blockUntil = 0;
     const tabs = [...dock.querySelectorAll('.sf-dock-item')];
     const items = () => tabs;
-    const clearVisuals = () => {
+    const clearVisuals = (restoreSelection = true) => {
         dock.classList.remove('is-scrubbing', 'is-pressing');
-        markDockActive(current);
+        if (restoreSelection) markDockActive(current);
         items().forEach(item => item.classList.remove('is-pressed','is-preview'));
     };
-    const stop = () => {
+    const stop = (restoreSelection = true) => {
         if (press?.timer) clearTimeout(press.timer);
         press = null;
-        clearVisuals();
+        clearVisuals(restoreSelection);
     };
     const preview = item => {
         items().forEach(el => el.classList.toggle('is-preview', el === item));
@@ -176,10 +176,14 @@ function installDockGestures(dock) {
     };
     const finish = (event, x, y, id) => {
         if (!press || press.id !== id) return;
-        if (!press.dragging) { stop(); return; } // Native link click on simple tap.
+        if (!press.dragging) {
+            // Keep the touched capsule while the native click/navigation catches up.
+            stop(dockCandidate(dock, x, y) !== press.item);
+            return;
+        }
         if (event.cancelable !== false) event.preventDefault();
         const item = dockCandidate(dock, x, y);
-        stop();
+        stop(!item);
         blockUntil = Date.now() + 700; // Consume Safari's synthetic click.
         if (!item) return;
         const view = item.dataset.dockView;

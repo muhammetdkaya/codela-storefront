@@ -74,6 +74,22 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  const released=await page.locator('.sf-dock-surface').evaluate(el=>({scale:new DOMMatrix(getComputedStyle(el,'::before').transform).a,index:el.closest('.sf-mobile-dock').style.getPropertyValue('--sf-dock-index')}));
  assert.equal(released.scale,1,'Cancel releases capsule expansion');
  assert.equal(released.index,'0','Cancel restores the original active tab');
+ // Safari can delay its native click after touchend. The capsule must not return home in that gap.
+ for(const [view,index] of [['cart','2'],['search','1']]){
+  await page.evaluate(view=>{
+   const target=document.querySelector(`[data-dock-view="${view}"]`), b=target.getBoundingClientRect();
+   const touch=new Touch({identifier:72,target,clientX:b.left+b.width/2,clientY:b.top+b.height/2});
+   target.dispatchEvent(new TouchEvent('touchstart',{bubbles:true,touches:[touch],changedTouches:[touch]}));
+   target.dispatchEvent(new TouchEvent('touchend',{bubbles:true,cancelable:true,touches:[],changedTouches:[touch]}));
+  },view);
+  await page.waitForTimeout(100);
+  assert.equal(await dock.evaluate(el=>el.style.getPropertyValue('--sf-dock-index')),index,'Release retains destination before native click');
+  assert.equal(await dock.evaluate(el=>el.classList.contains('is-pressing')),false,'Release clears only press expansion');
+  await page.locator(`[data-dock-view="${view}"]`).evaluate(el=>el.click());
+  assert.equal(await dock.evaluate(el=>el.style.getPropertyValue('--sf-dock-index')),index,'Panel opens without bouncing the capsule back');
+ }
+ await page.locator('.sf-search-cancel').click();
+
 
  await click('search');
  assert.equal(await page.evaluate(()=>document.activeElement.classList.contains('sf-search-cancel')),true);

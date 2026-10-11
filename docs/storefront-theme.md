@@ -466,3 +466,10 @@ The plugin's `Codela\Includes\MyAccountLayout` is the source of truth for authen
 - Doğrulama: 14 Python testi, Node arama/footer/dock gesture, JS syntax ve gerçek PHP çıktılı Chromium navigation geçti. Yeni gerçek DOM touch testi: kapsül büyümesi, gezinmeden anında önizleme, cancel sonrası ölçek/aktif sekme geri dönüşü. Mobil görüntü incelendi; iPhone Safari'de native hissin birebir eşitliği veya performans ölçümü yapılmadı.
 - Yayın: kaynak `214ca8fc5b458984377a0c0e5dd995a2c0da4a85`, [Actions 38135019365](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38135019365) validate (nav/account browser dahil) + bağımsız tema FTPS deploy başarılı; log: `Storefront deployed; checks passed.` Eklenti değişmedi. Sıradaki iş: gerçek iPhone'da ürün görseli/metin üstünde barın okunurluğu, dokunma ve sürükleme hissini kontrol et.
 
+
+## Son doğrulanmış devam noktası — 11 Ekim 2026 / Storefront 0.1.20
+
+- Tema 0.1.19 → 0.1.20: touchend/pointerup sırasında kapsülün eski aktif sekmeye dönüp click ile tekrar hedefe kayması düzeltildi. Geçerli tap/scrub bırakışında sadece basılı görünüm temizlenir; hedef kapsül native click veya sayfa geçişine kadar korunur. İptal/dışarı bırakma eski aktif sekmeyi geri getirir.
+- Doğrulama: JS syntax, Node dock gesture, 14 Python testi ve gerçek PHP çıktılı Chromium navigation geçti. Regresyon: Ana Sayfa → Sepet (sağ), Sepet → Ara (sol); touchend sonrası click 100ms geciktirilince hedef indeks korunur, panel açıldığında aynı hedef kalır. Mevcut cancel/hold/scrub/safe-area/reduced-motion testleri geçti. Gerçek iPhone Safari elle test edilmedi.
+- Yayın: kaynak hazır, bağımsız tema CI/FTPS sonucu bekleniyor. Eklenti değişmedi. Sıradaki iş: yayın sonucunu kaydet; iPhone'da sekmelerde dokun-bırak ve sayfa geçişinde geri sıçrama olmadığını kontrol et.
+

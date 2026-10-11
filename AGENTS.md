@@ -2,6 +2,12 @@
 
 Bu dosya depo genelinde çalışan asistanlar içindir. Kullanıcının güncel talimatları önceliklidir.
 
+## Son doğrulanmış devam noktası — 11 Ekim 2026 / Storefront 0.1.20
+
+- Tema 0.1.19 → 0.1.20: touchend/pointerup sırasında kapsülün eski aktif sekmeye dönüp click ile tekrar hedefe kayması düzeltildi. Geçerli tap/scrub bırakışında sadece basılı görünüm temizlenir; hedef kapsül native click veya sayfa geçişine kadar korunur. İptal/dışarı bırakma eski aktif sekmeyi geri getirir.
+- Doğrulama: JS syntax, Node dock gesture, 14 Python testi ve gerçek PHP çıktılı Chromium navigation geçti. Regresyon: Ana Sayfa → Sepet (sağ), Sepet → Ara (sol); touchend sonrası click 100ms geciktirilince hedef indeks korunur, panel açıldığında aynı hedef kalır. Mevcut cancel/hold/scrub/safe-area/reduced-motion testleri geçti. Gerçek iPhone Safari elle test edilmedi.
+- Yayın: kaynak hazır, bağımsız tema CI/FTPS sonucu bekleniyor. Eklenti değişmedi. Sıradaki iş: yayın sonucunu kaydet; iPhone'da sekmelerde dokun-bırak ve sayfa geçişinde geri sıçrama olmadığını kontrol et.
+
 ## Son doğrulanmış devam noktası — 11 Ekim 2026 / Storefront 0.1.19
 
 - Tema 0.1.18 → 0.1.19. Kullanıcının App Store görseline göre alt bar hafif saydam açık yüzey, tek 20px backdrop blur + doygunluk, ince aydınlık kenar ve yumuşak gölge kullanır. Blur desteklenmiyorsa opak fallback; reduced-transparency tercihi de opak yüzeyi seçer. Blur/gölge animasyonu yok.
