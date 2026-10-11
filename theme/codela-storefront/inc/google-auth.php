@@ -180,7 +180,7 @@ add_action( 'admin_post_codela_sf_google_callback', 'codela_sf_google_callback' 
 
 /** WooCommerce invokes this after its native login/registration forms. */
 function codela_sf_google_button(): void {
-    if ( ! function_exists( 'is_account_page' ) || ! is_account_page()
+    if ( ! function_exists( 'is_account_page' ) || ( ! is_account_page() && empty( $GLOBALS['codela_sf_auth_overlay'] ) )
         || is_user_logged_in() || ! codela_sf_google_enabled() ) { return; }
     ?>
     <div class="sf-shell sf-auth-social">
