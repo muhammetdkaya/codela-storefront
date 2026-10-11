@@ -37,8 +37,13 @@ function is_wp_error( ...$args ) { return false; }
 function add_action(...$args) {}
 function wc_get_template( $name ) {
     if ( $name !== 'myaccount/form-login.php' ) { throw new RuntimeException('Unexpected template'); }
-    echo '<div class="sf-account-intro"><p>Manage your orders and account details.</p></div>';
-    echo '<div class="woocommerce"><form class="woocommerce-form woocommerce-form-login" method="post"><input type="text" name="username"><input type="password" name="password"><button type="submit" name="login">Log in</button></form></div>';
+    echo '<div class="sf-account-intro"><h1>My account</h1><div class="sf-auth-tabs" hidden></div></div>';
+    echo '<div class="woocommerce"><form class="woocommerce-form woocommerce-form-login" method="post">'
+        . '<p class="woocommerce-form-row form-row"><label for="test-login-username">Email address</label><input id="test-login-username" class="input-text" type="email" name="username"></p>'
+        . '<p class="woocommerce-form-row form-row"><label for="test-login-password">Password</label><span class="password-input"><input id="test-login-password" class="input-text" type="password" name="password"></span></p>'
+        . '<p class="form-row"><label class="woocommerce-form-login__rememberme"><input type="checkbox" name="rememberme">Remember me</label><button type="submit" name="login">Log in</button></p>'
+        . '<p class="woocommerce-LostPassword lost_password"><a href="/account/lost-password/">Lost password?</a></p>'
+        . '</form></div>';
 }
 require __DIR__.'/../theme/codela-storefront/inc/account.php';
 require __DIR__.'/../theme/codela-storefront/inc/render.php';
