@@ -136,6 +136,13 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
         assert(social.height>=54,'Google Button reuses shared action hit size');
         assert.equal(social.background,'rgb(255, 255, 255)','Google Button is neutral white, not a custom orange CTA');
         assert.equal(social.radius,'12px','Google Button uses the shared control radius');
+        if(social.border!=='1px')console.error('Secondary Button computed styles',social,await page.locator('.sf-auth-google').evaluate(el=>({
+         classes:el.className, borderStyle:getComputedStyle(el).borderTopStyle,
+         borderToken:getComputedStyle(el).getPropertyValue('--sf-ui-border'),
+         matchingRules:[...document.styleSheets].flatMap(sh=>{try{return [...sh.cssRules]}catch{return []}})
+          .filter(rule=>rule.selectorText&&el.matches(rule.selectorText)&&/border/.test(rule.cssText))
+          .map(rule=>rule.cssText.slice(0,450)).slice(-12)
+        })));
         assert.equal(social.border,'1px','Google secondary UI Kit Button must retain its visible border');
         assert.notEqual(social.borderColor,social.background,'Google outline must contrast with white surface');
         assert(['flex','inline-flex'].includes(social.display),'Google Button retains shared flex button layout');
