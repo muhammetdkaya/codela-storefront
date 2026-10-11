@@ -16,8 +16,9 @@ assert.match(html,/sf-ui-button--quiet" aria-busy="true" disabled/,'Loading vari
 assert.match(html,/<a class="sf-ui-button sf-ui-button--secondary" href="https:\/\/store.test\/read\/"/,'Same component renders a real link');
 assert.match(html,/data-icon="arrow-right"[^>]*><\/span><span class="sf-ui-button-label">Read/,'Leading icon is supported');
 const output=execFileSync(php,['tests/render-header.php'],{encoding:'utf8'});
-assert.equal((output.match(/sf-ui-icon-button--bare/g)||[]).length,4,'Header icon triggers reuse control');
-assert.equal((output.match(/sf-ui-icon-button--soft/g)||[]).length,2,'Menu and search X share soft close control');
+assert.equal((output.match(/sf-ui-icon-button--bare/g)||[]).length,3,'Store tools retain bare shared controls');
+assert.match(output,/sf-header-menu[\s\S]*?sf-ui-icon-button--soft/,'Header menu shares soft control with close');
+assert.equal((output.match(/sf-ui-icon-button--soft/g)||[]).length,3,'Menu and both close controls use soft variant');
 assert.equal((output.match(/sf-ui-icon-button--clear/g)||[]).length,1,'Search clear uses common control');
 assert.match(output,/<a[^>]*data-panel="cart"[^>]*>[\s\S]*?sf-badge/,'Cart badge preserved');
 assert.match(output,/sf-ui-nav-tab/,'Mobile tabs use named UI component');
@@ -27,6 +28,12 @@ const cssUI=fs.readFileSync('theme/codela-storefront/assets/styles/components.cs
 const tokens=fs.readFileSync('theme/codela-storefront/assets/styles/tokens.css','utf8');
 assert(tokens.includes('--sf-ui-hit:44px'));
 assert(cssUI.includes('.sf-ui-icon-button--soft'));
+assert(cssUI.includes('.sf-ui-icon-button--soft:is(:active,.is-pressed)'));
+const navigation=fs.readFileSync('theme/codela-storefront/assets/styles/navigation.css','utf8');
+assert(navigation.includes('.sf-shell .sf-header .sf-brand'));
+assert(navigation.includes('--sf-ui-header-surface'));
+assert(tokens.includes('--sf-ui-header-surface'));
+assert(navigation.includes('prefers-reduced-transparency:reduce'));
 assert(cssUI.includes('.sf-ui-button--primary'));
 assert(cssUI.includes('.sf-ui-button--secondary'));
 assert(cssUI.includes('.sf-ui-button--quiet'));
