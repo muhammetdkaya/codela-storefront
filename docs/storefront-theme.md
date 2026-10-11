@@ -499,3 +499,15 @@ Test fixtures load CSS in production order and 16 Python assertions cover file o
 `inc/ui.php` now includes the general `codela_sf_ui_button()` for true button or anchor semantics, with primary/secondary/quiet variants, submit/button/reset, optional icon placement, loading, disabled, escaped attributes, and disabled-link navigation suppression. The previous `codela_sf_ui_primary_link()` becomes a compatibility wrapper using this one renderer. `styles/components.css` owns every variant, pressed/focus/disabled/loading presentation and reduced-motion handling. Existing Head/Nav/Cart/X contract and plugin-owned logged-in account remain unchanged.
 
 `tests/render-ui.php` and `tests/ui-kit.cjs` cover accessible output; new Chromium `tests/ui-kit-browser.cjs` verifies shared sizes, visuals, semantic attributes, responsiveness and reduced-motion indicator. Workflow/16 Python assertions updated. Source creation is NOT deployment proof. Verify GitHub Actions validation and independent FTPS deployment; real Safari acceptance remains outstanding.
+
+
+## Codela UI Kit release verification — 11 October 2026 / 0.1.24
+
+The new shared UI Kit was released in three separately validated stages:
+- [0.1.22 / Actions 38144147938](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38144147938): shared PHP IconButton/primary CTA, CSS tokens and reusable pressable states, UI Kit security/accessibility contract.
+- [0.1.23 / Actions 38144588453](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38144588453): navigation CSS isolated and account CSS conditional, legacy layout substantially smaller.
+- [0.1.24 / Actions 38145114992](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38145114992): one generalized semantic Button renderer for link/button, primary/secondary/quiet, disabled/loading, optional icon; both unit and browser state tests.
+
+All three GitHub Actions runs finished with **validate + deploy success**. The 0.1.24 implementation commit is [566fc86](https://github.com/muhammetdkaya/codela-storefront/commit/566fc866c8ec5efd0c6d428d3e645d4bdf35d045). Shared controls live in `inc/ui.php` and `assets/styles/{tokens,components}.css`. Navigation and guest account CSS are separate and plugin-owned signed-in My Account remains untouched. The Codela plugin repo was not changed.
+
+**Remaining follow-up:** Gradually separate overlay/search/cart CSS and modularize feature JavaScript without changing production UI or WordPress Interactivity semantics. Add non-public UI Kit visual preview. Verify the physical iPhone Safari appearance/gestures manually (CI Chromium passing is not device acceptance). Before a new UI feature, read `docs/design-system.md` and reuse the existing components.
