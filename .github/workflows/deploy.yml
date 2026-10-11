@@ -26,6 +26,7 @@ jobs:
           node tests/search-panel.cjs
           node tests/format.cjs
           node tests/ui-kit.cjs
+          node tests/google-auth.cjs
           node tests/footer.cjs
           node tests/dock-gesture.cjs
           python3 tests/package.py

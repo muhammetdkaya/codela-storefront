@@ -299,3 +299,33 @@ body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerc
 @media(prefers-reduced-motion:reduce){
  body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form :is(input.input-text,input[type=email],input[type=password]){transition:none!important}
 }
+
+
+/* Google OAuth button lives only on the guest account, with the existing
+   global sf-ui-button--secondary primitive. This block owns layout, not a new
+   button component, palette or press animation. */
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-auth-social{
+  max-width:100%;margin:23px auto 0;padding:0;
+  display:flex;flex-direction:column;align-items:stretch;gap:18px;
+}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-auth-divider{
+  display:flex;align-items:center;gap:18px;
+  width:100%;font-size:13px;color:#848890;
+}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-auth-divider::before,
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-auth-divider::after{
+  content:"";height:1px;background:var(--sf-ui-border);flex:1;
+}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-auth-social .sf-auth-google{
+  width:100%;gap:12px;margin:0;font-size:14px;font-weight:500;
+}
+.sf-auth-google .sf-google-glyph{
+  display:inline-grid;place-items:center;width:22px;height:22px;
+  font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:700;
+  color:var(--sf-ui-control-ink);
+}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-google-error{
+  max-width:560px;margin:0 auto 18px;padding:12px 14px;
+  border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);
+  color:var(--sf-ui-control-ink);background:#f7f7f8;font-size:13px;
+}
