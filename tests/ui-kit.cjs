@@ -47,4 +47,5 @@ console.log('Codela theme UI Kit PHP output, accessibility, escape, shared primi
 
 const menuSvg=fs.readFileSync('theme/codela-storefront/assets/icons/menu.svg','utf8');
 assert(menuSvg.includes('M4 8h16M4 16h16'),'Modern menu has two strokes');
-assert.match(output,/assets\/icons\/menu\.svg\?ver=[a-f0-9]{8}/,'Icon URL includes a content fingerprint');
+assert.match(output,/sf-menu-trigger[^>]*>[\s\S]*?class="sf-menu-mark"[^>]*><span><\/span><span><\/span>/,'Menu has two animatable strokes');
+assert.match(output,/assets\/icons\/search\.svg\?ver=[a-f0-9]{8}/,'Other icon URLs keep cache fingerprints');
