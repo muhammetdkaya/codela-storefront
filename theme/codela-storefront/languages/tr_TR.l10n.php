@@ -70,6 +70,7 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'Register' => 'Kayıt Ol',
 'Google login' => 'Google ile giriş',
 'Continue with Google' => 'Google ile devam et',
+'Google sign-in is not configured yet.' => 'Google ile giriş henüz ayarlanmadı.',
 'or' => 'veya',
 'Google sign-in was not completed. Try again or use your existing password.' => 'Google ile giriş tamamlanamadı. Tekrar deneyin veya mevcut şifrenizi kullanın.',
 'Create a Google Cloud OAuth client of type Web application. Add this exact authorized redirect URI:' => 'Google Cloud üzerinden Web uygulaması türünde OAuth istemcisi oluşturun. Yetkili yönlendirme URI alanına aşağıdaki adresi aynen ekleyin:',
