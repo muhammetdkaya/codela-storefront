@@ -1,23 +1,29 @@
 <?php
 /**
- * Storefront-owned account presentation. WooCommerce owns the forms,
- * nonce validation, registration settings and authentication lifecycle.
+ * Storefront owns presentation of the GUEST WooCommerce login screen only.
+ * Authenticated account/dashboard/navigation are owned by WooCommerce and by
+ * the Codela MyAccountLayout integration when enabled.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-/** Print a short, accessible introduction without overriding Woo templates. */
-function codela_sf_account_intro( bool $signed_in = false ): void {
-    if ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) { return; }
+/** Display a welcome heading exclusively above the native guest login form. */
+function codela_sf_account_intro(): void {
+    if (
+        ! function_exists( 'is_account_page' )
+        || ! is_account_page()
+        || is_user_logged_in()
+    ) {
+        return;
+    }
     ?>
     <header class="sf-account-intro">
         <span class="sf-account-eyebrow"><?php esc_html_e( 'YOUR ACCOUNT', 'codela-storefront' ); ?></span>
-        <h1><?php echo esc_html( $signed_in ? __( 'My account', 'codela-storefront' ) : __( 'Welcome back', 'codela-storefront' ) ); ?></h1>
-        <p><?php echo esc_html( $signed_in ? __( 'View your orders, addresses and account details.', 'codela-storefront' ) : __( 'Sign in to follow your orders and manage your details.', 'codela-storefront' ) ); ?></p>
+        <h1><?php esc_html_e( 'Welcome back', 'codela-storefront' ); ?></h1>
+        <p><?php esc_html_e( 'Sign in to follow your orders and manage your details.', 'codela-storefront' ); ?></p>
     </header>
     <?php
 }
 
 add_action( 'woocommerce_before_customer_login_form', 'codela_sf_account_intro', 5 );
-add_action( 'woocommerce_before_account_navigation', static function(): void {
-    codela_sf_account_intro( true );
-}, 5 );
+// Deliberately NO woocommerce_before_account_navigation hook:
+// Codela owns the signed-in profile, orders, tracking and account menu.

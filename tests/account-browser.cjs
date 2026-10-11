@@ -7,7 +7,7 @@ const render=env=>execFileSync(process.env.PHP_BIN||'php',['tests/render-account
 const intro=render({});
 const signed=render({ACCOUNT_SIGNED_IN:'1'});
 assert(intro.includes('Welcome back'));
-assert(signed.includes('My account'));
+assert.equal(signed,'','Signed-in Woo account never receives a duplicate theme header');
 assert.equal(render({ACCOUNT_OUTSIDE:'1'}),'','Do not inject account heading elsewhere');
 const fields='<p class="woocommerce-form-row form-row"><label for="username">Email address</label><input class="woocommerce-Input input-text" id="username" type="email" autocomplete="username" required></p>'+
 '<p class="woocommerce-form-row form-row"><label for="password">Password</label><input class="woocommerce-Input input-text" id="password" type="password" autocomplete="current-password" required></p>'+
@@ -31,7 +31,7 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
        focus:document.activeElement.tagName};
     });
     assert(!info.overflows,type+' must not overflow viewport '+width);
-    assert.equal(info.titleVisible,false,'Duplicated WP title hidden with intro present');
+    assert.equal(info.titleVisible,type==='logged', 'WP title shown only in vanilla Woo fallback; guest intro has own heading');
     if(type==='login'||type==='register'){
       assert.equal(await page.locator('form.woocommerce-form').count(),type==='login'?1:2,'Native Woo forms remain present');
       const input=page.locator('#username');
@@ -48,8 +48,35 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
       else assert(b.x>a.x,'Desktop content beside nav');
     }
    }
+   // Codela plugin owns the signed-in dashboard and its full-screen layout.
+   // The theme must not inject a header, card, navigation, or spacing on it.
+   const pluginMarkup='<div class="woocommerce"><div class="cdl-account-navigation">'+
+    '<div class="cdl-account-navigation__mobile"><header><h2>Hesabım</h2></header><p>MERHABA</p><strong>titan</strong></div></div>'+
+    '<div class="woocommerce-MyAccount-content"><section class="cdl-account-dashboard"><p>Recent order</p></section></div></div>';
+   await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head>'+
+    '<body class="woocommerce-account logged-in codela-my-account-layout codela-account-dashboard-home"><main class="sf-content">'+
+    '<h1 class="wp-block-post-title">Hesabım</h1>'+pluginMarkup+'</main></body></html>');
+   const plugin=await page.evaluate(()=>{
+    const c=document.querySelector('.woocommerce-MyAccount-content');
+    return {
+      heading:getComputedStyle(document.querySelector('.wp-block-post-title')).display,
+      pluginHeading:document.querySelectorAll('.cdl-account-navigation h2').length,
+      themeHeading:document.querySelectorAll('.sf-account-intro').length,
+      pluginNav:document.querySelectorAll('.cdl-account-navigation').length,
+      contentBorder:getComputedStyle(c).borderTopWidth,
+      contentPadding:getComputedStyle(c).paddingTop,
+      bodyOverflow:document.documentElement.scrollWidth>innerWidth+1
+    };
+   });
+   assert.equal(plugin.heading,'none','Only WP duplicate title is hidden on Codela account');
+   assert.equal(plugin.pluginHeading,1,'Codela account heading remains');
+   assert.equal(plugin.themeHeading,0,'No extra theme heading');
+   assert.equal(plugin.pluginNav,1,'Codela account navigation preserved');
+   assert.equal(plugin.contentBorder,'0px','Theme must not wrap plugin content in a new card');
+   assert.equal(plugin.contentPadding,'0px','Theme must not override plugin content padding');
+   assert.equal(plugin.bodyOverflow,false,'No extra horizontal overflow in Codela account');
    await page.close();
   }
-  console.log('Woo account intro, login/register and dashboard responsive layout: passed.');
+  console.log('Guest auth + vanilla Woo fallback + Codela signed-in account isolation: passed.');
  } finally {await browser.close();}
 })().catch(error=>{console.error(error);process.exit(1)});
