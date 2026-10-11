@@ -1,0 +1,99 @@
+/**
+ * Theme UI Kit primitives. Variants share hit targets, pointer responses,
+ * disabled states and keyboard focus. Page layout belongs elsewhere.
+ */
+.sf-shell .sf-ui-icon-button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:none;
+  position:relative;
+  width:var(--sf-ui-hit);
+  height:var(--sf-ui-hit);
+  min-width:var(--sf-ui-hit);
+  min-height:var(--sf-ui-hit);
+  padding:0;
+  margin:0;
+  border:0;
+  border-radius:var(--sf-ui-control-radius);
+  background:transparent;
+  color:var(--sf-ui-control-ink);
+  text-decoration:none!important;
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.sf-shell .sf-ui-icon-button .sf-icon{
+  width:var(--sf-ui-icon);
+  height:var(--sf-ui-icon);
+  transition:transform var(--sf-ui-motion-press) var(--sf-ui-ease-press);
+}
+.sf-shell .sf-ui-icon-button:is(:active,.is-pressed) .sf-icon{transform:scale(.9)}
+.sf-shell .sf-ui-icon-button--soft,
+#sf-panel button.sf-ui-icon-button--soft{
+  border-radius:var(--sf-ui-pill);
+  background:var(--sf-ui-control-soft)!important;
+  color:var(--sf-ui-control-ink);
+  box-shadow:none!important;
+}
+#sf-panel button.sf-ui-icon-button--soft .sf-icon{
+  width:var(--sf-ui-icon-close);
+  height:var(--sf-ui-icon-close);
+  filter:brightness(0);
+}
+.sf-shell .sf-ui-icon-button--clear,
+#sf-panel button.sf-ui-icon-button--clear{
+  border-radius:var(--sf-ui-pill);
+  background:radial-gradient(circle,var(--sf-ui-control-clear) 11px,transparent 11.5px)!important;
+  box-shadow:none!important;
+}
+#sf-panel button.sf-ui-icon-button--clear .sf-icon{
+  width:var(--sf-ui-icon-clear);
+  height:var(--sf-ui-icon-clear);
+  filter:brightness(0);
+  opacity:.8;
+}
+.sf-shell .sf-ui-icon-button[hidden]{display:none!important}
+.sf-shell :is(.sf-ui-icon-button,.sf-ui-button,.sf-ui-pressable):focus-visible{
+  outline:2px solid var(--sf-ui-accent);
+  outline-offset:3px;
+}
+.sf-shell :is(.sf-ui-icon-button,.sf-ui-button,.sf-ui-pressable):disabled,
+.sf-shell :is(.sf-ui-icon-button,.sf-ui-button,.sf-ui-pressable)[aria-disabled="true"]{
+  opacity:.4;
+  cursor:default;
+}
+.sf-shell .sf-ui-button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  min-height:var(--sf-ui-action-height);
+  padding:17px 24px;
+  border:0;
+  border-radius:var(--sf-ui-control-radius);
+  font:inherit;
+  font-weight:inherit;
+  text-decoration:none!important;
+  cursor:pointer;
+  transition:filter var(--sf-ui-motion-press) var(--sf-ui-ease-press),
+    transform var(--sf-ui-motion-press) var(--sf-ui-ease-press);
+}
+.sf-shell .sf-ui-button--primary{
+  background:var(--sf-ui-ink);
+  color:#fff;
+}
+.sf-shell .sf-ui-button--primary .sf-icon{filter:invert(1)}
+.sf-shell .sf-ui-button:active{transform:scale(.985);filter:brightness(1.08)}
+.sf-shell .sf-ui-pressable{
+  transition:transform var(--sf-ui-motion-press) var(--sf-ui-ease-press);
+}
+.sf-shell .sf-ui-pressable:active:not(:disabled){transform:scale(.96)}
+/* Tabs intentionally use the Navigation Controller's custom press/scrub
+   behavior; the shared token defines response speed, not a second handler. */
+.sf-shell .sf-ui-nav-tab{touch-action:pan-y}
+@media(prefers-reduced-motion:reduce){
+  .sf-shell .sf-ui-icon-button .sf-icon,
+  .sf-shell .sf-ui-button,
+  .sf-shell .sf-ui-pressable{transition:none!important}
+}

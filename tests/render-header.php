@@ -9,6 +9,7 @@ function esc_html__( $s, ...$args ) { return htmlspecialchars($s, ENT_QUOTES); }
 function esc_html_e( $s, ...$args ) { echo esc_html__($s); }
 function esc_attr_e( $s, ...$args ) { echo esc_html__($s); }
 function esc_attr( $s ) { return esc_html__($s); }
+function sanitize_html_class( $value ) { return preg_replace('/[^A-Za-z0-9_-]/', '', (string)$value); }
 function esc_html( $s ) { return esc_html__($s); }
 function esc_url( $s ) { return esc_html__($s); }
 function esc_url_raw( $s ) { return $s; }

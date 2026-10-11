@@ -1,3 +1,26 @@
+# ACTIVE: Codela Storefront UI Kit architecture (from 0.1.22)
+
+All new theme controls MUST reuse the primitives documented in
+[`docs/design-system.md`](docs/design-system.md). Do not copy Header icon,
+popup X, search clear, checkout/primary action or tap animation CSS into
+individual pages. The shared files are
+`inc/ui.php`, `assets/styles/tokens.css`, `assets/styles/components.css`;
+specialized navigation/search/cart behavior remains feature-owned until
+independently tested modules replace it. Source CSS import order is
+tokens → storefront layout → components. Use `sf-ui-*` namespace and
+semantic HTML. Preserve the latest user-approved mobile Header and dock
+appearance, gestures, collapsed handle and accessibility.
+
+STRICT BOUNDARY: signed-in Codela account/orders/shipping UI is owned by
+the plugin and must NEVER receive this theme's shared account/card/nav
+styling. Guest sign-in presentation is theme-owned. Existing Codela theme
+bridge supports design variables; do not create an independent competing
+settings panel.
+
+For all substantial UI changes: update source + shared contract tests +
+design-system documentation; run GitHub Actions validate AND deploy,
+and do not claim real iPhone acceptance from a desktop browser test.
+
 # Codela — çalışma ve devamlılık kuralları
 
 Bu dosya depo genelinde çalışan asistanlar içindir. Kullanıcının güncel talimatları önceliklidir.

@@ -19,6 +19,7 @@ jobs:
           find theme -name '*.php' -type f -print0 | xargs -0 -n1 php -l
           node --input-type=module --check < theme/codela-storefront/assets/storefront.js
           node tests/search-panel.cjs
+          node tests/ui-kit.cjs
           node tests/footer.cjs
           node tests/dock-gesture.cjs
           python3 tests/package.py

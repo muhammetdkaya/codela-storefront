@@ -1,0 +1,37 @@
+/**
+ * Codela Storefront design system — single semantic source for theme controls.
+ *
+ * Component names are sf-ui-* to avoid styling the independent Codela plugin.
+ * Theme style/theme.json own site palette; Codela plugin keeps its own modules.
+ */
+:root {
+  --sf-ui-ink:var(--sf-ink,#22231f);
+  --sf-ui-surface:#ffffff;
+  --sf-ui-surface-muted:#f3f3f3;
+  --sf-ui-control-soft:#f2f2f2;
+  --sf-ui-control-ink:#202020;
+  --sf-ui-control-clear:#d8d8d8;
+  --sf-ui-accent:var(--sf-accent,#656e52);
+  --sf-ui-border:var(--sf-line,#deded5);
+  --sf-ui-hit:44px;
+  --sf-ui-icon:22px;
+  --sf-ui-icon-close:19px;
+  --sf-ui-icon-clear:12px;
+  --sf-ui-action-height:54px;
+  --sf-ui-control-radius:var(--cdl-ct-radius,12px);
+  --sf-ui-pill:999px;
+  --sf-ui-motion-press:140ms;
+  --sf-ui-motion-selection:220ms;
+  --sf-ui-motion-panel:160ms;
+  --sf-ui-motion-dock:480ms;
+  --sf-ui-ease-press:cubic-bezier(.2,.8,.2,1);
+  --sf-ui-ease-dock:cubic-bezier(.32,0,.24,1);
+}
+@media (prefers-reduced-motion:reduce){
+  :root{
+    --sf-ui-motion-press:0ms;
+    --sf-ui-motion-selection:0ms;
+    --sf-ui-motion-panel:0ms;
+    --sf-ui-motion-dock:0ms;
+  }
+}

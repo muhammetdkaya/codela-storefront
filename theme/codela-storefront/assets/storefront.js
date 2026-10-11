@@ -393,7 +393,7 @@ async function search() {
         if (sequence !== searchSequence || current !== 'search') return;
         results.innerHTML = products.length ? products.map(p => `<a class="sf-result" href="${safeURL(p.url)}"><img src="${safeURL(p.image)}" alt="" width="80" height="100"><div><h3>${escape(decode(p.name))}</h3><p>${escape(decode(p.price))}</p><small>${escape(p.sku)}</small></div></a>`).join('') : `<p>${escape(t('No matching products.'))}</p>`;
     } catch (error) {
-        if (error.name !== 'AbortError' && sequence === searchSequence && current === 'search') results.innerHTML = `<p>${escape(t('Something went wrong. Please try again.'))}</p><button class="sf-retry-search">${escape(t('Retry'))}</button>`;
+        if (error.name !== 'AbortError' && sequence === searchSequence && current === 'search') results.innerHTML = `<p>${escape(t('Something went wrong. Please try again.'))}</p><button class="sf-retry-search sf-ui-pressable">${escape(t('Retry'))}</button>`;
     } finally { if (sequence === searchSequence) results.setAttribute('aria-busy','false'); }
 }
 async function requestCart(path = '', payload = null) {
@@ -418,7 +418,7 @@ function paintCart(data) {
         const limits = item.quantity_limits || {minimum:1,maximum:9999,multiple_of:1,editable:true};
         const subtotal = Number(item.totals.line_subtotal) + (config().taxInclusive ? Number(item.totals.line_subtotal_tax) : 0);
         const variants = (item.variation || []).map(v => `${escape(decode(v.attribute))}: ${escape(decode(v.value))}`).join(' · ');
-        return `<article class="sf-cart-row"><a href="${safeURL(item.permalink)}">${item.images[0] ? `<img class="sf-cart-photo" src="${safeURL(item.images[0].thumbnail || item.images[0].src)}" alt="${escape(decode(item.name))}" width="110" height="140">` : ''}</a><div><h3><a href="${safeURL(item.permalink)}">${escape(decode(item.name))}</a></h3>${variants ? `<p>${variants}</p>` : ''}<p>${escape(money(subtotal,item.totals))}</p><div class="sf-quantity"><div class="sf-stepper"><button data-key="${escape(item.key)}" data-qty="${item.quantity - limits.multiple_of}" aria-label="${escape(t('Decrease quantity'))}" ${!limits.editable || item.quantity - limits.multiple_of < limits.minimum ? 'disabled':''}>−</button><span aria-label="${escape(t('Quantity'))}">${item.quantity}</span><button data-key="${escape(item.key)}" data-qty="${item.quantity + limits.multiple_of}" aria-label="${escape(t('Increase quantity'))}" ${!limits.editable || item.quantity + limits.multiple_of > limits.maximum ? 'disabled':''}>+</button></div><button class="sf-remove" data-remove="${escape(item.key)}">${escape(t('Remove'))}</button></div></div></article>`;
+        return `<article class="sf-cart-row"><a href="${safeURL(item.permalink)}">${item.images[0] ? `<img class="sf-cart-photo" src="${safeURL(item.images[0].thumbnail || item.images[0].src)}" alt="${escape(decode(item.name))}" width="110" height="140">` : ''}</a><div><h3><a href="${safeURL(item.permalink)}">${escape(decode(item.name))}</a></h3>${variants ? `<p>${variants}</p>` : ''}<p>${escape(money(subtotal,item.totals))}</p><div class="sf-quantity"><div class="sf-stepper"><button class="sf-ui-pressable" data-key="${escape(item.key)}" data-qty="${item.quantity - limits.multiple_of}" aria-label="${escape(t('Decrease quantity'))}" ${!limits.editable || item.quantity - limits.multiple_of < limits.minimum ? 'disabled':''}>−</button><span aria-label="${escape(t('Quantity'))}">${item.quantity}</span><button class="sf-ui-pressable" data-key="${escape(item.key)}" data-qty="${item.quantity + limits.multiple_of}" aria-label="${escape(t('Increase quantity'))}" ${!limits.editable || item.quantity + limits.multiple_of > limits.maximum ? 'disabled':''}>+</button></div><button class="sf-remove sf-ui-pressable" data-remove="${escape(item.key)}">${escape(t('Remove'))}</button></div></div></article>`;
     }).join('') : `<div class="sf-empty"><h3>${escape(t('Your cart is empty.'))}</h3></div>`;
     $('.sf-cart-bottom').hidden = current !== 'cart' || !data.items.length;
     const subtotal = Number(data.totals.total_items) + (config().taxInclusive ? Number(data.totals.total_items_tax) : 0);
@@ -431,7 +431,7 @@ async function refreshCart() {
     if (!cartData) $('#sf-cart-items').textContent = t('Loading…');
     cartPending = (async () => {
         try { paintCart(await requestCart()); }
-        catch { $('#sf-cart-items').innerHTML = `<p>${escape(t('Something went wrong. Please try again.'))}</p><button class="sf-retry-cart">${escape(t('Retry'))}</button><p><a href="${safeURL(config().cart)}">${escape(t('Your cart'))}</a></p>`; $('.sf-cart-bottom').hidden = true; }
+        catch { $('#sf-cart-items').innerHTML = `<p>${escape(t('Something went wrong. Please try again.'))}</p><button class="sf-retry-cart sf-ui-pressable">${escape(t('Retry'))}</button><p><a href="${safeURL(config().cart)}">${escape(t('Your cart'))}</a></p>`; $('.sf-cart-bottom').hidden = true; }
         finally { cartPending = null; }
     })();
     return cartPending;
@@ -508,7 +508,7 @@ function init() {
     const menu = $('#sf-menu .sf-menu-list');
     menu?.classList.add('enhanced');
     menu?.querySelectorAll('.sub-menu').forEach(sub => {
-        const button = document.createElement('button'); button.className = 'sf-submenu-toggle'; button.textContent = '›'; button.setAttribute('aria-label', sub.parentElement.querySelector('a').textContent); button.setAttribute('aria-expanded','false');
+        const button = document.createElement('button'); button.className = 'sf-submenu-toggle sf-ui-pressable'; button.textContent = '›'; button.setAttribute('aria-label', sub.parentElement.querySelector('a').textContent); button.setAttribute('aria-expanded','false');
         button.addEventListener('click', () => {menuPath.push(sub.parentElement);paintMenu();animatePanelContent($('#sf-menu'));$('#sf-menu .sf-back').focus({preventScroll:true});});
         sub.before(button);
     });

@@ -12,7 +12,7 @@ body{margin:0;-webkit-font-smoothing:antialiased}
 .sf-brand a{display:block}
 .sf-brand .custom-logo{max-height:42px;width:auto;max-width:180px;object-fit:contain}
 .sf-actions{display:flex;gap:6px;flex-shrink:0}
-.sf-icon-button{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;position:relative;text-decoration:none}
+/* Icon control base and pressed feedback are defined in styles/components.css. */
 .sf-icon{width:22px;height:22px;display:block}
 .sf-badge{position:absolute;top:2px;right:0;min-width:14px;height:14px;font-size:10px;display:grid;place-items:center;border-radius:50%;background:var(--sf-ink);color:white}
 .sf-badge:empty{display:none}
@@ -56,8 +56,7 @@ body{margin:0;-webkit-font-smoothing:antialiased}
 .sf-cart-bottom>*{max-width:780px;margin:0 auto}
 .sf-subtotal{display:flex;justify-content:space-between;font-size:20px}
 .sf-cart-bottom p{font-size:12px;color:var(--sf-muted);margin:12px auto}
-.sf-primary{display:flex;align-items:center;justify-content:center;gap:16px;background:var(--sf-ink);color:white;padding:17px 24px;min-height:54px;text-decoration:none!important;border-radius:var(--cdl-ct-radius,12px)}
-.sf-primary .sf-icon{filter:invert(1)}
+/* Primary action styling is shared by all .sf-ui-button--primary instances. */
 .sf-status{font-size:13px;margin:0;padding:0 max(5vw,24px);color:var(--sf-muted);flex-shrink:0}
 .sf-status:not(:empty){padding-top:12px;padding-bottom:12px}
 .sf-empty{padding:50px 0;text-align:center}
@@ -240,27 +239,11 @@ body{margin:0;-webkit-font-smoothing:antialiased}
   font-size:20px;
   font-weight:400;
 }
+/* The same soft IconButton renders the menu/cart X and the search X.
+   Only toolbar flex sizing belongs here. */
 #sf-panel button.sf-close,
 #sf-panel.is-search-panel .sf-search-cancel{
-  display:grid;
-  place-items:center;
-  width:var(--sf-overlay-control-size);
-  height:var(--sf-overlay-control-size);
   flex:0 0 var(--sf-overlay-control-size);
-  padding:0;
-  border:0!important;
-  border-radius:50%;
-  background:#f2f2f2!important;
-  color:#202020;
-  box-shadow:none!important;
-  -webkit-appearance:none;
-  appearance:none;
-}
-#sf-panel button.sf-close .sf-icon,
-#sf-panel.is-search-panel .sf-search-cancel .sf-icon{
-  width:19px;
-  height:19px;
-  filter:brightness(0);
 }
 #sf-panel.is-search-panel .sf-panel-top{display:none!important}
 #sf-panel.is-search-panel #sf-search.sf-search-body{
@@ -339,25 +322,7 @@ body{margin:0;-webkit-font-smoothing:antialiased}
   appearance:none;
   display:none;
 }
-#sf-panel.is-search-panel .sf-search-clear{
-  display:grid;
-  place-items:center;
-  flex:none;
-  width:44px;
-  height:44px;
-  padding:0;
-  margin-right:-10px;
-  background:radial-gradient(circle,#d8d8d8 11px,transparent 11.5px);
-  border:0;
-  border-radius:50%;
-  box-shadow:none;
-}
-#sf-panel.is-search-panel .sf-search-clear .sf-icon{
-  width:12px;
-  height:12px;
-  filter:brightness(0);
-  opacity:.8;
-}
+#sf-panel.is-search-panel .sf-search-clear{margin-right:-10px}
 #sf-panel.is-search-panel .sf-search-cancel:focus-visible,
 #sf-panel.is-search-panel .sf-search-clear:focus-visible{
   outline:2px solid var(--sf-accent,#656e52)!important;
@@ -515,7 +480,7 @@ body{margin:0;-webkit-font-smoothing:antialiased}
     transform-origin:50% 100%;
     transform:translate3d(0,var(--sf-dock-travel),0) scale(var(--sf-dock-scale));
     opacity:1;
-    transition:transform 480ms cubic-bezier(.32,0,.24,1),opacity 100ms ease;
+    transition:transform var(--sf-ui-motion-dock) var(--sf-ui-ease-dock),opacity 100ms ease;
   }
   .sf-dock-surface::before{
     content:'';
@@ -529,7 +494,7 @@ body{margin:0;-webkit-font-smoothing:antialiased}
     opacity:0;
     z-index:-1;
     transform:translate3d(calc(var(--sf-dock-index)*100%),0,0) scale(var(--sf-dock-press-scale,1));
-    transition:transform 220ms cubic-bezier(.2,.8,.2,1),opacity 140ms ease;
+    transition:transform var(--sf-ui-motion-selection) var(--sf-ui-ease-press),opacity 140ms ease;
     pointer-events:none;
   }
   .sf-mobile-dock.has-selection .sf-dock-surface::before{opacity:1}
@@ -557,7 +522,7 @@ body{margin:0;-webkit-font-smoothing:antialiased}
     width:22px;
     height:22px;
     filter:brightness(0);
-    transition:transform 140ms cubic-bezier(.2,.8,.2,1);
+    transition:transform var(--sf-ui-motion-press) var(--sf-ui-ease-press);
   }
   .sf-mobile-dock .sf-dock-item.is-pressed .sf-icon,
   .sf-mobile-dock .sf-dock-item:active .sf-icon{transform:scale(1.06)}
@@ -582,7 +547,7 @@ body{margin:0;-webkit-font-smoothing:antialiased}
   }
   .sf-mobile-dock.is-collapsed .sf-dock-surface{
     opacity:0;
-    transition:transform 480ms cubic-bezier(.32,0,.24,1),opacity 100ms ease 380ms;
+    transition:transform var(--sf-ui-motion-dock) var(--sf-ui-ease-dock),opacity 100ms ease 380ms;
   }
   .sf-mobile-dock .sf-dock-handle{
     display:grid;
@@ -637,8 +602,7 @@ body{margin:0;-webkit-font-smoothing:antialiased}
 @media(min-width:701px){.sf-mobile-dock{display:none!important}}
 /* Reset initial pointer focus after the search control rule; Tab removes this class. */
 #sf-panel .sf-close.sf-initial-focus:focus-visible{outline:none!important;box-shadow:none!important}
-.sf-header .sf-icon-button .sf-icon{transition:transform 120ms ease}
-.sf-header .sf-icon-button:active .sf-icon{transform:scale(.9)}
+/* All icon-button tap feedback is now shared by styles/components.css. */
 @media(prefers-reduced-motion:reduce){
   .sf-shell *, .sf-shell *::before, .sf-shell *::after{transition:none!important;animation:none!important}
 }
