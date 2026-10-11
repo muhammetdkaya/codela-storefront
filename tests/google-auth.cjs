@@ -7,6 +7,7 @@ const result=JSON.parse(execFileSync(process.env.PHP_BIN||'php',['tests/google-a
 assert.equal(result.enabled,true,'Complete HTTPS credentials enable Google login');
 assert.equal(result.callback,'https://store.test/wp-admin/admin-post.php?action=codela_sf_google_callback');
 assert.equal(result.button,true,'Configured Google link uses the common secondary Button');
+assert.equal(result.configured_has_no_notice,true,'Configured Google link bypasses the setup tip');
 assert.equal(result.reject_unverified,'invalid_google_identity');
 assert.equal(result.reject_missing_sub,'invalid_google_identity');
 assert.equal(result.new,'customer','New verified Google identity becomes Woo customer');
@@ -19,7 +20,11 @@ assert.equal(result.allow_hosted_authority,'customer','Google-hosted domain is a
 assert.equal(result.link_existing_gmail,'customer','Verified Gmail can reuse a nonprivileged customer account');
 assert.equal(result.reject_admin,'privileged_account','Never allow Google to log in as store admin');
 assert.equal(result.disabled,true,'No secret disables feature');
-assert.equal(result.disabled_button,'','No dead Google button before setup');
+assert(result.disabled_button.includes('sf-ui-button--secondary') &&
+    result.disabled_button.includes('popovertarget="sf-google-setup-notice"') &&
+    result.disabled_button.includes('Google sign-in is not configured yet.'),
+    'Unconfigured Google remains visible as a real shared Button with native notice');
+assert(!result.disabled_button.includes('codela_sf_google_start'), 'Disabled Google Button never initiates OAuth');
 assert(php.includes("random_bytes( 32 )")&&php.includes("code_challenge_method' => 'S256'"),'Cryptographic state and PKCE S256');
 assert(php.includes("'httponly' => true")&&php.includes("'samesite' => 'Lax'")&&php.includes("'secure' => true"),'Cookie scoped to HTTPS+HttpOnly+SameSite');
 assert(php.includes('hash_equals( $state, $cookie )'),'Callback state bound to initiating browser');
@@ -31,4 +36,4 @@ assert(php.includes("get_user_meta( $user->ID, '_sf_google_sub'"),'Identity mapp
 assert(!php.includes("'access_type' => 'offline'"),'No long-lived refresh tokens for sign-in');
 assert(php.includes("current_user_can( 'manage_options' )")&&php.includes("check_admin_referer( 'codela_sf_google_save' )"),'Credential editor is capability and nonce restricted');
 
-console.log('Native Google OAuth: PKCE/state/cookie, verified customer identity, admin isolation, disabled state: passed.');
+console.log('Native Google OAuth: PKCE/state/cookie, verified customer identity, admin isolation, unconfigured notice: passed.');
