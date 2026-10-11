@@ -6,7 +6,7 @@ Bu dosya depo genelinde çalışan asistanlar içindir. Kullanıcının güncel 
 
 - Tema 0.1.20 → 0.1.21: tam sayfa gezinmesinde kapsülün önce solda oluşup aktif sekmeye kayması düzeltildi. Header PHP çıktısı `has-selection` ve doğru `--sf-dock-index` değerini ilk HTML'de verir; Hesabım index 3, Ana Sayfa index 0. JS başlangıcı aynı konumu korur, kullanıcı sekme değiştirdiğinde mevcut animasyon çalışır.
 - Doğrulama: render PHP lint, 14 Python testi ve gerçek PHP çıktılı Chromium navigation geçti. Ana Sayfa/Hesabım yeni belge yüklemesinde JS öncesi doğru konum + görünürlük ve JS sonrası transform geçişi olmaması sınandı. Önceki touchend/cancel/scrub/panel testleri geçti. Gerçek iPhone Safari elle test edilmedi.
-- Yayın: kaynak hazır; bağımsız tema CI/FTPS sonucu bekleniyor. Eklenti değişmedi. Sıradaki iş: yayın sonucunu kaydet; iPhone'da Hesabım ve Ana Sayfa tam sayfa geçişlerinde soldan gelişin olmadığını kontrol et.
+- Yayın: kaynak `fd3b57ec608ea877e2299b3985369506aa9af929`, [Actions 38139646274](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38139646274) validate (nav/account browser dahil) + bağımsız tema FTPS deploy başarılı; log: `Storefront deployed; checks passed.` Eklenti değişmedi. Sıradaki iş: iPhone'da Hesabım ve Ana Sayfa tam sayfa geçişlerinde soldan gelişin olmadığını kontrol et.
 
 ## Son doğrulanmış devam noktası — 11 Ekim 2026 / Storefront 0.1.20
 
