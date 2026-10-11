@@ -124,6 +124,31 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
   color:var(--sf-ui-control-ink);
 }
 .sf-shell .sf-ui-button .sf-ui-button-label{display:inline-flex;align-items:center}
+/* Google is the standard secondary UI Kit Button. Only internal alignment
+   belongs here: its text is mathematically centered in the entire button,
+   while the mark sits alongside it rather than shifting the text off center. */
+.sf-shell .sf-auth-google.sf-ui-button{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) max-content minmax(0,1fr);
+  align-items:center;
+  column-gap:10px;
+  text-align:center;
+}
+.sf-shell .sf-auth-google.sf-ui-button .sf-google-glyph{
+  grid-column:1;
+  justify-self:end;
+  align-self:center;
+  line-height:1;
+  width:22px;
+  height:22px;
+}
+.sf-shell .sf-auth-google.sf-ui-button .sf-ui-button-label{
+  grid-column:2;
+  justify-self:center;
+  white-space:nowrap;
+  text-align:center;
+}
+
 .sf-shell .sf-ui-button:is(:disabled,[aria-disabled="true"],[aria-busy="true"]),
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit]:is(:disabled,[aria-disabled="true"],[aria-busy="true"]),
 #sf-panel.is-account-panel .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register) button[type=submit]:is(:disabled,[aria-disabled="true"],[aria-busy="true"]){
