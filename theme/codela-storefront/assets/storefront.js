@@ -4,6 +4,8 @@ let dialog, current = null, opener, savedY = 0, savedBodyStyle = null, savedAdmi
 let searchTimer, searchController, searchSequence = 0;
 let cartNonce = '', cartData = null, cartPending = null, mutating = false;
 let menuPath = [];
+let dockGesture = null;
+let suppressDockClick = false;
 const $ = s => document.querySelector(s);
 const { state } = store('codela/storefront', {
     actions: {
@@ -38,6 +40,117 @@ function restoreStyle(element, values) {
         else element.style.removeProperty(name);
     }
 }
+function mobileDock() {
+    return $('.sf-mobile-dock');
+}
+// A native showModal() makes every outside element inert. Keep the same
+// navigation node in the dialog's top layer while Search or Cart is open.
+function mountDock() {
+    const dock = mobileDock();
+    if (dock && dock.parentElement !== dialog) dialog.appendChild(dock);
+}
+function restoreDock() {
+    const dock = mobileDock();
+    if (!dock) return;
+    dock.hidden = false;
+    if (dock.parentElement === dialog) dialog.before(dock);
+    markDockActive(null);
+}
+function markDockActive(name) {
+    const dock = mobileDock();
+    if (!dock) return;
+    dock.querySelectorAll('.sf-dock-item').forEach(item => {
+        const active = name ? item.dataset.dockView === name : item.hasAttribute('aria-current');
+        item.classList.toggle('is-active', active);
+        if (item.dataset.dockView) item.setAttribute('aria-expanded', String(item.dataset.dockView === name));
+    });
+}
+// Pick the tab underneath a moving finger, including gaps between tabs.
+function dockCandidate(dock, x, y) {
+    const bounds = dock.getBoundingClientRect();
+    if (y < bounds.top - 22 || y > bounds.bottom + 22) return null;
+    const items = [...dock.querySelectorAll('.sf-dock-item')];
+    if (!items.length) return null;
+    return items.reduce((best, item) => {
+        const box = item.getBoundingClientRect();
+        const center = box.left + box.width / 2;
+        const distance = Math.abs(center - x);
+        return !best || distance < best.distance ? {item,distance} : best;
+    }, null)?.item || null;
+}
+function installDockGestures(dock) {
+    if (!dock) return;
+    const holdMs = 220;
+    let holding = null;
+    let blockClick = false;
+    const clearVisuals = () => {
+        dock.classList.remove('is-scrubbing');
+        dock.querySelectorAll('.sf-dock-item').forEach(item => item.classList.remove('is-pressed','is-preview'));
+    };
+    const stop = () => {
+        if (holding?.timer) clearTimeout(holding.timer);
+        holding = null;
+        clearVisuals();
+    };
+    const preview = item => {
+        dock.querySelectorAll('.sf-dock-item').forEach(el => el.classList.toggle('is-preview', el === item));
+        if (holding) holding.choice = item;
+    };
+    const activateGesture = e => {
+        if (!holding || holding.dragging) return;
+        holding.dragging = true;
+        dock.classList.add('is-scrubbing');
+        holding.item.classList.remove('is-pressed');
+        try { dock.setPointerCapture?.(e.pointerId); } catch { /* browser may decline */ }
+    };
+    dock.addEventListener('pointerdown', e => {
+        if (e.button !== 0 && e.pointerType !== 'touch') return;
+        const item = e.target.closest('.sf-dock-item');
+        if (!item) return;
+        stop();
+        holding = {id:e.pointerId, item, choice:item, x:e.clientX, y:e.clientY, dragging:false, timer:null};
+        item.classList.add('is-pressed');
+        holding.timer = setTimeout(() => {
+            if (!holding || holding.id !== e.pointerId) return;
+            activateGesture(e);
+            preview(dockCandidate(dock, e.clientX, e.clientY) || item);
+        }, holdMs);
+    });
+    dock.addEventListener('pointermove', e => {
+        if (!holding || holding.id !== e.pointerId) return;
+        const distanceX = Math.abs(e.clientX - holding.x);
+        const distanceY = Math.abs(e.clientY - holding.y);
+        if (!holding.dragging && distanceY > 18 && distanceY > distanceX) { stop(); return; }
+        if (!holding.dragging && distanceX > 10) activateGesture(e);
+        if (holding.dragging) {
+            e.preventDefault();
+            preview(dockCandidate(dock, e.clientX, e.clientY));
+        }
+    });
+    dock.addEventListener('pointerup', e => {
+        if (!holding || holding.id !== e.pointerId) return;
+        if (!holding.dragging) { stop(); return; } // normal tap: let native link click.
+        e.preventDefault();
+        const item = dockCandidate(dock, e.clientX, e.clientY) || holding.choice;
+        stop();
+        blockClick = true;
+        // Suppress the synthetic link click generated after pointerup.
+        setTimeout(() => { blockClick = false; }, 80);
+        if (!item) return;
+        const view = item.dataset.dockView;
+        if (view === 'search' || view === 'cart') open(view);
+        else if (item.href) window.location.assign(item.href);
+    });
+    dock.addEventListener('pointercancel', stop);
+    dock.addEventListener('lostpointercapture', () => { if (holding?.dragging) stop(); });
+    dock.addEventListener('contextmenu', e => { if (holding) e.preventDefault(); });
+    dock.addEventListener('click', e => {
+        if (!blockClick) return;
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        blockClick = false;
+    }, true);
+}
 function open(name, event) {
     if (event && (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) return;
     event?.preventDefault();
@@ -58,10 +171,20 @@ function open(name, event) {
         // Preserve the rendered body origin, including WordPress's html top margin.
         document.body.style.position = 'fixed'; document.body.style.top = `${bodyRect.top}px`; document.body.style.width = `${bodyRect.width}px`;
         adminOffset();
+        mountDock();
         dialog.showModal();
+    }
+    if (current === 'search' && name !== 'search') {
+        clearTimeout(searchTimer);
+        searchController?.abort(); ++searchSequence;
+        $('#sf-results').setAttribute('aria-busy','false');
     }
     current = name;
     dialog.classList.toggle('is-search-panel', name === 'search');
+    dialog.classList.toggle('is-cart-panel', name === 'cart');
+    const dock = mobileDock();
+    if (dock && dock.parentElement === dialog) dock.hidden = name === 'menu';
+    markDockActive(name);
     const menuTrigger = document.querySelector('[data-panel="menu"]');
     dialog.setAttribute('aria-label', name === 'menu' ? (menuTrigger?.getAttribute('aria-label') || 'Menu') : name === 'search' ? t('Search products') : t('Your cart'));
     dialog.removeAttribute('aria-labelledby');
@@ -87,6 +210,7 @@ function close() {
     document.querySelectorAll('[data-panel]').forEach(el => el.setAttribute('aria-expanded','false'));
     searchController?.abort(); ++searchSequence; clearTimeout(searchTimer);
     dialog.close(); current = null;
+    restoreDock();
     restoreStyle(document.body, savedBodyStyle); savedBodyStyle = null;
     const bar = $('#wpadminbar'); if (bar) restoreStyle(bar, savedAdminStyle);
     savedAdminStyle = null; dialog.style.removeProperty('--sf-admin-offset');
@@ -211,6 +335,7 @@ async function changeCart(button) {
 }
 function init() {
     dialog = $('#sf-panel'); if (!dialog) return;
+    installDockGestures(mobileDock());
     window.addEventListener('resize', () => {
         if (dialog.open) adminOffset();
     });

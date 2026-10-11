@@ -417,3 +417,56 @@
   body:has(.sf-mobile-dock) { padding-bottom:calc(90px + env(safe-area-inset-bottom,0px)); }
 }
 @media(min-width:701px){.sf-mobile-dock{display:none!important}}
+
+/* 0.1.11 — keep the mobile dock inside Search and Cart's native dialog.
+   Finger feedback and scrub-selection animate only the tab, never the panel. */
+@media(max-width:700px){
+  .sf-mobile-dock{touch-action:pan-y}
+  .sf-mobile-dock .sf-dock-item{
+    transition:transform 140ms ease, background-color 140ms ease, color 140ms ease;
+    -webkit-user-select:none;
+    user-select:none;
+    -webkit-touch-callout:none;
+    transform:scale(1);
+  }
+  .sf-mobile-dock .sf-dock-item .sf-icon{
+    transition:transform 140ms ease;
+  }
+  .sf-mobile-dock .sf-dock-item:active,
+  .sf-mobile-dock .sf-dock-item.is-pressed{
+    transform:scale(.94);
+    background:#e5e5e9;
+  }
+  .sf-mobile-dock .sf-dock-item:active .sf-icon,
+  .sf-mobile-dock .sf-dock-item.is-pressed .sf-icon{
+    transform:scale(.88);
+  }
+  .sf-mobile-dock.is-scrubbing .sf-dock-item.is-preview{
+    transform:scale(1.045);
+    background:#d8d8df;
+  }
+  .sf-mobile-dock.is-scrubbing .sf-dock-item.is-preview .sf-icon{
+    transform:scale(1.08);
+  }
+  /* In the top-layer dialog the dock remains above scrollable results,
+     including the native search modal on iPhone Safari. */
+  #sf-panel .sf-mobile-dock{
+    z-index:10;
+    pointer-events:auto;
+  }
+  #sf-panel.is-search-panel .sf-search-content{
+    padding-bottom:calc(110px + env(safe-area-inset-bottom,0px));
+  }
+  #sf-panel.is-cart-panel .sf-cart-bottom:not([hidden]){
+    padding-bottom:calc(100px + env(safe-area-inset-bottom,0px));
+  }
+  #sf-panel.is-cart-panel #sf-cart{
+    padding-bottom:28px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .sf-mobile-dock .sf-dock-item,
+  .sf-mobile-dock .sf-dock-item .sf-icon{
+    transition:none!important;
+  }
+}
