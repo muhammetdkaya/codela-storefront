@@ -28,12 +28,19 @@ function has_custom_logo() { return false; }
 function is_checkout() { return getenv('FIXTURE_CHECKOUT') === '1'; }
 function is_front_page() { return getenv('FIXTURE_ACCOUNT') !== '1' && getenv('FIXTURE_GUEST_ACCOUNT') !== '1'; }
 function is_account_page() { return getenv('FIXTURE_ACCOUNT') === '1' || getenv('FIXTURE_GUEST_ACCOUNT') === '1'; }
-function is_user_logged_in() { return getenv('FIXTURE_GUEST_ACCOUNT') !== '1'; }
+function is_user_logged_in() { return getenv('FIXTURE_ACCOUNT') === '1' && getenv('FIXTURE_GUEST_ACCOUNT') !== '1'; }
 function get_privacy_policy_url() { return ''; }
 function add_query_arg( $args, $url ) { return $url.'?'.http_build_query($args); }
 function get_terms( ...$args ) { return [(object)['parent'=>0,'term_id'=>1,'name'=>'Collection'],(object)['parent'=>1,'term_id'=>2,'name'=>'Shoes']]; }
 function get_term_link( $term ) { return home_url('/category/'.$term->term_id.'/'); }
 function is_wp_error( ...$args ) { return false; }
+function add_action(...$args) {}
+function wc_get_template( $name ) {
+    if ( $name !== 'myaccount/form-login.php' ) { throw new RuntimeException('Unexpected template'); }
+    echo '<div class="sf-account-intro"><p>Manage your orders and account details.</p></div>';
+    echo '<div class="woocommerce"><form class="woocommerce-form woocommerce-form-login" method="post"><input type="text" name="username"><input type="password" name="password"><button type="submit" name="login">Log in</button></form></div>';
+}
+require __DIR__.'/../theme/codela-storefront/inc/account.php';
 require __DIR__.'/../theme/codela-storefront/inc/render.php';
 echo codela_sf_header();
 
