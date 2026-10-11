@@ -102,6 +102,23 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
       if(type==='login')assert.equal(compact.headings,0,'Single login page hides duplicated WooCommerce heading');
       const background=await page.locator('.sf-account-intro').evaluate(el=>getComputedStyle(document.body).backgroundColor);
       assert.equal(background,'rgb(255, 255, 255)','Guest account stays neutral white');
+      if(type==='login'){
+        await page.locator('.woocommerce').evaluate(node=>node.insertAdjacentHTML('beforeend',
+          '<div class="sf-shell sf-auth-social"><div class="sf-auth-divider"><span>or</span></div>'+
+          '<a class="sf-auth-google sf-ui-button sf-ui-button--secondary" href="/wp-admin/admin-post.php?action=codela_sf_google_start">'+
+          '<span class="sf-google-glyph" aria-hidden="true">G</span><span class="sf-ui-button-label">Continue with Google</span></a></div>'));
+        const social=await page.locator('.sf-auth-google').evaluate(el=>{
+          const style=getComputedStyle(el);
+          return {width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height,
+            background:style.backgroundColor,radius:style.borderRadius,display:style.display};
+        });
+        const parent=await page.locator('.sf-auth-social').boundingBox();
+        assert(social.width>=parent.width-2,'Google Button fills same form width');
+        assert(social.height>=54,'Google Button reuses shared action hit size');
+        assert.equal(social.background,'rgb(255, 255, 255)','Google Button is neutral white, not a custom orange CTA');
+        assert.equal(social.radius,'12px','Google Button uses the shared control radius');
+        assert.equal(social.display,'inline-flex','Google Button uses the existing Button component');
+      }
       if(type==='register'){
         await page.addScriptTag({content:authJS});
         assert.equal(await page.locator('.sf-auth-tabs').isVisible(),true,'Tabs appear when Woo renders registration');
