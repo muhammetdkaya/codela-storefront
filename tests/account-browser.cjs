@@ -33,11 +33,49 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
     assert(!info.overflows,type+' must not overflow viewport '+width);
     assert.equal(info.titleVisible,type==='logged', 'WP title shown only in vanilla Woo fallback; guest intro has own heading');
     if(type==='login'||type==='register'){
+      const layout=await page.evaluate(()=>{
+       const wrap=document.querySelector('#customer_login');
+       if(!wrap)return {single:true};
+       const first=wrap.querySelector('.u-column1').getBoundingClientRect();
+       const second=wrap.querySelector('.u-column2').getBoundingClientRect();
+       return {single:false,stacked:second.top>first.bottom-1,sideBySide:second.left>first.left};
+      });
+      assert(type==='login'?layout.single:width===390?layout.stacked:layout.sideBySide,'Guest layout respects Woo login/register settings and device width');
       assert.equal(await page.locator('form.woocommerce-form').count(),type==='login'?1:2,'Native Woo forms remain present');
       const input=page.locator('#username');
       assert.equal(await input.evaluate(el=>getComputedStyle(el).fontSize),'16px','Avoid mobile keyboard zoom');
       assert((await input.boundingBox()).height>=46,'Text input is touch accessible');
-      assert((await page.locator('.woocommerce-form-login__submit').boundingBox()).height>=48,'Submit has adequate target');
+      assert((await page.locator('.woocommerce-form-login__submit').boundingBox()).height>=54,'Submit uses UI Kit action height');
+      const controls=await page.evaluate(()=>{
+       const shell=document.createElement('div');
+       shell.className='sf-shell';
+       shell.style.cssText='position:absolute;left:0;top:-9999px';
+       shell.innerHTML='<button class="sf-ui-button sf-ui-button--primary">Shared Button</button>';
+       document.body.append(shell);
+       const theme=getComputedStyle(shell.querySelector('button'));
+       const native=getComputedStyle(document.querySelector('.woocommerce-form-login__submit'));
+       const reg=document.querySelector('.woocommerce-form-register button[type=submit]');
+       const register=reg?getComputedStyle(reg):null;
+       const fields=getComputedStyle(document.querySelector('#username'));
+       const result={
+        sameBackground:native.backgroundColor===theme.backgroundColor && (!register||register.backgroundColor===theme.backgroundColor),
+        sameRadius:native.borderRadius===theme.borderRadius && (!register||register.borderRadius===theme.borderRadius),
+        samePadding:native.paddingTop===theme.paddingTop && (!register||register.paddingTop===theme.paddingTop),
+        sameMotion:native.transitionProperty===theme.transitionProperty,
+        fieldRadius:fields.borderRadius,
+        fieldHeight:document.querySelector('#username').getBoundingClientRect().height,
+        registerPresent:!!reg
+       };
+       shell.remove();
+       return result;
+      });
+      assert.equal(controls.sameBackground,true,'Guest submit buttons reuse UI Kit primary palette');
+      assert.equal(controls.sameRadius,true,'Native Woo buttons reuse the shared control radius');
+      assert.equal(controls.samePadding,true,'Native Woo buttons reuse shared button spacing');
+      assert.equal(controls.sameMotion,true,'Native Woo and UI Kit buttons share press feedback');
+      assert.equal(controls.fieldRadius,'12px','Inputs follow the same UI Kit control radius');
+      assert(controls.fieldHeight>=54,'Guest input uses shared action height');
+      assert.equal(controls.registerPresent,type==='register','Registration follows native Woo setting');
       assert.equal(info.focus,'BODY','Opening account should not autofocus input');
     } else {
       const nav=page.locator('.woocommerce-MyAccount-navigation');
@@ -75,6 +113,18 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
    assert.equal(plugin.contentBorder,'0px','Theme must not wrap plugin content in a new card');
    assert.equal(plugin.contentPadding,'0px','Theme must not override plugin content padding');
    assert.equal(plugin.bodyOverflow,false,'No extra horizontal overflow in Codela account');
+   // The authenticated plugin dashboard must never inherit guest Button/input adapters.
+   const pluginButton=await page.evaluate(()=>{
+    const button=document.createElement('button');
+    button.className='woocommerce-button';
+    button.textContent='Plugin button';
+    document.querySelector('.cdl-account-dashboard').append(button);
+    const shared=getComputedStyle(button);
+    const nativeSize=shared.minHeight;
+    button.remove();
+    return nativeSize;
+   });
+   assert.notEqual(pluginButton,'54px','Theme guest Button adapter must not reach plugin-owned account');
    await page.close();
   }
   console.log('Guest auth + vanilla Woo fallback + Codela signed-in account isolation: passed.');
