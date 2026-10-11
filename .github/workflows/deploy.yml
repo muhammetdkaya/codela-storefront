@@ -22,6 +22,11 @@ jobs:
           node tests/dock-gesture.cjs
           python3 tests/package.py
           python3 scripts/build-package.py
+      - name: Browser navigation regression checks
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium
+          node tests/navigation-browser.cjs
       - uses: actions/upload-artifact@v4
         with:
           name: codela-storefront-package
@@ -67,3 +72,4 @@ jobs:
           path: ${{ runner.temp }}/storefront-rollback/
           if-no-files-found: ignore
           retention-days: 14
+

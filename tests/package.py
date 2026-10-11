@@ -21,7 +21,7 @@ class Tests(unittest.TestCase):
         self.assertTrue(all(field["type"] in {"text","menu","product"} for section in schema["sections"] for field in section["fields"]))
         self.assertIn("wp:codela/storefront-footer", (build.ROOT/"parts/footer.html").read_text())
         self.assertIn("codela_sf_footer", (build.ROOT/"inc/render.php").read_text())
-        self.assertIn("Version: 0.1.12", (build.ROOT/"style.css").read_text())
+        self.assertIn("Version: 0.1.13", (build.ROOT/"style.css").read_text())
     def test_fullscreen_panel_controls_do_not_show_automatic_focus_rings(self):
         css=(build.ROOT/"assets/storefront.css").read_text()
         js=(build.ROOT/"assets/storefront.js").read_text()
@@ -45,7 +45,7 @@ class Tests(unittest.TestCase):
         self.assertIn("dialog.classList.toggle('is-search-panel', name === 'search')",js)
         self.assertIn("#sf-panel.is-search-panel #sf-panel-title",css)
         self.assertNotIn(".sf-cart-link{",css)
-        self.assertIn("Version: 0.1.12", (build.ROOT/"style.css").read_text())
+        self.assertIn("Version: 0.1.13", (build.ROOT/"style.css").read_text())
     def test_balanced_header_static_panels_and_unified_white_search(self):
         render=(build.ROOT/'inc/render.php').read_text()
         js=(build.ROOT/'assets/storefront.js').read_text()
@@ -69,7 +69,6 @@ class Tests(unittest.TestCase):
         self.assertNotIn('sf-reveal',css)
         self.assertNotIn('placePanelReveal',js)
         self.assertNotIn('PANEL_MOTION_MS',js)
-        self.assertNotIn('requestAnimationFrame',js)
         self.assertIn('transition:none!important',css)
         self.assertIn('#sf-panel.is-search-panel',css)
         self.assertIn('background:#ffffff',css)
@@ -87,13 +86,15 @@ class Tests(unittest.TestCase):
         self.assertIn('syncSearchControls()',js)
         self.assertIn("'Search' => 'Ara'",locale)
         self.assertIn("'Clear search' => 'Aramayı temizle'",locale)
-        self.assertIn('Version: 0.1.12', (build.ROOT/'style.css').read_text())
+        self.assertIn('Version: 0.1.13', (build.ROOT/'style.css').read_text())
     def test_mobile_dock_and_right_header_menu(self):
         render=(build.ROOT/'inc/render.php').read_text()
         css=(build.ROOT/'assets/storefront.css').read_text()
         js=(build.ROOT/'assets/storefront.js').read_text()
         locale=(build.ROOT/'languages/tr_TR.l10n.php').read_text()
         self.assertIn('class="sf-mobile-dock"',render)
+        for view in ['home','search','cart','account']:
+            self.assertIn('data-dock-view="'+view+'"',render)
         dock=render.split('class="sf-mobile-dock"',1)[1].split('</nav>',1)[0]
         for name in ("'house'","'search'","'shopping-bag'","'user-round'"):
             self.assertIn(name,dock)
@@ -120,15 +121,15 @@ class Tests(unittest.TestCase):
         self.assertIn('document.querySelectorAll(\'[data-panel="cart"]\')',js)
         self.assertIn("'Home' => 'Ana Sayfa'",locale)
         self.assertIn("'Cart' => 'Sepet'",locale)
-        self.assertIn("Version: 0.1.12", (build.ROOT/'style.css').read_text())
+        self.assertIn("Version: 0.1.13", (build.ROOT/'style.css').read_text())
     def test_dock_stays_interactive_above_search_and_cart(self):
         render=(build.ROOT/'inc/render.php').read_text()
         js=(build.ROOT/'assets/storefront.js').read_text()
         css=(build.ROOT/'assets/storefront.css').read_text()
         self.assertIn('class="sf-mobile-dock"',render)
         self.assertIn('function mountDock()',js)
-        self.assertIn('if (dock && dock.parentElement !== dialog) dialog.appendChild(dock);',js)
-        self.assertIn('if (dock.parentElement === dialog) dialog.before(dock);',js)
+        self.assertIn('dialog.appendChild(dock);',js)
+        self.assertIn('if (dock.parentElement === dialog) dockHome.after(dock);',js)
         self.assertIn('mountDock();',js)
         self.assertIn('restoreDock();',js)
         self.assertIn('dock.hidden = name === \'menu\';',js)
@@ -151,7 +152,7 @@ class Tests(unittest.TestCase):
         self.assertIn("Show navigation",render)
         self.assertIn('.sf-mobile-dock.is-collapsed{',css)
         self.assertIn('.sf-mobile-dock.is-collapsed .sf-dock-handle{',css)
-        self.assertIn('transform:translate3d(0,calc(100% + 6px),0)',css)
+        self.assertIn('--sf-dock-travel:calc(100% + var(--sf-dock-bottom) + 8px)',css)
         self.assertIn("'Show navigation' => 'Gezinmeyi göster'",(build.ROOT/'languages/tr_TR.l10n.php').read_text())
         self.assertIn("const holdMs = 240;",js)
         self.assertIn("dock.addEventListener('pointermove'",js)
@@ -164,7 +165,7 @@ class Tests(unittest.TestCase):
         self.assertIn("dialog.classList.toggle('is-cart-panel', name === 'cart')",js)
         self.assertIn('#sf-panel.is-cart-panel .sf-cart-bottom:not([hidden])',css)
         self.assertIn('prefers-reduced-motion:reduce',css)
-        self.assertIn('Version: 0.1.12',(build.ROOT/'style.css').read_text())
+        self.assertIn('Version: 0.1.13',(build.ROOT/'style.css').read_text())
     def test_missing_secret_never_connects(self):
         with patch.dict(os.environ,{"FTP_PASSWORD":""}),patch.object(deploy.ftplib,"FTP_TLS") as ftp:
             self.assertEqual(deploy.main(),1);ftp.assert_not_called()
@@ -223,4 +224,5 @@ class DeploymentTests(unittest.TestCase):
         result,files,old,new=self.run_deploy("health");self.assertEqual(result,1);self.assertEqual(files,old)
 
 if __name__=="__main__":unittest.main()
+
 

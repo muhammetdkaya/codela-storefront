@@ -1,0 +1,146 @@
+// Actual rendered PHP + full storefront JS. Only WP action binding and API responses
+// are supplied at the integration boundary; production DOM is never recreated here.
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const {execFileSync} = require('node:child_process');
+const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const php = process.env.PHP_BIN || 'php';
+const header = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8'});
+const checkout = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8',env:{...process.env,FIXTURE_CHECKOUT:'1'}});
+assert(!checkout.includes('class="sf-mobile-dock"'), 'Checkout omits the dock');
+const css = fs.readFileSync('theme/codela-storefront/assets/storefront.css','utf8');
+const js = fs.readFileSync('theme/codela-storefront/assets/storefront.js','utf8').replace("import { store } from '@wordpress/interactivity';", `
+function store(namespace, options) {
+ window.sfActions = options.actions;
+ return {state:{config:{api:'https://store.test/api/', search:'https://store.test/search-api', cart:'/cart/', labels:{}}}};
+}`);
+const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/product/',images:[],quantity:1,totals:{line_subtotal:'1000',line_subtotal_tax:'0',currency_code:'TRY',currency_minor_unit:2}}],totals:{total_items:'1000',total_items_tax:'0',currency_code:'TRY',currency_minor_unit:2}};
+(async()=>{
+ const browser = await chromium.launch({headless:true,...(process.env.CHROMIUM_BIN ? {executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-gpu','--use-gl=disabled','--disable-software-rasterizer','--disable-dev-shm-usage','--no-zygote','--single-process']} : {})});
+ try {
+ const page = await browser.newPage({viewport:{width:390,height:844},hasTouch:true});
+ const errors=[]; page.on('pageerror',e=>errors.push(e.message));
+ let cartRequests=0, searchRequests=0;
+ await page.route('**/*', async route=>{
+  const url=route.request().url();
+  if(url.includes('/api/cart')) {cartRequests++;return route.fulfill({json:cart,headers:{Nonce:'test'}});}
+  if(url.includes('/search-api')) {searchRequests++;const q=new URL(url).searchParams.get('q');await new Promise(r=>setTimeout(r,q==='old'?180:10));return route.fulfill({json:[{name:q,url:'/product/',image:'',price:'10',sku:q}]});}
+  if(url.includes('/assets/icons/')) return route.fulfill({contentType:'image/svg+xml',body:fs.readFileSync('theme/codela-storefront/assets/icons/'+url.split('/').at(-1),'utf8')});
+  return route.fulfill({contentType:'text/html',body:`<!doctype html><html lang="en"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>.screen-reader-text{position:absolute!important;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}${css}</style></head><body>${header}<main style="height:3200px;padding:30px">Store content</main></body></html>`});
+ });
+ await page.goto('https://store.test/');
+ await page.addScriptTag({content:js});
+ await page.evaluate(()=>{
+   document.addEventListener('click',event=>{const trigger=event.target.closest('[data-wp-on--click]');if(trigger)window.sfActions[trigger.getAttribute('data-wp-on--click').split('.')[1]](event);});
+   window.focusLog=[];document.addEventListener('focusin',e=>window.focusLog.push(e.target.id));
+ });
+ const dock=page.locator('.sf-mobile-dock');
+ assert.deepEqual(await dock.locator('a').evaluateAll(xs=>xs.map(x=>x.dataset.dockView)),['home','search','cart','account']);
+ const click=async view=>page.locator(`.sf-mobile-dock [data-dock-view="${view}"]`).click();
+ await click('search');
+ assert.equal(await page.evaluate(()=>document.activeElement.classList.contains('sf-search-cancel')),true);
+ assert.equal(await page.locator('#sf-panel .sf-mobile-dock').count(),1);
+ assert.equal(await page.locator('.sf-dock-item.is-active').getAttribute('data-dock-view'),'search');
+ await page.locator('#sf-query').fill('old');
+ await page.waitForTimeout(190);
+ await page.locator('#sf-query').fill('new');
+ await page.waitForTimeout(400);
+ assert.equal(await page.locator('.sf-result h3').innerText(),'new','Latest result wins');
+ await click('cart');
+ await page.waitForTimeout(50);
+ assert.equal(await page.locator('.sf-dock-item.is-active').getAttribute('data-dock-view'),'cart');
+ assert.equal(await page.locator('.sf-cart-bottom').isVisible(),true);
+ const fetched=cartRequests;
+ await click('cart');
+ assert.equal(cartRequests,fetched,'Current tab is a no-op');
+ await click('search');
+ await page.locator('#sf-query').focus();
+ await page.locator('.sf-search-cancel').click();
+ await page.evaluate(()=>{window.focusLog=[]});
+ await click('search');
+ assert(!(await page.evaluate(()=>window.focusLog)).includes('sf-query'),'Reopening must never briefly focus query');
+ await page.locator('.sf-search-cancel').click();
+ // Gesture dispatch uses real DOM listeners and actual layout, not mock tabs.
+ async function scrub(from,to,outside=false,hold=false){
+  await page.evaluate(async ({from,to,outside,hold})=>{
+   const tabs=[...document.querySelectorAll('.sf-dock-item')];const a=tabs[from].getBoundingClientRect(), b=tabs[to].getBoundingClientRect();
+   const x=a.left+a.width/2,y=a.top+a.height/2;const target=tabs[from];
+   const emit=(type,cx,cy,end=false)=>{const touch=new Touch({identifier:42,target,clientX:cx,clientY:cy});target.dispatchEvent(new TouchEvent(type,{bubbles:true,cancelable:true,touches:end?[]:[touch],changedTouches:[touch],targetTouches:end?[]:[touch]}));};
+   emit('touchstart',x,y);if(hold)await new Promise(r=>setTimeout(r,260));emit('touchmove',b.left+b.width/2,y);emit('touchend',b.left+b.width/2,outside?y-130:y,true);
+  },{from,to,outside,hold});
+ }
+ await scrub(0,2);
+ assert.equal(await page.locator('#sf-panel').getAttribute('open'),'','Scrub opens modal instead of leaving page');
+ assert.equal(page.url(),'https://store.test/');
+ assert.equal(await page.locator('.sf-dock-item.is-active').getAttribute('data-dock-view'),'cart');
+ await scrub(2,1,false,true);
+ assert.equal(await page.locator('.sf-dock-item.is-active').getAttribute('data-dock-view'),'search');
+ await scrub(1,2,true);
+ assert.equal(await page.locator('.sf-dock-item.is-active').getAttribute('data-dock-view'),'search','Outside release cancels');
+ await page.locator('.sf-search-cancel').click();
+ // Safe-area travel, cumulative slow scroll, native scroll restoration, resize.
+ await page.evaluate(()=>{document.activeElement.blur();document.querySelector('.sf-mobile-dock').style.setProperty('--sf-dock-bottom','46px');window.scrollTo(0,100)});
+ await page.waitForTimeout(50);
+ await page.evaluate(()=>document.querySelector('.sf-dock-handle').click());
+ for(let y=102;y<=126;y+=2){await page.evaluate(y=>window.scrollTo(0,y),y);await page.waitForTimeout(20);}
+ assert(await dock.evaluate(el=>el.classList.contains('is-collapsed')),'Slow scroll accumulates');
+ await page.waitForTimeout(280);
+ assert(await dock.locator('a').evaluateAll(xs=>xs.every(x=>x.getBoundingClientRect().top>=innerHeight)),'All tabs move beyond safe-area viewport');
+ assert(await page.locator('.sf-dock-handle').isVisible(),'Only reveal handle remains');
+ await page.locator('.sf-dock-handle').click();
+ assert(!(await dock.evaluate(el=>el.classList.contains('is-collapsed'))));
+ await click('search');
+ await page.locator('.sf-search-cancel').click();
+ assert.equal(await page.evaluate(()=>scrollY),126,'Close restores exact scroll');
+ await page.evaluate(()=>window.scrollTo(0,0));
+ // Overlay Menu and X have identical coordinates at narrow widths.
+ for(const width of [320,390,700,1024]){
+  await page.setViewportSize({width,height:844});
+  const trigger=page.locator('.sf-header-menu a'); const box=await trigger.boundingBox();await trigger.click();
+  const close=page.locator('.sf-panel-top .sf-close'); const x=await close.boundingBox();
+  if(width<=700){assert(Math.abs(box.x-x.x)<1);assert(Math.abs(box.y-x.y)<1,'Menu/X share vertical center');}
+  assert.equal(await dock.isVisible(),false,'Menu hides dock');
+  await close.click();
+  if(width<=700){await click('search');const searchX=await page.locator('.sf-search-cancel').boundingBox();assert(Math.abs(box.x-searchX.x)<1,`Search X shares header hit target: ${width} header=${JSON.stringify(box)} search=${JSON.stringify(searchX)}`);assert(Math.abs(box.y-searchX.y)<1);await page.locator('.sf-search-cancel').click();}
+  assert.equal(await page.evaluate(()=>scrollY),0,'Header close restores top');
+ }
+ await page.setViewportSize({width:390,height:844});
+ // Rapid switching cancels old animation, leaves one active section, no modal flicker.
+ await page.evaluate(()=>{for(let i=0;i<12;i++)window.sfActions[i%2?'cart':'search']();});
+ await page.waitForTimeout(180);
+ assert.equal(await page.locator('.sf-panel-body:not([hidden])').count(),1);
+ assert.equal(await page.locator('#sf-panel .sf-mobile-dock').count(),1);
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await click('search');
+ assert.equal(await page.locator('.sf-search-content').evaluate(el=>el.getAnimations().length),0);
+ await page.locator('.sf-search-cancel').click();
+ // Simulate WordPress mobile admin toolbar and verify lock/restore at a scrolled offset.
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.evaluate(()=>{
+  const bar=document.createElement('div');bar.id='wpadminbar';bar.style.cssText='position:absolute;top:0;left:0;height:46px;width:100%;background:#222;z-index:99999';document.body.prepend(bar);
+  document.documentElement.style.marginTop='46px';window.scrollTo(0,20);
+ });
+ await page.waitForTimeout(40);
+ const before=await page.locator('#wpadminbar').boundingBox();
+ await click('search');
+ const during=await page.locator('#wpadminbar').boundingBox();
+ assert(Math.abs(before.y-during.y)<1,'Admin bar stays put while body locks');
+ assert.equal(await page.locator('#sf-panel').evaluate(el=>el.getBoundingClientRect().top),26);
+ // Panel scrolling must also hide/reveal dock; bounce at the bottom cannot reverse it.
+ await page.evaluate(()=>{document.querySelector('#sf-results').style.height='2400px';document.querySelector('#sf-search').scrollTop=40});
+ await page.waitForTimeout(30);
+ await page.evaluate(()=>document.querySelector('#sf-search').scrollTop=150);
+ await page.waitForTimeout(280);
+ assert(await dock.evaluate(el=>el.classList.contains('is-collapsed')));
+ await page.evaluate(()=>document.querySelector('#sf-search').scrollTop=110);
+ await page.waitForTimeout(280);
+ assert(!(await dock.evaluate(el=>el.classList.contains('is-collapsed'))));
+ if(process.env.QA_SCREENSHOT) await page.screenshot({path:process.env.QA_SCREENSHOT});
+ await page.locator('.sf-search-cancel').click();
+ assert.equal(await page.evaluate(()=>scrollY),20);
+ assert.equal(await page.locator('#wpadminbar').evaluate(el=>el.style.position),'absolute');
+ assert.deepEqual(errors,[]);
+ assert(searchRequests>0);
+ console.log('Browser navigation: real PHP markup, 4 viewport sizes, touch/hold/outside release, scroll/safe-area, focus/reopen, API race, rapid switching and reduced motion passed.');
+ } finally {await browser.close();}
+})().catch(e=>{console.error(e);process.exit(1)});

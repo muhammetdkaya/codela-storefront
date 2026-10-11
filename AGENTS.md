@@ -2,6 +2,18 @@
 
 Bu dosya depo genelinde çalışan asistanlar içindir. Kullanıcının güncel talimatları önceliklidir.
 
+## Son doğrulanmış devam noktası — 11 Ekim 2026 / Storefront 0.1.13
+
+- Kullanıcının header, alt menü, hız ve geçiş kalitesini iyileştirme isteği uygulandı. Tema **0.1.12 → 0.1.13**; eklenti sürümü değişmez.
+- Biten: gerçek PHP alt menü bağlantılarındaki eksik `data-dock-view` kimlikleri eklendi. Sürükleyip Ara/Sepet'e bırakmak artık tam ekran paneli açar; seçili kapsül doğru sekmeyi izler. Alan dışında bırakma iptal edilir, mouse/pen sürüklemesi capture ile izlenir; normal link tıklaması korunur.
+- Alt menü: tek kayan kapsül, yalnız transform/opacity animasyonu; dokunma hedefleri yer değiştirmez. Kaydırma her karede bir kez işlenir, küçük hareketler birikir, bounce sınırlandırılır. Safe-area dahil gerçek gizlenme mesafesi ve ayrı sabit 44px erişilebilir çizgi hedefi; yalnız durum değişiminde DOM güncellenir.
+- Header: mobil logo solda/menü sağda; 68px ortak yükseklik, 20px yan boşluk ve 44px kontrolle Menu/Search/Cart X hizası. Masaüstü ortalı logo korunur. Eski CSS geçiş yama blokları azaltıldı.
+- **Güncel hareket kararı:** kullanıcının bu talebiyle içerik geçişi 160ms/8px, alt kapsül 220ms, gizlenme 240ms. Tam ekran dialog dönüştürülmez, ikon kökenli büyüme yoktur. Kapatma anında; hızlı geçiş önceki animasyonu iptal eder; reduced-motion hareketi kapatır. Önceki tamamen animasyonsuz içerik kararı bu kapsamda güncellenmiştir.
+- Native dialog açılmadan önce görünür bölüm ve metin dışı autofocus hazırlanır; aramayı tekrar açarken geçici input odağı engellenir. Aktif sekmeye tekrar dokunmak ağ isteği başlatmaz. Sepete dönüşte mevcut toplam kaybolmaz; arka plandaki sepet mutasyonu mesajı başka panele sızmaz. Body kilidi/scroll/admin bar ve dock'un asıl DOM yeri geri yüklenir.
+- Doğrulama: PHP lint, JS syntax, 12 Python paket/dağıtım testi, Node arama/dokunma testleri geçti. Yeni Chromium testi gerçek PHP çıktısı + tam JS ile 320/390/700/1024px, sekme tap/touch/hold/outside cancel, safe-area, yavaş ve modal scroll, focus/reopen, gecikmiş arama, hızlı geçiş, reduced-motion ve WordPress toolbar konumunu sınar. WP action bağlama ve API yanıtları test sınırında simüledir; gerçek WP/Woo entegrasyon kabulü değildir.
+- Yayın: kaynak hazırlanıyor; bu kayıtta GitHub commit/CI/FTPS sonucu henüz yok. Gerçek iPhone/Safari ve gerçek ödeme akışı bu ortamda test edilmedi.
+- Sıradaki iş: 0.1.13 commit'inin validate/browser/deploy sonucunu kaydet; canlı iPhone'da sekmeler arası sürükleme, klavye/safe-area ve geçiş hissini kontrol et. Sonuç olmadan cihaz performansı veya Safari kabulü iddia etme.
+
 ## Her yeni tema çalışmasına başlarken
 
 1. Bu dosyayı ve `docs/storefront-theme.md` dosyasını oku.
@@ -35,9 +47,9 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - Tema ayarlarının altında Header (Üst alan), Footer (Alt alan) ve geliştirilen diğer bölümler için ayrı alt menüler bulunmalı; tüm ayarları tek uzun forma yığma. Bir tema bölümü geliştirilirken gerekli ayarları aynı çalışmada ilgili alt menüye ekle; temanın tamamlanmasını bekleme.
 - Küçük değişikliklerde de mevcut codela.dev otomatik dağıtımı açık kalır. Bağlantılı değişiklikleri topluca yap, yalnız ilgili dosyaları incele ve dağıtım sonuçlarını gereksiz tekrarlarla sorgulama. WordPress.org yayını ayrı yetki gerektirir.
 - Tasarım sade ve ürün odaklıdır. Kullanıcının aradığı özgünlük, karmaşık veya bilim kurgu dekorları eklemek anlamına gelmez. Sayfaları kullanım amacı ve örneklerle değerlendirerek tek tek geliştir.
-- Header: menü solda, logo merkezde; arama ve sepet sağda yan yana.
+- Header: mobilde logo solda, menü sağda; arama/sepet altta. Masaüstünde menü solda, logo merkezde, arama/sepet sağda.
 - Menü, arama ve sepet aynı görsel/etkileşim dilinde **tam ekran** açılır. Onaylanan yön Apple örneğindeki tam ekran menüdür; sayfayı yana iten menü önceki alternatifti.
-- Menü/arama/sepet tam ekran paneli, tıklanan ikonun yerinden köşeleri yumuşatılmış bir alandan büyür; kapanırken aynı ikona geri toplanır. İkon hareketi panelle eşzamanlıdır. Hareket azaltma tercihi, klavye, odak ve kaydırma konumu korunur.
+- Menü/arama/sepet aynı native dialog içinde açılır. Güncel 0.1.13 kararı: dialog geometrisi sabit, içerik 160ms kısa geçiş; kapatma bekletmez. İkon kökenli büyüme uygulanmaz. Hareket azaltma tercihi, klavye, odak ve kaydırma konumu korunur.
 - Arama hızlı ve doğru olmalı; gecikmiş eski sonuç yeni sorguyu ezmemeli. Mevcut sürümün yazım hatası toleransı olmayan aramasını gelişmiş arama gibi tanıtma.
 - Tutarlı ikon dili: Lucide temelli 24×24 çizim alanı, 2 birim çizgi, yuvarlatılmış uç/köşe ve tek renk. Temada yalnız kullanılan yerel SVG dosyaları yüklenir; tüm paketi, ikon fontunu, CDN veya ikon JavaScript çalışma zamanını ekleme. Eklentinin mevcut SVG maskeleri korunur; yeni/değişen ikonlar bu standarda kademeli geçirilir. Yönetim ikon CSS dosyasını mağazaya yükleme.
 - Ana sayfa, hakkımızda ve iletişim içerikleri kullanıcı tarafından rahatça düzenlenebilmelidir. İçerik düzenleme deneyimi henüz kesinleşmedi; mevcut WordPress metin/blok alanının tek başına kullanıcı ihtiyacını çözdüğünü varsayma. Elementor veya başka ağır bir sayfa oluşturucuyu kendiliğinden ekleme.
@@ -225,3 +237,4 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - Ana kaynak: `181290a30e050bc8d567d9ea0616bb1c7b2fa5db`; test mock güncellemesi: `7b8966bd5e6b786dd67c8f7cb840030edabd0899`.
 - [GitHub Actions 38112985514](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38112985514) **validate + deploy success**: PHP lint, JS syntax, Python paket testleri, iOS touch/hold/scroll davranışı için Node testi geçti; bağımsız tema FTPS dağıtımı başarılı. Codela eklentisinin güncellenmesi gerekmiyor.
 - Güncel iş: iPhone Safari'de arama/hesap ilk açılışında otomatik klavye olmadığını, basılı tutup yan sekmeye sürükleme-bırakmayı, sayfa ve modal aşağı/yukarı kaydırmalarında alt bar gizleme-açmayı ve çizgiye dokunmayı manuel teyit et. Bu testler gerçek cihazda henüz yapılmadı.
+

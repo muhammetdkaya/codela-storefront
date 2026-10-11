@@ -368,3 +368,25 @@ The source implementation is `2db0a69`; the mock DOMRect fixture was corrected i
 
 ### Verified 0.1.12 release (2026-10-11)
 Source changes were committed in `181290a` with a test-only fixture correction in `7b8966b`. [Actions #38112985514](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38112985514) successfully validated and deployed the standalone theme, including Node touch/scroll/hold simulations, PHP lint and package checks. The search modal now focuses a non-text close button rather than the query on opening; initial WooCommerce account auto-focus receives a narrow guard until the first explicit user action. The dock uses Safari touch events for drag selection, scroll-aware animated hiding, and a keyboard-accessible thin reveal handle. Real iPhone Safari input, pointer cancellation, keyboard, scroll and bottom safe-area acceptance remain pending.
+
+
+
+## Son doğrulanmış devam noktası — 11 Ekim 2026 / Storefront 0.1.13
+
+- Kullanıcının header, alt menü, hız ve geçiş kalitesini iyileştirme isteği uygulandı. Tema **0.1.12 → 0.1.13**; eklenti sürümü değişmez.
+- Biten: gerçek PHP alt menü bağlantılarındaki eksik `data-dock-view` kimlikleri eklendi. Sürükleyip Ara/Sepet'e bırakmak artık tam ekran paneli açar; seçili kapsül doğru sekmeyi izler. Alan dışında bırakma iptal edilir, mouse/pen sürüklemesi capture ile izlenir; normal link tıklaması korunur.
+- Alt menü: tek kayan kapsül, yalnız transform/opacity animasyonu; dokunma hedefleri yer değiştirmez. Kaydırma her karede bir kez işlenir, küçük hareketler birikir, bounce sınırlandırılır. Safe-area dahil gerçek gizlenme mesafesi ve ayrı sabit 44px erişilebilir çizgi hedefi; yalnız durum değişiminde DOM güncellenir.
+- Header: mobil logo solda/menü sağda; 68px ortak yükseklik, 20px yan boşluk ve 44px kontrolle Menu/Search/Cart X hizası. Masaüstü ortalı logo korunur. Eski CSS geçiş yama blokları azaltıldı.
+- **Güncel hareket kararı:** kullanıcının bu talebiyle içerik geçişi 160ms/8px, alt kapsül 220ms, gizlenme 240ms. Tam ekran dialog dönüştürülmez, ikon kökenli büyüme yoktur. Kapatma anında; hızlı geçiş önceki animasyonu iptal eder; reduced-motion hareketi kapatır. Önceki tamamen animasyonsuz içerik kararı bu kapsamda güncellenmiştir.
+- Native dialog açılmadan önce görünür bölüm ve metin dışı autofocus hazırlanır; aramayı tekrar açarken geçici input odağı engellenir. Aktif sekmeye tekrar dokunmak ağ isteği başlatmaz. Sepete dönüşte mevcut toplam kaybolmaz; arka plandaki sepet mutasyonu mesajı başka panele sızmaz. Body kilidi/scroll/admin bar ve dock'un asıl DOM yeri geri yüklenir.
+- Doğrulama: PHP lint, JS syntax, 12 Python paket/dağıtım testi, Node arama/dokunma testleri geçti. Yeni Chromium testi gerçek PHP çıktısı + tam JS ile 320/390/700/1024px, sekme tap/touch/hold/outside cancel, safe-area, yavaş ve modal scroll, focus/reopen, gecikmiş arama, hızlı geçiş, reduced-motion ve WordPress toolbar konumunu sınar. WP action bağlama ve API yanıtları test sınırında simüledir; gerçek WP/Woo entegrasyon kabulü değildir.
+- Yayın: kaynak hazırlanıyor; bu kayıtta GitHub commit/CI/FTPS sonucu henüz yok. Gerçek iPhone/Safari ve gerçek ödeme akışı bu ortamda test edilmedi.
+- Sıradaki iş: 0.1.13 commit'inin validate/browser/deploy sonucunu kaydet; canlı iPhone'da sekmeler arası sürükleme, klavye/safe-area ve geçiş hissini kontrol et. Sonuç olmadan cihaz performansı veya Safari kabulü iddia etme.
+
+### 0.1.13 review evidence
+
+Root cause of failed scrub navigation: production PHP had no `data-dock-view` attributes, while the old Node fixture invented them. It therefore tested an impossible DOM and passed. The new browser gate renders `inc/render.php` through `tests/render-header.php`, then runs the full JS with only WP action binding/API stubs. It also verifies checkout omits the dock. Node/Python contracts now assert actual routing attributes.
+
+Other concrete failures: per-event >7px scroll threshold ignored slow movement; collapsed translation omitted the dock's safe-area offset; all tab boxes were measured after visual writes; release outside fell back to the previous tab; search was exposed only after `showModal()` had performed autofocus; repeated current-tab clicks refetched/reset content. Tests cover the changed boundaries rather than claiming real device FPS improvements.
+
+Run locally: `node tests/dock-gesture.cjs`, `node tests/search-panel.cjs`, `python3 tests/package.py`; with PHP and Playwright Chromium installed, `node tests/navigation-browser.cjs`. `PHP_BIN`, `PLAYWRIGHT_MODULE`, `CHROMIUM_BIN` optionally select existing executables. Browser dependencies are CI-only and are not in the theme ZIP. Static screenshot review checks the light dock/selection and shared search toolbar; real iOS gesture arbitration, virtual keyboard and accessibility remain manual acceptance tasks.

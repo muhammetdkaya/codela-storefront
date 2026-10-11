@@ -4,6 +4,9 @@ let dialog, current = null, opener, savedY = 0, savedBodyStyle = null, savedAdmi
 let searchTimer, searchController, searchSequence = 0;
 let cartNonce = '', cartData = null, cartPending = null, mutating = false;
 let menuPath = [];
+let dockNode, dockHome, dockScrollFrame = 0, dockScrollTarget;
+let panelMotion = null;
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const dockScrollPositions = new WeakMap();
 const $ = s => document.querySelector(s);
 const { state } = store('codela/storefront', {
@@ -40,11 +43,12 @@ function restoreStyle(element, values) {
     }
 }
 function mobileDock() {
-    return $('.sf-mobile-dock');
+    return dockNode ||= $('.sf-mobile-dock');
 }
 function setDockCollapsed(collapsed) {
     const dock = mobileDock();
-    if (!dock || dock.hidden) return;
+    if (!dock || dock.hidden || dock.classList.contains('is-collapsed') === collapsed) return;
+    if (collapsed && dock.contains(document.activeElement) && document.activeElement.matches(':focus-visible')) return;
     dock.classList.toggle('is-collapsed', collapsed);
     const handle = dock.querySelector('.sf-dock-handle');
     if (handle) {
@@ -56,62 +60,74 @@ function setDockCollapsed(collapsed) {
 // A native modal makes outside nodes inert; move the one real dock into its top layer.
 function mountDock() {
     const dock = mobileDock();
-    if (dock && dock.parentElement !== dialog) dialog.appendChild(dock);
+    if (dock && dock.parentElement !== dialog) {
+        dockHome ||= document.createComment('mobile-navigation');
+        dock.before(dockHome);
+        dialog.appendChild(dock);
+    }
 }
 function restoreDock() {
     const dock = mobileDock();
     if (!dock) return;
     dock.hidden = false;
-    if (dock.parentElement === dialog) dialog.before(dock);
+    if (dock.parentElement === dialog) dockHome.after(dock);
     setDockCollapsed(false);
     markDockActive(null);
 }
 function markDockActive(name) {
     const dock = mobileDock();
     if (!dock) return;
-    dock.querySelectorAll('.sf-dock-item').forEach(item => {
+    let activeIndex = -1;
+    dock.querySelectorAll('.sf-dock-item').forEach((item, index) => {
         const active = name ? item.dataset.dockView === name : item.hasAttribute('aria-current');
         item.classList.toggle('is-active', active);
-        if (item.dataset.dockView) item.setAttribute('aria-expanded', String(item.dataset.dockView === name));
+        if (active) activeIndex = index;
+        if (item.dataset.panel) item.setAttribute('aria-expanded', String(item.dataset.panel === name));
     });
+    dock.style.setProperty('--sf-dock-index', Math.max(0, activeIndex));
+    dock.classList.toggle('has-selection', activeIndex !== -1);
 }
+// Hit testing uses stable, unscaled layout slots; animated icons cannot move targets.
 function dockCandidate(dock, x, y) {
     const bounds = dock.getBoundingClientRect();
-    if (y < bounds.top - 26 || y > bounds.bottom + 26) return null;
+    if (x < bounds.left - 16 || x > bounds.right + 16 || y < bounds.top - 26 || y > bounds.bottom + 26) return null;
     const items = [...dock.querySelectorAll('.sf-dock-item')];
-    if (!items.length) return null;
-    return items.reduce((best, item) => {
-        const box = item.getBoundingClientRect();
-        const distance = Math.abs(box.left + box.width / 2 - x);
-        return !best || distance < best.distance ? {item, distance} : best;
-    }, null)?.item || null;
+    const index = Math.max(0, Math.min(items.length - 1, Math.floor((x - bounds.left) / bounds.width * items.length)));
+    return items[index] || null;
 }
 function handleDockScroll(event) {
-    const dock = mobileDock();
-    if (!dock || dock.hidden || dock.classList.contains('is-scrubbing')) return;
     const target = event.target === document ? window : event.target;
-    if (target !== window) {
-        if (!(target instanceof Element) || dock.contains(target)) return;
-        if (dialog?.open && !dialog.contains(target)) return;
-    } else if (dialog?.open) return;
-    const position = target === window ? window.scrollY : target.scrollTop;
-    if (!Number.isFinite(position)) return;
-    const last = dockScrollPositions.get(target);
-    dockScrollPositions.set(target, position);
-    if (position < 24) { setDockCollapsed(false); return; }
-    if (last === undefined) return;
-    const change = position - last;
-    if (change > 7) setDockCollapsed(true);
-    else if (change < -7) setDockCollapsed(false);
+    if (target !== window && !(target instanceof Element)) return;
+    if (dialog?.open ? (target === window || !dialog.contains(target)) : target !== window) return;
+    // A single read/write pass per frame, including nested modal scrollers.
+    dockScrollTarget = target;
+    if (!dockScrollFrame) dockScrollFrame = requestAnimationFrame(flushDockScroll);
+}
+function flushDockScroll() {
+    dockScrollFrame = 0;
+    const dock = mobileDock(), target = dockScrollTarget;
+    if (!dock || dock.hidden || !target || window.innerWidth > 700) return;
+    const scroller = target === window ? document.scrollingElement : target;
+    const max = Math.max(0, scroller.scrollHeight - scroller.clientHeight);
+    const position = Math.max(0, Math.min(max, target === window ? window.scrollY : target.scrollTop));
+    const previous = dockScrollPositions.get(target) || {position, distance:0};
+    const delta = position - previous.position;
+    let distance = Math.sign(delta) === Math.sign(previous.distance) ? previous.distance + delta : delta;
+    if (dock.classList.contains('is-scrubbing') || dock.classList.contains('is-pressing')) distance = 0;
+    else if (position < 24) { setDockCollapsed(false); distance = 0; }
+    else if (distance >= 18 || distance <= -12) { setDockCollapsed(distance > 0); distance = 0; }
+    dockScrollPositions.set(target, {position, distance});
 }
 function installDockGestures(dock) {
     if (!dock) return;
     const holdMs = 240;
     let press = null;
     let blockUntil = 0;
-    const items = () => [...dock.querySelectorAll('.sf-dock-item')];
+    const tabs = [...dock.querySelectorAll('.sf-dock-item')];
+    const items = () => tabs;
     const clearVisuals = () => {
-        dock.classList.remove('is-scrubbing');
+        dock.classList.remove('is-scrubbing', 'is-pressing');
+        markDockActive(current);
         items().forEach(item => item.classList.remove('is-pressed','is-preview'));
     };
     const stop = () => {
@@ -122,10 +138,13 @@ function installDockGestures(dock) {
     const preview = item => {
         items().forEach(el => el.classList.toggle('is-preview', el === item));
         if (press) press.choice = item;
+        if (item) dock.style.setProperty('--sf-dock-index', tabs.indexOf(item));
+        dock.classList.toggle('has-selection', !!item);
     };
     const activate = () => {
         if (!press || press.dragging) return;
         press.dragging = true;
+        if (press.pointer) dock.setPointerCapture(press.id);
         dock.classList.add('is-scrubbing');
         press.item.classList.remove('is-pressed');
         preview(press.choice);
@@ -133,6 +152,8 @@ function installDockGestures(dock) {
     const begin = (item, x, y, id) => {
         if (!item || dock.classList.contains('is-collapsed')) return;
         stop();
+        blockUntil = 0;
+        dock.classList.add('is-pressing');
         press = {id, item, choice:item, x, y, dragging:false, timer:null};
         item.classList.add('is-pressed');
         const gestureId = id;
@@ -155,12 +176,12 @@ function installDockGestures(dock) {
         if (!press || press.id !== id) return;
         if (!press.dragging) { stop(); return; } // Native link click on simple tap.
         if (event.cancelable !== false) event.preventDefault();
-        const item = dockCandidate(dock, x, y) || press.choice;
+        const item = dockCandidate(dock, x, y);
         stop();
         blockUntil = Date.now() + 700; // Consume Safari's synthetic click.
         if (!item) return;
         const view = item.dataset.dockView;
-        if (view === 'search' || view === 'cart') open(view);
+        if (view === 'search' || view === 'cart') open(view, {currentTarget:item, preventDefault(){}});
         else if (item.href) window.location.assign(item.href);
     };
     // iOS Safari may cancel pointer capture when the finger leaves an <a>.
@@ -182,7 +203,9 @@ function installDockGestures(dock) {
     // Mouse/trackpad and pen also work without generating a second touch navigation.
     dock.addEventListener('pointerdown',event => {
         if (event.pointerType === 'touch' || event.button !== 0) return;
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
         begin(event.target.closest('.sf-dock-item'),event.clientX,event.clientY,event.pointerId);
+        if (press) press.pointer = true;
     });
     dock.addEventListener('pointermove',event => {
         if (event.pointerType !== 'touch') move(event,event.clientX,event.clientY,event.pointerId);
@@ -191,14 +214,20 @@ function installDockGestures(dock) {
         if (event.pointerType !== 'touch') finish(event,event.clientX,event.clientY,event.pointerId);
     });
     dock.addEventListener('pointercancel',event => { if (event.pointerType !== 'touch') stop(); });
+    dock.addEventListener('lostpointercapture',event => { if (event.pointerType !== 'touch') stop(); });
+    window.addEventListener('blur',stop);
+    window.addEventListener('resize',stop);
     dock.addEventListener('contextmenu',event => { if (press) event.preventDefault(); });
     dock.addEventListener('click',event => {
-        if (Date.now() >= blockUntil) return;
+        if (event.detail === 0 || Date.now() >= blockUntil) return;
         event.preventDefault();
         event.stopImmediatePropagation();
         blockUntil = 0;
     },true);
-    dock.querySelector('.sf-dock-handle')?.addEventListener('click',() => setDockCollapsed(false));
+    dock.querySelector('.sf-dock-handle')?.addEventListener('click',event => {
+        setDockCollapsed(false);
+        if (event.detail === 0) dock.querySelector('.is-active, .sf-dock-item')?.focus({preventScroll:true});
+    });
 }
 function preventInitialAccountAutoFocus() {
     const account = document.body.classList.contains('woocommerce-account')
@@ -231,10 +260,13 @@ function open(name, event) {
     event?.preventDefault();
     dialog ||= $('#sf-panel');
     if (!dialog || typeof dialog.showModal !== 'function') { if (name !== 'menu') location.href = config()[name] || config().shop; return; }
-    if (!dialog.open) {
-        opener = document.activeElement; savedY = window.scrollY;
+    const opening = !dialog.open;
+    if (!opening && current === name) return;
+    const previous = current;
+    if (opening) {
+        opener = event?.target?.closest?.('[data-panel]') || event?.currentTarget || document.activeElement; savedY = window.scrollY;
         const bodyRect = document.body.getBoundingClientRect();
-        savedBodyStyle = rememberStyle(document.body, ['position', 'top', 'width']);
+        savedBodyStyle = rememberStyle(document.body, ['position', 'top', 'width', 'padding-right']);
         const bar = $('#wpadminbar');
         if (bar) {
             const barRect = bar.getBoundingClientRect();
@@ -243,11 +275,12 @@ function open(name, event) {
             // when the body becomes a new containing block.
             bar.style.position = 'fixed'; bar.style.top = `${barRect.top}px`;
         }
+        const scrollbar = window.innerWidth - document.documentElement.clientWidth;
+        if (scrollbar > 0) document.body.style.paddingRight = `${parseFloat(getComputedStyle(document.body).paddingRight) + scrollbar}px`;
         // Preserve the rendered body origin, including WordPress's html top margin.
-        document.body.style.position = 'fixed'; document.body.style.top = `${bodyRect.top}px`; document.body.style.width = `${bodyRect.width}px`;
+        document.body.style.position = 'fixed'; document.body.style.top = `${bodyRect.top}px`; document.body.style.width = '100%';
         adminOffset();
         mountDock();
-        dialog.showModal();
     }
     if (current === 'search' && name !== 'search') {
         clearTimeout(searchTimer);
@@ -265,7 +298,7 @@ function open(name, event) {
     dialog.setAttribute('aria-label', name === 'menu' ? (menuTrigger?.getAttribute('aria-label') || 'Menu') : name === 'search' ? t('Search products') : t('Your cart'));
     dialog.removeAttribute('aria-labelledby');
     for (const section of ['menu','search','cart']) $(`#sf-${section}`).hidden = name !== section;
-    $('.sf-cart-bottom').hidden = true;
+    $('.sf-cart-bottom').hidden = name !== 'cart' || !cartData?.items.length;
     $('#sf-status').textContent = '';
     $('#sf-panel-title').textContent = name === 'menu' ? '' : name === 'search' ? t('Search products') : t('Your cart');
     document.querySelectorAll('[data-panel]').forEach(el => el.setAttribute('aria-expanded', String(el.dataset.panel === name)));
@@ -275,13 +308,31 @@ function open(name, event) {
     dialog.querySelectorAll('.sf-initial-focus').forEach(el => el.classList.remove('sf-initial-focus'));
     const initialFocus = name === 'search' ? $('.sf-search-cancel') : $('.sf-close');
     initialFocus.classList.add('sf-initial-focus');
+    // Native dialog focuses this button even when a previous session focused the query.
+    dialog.querySelectorAll('[autofocus]').forEach(el => el.removeAttribute('autofocus'));
+    initialFocus.setAttribute('autofocus', '');
+    if (opening) dialog.showModal();
     initialFocus.focus({preventScroll:true});
     if (name === 'menu') { menuPath = []; paintMenu(); }
     if (name === 'search') { syncSearchControls(); search(); }
     if (name === 'cart') refreshCart();
+    animatePanelContent(name === 'search' ? $('.sf-search-content') : $(`#sf-${name}`), previous === 'cart' && name === 'search' ? -1 : 1);
+}
+// Animate content, never the full-screen dialog: transforming it changes the
+// containing block of the fixed dock on Safari. Repeated actions cancel cleanly.
+function animatePanelContent(element, direction = 1) {
+    panelMotion?.cancel();
+    panelMotion = null;
+    if (reducedMotion.matches || !element?.animate) return;
+    panelMotion = element.animate([
+        {opacity:0, transform:`translate3d(${direction * 8}px,0,0)`},
+        {opacity:1, transform:'translate3d(0,0,0)'},
+    ], {duration:160, easing:'cubic-bezier(.2,.8,.2,1)'});
+    panelMotion.onfinish = () => { panelMotion = null; };
 }
 function close() {
     if (!dialog?.open) return;
+    panelMotion?.cancel(); panelMotion = null;
     dialog.classList.remove('is-open');
     document.querySelectorAll('[data-panel]').forEach(el => el.setAttribute('aria-expanded','false'));
     searchController?.abort(); ++searchSequence; clearTimeout(searchTimer);
@@ -290,7 +341,9 @@ function close() {
     restoreStyle(document.body, savedBodyStyle); savedBodyStyle = null;
     const bar = $('#wpadminbar'); if (bar) restoreStyle(bar, savedAdminStyle);
     savedAdminStyle = null; dialog.style.removeProperty('--sf-admin-offset');
-    window.scrollTo(0, savedY); opener?.focus({preventScroll:true});
+    window.scrollTo({top:savedY, left:0, behavior:'instant'});
+    dockScrollPositions.set(window, {position:savedY, distance:0});
+    if (opener?.isConnected) opener.focus({preventScroll:true});
 }
 function paintMenu() {
     const root = $('#sf-menu .sf-menu-list');
@@ -396,11 +449,11 @@ async function changeCart(button) {
             if (!['woocommerce_rest_invalid_nonce','woocommerce_rest_missing_nonce'].includes(error.code)) throw error;
             await requestCart(); data = await requestCart(isRemove ? '/remove-item' : '/update-item',payload);
         }
-        paintCart(data); $('#sf-status').textContent = t('Cart updated.');
+        paintCart(data); if (current === 'cart') $('#sf-status').textContent = t('Cart updated.');
     } catch(error) {
         if (error.cart) paintCart(error.cart);
         else { try { paintCart(await requestCart()); } catch { if (cartData) paintCart(cartData); } }
-        $('#sf-status').textContent = error.message;
+        if (current === 'cart') $('#sf-status').textContent = error.message;
     } finally {
         mutating = false; $('#sf-cart').setAttribute('aria-busy','false'); $('.sf-cart-bottom').inert = false;
         if (current === 'cart' && dialog.open) {
@@ -413,9 +466,14 @@ function init() {
     preventInitialAccountAutoFocus();
     dialog = $('#sf-panel'); if (!dialog) return;
     installDockGestures(mobileDock());
+    markDockActive(null);
+    dockScrollPositions.set(window, {position:window.scrollY, distance:0});
     window.addEventListener('scroll',handleDockScroll,{passive:true});
     dialog.addEventListener('scroll',handleDockScroll,{passive:true,capture:true});
-    window.addEventListener('pageshow',() => setDockCollapsed(false));
+    window.addEventListener('pageshow',() => {
+        setDockCollapsed(false);
+        dockScrollPositions.set(window, {position:window.scrollY, distance:0});
+    });
     window.addEventListener('resize', () => {
         if (dialog.open) adminOffset();
     });
@@ -445,10 +503,10 @@ function init() {
     menu?.classList.add('enhanced');
     menu?.querySelectorAll('.sub-menu').forEach(sub => {
         const button = document.createElement('button'); button.className = 'sf-submenu-toggle'; button.textContent = '›'; button.setAttribute('aria-label', sub.parentElement.querySelector('a').textContent); button.setAttribute('aria-expanded','false');
-        button.addEventListener('click', () => {menuPath.push(sub.parentElement);paintMenu();$('#sf-menu .sf-back').focus();});
+        button.addEventListener('click', () => {menuPath.push(sub.parentElement);paintMenu();animatePanelContent($('#sf-menu'));$('#sf-menu .sf-back').focus({preventScroll:true});});
         sub.before(button);
     });
-    $('#sf-menu .sf-back').addEventListener('click', () => {const item = menuPath.pop();paintMenu();item?.querySelector('.sf-submenu-toggle')?.focus();});
+    $('#sf-menu .sf-back').addEventListener('click', () => {const item = menuPath.pop();paintMenu();animatePanelContent($('#sf-menu'),-1);item?.querySelector('.sf-submenu-toggle')?.focus({preventScroll:true});});
     dialog.addEventListener('click',event => {
         const b = event.target.closest('button'); if (!b) return;
         if (b.matches('[data-qty],[data-remove]')) changeCart(b);
@@ -461,3 +519,4 @@ function init() {
     window.addEventListener('pageshow',event => {if(event.persisted){cartData=null;if(current === 'cart')refreshCart();}});
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',init,{once:true}); else init();
+
