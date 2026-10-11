@@ -1,3 +1,5 @@
+/* Woo guest submit controls consume this same Button primitive without template overrides.
+   Native Woo POST, nonce, validation and registered third-party hooks remain intact. */
 /**
  * Theme UI Kit primitives. Variants share hit targets, pointer responses,
  * disabled states and keyboard focus. Page layout belongs elsewhere.
@@ -83,7 +85,7 @@
   opacity:.4;
   cursor:default;
 }
-.sf-shell .sf-ui-button{
+:is(.sf-shell .sf-ui-button, body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit]){
   display:inline-flex;
   align-items:center;
   justify-content:center;
@@ -99,7 +101,7 @@
   transition:filter var(--sf-ui-motion-press) var(--sf-ui-ease-press),
     transform var(--sf-ui-motion-press) var(--sf-ui-ease-press);
 }
-.sf-shell .sf-ui-button--primary{
+:is(.sf-shell .sf-ui-button--primary, body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit]){
   background:var(--sf-ui-ink);
   color:#fff;
 }
@@ -114,12 +116,12 @@
   color:var(--sf-ui-control-ink);
 }
 .sf-shell .sf-ui-button .sf-ui-button-label{display:inline-flex;align-items:center}
-.sf-shell .sf-ui-button:is(:disabled,[aria-disabled="true"],[aria-busy="true"]){
+:is(.sf-shell .sf-ui-button, body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit]):is(:disabled,[aria-disabled="true"],[aria-busy="true"]){
   opacity:.44;
   cursor:default;
   pointer-events:none;
 }
-.sf-shell .sf-ui-button:is(:disabled,[aria-disabled="true"],[aria-busy="true"]):active{
+:is(.sf-shell .sf-ui-button, body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit]):is(:disabled,[aria-disabled="true"],[aria-busy="true"]):active{
   transform:none;
   filter:none;
 }
@@ -134,7 +136,7 @@
 }
 @keyframes sf-ui-spin{to{transform:rotate(360deg)}}
 
-.sf-shell .sf-ui-button:active{transform:scale(.985);filter:brightness(1.08)}
+:is(.sf-shell .sf-ui-button, body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit]):active{transform:scale(.985);filter:brightness(1.08)}
 .sf-shell .sf-ui-pressable{
   transition:transform var(--sf-ui-motion-press) var(--sf-ui-ease-press);
 }
@@ -146,6 +148,7 @@
   .sf-shell .sf-ui-icon-button,
   .sf-shell .sf-ui-icon-button .sf-icon,
   .sf-shell .sf-ui-button,
+  body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit],
   .sf-shell .sf-ui-pressable{transition:none!important}
   .sf-shell .sf-ui-spinner{animation:none!important}
 }
