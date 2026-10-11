@@ -14,7 +14,7 @@ let activeHeader=header;
 const checkout = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8',env:{...process.env,FIXTURE_CHECKOUT:'1'}});
 const footer = execFileSync(php, ['tests/render-footer.php'], {encoding:'utf8',env:{...process.env,FOOTER_PRIVACY:'1',FOOTER_TERMS:'1',FOOTER_NOTE:'1'}});
 assert(!checkout.includes('class="sf-mobile-dock'), 'Checkout omits the dock');
-const css = ['assets/styles/tokens.css','assets/storefront.css','assets/styles/overlay.css','assets/styles/navigation.css','assets/styles/components.css'].map(p=>fs.readFileSync('theme/codela-storefront/'+p,'utf8')).join('\n');
+const css = ['assets/styles/tokens.css','assets/storefront.css','assets/styles/overlay.css','assets/styles/navigation.css','assets/styles/components.css','assets/styles/account-overlay.css'].map(p=>fs.readFileSync('theme/codela-storefront/'+p,'utf8')).join('\n');
 const moduleSource = name => fs.readFileSync(
  'theme/codela-storefront/assets/scripts/'+name+'.js','utf8'
  ).replace(/^import .*;$/gm,'').replace(/^export /gm,'');
@@ -166,6 +166,19 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  await click('search');
  assert(!(await page.evaluate(()=>window.focusLog)).includes('sf-query'),'Reopening must never briefly focus query');
  await page.locator('.sf-search-cancel').click();
+ // Guest Account shares Search/Cart's native modal and Woo form.
+ await click('account');
+ assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),true,'Guest Account opens dialog');
+ assert.equal(await page.locator('#sf-account').isVisible(),true,'WooCommerce login is the active section');
+ assert.equal(await page.locator('#sf-account form.woocommerce-form-login').count(),1,'Native login form retained');
+ assert.equal(await page.locator('#sf-account form.woocommerce-form-login').getAttribute('action'),'https://store.test/myaccount/','Login submits to genuine Account URL');
+ assert.equal(page.url(),'https://store.test/','Guest Account does not reload');
+ await click('search');
+ assert.equal(await page.locator('#sf-account').isVisible(),false,'Search hides Account in same dialog');
+ await click('account');
+ assert.equal(await page.locator('#sf-account').isVisible(),true,'Account returns without page load');
+ await click('home');
+ assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),false,'Home dismisses guest Account');
  // On the already-rendered Home page, Search/Cart -> Home must just close.
  await page.evaluate(()=>{window.samePageDocumentMarker='home';});
  for(const popup of ['search','cart']){
@@ -186,6 +199,11 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
    emit('touchstart',x,y);if(hold)await new Promise(r=>setTimeout(r,260));emit('touchmove',b.left+b.width/2,y);emit('touchend',b.left+b.width/2,outside?y-130:y,true);
   },{from,to,outside,hold});
  }
+ await scrub(0,3);
+ assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),true,'Account gesture opens modal');
+ assert.equal(await page.locator('#sf-account').isVisible(),true,'Scrub displays native Woo login');
+ await scrub(3,0);
+ assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),false,'Home gesture closes Account');
  await scrub(0,2);
  assert.equal(await page.locator('#sf-panel').getAttribute('open'),'','Scrub opens modal instead of leaving page');
  assert.equal(page.url(),'https://store.test/');
@@ -317,6 +335,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  assert.equal(await page.locator('#wpadminbar').evaluate(el=>el.style.position),'absolute');
  // Disabled mobile dock uses the very same three header tools as desktop.
  // Full page loads start at their server-rendered selection, before any JavaScript.
+ assert.equal(accountHeader.includes('data-panel="account"'),false,'Logged-in account remains real page link');
  for(const [markup,path,index] of [[accountHeader,'myaccount/edit-address',3],[header,'home',0]]){
   activeHeader=markup;
   await page.goto('https://store.test/'+path);
