@@ -123,7 +123,10 @@ export function createOverlayController({
         dialog.setAttribute('aria-label', name === 'menu' ? menuLabel : name === 'search' ? t('Search products') : name === 'account' ? t('My account') : t('Your cart'));
         $('.sf-panel-top .sf-close').hidden = name === 'menu';
         dialog.removeAttribute('aria-labelledby');
-        for (const section of ['menu','search','cart','account']) $(`#sf-${section}`).hidden = name !== section;
+        for (const section of ['menu','search','cart','account']) {
+            const panel = $(`#sf-${section}`);
+            if (panel) panel.hidden = name !== section;
+        }
         $('.sf-cart-bottom').hidden = name !== 'cart' || !cartFeature.getData()?.items.length;
         $('#sf-status').textContent = '';
         $('#sf-panel-title').textContent = name === 'menu' ? '' : name === 'search' ? t('Search products') : name === 'account' ? t('My account') : t('Your cart');
