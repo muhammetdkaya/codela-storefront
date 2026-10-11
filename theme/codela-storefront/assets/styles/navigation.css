@@ -221,13 +221,13 @@
 }
 .sf-shell .sf-header .sf-actions .sf-ui-icon-button{border-radius:var(--sf-ui-pill)}
 @media(max-width:700px){
-  .sf-shell .sf-header{height:72px}
+  .sf-shell .sf-header{height:68px}
   .sf-shell.has-mobile-dock .sf-header{
     grid-template-columns:minmax(0,1fr) var(--sf-ui-hit);
-    padding-left:16px;padding-right:16px;column-gap:12px;
+    padding-left:20px;padding-right:20px;column-gap:12px;
   }
   .sf-shell.has-mobile-dock .sf-header .sf-brand{
-    max-width:min(220px,calc(100vw - 104px));justify-self:start;
+    max-width:min(220px,calc(100vw - 108px));justify-self:start;
   }
   .sf-shell.has-header-tools .sf-header{
     grid-template-columns:var(--sf-ui-hit) minmax(0,1fr) auto;
