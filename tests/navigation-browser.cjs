@@ -181,6 +181,10 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
    sameLine:Math.abs(remember.top+remember.height/2-forgot.top-forgot.height/2)<10,
    submitBg:getComputedStyle(submit).backgroundColor,
    fieldHeight:input.height,
+   submitHeight:submit.getBoundingClientRect().height,
+   submitMinHeight:getComputedStyle(submit).minHeight,
+   toolbarTitleSize:getComputedStyle(document.querySelector('#sf-panel-title')).fontSize,
+   bodyPaddingTop:parseFloat(getComputedStyle(root).paddingTop),
    toolbarBottom:document.querySelector('#sf-panel .sf-panel-top').getBoundingClientRect().bottom,
    formTop:root.querySelector('form.woocommerce-form-login').getBoundingClientRect().top,
    subtitle:root.textContent.includes('Manage your orders and account details.')};
@@ -188,7 +192,11 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  assert(compactAuth.inlineLabel,'Modal native field label stays inside input');
  assert(compactAuth.sameLine,'Modal remember and password recovery share a row');
  assert.equal(compactAuth.submitBg,'rgb(37, 39, 42)','Native modal submit uses shared primary Button');
- assert(compactAuth.fieldHeight<=56,'Popup fields use the compact shared UI Kit control height');
+ assert(compactAuth.fieldHeight>=54&&compactAuth.fieldHeight<=56,'Popup fields preserve the shared 54px input height');
+ assert.equal(compactAuth.submitMinHeight,'52px','Popup submit uses shared compact 52px Button token');
+ assert(compactAuth.submitHeight>=52&&compactAuth.submitHeight<=54,'Popup submit keeps accessible compact touch target');
+ assert.equal(compactAuth.toolbarTitleSize,'23px','Existing popup title uses the agreed 23px type');
+ assert(compactAuth.bodyPaddingTop<=12,'Login form starts close to the shared dialog toolbar');
  assert(compactAuth.formTop-compactAuth.toolbarBottom<70,'Popup form avoids oversized blank space below toolbar');
  assert.equal(compactAuth.subtitle,false,'Account popup has no descriptive subtitle');
  assert.equal(await page.locator('#sf-account form.woocommerce-form-login').getAttribute('action'),'https://store.test/myaccount/','Login submits to genuine Account URL');
