@@ -93,6 +93,8 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
        assert.equal(actionSize.font,'15px','Compact guest CTA type uses shared Button font token');
 
       assert.equal(controls.fieldRadius,'12px','Inputs follow the same UI Kit control radius');
+      assert.equal(await page.locator('#username').evaluate(el=>getComputedStyle(el).backgroundColor),
+        'rgb(255, 255, 255)','Guest input is a clean outlined white field, not a bulky gray surface');
       assert(controls.fieldHeight>=54&&controls.fieldHeight<=56,'Guest input uses 54px shared action height');
       const fieldAlignment=await page.evaluate(()=>{
        const input=document.querySelector('#username');
@@ -138,7 +140,12 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
           const style=getComputedStyle(el);
           return {width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height,
             background:style.backgroundColor,radius:style.borderRadius,display:style.display,
-            border:style.borderTopWidth,borderColor:style.borderTopColor};
+            border:style.borderTopWidth,borderColor:style.borderTopColor,
+            textCenter:el.querySelector('.sf-ui-button-label').getBoundingClientRect().left+
+              el.querySelector('.sf-ui-button-label').getBoundingClientRect().width/2,
+            buttonCenter:el.getBoundingClientRect().left+el.getBoundingClientRect().width/2,
+            glyphRight:el.querySelector('.sf-google-glyph').getBoundingClientRect().right,
+            textLeft:el.querySelector('.sf-ui-button-label').getBoundingClientRect().left};
         });
         const parent=await page.locator('.sf-auth-social').boundingBox();
         assert(social.width>=parent.width-2,'Google Button fills same form width');
@@ -154,11 +161,20 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
         })));
         assert.equal(social.border,'1px','Google secondary UI Kit Button must retain its visible border');
         assert.notEqual(social.borderColor,social.background,'Google outline must contrast with white surface');
-        assert(['flex','inline-flex'].includes(social.display),'Google Button retains shared flex button layout');
+        assert.equal(social.display,'grid','Google content uses aligned grid inside the shared Button');
+        assert(Math.abs(social.textCenter-social.buttonCenter)<1,
+          'Google label is centered in the complete Button regardless of glyph width');
+        assert(social.textLeft-social.glyphRight>=7&&social.textLeft-social.glyphRight<=14,
+          'The Google mark has a consistent gap and never overlaps its label');
         await page.locator('.sf-auth-social').evaluate(el=>el.remove());
         await page.locator('.woocommerce').evaluate((node,markup)=>node.insertAdjacentHTML('beforeend',markup),unconfiguredGoogle);
         const googleButton=page.locator('.sf-auth-google[popovertarget]');
         assert(await googleButton.isVisible(),'Google remains visible without configuration');
+        const inactiveAlignment=await googleButton.evaluate(el=>{
+          const box=el.getBoundingClientRect(),label=el.querySelector('.sf-ui-button-label').getBoundingClientRect();
+          return Math.abs((label.left+label.width/2)-(box.left+box.width/2));
+        });
+        assert(inactiveAlignment<1,'Unconfigured Google Button preserves the same exact text alignment');
         await googleButton.click();
         assert.equal(await page.locator('.sf-google-setup-notice').evaluate(el=>el.matches(':popover-open')),true,'Native notification opens on tap');
         assert.equal(await page.locator('.sf-google-setup-notice').innerText(),'Google sign-in is not configured yet.');
