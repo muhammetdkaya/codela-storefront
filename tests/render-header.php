@@ -26,8 +26,9 @@ function get_option( ...$args ) { return ''; }
 function get_bloginfo( ...$args ) { return 'CODELA'; }
 function has_custom_logo() { return false; }
 function is_checkout() { return getenv('FIXTURE_CHECKOUT') === '1'; }
-function is_front_page() { return getenv('FIXTURE_ACCOUNT') !== '1'; }
-function is_account_page() { return getenv('FIXTURE_ACCOUNT') === '1'; }
+function is_front_page() { return getenv('FIXTURE_ACCOUNT') !== '1' && getenv('FIXTURE_GUEST_ACCOUNT') !== '1'; }
+function is_account_page() { return getenv('FIXTURE_ACCOUNT') === '1' || getenv('FIXTURE_GUEST_ACCOUNT') === '1'; }
+function is_user_logged_in() { return getenv('FIXTURE_GUEST_ACCOUNT') !== '1'; }
 function get_privacy_policy_url() { return ''; }
 function add_query_arg( $args, $url ) { return $url.'?'.http_build_query($args); }
 function get_terms( ...$args ) { return [(object)['parent'=>0,'term_id'=>1,'name'=>'Collection'],(object)['parent'=>1,'term_id'=>2,'name'=>'Shoes']]; }
