@@ -33,6 +33,7 @@ function codela_sf_menu(): string {
 function codela_sf_header(): string {
     if ( ! codela_sf_ready() ) { return ''; }
     $settings = codela_theme_settings();
+    $show_mobile_dock = ! is_checkout() && ! in_array( $settings['mobile_dock_enabled'] ?? true, [ false, 0, '0', '' ], true );
     $labels = [];
     foreach ( [ 'Loading…', 'Search products', 'No matching products.', 'Something went wrong. Please try again.', 'Your cart is empty.', 'Remove', 'Quantity', 'Decrease quantity', 'Increase quantity', 'Back', 'View all', 'Cart updated.', 'Retry', 'Your cart', 'Item added to cart.', 'Subtotal', 'Shipping and discounts are calculated at checkout.' ] as $label ) {
         $labels[ $label ] = __( $label, 'codela-storefront' ); // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
@@ -46,7 +47,7 @@ function codela_sf_header(): string {
         'labels' => $labels,
     ] ] );
     ob_start(); ?>
-    <div data-wp-interactive="codela/storefront" class="sf-shell">
+    <div data-wp-interactive="codela/storefront" class="sf-shell <?php echo $show_mobile_dock ? 'has-mobile-dock' : 'has-header-tools'; ?>">
         <a class="sf-skip" href="#sf-content"><?php esc_html_e( 'Skip to content', 'codela-storefront' ); ?></a>
         <header class="sf-header">
             <nav class="sf-header-menu" aria-label="<?php esc_attr_e( 'Main menu', 'codela-storefront' ); ?>">
@@ -56,10 +57,12 @@ function codela_sf_header(): string {
             <nav class="sf-actions" aria-label="<?php esc_attr_e( 'Store tools', 'codela-storefront' ); ?>">
                 <a class="sf-icon-button" href="<?php echo esc_url( add_query_arg( [ 's' => '', 'post_type' => 'product' ], home_url( '/' ) ) ); ?>" data-wp-on--click="actions.search" data-panel="search" aria-label="<?php esc_attr_e( 'Search', 'codela-storefront' ); ?>" aria-haspopup="dialog" aria-expanded="false"><?php echo codela_sf_icon( 'search' ); ?></a>
                 <a class="sf-icon-button" href="<?php echo esc_url( wc_get_cart_url() ); ?>" data-wp-on--click="actions.cart" data-panel="cart" aria-label="<?php esc_attr_e( 'Your cart', 'codela-storefront' ); ?>" aria-haspopup="dialog" aria-expanded="false"><?php echo codela_sf_icon( 'shopping-bag' ); ?><span class="sf-badge" aria-hidden="true"></span></a>
+                <a class="sf-icon-button sf-account-link" href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>" aria-label="<?php esc_attr_e( 'My account', 'codela-storefront' ); ?>"><?php echo codela_sf_icon( 'user-round' ); ?></a>
             </nav>
         </header>
-        <?php if ( ! is_checkout() ) : ?>
+        <?php if ( $show_mobile_dock ) : ?>
         <nav class="sf-mobile-dock" aria-label="<?php esc_attr_e( 'Mobile navigation', 'codela-storefront' ); ?>">
+            <div class="sf-dock-surface">
             <a data-dock-view="home" class="sf-dock-item <?php echo esc_attr( is_front_page() ? 'is-active' : '' ); ?>" href="<?php echo esc_url( home_url( '/' ) ); ?>" <?php if ( is_front_page() ) : ?>aria-current="page"<?php endif; ?>>
                 <?php echo codela_sf_icon( 'house' ); ?><span><?php esc_html_e( 'Home', 'codela-storefront' ); ?></span>
             </a>
@@ -72,6 +75,7 @@ function codela_sf_header(): string {
             <a data-dock-view="account" class="sf-dock-item <?php echo esc_attr( is_account_page() ? 'is-active' : '' ); ?>" href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>" <?php if ( is_account_page() ) : ?>aria-current="page"<?php endif; ?>>
                 <?php echo codela_sf_icon( 'user-round' ); ?><span><?php esc_html_e( 'My account', 'codela-storefront' ); ?></span>
             </a>
+            </div>
             <button type="button" class="sf-dock-handle" tabindex="-1" aria-hidden="true" aria-label="<?php esc_attr_e( 'Show navigation', 'codela-storefront' ); ?>"></button>
         </nav>
         <?php endif; ?>
@@ -151,4 +155,5 @@ function codela_sf_footer(): string {
 
     return $html . '</div></footer>';
 }
+
 

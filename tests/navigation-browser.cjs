@@ -6,6 +6,10 @@ const {execFileSync} = require('node:child_process');
 const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const php = process.env.PHP_BIN || 'php';
 const header = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8'});
+const noDockHeader = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8',env:{...process.env,FIXTURE_DOCK:'0'}});
+assert(!noDockHeader.includes('class="sf-mobile-dock"'), 'Disabled setting omits dock');
+assert.equal(header,execFileSync(php,['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_DOCK:'1'}}),'Unset defaults to enabled');
+let activeHeader=header;
 const checkout = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8',env:{...process.env,FIXTURE_CHECKOUT:'1'}});
 const footer = execFileSync(php, ['tests/render-footer.php'], {encoding:'utf8',env:{...process.env,FOOTER_PRIVACY:'1',FOOTER_TERMS:'1',FOOTER_NOTE:'1'}});
 assert(!checkout.includes('class="sf-mobile-dock"'), 'Checkout omits the dock');
@@ -27,7 +31,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
   if(url.includes('/api/cart')) {cartRequests++;return route.fulfill({json:cart,headers:{Nonce:'test'}});}
   if(url.includes('/search-api')) {searchRequests++;const q=new URL(url).searchParams.get('q');await new Promise(r=>setTimeout(r,q==='old'?180:10));return route.fulfill({json:[{name:q,url:'/product/',image:'',price:'10',sku:q}]});}
   if(url.includes('/assets/icons/')) return route.fulfill({contentType:'image/svg+xml',body:fs.readFileSync('theme/codela-storefront/assets/icons/'+url.split('/').at(-1),'utf8')});
-  return route.fulfill({contentType:'text/html',body:`<!doctype html><html lang="en"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>.screen-reader-text{position:absolute!important;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}${css}</style></head><body>${header}<main style="height:3200px;padding:30px">Store content</main>${footer}</body></html>`});
+  return route.fulfill({contentType:'text/html',body:`<!doctype html><html lang="en"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>.screen-reader-text{position:absolute!important;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}${css}</style></head><body>${activeHeader}<main style="height:3200px;padding:30px">Store content</main>${footer}</body></html>`});
  });
  await page.goto('https://store.test/');
  const footerMetrics = await page.locator('.sf-footer').evaluate(root => {
@@ -90,13 +94,32 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  await scrub(1,2,true);
  assert.equal(await page.locator('.sf-dock-item.is-active').getAttribute('data-dock-view'),'search','Outside release cancels');
  await page.locator('.sf-search-cancel').click();
+ // Freeze the real CSS transition mid-flight: it must move AND shrink while still visible.
+ await page.evaluate(()=>document.querySelector('.sf-mobile-dock').classList.add('is-collapsed'));
+ await page.evaluate(()=>new Promise(requestAnimationFrame));
+ const shrinking=await page.locator('.sf-dock-surface').evaluate(el=>{
+  for(const a of el.getAnimations()){a.pause();a.currentTime=150;}
+  const style=getComputedStyle(el), matrix=new DOMMatrix(style.transform);
+  return {scale:matrix.a,y:matrix.f,opacity:Number(style.opacity)};
+ });
+ assert(shrinking.scale<.99 && shrinking.scale>.58 && shrinking.y>0 && shrinking.opacity>.9,'Visible downward shrinking phase');
+ await page.locator('.sf-dock-surface').evaluate(el=>el.getAnimations().forEach(a=>a.finish()));
+ await page.evaluate(()=>document.querySelector('.sf-mobile-dock').classList.remove('is-collapsed'));
+ await page.evaluate(()=>new Promise(requestAnimationFrame));
+ const growing=await page.locator('.sf-dock-surface').evaluate(el=>{
+  for(const a of el.getAnimations()){a.pause();a.currentTime=180;}
+  const s=getComputedStyle(el),m=new DOMMatrix(s.transform);
+  return {scale:m.a,y:m.f,opacity:Number(s.opacity)};
+ });
+ assert(growing.scale>.58 && growing.scale<1 && growing.y>0 && growing.opacity>.9,'Visible upward growing phase');
+ await page.locator('.sf-dock-surface').evaluate(el=>el.getAnimations().forEach(a=>a.finish()));
  // Safe-area travel, cumulative slow scroll, native scroll restoration, resize.
  await page.evaluate(()=>{document.activeElement.blur();document.querySelector('.sf-mobile-dock').style.setProperty('--sf-dock-bottom','46px');window.scrollTo(0,100)});
  await page.waitForTimeout(50);
  await page.evaluate(()=>document.querySelector('.sf-dock-handle').click());
  for(let y=102;y<=126;y+=2){await page.evaluate(y=>window.scrollTo(0,y),y);await page.waitForTimeout(20);}
  assert(await dock.evaluate(el=>el.classList.contains('is-collapsed')),'Slow scroll accumulates');
- await page.waitForTimeout(280);
+ await page.waitForTimeout(420);
  assert(await dock.locator('a').evaluateAll(xs=>xs.every(x=>x.getBoundingClientRect().top>=innerHeight)),'All tabs move beyond safe-area viewport');
  assert(await page.locator('.sf-dock-handle').isVisible(),'Only reveal handle remains');
  await page.locator('.sf-dock-handle').click();
@@ -142,17 +165,43 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  await page.evaluate(()=>{document.querySelector('#sf-results').style.height='2400px';document.querySelector('#sf-search').scrollTop=40});
  await page.waitForTimeout(30);
  await page.evaluate(()=>document.querySelector('#sf-search').scrollTop=150);
- await page.waitForTimeout(280);
+ await page.waitForTimeout(420);
  assert(await dock.evaluate(el=>el.classList.contains('is-collapsed')));
  await page.evaluate(()=>document.querySelector('#sf-search').scrollTop=110);
- await page.waitForTimeout(280);
+ await page.waitForTimeout(420);
  assert(!(await dock.evaluate(el=>el.classList.contains('is-collapsed'))));
  if(process.env.QA_SCREENSHOT) await page.screenshot({path:process.env.QA_SCREENSHOT});
  await page.locator('.sf-search-cancel').click();
  assert.equal(await page.evaluate(()=>scrollY),20);
  assert.equal(await page.locator('#wpadminbar').evaluate(el=>el.style.position),'absolute');
+ // Disabled mobile dock uses the very same three header tools as desktop.
+ activeHeader=noDockHeader;
+ await page.goto('https://store.test/no-dock');
+ await page.addScriptTag({content:js});
+ await page.evaluate(()=>document.addEventListener('click',event=>{const el=event.target.closest('[data-wp-on--click]');if(el)window.sfActions[el.getAttribute('data-wp-on--click').split('.')[1]](event);}));
+ for(const width of [320,390,700,1024]){
+  await page.setViewportSize({width,height:844});
+  assert.equal(await page.locator('.sf-mobile-dock').count(),0);
+  assert.equal(await page.locator('.sf-actions a:visible').count(),3);
+  if(width===390 && process.env.QA_HEADER)await page.screenshot({path:process.env.QA_HEADER});
+  assert.equal(await page.locator('.sf-account-link').getAttribute('href'),'https://store.test/myaccount/');
+  const layout=await page.locator('.sf-header').evaluate(el=>{
+   const boxes=[...el.querySelectorAll('a')].map(x=>x.getBoundingClientRect());
+   return {fits:boxes.every(b=>b.left>=0&&b.right<=innerWidth&&b.width>=44),overflow:document.documentElement.scrollWidth>innerWidth,padding:parseFloat(getComputedStyle(document.body).paddingBottom)};
+  });
+  assert(layout.fits && !layout.overflow,'No-dock tools fit even 320px');assert.equal(layout.padding,0);
+  for(const mode of ['search','cart']){
+   await page.locator('.sf-header [data-panel="'+mode+'"]').click();
+   assert.equal(await page.locator('#sf-panel').getAttribute('open'),'');
+   if(mode==='cart')await page.waitForTimeout(40);
+   assert.equal(await page.locator('.sf-mobile-dock').count(),0);
+   if(mode==='cart') assert(parseFloat(await page.locator('.sf-cart-bottom').evaluate(el=>getComputedStyle(el).paddingBottom))<80,'No phantom dock clearance');
+   await page.locator(mode==='search'?'.sf-search-cancel':'.sf-panel-top .sf-close').click();
+  }
+ }
  assert.deepEqual(errors,[]);
  assert(searchRequests>0);
  console.log('Browser navigation: real PHP markup, 4 viewport sizes, touch/hold/outside release, scroll/safe-area, focus/reopen, API race, rapid switching and reduced motion passed.');
  } finally {await browser.close();}
 })().catch(e=>{console.error(e);process.exit(1)});
+

@@ -438,3 +438,15 @@ Source [8308f35](https://github.com/muhammetdkaya/codela-storefront/commit/8308f
 
 ### Codela My Account ownership fix deployed (0.1.16, 2026-10-11)
 The plugin's `Codela\Includes\MyAccountLayout` is the source of truth for authenticated account UI, including order dashboard, profile, cargo tracking and custom menu links. The theme must **never** register an authenticated heading on WooCommerce's `before_account_navigation` hook or style account components when the `codela-my-account-layout` body class is present. Only the guest login UI remains themed; the site's WordPress post-title is hidden on the plugin-owned signed-in page to avoid duplicate headings. [GitHub Actions 38129810982](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38129810982) completed validation and standalone FTPS deployment successfully. Do not change the independent Codela plugin for this theme-only issue. Live authenticated iPhone UI still needs device acceptance.
+
+
+
+## Son doğrulanmış devam noktası — 11 Ekim 2026 / Storefront 0.1.17 kaynağı
+
+- Güncel `c35e0ea` / 0.1.16 üzerine çalışıldı: tek satır footer, guest login ve Codela oturum içi Hesabım sahipliği/izolasyonu aynen korunur. Tema **0.1.16 → 0.1.17**, CSS/JS cache beraber yükseldi.
+- Header şemasında `mobile_dock_enabled` checkbox, varsayılan açık. **Codela > Ayarlar > Tema > Header > Mobil alt menü** kapatılınca alt nav HTML'si üretilmez; boş alt padding/checkout clearance kalmaz. Kapalı mobil mod ve desktop aynı arama/sepet/hesap linklerini kullanır. Desktop'a mevcut yerel user-round ikonu ile Hesabım eklendi. Mobil kapalı mod desktop sırasını (menü/marka/ara-sepet-hesap) dar ekrana sığdırır; açık modda logo solda/menü sağda düzeni korunur. Ödeme ekranında dock hâlâ yoktur.
+- Alt barın ikonları, yüzeyi ve seçili kapsülü tek `.sf-dock-surface` içinde beraber hareket eder. Sabit nav ve 44px çizgi hedefi korunur. Aşağı kaydırırken 380ms boyunca aşağı iner ve %58 ölçeğe küçülür; opaklık ancak son 100ms'de söner. Yukarıda/çizgiye dokununca büyüyerek geri gelir. Dokunma, scrub, aktif kapsül ve reduced-motion korunur.
+- Ayar motorunda generic checkbox desteği için bağımsız Codela köprüsü `07418c938e2d099e330e6c03d332a826e3c3b67f`. Eklenti 1.1.1; WordPress.org yayını yok. Tema seçeneğinin tanımı hâlâ tema şemasındadır.
+- Doğrulama: PHP lint, Node arama/dock/footer, 14 Python testi ve gerçek PHP çıktısı kullanan Chromium nav testi geçti. 320/390/700/1024px açık/kapalı header, arama/sepet, hesabım URL'si, varsayılan ayar, checkout, phantom padding ve görünür ara-kare küçülme/büyüme kontrol edildi. CI güncel account/footer testlerini de çalıştırır; canlı Safari kabulü yapılmadı.
+- Yayın: kaynak hazır, iki deponun CI/FTPS sonuçları bekleniyor. Sıradaki iş: köprü ve tema dağıtımını doğrula, bu kaydı tamamla; canlı Header ayarını kapat/aç ve iPhone Safari'de bar küçülme/büyüme hissini kontrol et. Canlı müşterilerin ayarı bu çalışma sırasında kendiliğinden kapatılmadı.
+

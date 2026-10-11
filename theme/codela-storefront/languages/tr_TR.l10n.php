@@ -1,5 +1,7 @@
 <?php
 return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR', 'plural-forms' => 'nplurals=2; plural=(n > 1);', 'messages' => [
+'Mobile bottom navigation' => 'Mobil alt menü',
+'Show the bottom navigation on mobile. When disabled, search, cart and account appear in the header, as on desktop.' => 'Mobilde alt menüyü göster. Kapatıldığında arama, sepet ve hesabım ikonları masaüstündeki gibi üst alanda görünür.',
 'Theme' => 'Tema',
 'Download' => 'İndir',
 'Install theme' => 'Temayı yükle',
@@ -77,3 +79,4 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'The store is temporarily unavailable. Please try again later.' => 'Mağaza geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.',
 'Codela Storefront requires the current Codela Commerce Toolkit plugin with theme support and WooCommerce 9.0+. Activate or update these plugins, or switch to another theme.' => 'Codela Storefront için tema destekli güncel Codela Commerce Toolkit ve WooCommerce 9.0+ gereklidir. Eklentileri etkinleştirin veya güncelleyin; ya da başka bir temaya geçin.',
 ] ];
+

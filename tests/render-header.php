@@ -3,7 +3,7 @@
 // This is a DOM contract fixture, not a substitute for full WordPress integration.
 define('ABSPATH', __DIR__);
 function codela_sf_ready() { return true; }
-function codela_theme_settings() { return ['menu_id'=>0, 'brand'=>'CODELA']; }
+function codela_theme_settings() { return ['menu_id'=>0, 'brand'=>'CODELA'] + (getenv('FIXTURE_DOCK') === false ? [] : ['mobile_dock_enabled'=>getenv('FIXTURE_DOCK')]); }
 function __( $s, ...$args ) { return $s; }
 function esc_html__( $s, ...$args ) { return htmlspecialchars($s, ENT_QUOTES); }
 function esc_html_e( $s, ...$args ) { echo esc_html__($s); }
@@ -34,3 +34,4 @@ function get_term_link( $term ) { return home_url('/category/'.$term->term_id.'/
 function is_wp_error( ...$args ) { return false; }
 require __DIR__.'/../theme/codela-storefront/inc/render.php';
 echo codela_sf_header();
+

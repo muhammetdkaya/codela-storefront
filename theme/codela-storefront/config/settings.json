@@ -19,6 +19,13 @@
           "type": "menu",
           "label": "Main menu",
           "description": "Choose an existing WordPress menu, or use automatic product categories."
+        },
+        {
+          "id": "mobile_dock_enabled",
+          "type": "checkbox",
+          "default": true,
+          "label": "Mobile bottom navigation",
+          "description": "Show the bottom navigation on mobile. When disabled, search, cart and account appear in the header, as on desktop."
         }
       ]
     },

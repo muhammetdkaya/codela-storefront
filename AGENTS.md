@@ -2,6 +2,15 @@
 
 Bu dosya depo genelinde çalışan asistanlar içindir. Kullanıcının güncel talimatları önceliklidir.
 
+## Son doğrulanmış devam noktası — 11 Ekim 2026 / Storefront 0.1.17 kaynağı
+
+- Güncel `c35e0ea` / 0.1.16 üzerine çalışıldı: tek satır footer, guest login ve Codela oturum içi Hesabım sahipliği/izolasyonu aynen korunur. Tema **0.1.16 → 0.1.17**, CSS/JS cache beraber yükseldi.
+- Header şemasında `mobile_dock_enabled` checkbox, varsayılan açık. **Codela > Ayarlar > Tema > Header > Mobil alt menü** kapatılınca alt nav HTML'si üretilmez; boş alt padding/checkout clearance kalmaz. Kapalı mobil mod ve desktop aynı arama/sepet/hesap linklerini kullanır. Desktop'a mevcut yerel user-round ikonu ile Hesabım eklendi. Mobil kapalı mod desktop sırasını (menü/marka/ara-sepet-hesap) dar ekrana sığdırır; açık modda logo solda/menü sağda düzeni korunur. Ödeme ekranında dock hâlâ yoktur.
+- Alt barın ikonları, yüzeyi ve seçili kapsülü tek `.sf-dock-surface` içinde beraber hareket eder. Sabit nav ve 44px çizgi hedefi korunur. Aşağı kaydırırken 380ms boyunca aşağı iner ve %58 ölçeğe küçülür; opaklık ancak son 100ms'de söner. Yukarıda/çizgiye dokununca büyüyerek geri gelir. Dokunma, scrub, aktif kapsül ve reduced-motion korunur.
+- Ayar motorunda generic checkbox desteği için bağımsız Codela köprüsü `07418c938e2d099e330e6c03d332a826e3c3b67f`. Eklenti 1.1.1; WordPress.org yayını yok. Tema seçeneğinin tanımı hâlâ tema şemasındadır.
+- Doğrulama: PHP lint, Node arama/dock/footer, 14 Python testi ve gerçek PHP çıktısı kullanan Chromium nav testi geçti. 320/390/700/1024px açık/kapalı header, arama/sepet, hesabım URL'si, varsayılan ayar, checkout, phantom padding ve görünür ara-kare küçülme/büyüme kontrol edildi. CI güncel account/footer testlerini de çalıştırır; canlı Safari kabulü yapılmadı.
+- Yayın: kaynak hazır, iki deponun CI/FTPS sonuçları bekleniyor. Sıradaki iş: köprü ve tema dağıtımını doğrula, bu kaydı tamamla; canlı Header ayarını kapat/aç ve iPhone Safari'de bar küçülme/büyüme hissini kontrol et. Canlı müşterilerin ayarı bu çalışma sırasında kendiliğinden kapatılmadı.
+
 ## Son doğrulanmış devam noktası — 11 Ekim 2026 / Storefront 0.1.13
 
 - Kullanıcının header, alt menü, hız ve geçiş kalitesini iyileştirme isteği uygulandı. Tema **0.1.12 → 0.1.13**; eklenti sürümü değişmez.
@@ -47,7 +56,7 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - Tema ayarlarının altında Header (Üst alan), Footer (Alt alan) ve geliştirilen diğer bölümler için ayrı alt menüler bulunmalı; tüm ayarları tek uzun forma yığma. Bir tema bölümü geliştirilirken gerekli ayarları aynı çalışmada ilgili alt menüye ekle; temanın tamamlanmasını bekleme.
 - Küçük değişikliklerde de mevcut codela.dev otomatik dağıtımı açık kalır. Bağlantılı değişiklikleri topluca yap, yalnız ilgili dosyaları incele ve dağıtım sonuçlarını gereksiz tekrarlarla sorgulama. WordPress.org yayını ayrı yetki gerektirir.
 - Tasarım sade ve ürün odaklıdır. Kullanıcının aradığı özgünlük, karmaşık veya bilim kurgu dekorları eklemek anlamına gelmez. Sayfaları kullanım amacı ve örneklerle değerlendirerek tek tek geliştir.
-- Header: mobilde logo solda, menü sağda; arama/sepet altta. Masaüstünde menü solda, logo merkezde, arama/sepet sağda.
+- Header: mobil alt menü varsayılan açık ve Header ayarından kapatılabilir. Açıkken logo solda/menü sağda; kapalıyken desktop ile ortak menü/marka/arama-sepet-hesap düzeni. Masaüstünde alt menü yok, Hesabım dahil araçlar header içinde.
 - Menü, arama ve sepet aynı görsel/etkileşim dilinde **tam ekran** açılır. Onaylanan yön Apple örneğindeki tam ekran menüdür; sayfayı yana iten menü önceki alternatifti.
 - Menü/arama/sepet aynı native dialog içinde açılır. Güncel 0.1.13 kararı: dialog geometrisi sabit, içerik 160ms kısa geçiş; kapatma bekletmez. İkon kökenli büyüme uygulanmaz. Hareket azaltma tercihi, klavye, odak ve kaydırma konumu korunur.
 - Arama hızlı ve doğru olmalı; gecikmiş eski sonuç yeni sorguyu ezmemeli. Mevcut sürümün yazım hatası toleransı olmayan aramasını gelişmiş arama gibi tanıtma.
@@ -286,3 +295,4 @@ Source [8308f35](https://github.com/muhammetdkaya/codela-storefront/commit/8308f
 
 ### 0.1.16 rollout verified — 11 October 2026
 The double account heading shown on iPhone was reproduced by reviewing source ownership: Codela's `MyAccountLayout` fires Woo's `woocommerce_before_account_navigation` hook, which the theme's 0.1.15 intro had subscribed to. The theme 0.1.16 removes its signed-in intro, keeps only guest login markup, and excludes `body.codela-my-account-layout` from all 90 new account CSS selectors. Only the redundant WordPress post title is suppressed when Codela is active. [Commit c8c5d0b](https://github.com/muhammetdkaya/codela-storefront/commit/c8c5d0b8b32bf76ccb9d39cf7457b944a43703db), [Actions 38129810982](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38129810982): validate **success**, FTPS deploy **success**. Codela plugin repository unchanged. Pending manual acceptance: logged-in iPhone Safari orders, shipment tracking, addresses, overlays, guest login, logout and screenshots.
+
