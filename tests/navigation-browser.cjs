@@ -239,10 +239,28 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
   if(width<=700){assert(Math.abs(box.x-x.x)<1);assert(Math.abs(box.y-x.y)<1,'Menu/X share vertical center');}
   assert.equal(await dock.isVisible(),false,'Menu hides dock');
   await close.click();
+  await page.locator('#sf-panel').waitFor({state:'hidden'});
   if(width<=700){await click('search');const searchX=await page.locator('.sf-search-cancel').boundingBox();assert(Math.abs(box.x-searchX.x)<1,`Search X shares header hit target: ${width} header=${JSON.stringify(box)} search=${JSON.stringify(searchX)}`);assert(Math.abs(box.y-searchX.y)<1);await page.locator('.sf-search-cancel').click();}
   assert.equal(await page.evaluate(()=>scrollY),0,'Header close restores top');
  }
  await page.setViewportSize({width:390,height:844});
+ // Menu opening/closing is animated; reopening cancels a pending close.
+ await page.evaluate(()=>window.sfActions.menu());
+ assert(await page.locator('#sf-panel').evaluate(el=>el.getAnimations().length>0),'Menu has opening animation');
+ await page.waitForTimeout(280);
+ await page.evaluate(()=>window.sfActions.close());
+ assert(await page.locator('#sf-panel').evaluate(el=>el.open && el.getAnimations().length>0),'Menu stays modal during animated close');
+ await page.evaluate(()=>window.sfActions.menu());
+ await page.waitForTimeout(220);
+ assert(await page.locator('#sf-panel').evaluate(el=>el.open),'Reopen cancels pending menu close');
+ await page.evaluate(()=>window.sfActions.close());
+ await page.locator('#sf-panel').waitFor({state:'hidden'});
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.evaluate(()=>window.sfActions.menu());
+ assert.equal(await page.locator('#sf-panel').evaluate(el=>el.getAnimations().length),0);
+ await page.evaluate(()=>window.sfActions.close());
+ assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),false,'Reduced motion closes immediately');
+ await page.emulateMedia({reducedMotion:'no-preference'});
  // Rapid switching cancels old animation, leaves one active section, no modal flicker.
  await page.evaluate(()=>{for(let i=0;i<12;i++)window.sfActions[i%2?'cart':'search']();});
  await page.waitForTimeout(180);

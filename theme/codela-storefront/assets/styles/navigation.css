@@ -45,7 +45,7 @@
     bottom:var(--sf-dock-bottom);
     max-width:430px;
     margin:0 auto;
-    min-height:64px;
+    min-height:58px;
     border-radius:999px;
     color:#28282c;
     isolation:isolate;
@@ -59,7 +59,7 @@
     grid-template-columns:repeat(4,minmax(0,1fr));
     position:relative;
     isolation:isolate;
-    min-height:62px;
+    min-height:56px;
     padding:4px;
     border:1px solid rgba(255,255,255,.8);
     border-radius:999px;
@@ -95,13 +95,13 @@
     justify-content:center;
     gap:2px;
     min-width:0;
-    min-height:54px;
+    min-height:48px;
     border-radius:999px;
     color:#28282c;
     background:transparent;
     text-decoration:none!important;
     position:relative;
-    padding:5px 2px;
+    padding:3px 2px;
     touch-action:pan-y;
     -webkit-tap-highlight-color:transparent;
   }

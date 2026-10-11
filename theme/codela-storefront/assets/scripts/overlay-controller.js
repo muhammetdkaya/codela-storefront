@@ -10,6 +10,7 @@ export function createOverlayController({
 }) {
     let dialog = null, current = null, opener = null, savedY = 0;
     let savedBodyStyle = null, savedAdminStyle = null, panelMotion = null;
+    let surfaceMotion = null, closing = false;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     function adminOffset() {
@@ -34,8 +35,14 @@ export function createOverlayController({
         event?.preventDefault();
         dialog ||= $('#sf-panel');
         if (!dialog || typeof dialog.showModal !== 'function') { if (name !== 'menu') location.href = config()[name] || config().shop; return; }
+        if (closing) {
+            surfaceMotion?.cancel(); surfaceMotion = null;
+            panelMotion?.cancel(); panelMotion = null;
+            closing = false;
+        }
         const opening = !dialog.open;
         if (!opening && current === name) return;
+        surfaceMotion?.cancel(); surfaceMotion = null;
         const previous = current;
         if (opening) {
             opener = event?.target?.closest?.('[data-panel]') || event?.currentTarget || document.activeElement; savedY = window.scrollY;
@@ -87,6 +94,9 @@ export function createOverlayController({
         if (name === 'search') searchFeature.start();
         if (name === 'cart') cartFeature.refresh();
         animatePanelContent(name === 'search' ? $('.sf-search-content') : $(`#sf-${name}`), previous === 'cart' && name === 'search' ? -1 : 1);
+        if (name === 'menu' && !reducedMotion.matches && dialog.animate) {
+            surfaceMotion = dialog.animate([{opacity:0},{opacity:1}], {duration:220,easing:'ease-out'});
+        }
     }
     // Animate content, never the full-screen dialog: transforming it changes the
     // containing block of the fixed dock in some browsers. Repeated actions cancel cleanly.
@@ -94,15 +104,33 @@ export function createOverlayController({
         panelMotion?.cancel();
         panelMotion = null;
         if (reducedMotion.matches || !element?.animate) return;
+        const menu = element.id === 'sf-menu';
         panelMotion = element.animate([
-            {opacity:0, transform:`translate3d(${direction * 8}px,0,0)`},
+            {opacity:0, transform:menu ? 'translate3d(0,-16px,0)' : `translate3d(${direction * 8}px,0,0)`},
             {opacity:1, transform:'translate3d(0,0,0)'},
-        ], {duration:160, easing:'cubic-bezier(.2,.8,.2,1)'});
+        ], {duration:menu ? 260 : 160, easing:'cubic-bezier(.2,.8,.2,1)'});
         panelMotion.onfinish = () => { panelMotion = null; };
     }
     function close() {
-        if (!dialog?.open) return;
+        if (!dialog?.open || closing) return;
         panelMotion?.cancel(); panelMotion = null;
+        surfaceMotion?.cancel(); surfaceMotion = null;
+        if (current === 'menu' && !reducedMotion.matches && dialog.animate) {
+            closing = true;
+            panelMotion = $('#sf-menu').animate([
+                {opacity:1,transform:'translate3d(0,0,0)'},
+                {opacity:0,transform:'translate3d(0,-12px,0)'},
+            ], {duration:180,easing:'ease-in',fill:'forwards'});
+            surfaceMotion = dialog.animate([{opacity:1},{opacity:0}], {duration:180,easing:'ease-in',fill:'forwards'});
+            surfaceMotion.onfinish = finishClose;
+            return;
+        }
+        finishClose();
+    }
+    function finishClose() {
+        surfaceMotion?.cancel(); surfaceMotion = null;
+        panelMotion?.cancel(); panelMotion = null;
+        closing = false;
         dialog.classList.remove('is-open');
         document.querySelectorAll('[data-panel]').forEach(el => el.setAttribute('aria-expanded','false'));
         searchFeature.cancel();
