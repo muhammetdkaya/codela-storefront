@@ -55,7 +55,7 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
       const input=page.locator('#username');
       assert.equal(await input.evaluate(el=>getComputedStyle(el).fontSize),'16px','Avoid mobile keyboard zoom');
       assert((await input.boundingBox()).height>=46,'Text input is touch accessible');
-      assert((await page.locator('.woocommerce-form-login__submit').boundingBox()).height>=54,'Submit uses UI Kit action height');
+      assert((await page.locator('.woocommerce-form-login__submit').boundingBox()).height>=52,'Guest submit uses compact UI Kit action height');
       const controls=await page.evaluate(()=>{
        const shell=document.createElement('div');
        shell.className='sf-shell';
@@ -83,8 +83,17 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
       assert.equal(controls.sameRadius,true,'Native Woo buttons reuse the shared control radius');
       assert.equal(controls.samePadding,true,'Native Woo buttons reuse shared button spacing');
       assert.equal(controls.sameMotion,true,'Native Woo and UI Kit buttons share press feedback');
+       const actionSize=await page.locator('.woocommerce-form-login__submit').evaluate(el=>{
+         const st=getComputedStyle(el);
+         return {height:el.getBoundingClientRect().height,min:st.minHeight,font:st.fontSize,
+           paddingTop:st.paddingTop,paddingBottom:st.paddingBottom};
+       });
+       assert(actionSize.height>=52&&actionSize.height<=54,'Native login uses the 52px common Button sizing');
+       assert.equal(actionSize.min,'52px','Guest Button token is scoped to the account, not global design');
+       assert.equal(actionSize.font,'15px','Compact guest CTA type uses shared Button font token');
+
       assert.equal(controls.fieldRadius,'12px','Inputs follow the same UI Kit control radius');
-      assert(controls.fieldHeight>=54,'Guest input uses shared action height');
+      assert(controls.fieldHeight>=54&&controls.fieldHeight<=56,'Guest input uses 54px shared action height');
       const fieldAlignment=await page.evaluate(()=>{
        const input=document.querySelector('#username');
        const label=document.querySelector('label[for="username"]');
@@ -133,7 +142,7 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
         });
         const parent=await page.locator('.sf-auth-social').boundingBox();
         assert(social.width>=parent.width-2,'Google Button fills same form width');
-        assert(social.height>=54,'Google Button reuses shared action hit size');
+        assert(social.height>=52&&social.height<=54,'Google Button reuses compact UI Kit action height');
         assert.equal(social.background,'rgb(255, 255, 255)','Google Button is neutral white, not a custom orange CTA');
         assert.equal(social.radius,'12px','Google Button uses the shared control radius');
         if(social.border!=='1px')console.error('Secondary Button computed styles',social,await page.locator('.sf-auth-google').evaluate(el=>({
@@ -160,6 +169,13 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
       if(type==='register'){
         await page.addScriptTag({content:authJS});
         assert.equal(await page.locator('.sf-auth-tabs').isVisible(),true,'Tabs appear when Woo renders registration');
+        const tabs=await page.locator('.sf-auth-tabs').evaluate(el=>{
+         const selected=el.querySelector('[aria-selected="true"]');
+         return {height:selected.getBoundingClientRect().height,shadow:getComputedStyle(selected).boxShadow};
+        });
+        assert.equal(tabs.height,44,'Account tabs use 44px shared navigation height');
+        assert.notEqual(tabs.shadow,'none','Selected tab retains a subtle surface distinction');
+
         assert.equal(await page.locator('#customer_login .u-column2').isVisible(),false,'Login selected by default');
         await page.locator('[data-auth-tab="register"]').click();
         assert.equal(await page.locator('#customer_login .u-column2').isVisible(),true,'Registration tab shows the native register form');
