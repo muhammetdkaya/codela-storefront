@@ -343,4 +343,4 @@ create parallel stores or second navigation listeners.
 - Real PHP header fixture and browser tests cover 320–1360px. A Site Editor
   database-customized Woo checkout template can override theme files; do
   not overwrite customized templates without inspection or user confirmation.
-- Automated styling checks do not prove a live gateway/order placement.
+- [GitHub Actions 38174815133](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38174815133) passed validate (PHP, JS, browser layout) and independent theme deploy for source `2d45345`. Actual Safari/checkout gateway testing remains outstanding; automation does not prove a real order placement.
