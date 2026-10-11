@@ -450,3 +450,11 @@ The plugin's `Codela\Includes\MyAccountLayout` is the source of truth for authen
 - Doğrulama: PHP lint, Node arama/dock/footer, 14 Python testi ve gerçek PHP çıktısı kullanan Chromium nav testi geçti. 320/390/700/1024px açık/kapalı header, arama/sepet, hesabım URL'si, varsayılan ayar, checkout, phantom padding ve görünür ara-kare küçülme/büyüme kontrol edildi. GitHub CI içinde güncel account/footer testleri de geçti; canlı Safari kabulü yapılmadı.
 - Yayın: tema kaynak `5679b4a6ef9f24b1eb7fa0ac7d3fb9555c76dca8`, [Actions 38130928343](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38130928343) validate + FTPS deploy başarılı; log: `Storefront deployed; checks passed.` Köprü `07418c938e2d099e330e6c03d332a826e3c3b67f`, [Actions 38130707958](https://github.com/muhammetdkaya/codela/actions/runs/38130707958) validate + deploy başarılı: 983 dosya checksum ile doğrulandı, bootstrap geçişi ve public sağlık kontrolleri geçti. Free edition [38130707988](https://github.com/muhammetdkaya/codela/actions/runs/38130707988) başarılı. Sıradaki iş: canlı Header ayarını kapat/aç ve iPhone Safari'de bar küçülme/büyüme hissini kontrol et. Canlı müşterilerin ayarı bu çalışma sırasında kendiliğinden kapatılmadı.
 
+
+## Son doğrulanmış devam noktası — 11 Ekim 2026 / Storefront 0.1.18
+
+- Tema 0.1.17 → 0.1.18: gizlenince kalan çizgi 12px aşağı taşındı; sabit 44px dokunma hedefi ekran içinde kaldı.
+- Barın aşağı kayıp küçülmesi / yukarı çıkıp büyümesi 380ms → 480ms. Daha yavaş başlangıçlı easing ve %48 son ölçek; opaklık son 100ms'de söner. Çizgi 320ms gecikmeyle belirir. Reduced-motion değişmez; yalnız transform/opacity hareket eder.
+- Doğrulama: 14 Python paket/dağıtım testi ve gerçek PHP çıktılı Chromium nav regresyonu geçti (ara-kare küçülme/büyüme, safe-area, 44px çizgi hedefi, dokunma, paneller ve dört ekran genişliği). Gerçek iPhone Safari hissi elle doğrulanmadı.
+- Yayın: kaynak hazır; GitHub CI/bağımsız tema FTPS sonucu bekleniyor. Eklenti değişmedi. Sıradaki iş: yayın sonucunu kaydet, iPhone'da çizgi konumu ve belirginleşen geçişi kontrol et.
+

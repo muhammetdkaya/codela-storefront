@@ -102,7 +102,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
   const style=getComputedStyle(el), matrix=new DOMMatrix(style.transform);
   return {scale:matrix.a,y:matrix.f,opacity:Number(style.opacity)};
  });
- assert(shrinking.scale<.99 && shrinking.scale>.58 && shrinking.y>0 && shrinking.opacity>.9,'Visible downward shrinking phase');
+ assert(shrinking.scale<.99 && shrinking.scale>.48 && shrinking.y>0 && shrinking.opacity>.9,'Visible downward shrinking phase');
  await page.locator('.sf-dock-surface').evaluate(el=>el.getAnimations().forEach(a=>a.finish()));
  await page.evaluate(()=>document.querySelector('.sf-mobile-dock').classList.remove('is-collapsed'));
  await page.evaluate(()=>new Promise(requestAnimationFrame));
@@ -111,7 +111,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
   const s=getComputedStyle(el),m=new DOMMatrix(s.transform);
   return {scale:m.a,y:m.f,opacity:Number(s.opacity)};
  });
- assert(growing.scale>.58 && growing.scale<1 && growing.y>0 && growing.opacity>.9,'Visible upward growing phase');
+ assert(growing.scale>.48 && growing.scale<1 && growing.y>0 && growing.opacity>.9,'Visible upward growing phase');
  await page.locator('.sf-dock-surface').evaluate(el=>el.getAnimations().forEach(a=>a.finish()));
  // Safe-area travel, cumulative slow scroll, native scroll restoration, resize.
  await page.evaluate(()=>{document.activeElement.blur();document.querySelector('.sf-mobile-dock').style.setProperty('--sf-dock-bottom','46px');window.scrollTo(0,100)});
@@ -119,9 +119,15 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  await page.evaluate(()=>document.querySelector('.sf-dock-handle').click());
  for(let y=102;y<=126;y+=2){await page.evaluate(y=>window.scrollTo(0,y),y);await page.waitForTimeout(20);}
  assert(await dock.evaluate(el=>el.classList.contains('is-collapsed')),'Slow scroll accumulates');
- await page.waitForTimeout(420);
+ await page.waitForTimeout(520);
  assert(await dock.locator('a').evaluateAll(xs=>xs.every(x=>x.getBoundingClientRect().top>=innerHeight)),'All tabs move beyond safe-area viewport');
  assert(await page.locator('.sf-dock-handle').isVisible(),'Only reveal handle remains');
+ const handleGeometry=await page.locator('.sf-dock-handle').evaluate(el=>{
+  const box=el.getBoundingClientRect(), line=getComputedStyle(el,'::after');
+  return {height:box.height,bottom:box.bottom,lineY:new DOMMatrix(line.transform).f};
+ });
+ assert(handleGeometry.height>=44 && handleGeometry.bottom<=844,'Reveal touch target stays within viewport');
+ assert.equal(handleGeometry.lineY,12,'Reveal line sits 12px lower without moving the touch target');
  await page.locator('.sf-dock-handle').click();
  assert(!(await dock.evaluate(el=>el.classList.contains('is-collapsed'))));
  await click('search');
@@ -165,10 +171,10 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  await page.evaluate(()=>{document.querySelector('#sf-results').style.height='2400px';document.querySelector('#sf-search').scrollTop=40});
  await page.waitForTimeout(30);
  await page.evaluate(()=>document.querySelector('#sf-search').scrollTop=150);
- await page.waitForTimeout(420);
+ await page.waitForTimeout(520);
  assert(await dock.evaluate(el=>el.classList.contains('is-collapsed')));
  await page.evaluate(()=>document.querySelector('#sf-search').scrollTop=110);
- await page.waitForTimeout(420);
+ await page.waitForTimeout(520);
  assert(!(await dock.evaluate(el=>el.classList.contains('is-collapsed'))));
  if(process.env.QA_SCREENSHOT) await page.screenshot({path:process.env.QA_SCREENSHOT});
  await page.locator('.sf-search-cancel').click();

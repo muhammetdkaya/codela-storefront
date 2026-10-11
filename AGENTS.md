@@ -2,6 +2,13 @@
 
 Bu dosya depo genelinde çalışan asistanlar içindir. Kullanıcının güncel talimatları önceliklidir.
 
+## Son doğrulanmış devam noktası — 11 Ekim 2026 / Storefront 0.1.18
+
+- Tema 0.1.17 → 0.1.18: gizlenince kalan çizgi 12px aşağı taşındı; sabit 44px dokunma hedefi ekran içinde kaldı.
+- Barın aşağı kayıp küçülmesi / yukarı çıkıp büyümesi 380ms → 480ms. Daha yavaş başlangıçlı easing ve %48 son ölçek; opaklık son 100ms'de söner. Çizgi 320ms gecikmeyle belirir. Reduced-motion değişmez; yalnız transform/opacity hareket eder.
+- Doğrulama: 14 Python paket/dağıtım testi ve gerçek PHP çıktılı Chromium nav regresyonu geçti (ara-kare küçülme/büyüme, safe-area, 44px çizgi hedefi, dokunma, paneller ve dört ekran genişliği). Gerçek iPhone Safari hissi elle doğrulanmadı.
+- Yayın: kaynak hazır; GitHub CI/bağımsız tema FTPS sonucu bekleniyor. Eklenti değişmedi. Sıradaki iş: yayın sonucunu kaydet, iPhone'da çizgi konumu ve belirginleşen geçişi kontrol et.
+
 ## Son doğrulanmış devam noktası — 11 Ekim 2026 / Storefront 0.1.17
 
 - Güncel `c35e0ea` / 0.1.16 üzerine çalışıldı: tek satır footer, guest login ve Codela oturum içi Hesabım sahipliği/izolasyonu aynen korunur. Tema **0.1.16 → 0.1.17**, CSS/JS cache beraber yükseldi.
