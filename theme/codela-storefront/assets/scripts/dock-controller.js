@@ -209,7 +209,7 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
             blockUntil = Date.now() + 700; // Consume browser-generated click.
             if (!item) return;
             const view = item.dataset.dockView;
-            if (view === 'search' || view === 'cart') open(view, {currentTarget:item, preventDefault(){}});
+            if (item.dataset.panel && ['search','cart','account'].includes(view)) open(view, {currentTarget:item, preventDefault(){}});
             else if (!activateCurrentPage(item, event) && item.href) window.location.assign(item.href);
         };
         // Mobile browsers may cancel pointer capture when the finger leaves an <a>.
