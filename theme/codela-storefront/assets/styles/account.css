@@ -151,16 +151,6 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form .woocommerce-form-login__rememberme input{
   width:17px;height:17px;flex:none;accent-color:var(--sf-ui-ink);
 }
-body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form.woocommerce-form-login{
-  display:flex;flex-direction:column;
-}
-body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form.woocommerce-form-login :is(.lost_password,.woocommerce-LostPassword){
-  order:2;text-align:right;margin:0 0 9px;
-}
-body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form.woocommerce-form-login .form-row:has(button[type=submit]){
-  display:flex;flex-direction:column;align-items:stretch;gap:8px;
-  order:3;margin-bottom:0;
-}
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form :is(.lost_password,.woocommerce-LostPassword) a{
   color:var(--sf-ui-control-ink);font-size:13px;
   text-decoration:underline;text-underline-offset:4px;text-decoration-color:#bbbfc5;

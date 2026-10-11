@@ -70,6 +70,7 @@ $button = ob_get_clean();
 $results['button'] = str_contains( $button, 'sf-ui-button--secondary' ) &&
     str_contains( $button, 'Continue with Google' ) &&
     str_contains( $button, 'codela_sf_google_start' );
+$results['configured_has_no_notice'] = ! str_contains( $button, 'popovertarget' );
 $results['reject_unverified'] = kind( codela_sf_google_customer( [
     'sub' => 'abc-1', 'email' => 'unverified@gmail.com', 'email_verified' => false,
 ] ) );

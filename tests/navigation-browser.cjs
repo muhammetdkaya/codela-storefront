@@ -171,6 +171,21 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),true,'Guest Account opens dialog');
  assert.equal(await page.locator('#sf-account').isVisible(),true,'WooCommerce login is the active section');
  assert.equal(await page.locator('#sf-account form.woocommerce-form-login').count(),1,'Native login form retained');
+ const compactAuth=await page.locator('#sf-account').evaluate(root=>{
+  const input=root.querySelector('#test-login-username').getBoundingClientRect();
+  const label=root.querySelector('label[for="test-login-username"]').getBoundingClientRect();
+  const remember=root.querySelector('.woocommerce-form-login__rememberme').getBoundingClientRect();
+  const forgot=root.querySelector('.lost_password').getBoundingClientRect();
+  const submit=root.querySelector('button[type=submit]');
+  return {inlineLabel:label.top>=input.top && label.bottom<input.bottom-12,
+   sameLine:Math.abs(remember.top+remember.height/2-forgot.top-forgot.height/2)<10,
+   submitBg:getComputedStyle(submit).backgroundColor,
+   subtitle:root.textContent.includes('Manage your orders and account details.')};
+ });
+ assert(compactAuth.inlineLabel,'Modal native field label stays inside input');
+ assert(compactAuth.sameLine,'Modal remember and password recovery share a row');
+ assert.equal(compactAuth.submitBg,'rgb(37, 39, 42)','Native modal submit uses shared primary Button');
+ assert.equal(compactAuth.subtitle,false,'Account popup has no descriptive subtitle');
  assert.equal(await page.locator('#sf-account form.woocommerce-form-login').getAttribute('action'),'https://store.test/myaccount/','Login submits to genuine Account URL');
  assert.equal(page.url(),'https://store.test/','Guest Account does not reload');
  await click('search');

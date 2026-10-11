@@ -7,6 +7,8 @@ const render=env=>execFileSync(process.env.PHP_BIN||'php',['tests/render-account
 const intro=render({});
 const signed=render({ACCOUNT_SIGNED_IN:'1'});
 const authJS=fs.readFileSync('theme/codela-storefront/assets/scripts/auth.js','utf8');
+const nativeGoogleInfo=JSON.parse(execFileSync(process.env.PHP_BIN||'php',['tests/google-auth.php'],{encoding:'utf8'}));
+const unconfiguredGoogle=nativeGoogleInfo.disabled_button;
 const guestHeader=execFileSync(process.env.PHP_BIN||'php',['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_GUEST_ACCOUNT:'1'}});
 assert(guestHeader.includes('sf-auth-site-header') && guestHeader.includes('Back to store'),'Guest header returns to store');
 assert(!guestHeader.includes('sf-mobile-dock') && !guestHeader.includes('sf-panel'),'Guest header has no normal store dock or overlays');
@@ -14,6 +16,7 @@ assert(guestHeader.includes('arrow-right.svg'),'Back to store reuses the standar
 assert(!guestHeader.includes('↗'),'No Apple emoji-rendered arrow glyph');
 assert(intro.includes('My account'));
 assert(intro.includes('sf-auth-tabs'),'Guest intro offers progressive tabs');
+assert(!intro.includes('Manage your orders and account details.'),'Unnecessary account subtitle removed');
 assert.equal(signed,'','Signed-in Woo account never receives a duplicate theme header');
 assert.equal(render({ACCOUNT_OUTSIDE:'1'}),'','Do not inject account heading elsewhere');
 const fields='<p class="woocommerce-form-row form-row"><label for="username">Email address</label><input class="woocommerce-Input input-text" id="username" type="email" autocomplete="username" required></p>'+
@@ -82,6 +85,21 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
       assert.equal(controls.sameMotion,true,'Native Woo and UI Kit buttons share press feedback');
       assert.equal(controls.fieldRadius,'12px','Inputs follow the same UI Kit control radius');
       assert(controls.fieldHeight>=54,'Guest input uses shared action height');
+      const fieldAlignment=await page.evaluate(()=>{
+       const input=document.querySelector('#username');
+       const label=document.querySelector('label[for="username"]');
+       const a=input.getBoundingClientRect(),b=label.getBoundingClientRect();
+       const remember=document.querySelector('.woocommerce-form-login__rememberme').getBoundingClientRect();
+       const lost=document.querySelector('.woocommerce-LostPassword').getBoundingClientRect();
+       return {labelInside:b.top>=a.top && b.bottom<a.bottom-15, textPadding:parseFloat(getComputedStyle(input).paddingTop),
+        sameLine:Math.abs(remember.top+remember.height/2-lost.top-lost.height/2)<10,
+        rememberBeforeLost:remember.right<lost.left+5,
+        hasInputName:input.name||''};
+      });
+      assert(fieldAlignment.labelInside,'Woo label is rendered inside its actual field');
+      assert(fieldAlignment.textPadding>=26,'Typed value gets a separate line beneath the label');
+      assert(fieldAlignment.sameLine,'Remember me and lost-password share the same row');
+      assert(fieldAlignment.rememberBeforeLost,'Remember me stays left, password reset right');
       assert.equal(controls.registerPresent,type==='register','Registration follows native Woo setting');
       assert.equal(info.focus,'BODY','Opening account should not autofocus input');
       const compact=await page.evaluate(()=>{
@@ -118,6 +136,16 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
         assert.equal(social.background,'rgb(255, 255, 255)','Google Button is neutral white, not a custom orange CTA');
         assert.equal(social.radius,'12px','Google Button uses the shared control radius');
         assert(['flex','inline-flex'].includes(social.display),'Google Button retains shared flex button layout');
+        await page.locator('.sf-auth-social').evaluate(el=>el.remove());
+        await page.locator('.woocommerce').evaluate((node,markup)=>node.insertAdjacentHTML('beforeend',markup),unconfiguredGoogle);
+        const googleButton=page.locator('.sf-auth-google[popovertarget]');
+        assert(await googleButton.isVisible(),'Google remains visible without configuration');
+        await googleButton.click();
+        assert.equal(await page.locator('.sf-google-setup-notice').evaluate(el=>el.matches(':popover-open')),true,'Native notification opens on tap');
+        assert.equal(await page.locator('.sf-google-setup-notice').innerText(),'Google sign-in is not configured yet.');
+        await page.keyboard.press('Escape');
+        assert.equal(await page.locator('.sf-google-setup-notice').evaluate(el=>el.matches(':popover-open')),false,'Native notice closes on Escape');
+
       }
       if(type==='register'){
         await page.addScriptTag({content:authJS});

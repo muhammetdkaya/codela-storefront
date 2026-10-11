@@ -181,14 +181,27 @@ add_action( 'admin_post_codela_sf_google_callback', 'codela_sf_google_callback' 
 /** WooCommerce invokes this after its native login/registration forms. */
 function codela_sf_google_button(): void {
     if ( ! function_exists( 'is_account_page' ) || ( ! is_account_page() && empty( $GLOBALS['codela_sf_auth_overlay'] ) )
-        || is_user_logged_in() || ! codela_sf_google_enabled() ) { return; }
+        || is_user_logged_in() ) { return; }
+    $configured = codela_sf_google_enabled();
     ?>
     <div class="sf-shell sf-auth-social">
         <div class="sf-auth-divider"><span><?php esc_html_e( 'or', 'codela-storefront' ); ?></span></div>
+        <?php if ( $configured ) : ?>
         <a class="sf-auth-google sf-ui-button sf-ui-button--secondary" href="<?php echo esc_url( codela_sf_google_auth_url() ); ?>">
             <span class="sf-google-glyph" aria-hidden="true">G</span>
             <span class="sf-ui-button-label"><?php esc_html_e( 'Continue with Google', 'codela-storefront' ); ?></span>
         </a>
+        <?php else : ?>
+        <!-- Native HTML Popover API: uses the existing UI Kit Button, not another
+             notification component or a custom event handler. -->
+        <button class="sf-auth-google sf-ui-button sf-ui-button--secondary" type="button" popovertarget="sf-google-setup-notice" aria-controls="sf-google-setup-notice">
+            <span class="sf-google-glyph" aria-hidden="true">G</span>
+            <span class="sf-ui-button-label"><?php esc_html_e( 'Continue with Google', 'codela-storefront' ); ?></span>
+        </button>
+        <div id="sf-google-setup-notice" class="sf-google-setup-notice" popover="auto" role="status">
+            <?php esc_html_e( 'Google sign-in is not configured yet.', 'codela-storefront' ); ?>
+        </div>
+        <?php endif; ?>
     </div>
     <?php
 }
