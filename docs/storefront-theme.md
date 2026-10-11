@@ -493,3 +493,9 @@ Test additions: `tests/render-ui.php` and `tests/ui-kit.cjs` exercise markup reu
 The v0.1.22 shared UI Kit remains the source of control design. Mobile responsive header and floating dock are now `assets/styles/navigation.css`, while guest/vanilla Woo account styling is `assets/styles/account.css` and only loads on `is_account_page()`. Shared control CSS stays in `assets/styles/components.css`; page/layout CSS remains in `assets/storefront.css`. The existing 480ms dock movement, capsule, Safari touch handlers, bottom safe area, and Codela plugin account ownership are unchanged.
 
 Test fixtures load CSS in production order and 16 Python assertions cover file ownership. Do not claim a new live release until the GitHub Actions validate + standalone FTPS deploy both succeed. Next controlled refactor: overlay/search/cart CSS isolation, then JS controller separation with tests.
+
+## 0.1.24 — complete shared Button behavior (pending CI + FTP)
+
+`inc/ui.php` now includes the general `codela_sf_ui_button()` for true button or anchor semantics, with primary/secondary/quiet variants, submit/button/reset, optional icon placement, loading, disabled, escaped attributes, and disabled-link navigation suppression. The previous `codela_sf_ui_primary_link()` becomes a compatibility wrapper using this one renderer. `styles/components.css` owns every variant, pressed/focus/disabled/loading presentation and reduced-motion handling. Existing Head/Nav/Cart/X contract and plugin-owned logged-in account remain unchanged.
+
+`tests/render-ui.php` and `tests/ui-kit.cjs` cover accessible output; new Chromium `tests/ui-kit-browser.cjs` verifies shared sizes, visuals, semantic attributes, responsiveness and reduced-motion indicator. Workflow/16 Python assertions updated. Source creation is NOT deployment proof. Verify GitHub Actions validation and independent FTPS deployment; real Safari acceptance remains outstanding.

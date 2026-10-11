@@ -27,7 +27,8 @@ Codela's authenticated account remains plugin-owned.
 | Primitive | Use | States | Semantics |
 |---|---|---|---|
 | `codela_sf_ui_icon_button()` | Header Menu/Ara/Sepet/Hesabım, popup X, search clear | bare/soft/clear, pressed, focus, disabled | `<a>` for links; `<button type=button>` for actions |
-| `codela_sf_ui_primary_link()` | Checkout / hero discovery | pressed, keyboard focus | True `<a href>`; redirects without JavaScript |
+| `codela_sf_ui_button()` | Any primary/secondary/quiet action or link | pressed, focus, disabled, loading | Real `<button>` or `<a>`; type submit/button/reset |
+| `codela_sf_ui_primary_link()` | Existing checkout / hero discovery | pressed, keyboard focus | Compatibility wrapper around the Button component |
 | `.sf-ui-pressable` | Quantity +/−, cart removal, retry, submenu toggle | pressed/disabled/focus | Applied to existing semantic buttons |
 | `.sf-ui-nav-tab` | Floating iOS-style mobile navigation | selected, pressing, scrubbing, collapsed | Existing `Navigation Controller` owns touch and page routing |
 
@@ -57,6 +58,18 @@ echo codela_sf_ui_primary_link(
     wc_get_checkout_url(),
     __( 'Checkout', 'codela-storefront' )
 );
+echo codela_sf_ui_button(
+    __( 'Save', 'codela-storefront' ),
+    [ 'variant' => 'primary', 'type' => 'submit' ]
+);
+echo codela_sf_ui_button(
+    __( 'Cancel', 'codela-storefront' ),
+    [ 'variant' => 'secondary', 'disabled' => true ]
+);
+echo codela_sf_ui_button(
+    __( 'Continue', 'codela-storefront' ),
+    [ 'variant' => 'quiet', 'loading' => true ]
+);
 ```
 
 Allowed icon controls `bare` (default), `soft` (filled circular),
@@ -65,6 +78,12 @@ allowlisted `codela_sf_icon()`, accessible names are mandatory, attributes
 are allowlisted and escaped and URLs pass through `esc_url()`.
 The extra HTML argument is *internal trusted decoration only* (e.g. cart badge)
 and must not contain user-generated markup.
+
+The Button primitive accepts `href`, `type`, `variant`, `icon`,
+`icon_position`, `class`, `attributes`, `disabled`, `loading`.
+It sanitizes CSS classes, escapes content/attributes/URLs, disables real
+buttons and makes a disabled link non-navigable. Loading sets `aria-busy`
+and uses a CSS indicator that honours reduced motion.
 
 No fake clicks: `<button>` for actions, `<a>` for navigation. Prefer
 CSS `:active` for ordinary press feedback. No individual listener is needed

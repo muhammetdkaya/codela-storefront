@@ -84,6 +84,36 @@
   color:#fff;
 }
 .sf-shell .sf-ui-button--primary .sf-icon{filter:invert(1)}
+.sf-shell .sf-ui-button--secondary{
+  background:var(--sf-ui-surface);
+  color:var(--sf-ui-control-ink);
+  border:1px solid var(--sf-ui-border);
+}
+.sf-shell .sf-ui-button--quiet{
+  background:transparent;
+  color:var(--sf-ui-control-ink);
+}
+.sf-shell .sf-ui-button .sf-ui-button-label{display:inline-flex;align-items:center}
+.sf-shell .sf-ui-button:is(:disabled,[aria-disabled="true"],[aria-busy="true"]){
+  opacity:.44;
+  cursor:default;
+  pointer-events:none;
+}
+.sf-shell .sf-ui-button:is(:disabled,[aria-disabled="true"],[aria-busy="true"]):active{
+  transform:none;
+  filter:none;
+}
+.sf-shell .sf-ui-spinner{
+  width:16px;
+  height:16px;
+  flex:none;
+  border:2px solid currentColor;
+  border-right-color:transparent;
+  border-radius:50%;
+  animation:sf-ui-spin 700ms linear infinite;
+}
+@keyframes sf-ui-spin{to{transform:rotate(360deg)}}
+
 .sf-shell .sf-ui-button:active{transform:scale(.985);filter:brightness(1.08)}
 .sf-shell .sf-ui-pressable{
   transition:transform var(--sf-ui-motion-press) var(--sf-ui-ease-press);
@@ -96,4 +126,5 @@
   .sf-shell .sf-ui-icon-button .sf-icon,
   .sf-shell .sf-ui-button,
   .sf-shell .sf-ui-pressable{transition:none!important}
+  .sf-shell .sf-ui-spinner{animation:none!important}
 }

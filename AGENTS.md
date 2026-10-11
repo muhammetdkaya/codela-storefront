@@ -1,6 +1,6 @@
 # ACTIVE: Codela Storefront UI Kit architecture (from 0.1.22)
 
-All new theme controls MUST reuse the primitives documented in
+A general semantic Button (primary/secondary/quiet; disabled/loading; real links and form actions) and IconButton are the single sources for all new theme controls.\n\nAll new theme controls MUST reuse the primitives documented in
 [`docs/design-system.md`](docs/design-system.md). Do not copy Header icon,
 popup X, search clear, checkout/primary action or tap animation CSS into
 individual pages. The shared files are

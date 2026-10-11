@@ -23,3 +23,8 @@ echo codela_sf_ui_icon_button('x', 'Clear search', [
     'attributes' => [ 'hidden' => true ],
 ]);
 echo codela_sf_ui_primary_link('https://store.test/checkout/', 'Continue');
+
+echo codela_sf_ui_button('Save', [ 'variant'=>'primary', 'type'=>'submit', 'class'=>'ui-submit' ]);
+echo codela_sf_ui_button('Cancel', [ 'variant'=>'secondary', 'disabled'=>true ]);
+echo codela_sf_ui_button('Working', [ 'variant'=>'quiet', 'loading'=>true ]);
+echo codela_sf_ui_button('Read', [ 'variant'=>'secondary', 'href'=>'https://store.test/read/', 'icon'=>'arrow-right', 'icon_position'=>'left' ]);

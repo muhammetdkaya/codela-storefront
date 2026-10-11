@@ -41,8 +41,54 @@ function codela_sf_ui_icon_button( string $icon, string $label, array $options =
     return '<button type="button"' . $html . '>' . $content . '</button>';
 }
 
-/** Primary CTA, with shared pressed/focus/disabled behavior. */
+/**
+ * Full Button component — same design for actions and navigation.
+ *
+ * Options: variant primary|secondary|quiet, href for link, type for button,
+ * icon and icon_position, class, attributes, disabled, loading.
+ */
+function codela_sf_ui_button( string $label, array $options = [] ): string {
+    $variant = (string) ( $options['variant'] ?? 'primary' );
+    if ( ! in_array( $variant, [ 'primary', 'secondary', 'quiet' ], true ) ) { $variant = 'primary'; }
+
+    $extra = preg_split( '/\s+/', trim( (string) ( $options['class'] ?? '' ) ) ) ?: [];
+    $extras = array_filter( array_map( 'sanitize_html_class', $extra ) );
+    $classes = array_unique( array_merge( $extras, [ 'sf-ui-button', 'sf-ui-button--' . $variant ] ) );
+    $disabled = ! empty( $options['disabled'] ) || ! empty( $options['loading'] );
+    $loading = ! empty( $options['loading'] );
+    $is_link = array_key_exists( 'href', $options );
+
+    $attributes = (array) ( $options['attributes'] ?? [] );
+    if ( $loading ) { $attributes['aria-busy'] = 'true'; }
+    if ( $disabled && $is_link ) {
+        $attributes['aria-disabled'] = 'true';
+        $attributes['tabindex'] = '-1';
+    }
+    if ( $disabled && ! $is_link ) { $attributes['disabled'] = true; }
+
+    $html = ' class="' . esc_attr( implode( ' ', $classes ) ) . '"';
+    $html .= codela_sf_ui_attributes( $attributes );
+    $icon = (string) ( $options['icon'] ?? '' );
+    $graphic = $icon ? codela_sf_icon( $icon ) : '';
+    $caption = '<span class="sf-ui-button-label">' . esc_html( $label ) . '</span>';
+    if ( $loading ) { $caption = '<span class="sf-ui-spinner" aria-hidden="true"></span>' . $caption; }
+    $contents = 'left' === ( $options['icon_position'] ?? 'right' ) ? $graphic . $caption : $caption . $graphic;
+
+    if ( $is_link ) {
+        $href = $disabled ? '' : ' href="' . esc_url( (string) $options['href'] ) . '"';
+        return '<a' . $html . $href . '>' . $contents . '</a>';
+    }
+    $type = (string) ( $options['type'] ?? 'button' );
+    if ( ! in_array( $type, [ 'button', 'submit', 'reset' ], true ) ) { $type = 'button'; }
+    return '<button type="' . esc_attr( $type ) . '"' . $html . '>' . $contents . '</button>';
+}
+
+/** Backwards-compatible shared primary CTA alias used by theme layouts. */
 function codela_sf_ui_primary_link( string $url, string $label, string $icon = 'arrow-right' ): string {
-    return '<a class="sf-primary sf-ui-button sf-ui-button--primary" href="' . esc_url( $url ) . '">' .
-        esc_html( $label ) . ( $icon ? ' ' . codela_sf_icon( $icon ) : '' ) . '</a>';
+    return codela_sf_ui_button( $label, [
+        'href' => $url,
+        'variant' => 'primary',
+        'icon' => $icon,
+        'class' => 'sf-primary',
+    ] );
 }
