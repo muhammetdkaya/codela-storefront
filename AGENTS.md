@@ -1,4 +1,10 @@
 
+## Storefront 0.1.40 — physical iPhone guest-login screenshot corrections (11 October 2026)
+
+- User provided a real iPhone screenshot of guest login. Corrected actual theme rather than generating an image: reduce guest header height, main top padding, WP block gaps and intro-to-form spacing; hide the duplicate native Woo `> h2` on **single-form only** pages; keep multi-form fallback and Codela logged-in dashboard unchanged. Guest Custom Logo uses readable measured height; `Back to store` arrow now reuses `codela_sf_icon('arrow-right')` rotated in CSS to avoid iOS rendering the `↗` character as a blue emoji.
+- Preserve existing UI Kit Button, Woo native username-or-email input, password visibility, remember-me, forgot-password, login/nonce and conditional register tabs. No fake registration tab while Woo has registration disabled; actual setting is WooCommerce → Settings → Accounts & Privacy → Allow customers to create an account on My account page. No hard-coded provider login until real integration.
+- New browser checks compare actual header SVG, main padding, intro/form gap, duplicate heading and logo geometry with guest fixtures. Version 0.1.40. Validate and standalone theme FTPS release must pass before calling it live; real iOS Safari acceptance remains separate.
+
 - **Storefront 0.1.39 doğrulama ve bağımsız canlı dağıtım başarılı:** Kaynak `b52c9b42d14f816f3f3d4c1d3d965193b5e760f3`, [GitHub Actions 38164126133](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38164126133), `validate=success`, `deploy=success`. Tema görsel yerine gerçek beyaz/gri/antrasit referans sayfasına güncellendi; mevcut Woo formları ve sosyal provider entegrasyonu olmayan durumda sahte social CTA eklenmedi. Fiziksel iPhone Safari ve canlı oturum açma/üyelik işlevlerinin kullanıcı tarafından kabulü halen ayrı aşamadır.
 
 ## Storefront 0.1.39 — reference-based LIGHT login page (11 October 2026)
