@@ -11,8 +11,8 @@ Bu dosya depo genelinde çalışan asistanlar içindir. Kullanıcının güncel 
 - **Güncel hareket kararı:** kullanıcının bu talebiyle içerik geçişi 160ms/8px, alt kapsül 220ms, gizlenme 240ms. Tam ekran dialog dönüştürülmez, ikon kökenli büyüme yoktur. Kapatma anında; hızlı geçiş önceki animasyonu iptal eder; reduced-motion hareketi kapatır. Önceki tamamen animasyonsuz içerik kararı bu kapsamda güncellenmiştir.
 - Native dialog açılmadan önce görünür bölüm ve metin dışı autofocus hazırlanır; aramayı tekrar açarken geçici input odağı engellenir. Aktif sekmeye tekrar dokunmak ağ isteği başlatmaz. Sepete dönüşte mevcut toplam kaybolmaz; arka plandaki sepet mutasyonu mesajı başka panele sızmaz. Body kilidi/scroll/admin bar ve dock'un asıl DOM yeri geri yüklenir.
 - Doğrulama: PHP lint, JS syntax, 12 Python paket/dağıtım testi, Node arama/dokunma testleri geçti. Yeni Chromium testi gerçek PHP çıktısı + tam JS ile 320/390/700/1024px, sekme tap/touch/hold/outside cancel, safe-area, yavaş ve modal scroll, focus/reopen, gecikmiş arama, hızlı geçiş, reduced-motion ve WordPress toolbar konumunu sınar. WP action bağlama ve API yanıtları test sınırında simüledir; gerçek WP/Woo entegrasyon kabulü değildir.
-- Yayın: kaynak hazırlanıyor; bu kayıtta GitHub commit/CI/FTPS sonucu henüz yok. Gerçek iPhone/Safari ve gerçek ödeme akışı bu ortamda test edilmedi.
-- Sıradaki iş: 0.1.13 commit'inin validate/browser/deploy sonucunu kaydet; canlı iPhone'da sekmeler arası sürükleme, klavye/safe-area ve geçiş hissini kontrol et. Sonuç olmadan cihaz performansı veya Safari kabulü iddia etme.
+- **Yayın doğrulandı:** kaynak `fe5d8104a0b102bce5fd899bd9195a011e6f39a3`, gesture düzeltmesi `b43479da9d52e5e08f7dca34a8eb35534da295e0`; [Actions 38114065497](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38114065497) validate (browser dahil) ve deploy **success**. Bağımsız FTPS tema 0.1.13 dağıtımı tamamlandı. Gerçek iPhone/Safari ve gerçek ödeme akışı bu ortamda test edilmedi.
+- Sıradaki iş: canlı iPhone'da sekmeler arası sürükleme, klavye/safe-area ve geçiş hissini kontrol et. Otomatik Chromium başarısını iPhone/Safari kabulü veya gerçek cihaz hız ölçümü olarak sunma.
 
 ## Her yeni tema çalışmasına başlarken
 
@@ -241,3 +241,6 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 
 ### 0.1.13 CI edge-case correction — 11 October 2026
 Source `fe5d8104a0b102bce5fd899bd9195a011e6f39a3`; Actions 38113974270 passed PHP/Node/Python but browser test stopped deployment: a reveal-handle press within 700ms of a canceled scrub was swallowed by the synthetic-click guard. New physical presses now reset that guard even when the target is the handle, with a deterministic regression test. Theme stays 0.1.13; deploy remains pending until the corrected run succeeds.
+
+### Verified 0.1.13 deployment — 11 October 2026
+[Source b43479d](https://github.com/muhammetdkaya/codela-storefront/commit/b43479da9d52e5e08f7dca34a8eb35534da295e0), [Actions 38114065497](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38114065497): validate and deploy completed successfully. PHP/JS/Node/Python and the new real-rendered-markup Chromium suite passed. Standalone FTPS theme/ZIP/manifest distribution completed; no Codela plugin release. This supersedes the pending status in the CI correction note. Real iPhone Safari and live checkout acceptance remain unverified; next work starts with that device check, not repeating the implemented navigation refactor.
