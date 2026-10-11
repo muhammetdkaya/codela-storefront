@@ -1,4 +1,6 @@
 
+- **Storefront 0.1.43 validated and deployed (11 October 2026):** source `c1af16ced1681818494a4dc629bd905c384bf907`, [Actions 38168690522](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38168690522): PHP/JS/security+Chromium browser tests successful, theme-only FTPS deployment successful. Common native Woo form adapter, inset labels, remember/reset inline layout, active Google OAuth and unconfigured Google native popover all pass. No new WP plugin or separate UI component; Codela plugin and signed-in account unaffected. Physical iPhone Safari visual acceptance and real login/signup remain to be checked separately.
+
 ## Storefront 0.1.43 — minimalist guest authentication from existing UI Kit (11 October 2026)
 
 - Keep real Google **secondary UI Kit Button** visible on guest login and guest Account dialog even before Cloud credentials are configured. When configured, it remains the existing safe OAuth link. When not configured, it is a `type=button` with **native HTML Popover API** (`popovertarget`) showing a brief localized “Google sign-in is not configured yet.” notice, dismissable by tapping elsewhere or Escape. No fake OAuth redirect, custom JavaScript, extra library, plugin, or new button/notification controller.
