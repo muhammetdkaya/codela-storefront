@@ -15,7 +15,10 @@ const checkout = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8'
 const footer = execFileSync(php, ['tests/render-footer.php'], {encoding:'utf8',env:{...process.env,FOOTER_PRIVACY:'1',FOOTER_TERMS:'1',FOOTER_NOTE:'1'}});
 assert(!checkout.includes('class="sf-mobile-dock'), 'Checkout omits the dock');
 const css = ['assets/styles/tokens.css','assets/storefront.css','assets/styles/overlay.css','assets/styles/navigation.css','assets/styles/components.css'].map(p=>fs.readFileSync('theme/codela-storefront/'+p,'utf8')).join('\n');
-const js = fs.readFileSync('theme/codela-storefront/assets/storefront.js','utf8').replace("import { store } from '@wordpress/interactivity';", `
+const formatScript = fs.readFileSync('theme/codela-storefront/assets/scripts/format.js','utf8').replace(/^export /gm,'');
+const js = fs.readFileSync('theme/codela-storefront/assets/storefront.js','utf8')
+  .replace("import { escape, decode, safeURL, money } from './scripts/format.js';",formatScript)
+  .replace("import { store } from '@wordpress/interactivity';", `
 function store(namespace, options) {
  window.sfActions = options.actions;
  return {state:{config:{api:'https://store.test/api/', search:'https://store.test/search-api', cart:'/cart/', labels:{}}}};

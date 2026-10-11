@@ -1,4 +1,13 @@
 
+## Storefront 0.1.26 — shared JavaScript format module
+
+- The reusable HTML escape, HTML decode, URL safety and currency formatting functions are extracted from the storefront main module into `assets/scripts/format.js`. The main ES module imports their named exports. Function behavior and Store API search/cart logic are deliberately unchanged.
+- Relative module import is browser-native; WordPress registers the entry module as before and packages the referenced local file. The browser integration fixture inlines the actual helper module when injecting a test-only WordPress API stub; it does not maintain a second copy.
+- `tests/format.cjs` asserts escaping, protocol rejection and currency formatting. PHP/theme/package tests and JavaScript syntax checks cover the new dependency.
+- Source naming is intentionally device/vendor/OS-neutral. Continue extracting modal/search/cart controllers in later guarded versions; maintain a single navigation state and preserve registered WordPress action semantics.
+- Validation/deployment must be verified after this source release; test automation is not physical-device acceptance.
+
+
 ## Storefront 0.1.25 — overlay stylesheet + neutral source naming + private visual references
 
 - The popup/search-toolbar/results styles were extracted from `assets/storefront.css` into `assets/styles/overlay.css`. The production stylesheet order is tokens → layout → overlay → navigation → components → conditional account, preserving the existing semantic CSS and interactive behavior.

@@ -1,4 +1,5 @@
 import { store } from '@wordpress/interactivity';
+import { escape, decode, safeURL, money } from './scripts/format.js';
 
 let dialog, current = null, opener, savedY = 0, savedBodyStyle = null, savedAdminStyle = null;
 let searchTimer, searchController, searchSequence = 0;
@@ -19,14 +20,6 @@ const { state } = store('codela/storefront', {
 });
 const config = () => state.config;
 const t = key => config().labels[key] || key;
-const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const decode = value => { const e = document.createElement('textarea'); e.innerHTML = String(value ?? ''); return e.value; };
-const safeURL = value => { try { const url = new URL(value, location.href); return ['http:','https:'].includes(url.protocol) ? escape(url.href) : ''; } catch { return ''; } };
-const money = (amount, meta) => {
-    const digits = Number(meta.currency_minor_unit || 0);
-    const n = Number(amount) / 10 ** digits;
-    return new Intl.NumberFormat(document.documentElement.lang || 'en', {style:'currency', currency:meta.currency_code, minimumFractionDigits:digits, maximumFractionDigits:digits}).format(n);
-};
 function adminOffset() {
     const bar = $('#wpadminbar');
     const rect = bar?.getBoundingClientRect();
