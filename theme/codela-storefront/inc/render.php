@@ -50,7 +50,7 @@ function codela_sf_header(): string {
                 </div>
                 <a class="sf-auth-store-link sf-ui-pressable" href="<?php echo esc_url( home_url( '/' ) ); ?>">
                     <?php esc_html_e( 'Back to store', 'codela-storefront' ); ?>
-                    <span aria-hidden="true">↗</span>
+                    <?php echo codela_sf_icon( 'arrow-right' ); ?>
                 </a>
             </header>
         </div>
