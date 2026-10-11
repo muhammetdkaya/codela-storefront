@@ -1,13 +1,10 @@
 /** Theme-owned fullscreen dialog, search and cart overlay presentation. */
-/* Fullscreen panels: neutralize native/theme control chrome without removing
-   the intentionally subtle outline of the SEARCH FORM itself. */
+/* Remove native button appearance only. Shared UI Kit owns the complete
+   X and search-clear surfaces; panel CSS must not override their variants. */
 #sf-panel button.sf-close,
 #sf-panel .sf-search-form button.sf-icon-button {
   -webkit-appearance:none;
   appearance:none;
-  background:transparent!important;
-  border:0!important;
-  box-shadow:none!important;
 }
 #sf-panel #sf-query {
   -webkit-appearance:none;
