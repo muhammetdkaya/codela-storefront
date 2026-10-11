@@ -14,8 +14,6 @@ body{margin:0;-webkit-font-smoothing:antialiased}
 .sf-actions{display:flex;gap:6px;flex-shrink:0}
 /* Icon control base and pressed feedback are defined in styles/components.css. */
 .sf-icon{width:22px;height:22px;display:block}
-.sf-badge{position:absolute;top:2px;right:0;min-width:14px;height:14px;font-size:10px;display:grid;place-items:center;border-radius:50%;background:var(--sf-ink);color:white}
-.sf-badge:empty{display:none}
 .sf-skip{position:fixed;top:-100px;left:20px;padding:12px;background:white;z-index:100}
 .sf-skip:focus{top:10px}
 .sf-panel{position:fixed;inset:var(--sf-admin-offset,0px) 0 0;margin:0;width:100%;height:calc(100dvh - var(--sf-admin-offset,0px));max-width:none;max-height:none;border:0;border-radius:0;padding:0;background:var(--sf-bg);color:var(--sf-ink);transform:none;transition:none;overflow:hidden}
@@ -42,20 +40,29 @@ body{margin:0;-webkit-font-smoothing:antialiased}
 .sf-result h3{font-size:20px;font-weight:400;margin:0 0 8px}
 .sf-result p{font-size:14px;margin:0;color:var(--sf-muted)}
 .sf-result small{display:block;color:var(--sf-muted);font-size:11px;margin-top:5px}
-.sf-cart-row{display:grid;grid-template-columns:110px 1fr;gap:24px;padding:24px 0;border-bottom:1px solid var(--sf-line);max-width:780px;margin:auto}
-.sf-cart-photo{width:110px;height:140px;object-fit:cover}
-.sf-cart-row h3{font-size:20px;font-weight:400;margin:0 0 8px}
-.sf-cart-row p{font-size:13px;margin:8px 0}
-.sf-quantity{display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap}
-.sf-stepper{display:flex;align-items:center;border:1px solid var(--sf-line);border-radius:var(--cdl-ct-radius,12px);overflow:hidden}
-.sf-stepper button{width:40px;height:40px;font-size:20px}
-.sf-stepper span{min-width:28px;text-align:center;font-size:14px}
-.sf-remove{font-size:12px!important;text-decoration:underline;padding:10px}
+/* Cart layout only: UI Kit owns buttons, icons and pressed feedback. */
+.sf-cart-row{display:grid;grid-template-columns:92px minmax(0,1fr);gap:18px;padding:20px 0;border-bottom:1px solid var(--sf-ui-border);max-width:780px;margin:auto}
+.sf-cart-row:first-child{padding-top:8px}
+.sf-cart-row>a{display:block;align-self:start}
+.sf-cart-photo{display:block;width:92px;height:auto;aspect-ratio:4/5;object-fit:cover;border-radius:var(--sf-ui-control-radius)}
+.sf-cart-detail{min-width:0}
+.sf-cart-row h3{font-size:17px;line-height:1.35;font-weight:500;margin:0 0 7px}
+.sf-cart-row h3 a{text-decoration:none;color:inherit}
+.sf-cart-row .sf-cart-variation{font-size:12px;color:var(--sf-muted);margin:0 0 6px}
+.sf-cart-row .sf-cart-price{font-size:15px;font-weight:500;margin:0}
+.sf-quantity{display:flex;align-items:center;gap:14px;margin-top:13px;flex-wrap:wrap}
+.sf-stepper{display:inline-flex;align-items:center;min-height:44px;border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);overflow:hidden}
+.sf-stepper button{width:44px;height:44px;font-size:18px}
+.sf-stepper span{min-width:25px;text-align:center;font-size:14px;font-variant-numeric:tabular-nums}
+.sf-remove{font-size:12px!important;text-decoration:underline;text-underline-offset:3px;padding:10px 0}
 .sf-shell button:disabled{opacity:.4;cursor:default}
-.sf-cart-bottom{padding:22px max(5vw,24px) max(20px,env(safe-area-inset-bottom));border-top:1px solid var(--sf-line);flex-shrink:0}
+.sf-cart-bottom{padding:18px max(5vw,24px) max(20px,env(safe-area-inset-bottom));border-top:1px solid var(--sf-ui-border);flex-shrink:0}
 .sf-cart-bottom>*{max-width:780px;margin:0 auto}
-.sf-subtotal{display:flex;justify-content:space-between;font-size:20px}
-.sf-cart-bottom p{font-size:12px;color:var(--sf-muted);margin:12px auto}
+.sf-subtotal{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:17px;line-height:1.4}
+.sf-subtotal strong{font-weight:600;white-space:nowrap}
+.sf-cart-bottom p{font-size:12px;line-height:1.5;color:var(--sf-muted);margin:10px auto 15px}
+.sf-cart-bottom .sf-ui-button{width:100%;--sf-ui-button-height:52px;--sf-ui-button-font-size:15px}
+.sf-cart-bottom .sf-ui-button .sf-icon{width:20px;height:20px}
 /* Primary action styling is shared by all .sf-ui-button--primary instances. */
 .sf-status{font-size:13px;margin:0;padding:0 max(5vw,24px);color:var(--sf-muted);flex-shrink:0}
 .sf-status:not(:empty){padding-top:12px;padding-bottom:12px}
@@ -94,9 +101,10 @@ body{margin:0;-webkit-font-smoothing:antialiased}
 .sf-hero h1{font-family:Arial,sans-serif;letter-spacing:-1px;margin:8px 0}
 .sf-hero .sf-kicker{display:none}
 .sf-products{grid-template-columns:repeat(2,1fr);gap:18px}
-.sf-cart-row{grid-template-columns:85px 1fr;gap:18px}
-.sf-cart-photo{width:85px;height:120px}
-.sf-cart-row h3{font-size:18px}
+.sf-cart-row{grid-template-columns:80px minmax(0,1fr);gap:14px;padding:18px 0}
+.sf-cart-photo{width:80px;height:auto}
+.sf-cart-row h3{font-size:16px}
+.sf-cart-bottom{padding-left:20px;padding-right:20px;padding-top:16px}
 .sf-menu-secondary{gap:24px;flex-wrap:wrap}
 .sf-brand .custom-logo{max-width:145px}
 }

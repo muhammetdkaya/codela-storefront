@@ -99,7 +99,7 @@ function codela_sf_header(): string {
                 <?php echo codela_sf_icon( 'search' ); ?><span><?php esc_html_e( 'Search', 'codela-storefront' ); ?></span>
             </a>
             <a data-dock-view="cart" class="sf-dock-item sf-ui-nav-tab" href="<?php echo esc_url( wc_get_cart_url() ); ?>" data-wp-on--click="actions.cart" data-panel="cart" aria-haspopup="dialog" aria-expanded="false" aria-label="<?php esc_attr_e( 'Your cart', 'codela-storefront' ); ?>">
-                <?php echo codela_sf_icon( 'shopping-bag' ); ?><span class="sf-badge" aria-hidden="true"></span><span><?php esc_html_e( 'Cart', 'codela-storefront' ); ?></span>
+                <span class="sf-ui-icon-badged"><?php echo codela_sf_icon( 'shopping-bag' ); ?><span class="sf-badge" aria-hidden="true"></span></span><span><?php esc_html_e( 'Cart', 'codela-storefront' ); ?></span>
             </a>
             <a data-dock-view="account" class="sf-dock-item sf-ui-nav-tab <?php echo esc_attr( is_account_page() ? 'is-active' : '' ); ?>" href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>" <?php if ( $guest_account ) : ?>data-wp-on--click="actions.account" data-panel="account" aria-haspopup="dialog" aria-expanded="false"<?php endif; ?> <?php if ( is_account_page() ) : ?>aria-current="page"<?php endif; ?>>
                 <?php echo codela_sf_icon( 'user-round' ); ?><span><?php esc_html_e( 'My account', 'codela-storefront' ); ?></span>

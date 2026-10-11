@@ -103,6 +103,22 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
    document.addEventListener('click',event=>{const trigger=event.target.closest('[data-wp-on--click]');if(trigger)window.sfActions[trigger.getAttribute('data-wp-on--click').split('.')[1]](event);});
    window.focusLog=[];document.addEventListener('focusin',e=>window.focusLog.push(e.target.id));
  });
+ // Read the cart count on Home without first opening the cart.
+ await page.waitForFunction(()=>document.querySelector('.sf-mobile-dock .sf-badge')?.textContent==='1');
+ assert.equal(await page.locator('.sf-header .sf-badge').textContent(),'1','Header and dock share count');
+ assert.equal(await page.locator('#sf-panel').getAttribute('open'),null,'Count arrives while Cart remains closed');
+ const badgePosition=await page.locator('.sf-mobile-dock .sf-ui-icon-badged').evaluate(root=>{
+  const icon=root.querySelector('.sf-icon').getBoundingClientRect(),badge=root.querySelector('.sf-badge').getBoundingClientRect();
+  return {x:Math.abs(badge.left+badge.width/2-icon.right),y:badge.top-icon.top};
+ });
+ assert(badgePosition.x<4 && badgePosition.y<0,'Badge is anchored to the bag glyph');
+ cart.items_count=3;
+ await page.evaluate(()=>document.body.dispatchEvent(new Event('wc-blocks_added_to_cart')));
+ await page.waitForFunction(()=>document.querySelector('.sf-mobile-dock .sf-badge')?.textContent==='3');
+ assert.equal(await page.locator('.sf-header .sf-badge').textContent(),'3','Woo events refresh both counters');
+ cart.items_count=1;
+ await page.evaluate(()=>document.body.dispatchEvent(new Event('wc-blocks_added_to_cart')));
+ await page.waitForFunction(()=>document.querySelector('.sf-mobile-dock .sf-badge')?.textContent==='1');
  const dock=page.locator('.sf-mobile-dock');
  assert.deepEqual(await dock.locator('a').evaluateAll(xs=>xs.map(x=>x.dataset.dockView)),['home','search','cart','account']);
  const click=async view=>page.locator(`.sf-mobile-dock [data-dock-view="${view}"]`).click();
@@ -157,6 +173,14 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  await page.waitForTimeout(50);
  assert.equal(await page.locator('.sf-dock-item.is-active').getAttribute('data-dock-view'),'cart');
  assert.equal(await page.locator('.sf-cart-bottom').isVisible(),true);
+ assert.equal(await page.locator('.sf-cart-row .sf-cart-price').count(),1,'Cart price has a layout hook');
+ assert.equal(await page.locator('.sf-cart-bottom .sf-ui-button--primary').count(),1,'Checkout uses shared Button');
+ const checkoutWidth=await page.locator('.sf-cart-bottom .sf-ui-button').evaluate(el=>({
+  width:el.getBoundingClientRect().width,parent:el.parentElement.getBoundingClientRect().width,
+  fontSize:parseFloat(getComputedStyle(el).fontSize)
+ }));
+ assert(checkoutWidth.width>=checkoutWidth.parent-1,'Checkout fills its summary area');
+ assert(checkoutWidth.fontSize<=16,'Compact checkout uses shared typography');
  const fetched=cartRequests;
  await click('cart');
  assert.equal(cartRequests,fetched,'Current tab is a no-op');
@@ -396,6 +420,8 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
   assert(Math.abs(initial.x-initial.width*index)<1,'Capsule is already on the correct tab before JS');
   assert.equal(initial.opacity,1,'Initial selection is visible immediately');
   await page.addScriptTag({content:js});
+  await page.waitForFunction(()=>document.querySelector('.sf-mobile-dock .sf-badge')?.textContent==='1');
+  assert.equal(await page.locator('#sf-panel').getAttribute('open'),null,'Badge starts on other pages without Cart');
   await page.waitForTimeout(30);
   assert.equal(await page.locator('.sf-dock-surface').evaluate(el=>el.getAnimations().filter(a=>a.transitionProperty==='transform').length),0,'JS hydration must not slide the capsule from the left');
   if(index===3){

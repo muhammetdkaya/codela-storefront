@@ -5,7 +5,7 @@
 import { escape, decode, safeURL, money } from './format.js';
 
 export function createCartController({ $, config, t, getCurrent, getDialog }) {
-    let cartNonce = '', cartData = null, cartPending = null, mutating = false;
+    let cartNonce = '', cartData = null, cartPending = null, mutating = false, cartRevision = 0;
 
     async function requestCart(path = '', payload = null) {
         const response = await fetch(config().api + 'cart' + path, {
@@ -29,7 +29,7 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
             const limits = item.quantity_limits || {minimum:1,maximum:9999,multiple_of:1,editable:true};
             const subtotal = Number(item.totals.line_subtotal) + (config().taxInclusive ? Number(item.totals.line_subtotal_tax) : 0);
             const variants = (item.variation || []).map(v => `${escape(decode(v.attribute))}: ${escape(decode(v.value))}`).join(' · ');
-            return `<article class="sf-cart-row"><a href="${safeURL(item.permalink)}">${item.images[0] ? `<img class="sf-cart-photo" src="${safeURL(item.images[0].thumbnail || item.images[0].src)}" alt="${escape(decode(item.name))}" width="110" height="140">` : ''}</a><div><h3><a href="${safeURL(item.permalink)}">${escape(decode(item.name))}</a></h3>${variants ? `<p>${variants}</p>` : ''}<p>${escape(money(subtotal,item.totals))}</p><div class="sf-quantity"><div class="sf-stepper"><button class="sf-ui-pressable" data-key="${escape(item.key)}" data-qty="${item.quantity - limits.multiple_of}" aria-label="${escape(t('Decrease quantity'))}" ${!limits.editable || item.quantity - limits.multiple_of < limits.minimum ? 'disabled':''}>−</button><span aria-label="${escape(t('Quantity'))}">${item.quantity}</span><button class="sf-ui-pressable" data-key="${escape(item.key)}" data-qty="${item.quantity + limits.multiple_of}" aria-label="${escape(t('Increase quantity'))}" ${!limits.editable || item.quantity + limits.multiple_of > limits.maximum ? 'disabled':''}>+</button></div><button class="sf-remove sf-ui-pressable" data-remove="${escape(item.key)}">${escape(t('Remove'))}</button></div></div></article>`;
+            return `<article class="sf-cart-row"><a href="${safeURL(item.permalink)}">${item.images[0] ? `<img class="sf-cart-photo" src="${safeURL(item.images[0].thumbnail || item.images[0].src)}" alt="${escape(decode(item.name))}" width="110" height="140">` : ''}</a><div class="sf-cart-detail"><h3><a href="${safeURL(item.permalink)}">${escape(decode(item.name))}</a></h3>${variants ? `<p class="sf-cart-variation">${variants}</p>` : ''}<p class="sf-cart-price">${escape(money(subtotal,item.totals))}</p><div class="sf-quantity"><div class="sf-stepper"><button class="sf-ui-pressable" data-key="${escape(item.key)}" data-qty="${item.quantity - limits.multiple_of}" aria-label="${escape(t('Decrease quantity'))}" ${!limits.editable || item.quantity - limits.multiple_of < limits.minimum ? 'disabled':''}>−</button><span aria-label="${escape(t('Quantity'))}">${item.quantity}</span><button class="sf-ui-pressable" data-key="${escape(item.key)}" data-qty="${item.quantity + limits.multiple_of}" aria-label="${escape(t('Increase quantity'))}" ${!limits.editable || item.quantity + limits.multiple_of > limits.maximum ? 'disabled':''}>+</button></div><button class="sf-remove sf-ui-pressable" data-remove="${escape(item.key)}">${escape(t('Remove'))}</button></div></div></article>`;
         }).join('') : `<div class="sf-empty"><h3>${escape(t('Your cart is empty.'))}</h3></div>`;
         $('.sf-cart-bottom').hidden = getCurrent() !== 'cart' || !data.items.length;
         const subtotal = Number(data.totals.total_items) + (config().taxInclusive ? Number(data.totals.total_items_tax) : 0);
@@ -41,7 +41,16 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
         if (cartPending) return cartPending;
         if (!cartData) $('#sf-cart-items').textContent = t('Loading…');
         cartPending = (async () => {
-            try { paintCart(await requestCart()); }
+            try {
+                // Ignore a stale response if another Woo cart event arrived mid-GET.
+                let data;
+                while (true) {
+                    const revision = cartRevision;
+                    data = await requestCart();
+                    if (revision === cartRevision) break;
+                }
+                paintCart(data);
+            }
             catch { $('#sf-cart-items').innerHTML = `<p>${escape(t('Something went wrong. Please try again.'))}</p><button class="sf-retry-cart sf-ui-pressable">${escape(t('Retry'))}</button><p><a href="${safeURL(config().cart)}">${escape(t('Your cart'))}</a></p>`; $('.sf-cart-bottom').hidden = true; }
             finally { cartPending = null; }
         })();
@@ -81,8 +90,9 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
     }
 
     function invalidate() {
+        cartRevision++;
         cartData = null;
-        if (getCurrent() === 'cart') refreshCart();
+        refreshCart();
     }
 
     function bind() {
@@ -95,6 +105,8 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
         window.addEventListener('pageshow',event => {
             if (event.persisted) invalidate();
         });
+        // Fetch session-specific cart count on every Storefront page, not from cached HTML.
+        refreshCart();
     }
 
     return {

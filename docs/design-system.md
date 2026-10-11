@@ -313,3 +313,16 @@ create parallel stores or second navigation listeners.
 - Implement approved minimalist Account dialog composition in the actual theme: guest Account header 23px, existing rounded Login/Register tabs 44px with lighter active elevation, real WooCommerce input fields remain 54px with inset static labels, vertical row gaps 12px, Remember me and password-reset native elements stay on the same row, and original UI Kit primary login/register and secondary Google Buttons target 52px with 15px typography. White/light-gray/charcoal only; no orange.
 - Do not create per-page Button components, form HTML or new animations. Extend existing shared components.css Button with optional --sf-ui-button-height, --sf-ui-button-padding-y, --sf-ui-button-padding-x and --sf-ui-button-font-size tokens; originals remain unchanged where not overridden. Only guest Account dialog (account-overlay.css) and fallback guest My Account layout (account.css) supply compact overrides; signed-in Codela account, Menu/Search/Cart, common header/dock, Google OAuth verification, native Google setup notice and actual Woo login/register/reset backend are unchanged.
 - Browser regression checks added for 44px tabs, 52px shared CTA and Google, 54px inputs, 23px popup title, input label inside field, compact toolbar spacing and account login/registration behavior; package/enqueues theme version 0.1.45. CI validation and independent FTPS deploy must be confirmed; real physical iPhone Safari acceptance is separate.
+
+## 0.1.47 — Shared cart badge and composed cart screen
+
+- The existing cart controller initializes via an uncached Woo Store API
+  session read on every normal Storefront page. Cached HTML stays session
+  independent. The same invalidation path handles Woo add/remove and BFCache.
+- Header and dock use one `sf-ui-icon-badged` glyph-relative adornment with
+  centralized `components.css` badge geometry.
+- Cart rows and footer change only page composition and typography.
+  Checkout remains `sf-ui-button--primary`; quantity is `sf-ui-pressable`.
+  Woo totals, stock limits, taxes and plugin Account remain authoritative.
+- Browser checks cover off-cart counts, other pages, event updates, badge
+  position and full-width checkout; live deployment and mobile QA remain distinct.

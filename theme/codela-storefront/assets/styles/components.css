@@ -33,6 +33,18 @@
 }
 .sf-shell .sf-ui-icon-button:is(:active,.is-pressed) .sf-icon{transform:scale(.9)}
 .sf-shell .sf-ui-icon-button--soft:is(:active,.is-pressed){transform:scale(.96)}
+/* Shared icon badge geometry for Header and Dock. */
+.sf-shell .sf-ui-icon-badged{
+  display:inline-flex;position:relative;align-items:center;justify-content:center;
+  width:var(--sf-ui-icon);height:var(--sf-ui-icon);flex:none;overflow:visible;
+}
+.sf-shell .sf-ui-icon-badged .sf-badge{
+  position:absolute;top:-6px;right:-9px;display:grid;place-items:center;
+  min-width:16px;height:16px;padding:0 3px;border-radius:var(--sf-ui-pill);
+  background:var(--sf-ui-ink);color:#fff;font-size:10px;font-weight:600;
+  line-height:1;font-variant-numeric:tabular-nums;pointer-events:none;
+}
+.sf-shell .sf-ui-icon-badged .sf-badge:empty{display:none}
 /* The same surface primitive styles all floating header islands and the X.
    Placement belongs to navigation/overlay; touch and appearance live here. */
 .sf-shell .sf-ui-surface,

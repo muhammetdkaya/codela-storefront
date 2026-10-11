@@ -126,7 +126,6 @@
     text-overflow:ellipsis;
   }
   .sf-mobile-dock .sf-dock-item:focus-visible{outline:2px solid #55565c;outline-offset:-3px}
-  .sf-mobile-dock .sf-badge{top:3px;right:calc(50% - 23px);background:#2d2e34;color:#fff}
   .sf-mobile-dock[hidden]{display:none!important}
   .sf-mobile-dock.is-collapsed{
     --sf-dock-travel:calc(100% + var(--sf-dock-bottom) + 8px);
@@ -173,7 +172,7 @@
   body:has(.sf-mobile-dock){padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
   #sf-panel .sf-mobile-dock{z-index:10}
   #sf-panel.is-search-panel:has(.sf-mobile-dock) .sf-search-content{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
-  #sf-panel.is-cart-panel:has(.sf-mobile-dock) .sf-cart-bottom:not([hidden]){padding-bottom:calc(100px + env(safe-area-inset-bottom,0px))}
+  #sf-panel.is-cart-panel:has(.sf-mobile-dock) .sf-cart-bottom:not([hidden]){padding-bottom:calc(82px + env(safe-area-inset-bottom,0px))}
   #sf-panel.is-cart-panel #sf-cart{padding-bottom:28px}
 }
 /* One static blur layer; blur and shadow never animate. Keep an opaque fallback. */
