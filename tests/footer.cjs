@@ -20,7 +20,7 @@ assert.equal((populated.match(/class="sf-footer-inner"/g)||[]).length,1,'Footer 
 const draft=exec({FOOTER_PRIVACY:'1',FOOTER_TERMS:'1',FOOTER_DRAFT:'1'});
 assert.ok(!draft.includes('href="https://store.test/terms/"'),'Never link an unpublished WooCommerce terms page');
 assert.ok(draft.includes('href="https://store.test/privacy/"'),'Valid legal links still display');
-assert.match(css,/\.sf-footer-inner\s*\{[^}]*flex-wrap:nowrap;/s,'Single row enforced on mobile');
+assert.ok(css.includes('.sf-footer-inner{gap:12px;font-size:11px;flex-wrap:nowrap}'),'Single row enforced on mobile');
 assert.match(css,/\.sf-footer-brand\s*\{[^}]*text-overflow:ellipsis;/s,'Long names truncate rather than overflow');
 assert.ok(css.includes('.sf-footer-note{display:none}'),'Mobile layout prioritizes useful links');
 console.log('One-line footer legal links, publication status, brand, note and responsive layout: passed.');
