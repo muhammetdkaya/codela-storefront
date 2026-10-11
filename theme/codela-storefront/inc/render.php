@@ -61,7 +61,7 @@ function codela_sf_header(): string {
             </nav>
         </header>
         <?php if ( $show_mobile_dock ) : ?>
-        <nav class="sf-mobile-dock" aria-label="<?php esc_attr_e( 'Mobile navigation', 'codela-storefront' ); ?>">
+        <nav class="sf-mobile-dock<?php echo is_front_page() || is_account_page() ? ' has-selection' : ''; ?>" style="--sf-dock-index:<?php echo is_account_page() ? 3 : 0; ?>" aria-label="<?php esc_attr_e( 'Mobile navigation', 'codela-storefront' ); ?>">
             <div class="sf-dock-surface">
             <a data-dock-view="home" class="sf-dock-item <?php echo esc_attr( is_front_page() ? 'is-active' : '' ); ?>" href="<?php echo esc_url( home_url( '/' ) ); ?>" <?php if ( is_front_page() ) : ?>aria-current="page"<?php endif; ?>>
                 <?php echo codela_sf_icon( 'house' ); ?><span><?php esc_html_e( 'Home', 'codela-storefront' ); ?></span>

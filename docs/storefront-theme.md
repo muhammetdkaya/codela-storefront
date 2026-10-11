@@ -473,3 +473,10 @@ The plugin's `Codela\Includes\MyAccountLayout` is the source of truth for authen
 - Doğrulama: JS syntax, Node dock gesture, 14 Python testi ve gerçek PHP çıktılı Chromium navigation geçti. Regresyon: Ana Sayfa → Sepet (sağ), Sepet → Ara (sol); touchend sonrası click 100ms geciktirilince hedef indeks korunur, panel açıldığında aynı hedef kalır. Mevcut cancel/hold/scrub/safe-area/reduced-motion testleri geçti. Gerçek iPhone Safari elle test edilmedi.
 - Yayın: kaynak `581e70edb0eccd541e6a55f12181181758ea57bf`, [Actions 38138481833](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38138481833) validate (nav/account browser dahil) + bağımsız tema FTPS deploy başarılı; log: `Storefront deployed; checks passed.` Eklenti değişmedi. Sıradaki iş: iPhone'da sekmelerde dokun-bırak ve sayfa geçişinde geri sıçrama olmadığını kontrol et.
 
+
+## Son doğrulanmış devam noktası — 11 Ekim 2026 / Storefront 0.1.21
+
+- Tema 0.1.20 → 0.1.21: tam sayfa gezinmesinde kapsülün önce solda oluşup aktif sekmeye kayması düzeltildi. Header PHP çıktısı `has-selection` ve doğru `--sf-dock-index` değerini ilk HTML'de verir; Hesabım index 3, Ana Sayfa index 0. JS başlangıcı aynı konumu korur, kullanıcı sekme değiştirdiğinde mevcut animasyon çalışır.
+- Doğrulama: render PHP lint, 14 Python testi ve gerçek PHP çıktılı Chromium navigation geçti. Ana Sayfa/Hesabım yeni belge yüklemesinde JS öncesi doğru konum + görünürlük ve JS sonrası transform geçişi olmaması sınandı. Önceki touchend/cancel/scrub/panel testleri geçti. Gerçek iPhone Safari elle test edilmedi.
+- Yayın: kaynak hazır; bağımsız tema CI/FTPS sonucu bekleniyor. Eklenti değişmedi. Sıradaki iş: yayın sonucunu kaydet; iPhone'da Hesabım ve Ana Sayfa tam sayfa geçişlerinde soldan gelişin olmadığını kontrol et.
+

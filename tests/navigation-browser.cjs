@@ -7,12 +7,13 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const php = process.env.PHP_BIN || 'php';
 const header = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8'});
 const noDockHeader = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8',env:{...process.env,FIXTURE_DOCK:'0'}});
-assert(!noDockHeader.includes('class="sf-mobile-dock"'), 'Disabled setting omits dock');
+assert(!noDockHeader.includes('class="sf-mobile-dock'), 'Disabled setting omits dock');
 assert.equal(header,execFileSync(php,['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_DOCK:'1'}}),'Unset defaults to enabled');
+const accountHeader=execFileSync(php,['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_ACCOUNT:'1'}});
 let activeHeader=header;
 const checkout = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8',env:{...process.env,FIXTURE_CHECKOUT:'1'}});
 const footer = execFileSync(php, ['tests/render-footer.php'], {encoding:'utf8',env:{...process.env,FOOTER_PRIVACY:'1',FOOTER_TERMS:'1',FOOTER_NOTE:'1'}});
-assert(!checkout.includes('class="sf-mobile-dock"'), 'Checkout omits the dock');
+assert(!checkout.includes('class="sf-mobile-dock'), 'Checkout omits the dock');
 const css = fs.readFileSync('theme/codela-storefront/assets/storefront.css','utf8');
 const js = fs.readFileSync('theme/codela-storefront/assets/storefront.js','utf8').replace("import { store } from '@wordpress/interactivity';", `
 function store(namespace, options) {
@@ -219,6 +220,20 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  assert.equal(await page.evaluate(()=>scrollY),20);
  assert.equal(await page.locator('#wpadminbar').evaluate(el=>el.style.position),'absolute');
  // Disabled mobile dock uses the very same three header tools as desktop.
+ // Full page loads start at their server-rendered selection, before any JavaScript.
+ for(const [markup,path,index] of [[accountHeader,'myaccount',3],[header,'home',0]]){
+  activeHeader=markup;
+  await page.goto('https://store.test/'+path);
+  const initial=await page.locator('.sf-dock-surface').evaluate(el=>{
+   const style=getComputedStyle(el,'::before');
+   return {x:new DOMMatrix(style.transform).e,width:parseFloat(style.width),opacity:Number(style.opacity)};
+  });
+  assert(Math.abs(initial.x-initial.width*index)<1,'Capsule is already on the correct tab before JS');
+  assert.equal(initial.opacity,1,'Initial selection is visible immediately');
+  await page.addScriptTag({content:js});
+  await page.waitForTimeout(30);
+  assert.equal(await page.locator('.sf-dock-surface').evaluate(el=>el.getAnimations().filter(a=>a.transitionProperty==='transform').length),0,'JS hydration must not slide the capsule from the left');
+ }
  activeHeader=noDockHeader;
  await page.goto('https://store.test/no-dock');
  await page.addScriptTag({content:js});
