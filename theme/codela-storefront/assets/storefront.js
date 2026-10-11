@@ -150,8 +150,10 @@ async function requestCart(path = '', payload = null) {
 }
 function paintCart(data) {
     cartData = data;
-    const badge = $('.sf-badge'); if (badge) badge.textContent = data.items_count || '';
-    const cartLink = $('[data-panel="cart"]'); if (cartLink) cartLink.setAttribute('aria-label', `${t('Your cart')} (${data.items_count || 0})`);
+    document.querySelectorAll('.sf-badge').forEach(badge => { badge.textContent = data.items_count || ''; });
+    document.querySelectorAll('[data-panel="cart"]').forEach(link => {
+        link.setAttribute('aria-label', `${t('Your cart')} (${data.items_count || 0})`);
+    });
     const root = $('#sf-cart-items');
     root.innerHTML = data.items.length ? data.items.map(item => {
         const limits = item.quantity_limits || {minimum:1,maximum:9999,multiple_of:1,editable:true};

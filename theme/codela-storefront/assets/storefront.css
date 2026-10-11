@@ -311,3 +311,109 @@
   #sf-panel.is-search-panel #sf-query{height:44px;font-size:16px}
   #sf-panel.is-search-panel .sf-search-content{padding:14px var(--sf-overlay-gutter) 36px}
 }
+
+
+/* 0.1.9: mobile dock + right-edge Menu/X alignment. Desktop layout unchanged. */
+.sf-mobile-dock{display:none}
+@media(max-width:700px){
+  /* Keep brand geometrically centered between equal 44px side tracks. */
+  .sf-shell .sf-header{
+    display:grid;
+    grid-template-columns:44px minmax(0,1fr) 44px;
+    align-items:center;
+    column-gap:0;
+    padding-left:20px;
+    padding-right:20px;
+  }
+  .sf-header .sf-header-menu{
+    grid-column:3;
+    grid-row:1;
+    justify-self:end;
+    display:flex;
+    width:44px;
+    height:44px;
+  }
+  .sf-header .sf-brand{
+    grid-column:2;
+    grid-row:1;
+    justify-self:center;
+    max-width:100%;
+    text-align:center;
+  }
+  .sf-header .sf-actions{display:none}
+  /* Search/Cart dialog close X and header Menu share exactly the same
+     right-edge hit target: 20px inset, 44px wide. */
+  #sf-panel{
+    --sf-overlay-gutter:20px;
+    --sf-overlay-control-size:44px;
+  }
+  .sf-mobile-dock{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    align-items:stretch;
+    position:fixed;
+    z-index:1000;
+    left:16px;
+    right:16px;
+    bottom:calc(12px + env(safe-area-inset-bottom,0px));
+    width:auto;
+    max-width:430px;
+    margin:0 auto;
+    padding:5px;
+    min-height:76px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.14);
+    background:#242428;
+    box-shadow:0 7px 24px rgba(0,0,0,.17);
+    color:#fff;
+  }
+  .sf-mobile-dock .sf-dock-item{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:4px;
+    min-width:0;
+    min-height:66px;
+    border-radius:999px;
+    color:#f7f7f8;
+    background:transparent;
+    text-decoration:none!important;
+    position:relative;
+    padding:7px 2px;
+    -webkit-tap-highlight-color:transparent;
+    touch-action:manipulation;
+  }
+  .sf-mobile-dock .sf-dock-item.is-active{background:#49494e}
+  .sf-mobile-dock .sf-dock-item .sf-icon{
+    display:block;
+    width:22px;
+    height:22px;
+    filter:brightness(0) invert(1);
+  }
+  .sf-mobile-dock .sf-dock-item>span:last-child{
+    display:block;
+    font-size:11px;
+    font-weight:400;
+    line-height:1.25;
+    text-align:center;
+    white-space:nowrap;
+    max-width:100%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .sf-mobile-dock .sf-dock-item:focus-visible{
+    outline:2px solid white;
+    outline-offset:-3px;
+  }
+  .sf-mobile-dock .sf-badge{
+    top:7px;
+    right:calc(50% - 24px);
+    background:#fff;
+    color:#242428;
+  }
+  .sf-mobile-dock[hidden]{display:none!important}
+  /* Keep the last product and footer content above the floating dock. */
+  body:has(.sf-mobile-dock) { padding-bottom:calc(105px + env(safe-area-inset-bottom,0px)); }
+}
+@media(min-width:701px){.sf-mobile-dock{display:none!important}}
