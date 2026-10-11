@@ -6,7 +6,12 @@ const css=['assets/styles/tokens.css','assets/storefront.css','assets/styles/ove
 const render=env=>execFileSync(process.env.PHP_BIN||'php',['tests/render-account.php'],{encoding:'utf8',env:{...process.env,...env}});
 const intro=render({});
 const signed=render({ACCOUNT_SIGNED_IN:'1'});
-assert(intro.includes('Welcome back'));
+const authJS=fs.readFileSync('theme/codela-storefront/assets/scripts/auth.js','utf8');
+const guestHeader=execFileSync(process.env.PHP_BIN||'php',['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_GUEST_ACCOUNT:'1'}});
+assert(guestHeader.includes('sf-auth-site-header') && guestHeader.includes('Back to store'),'Guest header returns to store');
+assert(!guestHeader.includes('sf-mobile-dock') && !guestHeader.includes('sf-panel'),'Guest header has no normal store dock or overlays');
+assert(intro.includes('My account'));
+assert(intro.includes('sf-auth-tabs'),'Guest intro offers progressive tabs');
 assert.equal(signed,'','Signed-in Woo account never receives a duplicate theme header');
 assert.equal(render({ACCOUNT_OUTSIDE:'1'}),'','Do not inject account heading elsewhere');
 const fields='<p class="woocommerce-form-row form-row"><label for="username">Email address</label><input class="woocommerce-Input input-text" id="username" type="email" autocomplete="username" required></p>'+
@@ -77,6 +82,25 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
       assert(controls.fieldHeight>=54,'Guest input uses shared action height');
       assert.equal(controls.registerPresent,type==='register','Registration follows native Woo setting');
       assert.equal(info.focus,'BODY','Opening account should not autofocus input');
+      const background=await page.locator('.sf-account-intro').evaluate(el=>getComputedStyle(document.body).backgroundColor);
+      assert.equal(background,'rgb(255, 255, 255)','Guest account stays neutral white');
+      if(type==='register'){
+        await page.addScriptTag({content:authJS});
+        assert.equal(await page.locator('.sf-auth-tabs').isVisible(),true,'Tabs appear when Woo renders registration');
+        assert.equal(await page.locator('#customer_login .u-column2').isVisible(),false,'Login selected by default');
+        await page.locator('[data-auth-tab="register"]').click();
+        assert.equal(await page.locator('#customer_login .u-column2').isVisible(),true,'Registration tab shows the native register form');
+        assert.equal(await page.locator('#customer_login .u-column1').isVisible(),false,'Login form hidden while Register is selected');
+        assert.equal(await page.locator('[data-auth-tab="register"]').getAttribute('aria-selected'),'true');
+        await page.locator('[data-auth-tab="register"]').focus();
+        await page.keyboard.press('ArrowLeft');
+        assert.equal(await page.locator('[data-auth-tab="login"]').getAttribute('aria-selected'),'true','Keyboard arrows change tabs');
+        assert.equal(await page.locator('#customer_login .u-column1').isVisible(),true,'Login form restored without re-creating form');
+        assert.equal(await page.locator('form.woocommerce-form').count(),2,'Both native Woo forms remain in DOM');
+      }else{
+        await page.addScriptTag({content:authJS});
+        assert.equal(await page.locator('.sf-auth-tabs').isVisible(),false,'No fake Register tab if Woo registration is disabled');
+      }
     } else {
       const nav=page.locator('.woocommerce-MyAccount-navigation');
       const content=page.locator('.woocommerce-MyAccount-content');
