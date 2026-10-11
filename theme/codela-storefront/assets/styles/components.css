@@ -170,7 +170,7 @@
 :is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
   form .form-row:has(> label[for]):has(input.input-text) input.input-text{
     min-height:var(--sf-ui-action-height);
-    padding:24px 16px 6px;
+    padding:27px 16px 6px;
 }
 :is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
   form .form-row:has(> label[for]):has(input.input-text) .password-input input.input-text{padding-right:54px}
