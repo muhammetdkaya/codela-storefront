@@ -54,7 +54,7 @@ function codela_sf_header(): string {
         <a class="sf-skip" href="#sf-content"><?php esc_html_e( 'Skip to content', 'codela-storefront' ); ?></a>
         <header class="sf-header">
             <nav class="sf-header-menu" aria-label="<?php esc_attr_e( 'Main menu', 'codela-storefront' ); ?>">
-                <?php echo codela_sf_ui_icon_button( 'menu', __( 'Menu', 'codela-storefront' ), [ 'variant' => 'soft', 'href' => '#sf-menu-fallback', 'attributes' => [ 'data-wp-on--click' => 'actions.menu', 'data-panel' => 'menu', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] ] ); ?>
+                <?php echo codela_sf_ui_icon_button( 'menu', __( 'Menu', 'codela-storefront' ), [ 'variant' => 'soft', 'class' => 'sf-menu-trigger', 'href' => '#sf-menu-fallback', 'attributes' => [ 'data-wp-on--click' => 'actions.menu', 'data-panel' => 'menu', 'aria-haspopup' => 'dialog', 'aria-controls' => 'sf-panel', 'aria-expanded' => 'false' ] ] ); ?>
             </nav>
             <div class="sf-brand sf-ui-surface"><?php if ( has_custom_logo() ) { the_custom_logo(); } else { ?><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( $settings['brand'] ?: get_bloginfo( 'name' ) ); ?></a><?php } ?></div>
             <nav class="sf-actions sf-ui-surface" aria-label="<?php esc_attr_e( 'Store tools', 'codela-storefront' ); ?>">
