@@ -153,3 +153,67 @@
   .sf-shell .sf-ui-spinner{animation:none!important}
 }
 
+
+
+/* Native Woo input/layout adapter: labels occupy the existing field surface,
+   using the same spacing, radius and action-height tokens as other UI controls.
+   No new input markup or JS; labels keep their real for/id relationship. */
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
+  form .form-row:has(> label[for]):has(input.input-text){position:relative}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
+  form .form-row:has(> label[for]):has(input.input-text) > label[for]{
+    position:absolute;z-index:1;top:9px;left:16px;right:16px;
+    margin:0;padding:0;pointer-events:none;
+    color:#777b82;font-size:12px;font-weight:400;line-height:17px;
+}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
+  form .form-row:has(> label[for]):has(input.input-text) input.input-text{
+    min-height:calc(var(--sf-ui-action-height) + 8px);
+    padding:28px 16px 8px;
+}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
+  form .form-row:has(> label[for]):has(input.input-text) .password-input input.input-text{padding-right:54px}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
+  form .form-row:has(> label[for]):has(input.input-text) input::placeholder{opacity:0}
+
+/* Native form row contains remember + submit; display:contents puts the
+   existing label, forgot-password link and shared submit in one CSS grid. */
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
+  form.woocommerce-form-login{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    column-gap:8px;align-items:center;
+}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
+  form.woocommerce-form-login > .form-row:not(:has(button[type=submit])){grid-column:1/-1}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
+  form.woocommerce-form-login > .form-row:has(button[type=submit]){display:contents}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
+  form.woocommerce-form-login .woocommerce-form-login__rememberme{
+    grid-column:1;order:1;min-width:0;margin:0;
+    white-space:nowrap;font-size:clamp(11px,2.7vw,13px);
+}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
+  form.woocommerce-form-login > :is(.lost_password,.woocommerce-LostPassword){
+    grid-column:2;order:2;min-width:0;margin:0;text-align:right;
+    white-space:nowrap;font-size:clamp(11px,2.7vw,13px);
+}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
+  form.woocommerce-form-login > :is(.lost_password,.woocommerce-LostPassword) a{font-size:inherit}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
+  form.woocommerce-form-login button[type=submit]{
+    grid-column:1/-1;order:3;margin:14px 0 0;width:100%;
+}
+/* Native auto-dismissable notice above the dialog, using existing neutral
+   UI Kit surfaces. Browser Popover API performs open/close without any JS. */
+.sf-google-setup-notice[popover]:popover-open{
+  position:fixed;inset:auto 16px calc(88px + env(safe-area-inset-bottom,0px));
+  box-sizing:border-box;max-width:min(360px,calc(100vw - 32px));
+  margin:0 auto;padding:13px 17px;
+  border:1px solid var(--sf-ui-border);
+  border-radius:var(--sf-ui-control-radius);
+  background:var(--sf-ui-surface);color:var(--sf-ui-control-ink);
+  font-size:13px;line-height:1.5;text-align:center;
+  box-shadow:var(--sf-ui-glass-shadow);
+}
+.sf-google-setup-notice[popover]::backdrop{background:transparent}
