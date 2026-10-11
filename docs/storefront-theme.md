@@ -458,3 +458,11 @@ The plugin's `Codela\Includes\MyAccountLayout` is the source of truth for authen
 - Doğrulama: 14 Python paket/dağıtım testi ve gerçek PHP çıktılı Chromium nav regresyonu geçti (ara-kare küçülme/büyüme, safe-area, 44px çizgi hedefi, dokunma, paneller ve dört ekran genişliği). Gerçek iPhone Safari hissi elle doğrulanmadı.
 - Yayın: kaynak `b84badc875b7da4af38efe65ccf942211e91a3a4`, [Actions 38133847797](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38133847797) validate (nav/account browser dahil) + bağımsız tema FTPS deploy başarılı; log: `Storefront deployed; checks passed.` Eklenti değişmedi. Sıradaki iş: iPhone'da çizgi konumu ve belirginleşen geçişi kontrol et.
 
+
+## Son doğrulanmış devam noktası — 11 Ekim 2026 / Storefront 0.1.19
+
+- Tema 0.1.18 → 0.1.19. Kullanıcının App Store görseline göre alt bar hafif saydam açık yüzey, tek 20px backdrop blur + doygunluk, ince aydınlık kenar ve yumuşak gölge kullanır. Blur desteklenmiyorsa opak fallback; reduced-transparency tercihi de opak yüzeyi seçer. Blur/gölge animasyonu yok.
+- Dokunmada seçili arka plan kapsülü %6 büyür; dokunulan sekme touchstart/pointerdown anında önizlenir, basılı tutma/sürükleme boyunca parmağı izler. İptalde doğru aktif sekme ve normal ölçek geri gelir. İkonlar 20 → 22px; ikon dokunma tepkisi hafif büyüme. 44px hedefler ve 0.1.18 gizleme/çizgi davranışı korunur.
+- Doğrulama: 14 Python testi, Node arama/footer/dock gesture, JS syntax ve gerçek PHP çıktılı Chromium navigation geçti. Yeni gerçek DOM touch testi: kapsül büyümesi, gezinmeden anında önizleme, cancel sonrası ölçek/aktif sekme geri dönüşü. Mobil görüntü incelendi; iPhone Safari'de native hissin birebir eşitliği veya performans ölçümü yapılmadı.
+- Yayın: kaynak hazır; bağımsız tema CI/FTPS sonucu bekleniyor. Eklenti değişmedi. Sıradaki iş: yayın sonucunu kaydet; gerçek iPhone'da ürün görseli/metin üstünde barın okunurluğu, dokunma ve sürükleme hissini kontrol et.
+

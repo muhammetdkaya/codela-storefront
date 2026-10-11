@@ -53,6 +53,28 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  const dock=page.locator('.sf-mobile-dock');
  assert.deepEqual(await dock.locator('a').evaluateAll(xs=>xs.map(x=>x.dataset.dockView)),['home','search','cart','account']);
  const click=async view=>page.locator(`.sf-mobile-dock [data-dock-view="${view}"]`).click();
+ // A physical touch previews the touched capsule immediately; cancelling restores the active tab.
+ await page.evaluate(()=>{
+  const target=document.querySelector('[data-dock-view="search"]'), b=target.getBoundingClientRect();
+  const touch=new Touch({identifier:71,target,clientX:b.left+b.width/2,clientY:b.top+b.height/2});
+  target.dispatchEvent(new TouchEvent('touchstart',{bubbles:true,touches:[touch],changedTouches:[touch]}));
+ });
+ await page.waitForTimeout(140);
+ const pressed=await page.locator('.sf-dock-surface').evaluate(el=>{
+  const dock=el.closest('.sf-mobile-dock'),s=getComputedStyle(el,'::before');
+  return {scale:new DOMMatrix(s.transform).a,index:dock.style.getPropertyValue('--sf-dock-index'),blur:getComputedStyle(el).backdropFilter};
+ });
+ assert(pressed.scale>1.02 && pressed.scale<1.08,'Touch expands the background capsule');
+ assert.equal(pressed.index,'1','Touch previews the touched tab before navigation');
+ assert.equal(await page.locator('#sf-panel').getAttribute('open'),null,'Press alone never opens a panel');
+ assert(pressed.blur.includes('blur('),'Glass surface uses one backdrop blur layer');
+ if(process.env.DOCK_QA)await page.screenshot({path:process.env.DOCK_QA});
+ await page.evaluate(()=>document.querySelector('[data-dock-view="search"]').dispatchEvent(new TouchEvent('touchcancel',{bubbles:true})));
+ await page.waitForTimeout(240);
+ const released=await page.locator('.sf-dock-surface').evaluate(el=>({scale:new DOMMatrix(getComputedStyle(el,'::before').transform).a,index:el.closest('.sf-mobile-dock').style.getPropertyValue('--sf-dock-index')}));
+ assert.equal(released.scale,1,'Cancel releases capsule expansion');
+ assert.equal(released.index,'0','Cancel restores the original active tab');
+
  await click('search');
  assert.equal(await page.evaluate(()=>document.activeElement.classList.contains('sf-search-cancel')),true);
  assert.equal(await page.locator('#sf-panel .sf-mobile-dock').count(),1);

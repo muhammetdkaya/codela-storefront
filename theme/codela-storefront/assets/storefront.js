@@ -157,6 +157,7 @@ function installDockGestures(dock) {
         dock.classList.add('is-pressing');
         press = {id, item, choice:item, x, y, dragging:false, timer:null};
         item.classList.add('is-pressed');
+        preview(item);
         const gestureId = id;
         press.timer = setTimeout(() => {
             if (press?.id !== gestureId) return;
@@ -520,4 +521,5 @@ function init() {
     window.addEventListener('pageshow',event => {if(event.persisted){cartData=null;if(current === 'cart')refreshCart();}});
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',init,{once:true}); else init();
+
 
