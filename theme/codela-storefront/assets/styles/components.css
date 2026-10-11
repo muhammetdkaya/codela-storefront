@@ -31,17 +31,35 @@
 }
 .sf-shell .sf-ui-icon-button:is(:active,.is-pressed) .sf-icon{transform:scale(.9)}
 .sf-shell .sf-ui-icon-button--soft:is(:active,.is-pressed){transform:scale(.96)}
+/* The same surface primitive styles all floating header islands and the X.
+   Placement belongs to navigation/overlay; touch and appearance live here. */
+.sf-shell .sf-ui-surface,
 .sf-shell .sf-ui-icon-button--soft,
 #sf-panel button.sf-ui-icon-button--soft{
+  border:1px solid var(--sf-ui-glass-border);
   border-radius:var(--sf-ui-pill);
-  background:var(--sf-ui-control-soft)!important;
-  color:var(--sf-ui-control-ink);
-  box-shadow:none!important;
+  background:var(--sf-ui-glass-surface)!important;
+  color:var(--sf-ui-glass-ink);
+  box-shadow:var(--sf-ui-glass-shadow)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
+  backdrop-filter:blur(18px) saturate(140%);
 }
+.sf-shell .sf-ui-icon-button--soft .sf-icon,
 #sf-panel button.sf-ui-icon-button--soft .sf-icon{
-  width:var(--sf-ui-icon-close);
-  height:var(--sf-ui-icon-close);
-  filter:brightness(0);
+  width:var(--sf-ui-icon);
+  height:var(--sf-ui-icon);
+  filter:brightness(0) invert(1);
+}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .sf-shell .sf-ui-surface,.sf-shell .sf-ui-icon-button--soft,
+  #sf-panel button.sf-ui-icon-button--soft{background:var(--sf-ui-glass-opaque)!important}
+}
+@media(prefers-reduced-transparency:reduce){
+  .sf-shell .sf-ui-surface,.sf-shell .sf-ui-icon-button--soft,
+  #sf-panel button.sf-ui-icon-button--soft{
+    background:var(--sf-ui-glass-opaque)!important;
+    -webkit-backdrop-filter:none;backdrop-filter:none;
+  }
 }
 .sf-shell .sf-ui-icon-button--clear,
 #sf-panel button.sf-ui-icon-button--clear{

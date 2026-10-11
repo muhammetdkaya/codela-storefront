@@ -15,7 +15,7 @@ const sample=execFileSync(process.env.PHP_BIN||'php',['tests/render-ui.php'],{en
    const rect=await soft.boundingBox();
    assert(rect.width>=44&&rect.height>=44,'IconButton touch target stays 44px');
    const properties=await soft.evaluate(el=>({radius:getComputedStyle(el).borderRadius,bg:getComputedStyle(el).backgroundColor}));
-   assert.equal(properties.bg,'rgb(242, 242, 242)','Soft icon button uses shared surface token');
+   assert.equal(properties.bg,'rgba(43, 43, 47, 0.9)','Soft icon button uses shared floating surface token');
    assert.equal(properties.radius,'999px','Icon button has shared circular shape');
    const secondary=page.locator('button.sf-ui-button--secondary');
    assert(await secondary.isDisabled(),'Disabled button cannot activate');

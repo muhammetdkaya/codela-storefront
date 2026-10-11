@@ -190,36 +190,21 @@
 @media(min-width:701px){.sf-mobile-dock{display:none!important}}
 
 
-/* Independent header surfaces; visual tokens and interaction are UI Kit-owned. */
+/* Header composition only. Surface paint and press feedback are shared UI Kit. */
 .sf-shell .sf-header{background:transparent;border-bottom:0;isolation:isolate}
 .sf-shell .sf-header .sf-brand{
   display:flex;align-items:center;justify-content:center;
   min-height:var(--sf-ui-hit);padding:0 18px;
-  border:1px solid var(--sf-ui-header-border);
-  border-radius:var(--sf-ui-pill);
-  background:var(--sf-ui-header-surface);
-  box-shadow:var(--sf-ui-header-shadow);
-  backdrop-filter:blur(16px) saturate(130%);
-  -webkit-backdrop-filter:blur(16px) saturate(130%);
 }
-.sf-shell .sf-header .sf-brand .custom-logo{max-height:34px}
-.sf-shell .sf-header .sf-header-menu .sf-ui-icon-button--soft{
-  background:var(--sf-ui-header-surface)!important;
-  border:1px solid var(--sf-ui-header-border);
-  box-shadow:var(--sf-ui-header-shadow)!important;
-  backdrop-filter:blur(16px) saturate(130%);
-  -webkit-backdrop-filter:blur(16px) saturate(130%);
+.sf-shell .sf-header .sf-brand a{color:var(--sf-ui-glass-ink);text-decoration:none}
+.sf-shell .sf-header .sf-brand .custom-logo{
+  max-height:34px;filter:brightness(0) invert(1);
 }
 .sf-shell .sf-header .sf-actions{
   gap:0;min-height:var(--sf-ui-hit);padding:0 3px;
-  border:1px solid var(--sf-ui-header-border);
-  border-radius:var(--sf-ui-pill);
-  background:var(--sf-ui-header-surface);
-  box-shadow:var(--sf-ui-header-shadow);
-  backdrop-filter:blur(16px) saturate(130%);
-  -webkit-backdrop-filter:blur(16px) saturate(130%);
 }
-.sf-shell .sf-header .sf-actions .sf-ui-icon-button{border-radius:var(--sf-ui-pill)}
+.sf-shell .sf-header .sf-actions .sf-ui-icon-button{border-radius:var(--sf-ui-pill);color:var(--sf-ui-glass-ink)}
+.sf-shell .sf-header .sf-actions .sf-ui-icon-button .sf-icon{filter:brightness(0) invert(1)}
 @media(max-width:700px){
   .sf-shell .sf-header{height:68px}
   .sf-shell.has-mobile-dock .sf-header{
@@ -237,16 +222,4 @@
     max-width:100%;padding:0 10px;font-size:clamp(15px,4.6vw,23px);
   }
   .sf-shell.has-header-tools .sf-header .sf-actions{gap:0}
-}
-@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
-  .sf-shell .sf-header .sf-brand,
-  .sf-shell .sf-header .sf-header-menu .sf-ui-icon-button--soft,
-  .sf-shell .sf-header .sf-actions{background:#f1f1f2!important}
-}
-@media(prefers-reduced-transparency:reduce){
-  .sf-shell .sf-header .sf-brand,
-  .sf-shell .sf-header .sf-header-menu .sf-ui-icon-button--soft,
-  .sf-shell .sf-header .sf-actions{
-    background:#f1f1f2!important;backdrop-filter:none;-webkit-backdrop-filter:none;
-  }
 }

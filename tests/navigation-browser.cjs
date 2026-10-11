@@ -205,6 +205,15 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
   await page.setViewportSize({width,height:844});
   const trigger=page.locator('.sf-header-menu a'); const box=await trigger.boundingBox();await trigger.click();
   const close=page.locator('.sf-panel-top .sf-close'); const x=await close.boundingBox();
+  const shared=await page.evaluate(()=>{
+    const menu=document.querySelector('.sf-header-menu .sf-ui-icon-button--soft');
+    const close=document.querySelector('.sf-panel-top .sf-close');
+    const style=el=>({bg:getComputedStyle(el).backgroundColor,radius:getComputedStyle(el).borderRadius,
+      icon:getComputedStyle(el.querySelector('.sf-icon')).width,shadow:getComputedStyle(el).boxShadow});
+    return {menu:style(menu),close:style(close)};
+  });
+  assert.deepEqual(shared.menu,shared.close,'Menu and X share surface, icon sizing and elevation');
+
   if(width<=700){assert(Math.abs(box.x-x.x)<1);assert(Math.abs(box.y-x.y)<1,'Menu/X share vertical center');}
   assert.equal(await dock.isVisible(),false,'Menu hides dock');
   await close.click();

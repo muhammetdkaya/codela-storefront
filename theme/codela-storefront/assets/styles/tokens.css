@@ -8,17 +8,23 @@
   --sf-ui-ink:var(--sf-ink,#22231f);
   --sf-ui-surface:#ffffff;
   --sf-ui-surface-muted:#f3f3f3;
-  --sf-ui-control-soft:#f2f2f2;
-  --sf-ui-header-surface:rgba(239,239,240,.88);
-  --sf-ui-header-border:rgba(34,35,31,.08);
-  --sf-ui-header-shadow:0 2px 10px rgba(24,24,24,.035);
+  /* Shared floating surface: brand, header actions, menu and dialog close. */
+  --sf-ui-glass-surface:rgba(43,43,47,.9);
+  --sf-ui-glass-opaque:#2b2b2f;
+  --sf-ui-glass-border:rgba(255,255,255,.13);
+  --sf-ui-glass-shadow:0 4px 18px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.09);
+  --sf-ui-glass-ink:#ffffff;
+  --sf-ui-control-soft:var(--sf-ui-glass-surface);
+  --sf-ui-header-surface:var(--sf-ui-glass-surface);
+  --sf-ui-header-border:var(--sf-ui-glass-border);
+  --sf-ui-header-shadow:var(--sf-ui-glass-shadow);
   --sf-ui-control-ink:#202020;
   --sf-ui-control-clear:#d8d8d8;
   --sf-ui-accent:var(--sf-accent,#656e52);
   --sf-ui-border:var(--sf-line,#deded5);
   --sf-ui-hit:44px;
   --sf-ui-icon:22px;
-  --sf-ui-icon-close:19px;
+  --sf-ui-icon-close:22px;
   --sf-ui-icon-clear:12px;
   --sf-ui-action-height:54px;
   --sf-ui-control-radius:var(--cdl-ct-radius,12px);
