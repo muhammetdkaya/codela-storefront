@@ -206,3 +206,8 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - Search/Cart içerikleri yüzen alt nav'ın altında gizlenmesin diye mobilde sonuç listesi ve sepet alt toplam/ödeme alanının alt boşluğu güvenli alanla birlikte artırıldı; tab z-index üstte.
 - Tema, CSS/JS cache sürümü **0.1.10 → 0.1.11**. `tests/dock-gesture.cjs` ile gerçek JS helper'ları çalıştırılarak mount/restore, aktif sayfa, pointer seçimi, hold, iptal/duplicate click; `tests/package.py` ile statik sözleşme korunur. CI workflow Node testini çalıştırır.
 - **Henüz CI/deploy çalıştırılmamış kaynak hazırlığıdır**; test ve üretim durumunu kontrol etmeden başarı iddia etme. Sonraki iş: GitHub Actions doğrulama + FTPS dağıtım sonuçlarını al, iPhone'da Arama ↔ Sepet ve Ana Sayfa/Hesabım bırakma, klavye/safe-area, X/focus, checkout CTA ve gerçek cihaz görünümünü test et.
+
+## Storefront 0.1.11 deployment verified — 11 Oct 2026
+- Source commit `2db0a69`, test fixture fix `c99479c`. [Actions 38112420622](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38112420622) validated and deployed successfully. The previous run failed on incomplete test fixture geometry, not the browser implementation.
+- Native Search/Cart dialogs now retain the floating mobile dock within their top layer for direct switching. Press/hold-and-scrub tabs have CSS feedback and pointer tests. Theme and assets are 0.1.11; no Codela plugin release.
+- Remaining: manually test on real iPhone Safari, especially dock during keyboard input, press-and-scrub selection, the subtotal/checkout button, modal focus and safe-area. CI success is not proof of visual acceptance.
