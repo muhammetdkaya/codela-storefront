@@ -15,14 +15,20 @@ const checkout = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8'
 const footer = execFileSync(php, ['tests/render-footer.php'], {encoding:'utf8',env:{...process.env,FOOTER_PRIVACY:'1',FOOTER_TERMS:'1',FOOTER_NOTE:'1'}});
 assert(!checkout.includes('class="sf-mobile-dock'), 'Checkout omits the dock');
 const css = ['assets/styles/tokens.css','assets/storefront.css','assets/styles/overlay.css','assets/styles/navigation.css','assets/styles/components.css'].map(p=>fs.readFileSync('theme/codela-storefront/'+p,'utf8')).join('\n');
-const formatScript = fs.readFileSync('theme/codela-storefront/assets/scripts/format.js','utf8').replace(/^export /gm,'');
+const moduleSource = name => fs.readFileSync(
+ 'theme/codela-storefront/assets/scripts/'+name+'.js','utf8'
+ ).replace(/^import .*;$/gm,'').replace(/^export /gm,'');
+const inlineControllers = ['format','search-controller','cart-controller']
+ .map(moduleSource).join('\n');
 const js = fs.readFileSync('theme/codela-storefront/assets/storefront.js','utf8')
-  .replace("import { escape, decode, safeURL, money } from './scripts/format.js';",formatScript)
-  .replace("import { store } from '@wordpress/interactivity';", `
+ .replace(/^import .*from '\.\/scripts\/[^']+';$/gm,'')
+ .replace("import { store } from '@wordpress/interactivity';",`
 function store(namespace, options) {
  window.sfActions = options.actions;
  return {state:{config:{api:'https://store.test/api/', search:'https://store.test/search-api', cart:'/cart/', labels:{}}}};
-}`);
+}
+`)
+ .replace("let dialog, current",inlineControllers + '\nlet dialog, current');
 const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/product/',images:[],quantity:1,totals:{line_subtotal:'1000',line_subtotal_tax:'0',currency_code:'TRY',currency_minor_unit:2}}],totals:{total_items:'1000',total_items_tax:'0',currency_code:'TRY',currency_minor_unit:2}};
 (async()=>{
  const browser = await chromium.launch({headless:true,...(process.env.CHROMIUM_BIN ? {executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-gpu','--use-gl=disabled','--disable-software-rasterizer','--disable-dev-shm-usage','--no-zygote','--single-process']} : {})});

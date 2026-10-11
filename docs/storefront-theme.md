@@ -537,3 +537,32 @@ All three GitHub Actions runs finished with **validate + deploy success**. The 0
 - [0.1.26 source 073eca6](https://github.com/muhammetdkaya/codela-storefront/commit/073eca6a1beb9e3403a159cd3b25a16bd24b61ba), [Actions 38146791734](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38146791734): `validate` and independent `deploy` **success**. Reusable HTML escaping, decoding, URL validation and currency formatting are exported by `assets/scripts/format.js`, imported by the main module and covered by extra security/format tests.
 - The Codela plugin is unchanged. The Header, mobile dock gestures, search/cart behavior, footer and authenticated account layout continue using their existing contracts.
 - Next priority: extract popup/search/cart state controllers into carefully tested modules while preserving a *single* dialog and navigation state, and avoid duplicated gesture listeners. Do not claim manual touch-device acceptance from automated Chromium passing.
+
+
+## 0.1.27 — Search and cart controllers
+
+The main `assets/storefront.js` module is now the single owner of dialog
+routing, WordPress Interactivity actions, modal focus, floating navigation,
+scroll position and panel transitions. Independent feature controllers are
+instantiated once with explicit dependencies (query selector, config, labels,
+active view, dialog):
+
+- `assets/scripts/search-controller.js`: input/debounce/clear, stale-result
+  invalidation via request sequence, abort, skeleton, endpoint data, empty/error
+  messages. Public API: `bind()`, `cancel()`, `start()`, `retry()`.
+- `assets/scripts/cart-controller.js`: Store API nonce handling, GET/POST,
+  quantity and remove mutations, retry, active footer, subtotal and cart badges,
+  external cart invalidation events. Public API: `bind()`, `getData()`,
+  `refresh()`, `change()`, `invalidate()`.
+- `assets/scripts/format.js`: the same shared escaping, safe URL, decoding and
+  currency formatting used by both feature controllers.
+
+Every controller is created once. No duplicate dialog, dock or event listener
+is added. Pending searches are aborted when leaving search; repeated cart GET
+requests coalesce; nonce refresh and the original Store API integration remain
+unchanged. The browser fixture runs the actual module sources and the existing
+end-to-end search/cart/nav checks. The signed-in account UI remains plugin-owned.
+
+Platform-neutral identifiers are mandatory. Keep the modal/dock ownership
+unified while considering future extraction of the overlay controller; never
+create parallel stores or second navigation listeners.

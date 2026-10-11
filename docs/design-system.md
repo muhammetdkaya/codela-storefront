@@ -153,3 +153,32 @@ Overlay toolbar, close-focus, search input, product results and placeholder rows
 - `tests/format.cjs` asserts escaping, protocol rejection and currency formatting. PHP/theme/package tests and JavaScript syntax checks cover the new dependency.
 - Source naming is intentionally device/vendor/OS-neutral. Continue extracting modal/search/cart controllers in later guarded versions; maintain a single navigation state and preserve registered WordPress action semantics.
 - Validation/deployment must be verified after this source release; test automation is not physical-device acceptance.
+
+
+## 0.1.27 — Search and cart controllers
+
+The main `assets/storefront.js` module is now the single owner of dialog
+routing, WordPress Interactivity actions, modal focus, floating navigation,
+scroll position and panel transitions. Independent feature controllers are
+instantiated once with explicit dependencies (query selector, config, labels,
+active view, dialog):
+
+- `assets/scripts/search-controller.js`: input/debounce/clear, stale-result
+  invalidation via request sequence, abort, skeleton, endpoint data, empty/error
+  messages. Public API: `bind()`, `cancel()`, `start()`, `retry()`.
+- `assets/scripts/cart-controller.js`: Store API nonce handling, GET/POST,
+  quantity and remove mutations, retry, active footer, subtotal and cart badges,
+  external cart invalidation events. Public API: `bind()`, `getData()`,
+  `refresh()`, `change()`, `invalidate()`.
+- `assets/scripts/format.js`: the same shared escaping, safe URL, decoding and
+  currency formatting used by both feature controllers.
+
+Every controller is created once. No duplicate dialog, dock or event listener
+is added. Pending searches are aborted when leaving search; repeated cart GET
+requests coalesce; nonce refresh and the original Store API integration remain
+unchanged. The browser fixture runs the actual module sources and the existing
+end-to-end search/cart/nav checks. The signed-in account UI remains plugin-owned.
+
+Platform-neutral identifiers are mandatory. Keep the modal/dock ownership
+unified while considering future extraction of the overlay controller; never
+create parallel stores or second navigation listeners.
