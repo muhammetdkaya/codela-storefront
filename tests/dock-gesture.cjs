@@ -17,7 +17,7 @@ const items=['home','search','cart','account'].map((name,i)=>({
  hasAttribute(k){return this.attrs.has(k)},setAttribute(k,v){this.attrs.set(k,v)}
 }));
 const handlers={};
-const handle={tabIndex:-1,attrs:new Map(),setAttribute(k,v){this.attrs.set(k,v)}};
+const handle={tabIndex:-1,attrs:new Map(),setAttribute(k,v){this.attrs.set(k,v)},addEventListener(k,fn){this[k]=fn}};
 const shell={};
 const dock={
  parentElement:shell,hidden:false,classList:classList(),
