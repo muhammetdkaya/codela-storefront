@@ -1,4 +1,6 @@
 
+- **0.1.44 deployed (11 October 2026):** [Actions 38169988797](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38169988797), source `0165bad7032ee70fd93c12957aa139480ac24a92`. Validation, real browser regression and standalone Storefront FTPS deployment all successful. The root cause of missing Google Button border was CSS specificity leakage from a grouped :is() selector (max specificity of a native popup ID arm applied to the shared Button arm). Replaced shared Button style groups with ordinary comma-separated selectors, preserving original UI Kit variants and Woo native-submit rules; modal whitespace and inset field heights compacted. Screenshot visual review and device acceptance still require physical Safari inspection. No Codela plugin changes.
+
 ## Storefront 0.1.44 — real iPhone guest Account screenshot polish (11 October 2026)
 
 - The latest mobile screenshot revealed excess space between native modal header and segmented login/register tabs, generous input/control spacing and a faint or absent outline on the Google secondary button. Reuse the existing UI Kit, Woo forms and one native dialog. No generated image, invented button or Codela plugin changes.
