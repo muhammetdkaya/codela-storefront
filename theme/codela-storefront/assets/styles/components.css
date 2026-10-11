@@ -92,11 +92,14 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
   align-items:center;
   justify-content:center;
   gap:16px;
-  min-height:var(--sf-ui-action-height);
-  padding:17px 24px;
+  /* Size controls are shared by every UI Kit Button and native Woo submit.
+     Page compositions only change these tokens, never draw another button. */
+  min-height:var(--sf-ui-button-height,var(--sf-ui-action-height));
+  padding:var(--sf-ui-button-padding-y,17px) var(--sf-ui-button-padding-x,24px);
   border:0;
   border-radius:var(--sf-ui-control-radius);
   font:inherit;
+  font-size:var(--sf-ui-button-font-size,inherit);
   font-weight:inherit;
   text-decoration:none!important;
   cursor:pointer;
