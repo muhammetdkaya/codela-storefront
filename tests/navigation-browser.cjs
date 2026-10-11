@@ -180,11 +180,16 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
   return {inlineLabel:label.top>=input.top && label.bottom<input.bottom-12,
    sameLine:Math.abs(remember.top+remember.height/2-forgot.top-forgot.height/2)<10,
    submitBg:getComputedStyle(submit).backgroundColor,
+   fieldHeight:input.height,
+   toolbarBottom:document.querySelector('#sf-panel .sf-panel-top').getBoundingClientRect().bottom,
+   formTop:root.querySelector('form.woocommerce-form-login').getBoundingClientRect().top,
    subtitle:root.textContent.includes('Manage your orders and account details.')};
  });
  assert(compactAuth.inlineLabel,'Modal native field label stays inside input');
  assert(compactAuth.sameLine,'Modal remember and password recovery share a row');
  assert.equal(compactAuth.submitBg,'rgb(37, 39, 42)','Native modal submit uses shared primary Button');
+ assert(compactAuth.fieldHeight<=56,'Popup fields use the compact shared UI Kit control height');
+ assert(compactAuth.formTop-compactAuth.toolbarBottom<70,'Popup form avoids oversized blank space below toolbar');
  assert.equal(compactAuth.subtitle,false,'Account popup has no descriptive subtitle');
  assert.equal(await page.locator('#sf-account form.woocommerce-form-login').getAttribute('action'),'https://store.test/myaccount/','Login submits to genuine Account URL');
  assert.equal(page.url(),'https://store.test/','Guest Account does not reload');
