@@ -1,4 +1,6 @@
 
+- **0.1.40 doğrulama/dağıtım başarılı (11 Ekim 2026):** `3e3c32cb6b5f2934a0a90ad37548fd333fdb2376`, [Actions 38164727652](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38164727652): `validate=success`, tarayıcı account/header/browser kontrolleri başarılı, Storefront bağımsız FTPS `deploy=success`. Canlı misafir hesapta iPhone Safari görsel kabulü ve WooCommerce kayıt ayarının gerçekten etkin olup olmadığı ayrıca doğrulanmalı. Giriş formunun yalnız görünümü değiştirildi; Codela hesap içeriği ve auth backend'e dokunulmadı.
+
 ## Storefront 0.1.40 — physical iPhone guest-login screenshot corrections (11 October 2026)
 
 - User provided a real iPhone screenshot of guest login. Corrected actual theme rather than generating an image: reduce guest header height, main top padding, WP block gaps and intro-to-form spacing; hide the duplicate native Woo `> h2` on **single-form only** pages; keep multi-form fallback and Codela logged-in dashboard unchanged. Guest Custom Logo uses readable measured height; `Back to store` arrow now reuses `codela_sf_icon('arrow-right')` rotated in CSS to avoid iOS rendering the `↗` character as a blue emoji.
