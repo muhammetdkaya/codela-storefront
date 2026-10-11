@@ -16,9 +16,11 @@ There are three distinct layers:
    page layout and domain behavior only. Menu and cart API calls, tab selection,
    modal lifecycle and storefront routing belong here, not in a generic Button.
 
-Dependencies load in this order: tokens → legacy/layout stylesheet →
-components. Shared component styles take precedence over transitional legacy
-rules. Keep this dependency order until all legacy geometry is removed.
+Dependencies load in this order: tokens → storefront layout → navigation →
+shared components → guest account CSS (only on the My Account page).
+Shared component styles take precedence over transitional page rules. The
+account stylesheet is always scoped to guests or the vanilla Woo fallback;
+Codela's authenticated account remains plugin-owned.
 
 ## Current primitives and contracts
 
@@ -113,9 +115,9 @@ functionality or keyboard accessibility.
 - Extract the isolated dock gesture controller, fullscreen modal lifecycle,
   Store API cart and search into separately tested JavaScript modules, *without*
   loading duplicate listeners or separate navigation states.
-- Move feature-only rules out of the legacy stylesheet after visual
-  equivalence tests; the component stylesheet must stay the unique source
-  for shared controls.
+- Continue extracting feature-only overlay, search and cart rules from the
+  remaining storefront layout stylesheet using visual equivalence tests.
+  The shared component stylesheet stays the sole source for control design.
 - Add an admin-only or development-only UI Kit playground preview showing
   real controls in default, pressed, focus, disabled and loading states;
   do not ship test content on public store pages.

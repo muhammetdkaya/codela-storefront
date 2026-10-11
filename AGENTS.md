@@ -7,7 +7,7 @@ individual pages. The shared files are
 `inc/ui.php`, `assets/styles/tokens.css`, `assets/styles/components.css`;
 specialized navigation/search/cart behavior remains feature-owned until
 independently tested modules replace it. Source CSS import order is
-tokens → storefront layout → components. Use `sf-ui-*` namespace and
+tokens → storefront layout → navigation → components → account (conditional). Use `sf-ui-*` namespace and
 semantic HTML. Preserve the latest user-approved mobile Header and dock
 appearance, gestures, collapsed handle and accessibility.
 
