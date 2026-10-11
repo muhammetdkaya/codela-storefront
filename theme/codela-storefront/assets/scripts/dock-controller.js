@@ -8,21 +8,50 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
     const dockScrollPositions = new WeakMap();
     const $ = s => document.querySelector(s);
     let initialized = false;
+    // Opposing scroll motions must not toggle the dock on every small reversal.
+    const DOCK_REST_MS = 650, HIDE_TRAVEL_PX = 44, SHOW_TRAVEL_PX = 28;
+    let lastDockChangeAt = Date.now(), pendingDockTransition = null;
 
     function mobileDock() {
         return dockNode ||= $('.sf-mobile-dock');
     }
+    function cancelPendingDockTransition() {
+        if (!pendingDockTransition) return;
+        clearTimeout(pendingDockTransition.timer);
+        pendingDockTransition = null;
+    }
     function setDockCollapsed(collapsed) {
+        // Explicit navigation, reveal-handle or scroll-to-top actions take precedence.
+        cancelPendingDockTransition();
         const dock = mobileDock();
         if (!dock || dock.hidden || dock.classList.contains('is-collapsed') === collapsed) return;
         if (collapsed && dock.contains(document.activeElement) && document.activeElement.matches(':focus-visible')) return;
         dock.classList.toggle('is-collapsed', collapsed);
+        lastDockChangeAt = Date.now();
         const handle = dock.querySelector('.sf-dock-handle');
         if (handle) {
             handle.tabIndex = collapsed ? 0 : -1;
             handle.setAttribute('aria-hidden', String(!collapsed));
         }
         dock.querySelectorAll('.sf-dock-item').forEach(item => { item.inert = collapsed; });
+    }
+    function requestDockCollapsed(collapsed) {
+        const dock = mobileDock();
+        if (!dock || dock.hidden || dock.classList.contains('is-collapsed') === collapsed) return;
+        const remaining = DOCK_REST_MS - (Date.now() - lastDockChangeAt);
+        if (remaining <= 0) { setDockCollapsed(collapsed); return; }
+        if (pendingDockTransition?.collapsed === collapsed) return;
+        cancelPendingDockTransition();
+        const pending = {collapsed, direction:collapsed ? 1 : -1, reverse:0, timer:null};
+        pending.timer = setTimeout(() => {
+            if (pendingDockTransition !== pending) return;
+            pendingDockTransition = null;
+            const currentDock = mobileDock();
+            if (currentDock && !currentDock.hidden && !currentDock.classList.contains('is-pressing') && !currentDock.classList.contains('is-scrubbing')) {
+                setDockCollapsed(collapsed);
+            }
+        }, remaining);
+        pendingDockTransition = pending;
     }
     // A native modal makes outside nodes inert; move the one real dock into its top layer.
     function mountDock() {
@@ -95,9 +124,20 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
         const previous = dockScrollPositions.get(target) || {position, distance:0};
         const delta = position - previous.position;
         let distance = Math.sign(delta) === Math.sign(previous.distance) ? previous.distance + delta : delta;
-        if (dock.classList.contains('is-scrubbing') || dock.classList.contains('is-pressing')) distance = 0;
-        else if (position < 24) { setDockCollapsed(false); distance = 0; }
-        else if (distance >= 18 || distance <= -12) { setDockCollapsed(distance > 0); distance = 0; }
+        if (pendingDockTransition) {
+            // Tiny direction jitter is harmless. A genuine reversal cancels stale intent.
+            const along = delta * pendingDockTransition.direction;
+            pendingDockTransition.reverse = along >= 0 ? 0 : pendingDockTransition.reverse - along;
+            if (pendingDockTransition.reverse >= 12) cancelPendingDockTransition();
+        }
+        if (dock.classList.contains('is-scrubbing') || dock.classList.contains('is-pressing')) {
+            cancelPendingDockTransition(); distance = 0;
+        } else if (position < 24) {
+            setDockCollapsed(false); distance = 0;
+        } else if (!pendingDockTransition && (distance >= HIDE_TRAVEL_PX || distance <= -SHOW_TRAVEL_PX)) {
+            requestDockCollapsed(distance > 0);
+            distance = 0;
+        }
         dockScrollPositions.set(target, {position, distance});
     }
     function installDockGestures(dock) {

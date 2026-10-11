@@ -79,6 +79,8 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  });
  assert(logoGeometry.delta<1,'Logo is vertically centered without inline baseline gap');
  assert.equal(logoGeometry.filter,'none','Custom logo colors are preserved');
+ const brandPadding=await page.locator('.sf-brand').evaluate(el=>getComputedStyle(el).paddingLeft);
+ assert.equal(brandPadding,'8px','Brand surface uses compact symmetric horizontal padding');
  await page.evaluate(()=>window.scrollTo(0,200));
  assert.equal(await page.locator('.sf-header').evaluate(el=>el.getBoundingClientRect().top),0,'Header stays fixed on scroll');
  await page.evaluate(()=>{window.scrollTo(0,0);document.body.classList.remove('home');});
@@ -220,7 +222,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  await page.evaluate(()=>{document.activeElement.blur();document.querySelector('.sf-mobile-dock').style.setProperty('--sf-dock-bottom','46px');window.scrollTo(0,100)});
  await page.waitForTimeout(50);
  await page.evaluate(()=>document.querySelector('.sf-dock-handle').click());
- for(let y=102;y<=126;y+=2){await page.evaluate(y=>window.scrollTo(0,y),y);await page.waitForTimeout(20);}
+ for(let y=102;y<=152;y+=2){await page.evaluate(y=>window.scrollTo(0,y),y);await page.waitForTimeout(20);}
  assert(await dock.evaluate(el=>el.classList.contains('is-collapsed')),'Slow scroll accumulates');
  await page.waitForTimeout(520);
  assert(await dock.locator('a').evaluateAll(xs=>xs.every(x=>x.getBoundingClientRect().top>=innerHeight)),'All tabs move beyond safe-area viewport');
@@ -235,7 +237,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  assert(!(await dock.evaluate(el=>el.classList.contains('is-collapsed'))));
  await click('search');
  await page.locator('.sf-search-cancel').click();
- assert.equal(await page.evaluate(()=>scrollY),126,'Close restores exact scroll');
+ assert.equal(await page.evaluate(()=>scrollY),152,'Close restores exact scroll');
  await page.evaluate(()=>window.scrollTo(0,0));
  // The same button is reparented at an identical viewport position while it morphs.
  for(const width of [320,390,700,1024]){
@@ -306,7 +308,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  await page.waitForTimeout(520);
  assert(await dock.evaluate(el=>el.classList.contains('is-collapsed')));
  await page.evaluate(()=>document.querySelector('#sf-search').scrollTop=110);
- await page.waitForTimeout(520);
+ await page.waitForTimeout(760);
  assert(!(await dock.evaluate(el=>el.classList.contains('is-collapsed'))));
  if(process.env.QA_SCREENSHOT) await page.screenshot({path:process.env.QA_SCREENSHOT});
  await page.locator('.sf-search-cancel').click();

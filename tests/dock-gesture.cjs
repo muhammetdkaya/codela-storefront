@@ -40,14 +40,15 @@ const document={
 };
 const windowHandlers={};let scrollListeners=0;
 const win={innerWidth:390,addEventListener(k,fn){windowHandlers[k]=fn;if(k==='scroll')scrollListeners++},scrollY:0,location:{assign:url=>{assigned=url}}};
-let assigned='',opened=[],closed=0,seq=0,raf=null;
+let assigned='',opened=[],closed=0,seq=0,raf=null,now=0;
 const timers=new Map();
 const setTimeoutFake=fn=>{const id=++seq;timers.set(id,fn);return id};
+const fireTimers=()=>{for(const [id,fn] of [...timers]){timers.delete(id);fn();}};
 const context={
  document,window:win,
  requestAnimationFrame:fn=>{raf=fn;return 1},
  Element:class Element{},
- clearTimeout:id=>timers.delete(id),setTimeout:setTimeoutFake,Date,Math,Number
+ clearTimeout:id=>timers.delete(id),setTimeout:setTimeoutFake,Date:{now:()=>now},Math,Number
 };
 const createDockController=vm.runInNewContext(src.replace(/^export /m,'')+'\ncreateDockController',context);
 const helpers=createDockController({
@@ -67,15 +68,35 @@ helpers.init(dialog);helpers.init(dialog);
 assert.equal(scrollListeners,1,'Scroll listener installed once');
 assert.equal(typeof dialogHandlers.scroll,'function','Native modal scroll is tracked');
 assert.equal(typeof handlers.touchstart,'function','Touch listeners installed once');
-// Window and modal scroll direction trigger a recoverable collapsed dock.
+// Hiding requires substantial downward travel; rapid reversal waits for rest time.
 windowHandlers.scroll({target:document});raf();
+win.scrollY=20;windowHandlers.scroll({target:document});raf();
+assert.equal(dock.classList.contains('is-collapsed'),false,'Tiny scroll does not hide dock');
 win.scrollY=140;windowHandlers.scroll({target:document});raf();
-assert.equal(dock.classList.contains('is-collapsed'),true,'Scroll down hides dock');
+assert.equal(dock.classList.contains('is-collapsed'),false,'First transition respects initial 650ms dwell');
+now=650;fireTimers();
+assert.equal(dock.classList.contains('is-collapsed'),true,'Sustained downward movement hides dock');
 assert.equal(handle.tabIndex,0,'Reveal line is keyboard reachable');
 assert.equal(items[0].inert,true,'Hidden dock tabs are inert');
-win.scrollY=98;windowHandlers.scroll({target:document});raf();
-assert.equal(dock.classList.contains('is-collapsed'),false,'Scroll up restores dock');
+// A few pixels of scroll bounce must not reveal the bar.
+win.scrollY=136;windowHandlers.scroll({target:document});raf();
+assert.equal(dock.classList.contains('is-collapsed'),true,'Small reversal is ignored');
+now=700;win.scrollY=98;windowHandlers.scroll({target:document});raf();
+assert.equal(dock.classList.contains('is-collapsed'),true,'Upward movement cannot undo hide within rest time');
+now=1300;fireTimers();
+assert.equal(dock.classList.contains('is-collapsed'),false,'Confirmed upward movement reveals dock after rest time');
 assert.equal(items[0].inert,false);
+// A queued hide should be cancelled when the direction truly reverses.
+now=1350;win.scrollY=150;windowHandlers.scroll({target:document});raf();
+assert.equal(dock.classList.contains('is-collapsed'),false,'New hide queues during dwell');
+win.scrollY=134;windowHandlers.scroll({target:document});raf();
+now=2200;fireTimers();
+assert.equal(dock.classList.contains('is-collapsed'),false,'Real reversal cancels an obsolete queued hide');
+// Explicit reveal/scroll-to-top should always override any pending motion.
+win.scrollY=200;windowHandlers.scroll({target:document});raf();
+now=2300;win.scrollY=10;windowHandlers.scroll({target:document});raf();
+now=3000;fireTimers();
+assert.equal(dock.classList.contains('is-collapsed'),false,'At top, any queued hide must stay cancelled');
 const touch=(x,y,id=1)=>({clientX:x,clientY:y,identifier:id});
 const ev=(item,t,kind)=>({
  target:{closest:()=>item},touches:kind==='end'?[]:[t],changedTouches:[t],cancelable:true,
