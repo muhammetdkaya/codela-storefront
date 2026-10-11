@@ -25,7 +25,7 @@ const js = fs.readFileSync('theme/codela-storefront/assets/storefront.js','utf8'
  .replace("import { store } from '@wordpress/interactivity';",`
 function store(namespace, options) {
  window.sfActions = options.actions;
- return {state:{config:{api:'https://store.test/api/', search:'https://store.test/search-api', cart:'/cart/', labels:{}}}};
+ return {state:{config:{api:'https://store.test/api/', search:'https://store.test/search-api', cart:'/cart/',account:'https://store.test/myaccount/', labels:{}}}};
 }
 `)
  .replace("let menuPath = [];",inlineControllers + '\nlet menuPath = [];');
