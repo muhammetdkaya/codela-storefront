@@ -1,0 +1,58 @@
+/**
+ * Checkout-only composition for WooCommerce Block and classic checkout.
+ * No cloned forms, payment handlers, or visual Button implementations.
+ */
+body.woocommerce-checkout{background:var(--sf-ui-surface);color:var(--sf-ui-ink)}
+.sf-checkout-page{
+ --sf-checkout-width:1120px;
+ width:100%;max-width:none!important;min-height:55vh;margin:0 auto!important;
+ padding:clamp(24px,4vw,48px) max(20px,5vw) 72px;
+}
+.sf-checkout-page > .wp-block-post-title{
+ width:100%;max-width:var(--sf-checkout-width);margin:0 auto 24px;padding:0 0 18px;
+ border-bottom:1px solid var(--sf-ui-border);
+ font-size:clamp(26px,3vw,36px);font-weight:400;line-height:1.25;letter-spacing:-.035em;
+}
+.sf-checkout-page > .wp-block-post-content,
+.sf-checkout-page > .wp-block-post-content > .wp-block-woocommerce-checkout{
+ width:100%;max-width:var(--sf-checkout-width)!important;margin-inline:auto;
+}
+.sf-checkout-page :is(.wc-block-checkout,.woocommerce){width:100%;max-width:none;margin-inline:auto}
+body.woocommerce-checkout :is(.wc-block-components-title,.wc-block-components-checkout-step__heading-title),
+body.woocommerce-checkout .woocommerce :is(#customer_details h3,#order_review_heading){
+ color:var(--sf-ui-ink);font-size:clamp(17px,2vw,21px);font-weight:500;line-height:1.35;letter-spacing:-.02em;
+}
+body.woocommerce-checkout :is(.wc-block-components-checkout-step__description,.wc-block-components-order-summary-item__description,.woocommerce form.checkout .form-row .optional){color:var(--sf-muted)}
+/* Keep Woo's native floating labels, validation, address and payment behavior. */
+body.woocommerce-checkout .wc-block-components-form :is(.wc-block-components-text-input input,.wc-block-components-combobox-control input,select),
+body.woocommerce-checkout .woocommerce form.checkout :is(input.input-text,select,textarea){
+ min-height:var(--sf-ui-action-height);border:1px solid var(--sf-ui-border);
+ border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface);color:var(--sf-ui-ink);
+}
+body.woocommerce-checkout .wc-block-components-form :is(.wc-block-components-text-input input,.wc-block-components-combobox-control input,select):focus,
+body.woocommerce-checkout .woocommerce form.checkout :is(input.input-text,select,textarea):focus{
+ border-color:var(--sf-ui-accent);outline:2px solid color-mix(in srgb,var(--sf-ui-accent) 24%,transparent);outline-offset:1px;
+}
+body.woocommerce-checkout .wc-block-components-form :is(.wc-block-components-text-input input,.wc-block-components-combobox-control input,select)[aria-invalid="true"]{border-color:var(--wc-red,#cc1818)}
+body.woocommerce-checkout .wc-block-checkout__sidebar .wc-block-components-order-summary,
+body.woocommerce-checkout .woocommerce #order_review{
+ border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);
+ background:var(--sf-ui-surface-muted);padding:clamp(16px,2vw,24px);
+}
+body.woocommerce-checkout .wc-block-checkout__sidebar .wc-block-components-order-summary-item__image img{border-radius:var(--sf-ui-control-radius)}
+body.woocommerce-checkout .wc-block-components-order-summary-item__total-price,
+body.woocommerce-checkout .wc-block-components-totals-footer-item .wc-block-components-totals-item__value{
+ color:var(--sf-ui-ink);font-weight:600;font-variant-numeric:tabular-nums;
+}
+body.woocommerce-checkout .woocommerce form.checkout .form-row label{color:var(--sf-ui-control-ink);font-size:13px}
+body.woocommerce-checkout .woocommerce #payment{border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface-muted)}
+body.woocommerce-checkout .woocommerce #payment .payment_box{background:var(--sf-ui-surface)}
+@media(max-width:700px){
+ .sf-checkout-page{padding:20px 20px 44px}
+ .sf-checkout-page > .wp-block-post-title{margin-bottom:20px;padding-bottom:14px}
+ body.woocommerce-checkout .wc-block-checkout__sidebar .wc-block-components-order-summary,
+ body.woocommerce-checkout .woocommerce #order_review{padding:16px}
+ body.woocommerce-checkout .woocommerce form.checkout :is(#customer_details .col-1,#customer_details .col-2){float:none;width:100%;max-width:100%}
+ body.woocommerce-checkout .wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button,
+ body.woocommerce-checkout .woocommerce #place_order{width:100%}
+}

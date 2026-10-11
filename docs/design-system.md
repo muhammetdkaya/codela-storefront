@@ -326,3 +326,21 @@ create parallel stores or second navigation listeners.
   Woo totals, stock limits, taxes and plugin Account remain authoritative.
 - Browser checks cover off-cart counts, other pages, event updates, badge
   position and full-width checkout. [Actions 38173704424](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38173704424) passed both validate and standalone deployment for `e0be1f9`. Physical iPhone/Safari acceptance remains separate.
+
+## 0.1.48 — WooCommerce Checkout composition
+
+- The WooCommerce-specific `page-checkout` template takes precedence over generic
+  `page.html`. Supply theme-owned `templates/page-checkout.html`, with the
+  **same** Header/Footer parts and Woo `page-content-wrapper` + `post-content`
+  (do not embed a checkout block or rewrite native payment processing).
+  The `checkout-header` part references the original header for Woo fallback.
+- No mobile dock during checkout, via the existing `is_checkout()` behavior.
+  Checkout form remains a full page, never a modal.
+- Enqueue `styles/checkout.css` only on checkout. It composes layout and
+  existing tokens for Woo's block/classic native form and order summary.
+  Append native Place Order selectors to **shared** Button component rules in
+  `components.css`; normal, pressed, disabled and focus states remain common.
+- Real PHP header fixture and browser tests cover 320–1360px. A Site Editor
+  database-customized Woo checkout template can override theme files; do
+  not overwrite customized templates without inspection or user confirmation.
+- Automated styling checks do not prove a live gateway/order placement.

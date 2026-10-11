@@ -21,7 +21,28 @@ class Tests(unittest.TestCase):
         self.assertTrue(all(field["type"] in {"text","menu","product","checkbox"} for section in schema["sections"] for field in section["fields"]))
         self.assertIn("wp:codela/storefront-footer", (build.ROOT/"parts/footer.html").read_text())
         self.assertIn("codela_sf_footer", (build.ROOT/"inc/render.php").read_text())
-        self.assertIn("Version: 0.1.47", (build.ROOT/"style.css").read_text())
+        self.assertIn("Version: 0.1.48", (build.ROOT/"style.css").read_text())
+    def test_checkout_keeps_woocommerce_content_and_shared_theme_shell(self):
+        page=(build.ROOT/"templates/page-checkout.html").read_text()
+        part=(build.ROOT/"parts/checkout-header.html").read_text()
+        adapter=(build.ROOT/"assets/styles/checkout.css").read_text()
+        shared=(build.ROOT/"assets/styles/components.css").read_text()
+        functions=(build.ROOT/"functions.php").read_text()
+        self.assertIn('wp:template-part {"slug":"header"',page)
+        self.assertIn('wp:template-part {"slug":"footer"',page)
+        self.assertIn('wp:woocommerce/page-content-wrapper {"page":"checkout"}',page)
+        self.assertEqual(page.count('wp:post-content'),1)
+        self.assertNotIn('wp:woocommerce/checkout ',page)
+        self.assertIn('sf-content sf-checkout-page',page)
+        self.assertIn('wp:template-part {"slug":"header"',part)
+        self.assertIn('styles/checkout.css',functions)
+        self.assertIn('is_checkout() )',functions)
+        self.assertIn('var(--sf-ui-control-radius)',adapter)
+        self.assertIn('var(--sf-ui-action-height)',adapter)
+        self.assertIn('#order_review',adapter)
+        self.assertIn('.wc-block-components-checkout-place-order-button, #place_order',shared)
+        self.assertIn("node tests/checkout-browser.cjs",Path(".github/workflows/deploy.yml").read_text())
+
     def test_fullscreen_panel_controls_do_not_show_automatic_focus_rings(self):
         css=''.join((build.ROOT/p).read_text() for p in ('assets/storefront.css','assets/styles/overlay.css'))
         js=(build.ROOT/'assets/scripts/overlay-controller.js').read_text()
@@ -45,7 +66,7 @@ class Tests(unittest.TestCase):
         self.assertIn("dialog.classList.toggle('is-search-panel', name === 'search')",(build.ROOT/'assets/scripts/overlay-controller.js').read_text())
         self.assertIn("#sf-panel.is-search-panel #sf-panel-title",css)
         self.assertNotIn(".sf-cart-link{",css)
-        self.assertIn("Version: 0.1.47", (build.ROOT/"style.css").read_text())
+        self.assertIn("Version: 0.1.48", (build.ROOT/"style.css").read_text())
     def test_balanced_header_static_panels_and_unified_white_search(self):
         render=(build.ROOT/'inc/render.php').read_text()
         js=(build.ROOT/'assets/storefront.js').read_text()
@@ -86,7 +107,7 @@ class Tests(unittest.TestCase):
         self.assertIn('syncSearchControls()',(build.ROOT/'assets/scripts/search-controller.js').read_text())
         self.assertIn("'Search' => 'Ara'",locale)
         self.assertIn("'Clear search' => 'Aramayı temizle'",locale)
-        self.assertIn('Version: 0.1.47', (build.ROOT/'style.css').read_text())
+        self.assertIn('Version: 0.1.48', (build.ROOT/'style.css').read_text())
     def test_mobile_dock_and_right_header_menu(self):
         render=(build.ROOT/'inc/render.php').read_text()
         css=''.join((build.ROOT/part).read_text() for part in ('assets/storefront.css','assets/styles/overlay.css','assets/styles/navigation.css','assets/styles/account.css'))
@@ -123,7 +144,7 @@ class Tests(unittest.TestCase):
         self.assertIn('document.querySelectorAll(\'[data-panel="cart"]\')',(build.ROOT/'assets/scripts/cart-controller.js').read_text())
         self.assertIn("'Home' => 'Ana Sayfa'",locale)
         self.assertIn("'Cart' => 'Sepet'",locale)
-        self.assertIn("Version: 0.1.47", (build.ROOT/'style.css').read_text())
+        self.assertIn("Version: 0.1.48", (build.ROOT/'style.css').read_text())
     def test_dock_stays_interactive_above_search_and_cart(self):
         render=(build.ROOT/'inc/render.php').read_text()
         js=(build.ROOT/'assets/scripts/dock-controller.js').read_text()
@@ -167,7 +188,7 @@ class Tests(unittest.TestCase):
         self.assertIn("dialog.classList.toggle('is-cart-panel', name === 'cart')",(build.ROOT/'assets/scripts/overlay-controller.js').read_text())
         self.assertIn('#sf-panel.is-cart-panel:has(.sf-mobile-dock) .sf-cart-bottom:not([hidden])',css)
         self.assertIn('prefers-reduced-motion:reduce',css)
-        self.assertIn('Version: 0.1.47',(build.ROOT/'style.css').read_text())
+        self.assertIn('Version: 0.1.48',(build.ROOT/'style.css').read_text())
     def test_single_row_footer_with_configured_legal_links(self):
         render=(build.ROOT/'inc/render.php').read_text()
         css=''.join((build.ROOT/part).read_text() for part in ('assets/storefront.css','assets/styles/overlay.css','assets/styles/navigation.css','assets/styles/account.css'))
@@ -185,7 +206,7 @@ class Tests(unittest.TestCase):
         self.assertIn('.sf-footer-inner{',css)
         self.assertIn('flex-wrap:nowrap',css)
         self.assertIn('.sf-footer-note{display:none}',css)
-        self.assertIn("Version: 0.1.47",(build.ROOT/'style.css').read_text())
+        self.assertIn("Version: 0.1.48",(build.ROOT/'style.css').read_text())
     def test_account_uses_native_woocommerce_authentication(self):
         account=(build.ROOT/'inc/account.php').read_text()
         php=(build.ROOT/'functions.php').read_text()
@@ -211,7 +232,7 @@ class Tests(unittest.TestCase):
         self.assertIn('woocommerce-MyAccount-navigation',css)
         self.assertIn('autocomplete', (build.ROOT/'inc/render.php').read_text())
         self.assertIn("'Welcome back' => 'Tekrar hoş geldiniz'",locale)
-        self.assertIn("Version: 0.1.47",(build.ROOT/'style.css').read_text())
+        self.assertIn("Version: 0.1.48",(build.ROOT/'style.css').read_text())
     def test_shared_ui_kit_and_theme_boundary(self):
         ui=(build.ROOT/'inc/ui.php').read_text()
         render=(build.ROOT/'inc/render.php').read_text()
@@ -266,7 +287,7 @@ class Tests(unittest.TestCase):
         self.assertNotIn('#sf-panel.is-search-panel .sf-search-toolbar{',layout)
         self.assertIn('codela-storefront-overlay',loader)
         self.assertIn("styles/overlay.css",loader)
-        self.assertIn("Version: 0.1.47",(build.ROOT/'style.css').read_text())
+        self.assertIn("Version: 0.1.48",(build.ROOT/'style.css').read_text())
     def test_format_module_import_and_output_ownership(self):
         main=(build.ROOT/'assets/storefront.js').read_text()
         helper=(build.ROOT/'assets/scripts/format.js').read_text()
