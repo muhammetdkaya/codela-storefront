@@ -175,11 +175,15 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  assert.equal(await page.locator('.sf-cart-bottom').isVisible(),true);
  assert.equal(await page.locator('.sf-cart-row .sf-cart-price').count(),1,'Cart price has a layout hook');
  assert.equal(await page.locator('.sf-cart-bottom .sf-ui-button--primary').count(),1,'Checkout uses shared Button');
- const checkoutWidth=await page.locator('.sf-cart-bottom .sf-ui-button').evaluate(el=>({
-  width:el.getBoundingClientRect().width,parent:el.parentElement.getBoundingClientRect().width,
-  fontSize:parseFloat(getComputedStyle(el).fontSize)
- }));
- assert(checkoutWidth.width>=checkoutWidth.parent-1,'Checkout fills its summary area');
+ const checkoutWidth=await page.locator('.sf-cart-bottom .sf-ui-button').evaluate(el=>{
+  const parent=el.parentElement,style=getComputedStyle(parent);
+  return {
+   width:el.getBoundingClientRect().width,
+   contentWidth:parent.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight),
+   fontSize:parseFloat(getComputedStyle(el).fontSize)
+  };
+ });
+ assert(Math.abs(checkoutWidth.width-checkoutWidth.contentWidth)<2,'Checkout fills its summary content area');
  assert(checkoutWidth.fontSize<=16,'Compact checkout uses shared typography');
  const fetched=cartRequests;
  await click('cart');
