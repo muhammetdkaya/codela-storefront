@@ -3,7 +3,7 @@
 
 - Dock surface reduced by 6px, with 48px tab targets (above the 44px minimum); icon and label sizes unchanged. Shared menu glyph is a clean two-line 1.8px stroke.
 - Menu opens with a 220ms surface fade and 260ms vertical content reveal; closes with a 180ms fade/lift before restoring scroll and focus. The dialog is never transformed. Reopening cancels pending closure; reduced-motion closes immediately. Search/cart behavior is unchanged.
-- Validation and deployment pending. Next: confirm CI/FTPS release, then physical-device acceptance of compact dock and menu open/close.
+- Verified: [Actions 38156499427](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38156499427) validate and independent FTPS deploy succeeded. Source 44e99d3e9dfc9db91153814adc7e505085a38609. Browser regression covers animated menu close, cancellation by reopening, reduced motion and existing navigation/account/UI tests. Next: physical-device acceptance of compact dock and menu open/close.
 
 ## Storefront 0.1.32 — fixed light header (11 October 2026)
 
