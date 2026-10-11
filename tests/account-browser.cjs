@@ -10,6 +10,8 @@ const authJS=fs.readFileSync('theme/codela-storefront/assets/scripts/auth.js','u
 const guestHeader=execFileSync(process.env.PHP_BIN||'php',['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_GUEST_ACCOUNT:'1'}});
 assert(guestHeader.includes('sf-auth-site-header') && guestHeader.includes('Back to store'),'Guest header returns to store');
 assert(!guestHeader.includes('sf-mobile-dock') && !guestHeader.includes('sf-panel'),'Guest header has no normal store dock or overlays');
+assert(guestHeader.includes('arrow-right.svg'),'Back to store reuses the standard icon SVG');
+assert(!guestHeader.includes('↗'),'No Apple emoji-rendered arrow glyph');
 assert(intro.includes('My account'));
 assert(intro.includes('sf-auth-tabs'),'Guest intro offers progressive tabs');
 assert.equal(signed,'','Signed-in Woo account never receives a duplicate theme header');
@@ -28,7 +30,7 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
   for(const width of [390,1280]){
    const page=await browser.newPage({viewport:{width,height:850},isMobile:width===390,hasTouch:width===390});
    for(const [type,markup] of [['login',login],['register',register],['logged',logged]]){
-    const html='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body class="woocommerce-account"><main class="sf-content"><h1 class="wp-block-post-title">My Account</h1>'+markup+'</main></body></html>';
+    const html='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body class="woocommerce-account">'+(type==='logged'?'':guestHeader)+'<main class="sf-content"><h1 class="wp-block-post-title">My Account</h1>'+markup+'</main></body></html>';
     await page.setContent(html);
     const info=await page.evaluate(()=>{
      return {overflows:document.documentElement.scrollWidth>innerWidth+1,
@@ -82,6 +84,22 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
       assert(controls.fieldHeight>=54,'Guest input uses shared action height');
       assert.equal(controls.registerPresent,type==='register','Registration follows native Woo setting');
       assert.equal(info.focus,'BODY','Opening account should not autofocus input');
+      const compact=await page.evaluate(()=>{
+       const intro=document.querySelector('.sf-account-intro').getBoundingClientRect();
+       const form=document.querySelector('form.woocommerce-form-login').getBoundingClientRect();
+       const headings=[...document.querySelectorAll('.woocommerce > h2')].filter(el=>getComputedStyle(el).display!=='none');
+       const arrow=document.querySelector('.sf-auth-store-link .sf-icon');
+       const logo=document.querySelector('.sf-auth-brand');
+       const main=document.querySelector('main.sf-content');
+       return {gap:form.top-intro.bottom,headings:headings.length,hasSvg:!!arrow,
+        sectionPadding:parseFloat(getComputedStyle(main).paddingTop),
+        brandHeight:logo?.getBoundingClientRect().height};
+      });
+      assert(compact.hasSvg,'Back link has shared arrow icon');
+      assert(compact.sectionPadding<=36,'Guest content starts close below header divider');
+      assert(compact.gap<85,'Guest intro and form have no oversized vertical gap');
+      assert(compact.brandHeight>=30,'Brand remains readable on phone');
+      if(type==='login')assert.equal(compact.headings,0,'Single login page hides duplicated WooCommerce heading');
       const background=await page.locator('.sf-account-intro').evaluate(el=>getComputedStyle(document.body).backgroundColor);
       assert.equal(background,'rgb(255, 255, 255)','Guest account stays neutral white');
       if(type==='register'){
