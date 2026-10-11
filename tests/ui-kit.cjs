@@ -37,6 +37,14 @@ assert(cssUI.includes('prefers-reduced-transparency:reduce'));
 assert(cssUI.includes('.sf-ui-button--primary'));
 assert(cssUI.includes('.sf-ui-button--secondary'));
 assert(cssUI.includes('.sf-ui-button--quiet'));
+const accountCSS=fs.readFileSync('theme/codela-storefront/assets/styles/account.css','utf8');
+assert(cssUI.includes('woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit]'),
+ 'Native Woo login/register/reset buttons share the common Button variant');
+assert(accountCSS.includes('var(--sf-ui-control-radius)') && accountCSS.includes('var(--sf-ui-action-height)'),
+ 'Guest inputs reuse existing UI Kit tokens');
+assert(!accountCSS.includes('background:#252525') && !accountCSS.includes('button.woocommerce-button:hover'),
+ 'No guest-only duplicate button visuals');
+
 assert(cssUI.includes('.sf-ui-spinner'));
 assert(cssUI.includes(':focus-visible'));
 assert(cssUI.includes('prefers-reduced-motion:reduce'));
