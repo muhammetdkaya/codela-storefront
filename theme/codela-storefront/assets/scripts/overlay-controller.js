@@ -115,17 +115,18 @@ export function createOverlayController({
         dialog.classList.toggle('is-menu-panel', name === 'menu');
         dialog.classList.toggle('is-search-panel', name === 'search');
         dialog.classList.toggle('is-cart-panel', name === 'cart');
+        dialog.classList.toggle('is-account-panel', name === 'account');
         const dock = mobileDock();
         if (dock && dock.parentElement === dialog) dock.hidden = name === 'menu';
         markDockActive(name);
         const menuTrigger = findMenuTrigger();
-        dialog.setAttribute('aria-label', name === 'menu' ? menuLabel : name === 'search' ? t('Search products') : t('Your cart'));
+        dialog.setAttribute('aria-label', name === 'menu' ? menuLabel : name === 'search' ? t('Search products') : name === 'account' ? t('My account') : t('Your cart'));
         $('.sf-panel-top .sf-close').hidden = name === 'menu';
         dialog.removeAttribute('aria-labelledby');
-        for (const section of ['menu','search','cart']) $(`#sf-${section}`).hidden = name !== section;
+        for (const section of ['menu','search','cart','account']) $(`#sf-${section}`).hidden = name !== section;
         $('.sf-cart-bottom').hidden = name !== 'cart' || !cartFeature.getData()?.items.length;
         $('#sf-status').textContent = '';
-        $('#sf-panel-title').textContent = name === 'menu' ? '' : name === 'search' ? t('Search products') : t('Your cart');
+        $('#sf-panel-title').textContent = name === 'menu' ? '' : name === 'search' ? t('Search products') : name === 'account' ? t('My account') : t('Your cart');
         document.querySelectorAll('[data-panel]').forEach(el => el.setAttribute('aria-expanded', String(el.dataset.panel === name && name !== 'menu')));
         dialog.classList.add('is-open');
         // Automatically focused controls should not display a giant focus ring
@@ -147,6 +148,13 @@ export function createOverlayController({
         if (name === 'menu') onMenuOpen();
         if (name === 'search') searchFeature.start();
         if (name === 'cart') cartFeature.refresh();
+        if (name === 'account') {
+            // Native Woo forms submit to My Account, not the page under the dialog.
+            // Their login/registration handlers and nonces remain WooCommerce-owned.
+            dialog.querySelectorAll('#sf-account form.woocommerce-form').forEach(form => {
+                form.action = config().account;
+            });
+        }
         animatePanelContent(name === 'search' ? $('.sf-search-content') : $(`#sf-${name}`), previous === 'cart' && name === 'search' ? -1 : 1);
     }
     // Animate content, never the full-screen dialog: transforming it changes the
