@@ -1,4 +1,10 @@
 
+## Storefront 0.1.37 — compact logo and steady scroll navigation (11 October 2026)
+
+- Fixed header logo pill horizontal padding reduced **18px → 8px** (mobile dock disabled: **10px → 7px**). The shared floating glass surface, custom logo colour, vertical centering, 44px minimum control height, menu/X position and responsive header layouts remain intact.
+- Dock scroll state now needs **44px downward** or **28px upward** cumulative travel and at least **650ms between hide/reveal transitions**. If the rest interval has not elapsed, one deferred change is scheduled and genuine reverse movement (12px) cancels it. Scroll jitter does not continuously bounce the bar. When near the top, opening a panel, touching reveal handle or starting a dock gesture, pending changes are cancelled; keyboard/safe-area/scroll restoration remain unchanged.
+- Only `dock-controller.js` owns the scroll state; no separate navigation listeners, page changes or reimplementation of the shared 480ms CSS motion. Node and rendered-browser tests cover dwell, cumulative scroll, reversals, stable top position and compact brand. Theme/CSS/JS versions raised to 0.1.37. GitHub Actions validation and independent Storefront deploy must be verified; real physical touch acceptance remains separate.
+
 - **Dağıtım doğrulandı (0.1.36):** [GitHub Actions 38160300948](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38160300948), kaynak commit `10e4047bb89111069af974ac36560ef2d85bc168`: `validate` ve bağımsız Storefront FTPS `deploy` başarılı. Gerçek telefon üzerinde elle kullanım kabulü ayrıca yapılmalı. Sonraki kontrol: Ana Sayfa ↔ Arama/Sepet ve Hesabım alt sayfası ↔ Arama/Sepet, tap ve sürükleme ile anlık kapatma; farklı sayfalara normal gezinme.
 
 ## Storefront 0.1.36 — current-page dock actions dismiss overlays (11 October 2026)
