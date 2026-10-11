@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 function codela_sf_account_intro(): void {
     if (
         ! function_exists( 'is_account_page' )
-        || ! is_account_page()
+        || ( ! is_account_page() && empty( $GLOBALS['codela_sf_auth_overlay'] ) )
         || is_user_logged_in()
     ) {
         return;
@@ -31,3 +31,22 @@ function codela_sf_account_intro(): void {
 add_action( 'woocommerce_before_customer_login_form', 'codela_sf_account_intro', 5 );
 // Deliberately NO woocommerce_before_account_navigation hook:
 // Codela owns the signed-in profile, orders, tracking and account menu.
+
+/**
+ * Render genuine WooCommerce login and optional registration forms inside the
+ * existing Storefront dialog. No iframe, duplicate auth engine, or AJAX endpoint.
+ * The native Woo template retains its own nonces, hooks and validation.
+ */
+function codela_sf_account_overlay_form(): string {
+    if ( is_user_logged_in() || ! function_exists( 'wc_get_template' ) ) { return ''; }
+    ob_start();
+    $GLOBALS['codela_sf_auth_overlay'] = true;
+    try {
+        echo '<div class="woocommerce sf-overlay-auth">';
+        wc_get_template( 'myaccount/form-login.php' );
+        echo '</div>';
+    } finally {
+        unset( $GLOBALS['codela_sf_auth_overlay'] );
+    }
+    return (string) ob_get_clean();
+}
