@@ -128,13 +128,16 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
         const social=await page.locator('.sf-auth-google').evaluate(el=>{
           const style=getComputedStyle(el);
           return {width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height,
-            background:style.backgroundColor,radius:style.borderRadius,display:style.display};
+            background:style.backgroundColor,radius:style.borderRadius,display:style.display,
+            border:style.borderTopWidth,borderColor:style.borderTopColor};
         });
         const parent=await page.locator('.sf-auth-social').boundingBox();
         assert(social.width>=parent.width-2,'Google Button fills same form width');
         assert(social.height>=54,'Google Button reuses shared action hit size');
         assert.equal(social.background,'rgb(255, 255, 255)','Google Button is neutral white, not a custom orange CTA');
         assert.equal(social.radius,'12px','Google Button uses the shared control radius');
+        assert.equal(social.border,'1px','Google secondary UI Kit Button must retain its visible border');
+        assert.notEqual(social.borderColor,social.background,'Google outline must contrast with white surface');
         assert(['flex','inline-flex'].includes(social.display),'Google Button retains shared flex button layout');
         await page.locator('.sf-auth-social').evaluate(el=>el.remove());
         await page.locator('.woocommerce').evaluate((node,markup)=>node.insertAdjacentHTML('beforeend',markup),unconfiguredGoogle);

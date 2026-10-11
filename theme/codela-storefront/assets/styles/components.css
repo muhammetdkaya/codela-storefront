@@ -106,7 +106,8 @@
   color:#fff;
 }
 .sf-shell .sf-ui-button--primary .sf-icon{filter:invert(1)}
-.sf-shell .sf-ui-button--secondary{
+.sf-shell .sf-ui-button--secondary,
+.woocommerce .sf-shell .sf-ui-button--secondary{
   background:var(--sf-ui-surface);
   color:var(--sf-ui-control-ink);
   border:1px solid var(--sf-ui-border);
@@ -162,14 +163,14 @@
   form .form-row:has(> label[for]):has(input.input-text){position:relative}
 :is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
   form .form-row:has(> label[for]):has(input.input-text) > label[for]{
-    position:absolute;z-index:1;top:9px;left:16px;right:16px;
+    position:absolute;z-index:1;top:7px;left:16px;right:16px;
     margin:0;padding:0;pointer-events:none;
     color:#777b82;font-size:12px;font-weight:400;line-height:17px;
 }
 :is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
   form .form-row:has(> label[for]):has(input.input-text) input.input-text{
-    min-height:calc(var(--sf-ui-action-height) + 8px);
-    padding:28px 16px 8px;
+    min-height:var(--sf-ui-action-height);
+    padding:24px 16px 6px;
 }
 :is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
   form .form-row:has(> label[for]):has(input.input-text) .password-input input.input-text{padding-right:54px}
@@ -202,7 +203,7 @@
   form.woocommerce-form-login > :is(.lost_password,.woocommerce-LostPassword) a{font-size:inherit}
 :is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
   form.woocommerce-form-login button[type=submit]{
-    grid-column:1/-1;order:3;margin:14px 0 0;width:100%;
+    grid-column:1/-1;order:3;margin:10px 0 0;width:100%;
 }
 /* Native auto-dismissable notice above the dialog, using existing neutral
    UI Kit surfaces. Browser Popover API performs open/close without any JS. */
