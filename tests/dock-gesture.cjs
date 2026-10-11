@@ -105,6 +105,11 @@ assert.equal(assigned,'https://example.test/account','Release on Account navigat
 const h=ev(items[0],touch(40,55,4),'start');handlers.touchstart(h);
 handlers.touchcancel();
 assert.equal(dock.classList.contains('is-scrubbing'),false,'Cancelled gesture resets styling');
+// A new physical press on the reveal handle clears the prior scrub's ghost-click guard.
+handlers.touchstart(ev(null,touch(160,90,5),'start'));
+let handleBlocked=false;
+handlers.click({detail:1,preventDefault(){handleBlocked=true},stopImmediatePropagation(){}});
+assert.equal(handleBlocked,false,'New reveal-handle press must not be swallowed');
 helpers.setDockCollapsed(true);
 handlers.click({preventDefault(){},stopImmediatePropagation(){}}); // Consume old synthetic click if pending
 handle.tabIndex=0;

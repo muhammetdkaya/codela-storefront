@@ -238,3 +238,6 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - [GitHub Actions 38112985514](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38112985514) **validate + deploy success**: PHP lint, JS syntax, Python paket testleri, iOS touch/hold/scroll davranışı için Node testi geçti; bağımsız tema FTPS dağıtımı başarılı. Codela eklentisinin güncellenmesi gerekmiyor.
 - Güncel iş: iPhone Safari'de arama/hesap ilk açılışında otomatik klavye olmadığını, basılı tutup yan sekmeye sürükleme-bırakmayı, sayfa ve modal aşağı/yukarı kaydırmalarında alt bar gizleme-açmayı ve çizgiye dokunmayı manuel teyit et. Bu testler gerçek cihazda henüz yapılmadı.
 
+
+### 0.1.13 CI edge-case correction — 11 October 2026
+Source `fe5d8104a0b102bce5fd899bd9195a011e6f39a3`; Actions 38113974270 passed PHP/Node/Python but browser test stopped deployment: a reveal-handle press within 700ms of a canceled scrub was swallowed by the synthetic-click guard. New physical presses now reset that guard even when the target is the handle, with a deterministic regression test. Theme stays 0.1.13; deploy remains pending until the corrected run succeeds.

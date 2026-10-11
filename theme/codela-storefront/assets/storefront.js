@@ -150,9 +150,10 @@ function installDockGestures(dock) {
         preview(press.choice);
     };
     const begin = (item, x, y, id) => {
+        // A new physical press (including the reveal handle) is never a ghost click.
+        blockUntil = 0;
         if (!item || dock.classList.contains('is-collapsed')) return;
         stop();
-        blockUntil = 0;
         dock.classList.add('is-pressing');
         press = {id, item, choice:item, x, y, dragging:false, timer:null};
         item.classList.add('is-pressed');
