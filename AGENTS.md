@@ -1,4 +1,6 @@
 
+- **0.1.46 deployed successfully (11 October 2026):** original source revision `b69691b0b84e604cffdbbef64744243b68c6a8eb`, [GitHub Actions 38171964093](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38171964093) both `validate=success` and independent `deploy=success` (Storefront FTPS). Native guest Woo input surfaces are white thin-outline instead of gray-filled, a noticeably lighter login composition. Existing secondary Google Button now places its label at its exact horizontal center and glyph just left of the label via shared layout-only grid; configured and unconfigured Button, native popover within actual Account dialog, 320–1280 responsive tests, Woo forms and dock all verified. Google Cloud credentials are still needed for real Google login; physical iPhone Safari visual acceptance is unverified. Codela eklentisi değişmedi.
+
 ## Storefront 0.1.46 — visible input refresh and exact Google label centering (11 October 2026)
 
 - User's iPhone screenshot after 0.1.45 showed the visual changes remained too subtle and Google icon/label alignment still looked off. This is a real theme correction, not an illustrative design or new auth feature.
