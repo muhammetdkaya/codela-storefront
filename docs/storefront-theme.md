@@ -566,3 +566,11 @@ end-to-end search/cart/nav checks. The signed-in account UI remains plugin-owned
 Platform-neutral identifiers are mandatory. Keep the modal/dock ownership
 unified while considering future extraction of the overlay controller; never
 create parallel stores or second navigation listeners.
+
+
+## 0.1.27 module isolation verified — 11 October 2026
+
+- Source changes: [bf8d339](https://github.com/muhammetdkaya/codela-storefront/commit/bf8d33950bf8ac37ed899fd24d3efbc1c995dd86); contract-only fixture correction: [b616853](https://github.com/muhammetdkaya/codela-storefront/commit/b616853d6d6f54fd7172a4179d5409210ada6ee2).
+- [Actions 38148006178](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38148006178) finished **validate success / standalone deploy success**. First run failed because an old format unit test looked for an import in the main module rather than both new feature modules; this test fixture was corrected before publishing.
+- `assets/scripts/search-controller.js` owns debounced requests, abort, response sequence and result rendering. `assets/scripts/cart-controller.js` owns Store API nonce, coalesced GET, quantity/remove operations, error recovery and external cart events. `assets/storefront.js` continues to own one WordPress Interactivity store, one native panel, one mobile navigation state and all panel focus/transition behavior.
+- Existing browser tests passed with production module implementations injected into the test harness; no parallel fake search/cart implementations were used. Codela plugin unchanged. Physical mobile-device interaction has not been manually accepted. Next: consider moving the single overlay controller out of the entry module, preserving shared dock and search/cart references with explicit lifecycle contract and regression tests.
