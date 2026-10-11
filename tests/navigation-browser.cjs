@@ -222,8 +222,9 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  await page.evaluate(()=>{document.activeElement.blur();document.querySelector('.sf-mobile-dock').style.setProperty('--sf-dock-bottom','46px');window.scrollTo(0,100)});
  await page.waitForTimeout(50);
  await page.evaluate(()=>document.querySelector('.sf-dock-handle').click());
- for(let y=102;y<=152;y+=2){await page.evaluate(y=>window.scrollTo(0,y),y);await page.waitForTimeout(20);}
- assert(await dock.evaluate(el=>el.classList.contains('is-collapsed')),'Slow scroll accumulates');
+ for(let y=102;y<=190;y+=2){await page.evaluate(y=>window.scrollTo(0,y),y);await page.waitForTimeout(20);}
+ await page.waitForTimeout(760);
+ assert(await dock.evaluate(el=>el.classList.contains('is-collapsed')),'Slow scroll accumulates after minimum rest time');
  await page.waitForTimeout(520);
  assert(await dock.locator('a').evaluateAll(xs=>xs.every(x=>x.getBoundingClientRect().top>=innerHeight)),'All tabs move beyond safe-area viewport');
  assert(await page.locator('.sf-dock-handle').isVisible(),'Only reveal handle remains');
@@ -237,7 +238,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  assert(!(await dock.evaluate(el=>el.classList.contains('is-collapsed'))));
  await click('search');
  await page.locator('.sf-search-cancel').click();
- assert.equal(await page.evaluate(()=>scrollY),152,'Close restores exact scroll');
+ assert.equal(await page.evaluate(()=>scrollY),190,'Close restores exact scroll');
  await page.evaluate(()=>window.scrollTo(0,0));
  // The same button is reparented at an identical viewport position while it morphs.
  for(const width of [320,390,700,1024]){
