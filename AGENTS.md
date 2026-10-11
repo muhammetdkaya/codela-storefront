@@ -220,3 +220,8 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - Aşağı kaydırıldığında yüzen alt menü `260ms` yumuşak kayarak ekranın altına gizlenir; altta ince `42×4px` çizgi kalır. Yukarı kaydırınca veya çizgiye dokununca geri görünür. Ana sayfa, Hesabım ve içeriği kaydırılabilen Arama/Sepet modalının scroll olayları desteklenir. Gizli sekmeler inert; çizgi klavyeyle açılabilir; `prefers-reduced-motion` geçişi devre dışı bırakır. Nav açık gri kalır ve ödeme sayfasında hiç render edilmez.
 - Kaynak sürüm 0.1.11 → **0.1.12**; CSS/JS asset sürümleri de yükseldi. `tests/dock-gesture.cjs` touch, hold, scroll hide/show ve odak davranışını test edecek şekilde güncellendi; Python tema testleri ve Türkçe `Show navigation` çevirisi eklendi.
 - Kaynağın commit'i ve CI/FTP sonucu ayrıca doğrulanacak. Gerçek iPhone Safari klavye/gesture/safe-area manuel kabulü henüz yapılmadı. Sıradaki iş CI testleri ve deploy, sonra üç kullanım durumunun gerçek cihaz kontrolü.
+
+## 0.1.12 dağıtım doğrulaması — 11 Ekim 2026
+- Ana kaynak: `181290a30e050bc8d567d9ea0616bb1c7b2fa5db`; test mock güncellemesi: `7b8966bd5e6b786dd67c8f7cb840030edabd0899`.
+- [GitHub Actions 38112985514](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38112985514) **validate + deploy success**: PHP lint, JS syntax, Python paket testleri, iOS touch/hold/scroll davranışı için Node testi geçti; bağımsız tema FTPS dağıtımı başarılı. Codela eklentisinin güncellenmesi gerekmiyor.
+- Güncel iş: iPhone Safari'de arama/hesap ilk açılışında otomatik klavye olmadığını, basılı tutup yan sekmeye sürükleme-bırakmayı, sayfa ve modal aşağı/yukarı kaydırmalarında alt bar gizleme-açmayı ve çizgiye dokunmayı manuel teyit et. Bu testler gerçek cihazda henüz yapılmadı.
