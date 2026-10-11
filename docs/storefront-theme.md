@@ -637,4 +637,4 @@ create parallel stores or second navigation listeners.
 
 - User still saw the old menu glyph after 0.1.33. SVG source was updated, but shared icon URLs lacked a cache version. Shared renderer now appends a content-derived CRC32 fingerprint, cached per icon within the request. All theme icons refresh when their bytes change; no manual browser cache clearing should be needed after fresh HTML loads.
 - Browser fixture resolves the URL pathname separately from its query. UI Kit contract checks the fingerprint and two-line menu asset.
-- Validation/deployment pending. Next: confirm release and user's visible menu glyph.
+- Verified: [Actions 38156858978](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38156858978) validate and standalone deploy succeeded for `d9a3f2aecd09269abf36a9528c8f68d24c139031`. Initial validation caught a fingerprint path error, corrected before deployment. Next: confirm user's visible two-line menu after a fresh page load.
