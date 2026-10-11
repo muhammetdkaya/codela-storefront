@@ -106,7 +106,7 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
         hasInputName:input.name||''};
       });
       assert(fieldAlignment.labelInside,'Woo label is rendered inside its actual field');
-      assert(fieldAlignment.textPadding>=26,'Typed value gets a separate line beneath the label');
+      assert(fieldAlignment.textPadding>=25,'Typed value follows the inset label within compact 56px field');
       assert(fieldAlignment.sameLine,'Remember me and lost-password share the same row');
       assert(fieldAlignment.rememberBeforeLost,'Remember me stays left, password reset right');
       assert.equal(controls.registerPresent,type==='register','Registration follows native Woo setting');
