@@ -1,3 +1,12 @@
+
+## Storefront 0.1.25 — overlay stylesheet + neutral source naming + private visual references
+
+- The popup/search-toolbar/results styles were extracted from `assets/storefront.css` into `assets/styles/overlay.css`. The production stylesheet order is tokens → layout → overlay → navigation → components → conditional account, preserving the existing semantic CSS and interactive behavior.
+- Source code comments, fixture assertions and documentation use device-independent names: touch gestures, delayed native clicks, overlay surfaces, safe-area and scrolling. Never use a device/operating-system/vendor name to identify a component or animation.
+- The non-public `tests/ui-kit-preview.cjs` renders actual PHP component examples and header markup with the real CSS into visual screenshots for two viewport widths. `qa/storefront-ui-kit-390.png` and `qa/storefront-ui-kit-1280.png` are uploaded only as temporary CI artifacts, not served by the theme or included in its package.
+- Existing browser/navigation/account regressions are updated for the new stylesheet and the 0.1.25 version. Continue modularizing feature controllers only after behavior-equivalence tests; do not split the dock controller without guarding the single node/state lifecycle. Plugin-owned authenticated account markup remains excluded.
+- Source commit is not proof of live deployment. After CI, check both validate and standalone deploy success; real mobile device checks remain separate.
+
 # ACTIVE: Codela Storefront UI Kit architecture (from 0.1.22)
 
 A general semantic Button (primary/secondary/quiet; disabled/loading; real links and form actions) and IconButton are the single sources for all new theme controls.\n\nAll new theme controls MUST reuse the primitives documented in

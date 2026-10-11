@@ -93,7 +93,7 @@ assert.equal(opened.at(-1),'cart','Releasing on Cart switches panel');
 assert.equal(up.prevented,true,'Native click is suppressed on drag');
 let prevented=false;
 handlers.click({detail:1,preventDefault(){prevented=true},stopImmediatePropagation(){}});
-assert.equal(prevented,true,'Safari synthetic click suppressed');
+assert.equal(prevented,true,'mobil tarayıcı synthetic click suppressed');
 e=ev(items[0],touch(40,55,3),'start');handlers.touchstart(e);
 const hold=[...timers.values()].at(-1);
 assert.equal(typeof hold,'function');
@@ -116,6 +116,6 @@ handle.tabIndex=0;
 assert.ok(src.includes("dock.querySelector('.sf-dock-handle')?.addEventListener('click'"),'Thin handle can reopen dock');
 assert.ok(src.includes("name === 'search' ? $('.sf-search-cancel')"),'Search opens without auto focusing text input');
 assert.ok(src.includes('preventInitialAccountAutoFocus()'),'Account autofocus guard is installed');
-assert.ok(src.includes("dock.addEventListener('touchmove'"),'Native touch support for Safari');
+assert.ok(src.includes("dock.addEventListener('touchmove'"),'Native touch support for mobil tarayıcı');
 console.log('Dock modal, scrolling, touch scrubbing, hold and focus tests passed.');
 

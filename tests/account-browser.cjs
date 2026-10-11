@@ -2,7 +2,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const {execFileSync}=require('node:child_process');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
-const css=['assets/styles/tokens.css','assets/storefront.css','assets/styles/navigation.css','assets/styles/components.css','assets/styles/account.css'].map(p=>fs.readFileSync('theme/codela-storefront/'+p,'utf8')).join('\n');
+const css=['assets/styles/tokens.css','assets/storefront.css','assets/styles/overlay.css','assets/styles/navigation.css','assets/styles/components.css','assets/styles/account.css'].map(p=>fs.readFileSync('theme/codela-storefront/'+p,'utf8')).join('\n');
 const render=env=>execFileSync(process.env.PHP_BIN||'php',['tests/render-account.php'],{encoding:'utf8',env:{...process.env,...env}});
 const intro=render({});
 const signed=render({ACCOUNT_SIGNED_IN:'1'});

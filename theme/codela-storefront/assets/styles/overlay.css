@@ -1,0 +1,223 @@
+/** Theme-owned fullscreen dialog, search and cart overlay presentation. */
+/* Fullscreen panels: neutralize native/theme control chrome without removing
+   the intentionally subtle outline of the SEARCH FORM itself. */
+#sf-panel button.sf-close,
+#sf-panel .sf-search-form button.sf-icon-button {
+  -webkit-appearance:none;
+  appearance:none;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+#sf-panel #sf-query {
+  -webkit-appearance:none;
+  appearance:none;
+  border:0!important;
+  box-shadow:none!important;
+  outline:none!important;
+}
+#sf-panel .sf-search-form:focus-within {
+  outline:none;
+  box-shadow:none!important;
+}
+#sf-panel .sf-initial-focus:focus-visible {
+  /* showModal() programmatic focus is not keyboard navigation */
+  outline:none!important;
+  box-shadow:none!important;
+}
+
+/* Search keeps an accessible dialog title without repeating it visually. Keep a 1px flex item so Close stays at right. */
+#sf-panel.is-search-panel #sf-panel-title{flex:0 0 1px;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* Shared panel surface and toolbar geometry.
+   Identical toolbar dimensions and close-control geometry on all panels. */
+#sf-panel{
+  --sf-overlay-gutter:clamp(16px,5vw,32px);
+  --sf-overlay-toolbar-height:68px;
+  --sf-overlay-control-size:44px;
+  background:#ffffff;
+  color:#22231f;
+  color-scheme:light;
+}
+#sf-panel .sf-panel-top{
+  min-height:var(--sf-overlay-toolbar-height);
+  padding:10px var(--sf-overlay-gutter);
+  border-bottom:1px solid #eeeeee;
+  box-sizing:border-box;
+}
+#sf-panel .sf-panel-top h2{
+  font-size:20px;
+  font-weight:400;
+}
+/* The same soft IconButton renders the menu/cart X and the search X.
+   Only toolbar flex sizing belongs here. */
+#sf-panel button.sf-close,
+#sf-panel.is-search-panel .sf-search-cancel{
+  flex:0 0 var(--sf-overlay-control-size);
+}
+#sf-panel.is-search-panel .sf-panel-top{display:none!important}
+#sf-panel.is-search-panel #sf-search.sf-search-body{
+  padding:0;
+  overflow-y:auto;
+}
+#sf-panel.is-search-panel .sf-search-toolbar{
+  position:sticky;
+  top:0;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  width:100%;
+  min-height:var(--sf-overlay-toolbar-height);
+  padding:10px var(--sf-overlay-gutter);
+  margin:0;
+  border-bottom:1px solid #eeeeee;
+  background:#ffffff;
+  box-sizing:border-box;
+}
+#sf-panel.is-search-panel .sf-search-form{
+  display:flex;
+  align-items:center;
+  flex:1;
+  min-width:0;
+  width:auto;
+  max-width:none;
+  height:46px;
+  min-height:46px;
+  margin:0;
+  padding:0 13px;
+  gap:10px;
+  border:0;
+  border-radius:15px;
+  background:#f3f3f3;
+  box-shadow:none;
+}
+#sf-panel.is-search-panel .sf-search-leading{
+  display:grid;
+  place-items:center;
+  flex:none;
+  width:20px;
+  height:20px;
+}
+#sf-panel.is-search-panel .sf-search-leading .sf-icon{
+  display:block;
+  width:20px;
+  height:20px;
+  filter:brightness(0);
+  opacity:.72;
+}
+#sf-panel.is-search-panel #sf-query{
+  flex:1;
+  min-width:0;
+  width:100%;
+  height:44px;
+  min-height:0;
+  padding:0;
+  margin:0;
+  border:0!important;
+  outline:0!important;
+  border-radius:0;
+  background:transparent;
+  color:#22231f;
+  caret-color:#22231f;
+  box-shadow:none!important;
+  font-size:16px;
+  line-height:1.35;
+  -webkit-appearance:none;
+  appearance:none;
+}
+#sf-panel.is-search-panel #sf-query::placeholder{color:#929292;opacity:1}
+#sf-panel.is-search-panel #sf-query::-webkit-search-cancel-button{
+  -webkit-appearance:none;
+  appearance:none;
+  display:none;
+}
+#sf-panel.is-search-panel .sf-search-clear{margin-right:-10px}
+#sf-panel.is-search-panel .sf-search-cancel:focus-visible,
+#sf-panel.is-search-panel .sf-search-clear:focus-visible{
+  outline:2px solid var(--sf-accent,#656e52)!important;
+  outline-offset:3px;
+}
+#sf-panel.is-search-panel .sf-search-content{
+  width:100%;
+  min-height:60vh;
+  padding:14px var(--sf-overlay-gutter) 40px;
+  border:0;
+  background:#ffffff;
+}
+#sf-panel.is-search-panel #sf-results{
+  max-width:950px;
+  margin-left:auto;
+  margin-right:auto;
+}
+#sf-panel.is-search-panel .sf-result{
+  gap:14px;
+  padding:14px 0;
+  color:#22231f;
+  border-bottom:1px solid #ebebeb;
+}
+#sf-panel.is-search-panel .sf-result img{
+  width:58px;
+  height:72px;
+  border-radius:10px;
+  background:#f1f1f1;
+}
+#sf-panel.is-search-panel .sf-result h3{font-size:17px;margin-bottom:6px}
+#sf-panel.is-search-panel .sf-result p,
+#sf-panel.is-search-panel .sf-result small,
+#sf-panel.is-search-panel #sf-results>p{color:#808080}
+#sf-panel.is-search-panel .sf-search-skeleton{padding-top:6px}
+#sf-panel.is-search-panel .sf-skeleton-row{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  min-height:78px;
+}
+#sf-panel.is-search-panel .sf-skeleton-row>i{
+  display:block;
+  flex:none;
+  width:48px;
+  height:48px;
+  background:#eeeeee;
+  border-radius:50%;
+}
+#sf-panel.is-search-panel .sf-skeleton-row>span{
+  display:flex;
+  flex-direction:column;
+  flex:1;
+  gap:10px;
+}
+#sf-panel.is-search-panel .sf-skeleton-row b{
+  display:block;
+  width:min(60%,250px);
+  height:12px;
+  border-radius:6px;
+  background:#eeeeee;
+}
+#sf-panel.is-search-panel .sf-skeleton-row b:last-child{
+  width:min(45%,175px);
+  height:10px;
+}
+/* Preserve 44px close targets on mobile screens while scaling the visual X down. */
+@media(max-width:700px){
+  #sf-panel{
+    --sf-overlay-gutter:20px;
+    --sf-overlay-toolbar-height:68px;
+  }
+  #sf-panel.is-search-panel .sf-search-toolbar{
+    gap:10px;
+    padding:10px var(--sf-overlay-gutter);
+  }
+  #sf-panel.is-search-panel .sf-search-form{
+    height:46px;
+    min-height:46px;
+    padding:0 12px;
+    border-radius:15px;
+  }
+  #sf-panel.is-search-panel #sf-query{height:44px;font-size:16px}
+  #sf-panel.is-search-panel .sf-search-content{padding:14px var(--sf-overlay-gutter) 36px}
+}
+
+
+/* Reset initial pointer focus after the search control rule; Tab removes this class. */
+#sf-panel .sf-close.sf-initial-focus:focus-visible{outline:none!important;box-shadow:none!important}

@@ -14,7 +14,7 @@ let activeHeader=header;
 const checkout = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8',env:{...process.env,FIXTURE_CHECKOUT:'1'}});
 const footer = execFileSync(php, ['tests/render-footer.php'], {encoding:'utf8',env:{...process.env,FOOTER_PRIVACY:'1',FOOTER_TERMS:'1',FOOTER_NOTE:'1'}});
 assert(!checkout.includes('class="sf-mobile-dock'), 'Checkout omits the dock');
-const css = ['assets/styles/tokens.css','assets/storefront.css','assets/styles/navigation.css','assets/styles/components.css'].map(p=>fs.readFileSync('theme/codela-storefront/'+p,'utf8')).join('\n');
+const css = ['assets/styles/tokens.css','assets/storefront.css','assets/styles/overlay.css','assets/styles/navigation.css','assets/styles/components.css'].map(p=>fs.readFileSync('theme/codela-storefront/'+p,'utf8')).join('\n');
 const js = fs.readFileSync('theme/codela-storefront/assets/storefront.js','utf8').replace("import { store } from '@wordpress/interactivity';", `
 function store(namespace, options) {
  window.sfActions = options.actions;
@@ -43,7 +43,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
      nowrap:getComputedStyle(inner).flexWrap,rows:root.querySelectorAll('.sf-footer-inner').length};
  });
  assert.equal(footerMetrics.rows,1,'One-line footer wrapper');
- assert.equal(footerMetrics.nowrap,'nowrap','Footer must not wrap on iPhone');
+ assert.equal(footerMetrics.nowrap,'nowrap','Footer must not wrap on mobile screen');
  assert.ok(footerMetrics.topDifference<3,'Copyright and legal links share the same mobile row');
  assert.equal(footerMetrics.overlaps,false,'Mobile footer text must not collide with legal links');
  await page.addScriptTag({content:js});
@@ -75,7 +75,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  const released=await page.locator('.sf-dock-surface').evaluate(el=>({scale:new DOMMatrix(getComputedStyle(el,'::before').transform).a,index:el.closest('.sf-mobile-dock').style.getPropertyValue('--sf-dock-index')}));
  assert.equal(released.scale,1,'Cancel releases capsule expansion');
  assert.equal(released.index,'0','Cancel restores the original active tab');
- // Safari can delay its native click after touchend. The capsule must not return home in that gap.
+ // mobile browser can delay its native click after touchend. The capsule must not return home in that gap.
  for(const [view,index] of [['cart','2'],['search','1']]){
   await page.evaluate(view=>{
    const target=document.querySelector(`[data-dock-view="${view}"]`), b=target.getBoundingClientRect();

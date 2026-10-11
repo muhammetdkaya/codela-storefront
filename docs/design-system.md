@@ -16,7 +16,7 @@ There are three distinct layers:
    page layout and domain behavior only. Menu and cart API calls, tab selection,
    modal lifecycle and storefront routing belong here, not in a generic Button.
 
-Dependencies load in this order: tokens → storefront layout → navigation →
+Dependencies load in this order: tokens → storefront layout → overlay → navigation →
 shared components → guest account CSS (only on the My Account page).
 Shared component styles take precedence over transitional page rules. The
 account stylesheet is always scoped to guests or the vanilla Woo fallback;
@@ -30,7 +30,7 @@ Codela's authenticated account remains plugin-owned.
 | `codela_sf_ui_button()` | Any primary/secondary/quiet action or link | pressed, focus, disabled, loading | Real `<button>` or `<a>`; type submit/button/reset |
 | `codela_sf_ui_primary_link()` | Existing checkout / hero discovery | pressed, keyboard focus | Compatibility wrapper around the Button component |
 | `.sf-ui-pressable` | Quantity +/−, cart removal, retry, submenu toggle | pressed/disabled/focus | Applied to existing semantic buttons |
-| `.sf-ui-nav-tab` | Floating iOS-style mobile navigation | selected, pressing, scrubbing, collapsed | Existing `Navigation Controller` owns touch and page routing |
+| `.sf-ui-nav-tab` | Floating gesture-enabled mobile navigation | selected, pressing, scrubbing, collapsed | Existing `Navigation Controller` owns touch and page routing |
 
 Rules: don't attach global `button` or `.woocommerce button` rules to the kit.
 Never duplicate a semantic control's animation, icon size or hitbox in page CSS.
@@ -126,7 +126,7 @@ functionality or keyboard accessibility.
    Python package checks, Chromium navigation/login layouts.
 6. Increment theme + CSS/JS versions, commit to this repo, confirm **both**
    GitHub Actions `validate` and `deploy` success before claiming live.
-7. Manual iPhone Safari acceptance is separate from CI. Test dock touch,
+7. Manual mobile browser acceptance is separate from CI. Test dock touch,
    scroll animations, focus and safe area on device.
 
 ## Next refactoring steps (do not regress production)
@@ -140,3 +140,7 @@ functionality or keyboard accessibility.
 - Add an admin-only or development-only UI Kit playground preview showing
   real controls in default, pressed, focus, disabled and loading states;
   do not ship test content on public store pages.
+
+## Feature stylesheet isolation (0.1.25)
+
+Overlay toolbar, close-focus, search input, product results and placeholder rows are maintained in `assets/styles/overlay.css`. The new load order is tokens → layout → overlay → navigation → shared controls → conditional account. UI behavior, popup routing and all legacy selectors remain unchanged; avoid introducing duplicate layout rules into the core sheet. No platform-specific product name belongs in new filenames, functions, classes, tests or comments: use technical behavior descriptions such as touch navigation, hold gesture, scroll collapse, and safe area.

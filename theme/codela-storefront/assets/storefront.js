@@ -184,13 +184,13 @@ function installDockGestures(dock) {
         if (event.cancelable !== false) event.preventDefault();
         const item = dockCandidate(dock, x, y);
         stop(!item);
-        blockUntil = Date.now() + 700; // Consume Safari's synthetic click.
+        blockUntil = Date.now() + 700; // Consume browser-generated click.
         if (!item) return;
         const view = item.dataset.dockView;
         if (view === 'search' || view === 'cart') open(view, {currentTarget:item, preventDefault(){}});
         else if (item.href) window.location.assign(item.href);
     };
-    // iOS Safari may cancel pointer capture when the finger leaves an <a>.
+    // Mobile browsers may cancel pointer capture when the finger leaves an <a>.
     // Track the original touch identifier instead and always receive touchend.
     dock.addEventListener('touchstart', event => {
         if (event.touches.length !== 1) { stop(); return; }
@@ -325,7 +325,7 @@ function open(name, event) {
     animatePanelContent(name === 'search' ? $('.sf-search-content') : $(`#sf-${name}`), previous === 'cart' && name === 'search' ? -1 : 1);
 }
 // Animate content, never the full-screen dialog: transforming it changes the
-// containing block of the fixed dock on Safari. Repeated actions cancel cleanly.
+// containing block of the fixed dock in some browsers. Repeated actions cancel cleanly.
 function animatePanelContent(element, direction = 1) {
     panelMotion?.cancel();
     panelMotion = null;

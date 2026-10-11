@@ -511,3 +511,12 @@ The new shared UI Kit was released in three separately validated stages:
 All three GitHub Actions runs finished with **validate + deploy success**. The 0.1.24 implementation commit is [566fc86](https://github.com/muhammetdkaya/codela-storefront/commit/566fc866c8ec5efd0c6d428d3e645d4bdf35d045). Shared controls live in `inc/ui.php` and `assets/styles/{tokens,components}.css`. Navigation and guest account CSS are separate and plugin-owned signed-in My Account remains untouched. The Codela plugin repo was not changed.
 
 **Remaining follow-up:** Gradually separate overlay/search/cart CSS and modularize feature JavaScript without changing production UI or WordPress Interactivity semantics. Add non-public UI Kit visual preview. Verify the physical iPhone Safari appearance/gestures manually (CI Chromium passing is not device acceptance). Before a new UI feature, read `docs/design-system.md` and reuse the existing components.
+
+
+## Storefront 0.1.25 — overlay stylesheet + neutral source naming + private visual references
+
+- The popup/search-toolbar/results styles were extracted from `assets/storefront.css` into `assets/styles/overlay.css`. The production stylesheet order is tokens → layout → overlay → navigation → components → conditional account, preserving the existing semantic CSS and interactive behavior.
+- Source code comments, fixture assertions and documentation use device-independent names: touch gestures, delayed native clicks, overlay surfaces, safe-area and scrolling. Never use a device/operating-system/vendor name to identify a component or animation.
+- The non-public `tests/ui-kit-preview.cjs` renders actual PHP component examples and header markup with the real CSS into visual screenshots for two viewport widths. `qa/storefront-ui-kit-390.png` and `qa/storefront-ui-kit-1280.png` are uploaded only as temporary CI artifacts, not served by the theme or included in its package.
+- Existing browser/navigation/account regressions are updated for the new stylesheet and the 0.1.25 version. Continue modularizing feature controllers only after behavior-equivalence tests; do not split the dock controller without guarding the single node/state lifecycle. Plugin-owned authenticated account markup remains excluded.
+- Source commit is not proof of live deployment. After CI, check both validate and standalone deploy success; real mobile device checks remain separate.

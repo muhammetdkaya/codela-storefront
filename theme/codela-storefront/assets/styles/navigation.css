@@ -1,4 +1,4 @@
-/** Mobile header modes, floating dock and Safari feedback. Theme-owned. */
+/** Mobile header modes, floating dock and touch feedback. Theme-owned. */
 .sf-mobile-dock{display:none}
 @media(max-width:700px){
   .sf-shell.has-header-tools .sf-header{

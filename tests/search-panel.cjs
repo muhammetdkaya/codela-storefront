@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 const js = fs.readFileSync('theme/codela-storefront/assets/storefront.js','utf8');
-const css = fs.readFileSync('theme/codela-storefront/assets/storefront.css','utf8');
+const css = ['assets/storefront.css','assets/styles/overlay.css'].map(p=>fs.readFileSync('theme/codela-storefront/'+p,'utf8')).join('\n');
 const markup = fs.readFileSync('theme/codela-storefront/inc/render.php','utf8');
 const start = js.indexOf('function syncSearchControls() {');
 const end = js.indexOf('\nasync function search() {', start);
