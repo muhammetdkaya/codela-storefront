@@ -36,7 +36,7 @@ const shell={};
 const dock={
   parentElement:shell,hidden:false,
   classList:classes(),
-  getBoundingClientRect:()=>({left:0,top:20,width:320,height:86}),
+  getBoundingClientRect:()=>({left:0,top:20,right:320,bottom:106,width:320,height:86}),
   querySelectorAll:sel=>sel==='.sf-dock-item'?items:[],
   addEventListener:(name,handler)=>{handlers[name]=handler},
   appendChild(){},
