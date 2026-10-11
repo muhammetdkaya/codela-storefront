@@ -222,34 +222,36 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  await page.locator('.sf-search-cancel').click();
  assert.equal(await page.evaluate(()=>scrollY),126,'Close restores exact scroll');
  await page.evaluate(()=>window.scrollTo(0,0));
- // Overlay Menu and X have identical coordinates at narrow widths.
+ // The same button is reparented at an identical viewport position while it morphs.
  for(const width of [320,390,700,1024]){
   await page.setViewportSize({width,height:844});
-  const trigger=page.locator('.sf-header-menu a'); const box=await trigger.boundingBox();await trigger.click();
-  const close=page.locator('.sf-panel-top .sf-close'); const x=await close.boundingBox();
-  const shared=await page.evaluate(()=>{
-    const menu=document.querySelector('.sf-header-menu .sf-ui-icon-button--soft');
-    const close=document.querySelector('.sf-panel-top .sf-close');
-    const style=el=>({bg:getComputedStyle(el).backgroundColor,radius:getComputedStyle(el).borderRadius,
-      icon:getComputedStyle(el.querySelector('.sf-icon')).width,shadow:getComputedStyle(el).boxShadow});
-    return {menu:style(menu),close:style(close)};
-  });
-  assert.deepEqual(shared.menu,shared.close,'Menu and X share surface, icon sizing and elevation');
-
-  if(width<=700){assert(Math.abs(box.x-x.x)<1);assert(Math.abs(box.y-x.y)<1,'Menu/X share vertical center');}
-  assert.equal(await dock.isVisible(),false,'Menu hides dock');
-  await close.click();
+  const trigger=page.locator('.sf-header-menu .sf-menu-trigger'),box=await trigger.boundingBox();
+  await trigger.evaluate(el=>el.dataset.testIdentity='original-control');
+  await trigger.click();
+  const moved=page.locator('#sf-panel > .sf-menu-trigger'),x=await moved.boundingBox();
+  assert.equal(await moved.getAttribute('data-test-identity'),'original-control','The original node enters the dialog');
+  assert(Math.abs(box.x-x.x)<1&&Math.abs(box.y-x.y)<1,'Menu/X stay at the same point at '+width);
+  assert.equal(await page.locator('.sf-panel-top .sf-close').isVisible(),false,'The menu has no second X');
+  assert.equal(await moved.getAttribute('aria-expanded'),'true');
+  await page.waitForTimeout(310);
+  const strokes=await moved.locator('.sf-menu-mark > span').evaluateAll(xs=>xs.map(el=>getComputedStyle(el).transform));
+  assert(strokes.every(x=>x!=='none'),'The two lines turn into an X');
+  assert.equal(await dock.isVisible(),false,'Menu hides the dock');
+  await moved.click();
+  assert.equal(await moved.getAttribute('aria-expanded'),'false','Tapping X reverses its motion');
   await page.locator('#sf-panel').waitFor({state:'hidden'});
-  if(width<=700){await click('search');const searchX=await page.locator('.sf-search-cancel').boundingBox();assert(Math.abs(box.x-searchX.x)<1,`Search X shares header hit target: ${width} header=${JSON.stringify(box)} search=${JSON.stringify(searchX)}`);assert(Math.abs(box.y-searchX.y)<1);await page.locator('.sf-search-cancel').click();}
-  assert.equal(await page.evaluate(()=>scrollY),0,'Header close restores top');
+  assert.equal(await trigger.count(),1,'The node returns to the header');
+  assert.equal(await page.locator('.sf-menu-trigger').count(),1,'Never duplicate the menu button');
+  if(width<=700){await click('search');const searchX=await page.locator('.sf-search-cancel').boundingBox();assert(Math.abs(box.x-searchX.x)<1);assert(Math.abs(box.y-searchX.y)<1);await page.locator('.sf-search-cancel').click();}
+  assert.equal(await page.evaluate(()=>scrollY),0);
  }
  await page.setViewportSize({width:390,height:844});
  // Menu opening/closing is animated; reopening cancels a pending close.
  await page.evaluate(()=>window.sfActions.menu());
- assert(await page.locator('#sf-panel').evaluate(el=>el.getAnimations().length>0),'Menu has opening animation');
+ assert(await page.locator('#sf-menu').evaluate(el=>el.getAnimations().length>0),'Menu content has opening animation');
  await page.waitForTimeout(280);
  await page.evaluate(()=>window.sfActions.close());
- assert(await page.locator('#sf-panel').evaluate(el=>el.open && el.getAnimations().length>0),'Menu stays modal during animated close');
+ assert(await page.locator('#sf-panel').evaluate(el=>el.open),'Menu stays open during icon reverse morph');
  await page.evaluate(()=>window.sfActions.menu());
  await page.waitForTimeout(220);
  assert(await page.locator('#sf-panel').evaluate(el=>el.open),'Reopen cancels pending menu close');
@@ -257,7 +259,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  await page.locator('#sf-panel').waitFor({state:'hidden'});
  await page.emulateMedia({reducedMotion:'reduce'});
  await page.evaluate(()=>window.sfActions.menu());
- assert.equal(await page.locator('#sf-panel').evaluate(el=>el.getAnimations().length),0);
+ assert.equal(await page.locator('#sf-menu').evaluate(el=>el.getAnimations().length),0);
  await page.evaluate(()=>window.sfActions.close());
  assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),false,'Reduced motion closes immediately');
  await page.emulateMedia({reducedMotion:'no-preference'});
