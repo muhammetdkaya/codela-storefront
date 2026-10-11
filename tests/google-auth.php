@@ -19,6 +19,7 @@ class WP_User {
     ) {}
 }
 function add_action( ...$args ) {}
+function is_wp_error( $value ) { return $value instanceof WP_Error; }
 function get_option( $key, $default = '' ) { return $GLOBALS['settings'][ $key ] ?? $default; }
 function is_ssl() { return true; }
 function is_user_logged_in() { return false; }
