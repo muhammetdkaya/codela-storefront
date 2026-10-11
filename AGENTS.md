@@ -1,4 +1,6 @@
 
+- **0.1.38 doğrulama ve dağıtım (11 Ekim 2026):** Kaynak `2d3957fc1414e0e84e33adc3c6c19dd663a14988`; [Actions 38162480128](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38162480128) içinde `validate` (PHP/Node + gerçek HTML Chromium hesap/form/dokunma regresyonları) ve bağımsız Storefront FTPS `deploy` başarılı. Giriş/kayıt gerçek Woo nonce ve kayıt ayarıyla çalışır; sosyal giriş sağlanıyorsa mevcut eklenti entegrasyonu ekrana çıkacaktır; tema sosyal sağlayıcı tanımlamaz. Fiziksel iPhone Safari kabulü yapılmadı. Sıradaki iş: gerçek sitenin misafir Hesabım sayfasında giriş/kayıt görünümü ve şifre sıfırlama/test sosyal akışını kontrol etmek.
+
 ## Storefront 0.1.38 — guest sign-in composed from shared UI Kit (11 October 2026)
 
 - Redesigned ONLY guest My Account login, optional Woo registration and native password reset presentation in `assets/styles/account.css`: centered, restrained layout, light outlined inputs/cards, mobile stacking, no heavy shadows or duplicated brand header. Woo renders and processes the original login/register/password reset forms: nonces, validation, redirects, hooks and third-party social-login inserts are left intact. Registration appears only if the existing Woo setting permits it; no fabricated social login buttons or custom auth endpoints.
