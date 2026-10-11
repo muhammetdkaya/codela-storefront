@@ -4,8 +4,7 @@ let dialog, current = null, opener, savedY = 0, savedBodyStyle = null, savedAdmi
 let searchTimer, searchController, searchSequence = 0;
 let cartNonce = '', cartData = null, cartPending = null, mutating = false;
 let menuPath = [];
-let dockGesture = null;
-let suppressDockClick = false;
+const dockScrollPositions = new WeakMap();
 const $ = s => document.querySelector(s);
 const { state } = store('codela/storefront', {
     actions: {
@@ -43,8 +42,18 @@ function restoreStyle(element, values) {
 function mobileDock() {
     return $('.sf-mobile-dock');
 }
-// A native showModal() makes every outside element inert. Keep the same
-// navigation node in the dialog's top layer while Search or Cart is open.
+function setDockCollapsed(collapsed) {
+    const dock = mobileDock();
+    if (!dock || dock.hidden) return;
+    dock.classList.toggle('is-collapsed', collapsed);
+    const handle = dock.querySelector('.sf-dock-handle');
+    if (handle) {
+        handle.tabIndex = collapsed ? 0 : -1;
+        handle.setAttribute('aria-hidden', String(!collapsed));
+    }
+    dock.querySelectorAll('.sf-dock-item').forEach(item => { item.inert = collapsed; });
+}
+// A native modal makes outside nodes inert; move the one real dock into its top layer.
 function mountDock() {
     const dock = mobileDock();
     if (dock && dock.parentElement !== dialog) dialog.appendChild(dock);
@@ -54,6 +63,7 @@ function restoreDock() {
     if (!dock) return;
     dock.hidden = false;
     if (dock.parentElement === dialog) dialog.before(dock);
+    setDockCollapsed(false);
     markDockActive(null);
 }
 function markDockActive(name) {
@@ -65,91 +75,156 @@ function markDockActive(name) {
         if (item.dataset.dockView) item.setAttribute('aria-expanded', String(item.dataset.dockView === name));
     });
 }
-// Pick the tab underneath a moving finger, including gaps between tabs.
 function dockCandidate(dock, x, y) {
     const bounds = dock.getBoundingClientRect();
-    if (y < bounds.top - 22 || y > bounds.bottom + 22) return null;
+    if (y < bounds.top - 26 || y > bounds.bottom + 26) return null;
     const items = [...dock.querySelectorAll('.sf-dock-item')];
     if (!items.length) return null;
     return items.reduce((best, item) => {
         const box = item.getBoundingClientRect();
-        const center = box.left + box.width / 2;
-        const distance = Math.abs(center - x);
-        return !best || distance < best.distance ? {item,distance} : best;
+        const distance = Math.abs(box.left + box.width / 2 - x);
+        return !best || distance < best.distance ? {item, distance} : best;
     }, null)?.item || null;
+}
+function handleDockScroll(event) {
+    const dock = mobileDock();
+    if (!dock || dock.hidden || dock.classList.contains('is-scrubbing')) return;
+    const target = event.target === document ? window : event.target;
+    if (target !== window) {
+        if (!(target instanceof Element) || dock.contains(target)) return;
+        if (dialog?.open && !dialog.contains(target)) return;
+    } else if (dialog?.open) return;
+    const position = target === window ? window.scrollY : target.scrollTop;
+    if (!Number.isFinite(position)) return;
+    const last = dockScrollPositions.get(target);
+    dockScrollPositions.set(target, position);
+    if (position < 24) { setDockCollapsed(false); return; }
+    if (last === undefined) return;
+    const change = position - last;
+    if (change > 7) setDockCollapsed(true);
+    else if (change < -7) setDockCollapsed(false);
 }
 function installDockGestures(dock) {
     if (!dock) return;
-    const holdMs = 220;
-    let holding = null;
-    let blockClick = false;
+    const holdMs = 240;
+    let press = null;
+    let blockUntil = 0;
+    const items = () => [...dock.querySelectorAll('.sf-dock-item')];
     const clearVisuals = () => {
         dock.classList.remove('is-scrubbing');
-        dock.querySelectorAll('.sf-dock-item').forEach(item => item.classList.remove('is-pressed','is-preview'));
+        items().forEach(item => item.classList.remove('is-pressed','is-preview'));
     };
     const stop = () => {
-        if (holding?.timer) clearTimeout(holding.timer);
-        holding = null;
+        if (press?.timer) clearTimeout(press.timer);
+        press = null;
         clearVisuals();
     };
     const preview = item => {
-        dock.querySelectorAll('.sf-dock-item').forEach(el => el.classList.toggle('is-preview', el === item));
-        if (holding) holding.choice = item;
+        items().forEach(el => el.classList.toggle('is-preview', el === item));
+        if (press) press.choice = item;
     };
-    const activateGesture = e => {
-        if (!holding || holding.dragging) return;
-        holding.dragging = true;
+    const activate = () => {
+        if (!press || press.dragging) return;
+        press.dragging = true;
         dock.classList.add('is-scrubbing');
-        holding.item.classList.remove('is-pressed');
-        try { dock.setPointerCapture?.(e.pointerId); } catch { /* browser may decline */ }
+        press.item.classList.remove('is-pressed');
+        preview(press.choice);
     };
-    dock.addEventListener('pointerdown', e => {
-        if (e.button !== 0 && e.pointerType !== 'touch') return;
-        const item = e.target.closest('.sf-dock-item');
-        if (!item) return;
+    const begin = (item, x, y, id) => {
+        if (!item || dock.classList.contains('is-collapsed')) return;
         stop();
-        holding = {id:e.pointerId, item, choice:item, x:e.clientX, y:e.clientY, dragging:false, timer:null};
+        press = {id, item, choice:item, x, y, dragging:false, timer:null};
         item.classList.add('is-pressed');
-        holding.timer = setTimeout(() => {
-            if (!holding || holding.id !== e.pointerId) return;
-            activateGesture(e);
-            preview(dockCandidate(dock, e.clientX, e.clientY) || item);
+        const gestureId = id;
+        press.timer = setTimeout(() => {
+            if (press?.id !== gestureId) return;
+            activate();
         }, holdMs);
-    });
-    dock.addEventListener('pointermove', e => {
-        if (!holding || holding.id !== e.pointerId) return;
-        const distanceX = Math.abs(e.clientX - holding.x);
-        const distanceY = Math.abs(e.clientY - holding.y);
-        if (!holding.dragging && distanceY > 18 && distanceY > distanceX) { stop(); return; }
-        if (!holding.dragging && distanceX > 10) activateGesture(e);
-        if (holding.dragging) {
-            e.preventDefault();
-            preview(dockCandidate(dock, e.clientX, e.clientY));
+    };
+    const move = (event, x, y, id) => {
+        if (!press || press.id !== id) return;
+        const dx = Math.abs(x - press.x), dy = Math.abs(y - press.y);
+        if (!press.dragging && dy > 18 && dy > dx) { stop(); return; }
+        if (!press.dragging && dx > 9) activate();
+        if (press?.dragging) {
+            if (event.cancelable !== false) event.preventDefault();
+            preview(dockCandidate(dock, x, y));
         }
-    });
-    dock.addEventListener('pointerup', e => {
-        if (!holding || holding.id !== e.pointerId) return;
-        if (!holding.dragging) { stop(); return; } // normal tap: let native link click.
-        e.preventDefault();
-        const item = dockCandidate(dock, e.clientX, e.clientY) || holding.choice;
+    };
+    const finish = (event, x, y, id) => {
+        if (!press || press.id !== id) return;
+        if (!press.dragging) { stop(); return; } // Native link click on simple tap.
+        if (event.cancelable !== false) event.preventDefault();
+        const item = dockCandidate(dock, x, y) || press.choice;
         stop();
-        blockClick = true;
-        // Suppress the synthetic link click generated after pointerup.
-        setTimeout(() => { blockClick = false; }, 80);
+        blockUntil = Date.now() + 700; // Consume Safari's synthetic click.
         if (!item) return;
         const view = item.dataset.dockView;
         if (view === 'search' || view === 'cart') open(view);
         else if (item.href) window.location.assign(item.href);
+    };
+    // iOS Safari may cancel pointer capture when the finger leaves an <a>.
+    // Track the original touch identifier instead and always receive touchend.
+    dock.addEventListener('touchstart', event => {
+        if (event.touches.length !== 1) { stop(); return; }
+        const touch = event.changedTouches[0];
+        begin(event.target.closest('.sf-dock-item'),touch.clientX,touch.clientY,touch.identifier);
+    }, {passive:true});
+    dock.addEventListener('touchmove', event => {
+        const touch = [...event.changedTouches].find(t => t.identifier === press?.id);
+        if (touch) move(event,touch.clientX,touch.clientY,touch.identifier);
+    }, {passive:false});
+    dock.addEventListener('touchend', event => {
+        const touch = [...event.changedTouches].find(t => t.identifier === press?.id);
+        if (touch) finish(event,touch.clientX,touch.clientY,touch.identifier);
+    }, {passive:false});
+    dock.addEventListener('touchcancel',stop);
+    // Mouse/trackpad and pen also work without generating a second touch navigation.
+    dock.addEventListener('pointerdown',event => {
+        if (event.pointerType === 'touch' || event.button !== 0) return;
+        begin(event.target.closest('.sf-dock-item'),event.clientX,event.clientY,event.pointerId);
     });
-    dock.addEventListener('pointercancel', stop);
-    dock.addEventListener('lostpointercapture', () => { if (holding?.dragging) stop(); });
-    dock.addEventListener('contextmenu', e => { if (holding) e.preventDefault(); });
-    dock.addEventListener('click', e => {
-        if (!blockClick) return;
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        blockClick = false;
-    }, true);
+    dock.addEventListener('pointermove',event => {
+        if (event.pointerType !== 'touch') move(event,event.clientX,event.clientY,event.pointerId);
+    });
+    dock.addEventListener('pointerup',event => {
+        if (event.pointerType !== 'touch') finish(event,event.clientX,event.clientY,event.pointerId);
+    });
+    dock.addEventListener('pointercancel',event => { if (event.pointerType !== 'touch') stop(); });
+    dock.addEventListener('contextmenu',event => { if (press) event.preventDefault(); });
+    dock.addEventListener('click',event => {
+        if (Date.now() >= blockUntil) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        blockUntil = 0;
+    },true);
+    dock.querySelector('.sf-dock-handle')?.addEventListener('click',() => setDockCollapsed(false));
+}
+function preventInitialAccountAutoFocus() {
+    const account = document.body.classList.contains('woocommerce-account')
+        || !!document.querySelector('.woocommerce-MyAccount-navigation, .woocommerce-form-login, .woocommerce-form-register');
+    if (!account) return;
+    let guarding = true;
+    const inputSelector = 'input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=submit]),textarea,[contenteditable="true"]';
+    document.querySelectorAll('[autofocus]').forEach(el => {
+        if (el.matches(inputSelector)) el.removeAttribute('autofocus');
+    });
+    const dismiss = el => {
+        if (guarding && el?.matches?.(inputSelector)) el.blur();
+    };
+    const onFocus = event => dismiss(event.target);
+    const release = () => {
+        if (!guarding) return;
+        guarding = false;
+        document.removeEventListener('focusin',onFocus,true);
+        document.removeEventListener('touchstart',release,true);
+        document.removeEventListener('pointerdown',release,true);
+        document.removeEventListener('keydown',release,true);
+    };
+    document.addEventListener('focusin',onFocus,true);
+    for (const type of ['touchstart','pointerdown','keydown']) document.addEventListener(type,release,{capture:true,once:true});
+    dismiss(document.activeElement);
+    setTimeout(release,1600);
 }
 function open(name, event) {
     if (event && (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) return;
@@ -180,6 +255,7 @@ function open(name, event) {
         $('#sf-results').setAttribute('aria-busy','false');
     }
     current = name;
+    setDockCollapsed(false);
     dialog.classList.toggle('is-search-panel', name === 'search');
     dialog.classList.toggle('is-cart-panel', name === 'cart');
     const dock = mobileDock();
@@ -197,7 +273,7 @@ function open(name, event) {
     // Automatically focused controls should not display a giant focus ring
     // when opening a panel; keyboard navigation must still show its indicator.
     dialog.querySelectorAll('.sf-initial-focus').forEach(el => el.classList.remove('sf-initial-focus'));
-    const initialFocus = name === 'search' ? $('#sf-query') : $('.sf-close');
+    const initialFocus = name === 'search' ? $('.sf-search-cancel') : $('.sf-close');
     initialFocus.classList.add('sf-initial-focus');
     initialFocus.focus({preventScroll:true});
     if (name === 'menu') { menuPath = []; paintMenu(); }
@@ -334,8 +410,12 @@ async function changeCart(button) {
     }
 }
 function init() {
+    preventInitialAccountAutoFocus();
     dialog = $('#sf-panel'); if (!dialog) return;
     installDockGestures(mobileDock());
+    window.addEventListener('scroll',handleDockScroll,{passive:true});
+    dialog.addEventListener('scroll',handleDockScroll,{passive:true,capture:true});
+    window.addEventListener('pageshow',() => setDockCollapsed(false));
     window.addEventListener('resize', () => {
         if (dialog.open) adminOffset();
     });

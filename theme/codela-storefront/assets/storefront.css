@@ -470,3 +470,63 @@
     transition:none!important;
   }
 }
+
+/* 0.1.12: animated dock scroll hide, with a slim accessible reveal handle. */
+@media(max-width:700px){
+  .sf-mobile-dock{
+    transition:transform 260ms cubic-bezier(.22,1,.36,1),box-shadow 260ms ease;
+  }
+  .sf-mobile-dock.is-collapsed{
+    transform:translate3d(0,calc(100% + 6px),0);
+    box-shadow:none;
+  }
+  .sf-mobile-dock .sf-dock-handle{
+    display:flex;
+    position:absolute;
+    justify-content:center;
+    align-items:center;
+    left:50%;
+    bottom:calc(100% + 5px);
+    transform:translateX(-50%);
+    width:70px;
+    height:29px;
+    padding:0;
+    border:0;
+    background:transparent;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 180ms ease 60ms;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .sf-mobile-dock .sf-dock-handle:after{
+    content:'';
+    display:block;
+    width:42px;
+    height:4px;
+    background:#a4a5ab;
+    border-radius:999px;
+    box-shadow:0 1px 3px rgba(0,0,0,.10);
+  }
+  .sf-mobile-dock.is-collapsed .sf-dock-handle{
+    opacity:1;
+    pointer-events:auto;
+  }
+  .sf-mobile-dock.is-collapsed .sf-dock-item{pointer-events:none}
+  .sf-mobile-dock .sf-dock-handle:focus-visible{
+    outline:2px solid #55565c;
+    outline-offset:1px;
+  }
+  /* Horizontal finger scrubbing must not become native text selection or
+     the long-press link preview on mobile Safari. Vertical page scroll stays native. */
+  .sf-mobile-dock .sf-dock-item{
+    touch-action:pan-y;
+    -webkit-user-select:none;
+    user-select:none;
+    -webkit-touch-callout:none;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .sf-mobile-dock,.sf-mobile-dock .sf-dock-handle{
+    transition:none!important;
+  }
+}

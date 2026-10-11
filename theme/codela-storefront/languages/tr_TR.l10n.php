@@ -54,6 +54,7 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'Search' => 'Ara',
 'Menu' => 'Menü',
 'Mobile navigation' => 'Mobil gezinme',
+'Show navigation' => 'Gezinmeyi göster',
 'Home' => 'Ana Sayfa',
 'Cart' => 'Sepet',
 'Close' => 'Kapat',
