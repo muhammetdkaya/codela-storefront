@@ -145,6 +145,14 @@ handlers.touchmove(ev(items[1],touch(40,55,9),'move'));
 const back=ev(items[1],touch(40,55,9),'end');handlers.touchend(back);
 assert.equal(closed,2,'Scrub to current Home closes the popup');
 assert.equal(assigned,'https://example.test/account','Scrub to current Home does not navigate');
+items[3].dataset.panel='account';
+e=ev(items[0],touch(40,55,12),'start');handlers.touchstart(e);
+handlers.touchmove(ev(items[0],touch(285,55,12),'move'));
+handlers.touchend(ev(items[0],touch(285,55,12),'end'));
+assert.equal(opened.at(-1),'account','Guest Account scrub opens overlay, not navigation');
+assert.equal(assigned,'https://example.test/account','Guest Account does not cause another full page load');
+delete items[3].dataset.panel;
+
 assert.equal(back.prevented,true,'Scrub event is consumed');
 // Account is not the active page on Home, so external navigation stays native.
 
