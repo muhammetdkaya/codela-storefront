@@ -21,6 +21,7 @@ jobs:
           node --input-type=module --check < theme/codela-storefront/assets/scripts/format.js
           node --input-type=module --check < theme/codela-storefront/assets/scripts/search-controller.js
           node --input-type=module --check < theme/codela-storefront/assets/scripts/cart-controller.js
+          node --input-type=module --check < theme/codela-storefront/assets/scripts/overlay-controller.js
           node tests/search-panel.cjs
           node tests/format.cjs
           node tests/ui-kit.cjs

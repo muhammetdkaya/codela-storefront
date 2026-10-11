@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
 const src=fs.readFileSync('theme/codela-storefront/assets/storefront.js','utf8');
-const start=src.indexOf('function mobileDock() {'),end=src.indexOf('\nfunction open(name, event) {',start);
+const start=src.indexOf('function mobileDock() {'),end=src.indexOf('\nfunction preventInitialAccountAutoFocus() {',start);
 assert.ok(start>0 && end>start);
 const classList=()=>{
  const set=new Set();
@@ -44,6 +44,7 @@ const timers=new Map();
 const setTimeoutFake=fn=>{const id=++seq;timers.set(id,fn);return id};
 const context={
  dialog,document,window:win,current:null,dockNode:null,dockHome:null,dockScrollFrame:0,dockScrollTarget:null,
+ overlay:{getDialog:()=>dialog,getCurrent:()=>null,open:name=>opened.push(name)},
  requestAnimationFrame:fn=>{raf=fn;return 1},
  $:sel=>sel==='.sf-mobile-dock'?dock:null,
  dockScrollPositions:new WeakMap(),Element:class Element{},

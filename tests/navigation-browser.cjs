@@ -18,7 +18,7 @@ const css = ['assets/styles/tokens.css','assets/storefront.css','assets/styles/o
 const moduleSource = name => fs.readFileSync(
  'theme/codela-storefront/assets/scripts/'+name+'.js','utf8'
  ).replace(/^import .*;$/gm,'').replace(/^export /gm,'');
-const inlineControllers = ['format','search-controller','cart-controller']
+const inlineControllers = ['format','search-controller','cart-controller','overlay-controller']
  .map(moduleSource).join('\n');
 const js = fs.readFileSync('theme/codela-storefront/assets/storefront.js','utf8')
  .replace(/^import .*from '\.\/scripts\/[^']+';$/gm,'')
@@ -28,7 +28,7 @@ function store(namespace, options) {
  return {state:{config:{api:'https://store.test/api/', search:'https://store.test/search-api', cart:'/cart/', labels:{}}}};
 }
 `)
- .replace("let dialog, current",inlineControllers + '\nlet dialog, current');
+ .replace("let menuPath = [];",inlineControllers + '\nlet menuPath = [];');
 const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/product/',images:[],quantity:1,totals:{line_subtotal:'1000',line_subtotal_tax:'0',currency_code:'TRY',currency_minor_unit:2}}],totals:{total_items:'1000',total_items_tax:'0',currency_code:'TRY',currency_minor_unit:2}};
 (async()=>{
  const browser = await chromium.launch({headless:true,...(process.env.CHROMIUM_BIN ? {executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-gpu','--use-gl=disabled','--disable-software-rasterizer','--disable-dev-shm-usage','--no-zygote','--single-process']} : {})});
