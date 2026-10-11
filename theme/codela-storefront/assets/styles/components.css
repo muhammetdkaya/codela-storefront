@@ -22,6 +22,7 @@
   cursor:pointer;
   touch-action:manipulation;
   -webkit-tap-highlight-color:transparent;
+  transition:transform var(--sf-ui-motion-press) var(--sf-ui-ease-press);
 }
 .sf-shell .sf-ui-icon-button .sf-icon{
   width:var(--sf-ui-icon);
@@ -29,6 +30,7 @@
   transition:transform var(--sf-ui-motion-press) var(--sf-ui-ease-press);
 }
 .sf-shell .sf-ui-icon-button:is(:active,.is-pressed) .sf-icon{transform:scale(.9)}
+.sf-shell .sf-ui-icon-button--soft:is(:active,.is-pressed){transform:scale(.96)}
 .sf-shell .sf-ui-icon-button--soft,
 #sf-panel button.sf-ui-icon-button--soft{
   border-radius:var(--sf-ui-pill);
@@ -123,6 +125,7 @@
    behavior; the shared token defines response speed, not a second handler. */
 .sf-shell .sf-ui-nav-tab{touch-action:pan-y}
 @media(prefers-reduced-motion:reduce){
+  .sf-shell .sf-ui-icon-button,
   .sf-shell .sf-ui-icon-button .sf-icon,
   .sf-shell .sf-ui-button,
   .sf-shell .sf-ui-pressable{transition:none!important}
