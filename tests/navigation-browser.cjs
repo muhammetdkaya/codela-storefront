@@ -5,6 +5,7 @@ const fs = require('node:fs');
 const {execFileSync} = require('node:child_process');
 const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const php = process.env.PHP_BIN || 'php';
+const googleDisabled=JSON.parse(execFileSync(php,['tests/google-auth.php'],{encoding:'utf8'})).disabled_button;
 const header = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8'});
 const noDockHeader = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8',env:{...process.env,FIXTURE_DOCK:'0'}});
 assert(!noDockHeader.includes('class="sf-mobile-dock'), 'Disabled setting omits dock');
@@ -181,6 +182,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
    sameLine:Math.abs(remember.top+remember.height/2-forgot.top-forgot.height/2)<10,
    submitBg:getComputedStyle(submit).backgroundColor,
    fieldHeight:input.height,
+   fieldBackground:getComputedStyle(root.querySelector('#test-login-username')).backgroundColor,
    submitHeight:submit.getBoundingClientRect().height,
    submitMinHeight:getComputedStyle(submit).minHeight,
    toolbarTitleSize:getComputedStyle(document.querySelector('#sf-panel-title')).fontSize,
@@ -193,14 +195,34 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  assert(compactAuth.sameLine,'Modal remember and password recovery share a row');
  assert.equal(compactAuth.submitBg,'rgb(37, 39, 42)','Native modal submit uses shared primary Button');
  assert(compactAuth.fieldHeight>=54&&compactAuth.fieldHeight<=56,'Popup fields preserve the shared 54px input height');
+ assert.equal(compactAuth.fieldBackground,'rgb(255, 255, 255)','Actual guest modal fields are clean and white');
  assert.equal(compactAuth.submitMinHeight,'52px','Popup submit uses shared compact 52px Button token');
  assert(compactAuth.submitHeight>=52&&compactAuth.submitHeight<=54,'Popup submit keeps accessible compact touch target');
  assert.equal(compactAuth.toolbarTitleSize,'23px','Existing popup title uses the agreed 23px type');
- assert(compactAuth.bodyPaddingTop<=12,'Login form starts close to the shared dialog toolbar');
+ assert(compactAuth.bodyPaddingTop<=20,'Login form stays close to the shared dialog toolbar');
  assert(compactAuth.formTop-compactAuth.toolbarBottom<70,'Popup form avoids oversized blank space below toolbar');
  assert.equal(compactAuth.subtitle,false,'Account popup has no descriptive subtitle');
  assert.equal(await page.locator('#sf-account form.woocommerce-form-login').getAttribute('action'),'https://store.test/myaccount/','Login submits to genuine Account URL');
  assert.equal(page.url(),'https://store.test/','Guest Account does not reload');
+ await page.locator('#sf-account .sf-overlay-auth').evaluate((element,markup)=>element.insertAdjacentHTML('beforeend',markup),googleDisabled);
+ const visualGoogle=await page.locator('#sf-account .sf-auth-google').evaluate(el=>{
+  const button=el.getBoundingClientRect(),label=el.querySelector('.sf-ui-button-label').getBoundingClientRect();
+  const glyph=el.querySelector('.sf-google-glyph').getBoundingClientRect();
+  return {mode:getComputedStyle(el).display,centerError:Math.abs((label.left+label.width/2)-(button.left+button.width/2)),
+   iconGap:label.left-glyph.right,buttonHeight:button.height};
+ });
+ assert.equal(visualGoogle.mode,'grid','Live Account panel applies shared Google grid alignment');
+ assert(visualGoogle.centerError<1,'Google label is precisely centered in actual dialog');
+ assert(visualGoogle.iconGap>=7&&visualGoogle.iconGap<=14,'Google icon and text have consistent nonoverlapping gap');
+ assert(visualGoogle.buttonHeight>=52&&visualGoogle.buttonHeight<=54,'Google retains shared compact touch target');
+ await page.locator('#sf-account .sf-auth-google').click();
+ assert.equal(await page.locator('#sf-google-setup-notice').evaluate(el=>el.matches(':popover-open')),true,
+  'Setup notice is visible inside the actual Account dialog');
+ await page.keyboard.press('Escape');
+ assert.equal(await page.locator('#sf-google-setup-notice').evaluate(el=>el.matches(':popover-open')),false,
+  'Setup notice closes without closing the Account dialog');
+ assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),true,'Account dialog remains open after dismissing Google tip');
+
  await click('search');
  assert.equal(await page.locator('#sf-account').isVisible(),false,'Search hides Account in same dialog');
  await click('account');

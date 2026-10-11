@@ -133,8 +133,8 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
   box-sizing:border-box;width:100%;min-height:var(--sf-ui-action-height);
   padding:14px 16px;
   color:var(--sf-ui-control-ink);
-  background:#f7f7f8;
-  border:1px solid #e3e4e7;
+  background:#fff;
+  border:1px solid #dde0e5;
   border-radius:var(--sf-ui-control-radius);
   font:inherit;font-size:16px;line-height:1.4;box-shadow:none;
   transition:border-color var(--sf-ui-motion-press) ease,background-color var(--sf-ui-motion-press) ease;
@@ -300,7 +300,7 @@ body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerc
    button component, palette or press animation. */
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-auth-social{
   max-width:100%;margin:23px auto 0;padding:0;
-  display:flex;flex-direction:column;align-items:stretch;gap:18px;
+  display:flex;flex-direction:column;align-items:stretch;gap:12px;
 }
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-auth-divider{
   display:flex;align-items:center;gap:18px;
