@@ -1,4 +1,6 @@
 
+- **0.1.37 dağıtım sonucu:** `4161a458c08da37257c37aecbf1ecfccee4b4d45` için [Actions 38161509933](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38161509933) `validate` ve Storefront FTPS `deploy` başarılı. İlk kaynak `367a471c` üzerindeki browser testinde yeni 44px hareket eşiğinden kısa scroll beklentisi nedeniyle validate başarısız olmuştu; `4161a458` ile gerçek davranış ve test mesafesi eşleşti, yeniden koşuda tüm browser testleri geçti. Fiziksel mobil cihaz kabulü halen kullanıcı tarafında.
+
 ## Storefront 0.1.37 — compact logo and steady scroll navigation (11 October 2026)
 
 - Fixed header logo pill horizontal padding reduced **18px → 8px** (mobile dock disabled: **10px → 7px**). The shared floating glass surface, custom logo colour, vertical centering, 44px minimum control height, menu/X position and responsive header layouts remain intact.
