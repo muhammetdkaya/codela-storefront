@@ -44,6 +44,24 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
   return route.fulfill({contentType:'text/html',body:`<!doctype html><html lang="en"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>.screen-reader-text{position:absolute!important;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}${css}</style></head><body>${activeHeader}<main style="height:3200px;padding:30px">Store content</main>${footer}</body></html>`});
  });
  await page.goto('https://store.test/');
+ const surfaces=await page.locator('.sf-header').evaluate(header=>{
+   const brand=header.querySelector('.sf-brand');
+   const menu=header.querySelector('.sf-header-menu .sf-ui-icon-button');
+   const a=getComputedStyle(brand),b=getComputedStyle(menu);
+   return {brandRadius:a.borderRadius,menuRadius:b.borderRadius,
+     brandBg:a.backgroundColor,menuBg:b.backgroundColor,
+     brandHeight:brand.getBoundingClientRect().height,menuHeight:menu.getBoundingClientRect().height,
+     menuVariant:menu.classList.contains('sf-ui-icon-button--soft'),
+     headerBorder:getComputedStyle(header).borderBottomWidth};
+ });
+ assert(surfaces.menuVariant,'Header menu uses shared soft control');
+ assert.equal(surfaces.brandRadius,'999px');
+ assert.equal(surfaces.menuRadius,'999px');
+ assert(surfaces.brandHeight>=44&&surfaces.menuHeight>=44,'Independent surfaces keep touch target');
+ assert.notEqual(surfaces.brandBg,'rgba(0, 0, 0, 0)');
+ assert.equal(surfaces.brandBg,surfaces.menuBg,'Brand and menu share header surface');
+ assert.equal(surfaces.headerBorder,'0px','Header background is not one solid bar');
+
  const footerMetrics = await page.locator('.sf-footer').evaluate(root => {
    const inner = root.querySelector('.sf-footer-inner');
    const copy = root.querySelector('.sf-footer-copy').getBoundingClientRect();
