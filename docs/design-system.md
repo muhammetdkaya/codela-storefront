@@ -325,4 +325,4 @@ create parallel stores or second navigation listeners.
   Checkout remains `sf-ui-button--primary`; quantity is `sf-ui-pressable`.
   Woo totals, stock limits, taxes and plugin Account remain authoritative.
 - Browser checks cover off-cart counts, other pages, event updates, badge
-  position and full-width checkout; live deployment and mobile QA remain distinct.
+  position and full-width checkout. [Actions 38173704424](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38173704424) passed both validate and standalone deployment for `e0be1f9`. Physical iPhone/Safari acceptance remains separate.
