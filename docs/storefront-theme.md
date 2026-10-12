@@ -5,9 +5,9 @@
 
 ## Tek güncel devam noktası — 12 Ekim 2026 / 0.1.54
 
-- **Tema 0.1.53 → 0.1.54:** kullanıcı yeni referanslar ve canlı ekran görüntüsüyle üst cam kontrollerde/alt menüde beyaz çerçevenin ağır kaldığını bildirdi. Ortak floating material dolu çevre çizgisini kaldırır; yalnız ince üst/alt ışık ve daha hafif yayılmış gölge vardır. Tokens içindeki tek değişiklik Header/soft IconButton/Dock'u birlikte etkiler. Bu kaynak kaydında CI/dağıtım bekliyor.
+- **Tema 0.1.53 → 0.1.54 canlıda:** kullanıcı yeni referanslar ve canlı ekran görüntüsüyle üst cam kontrollerde/alt menüde beyaz çerçevenin ağır kaldığını bildirdi. Ortak floating material dolu çevre çizgisini kaldırır; yalnız ince üst/alt ışık ve daha hafif yayılmış gölge vardır. Tokens içindeki tek değişiklik Header/soft IconButton/Dock'u birlikte etkiler. Kaynak [3d555b6](https://github.com/muhammetdkaya/codela-storefront/commit/3d555b64906a8d7f29ddb441bb4f2d8e4d76bd9d); [Actions 38306336678](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38306336678): `validate=success`, `deploy=success` ve gerçek **Deploy Storefront only=success**.
 - 0.1.53 geçirgen yüzey (%22 dolgu, 6px blur) ve bütün Dock %1,8 press tepkisi korunur. Etkileşim/controller/JS veya sayfa başına yeni paint yok. Aynı 44px hedefler, düzen ölçüleri ve klavye odak halkası korunur; erişilebilir forced-colors sınırı ayrıca geçerlidir.
-- Yerel UI/navigation browser kontrolleri ve metin/renk üzerindeki görsel referanslar kontrol edildi; paket/CI ayrıca doğrulanır. Fiziksel Safari görsel kabulü ve gerçek performans ölçümü ayrı kalır.
+- Yerel UI/navigation browser kontrolleri ve metin/renk üzerindeki görsel referanslar kontrol edildi; 22 paket testi ve gerçek CI PHP/Node/paket/Chromium kontrolleri başarılı. Fiziksel Safari görsel kabulü ve gerçek performans ölçümü ayrı kalır.
 - Sıradaki iş: yeni referanslara göre canlı cihaz kabulü; ardından mevcut gerçek WP/Woo senaryoları, F5 kapsam sınırı ve F6 ölçümü. Bu çalışma F3/F4/F5/F6'yı kapatmaz.
 
 ## Mimari ve sınırlar
