@@ -1,4 +1,5 @@
 /** Mobile header modes, floating dock and touch feedback. Theme-owned. */
+/* Checkout shares the dock-mode Header geometry without mounting the dock itself. */
 .sf-mobile-dock{display:none}
 @media(max-width:700px){
   .sf-shell.has-header-tools .sf-header{
@@ -11,27 +12,27 @@
   .has-header-tools .sf-header .sf-brand .custom-logo{max-width:100%;height:auto}
   .has-header-tools .sf-header .sf-actions{gap:0}
 
-  .sf-shell.has-mobile-dock .sf-header{
+  .sf-shell:is(.has-mobile-dock,.has-checkout-header) .sf-header{
     grid-template-columns:minmax(0,1fr) 44px;
     column-gap:8px;
     padding-left:20px;
     padding-right:20px;
   }
-  .has-mobile-dock .sf-header .sf-header-menu{
+  :is(.has-mobile-dock,.has-checkout-header) .sf-header .sf-header-menu{
     grid-column:2;
     grid-row:1;
     justify-self:end;
     width:44px;
     height:44px;
   }
-  .has-mobile-dock .sf-header .sf-brand{
+  :is(.has-mobile-dock,.has-checkout-header) .sf-header .sf-brand{
     grid-column:1;
     grid-row:1;
     justify-self:start;
     max-width:100%;
     text-align:left;
   }
-  .has-mobile-dock .sf-header .sf-actions{display:none}
+  :is(.has-mobile-dock,.has-checkout-header) .sf-header .sf-actions{display:none}
   .sf-mobile-dock{
     --sf-dock-bottom:calc(12px + env(safe-area-inset-bottom,0px));
     --sf-dock-travel:0px;
@@ -218,11 +219,11 @@ body.admin-bar{--sf-header-offset:32px}
 .sf-shell .sf-header .sf-actions .sf-ui-icon-button .sf-icon{filter:brightness(0)}
 @media(max-width:700px){
   .sf-shell .sf-header{height:68px}
-  .sf-shell.has-mobile-dock .sf-header{
+  .sf-shell:is(.has-mobile-dock,.has-checkout-header) .sf-header{
     grid-template-columns:minmax(0,1fr) var(--sf-ui-hit);
     padding-left:20px;padding-right:20px;column-gap:12px;
   }
-  .sf-shell.has-mobile-dock .sf-header .sf-brand{
+  .sf-shell:is(.has-mobile-dock,.has-checkout-header) .sf-header .sf-brand{
     max-width:min(220px,calc(100vw - 108px));justify-self:start;
   }
   .sf-shell.has-header-tools .sf-header{

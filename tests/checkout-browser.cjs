@@ -1,8 +1,12 @@
 // Real PHP header and native Woo-style checkout fixture; styling only.
 const assert=require('node:assert/strict'),fs=require('node:fs'),{execFileSync}=require('node:child_process');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
-const header=execFileSync(process.env.PHP_BIN||'php',['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_CHECKOUT:'1'}});
+const php=process.env.PHP_BIN||'php';
+const header=execFileSync(php,['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_CHECKOUT:'1'}});
+const homeHeader=execFileSync(php,['tests/render-header.php'],{encoding:'utf8'});
 assert(header.includes('class="sf-header"'));assert(!header.includes('class="sf-mobile-dock'));
+assert(header.includes('has-checkout-header'),'Checkout uses compact shared Header composition');
+assert(homeHeader.includes('has-mobile-dock'),'Home retains the original dock composition');
 const css=['assets/styles/tokens.css','assets/storefront.css','assets/styles/overlay.css','assets/styles/navigation.css','assets/styles/components.css','assets/styles/checkout.css'].map(p=>fs.readFileSync('theme/codela-storefront/'+p,'utf8')).join('\n');
 const fixture=`<main class="wp-block-group sf-content sf-checkout-page" id="sf-content">
 <h1 class="wp-block-post-title">Ödeme</h1><div class="wp-block-post-content"><div class="wp-block-woocommerce-checkout">
@@ -20,7 +24,8 @@ const page=await browser.newPage();
 await page.route('**/*',route=>{
 const url=route.request().url();
 if(url.includes('/assets/icons/'))return route.fulfill({contentType:'image/svg+xml',body:fs.readFileSync('theme/codela-storefront/assets/icons/'+new URL(url).pathname.split('/').at(-1),'utf8')});
-return route.fulfill({contentType:'text/html',body:`<!doctype html><html lang="tr"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>${css}</style></head><body class="woocommerce-checkout">${header}${fixture}</body></html>`});
+const compareHome=url.includes('/compare-home-header');
+return route.fulfill({contentType:'text/html',body:`<!doctype html><html lang="tr"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>${css}</style></head><body class="${compareHome?'home':'woocommerce-checkout'}">${compareHome?homeHeader:header}${fixture}</body></html>`});
 });
 await page.goto('https://store.test/checkout/');
 for(const width of [320,390,700,1024,1360]){
@@ -43,6 +48,33 @@ assert.equal(actual.inputRadius,actual.buttonRadius,'Shared radius');
 assert.equal(actual.buttonBackground,'rgb(34, 35, 31)','Shared primary color');
 assert.equal(actual.summaryBackground,'rgb(243, 243, 243)','Shared muted surface');
 assert.equal(actual.submit,'submit','Native submit semantics');
+const checkoutHeader=await page.locator('.sf-header').evaluate(el=>{
+ const logo=el.querySelector('.sf-brand').getBoundingClientRect();
+ const menu=el.querySelector('.sf-header-menu').getBoundingClientRect();
+ const tools=el.querySelector('.sf-actions');
+ return {logoX:logo.x,logoY:logo.y,logoWidth:logo.width,menuX:menu.x,menuY:menu.y,
+  menuWidth:menu.width,toolsVisible:getComputedStyle(tools).display!=='none'};
+});
+await page.goto('https://store.test/compare-home-header');
+const homeHeaderGeometry=await page.locator('.sf-header').evaluate(el=>{
+ const logo=el.querySelector('.sf-brand').getBoundingClientRect();
+ const menu=el.querySelector('.sf-header-menu').getBoundingClientRect();
+ const tools=el.querySelector('.sf-actions');
+ return {logoX:logo.x,logoY:logo.y,logoWidth:logo.width,menuX:menu.x,menuY:menu.y,
+  menuWidth:menu.width,toolsVisible:getComputedStyle(tools).display!=='none'};
+});
+for(const prop of ['logoX','logoY','logoWidth','menuX','menuY','menuWidth'])
+ assert(Math.abs(checkoutHeader[prop]-homeHeaderGeometry[prop])<1,
+   'Checkout and Home share '+prop+' at '+width+'px: '+JSON.stringify({checkoutHeader,homeHeaderGeometry}));
+assert.equal(checkoutHeader.toolsVisible,homeHeaderGeometry.toolsVisible,
+ 'Header action visibility is identical on Home and Checkout at '+width);
+if(width<=700){
+ assert.equal(checkoutHeader.toolsVisible,false,'Compact mobile checkout header keeps store tools in menu');
+ assert(checkoutHeader.logoX<checkoutHeader.menuX,'Logo stays left and Menu stays right');
+}else{
+ assert.equal(checkoutHeader.toolsVisible,true,'Desktop tools remain in the desktop header');
+}
+await page.goto('https://store.test/checkout/');
 }
 await page.locator('#email').fill('example@test.com');
 assert.equal(await page.locator('#email').inputValue(),'example@test.com');

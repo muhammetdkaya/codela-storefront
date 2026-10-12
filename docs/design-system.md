@@ -344,3 +344,19 @@ create parallel stores or second navigation listeners.
   database-customized Woo checkout template can override theme files; do
   not overwrite customized templates without inspection or user confirmation.
 - [GitHub Actions 38174815133](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38174815133) passed validate (PHP, JS, browser layout) and independent theme deploy for source `2d45345`. Actual Safari/checkout gateway testing remains outstanding; automation does not prove a real order placement.
+
+## 0.1.49 — Shared Header composition with Checkout
+
+- A checkout page has no mobile dock (intentional). It nevertheless uses
+  precisely the mobile compact Header layout from ordinary dock-enabled pages:
+  logo left and Menu on the right. This is a **mode**, not a second header.
+- In `codela_sf_header()`, the checkout-only `has-checkout-header` mode is
+  selected when `is_checkout()` is true and the existing `has-mobile-dock`
+  mode is false; both modes share the **same** mobile header selector rules in
+  `navigation.css`. No new logo, menu, icons, buttons, or overlay controllers.
+- On desktop, normal header search/cart/account tools remain available;
+  manually disabling the mobile dock on other pages continues to show its
+  existing alternate layout.
+- Checkout browser regression compares Home and Checkout **computed header
+  geometry** at 320, 390, 700, 1024 and 1360px, including icon visibility.
+  Woo checkout native markup and gateway mechanics remain untouched.
