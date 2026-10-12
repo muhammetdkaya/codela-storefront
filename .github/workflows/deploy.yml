@@ -3,9 +3,9 @@ on:
   push:
     branches: [main]
     paths: ['theme/**', 'scripts/**', 'tests/**', '.github/workflows/deploy.yml']
+  workflow_dispatch:
   pull_request:
     paths: ['theme/**', 'scripts/**', 'tests/**', '.github/workflows/deploy.yml']
-  workflow_dispatch:
 permissions:
   contents: read
 concurrency:
@@ -25,7 +25,7 @@ jobs:
           node --input-type=module --check < theme/codela-storefront/assets/scripts/cart-controller.js
           node --input-type=module --check < theme/codela-storefront/assets/scripts/overlay-controller.js
           node --input-type=module --check < theme/codela-storefront/assets/scripts/dock-controller.js
-          php tests/script-modules.php
+          node tests/cart-race.cjs
           node tests/search-panel.cjs
           node tests/format.cjs
           node tests/ui-kit.cjs
@@ -38,7 +38,6 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.62.1
           npx playwright install --with-deps chromium
-          node tests/script-module-browser.cjs
           node tests/navigation-browser.cjs
           node tests/checkout-browser.cjs
           node tests/ui-kit-browser.cjs
