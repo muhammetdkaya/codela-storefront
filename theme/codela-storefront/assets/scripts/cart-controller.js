@@ -6,15 +6,17 @@ import { escape, decode, safeURL, money } from 'codela-storefront/format';
 
 export function createCartController({ $, config, t, getCurrent, getDialog }) {
     let cartNonce = '', cartData = null, cartPending = null, mutating = false, cartRevision = 0;
+    let dirty = false, externalRevision = 0, readAbort = null, bound = false, refreshScheduled = false;
 
-    async function requestCart(path = '', payload = null) {
+    async function requestCart(path = '', payload = null, { signal, acceptNonce = true } = {}) {
         const response = await fetch(config().api + 'cart' + path, {
-            method:payload ? 'POST':'GET', credentials:'same-origin', cache:'no-store',
+            method:payload ? 'POST':'GET', credentials:'same-origin', cache:'no-store', signal,
             headers:payload ? {'Content-Type':'application/json', 'Nonce':cartNonce} : {},
             body:payload ? JSON.stringify(payload) : undefined,
         });
-        const nonce = response.headers.get('Nonce'); if (nonce) cartNonce = nonce;
+        const nonce = response.headers.get('Nonce');
         const data = await response.json();
+        if (nonce && (typeof acceptNonce === 'function' ? acceptNonce() : acceptNonce)) cartNonce = nonce;
         if (!response.ok) { const error = new Error(decode(data.message || t('Something went wrong. Please try again.'))); error.code = data.code; error.cart = data.data?.cart; throw error; }
         return data;
     }
@@ -36,29 +38,61 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
         $('#sf-subtotal').textContent = money(subtotal,data.totals);
         if (getCurrent() === 'cart') $('#sf-status').textContent = (data.errors || []).map(e => decode(e.message)).join(' ');
     }
+    function scheduleRefresh() {
+        if (refreshScheduled || mutating) return;
+        refreshScheduled = true;
+        queueMicrotask(() => {
+            refreshScheduled = false;
+            if (!mutating && dirty) void refreshCart();
+        });
+    }
     async function refreshCart() {
-        if (mutating) return;
+        if (mutating) { dirty = true; return; }
         if (cartPending) return cartPending;
         if (!cartData) $('#sf-cart-items').textContent = t('Loading…');
-        cartPending = (async () => {
+        dirty = false;
+        const generation = cartRevision;
+        const abort = new AbortController();
+        readAbort = abort;
+        const pending = Promise.resolve().then(async () => {
             try {
-                // Ignore a stale response if another Woo cart event arrived mid-GET.
-                let data;
-                while (true) {
-                    const revision = cartRevision;
-                    data = await requestCart();
-                    if (revision === cartRevision) break;
+                // A GET is never allowed to overwrite a newer write or invalidation.
+                const data = await requestCart('', null, {
+                    signal: abort.signal,
+                    acceptNonce: false,
+                });
+                if (generation !== cartRevision || mutating || abort.signal.aborted) {
+                    dirty = true;
+                    return;
                 }
                 paintCart(data);
+            } catch (error) {
+                if (generation !== cartRevision || mutating || abort.signal.aborted) {
+                    if (!mutating) dirty = true;
+                    return;
+                }
+                if (!cartData) {
+                    $('#sf-cart-items').innerHTML = `<p>${escape(t('Something went wrong. Please try again.'))}</p><button class="sf-retry-cart sf-ui-pressable">${escape(t('Retry'))}</button><p><a href="${safeURL(config().cart)}">${escape(t('Your cart'))}</a></p>`;
+                    $('.sf-cart-bottom').hidden = true;
+                } else if (getCurrent() === 'cart') {
+                    $('#sf-status').textContent = t('Something went wrong. Please try again.');
+                }
+            } finally {
+                if (readAbort === abort) readAbort = null;
+                if (cartPending === pending) cartPending = null;
+                if (dirty && !mutating) scheduleRefresh();
             }
-            catch { $('#sf-cart-items').innerHTML = `<p>${escape(t('Something went wrong. Please try again.'))}</p><button class="sf-retry-cart sf-ui-pressable">${escape(t('Retry'))}</button><p><a href="${safeURL(config().cart)}">${escape(t('Your cart'))}</a></p>`; $('.sf-cart-bottom').hidden = true; }
-            finally { cartPending = null; }
-        })();
-        return cartPending;
+        });
+        cartPending = pending;
+        return pending;
     }
     async function changeCart(button) {
         if (mutating) return;
         mutating = true;
+        cartRevision++;
+        readAbort?.abort();
+        dirty = false;
+        const externalAtStart = externalRevision;
         const key = button.dataset.remove || button.dataset.key;
         const isRemove = !!button.dataset.remove;
         const payload = isRemove ? {key} : {key, quantity:Number(button.dataset.qty)};
@@ -68,20 +102,21 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
         $('.sf-cart-bottom').inert = true;
         try {
             // A nonce is read fresh from the session GET, never embedded in cacheable HTML.
-            if (!cartNonce) await requestCart();
+            if (!cartNonce) await requestCart('', null, {acceptNonce:() => mutating});
             let data;
             try { data = await requestCart(isRemove ? '/remove-item' : '/update-item',payload); }
             catch(error) {
                 if (!['woocommerce_rest_invalid_nonce','woocommerce_rest_missing_nonce'].includes(error.code)) throw error;
-                await requestCart(); data = await requestCart(isRemove ? '/remove-item' : '/update-item',payload);
+                await requestCart('', null, {acceptNonce:() => mutating}); data = await requestCart(isRemove ? '/remove-item' : '/update-item',payload);
             }
             paintCart(data); if (getCurrent() === 'cart') $('#sf-status').textContent = t('Cart updated.');
         } catch(error) {
             if (error.cart) paintCart(error.cart);
-            else { try { paintCart(await requestCart()); } catch { if (cartData) paintCart(cartData); } }
+            else { try { paintCart(await requestCart('', null, {acceptNonce:() => mutating})); } catch { if (cartData) paintCart(cartData); } }
             if (getCurrent() === 'cart') $('#sf-status').textContent = error.message;
         } finally {
             mutating = false; $('#sf-cart').setAttribute('aria-busy','false'); $('.sf-cart-bottom').inert = false;
+            if (externalRevision !== externalAtStart || dirty) { dirty = true; scheduleRefresh(); }
             if (getCurrent() === 'cart' && getDialog()?.open) {
                 const candidate = [...$('#sf-cart').querySelectorAll('[data-key]')].find(b => b.dataset.key === key && b.dataset.qty === focusQuantity && !b.disabled) || $('#sf-cart button:not(:disabled)') || $('.sf-close');
                 candidate.focus({preventScroll:true});
@@ -91,12 +126,18 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
 
     function invalidate() {
         cartRevision++;
-        cartData = null;
-        refreshCart();
+        externalRevision++;
+        dirty = true;
+        if (mutating) return;
+        readAbort?.abort();
+        if (!cartPending) scheduleRefresh();
     }
 
     function bind() {
+        if (bound) return;
+        bound = true;
         document.body.addEventListener('wc-blocks_added_to_cart', invalidate);
+        document.body.addEventListener('wc-blocks_removed_from_cart', invalidate);
         if (window.jQuery) {
             window.jQuery(document.body).on(
                 'added_to_cart removed_from_cart updated_wc_div', invalidate
