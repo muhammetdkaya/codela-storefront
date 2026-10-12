@@ -7,6 +7,61 @@ import { escape, decode, safeURL, money } from 'codela-storefront/format';
 export function createCartController({ $, config, t, getCurrent, getDialog }) {
     let cartNonce = '', cartData = null, cartPending = null, mutating = false, cartRevision = 0;
     let dirty = false, externalRevision = 0, readAbort = null, bound = false, refreshScheduled = false;
+    let wooStore = null, wooSnapshot = '', wooRefresh = null, wooRefreshDirty = false;
+
+    // Observe only cart contents, not unrelated wp.data updates or customer fields.
+    function cartSignature(data) {
+        if (!data) return '';
+        return JSON.stringify([
+            data.items || [], data.totals || {}, data.coupons || [],
+            data.itemsCount ?? data.items_count ?? 0,
+        ]);
+    }
+    function bindWooStore() {
+        if (wooStore) return;
+        const registry = window.wp?.data;
+        const store = window.wc?.wcBlocksData?.cartStore;
+        if (!store || !registry?.select || !registry?.subscribe || !registry?.dispatch || !registry?.resolveSelect) return;
+        const selectors = registry.select(store);
+        const actions = registry.dispatch(store);
+        if (!selectors?.getCartData || !actions?.invalidateResolution) return;
+        wooStore = { registry, store };
+        wooSnapshot = cartSignature(selectors.getCartData());
+        registry.subscribe(() => {
+            const next = cartSignature(selectors.getCartData());
+            if (next === wooSnapshot) return;
+            wooSnapshot = next;
+            if (next !== cartSignature(cartData)) invalidate();
+        }, store);
+    }
+    function refreshWooStore() {
+        // Use Woo's resolver/normalization pipeline; never assign REST JSON to its store.
+        if (!wooStore) return;
+        if (wooRefresh) { wooRefreshDirty = true; return; }
+        {
+            wooRefreshDirty = false;
+            const { registry, store } = wooStore;
+            wooRefresh = Promise.resolve().then(async () => {
+                await registry.dispatch(store).invalidateResolution('getCartData', []);
+                await registry.resolveSelect(store).getCartData();
+            }).catch(() => {
+                // A failed secondary consumer refresh must not retry a successful POST.
+            }).finally(() => {
+                wooRefresh = null;
+                if (wooRefreshDirty) refreshWooStore();
+            });
+        }
+    }
+    function notifyWooConsumers() {
+        refreshWooStore();
+        // Keep third-party event handler errors outside the mutation/recovery path.
+        Promise.resolve().then(() => {
+            if (!window.jQuery) return;
+            const body = window.jQuery(document.body);
+            if ($('.woocommerce-cart-form')) body.trigger('wc_update_cart');
+            if ($('form.checkout')) body.trigger('update_checkout');
+        }).catch(() => {});
+    }
 
     async function requestCart(path = '', payload = null, { signal, acceptNonce = true } = {}) {
         const response = await fetch(config().api + 'cart' + path, {
@@ -110,6 +165,7 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
                 await requestCart('', null, {acceptNonce:() => mutating}); data = await requestCart(isRemove ? '/remove-item' : '/update-item',payload);
             }
             paintCart(data); if (getCurrent() === 'cart') $('#sf-status').textContent = t('Cart updated.');
+            notifyWooConsumers();
         } catch(error) {
             if (error.cart) paintCart(error.cart);
             else { try { paintCart(await requestCart('', null, {acceptNonce:() => mutating})); } catch { if (cartData) paintCart(cartData); } }
@@ -140,9 +196,13 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
         document.body.addEventListener('wc-blocks_removed_from_cart', invalidate);
         if (window.jQuery) {
             window.jQuery(document.body).on(
-                'added_to_cart removed_from_cart updated_wc_div', invalidate
+                'added_to_cart removed_from_cart updated_wc_div updated_checkout', invalidate
             );
         }
+        bindWooStore();
+        // Classic footer scripts normally precede module init. One load retry
+        // supports deferred Woo registration without polling or loading Blocks on Home.
+        window.addEventListener('load', bindWooStore, {once:true});
         window.addEventListener('pageshow',event => {
             if (event.persisted) invalidate();
         });
@@ -158,3 +218,4 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
         invalidate,
     };
 }
+
