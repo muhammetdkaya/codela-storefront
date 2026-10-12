@@ -26,6 +26,7 @@ jobs:
           node --input-type=module --check < theme/codela-storefront/assets/scripts/overlay-controller.js
           node --input-type=module --check < theme/codela-storefront/assets/scripts/dock-controller.js
           node tests/cart-race.cjs
+          node tests/cart-sync.cjs
           node tests/search-panel.cjs
           node tests/format.cjs
           node tests/ui-kit.cjs
@@ -95,4 +96,5 @@ jobs:
           path: ${{ runner.temp }}/storefront-rollback/
           if-no-files-found: ignore
           retention-days: 14
+
 

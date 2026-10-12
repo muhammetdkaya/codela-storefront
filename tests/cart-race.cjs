@@ -9,19 +9,20 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
 function snapshot(quantity) {
  return {items_count:quantity,items:quantity?[{key:'k',name:'Product',quantity,permalink:'/p',images:[],variation:[],totals:{line_subtotal:'100',line_subtotal_tax:'0',currency_code:'TRY',currency_minor_unit:2}}]:[],totals:{total_items:String(quantity*100),total_items_tax:'0',currency_code:'TRY',currency_minor_unit:2}};
 }
-function setup() {
+function setup(extend = () => {}) {
  const requests=[], listeners={}, nodes={};
  const element=()=>({innerHTML:'',textContent:'',hidden:false,inert:false,dataset:{},disabled:false,setAttribute(){},querySelectorAll(){return []},focus(){}});
  for(const id of ['#sf-cart-items','.sf-cart-bottom','#sf-subtotal','#sf-status','#sf-cart','.sf-close'])nodes[id]=element();
  const context={console,AbortController,Promise,queueMicrotask,fetch:(url,options)=>{const d=deferred();requests.push({url,options,...d});return d.promise;},
  document:{querySelectorAll:()=>[],body:{addEventListener:(name,fn)=>{listeners[name]??=[];listeners[name].push(fn);}}},
  window:{addEventListener:()=>{}},escape:x=>x,decode:x=>x,safeURL:x=>x,money:x=>String(x)};
+ extend(context, nodes);
  vm.createContext(context);vm.runInContext(source+'\nthis.createCartController=createCartController;',context);
  const controller=context.createCartController({$:id=>nodes[id],config:()=>({api:'/api/',cart:'/cart'}),t:x=>x,getCurrent:()=> 'cart',getDialog:()=>({open:false})});
  const answer=(index,data,nonce='nonce-'+index,ok=true,code)=>requests[index].resolve({ok,headers:{get:key=>key==='Nonce'?nonce:null},json:async()=>ok?data:{code,message:'failure'}});
  return {controller,requests,nodes,listeners,answer};
 }
-(async()=>{
+if (require.main === module) (async()=>{
  // An old GET must never replace the successful POST or its nonce.
  {
  const x=setup();const read=x.controller.refresh();await tick();assert.equal(x.requests.length,1);
@@ -54,3 +55,6 @@ function setup() {
  }
  console.log('Cart race regression tests passed');
 })().catch(e=>{console.error(e);process.exitCode=1;});
+
+module.exports = {setup, snapshot, tick};
+
