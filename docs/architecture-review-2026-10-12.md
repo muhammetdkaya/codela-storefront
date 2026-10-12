@@ -3,6 +3,8 @@
 Tarih: 12 Ekim 2026 (Europe/Istanbul)  
 Kapsam: yalnız inceleme ve dokümantasyon; uygulama kodunda düzeltme yapılmadı.
 
+**Uygulama için:** [Dosya bazlı çözüm rehberi, iş paketleri ve kabul testleri](architecture-remediation-guide-2026-10-12.md). 12 Ekim'de kullanıcı isteğiyle eklendi; henüz düzeltme uygulandığı anlamına gelmez.
+
 ## Karar
 
 **Mevcut temel korunmalı. Yeni sayfa/özellik geliştirmesinden önce kısa bir sağlamlaştırma aşaması yapılmalı; temayı yeniden yazmak gerekmiyor.** Öncelik: alt JS modüllerinin önbellek sürümlemesi, sepet GET/POST yarışının giderilmesi ve WooCommerce'in diğer sepet arayüzleriyle senkronizasyon. Bunları gerçek WordPress/WooCommerce üzerinde doğrulayıp geliştirmeye devam etmek uygun.

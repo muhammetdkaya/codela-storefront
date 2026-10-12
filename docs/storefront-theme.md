@@ -1,3 +1,7 @@
+## 12 Ekim 2026 — uygulayıcı için ayrıntılı yönlendirme
+
+[Mimari sağlamlaştırma uygulama rehberi](architecture-remediation-guide-2026-10-12.md) eklendi. F1–F7 için dosyalar, önerilen çözüm, korunacak sözleşmeler, yarış/önbellek/Woo entegrasyon testleri ve kapanış ölçütleri belirtildi. Bu çalışma yalnız dokümantasyondur; uygulama sürümü ve kod değişmedi. A/B doğruluk düzeltmeleri, C gerçek entegrasyon, D CSS sınırı, E ölçümlü hız, F belge düzeni sırasıyla ele alınmalı.
+
 ## 12 Ekim 2026 — bağımsız mimari inceleme
 
 [Ayrıntılı rapor: WordPress API, hız, ortak UI ve sepet tutarlılığı](architecture-review-2026-10-12.md). 0.1.49 uygulaması incelendi; kod veya sürüm değiştirilmedi. Mevcut temel üzerinde devam etmek uygun; önce rapordaki F1–F3 doğruluk/uyumluluk bulguları ve gerçek WP/Woo kabul testi ele alınmalı. Test kanıtları, ölçülmeyen alanlar ve önerilen sıra raporda ayrı yazıldı. Bu bağlantının altındaki eski sürüm notları tarihçedir; güncel durum için AGENTS.md başını ve daha yeni kayıtları esas alın.

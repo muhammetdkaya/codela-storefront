@@ -1,3 +1,7 @@
+## Sağlamlaştırma uygulama rehberi — 12 Ekim 2026
+
+Mimari rapordaki sorunların dosya bazlı çözümü, işlem sırası ve zorunlu kabul testleri [uygulama rehberinde](docs/architecture-remediation-guide-2026-10-12.md). Uygulama görevi verildiğinde önce güncel kodda bulguları doğrulayın; A (Script Modules/cache) → B (sepet yarışları) → C (Woo senkronizasyonu ve gerçek entegrasyon) sırasını izleyin. D–F paketleri CSS sınırı, ölçümlü hız ve belge düzenidir. Bu ek yalnız yönlendirmedir; düzeltmeler yapılmış değildir. Onaylı UI'ı ve eşzamanlı çalışmayı koruyun; her bulguyu commit/test/yayın kanıtıyla kapatın.
+
 ## Mimari inceleme — 12 Ekim 2026 (yalnız rapor)
 
 Yeni tema çalışmasından önce [mimari / WordPress API / hız incelemesini](docs/architecture-review-2026-10-12.md) okuyun. İncelenen uygulama 0.1.49 / `c015e9c`; son kontrol HEAD `51f0fdc` (yalnız sonraki belge değişiklikleri). **Temel korunmalı; sonraki geniş özellik turundan önce alt JS modül cache sürümlemesi (F1), sepet GET/POST yarışı (F2) ve Woo sepet senkronizasyonu (F3) ele alınmalı.** Rapor düzeltme/yayın yapıldığı anlamına gelmez; kullanıcı bu çalışmada yalnız inceleme istedi. Bulguları güncel kodda yeniden doğrulayın ve kapanışlarını commit/test kanıtıyla kaydedin. Eşzamanlı çalışmanın değişikliklerini geri almayın; eski tarihçedeki “sıradaki iş” satırlarını yeni onayların önüne geçirmeyin. Diğer mevcut kurallar ve sürüm kayıtları aşağıda korunmuştur.
