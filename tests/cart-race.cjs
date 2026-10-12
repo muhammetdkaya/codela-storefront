@@ -47,7 +47,7 @@ function setup() {
  {
  const x=setup();x.controller.bind();x.controller.bind();await tick();
  assert.equal(x.requests.length,1);
- assert.equal(x.listeners.wc_blocks_added_to_cart,undefined);
+ assert.equal(x.listeners['wc_blocks_added_to_cart'],undefined);
  assert.equal(x.listeners.wc-blocks_added_to_cart?.length,1);
  assert.equal(x.listeners.wc-blocks_removed_from_cart?.length,1);
  x.answer(0,snapshot(0));await tick();
