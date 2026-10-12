@@ -14,7 +14,7 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
             headers:payload ? {'Content-Type':'application/json', 'Nonce':cartNonce} : {},
             body:payload ? JSON.stringify(payload) : undefined,
         });
-        const nonce = response.headers.get('Nonce'); if (nonce && acceptNonce) cartNonce = nonce;
+        const nonce = response.headers.get('Nonce'); if (nonce && (typeof acceptNonce === 'function' ? acceptNonce() : acceptNonce)) cartNonce = nonce;
         const data = await response.json();
         if (!response.ok) { const error = new Error(decode(data.message || t('Something went wrong. Please try again.'))); error.code = data.code; error.cart = data.data?.cart; throw error; }
         return data;
@@ -53,7 +53,7 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
         const generation = cartRevision;
         const abort = new AbortController();
         readAbort = abort;
-        const pending = (async () => {
+        const pending = Promise.resolve().then(async () => {
             try {
                 // A GET is never allowed to overwrite a newer write or invalidation.
                 const data = await requestCart('', null, {
@@ -64,7 +64,6 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
                     dirty = true;
                     return;
                 }
-                // The nonce is intentionally acquired in the controlled write path.
                 paintCart(data);
             } catch (error) {
                 if (generation !== cartRevision || mutating || abort.signal.aborted) {
@@ -82,7 +81,7 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
                 if (cartPending === pending) cartPending = null;
                 if (dirty && !mutating) scheduleRefresh();
             }
-        })();
+        });
         cartPending = pending;
         return pending;
     }
