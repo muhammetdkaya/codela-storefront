@@ -5,7 +5,7 @@
 
 ## Tek güncel devam noktası — 12 Ekim 2026 / 0.1.52
 
-- **Tema 0.1.51 → 0.1.52:** ortak Button/IconButton yüzey ve basma tepkisi tamamlandı; bu kaynak kaydında CI/dağıtım henüz bekliyor. Kod ile canlı yayın ayrı doğrulanacak.
+- **Tema 0.1.51 → 0.1.52 canlıda:** ortak Button/IconButton yüzey ve basma tepkisi yayınlandı. Kaynak [32fc618](https://github.com/muhammetdkaya/codela-storefront/commit/32fc6181fd99b231e67f96b25340d0dff79cdaaa); [Actions 38300950226](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38300950226): `validate=success`, `deploy=success` ve gerçek **Deploy Storefront only=success**.
 - Normal Button/pressable %2,5, IconButton %8 büyür; 110 ms basma, 360 ms esnek bırakma. İkon tek başına küçülmez; bütün kontrol birlikte hareket eder. Şeffaf ton, sabit 20px blur ve ışık katmanı ortak tokens/components içinde. Yeni çalışma zamanı JS'i, istek veya bağımlılık yok.
 - Yerel Chromium: gerçek mouse/klavye/dokunma aktivasyonu, tek tıklama, yerleşim ölçüleri, odak, disabled, reduced-motion/transparency ve forced-colors kontrolleri; ayrıca navigation, checkout, account ve UI preview geçti. Node regresyonları ve 22 paket testi başarılı. Fiziksel mobil Safari kabulü ve gerçek performans ölçümü yapılmadı.
 - 0.1.51 sepet senkronizasyonu ve içerik hash'li WordPress modülleri korunur. Önceki canlı kanıtı: [Actions 38266829194](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38266829194). Bu çalışma F3/F4/F5/F6'yı kapatmaz.
