@@ -48,7 +48,7 @@
     margin:0 auto;
     min-height:58px;
     border-radius:999px;
-    color:#28282c;
+    color:var(--sf-ui-glass-ink);
     isolation:isolate;
     touch-action:pan-y;
     -webkit-user-select:none;
@@ -104,7 +104,7 @@
     min-width:0;
     min-height:48px;
     border-radius:999px;
-    color:#28282c;
+    color:var(--sf-ui-glass-ink);
     background:transparent;
     text-decoration:none!important;
     position:relative;
@@ -123,8 +123,8 @@
   .sf-mobile-dock .sf-dock-item:active .sf-icon{transform:scale(1.06)}
   .sf-mobile-dock.is-scrubbing .sf-dock-item.is-preview .sf-icon{transform:translateY(-1px) scale(1.08)}
   .sf-mobile-dock .sf-dock-item>span:last-child{
-    font-size:10px;
-    font-weight:500;
+    font-size:var(--sf-ui-nav-label-size);
+    font-weight:var(--sf-ui-nav-label-weight);
     line-height:1.25;
     text-align:center;
     white-space:nowrap;

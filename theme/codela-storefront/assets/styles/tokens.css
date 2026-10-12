@@ -9,12 +9,12 @@
   --sf-ui-surface:#ffffff;
   --sf-ui-surface-muted:#f3f3f3;
   /* Shared floating surface: brand, header actions, menu and dialog close. */
-  --sf-ui-glass-surface:rgba(250,250,252,.22);
+  --sf-ui-glass-surface:rgba(250,250,252,.28);
   --sf-ui-glass-opaque:#f5f5f6;
   --sf-ui-glass-border:transparent;
   /* A light top edge, not a solid perimeter stroke. */
   --sf-ui-glass-shadow:0 2px 10px rgba(0,0,0,.035),inset 0 .5px 0 rgba(255,255,255,.35),inset 0 -.5px 0 rgba(35,35,40,.10);
-  --sf-ui-glass-ink:#28282c;
+  --sf-ui-glass-ink:#1c1c1e;
   --sf-ui-control-soft:var(--sf-ui-glass-surface);
   --sf-ui-header-surface:var(--sf-ui-glass-surface);
   --sf-ui-header-border:var(--sf-ui-glass-border);
@@ -25,13 +25,15 @@
   --sf-ui-border:var(--sf-line,#deded5);
   --sf-ui-hit:44px;
   --sf-ui-icon:22px;
+  --sf-ui-nav-label-size:11px;
+  --sf-ui-nav-label-weight:600;
   --sf-ui-icon-close:22px;
   --sf-ui-icon-clear:12px;
   --sf-ui-action-height:54px;
   --sf-ui-control-radius:var(--cdl-ct-radius,12px);
   --sf-ui-pill:999px;
   /* Shared control material: tint preserves contrast over changing content. */
-  --sf-ui-glass-blur:6px;
+  --sf-ui-glass-blur:8px;
   --sf-ui-glass-saturation:150%;
   /* Diffuse dark backdrops while retaining the shared dark foreground. */
   --sf-ui-glass-contrast:.35;

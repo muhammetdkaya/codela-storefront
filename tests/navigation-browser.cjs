@@ -65,8 +65,15 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
 
  // Fixed header leaves text clearance, while the home hero begins at the top.
  assert.equal(await page.locator('.sf-header').evaluate(el=>getComputedStyle(el).position),'fixed');
- assert.equal(surfaces.menuBg,'rgba(250, 250, 252, 0.22)','Shared surfaces are light');
+ assert.equal(surfaces.menuBg,'rgba(250, 250, 252, 0.28)','Shared surfaces are light');
  assert.equal(await page.locator('.sf-dock-surface').evaluate(el=>getComputedStyle(el).borderTopColor),'rgba(0, 0, 0, 0)','Dock has no solid perimeter stroke');
+ const dockLabels=await page.locator('.sf-dock-item>span:last-child').evaluateAll(xs=>xs.map(el=>({font:getComputedStyle(el).fontSize,weight:getComputedStyle(el).fontWeight,color:getComputedStyle(el).color,clipped:el.scrollWidth>el.clientWidth})));
+ for(const label of dockLabels){
+  assert.equal(label.font,'11px','Dock label is readable');
+  assert.equal(label.weight,'600','Dock label has sufficient stroke weight');
+  assert.equal(label.color,'rgb(28, 28, 30)','Dock foreground uses shared dark ink');
+  assert(!label.clipped,'Dock label fits its layout slot');
+ }
  await page.evaluate(()=>{
    document.body.classList.add('home');
    const main=document.querySelector('main');main.classList.add('sf-content');main.style.padding='0';

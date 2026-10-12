@@ -1,6 +1,6 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.54. Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.55. Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
 
 ## One design, not one enormous universal widget
@@ -173,6 +173,18 @@ functionality or keyboard accessibility.
 - Existing translucency, backdrop, press/release and dock gestures remain.
   UI/navigation browser checks verify the floating perimeter is transparent;
   private text/color backdrop references support visual review.
+
+## Accepted material readability (0.1.55)
+
+- User accepted the borderless appearance; preserve that design. Current
+  shared floating material uses 28% tint and 8px static blur, slightly
+  separating foreground from detailed images without making it opaque.
+- `--sf-ui-glass-ink` is #1c1c1e. Dock labels use shared navigation typography
+  tokens (11px, weight 600); all dock items inherit the same glass ink.
+  Geometry, touch targets and gestures remain unchanged.
+- Browser checks verify label size, weight, color and available slot width;
+  private references place real fixed controls over text/color backgrounds.
+  Test physical-device readability separately from automated source checks.
 
 ## Contribution checklist
 
