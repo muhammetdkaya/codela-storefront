@@ -17,6 +17,7 @@ const sample=execFileSync(process.env.PHP_BIN||'php',['tests/render-ui.php'],{en
    const properties=await soft.evaluate(el=>({radius:getComputedStyle(el).borderRadius,bg:getComputedStyle(el).backgroundColor}));
    assert.equal(properties.bg,'rgba(250, 250, 252, 0.22)','Soft icon button uses shared floating surface token');
    assert.equal(properties.radius,'999px','Icon button has shared circular shape');
+   assert.equal(await soft.evaluate(el=>getComputedStyle(el).borderTopColor),'rgba(0, 0, 0, 0)','Floating control has no solid perimeter stroke');
    const secondary=page.locator('button.sf-ui-button--secondary');
    assert(await secondary.isDisabled(),'Disabled button cannot activate');
    const busy=page.locator('button.sf-ui-button--quiet');

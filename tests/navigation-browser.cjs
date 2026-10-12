@@ -66,6 +66,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  // Fixed header leaves text clearance, while the home hero begins at the top.
  assert.equal(await page.locator('.sf-header').evaluate(el=>getComputedStyle(el).position),'fixed');
  assert.equal(surfaces.menuBg,'rgba(250, 250, 252, 0.22)','Shared surfaces are light');
+ assert.equal(await page.locator('.sf-dock-surface').evaluate(el=>getComputedStyle(el).borderTopColor),'rgba(0, 0, 0, 0)','Dock has no solid perimeter stroke');
  await page.evaluate(()=>{
    document.body.classList.add('home');
    const main=document.querySelector('main');main.classList.add('sf-content');main.style.padding='0';

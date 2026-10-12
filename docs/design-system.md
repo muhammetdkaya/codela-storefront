@@ -1,6 +1,6 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.53. Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.54. Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
 
 ## One design, not one enormous universal widget
@@ -160,6 +160,19 @@ functionality or keyboard accessibility.
   because a white background alone cannot demonstrate translucency.
 - No new runtime script, listener, request or library. Physical Safari visual
   acceptance and measured rendering cost remain to be checked.
+
+## Reference edge refinement (0.1.54)
+
+- User references and the actual device screenshot showed the solid white
+  perimeter and broad shadow made the floating controls look outlined.
+  The shared glass border is now transparent (layout footprint unchanged).
+  A half-pixel top/bottom light edge and a weaker diffuse shadow provide depth.
+- Header, soft IconButton and Dock consume the same tokens. Do not add
+  per-page border/shadow overrides. Keep form-secondary borders, keyboard
+  focus outlines and forced-colors accessibility boundaries independent.
+- Existing translucency, backdrop, press/release and dock gestures remain.
+  UI/navigation browser checks verify the floating perimeter is transparent;
+  private text/color backdrop references support visual review.
 
 ## Contribution checklist
 
