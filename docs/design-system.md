@@ -1,6 +1,6 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; production theme 0.1.50. Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.52. Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
 
 ## One design, not one enormous universal widget
@@ -115,6 +115,33 @@ Do not equate pressed, selected, focused, loading and disabled states.
 Each is independently verifiable; animations must not be required for
 functionality or keyboard accessibility.
 
+## Shared control feedback and material (0.1.52)
+
+- Whole Button/pressable expands to 1.025; IconButton to 1.08. Engage is
+  110ms; release is 360ms with a small elastic settling curve. Native `:active`
+  drives ordinary controls; the browser owns touch activation timing. There
+  is no delayed click, synthetic activation, timer or new event listener.
+- Only transform transitions. Static gradients, inset light and 20px backdrop
+  blur provide depth; blur, filter and shadow are not animated. Dark actions
+  keep a 90% ink tint for readable white text; secondary controls keep 78%
+  surface tint. Floating header surfaces use the shared 72% light tint.
+- Keep 44px IconButton and 54px default action hit/layout dimensions. Motion
+  does not affect document flow. Existing compact size tokens remain valid.
+- Reduced motion turns expansion off. Reduced transparency and unsupported
+  backdrop filtering use opaque surfaces; forced colors keep native system
+  colors. Disabled/busy controls cannot expand. Native Woo submit semantics
+  and spinner pseudo-elements are preserved.
+- Dock gesture/selected capsule and Menu/X glyph transformation remain owned
+  by their existing controllers. No page-specific button animation or vendor
+  names in source identifiers. F5 must extend these adapters, not duplicate them.
+- Research references: [material interaction](https://developer.apple.com/videos/play/wwdc2025/219/)
+  and [control scale/bounce](https://developer.apple.com/videos/play/wwdc2025/284/).
+  This is a restrained web interpretation, not an implementation of native physics.
+- `tests/ui-kit-browser.cjs` exercises real pointer, keyboard and touch
+  activation, layout stability, settling, focus and accessibility preferences.
+  Physical-device Safari feel and F6 cold/warm/GPU measurements remain open;
+  CSS-only does not imply zero rendering cost.
+
 ## Contribution checklist
 
 1. Locate an existing primitive *before* writing HTML/CSS/JS.
@@ -133,7 +160,7 @@ functionality or keyboard accessibility.
 
 - Controller extraction and private CI UI Kit previews are already implemented; do not repeat them.
 - F5: move the remaining generic Woo button paint into scoped shared adapters, preserving the parallel Button/IconButton work and plugin account ownership.
-- F3/F4 synchronization is tracked in draft PR #16 and requires real WP/Woo acceptance before release.
+- F3 synchronization source was deployed in 0.1.51; real WP/Woo acceptance remains open (F3/F4).
 - F6: measure cold/warm and interaction performance before changing asset loading or blur.
 - Current state and deployment evidence live in AGENTS.md and docs/storefront-theme.md; dated notes below preserve prior decisions.
 

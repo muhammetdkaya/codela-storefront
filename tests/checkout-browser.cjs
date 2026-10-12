@@ -45,7 +45,7 @@ assert.equal(actual.header,1);assert.equal(actual.dock,0);
 assert(actual.inputHeight>=54,'Shared input height');
 assert(actual.buttonHeight>=54,'Shared button action height');
 assert.equal(actual.inputRadius,actual.buttonRadius,'Shared radius');
-assert.equal(actual.buttonBackground,'rgb(34, 35, 31)','Shared primary color');
+assert.equal(actual.buttonBackground,'color(srgb 0.133333 0.137255 0.121569 / 0.9)','Shared primary color');
 assert.equal(actual.summaryBackground,'rgb(243, 243, 243)','Shared muted surface');
 assert.equal(actual.submit,'submit','Native submit semantics');
 const checkoutHeader=await page.locator('.sf-header').evaluate(el=>{
@@ -83,3 +83,4 @@ assert.equal(await page.locator('[data-panel="cart"]').count(),1);
 console.log('Checkout header/no-dock, native fields, primary CTA, summary, 5 viewport sizes passed.');
 }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exit(1)});
+

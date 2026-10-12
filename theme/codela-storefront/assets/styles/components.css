@@ -24,15 +24,21 @@
   cursor:pointer;
   touch-action:manipulation;
   -webkit-tap-highlight-color:transparent;
-  transition:transform var(--sf-ui-motion-press) var(--sf-ui-ease-press);
+  transition:transform var(--sf-ui-motion-release) var(--sf-ui-ease-release);
 }
 .sf-shell .sf-ui-icon-button .sf-icon{
   width:var(--sf-ui-icon);
   height:var(--sf-ui-icon);
-  transition:transform var(--sf-ui-motion-press) var(--sf-ui-ease-press);
 }
-.sf-shell .sf-ui-icon-button:is(:active,.is-pressed) .sf-icon{transform:scale(.9)}
-.sf-shell .sf-ui-icon-button--soft:is(:active,.is-pressed){transform:scale(.96)}
+/* Move the complete control, never counter-scale its glyph or badge. */
+.sf-shell .sf-ui-icon-button:is(:active,.is-pressed):not(:disabled,[aria-disabled="true"],[aria-busy="true"]){
+  transform:scale(var(--sf-ui-scale-icon));
+  transition-duration:var(--sf-ui-motion-engage);
+  transition-timing-function:var(--sf-ui-ease-press);
+}
+.sf-shell .sf-ui-icon-button--soft:is(:active,.is-pressed):not(:disabled,[aria-disabled="true"],[aria-busy="true"]){
+  background-image:var(--sf-ui-glass-highlight-pressed)!important;
+}
 /* Shared icon badge geometry for Header and Dock. */
 .sf-shell .sf-ui-icon-badged{
   display:inline-flex;position:relative;align-items:center;justify-content:center;
@@ -52,11 +58,11 @@
 #sf-panel button.sf-ui-icon-button--soft{
   border:1px solid var(--sf-ui-glass-border);
   border-radius:var(--sf-ui-pill);
-  background:var(--sf-ui-glass-surface)!important;
+  background:var(--sf-ui-glass-highlight),var(--sf-ui-glass-surface)!important;
   color:var(--sf-ui-glass-ink);
   box-shadow:var(--sf-ui-glass-shadow)!important;
-  -webkit-backdrop-filter:blur(18px) saturate(140%);
-  backdrop-filter:blur(18px) saturate(140%);
+  -webkit-backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation));
+  backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation));
 }
 .sf-shell .sf-ui-icon-button--soft .sf-icon,
 #sf-panel button.sf-ui-icon-button--soft .sf-icon{
@@ -67,13 +73,6 @@
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   .sf-shell .sf-ui-surface,.sf-shell .sf-ui-icon-button--soft,
   #sf-panel button.sf-ui-icon-button--soft{background:var(--sf-ui-glass-opaque)!important}
-}
-@media(prefers-reduced-transparency:reduce){
-  .sf-shell .sf-ui-surface,.sf-shell .sf-ui-icon-button--soft,
-  #sf-panel button.sf-ui-icon-button--soft{
-    background:var(--sf-ui-glass-opaque)!important;
-    -webkit-backdrop-filter:none;backdrop-filter:none;
-  }
 }
 .sf-shell .sf-ui-icon-button--clear,
 #sf-panel button.sf-ui-icon-button--clear{
@@ -117,22 +116,32 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
   font-weight:inherit;
   text-decoration:none!important;
   cursor:pointer;
-  transition:filter var(--sf-ui-motion-press) var(--sf-ui-ease-press),
-    transform var(--sf-ui-motion-press) var(--sf-ui-ease-press);
+  touch-action:manipulation;
+  transition:transform var(--sf-ui-motion-release) var(--sf-ui-ease-release);
 }
 .sf-shell .sf-ui-button--primary,
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, #place_order),
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit],
 #sf-panel.is-account-panel .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register) button[type=submit]{
   background:var(--sf-ui-ink);
+  background:color-mix(in srgb,var(--sf-ui-ink) 90%,transparent);
+  background-image:var(--sf-ui-action-highlight);
   color:#fff;
+  box-shadow:var(--sf-ui-action-shadow);
+  -webkit-backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation));
+  backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation));
 }
 .sf-shell .sf-ui-button--primary .sf-icon{filter:invert(1)}
 .sf-shell .sf-ui-button--secondary,
 .woocommerce .sf-shell .sf-ui-button--secondary{
   background:var(--sf-ui-surface);
+  background:color-mix(in srgb,var(--sf-ui-surface) 78%,transparent);
+  background-image:var(--sf-ui-glass-highlight);
   color:var(--sf-ui-control-ink);
   border:1px solid var(--sf-ui-border);
+  box-shadow:var(--sf-ui-action-shadow);
+  -webkit-backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation));
+  backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation));
 }
 .sf-shell .sf-ui-button--quiet{
   background:transparent;
@@ -193,11 +202,34 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
 .sf-shell .sf-ui-button:active,
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, #place_order):active,
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit]:active,
-#sf-panel.is-account-panel .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register) button[type=submit]:active{transform:scale(.985);filter:brightness(1.08)}
-.sf-shell .sf-ui-pressable{
-  transition:transform var(--sf-ui-motion-press) var(--sf-ui-ease-press);
+#sf-panel.is-account-panel .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register) button[type=submit]:active{
+  transform:scale(var(--sf-ui-scale-action));
+  transition-duration:var(--sf-ui-motion-engage);
+  transition-timing-function:var(--sf-ui-ease-press);
 }
-.sf-shell .sf-ui-pressable:active:not(:disabled){transform:scale(.96)}
+.sf-shell .sf-ui-pressable:not(.sf-ui-nav-tab){
+  transition:transform var(--sf-ui-motion-release) var(--sf-ui-ease-release);
+}
+.sf-shell .sf-ui-pressable:active:not(.sf-ui-nav-tab):not(:disabled,[aria-disabled="true"],[aria-busy="true"]){
+  transform:scale(var(--sf-ui-scale-action));
+  transition-duration:var(--sf-ui-motion-engage);
+  transition-timing-function:var(--sf-ui-ease-press);
+}
+
+/* The press light is a static paint change. Only transform is animated;
+   blur/shadows never interpolate and native Woo spinner pseudo-elements stay free. */
+.sf-shell .sf-ui-button--primary:active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]),
+body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, #place_order):active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]),
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit]:active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]),
+#sf-panel.is-account-panel .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register) button[type=submit]:active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]){
+  background-image:var(--sf-ui-action-highlight-pressed);
+}
+.sf-shell .sf-ui-button--secondary:active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]){
+  background-image:var(--sf-ui-glass-highlight-pressed);
+}
+.sf-shell :is(.sf-ui-icon-button,.sf-ui-pressable):is(:disabled,[aria-disabled="true"],[aria-busy="true"]){
+  transform:none;
+}
 /* Tabs intentionally use the Navigation Controller's custom press/scrub
    behavior; the shared token defines response speed, not a second handler. */
 .sf-shell .sf-ui-nav-tab{touch-action:pan-y}
@@ -211,7 +243,40 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
   .sf-shell .sf-ui-spinner{animation:none!important}
 }
 
-
+/* Opaque materials keep contrast where backdrop sampling is unavailable. */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+.sf-shell .sf-ui-button--primary,
+body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, #place_order),
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit],
+#sf-panel.is-account-panel .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register) button[type=submit]{background:var(--sf-ui-ink);}
+.sf-shell .sf-ui-button--secondary,
+.woocommerce .sf-shell .sf-ui-button--secondary{background:var(--sf-ui-surface);}
+}
+@media(prefers-reduced-transparency:reduce){
+.sf-shell .sf-ui-button--primary,
+body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, #place_order),
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit],
+#sf-panel.is-account-panel .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register) button[type=submit]{background:var(--sf-ui-ink);-webkit-backdrop-filter:none;backdrop-filter:none;}
+.sf-shell .sf-ui-button--secondary,
+.woocommerce .sf-shell .sf-ui-button--secondary{background:var(--sf-ui-surface);-webkit-backdrop-filter:none;backdrop-filter:none;}
+.sf-shell .sf-ui-surface,
+.sf-shell .sf-ui-icon-button--soft,
+#sf-panel button.sf-ui-icon-button--soft{background:var(--sf-ui-glass-opaque)!important;-webkit-backdrop-filter:none;backdrop-filter:none;}
+}
+@media(forced-colors:active){
+.sf-shell .sf-ui-button--primary,
+body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, #place_order),
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit],
+#sf-panel.is-account-panel .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register) button[type=submit],
+.sf-shell .sf-ui-button--secondary,
+.woocommerce .sf-shell .sf-ui-button--secondary,
+.sf-shell .sf-ui-surface,
+.sf-shell .sf-ui-icon-button--soft,
+#sf-panel button.sf-ui-icon-button--soft{
+  background:ButtonFace!important;color:ButtonText!important;border:1px solid ButtonText;
+  box-shadow:none!important;-webkit-backdrop-filter:none;backdrop-filter:none;
+}
+}
 
 /* Native Woo input/layout adapter: labels occupy the existing field surface,
    using the same spacing, radius and action-height tokens as other UI controls.
@@ -275,3 +340,4 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
   box-shadow:var(--sf-ui-glass-shadow);
 }
 .sf-google-setup-notice[popover]::backdrop{background:transparent}
+

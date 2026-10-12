@@ -150,7 +150,7 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
         const parent=await page.locator('.sf-auth-social').boundingBox();
         assert(social.width>=parent.width-2,'Google Button fills same form width');
         assert(social.height>=52&&social.height<=54,'Google Button reuses compact UI Kit action height');
-        assert.equal(social.background,'rgb(255, 255, 255)','Google Button is neutral white, not a custom orange CTA');
+        assert.equal(social.background,'color(srgb 1 1 1 / 0.78)','Google Button is neutral white, not a custom orange CTA');
         assert.equal(social.radius,'12px','Google Button uses the shared control radius');
         if(social.border!=='1px')console.error('Secondary Button computed styles',social,await page.locator('.sf-auth-google').evaluate(el=>({
          classes:el.className, borderStyle:getComputedStyle(el).borderTopStyle,
@@ -259,3 +259,4 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
   console.log('Guest auth + vanilla Woo fallback + Codela signed-in account isolation: passed.');
  } finally {await browser.close();}
 })().catch(error=>{console.error(error);process.exit(1)});
+

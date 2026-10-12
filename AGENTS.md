@@ -1,12 +1,12 @@
 # Codela Storefront — güncel çalışma kuralları
 
-## Tek güncel devam noktası — 12 Ekim 2026 / 0.1.51
+## Tek güncel devam noktası — 12 Ekim 2026 / 0.1.52
 
-- **Tema 0.1.50 → 0.1.51 canlıda.** PR #16 birleştirildi; kaynak `62fe44d444fe440a7970ea2c8e11078a8011158a`. [Actions 38266829194](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38266829194): validate ve gerçek **Deploy Storefront only** başarılı; log `Storefront deployed; checks passed.`.
-- Woo Blocks mevcut cart store'undan tema rozeti/sepetine değişiklik takibi; başarılı tema mutasyonundan Woo resolver yenilemesine bağlantı; yalnız mevcut classic cart/checkout formlarına refresh eklendi. Yeni Blocks bundle/ikinci cart motoru yok. Eklenti değişmedi.
-- Yerel cart-race/cart-sync ve release CI PHP/Node/paket/Chromium kontrolleri başarılı. Kullanıcı, eksik gerçek WP/Woo kabulü açıklandıktan sonra “Canlıya al” dedi; bunun üzerine yayınlandı. Bu yetki test sonucu değildir: gerçek WP/Woo, gateway ve fiziksel Safari kabulü hâlâ açık.
-- Sıradaki iş: [gerçek entegrasyon senaryoları](docs/cart-sync-acceptance.md), ardından F5 ortak Woo düğme sınırı ve F6 performans ölçümü. F3 kodu yayınlandı; gerçek kabul tamamlanmadan F3/F4 bütünüyle kapandı denmez. F1/F2 önceki yayın kapsamıyla korunur.
-- F7 güncel durum/tarihçe ayrımı tamamlandı; eski kararlar [tarihçede](AGENTS-history-2026-10-12.md). Önceki “taslak PR #16” ve bekletme notları güncel görev değildir.
+- **Tema 0.1.51 → 0.1.52:** ortak Button/IconButton yüzey ve basma tepkisi tamamlandı; bu kaynak kaydında CI/dağıtım henüz bekliyor. Kod ile canlı yayın ayrı doğrulanacak.
+- Normal Button/pressable %2,5, IconButton %8 büyür; 110 ms basma, 360 ms esnek bırakma. İkon tek başına küçülmez; bütün kontrol birlikte hareket eder. Şeffaf ton, sabit 20px blur ve ışık katmanı ortak tokens/components içinde. Yeni çalışma zamanı JS'i, istek veya bağımlılık yok.
+- Yerel Chromium: gerçek mouse/klavye/dokunma aktivasyonu, tek tıklama, yerleşim ölçüleri, odak, disabled, reduced-motion/transparency ve forced-colors kontrolleri; ayrıca navigation, checkout, account ve UI preview geçti. Node regresyonları ve 22 paket testi başarılı. Fiziksel mobil Safari kabulü ve gerçek performans ölçümü yapılmadı.
+- 0.1.51 sepet senkronizasyonu ve içerik hash'li WordPress modülleri korunur. Önceki canlı kanıtı: [Actions 38266829194](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38266829194). Bu çalışma F3/F4/F5/F6'yı kapatmaz.
+- Sıradaki iş: yeni Button hissinin fiziksel cihaz kabulü; mevcut gerçek WP/Woo entegrasyon senaryoları, F5 Woo kapsam sınırı ve F6 ölçümü. F5 çalışması ortak basma/yüzey kurallarını kopyalamadan yeniden kullanmalı.
 
 ## Başlangıçta okunacaklar
 
@@ -21,7 +21,7 @@
 - Tüm tema düğmeleri `inc/ui.php`, `assets/styles/tokens.css`, `assets/styles/components.css` içindeki Button/IconButton/pressable sözleşmesini kullanır. Sayfa CSS'i yerleşim ve mevcut token override'larını sağlar; yeni kopya paint/pressed/focus kuralları eklemeyin.
 - Tema guest hesabı ve mağaza görünümünü yönetir. Oturum açmış Codela hesap/sipariş/adres/kargo paneli eklentiye aittir; `.codela-my-account-layout` kapsamına ortak tema form/card/nav stilleri taşımayın.
 - Kaynak isimleri platform/cihaz adlarından bağımsızdır. Standart semantik HTML, reduced-motion, 44px hedefler ve erişilebilir isimler korunur.
-- **Korunan paralel UI kapsamı:** Kullanıcı ortak Button/IconButton büyüme, esnek bırakma ve saydam yüzey çalışması istedi. Önceki aktif not tokens/components ve UI testlerini bu işe ayırıyordu. Güncel PR/HEAD kontrolü yapın; F5 için son ortak stilleri geri almayın. Bu not tamamlanmış yayın kanıtı değildir.
+- **Ortak UI kapsamı:** 0.1.52 Button/IconButton büyüme, esnek bırakma ve saydam yüzey kuralları tokens/components içinde uygulanmıştır. Güncel HEAD kontrolü yapın; F5 için bu stilleri geri almayın veya sayfa CSS’ine kopyalamayın. Yayın kanıtı üstteki devam noktasında tutulur.
 
 ## Her yeni tema çalışmasına başlarken
 

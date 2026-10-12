@@ -65,7 +65,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
 
  // Fixed header leaves text clearance, while the home hero begins at the top.
  assert.equal(await page.locator('.sf-header').evaluate(el=>getComputedStyle(el).position),'fixed');
- assert.equal(surfaces.menuBg,'rgba(250, 250, 252, 0.82)','Shared surfaces are light');
+ assert.equal(surfaces.menuBg,'rgba(250, 250, 252, 0.72)','Shared surfaces are light');
  await page.evaluate(()=>{
    document.body.classList.add('home');
    const main=document.querySelector('main');main.classList.add('sf-content');main.style.padding='0';
@@ -221,7 +221,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  });
  assert(compactAuth.inlineLabel,'Modal native field label stays inside input');
  assert(compactAuth.sameLine,'Modal remember and password recovery share a row');
- assert.equal(compactAuth.submitBg,'rgb(37, 39, 42)','Native modal submit uses shared primary Button');
+ assert.equal(compactAuth.submitBg,'color(srgb 0.145098 0.152941 0.164706 / 0.9)','Native modal submit uses shared primary Button');
  assert(compactAuth.fieldHeight>=54&&compactAuth.fieldHeight<=56,'Popup fields preserve the shared 54px input height');
  assert.equal(compactAuth.fieldBackground,'rgb(255, 255, 255)','Actual guest modal fields are clean and white');
  assert.equal(compactAuth.submitMinHeight,'52px','Popup submit uses shared compact 52px Button token');
