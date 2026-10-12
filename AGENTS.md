@@ -1,3 +1,7 @@
+## Active parallel UI scope — 12 October 2026
+
+User requested shared Button/IconButton press expansion, elastic release and translucent blurred surfaces while the remediation agent works on F1–F7. UI work owns `assets/styles/tokens.css`, shared button rules in `assets/styles/components.css`, and UI regression tests; it does not modify cart/search/overlay/dock controllers or module registration logic. Coordinate F5 edits against the newest shared CSS, preserve the new interaction contract and avoid reverting it while removing legacy Woo rules. Release metadata must be merged against current HEAD. Neutral technical source naming only. This is an active work note, not a completed release.
+
 ## Sağlamlaştırma uygulama rehberi — 12 Ekim 2026
 
 Mimari rapordaki sorunların dosya bazlı çözümü, işlem sırası ve zorunlu kabul testleri [uygulama rehberinde](docs/architecture-remediation-guide-2026-10-12.md). Uygulama görevi verildiğinde önce güncel kodda bulguları doğrulayın; A (Script Modules/cache) → B (sepet yarışları) → C (Woo senkronizasyonu ve gerçek entegrasyon) sırasını izleyin. D–F paketleri CSS sınırı, ölçümlü hız ve belge düzenidir. Bu ek yalnız yönlendirmedir; düzeltmeler yapılmış değildir. Onaylı UI'ı ve eşzamanlı çalışmayı koruyun; her bulguyu commit/test/yayın kanıtıyla kapatın.
