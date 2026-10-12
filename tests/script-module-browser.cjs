@@ -16,13 +16,17 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
   fs.cpSync(path.resolve('theme/codela-storefront/inc'), path.join(dir, 'inc'), {recursive: true});
   const formatFile = path.join(assets, 'scripts/format.js');
   const original = fs.readFileSync(formatFile, 'utf8');
+  const cartFile = path.join(assets, 'scripts/cart-controller.js');
+  const originalCart = fs.readFileSync(cartFile, 'utf8');
+  const cartRevision = v => originalCart + '\nwindow.__sfCartRevision = ' + JSON.stringify(v) + ';\n';
+  fs.writeFileSync(cartFile, cartRevision('A'));
   const revision = v => original + '\nwindow.__sfFormatRevision = ' + JSON.stringify(v) + ';\n';
   fs.writeFileSync(formatFile, revision('A'));
   let html = '';
   const requests = new Map();
   const server = http.createServer((req, res) => {
     const pathname = new URL(req.url, 'http://localhost').pathname;
-    if (pathname === '/a' || pathname === '/b') {
+    if (pathname === '/a' || pathname === '/b' || pathname === '/c') {
       res.writeHead(200, {'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-cache'});
       res.end(html);return;
     }
@@ -67,22 +71,44 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(origin + '/a');
-    await page.waitForFunction(() => window.__sfFormatRevision === 'A');
-    fs.writeFileSync(formatFile, revision('B'));
+    await page.waitForFunction(() => window.__sfFormatRevision === 'A' && window.__sfCartRevision === 'A');
+
+    // Change ONLY cart-controller; the entry and formatter remain byte-for-byte stable.
+    fs.writeFileSync(cartFile, cartRevision('B'));
     const b = readRegistration();
-    assert.notEqual(a['codela-storefront/format'].version,b['codela-storefront/format'].version);
+    assert.notEqual(a['codela-storefront/cart'].version,b['codela-storefront/cart'].version);
     for (const id of Object.keys(a)) {
-      if (id !== 'codela-storefront/format') {
+      if (id !== 'codela-storefront/cart') {
         assert.equal(a[id].version,b[id].version,id+' must keep its cached URL');
       }
     }
     html = buildHtml(b);
     await page.goto(origin + '/b');
-    await page.waitForFunction(() => window.__sfFormatRevision === 'B');
-    const aUrl = '/assets/scripts/format.js?ver=' + a['codela-storefront/format'].version;
-    const bUrl = '/assets/scripts/format.js?ver=' + b['codela-storefront/format'].version;
-    assert.equal(requests.get(aUrl),1,'Original format script loaded once');
-    assert.equal(requests.get(bUrl),1,'Updated format script loaded without clearing cache');
+    await page.waitForFunction(() => window.__sfCartRevision === 'B' && window.__sfFormatRevision === 'A');
+
+    // Then change ONLY the shared formatter. Both consumers still resolve it
+    // through the new import map without changing either parent URL.
+    fs.writeFileSync(formatFile, revision('B'));
+    const c = readRegistration();
+    assert.notEqual(b['codela-storefront/format'].version,c['codela-storefront/format'].version);
+    for (const id of Object.keys(b)) {
+      if (id !== 'codela-storefront/format') {
+        assert.equal(b[id].version,c[id].version,id+' must keep its cached URL');
+      }
+    }
+    html = buildHtml(c);
+    await page.goto(origin + '/c');
+    await page.waitForFunction(() => window.__sfFormatRevision === 'B' && window.__sfCartRevision === 'B');
+    for (const [id,entryA,entryB] of [
+      ['format',a['codela-storefront/format'],c['codela-storefront/format']],
+      ['cart',a['codela-storefront/cart'],b['codela-storefront/cart']]
+    ]) {
+      const resource = id === 'cart' ? 'cart-controller.js' : 'format.js';
+      const oldUrl = '/assets/scripts/' + resource + '?ver=' + entryA.version;
+      const newUrl = '/assets/scripts/' + resource + '?ver=' + entryB.version;
+      assert.equal(requests.get(oldUrl),1,'Old '+id+' resource requested once');
+      assert.equal(requests.get(newUrl),1,'Updated '+id+' resource loaded without clearing cache');
+    }
     assert.deepEqual(errors,[],'All bare imports resolve without runtime errors');
     await context.close();
     console.log('Module import graph and warm-cache child update: passed.');
