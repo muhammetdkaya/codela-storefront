@@ -5,9 +5,9 @@
 
 ## Tek güncel devam noktası — 12 Ekim 2026 / 0.1.55
 
-- **Tema 0.1.54 → 0.1.55:** kullanıcı cam görünümü kabul etti, okunabilirlik iyileştirmesi istedi. Ortak floating yüzey %28 açık dolgu ve 8px sabit blur ile detayları biraz daha dağıtır; ortak koyu yazı #1c1c1e. Alt menü etiketleri ortak navigation tokenlarıyla 11px/600; sayfa başına kopya tasarım yok. Bu kaynak kaydında CI/dağıtım bekliyor.
+- **Tema 0.1.54 → 0.1.55 canlıda:** kullanıcı cam görünümü kabul etti, okunabilirlik iyileştirmesi istedi. Ortak floating yüzey %28 açık dolgu ve 8px sabit blur ile detayları biraz daha dağıtır; ortak koyu yazı #1c1c1e. Alt menü etiketleri ortak navigation tokenlarıyla 11px/600; sayfa başına kopya tasarım yok. Kaynak [5a368da](https://github.com/muhammetdkaya/codela-storefront/commit/5a368da8eaef193e86ee81b966954b1d31644882); [Actions 38307301784](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38307301784): `validate=success`, `deploy=success` ve gerçek **Deploy Storefront only=success**.
 - Kabul edilen çerçevesiz yüzey, hafif gölge, Button/IconButton ve bütün Dock press/release davranışları korunur. Yeni JS, istek veya bağımlılık yok; 44px hedefler ve mevcut bar boyutları devam eder.
-- Yerel ortak kontrol/navigation tarayıcı testleri ve metin/renk üzerindeki görsel kontrol; etiket boyutu/ağırlığı/rengi ve taşmaması doğrulanır. Paket ve gerçek CI kaynak üzerinde ayrıca doğrulanacak. Fiziksel Safari kabulü ve F6 gerçek ölçümü ayrı kalır.
+- Yerel ortak kontrol/navigation tarayıcı testleri ve metin/renk üzerindeki görsel kontrol; etiket boyutu/ağırlığı/rengi ve taşmaması doğrulanır. 22 paket testi ve gerçek CI PHP/Node/paket/Chromium kontrolleri başarılı. Fiziksel Safari kabulü ve F6 gerçek ölçümü ayrı kalır.
 - Sıradaki iş: canlı cihazda görsel/yazı üstündeki etiket okunabilirliğini kontrol edin; ardından gerçek WP/Woo senaryoları, F5 kapsam sınırı ve F6 ölçümü. Bu çalışma F3/F4/F5/F6'yı kapatmaz.
 
 ## Mimari ve sınırlar
