@@ -4,6 +4,8 @@ on:
     branches: [main]
     paths: ['theme/**', 'scripts/**', 'tests/**', '.github/workflows/deploy.yml']
   workflow_dispatch:
+  pull_request:
+    paths: ['theme/**', 'scripts/**', 'tests/**', '.github/workflows/deploy.yml']
 permissions:
   contents: read
 concurrency:
@@ -23,6 +25,7 @@ jobs:
           node --input-type=module --check < theme/codela-storefront/assets/scripts/cart-controller.js
           node --input-type=module --check < theme/codela-storefront/assets/scripts/overlay-controller.js
           node --input-type=module --check < theme/codela-storefront/assets/scripts/dock-controller.js
+          node tests/cart-race.cjs
           node tests/search-panel.cjs
           node tests/format.cjs
           node tests/ui-kit.cjs
@@ -52,6 +55,7 @@ jobs:
           path: dist/
           retention-days: 14
   deploy:
+    if: github.event_name != 'pull_request'
     needs: validate
     runs-on: ubuntu-24.04
     timeout-minutes: 10
