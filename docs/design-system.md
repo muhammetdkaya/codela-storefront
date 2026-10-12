@@ -1,6 +1,6 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.52. Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.53. Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
 
 ## One design, not one enormous universal widget
@@ -121,10 +121,12 @@ functionality or keyboard accessibility.
   110ms; release is 360ms with a small elastic settling curve. Native `:active`
   drives ordinary controls; the browser owns touch activation timing. There
   is no delayed click, synthetic activation, timer or new event listener.
-- Only transform transitions. Static gradients, inset light and 20px backdrop
+- Only transform transitions. Static gradients, inset light and 6px backdrop
   blur provide depth; blur, filter and shadow are not animated. Dark actions
   keep a 90% ink tint for readable white text; secondary controls keep 78%
-  surface tint. Floating header surfaces use the shared 72% light tint.
+  surface tint. Floating header and dock surfaces use the shared 22% light tint.
+  Shared static contrast/brightness filters diffuse dark sampled content so
+  the dark foreground retains contrast without an opaque white fill.
 - Keep 44px IconButton and 54px default action hit/layout dimensions. Motion
   does not affect document flow. Existing compact size tokens remain valid.
 - Reduced motion turns expansion off. Reduced transparency and unsupported
@@ -141,6 +143,23 @@ functionality or keyboard accessibility.
   activation, layout stability, settling, focus and accessibility preferences.
   Physical-device Safari feel and F6 cold/warm/GPU measurements remain open;
   CSS-only does not imply zero rendering cost.
+
+## Floating surface correction (0.1.53)
+
+- The physical-device screenshot exposed that 72% Header tint, 76% Dock tint
+  and strong blur hid the backdrop too much. Header/soft IconButton and Dock
+  now share the material in `components.css`; remove page-owned material copies.
+- The whole Dock scales to 1.018 from its existing `is-pressing` state.
+  CSS `scale` has independent engage/release timing; its collapse `transform`,
+  stable parent hit slots, selected capsule and controller remain intact.
+  Reduced motion sets the whole-dock scale to 1; opaque transparency and
+  forced-color fallbacks apply to Dock through the same surface primitive.
+- Browser navigation tests verify whole-surface expansion and cancellation
+  as well as existing selection/scrub/collapse. Private CI references include
+  actual Header/Dock over text and colors (`storefront-ui-kit-glass-*.png`),
+  because a white background alone cannot demonstrate translucency.
+- No new runtime script, listener, request or library. Physical Safari visual
+  acceptance and measured rendering cost remain to be checked.
 
 ## Contribution checklist
 

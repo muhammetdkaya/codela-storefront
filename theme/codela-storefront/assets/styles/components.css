@@ -54,6 +54,8 @@
 /* The same surface primitive styles all floating header islands and the X.
    Placement belongs to navigation/overlay; touch and appearance live here. */
 .sf-shell .sf-ui-surface,
+.sf-shell .sf-dock-surface,
+#sf-panel .sf-dock-surface,
 .sf-shell .sf-ui-icon-button--soft,
 #sf-panel button.sf-ui-icon-button--soft{
   border:1px solid var(--sf-ui-glass-border);
@@ -61,8 +63,8 @@
   background:var(--sf-ui-glass-highlight),var(--sf-ui-glass-surface)!important;
   color:var(--sf-ui-glass-ink);
   box-shadow:var(--sf-ui-glass-shadow)!important;
-  -webkit-backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation));
-  backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation));
+  -webkit-backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation)) contrast(var(--sf-ui-glass-contrast)) brightness(var(--sf-ui-glass-brightness));
+  backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation)) contrast(var(--sf-ui-glass-contrast)) brightness(var(--sf-ui-glass-brightness));
 }
 .sf-shell .sf-ui-icon-button--soft .sf-icon,
 #sf-panel button.sf-ui-icon-button--soft .sf-icon{
@@ -71,7 +73,7 @@
   filter:brightness(0);
 }
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
-  .sf-shell .sf-ui-surface,.sf-shell .sf-ui-icon-button--soft,
+  .sf-shell .sf-ui-surface,.sf-shell .sf-dock-surface,#sf-panel .sf-dock-surface,.sf-shell .sf-ui-icon-button--soft,
   #sf-panel button.sf-ui-icon-button--soft{background:var(--sf-ui-glass-opaque)!important}
 }
 .sf-shell .sf-ui-icon-button--clear,
@@ -260,6 +262,8 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
 .sf-shell .sf-ui-button--secondary,
 .woocommerce .sf-shell .sf-ui-button--secondary{background:var(--sf-ui-surface);-webkit-backdrop-filter:none;backdrop-filter:none;}
 .sf-shell .sf-ui-surface,
+.sf-shell .sf-dock-surface,
+#sf-panel .sf-dock-surface,
 .sf-shell .sf-ui-icon-button--soft,
 #sf-panel button.sf-ui-icon-button--soft{background:var(--sf-ui-glass-opaque)!important;-webkit-backdrop-filter:none;backdrop-filter:none;}
 }
@@ -271,6 +275,8 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
 .sf-shell .sf-ui-button--secondary,
 .woocommerce .sf-shell .sf-ui-button--secondary,
 .sf-shell .sf-ui-surface,
+.sf-shell .sf-dock-surface,
+#sf-panel .sf-dock-surface,
 .sf-shell .sf-ui-icon-button--soft,
 #sf-panel button.sf-ui-icon-button--soft{
   background:ButtonFace!important;color:ButtonText!important;border:1px solid ButtonText;

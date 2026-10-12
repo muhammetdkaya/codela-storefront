@@ -62,14 +62,15 @@
     isolation:isolate;
     min-height:56px;
     padding:4px;
-    border:1px solid rgba(255,255,255,.8);
+    border:1px solid transparent;
     border-radius:999px;
-    background:#f5f5f6;
-    box-shadow:0 5px 18px rgba(0,0,0,.08),0 0 0 1px rgba(35,35,40,.06),inset 0 1px 0 rgba(255,255,255,.6);
     transform-origin:50% 100%;
     transform:translate3d(0,var(--sf-dock-travel),0) scale(var(--sf-dock-scale));
     opacity:1;
-    transition:transform var(--sf-ui-motion-dock) var(--sf-ui-ease-dock),opacity 100ms ease;
+    /* Independent scale keeps scroll-collapse transform and stable hit slots intact. */
+    scale:1;
+    transition:transform var(--sf-ui-motion-dock) var(--sf-ui-ease-dock),
+      scale var(--sf-ui-motion-release) var(--sf-ui-ease-release),opacity 100ms ease;
   }
   .sf-dock-surface::before{
     content:'';
@@ -88,6 +89,11 @@
   }
   .sf-mobile-dock.has-selection .sf-dock-surface::before{opacity:1}
   .sf-mobile-dock.is-pressing{--sf-dock-press-scale:1.06}
+  .sf-mobile-dock:not(.is-collapsed):is(.is-pressing,:has(.sf-dock-item:active)) .sf-dock-surface{
+    scale:var(--sf-ui-scale-dock);
+    transition:transform var(--sf-ui-motion-dock) var(--sf-ui-ease-dock),
+      scale var(--sf-ui-motion-engage) var(--sf-ui-ease-press),opacity 100ms ease;
+  }
   .sf-mobile-dock.is-scrubbing .sf-dock-surface::before{transition-duration:90ms}
   .sf-mobile-dock .sf-dock-item{
     display:flex;
@@ -176,17 +182,8 @@
   #sf-panel.is-cart-panel:has(.sf-mobile-dock) .sf-cart-bottom:not([hidden]){padding-bottom:calc(82px + env(safe-area-inset-bottom,0px))}
   #sf-panel.is-cart-panel #sf-cart{padding-bottom:28px}
 }
-/* One static blur layer; blur and shadow never animate. Keep an opaque fallback. */
-@supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
-  @media(max-width:700px){
-    .sf-dock-surface{
-      background:rgba(250,250,252,.76);
-      -webkit-backdrop-filter:blur(20px) saturate(145%);
-      backdrop-filter:blur(20px) saturate(145%);
-    }
-  }
-}
-@media(prefers-reduced-transparency:reduce){.sf-dock-surface{background:#f5f5f6;-webkit-backdrop-filter:none;backdrop-filter:none}}
+/* Floating material is shared with Header/IconButton in components.css. */
+@media(prefers-reduced-motion:reduce){.sf-mobile-dock.is-pressing{--sf-dock-press-scale:1}}
 @media(min-width:701px){.sf-mobile-dock{display:none!important}}
 
 

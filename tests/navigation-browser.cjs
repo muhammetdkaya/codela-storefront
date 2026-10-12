@@ -65,7 +65,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
 
  // Fixed header leaves text clearance, while the home hero begins at the top.
  assert.equal(await page.locator('.sf-header').evaluate(el=>getComputedStyle(el).position),'fixed');
- assert.equal(surfaces.menuBg,'rgba(250, 250, 252, 0.72)','Shared surfaces are light');
+ assert.equal(surfaces.menuBg,'rgba(250, 250, 252, 0.22)','Shared surfaces are light');
  await page.evaluate(()=>{
    document.body.classList.add('home');
    const main=document.querySelector('main');main.classList.add('sf-content');main.style.padding='0';
@@ -131,17 +131,21 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  await page.waitForTimeout(140);
  const pressed=await page.locator('.sf-dock-surface').evaluate(el=>{
   const dock=el.closest('.sf-mobile-dock'),s=getComputedStyle(el,'::before');
-  return {scale:new DOMMatrix(s.transform).a,index:dock.style.getPropertyValue('--sf-dock-index'),blur:getComputedStyle(el).backdropFilter};
+  return {scale:new DOMMatrix(s.transform).a,wholeScale:parseFloat(getComputedStyle(el).scale),index:dock.style.getPropertyValue('--sf-dock-index'),blur:getComputedStyle(el).backdropFilter,bg:getComputedStyle(el).backgroundColor};
  });
  assert(pressed.scale>1.02 && pressed.scale<1.08,'Touch expands the background capsule');
+ assert(Math.abs(pressed.wholeScale-1.018)<.001,'Touch also expands the whole floating surface');
+ assert.equal(pressed.bg,surfaces.menuBg,'Dock shares the transparent Header material');
  assert.equal(pressed.index,'1','Touch previews the touched tab before navigation');
  assert.equal(await page.locator('#sf-panel').getAttribute('open'),null,'Press alone never opens a panel');
  assert(pressed.blur.includes('blur('),'Glass surface uses one backdrop blur layer');
  if(process.env.DOCK_QA)await page.screenshot({path:process.env.DOCK_QA});
  await page.evaluate(()=>document.querySelector('[data-dock-view="search"]').dispatchEvent(new TouchEvent('touchcancel',{bubbles:true})));
  await page.waitForTimeout(240);
- const released=await page.locator('.sf-dock-surface').evaluate(el=>({scale:new DOMMatrix(getComputedStyle(el,'::before').transform).a,index:el.closest('.sf-mobile-dock').style.getPropertyValue('--sf-dock-index')}));
+ await page.waitForTimeout(220);
+ const released=await page.locator('.sf-dock-surface').evaluate(el=>({scale:new DOMMatrix(getComputedStyle(el,'::before').transform).a,wholeScale:parseFloat(getComputedStyle(el).scale),index:el.closest('.sf-mobile-dock').style.getPropertyValue('--sf-dock-index')}));
  assert.equal(released.scale,1,'Cancel releases capsule expansion');
+ assert.equal(released.wholeScale,1,'Cancel settles the whole surface');
  assert.equal(released.index,'0','Cancel restores the original active tab');
  // mobile browser can delay its native click after touchend. The capsule must not return home in that gap.
  for(const [view,index] of [['cart','2'],['search','1']]){
@@ -372,6 +376,9 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  await page.evaluate(()=>window.sfActions.close());
  await page.locator('#sf-panel').waitFor({state:'hidden'});
  await page.emulateMedia({reducedMotion:'reduce'});
+ await dock.evaluate(el=>el.classList.add('is-pressing'));
+ assert.equal(await page.locator('.sf-dock-surface').evaluate(el=>getComputedStyle(el).scale),'1','Reduced motion disables whole-dock expansion');
+ await dock.evaluate(el=>el.classList.remove('is-pressing'));
  await page.evaluate(()=>window.sfActions.menu());
  assert.equal(await page.locator('#sf-menu').evaluate(el=>el.getAnimations().length),0);
  await page.evaluate(()=>window.sfActions.close());

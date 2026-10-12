@@ -1,15 +1,15 @@
 # Codela Storefront — güncel teknik durum
 
-12 Ekim 2026. Tema **0.1.52**, bağımsız kaynak: `theme/codela-storefront/`.
+12 Ekim 2026. Tema **0.1.53**, bağımsız kaynak: `theme/codela-storefront/`.
 [Kalıcı kurallar](../AGENTS.md) · [Tasarım sözleşmesi](design-system.md) · [Tarihçe](storefront-theme-history-2026-10-12.md)
 
-## Tek güncel devam noktası — 12 Ekim 2026 / 0.1.52
+## Tek güncel devam noktası — 12 Ekim 2026 / 0.1.53
 
-- **Tema 0.1.51 → 0.1.52 canlıda:** ortak Button/IconButton yüzey ve basma tepkisi yayınlandı. Kaynak [32fc618](https://github.com/muhammetdkaya/codela-storefront/commit/32fc6181fd99b231e67f96b25340d0dff79cdaaa); [Actions 38300950226](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38300950226): `validate=success`, `deploy=success` ve gerçek **Deploy Storefront only=success**.
-- Normal Button/pressable %2,5, IconButton %8 büyür; 110 ms basma, 360 ms esnek bırakma. İkon tek başına küçülmez; bütün kontrol birlikte hareket eder. Şeffaf ton, sabit 20px blur ve ışık katmanı ortak tokens/components içinde. Yeni çalışma zamanı JS'i, istek veya bağımlılık yok.
-- Yerel Chromium: gerçek mouse/klavye/dokunma aktivasyonu, tek tıklama, yerleşim ölçüleri, odak, disabled, reduced-motion/transparency ve forced-colors kontrolleri; ayrıca navigation, checkout, account ve UI preview geçti. Node regresyonları ve 22 paket testi başarılı. Fiziksel mobil Safari kabulü ve gerçek performans ölçümü yapılmadı.
-- 0.1.51 sepet senkronizasyonu ve içerik hash'li WordPress modülleri korunur. Önceki canlı kanıtı: [Actions 38266829194](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38266829194). Bu çalışma F3/F4/F5/F6'yı kapatmaz.
-- Sıradaki iş: yeni Button hissinin fiziksel cihaz kabulü; mevcut gerçek WP/Woo entegrasyon senaryoları, F5 Woo kapsam sınırı ve F6 ölçümü. F5 çalışması ortak basma/yüzey kurallarını kopyalamadan yeniden kullanmalı.
+- **Tema 0.1.52 → 0.1.53:** kullanıcının fiziksel cihaz ekran görüntüsünde cam yüzey fazla kapalı bulundu. Header/soft IconButton ve Dock artık aynı ortak yüzey kuralını kullanır: %22 açık dolgu, 6px sabit blur ve daha hafif ışık katmanı. Koyu arka planda ortak koyu ikon/yazıyı korumak için backdrop contrast/brightness tokenları ışığı dağıtır. Bu kaynak kaydında CI/dağıtım bekliyor.
+- Alt menüde mevcut `is-pressing` durumuyla bütün yüzey %1,8 büyür ve esnek geri döner. Ayrı CSS `scale` özelliği, scroll-collapse `transform`unu ve controller'ın sabit dokunma slotlarını değiştirmez. Yeni JS/istek/bağımlılık yok; normal Button/IconButton etkileşimi korunur.
+- Yerel Chromium navigation, ortak kontrol, checkout/account ve metin/renk üzerindeki cam yüzey görsel kontrolleri geçti. Node regresyonları ve paket kontrolleri yapıldı. CI gerçek source üzerinden ayrıca doğrulanacak. Fiziksel Safari kabulü ve F6 performans ölçümü hâlâ ayrı işlerdir.
+- 0.1.51 sepet senkronizasyonu/hash'li WordPress modülleri korunur. Bu çalışma F3/F4/F5/F6'yı kapatmaz. Önceki ortak UI yayını: [Actions 38300950226](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38300950226).
+- Sıradaki iş: canlı cihazda yazı/görsel üstündeki geçirgenlik ve bütün Dock tepkisini kontrol edin; ardından gerçek WP/Woo entegrasyon senaryoları, F5 kapsam sınırı ve F6 ölçümü. F5 ortak yüzeyi sayfa CSS'ine kopyalamamalı.
 
 ## Mimari ve sınırlar
 

@@ -27,14 +27,24 @@ const demoCSS=[
   fs.mkdirSync('qa',{recursive:true});
   for(const width of [390,1280]){
    const page=await browser.newPage({viewport:{width,height:940},deviceScaleFactor:1});
+   await page.route('**/assets/icons/**',route=>route.fulfill({contentType:'image/svg+xml',body:fs.readFileSync('theme/codela-storefront/assets/icons/'+new URL(route.request().url()).pathname.split('/').at(-1),'utf8')}));
    const html='<!doctype html><html lang="tr"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'\n'+demoCSS+'</style></head><body><div class="sf-shell">'+header+'<main class="qa-page"><h1 class="qa-title">Storefront UI Kit</h1><p class="qa-note">Shared controls, consistent feedback and accessibility states.</p><section class="qa-section"><h2>Icon controls and actions</h2><div class="qa-controls">'+controls+'</div><p class="qa-legend">Standard · Soft · Clear · Primary · Disabled · Loading · Secondary</p></section><section class="qa-section"><h2>Control states</h2><div class="qa-controls"><button type="button" class="sf-ui-button sf-ui-button--primary">Normal</button><button type="button" disabled class="sf-ui-button sf-ui-button--secondary">Disabled</button><button type="button" class="sf-ui-button sf-ui-button--quiet" aria-busy="true" disabled>Loading</button></div></section></main></div></body></html>';
    await page.setContent(html);
    const preview=page.locator('.qa-page');
    assert(await preview.isVisible());
    assert((await page.locator('.sf-ui-icon-button').count())>=2);
    await page.screenshot({path:'qa/storefront-ui-kit-'+width+'.png',fullPage:true,animations:'disabled'});
+   if(width===390){
+    // Actual fixed Header/Dock over text and color, not a blank white backdrop.
+    await page.setContent('<style>'+css+'body{margin:0;background:#f8f7f4;font:18px system-ui}.qa-band{position:fixed;left:0;right:0;padding:4px;font-size:23px;line-height:30px;letter-spacing:1px;background:linear-gradient(90deg,#dfdbd4,#c4d1d3,#f3e1c9);z-index:0}.qa-top{top:0;height:70px}.qa-bottom{bottom:0;height:100px}.qa-copy{margin:110px 20px;line-height:1.6}</style><div class="qa-band qa-top">BACKDROP TEXT AND CONTENT<br>234567890 · products · store</div><div class="qa-band qa-bottom">BACKDROP TEXT AND CONTENT<br>234567890 · products · store</div>'+header+'<div class="qa-copy">Shared glass material<br>Content shows through the surface.</div>');
+    await page.screenshot({path:'qa/storefront-ui-kit-glass-'+width+'.png'});
+    await page.locator('.sf-mobile-dock').evaluate(el=>el.classList.add('is-pressing'));
+    await page.waitForTimeout(150);
+    await page.screenshot({path:'qa/storefront-ui-kit-glass-pressed-'+width+'.png'});
+   }
    await page.close();
   }
   console.log('Private UI Kit visual references generated for two viewport sizes.');
  } finally {await browser.close();}
 })().catch(error=>{console.error(error);process.exit(1)});
+

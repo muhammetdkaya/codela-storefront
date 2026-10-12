@@ -9,7 +9,7 @@
   --sf-ui-surface:#ffffff;
   --sf-ui-surface-muted:#f3f3f3;
   /* Shared floating surface: brand, header actions, menu and dialog close. */
-  --sf-ui-glass-surface:rgba(250,250,252,.72);
+  --sf-ui-glass-surface:rgba(250,250,252,.22);
   --sf-ui-glass-opaque:#f5f5f6;
   --sf-ui-glass-border:rgba(255,255,255,.8);
   --sf-ui-glass-shadow:0 4px 18px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.6);
@@ -30,10 +30,13 @@
   --sf-ui-control-radius:var(--cdl-ct-radius,12px);
   --sf-ui-pill:999px;
   /* Shared control material: tint preserves contrast over changing content. */
-  --sf-ui-glass-blur:20px;
-  --sf-ui-glass-saturation:160%;
-  --sf-ui-glass-highlight:linear-gradient(160deg,rgba(255,255,255,.24),rgba(255,255,255,.02) 48%,rgba(255,255,255,.08));
-  --sf-ui-glass-highlight-pressed:linear-gradient(160deg,rgba(255,255,255,.34),rgba(255,255,255,.06) 48%,rgba(255,255,255,.14));
+  --sf-ui-glass-blur:6px;
+  --sf-ui-glass-saturation:150%;
+  /* Diffuse dark backdrops while retaining the shared dark foreground. */
+  --sf-ui-glass-contrast:.35;
+  --sf-ui-glass-brightness:1.4;
+  --sf-ui-glass-highlight:linear-gradient(160deg,rgba(255,255,255,.12),rgba(255,255,255,0) 48%,rgba(255,255,255,.04));
+  --sf-ui-glass-highlight-pressed:linear-gradient(160deg,rgba(255,255,255,.20),rgba(255,255,255,.02) 48%,rgba(255,255,255,.08));
   --sf-ui-action-highlight:linear-gradient(160deg,rgba(255,255,255,.10),transparent 52%,rgba(255,255,255,.025));
   --sf-ui-action-highlight-pressed:linear-gradient(160deg,rgba(255,255,255,.18),rgba(255,255,255,.015) 52%,rgba(255,255,255,.06));
   --sf-ui-action-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(0,0,0,.10),0 3px 9px rgba(0,0,0,.06);
@@ -42,6 +45,7 @@
   --sf-ui-motion-release:360ms;
   --sf-ui-scale-action:1.025;
   --sf-ui-scale-icon:1.08;
+  --sf-ui-scale-dock:1.018;
   --sf-ui-ease-release:cubic-bezier(.22,1.35,.36,1);
   --sf-ui-motion-selection:220ms;
   --sf-ui-motion-panel:160ms;
@@ -56,6 +60,7 @@
     --sf-ui-motion-release:0ms;
     --sf-ui-scale-action:1;
     --sf-ui-scale-icon:1;
+    --sf-ui-scale-dock:1;
     --sf-ui-motion-selection:0ms;
     --sf-ui-motion-panel:0ms;
     --sf-ui-motion-dock:0ms;
