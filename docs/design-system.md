@@ -360,3 +360,4 @@ create parallel stores or second navigation listeners.
 - Checkout browser regression compares Home and Checkout **computed header
   geometry** at 320, 390, 700, 1024 and 1360px, including icon visibility.
   Woo checkout native markup and gateway mechanics remain untouched.
+- [GitHub Actions 38202574916](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38202574916) verified both browser tests and independent FTPS deployment at `c015e9c`. Physical Safari acceptance still required.
