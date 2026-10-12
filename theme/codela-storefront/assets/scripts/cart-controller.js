@@ -14,8 +14,9 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
             headers:payload ? {'Content-Type':'application/json', 'Nonce':cartNonce} : {},
             body:payload ? JSON.stringify(payload) : undefined,
         });
-        const nonce = response.headers.get('Nonce'); if (nonce && (typeof acceptNonce === 'function' ? acceptNonce() : acceptNonce)) cartNonce = nonce;
+        const nonce = response.headers.get('Nonce');
         const data = await response.json();
+        if (nonce && (typeof acceptNonce === 'function' ? acceptNonce() : acceptNonce)) cartNonce = nonce;
         if (!response.ok) { const error = new Error(decode(data.message || t('Something went wrong. Please try again.'))); error.code = data.code; error.cart = data.data?.cart; throw error; }
         return data;
     }
@@ -101,17 +102,17 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
         $('.sf-cart-bottom').inert = true;
         try {
             // A nonce is read fresh from the session GET, never embedded in cacheable HTML.
-            if (!cartNonce) await requestCart();
+            if (!cartNonce) await requestCart('', null, {acceptNonce:() => mutating});
             let data;
             try { data = await requestCart(isRemove ? '/remove-item' : '/update-item',payload); }
             catch(error) {
                 if (!['woocommerce_rest_invalid_nonce','woocommerce_rest_missing_nonce'].includes(error.code)) throw error;
-                await requestCart(); data = await requestCart(isRemove ? '/remove-item' : '/update-item',payload);
+                await requestCart('', null, {acceptNonce:() => mutating}); data = await requestCart(isRemove ? '/remove-item' : '/update-item',payload);
             }
             paintCart(data); if (getCurrent() === 'cart') $('#sf-status').textContent = t('Cart updated.');
         } catch(error) {
             if (error.cart) paintCart(error.cart);
-            else { try { paintCart(await requestCart()); } catch { if (cartData) paintCart(cartData); } }
+            else { try { paintCart(await requestCart('', null, {acceptNonce:() => mutating})); } catch { if (cartData) paintCart(cartData); } }
             if (getCurrent() === 'cart') $('#sf-status').textContent = error.message;
         } finally {
             mutating = false; $('#sf-cart').setAttribute('aria-busy','false'); $('.sf-cart-bottom').inert = false;
@@ -136,6 +137,7 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
         if (bound) return;
         bound = true;
         document.body.addEventListener('wc-blocks_added_to_cart', invalidate);
+        document.body.addEventListener('wc-blocks_removed_from_cart', invalidate);
         if (window.jQuery) {
             window.jQuery(document.body).on(
                 'added_to_cart removed_from_cart updated_wc_div', invalidate
