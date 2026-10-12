@@ -1,3 +1,11 @@
+## Güncel devam noktası — 12 Ekim 2026 / 0.1.50
+
+- **Canlı dağıtım doğrulandı:** `71fa37312ed60de0b390320174391d0365ec220a`; [Actions 38262389955](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38262389955) validate ve gerçek **Deploy Storefront only** adımı başarılı. Dağıtım logu: `Storefront deployed; checks passed.`
+- PR #15 sonrasındaki `21d97ef` de başarısızdı: testte `listeners.wc-blocks_added_to_cart` ve removal karşılığı JavaScript çıkarma işlemi olarak yorumlanıyordu. İki erişim de köşeli parantezli olay adına düzeltildi; uygulama sürümü değiştirilmedi.
+- Yerelde cart-race/search/format ve 22 paket testi geçti. PHP yerelde yok; PHP ve gerçek Chromium fixture kontrolleri yukarıdaki CI'da geçti. Bu sonuç gerçek WordPress/Woo entegrasyonu veya fiziksel Safari kabulü değildir.
+- **F3/F4 açık:** Woo iki yönlü senkronizasyonu sıradaki iştir. Eklentideki `tools/test-theme-wordpress.php` mevcut `codela_theme_build_zip()` yolunu kullanır; güncel bağımsız tema ZIP'inin test edildiğini kanıtlamaz. Entegrasyon kurulumu açıkça bağımsız paketi kurmalı ve sürümünü doğrulamalıdır.
+- F5 ortak Woo düğme kapsamı, F6 gerçek hız ölçümü ve F7 kapsamlı tarihçe düzeni açık. Ortak UI dosyalarındaki paralel çalışma notunu koruyun; güncel HEAD'i yeniden okuyun. Aşağıdaki tarihli eski “sıradaki iş” kayıtları bu güncel durumun yerine geçmez.
+
 ## Active parallel UI scope — 12 October 2026
 
 User requested shared Button/IconButton press expansion, elastic release and translucent blurred surfaces while the remediation agent works on F1–F7. UI work owns `assets/styles/tokens.css`, shared button rules in `assets/styles/components.css`, and UI regression tests; it does not modify cart/search/overlay/dock controllers or module registration logic. Coordinate F5 edits against the newest shared CSS, preserve the new interaction contract and avoid reverting it while removing legacy Woo rules. Release metadata must be merged against current HEAD. Neutral technical source naming only. This is an active work note, not a completed release.
