@@ -1,21 +1,12 @@
-## 0.1.51 yayın hazırlığı — 12 Ekim 2026
-
-Kullanıcı, gerçek WP/Woo kabul testinin henüz yapılmadığı açıklandıktan sonra **“Canlıya al”** talimatını verdi. Bu açık yayın talimatıyla PR #16 yayıma hazırlanıyor; önceki taslak bekletme notu yayın engeli değildir. Gerçek entegrasyon/Safari kabulü yapılmış sayılmaz ve F4 açık kalır.
-
-- Tema 0.1.50 → **0.1.51**; eklenti değişmedi. Koşullu Woo Blocks store gözlemi, başarılı tema mutasyonu sonrası Woo resolver yenilemesi ve yalnız gerçek classic formlarda yenileme eklendi.
-- Yerel cart-race/cart-sync ve önceki PR CI doğrulaması başarılı. Sürüm commit'inin CI ve gerçek FTP dağıtımı henüz bekleniyor; canlı başarısı takip eden kayıtta yazılacak.
-- Sıradaki iş: yeni source workflow validate + gerçek Deploy Storefront only adımını doğrulamak; sonra iki yönlü gerçek WP/Woo kabulü, ortak düğme kapsamı ve performans ölçümü.
-
 # Codela Storefront — güncel çalışma kuralları
 
-## Tek güncel devam noktası — 12 Ekim 2026
+## Tek güncel devam noktası — 12 Ekim 2026 / 0.1.51
 
-- Üretim tema sürümü **0.1.50**. Kaynak `71fa37312ed60de0b390320174391d0365ec220a`; [Actions 38262389955](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38262389955) **validate ve Deploy Storefront only başarılı**. Log: `Storefront deployed; checks passed.`
-- PR #15 sepet yarış düzeltmeleri bu yayınla canlıya ulaştı. Sonraki `21d97ef` de başarısızdı; iki tireli olay adı erişimi `71fa373` ile düzeltildi. Test-only düzeltmede sürüm artırılmadı.
-- **Aktif iş: [taslak PR #16](https://github.com/muhammetdkaya/codela-storefront/pull/16)**, `fix/woo-cart-sync`, kaynak `61ee2da`. Koşullu Woo Blocks/classic senkronizasyonu + gerçek controller sözleşme testleri hazır; **canlıda değil**. Birleştirmeden önce [gerçek entegrasyon kabul kapısını](https://github.com/muhammetdkaya/codela-storefront/blob/fix/woo-cart-sync/docs/cart-sync-acceptance.md) PR dalından okuyun; bu dosya PR dalındadır. [Actions 38263298445](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38263298445) tüm PHP/Node/paket/Chromium fixture kontrollerini geçti; PR için deploy beklendiği gibi atlandı. Gerçek WP/Woo testi geçince güncel HEAD'e göre sürüm/cache/paket sürümlerini birlikte artırın.
-- Yerelde cart-race, cart-sync, search, format, dock ve 22 paket testi geçti. PHP yerelde yok; üretim sürümünün PHP/Chromium fixture testleri Actions'ta geçti. Fixture başarısı gerçek WP/Woo, ödeme sağlayıcısı veya fiziksel Safari kabulü değildir.
-- F1 Script Modules kodu mevcut ve dağıtılmıştır; gerçek WP import-map/cache kabulü ayrıca izlenir. F2 kodu dağıtıldı; rehberdeki tüm hata/nonce senaryoları kapandı sayılmaz. F3/F4 gerçek entegrasyon, F5 Woo düğme sınırı, F6 ölçümlü performans açık.
-- F7 belge düzeni: güncel kurallar ve durum bu dosyada; önceki içerik karar/link kaybetmeden [tarihçede](AGENTS-history-2026-10-12.md). Tarihli eski “sıradaki iş” kayıtları yeni talimat değildir.
+- **Tema 0.1.50 → 0.1.51 canlıda.** PR #16 birleştirildi; kaynak `62fe44d444fe440a7970ea2c8e11078a8011158a`. [Actions 38266829194](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38266829194): validate ve gerçek **Deploy Storefront only** başarılı; log `Storefront deployed; checks passed.`.
+- Woo Blocks mevcut cart store'undan tema rozeti/sepetine değişiklik takibi; başarılı tema mutasyonundan Woo resolver yenilemesine bağlantı; yalnız mevcut classic cart/checkout formlarına refresh eklendi. Yeni Blocks bundle/ikinci cart motoru yok. Eklenti değişmedi.
+- Yerel cart-race/cart-sync ve release CI PHP/Node/paket/Chromium kontrolleri başarılı. Kullanıcı, eksik gerçek WP/Woo kabulü açıklandıktan sonra “Canlıya al” dedi; bunun üzerine yayınlandı. Bu yetki test sonucu değildir: gerçek WP/Woo, gateway ve fiziksel Safari kabulü hâlâ açık.
+- Sıradaki iş: [gerçek entegrasyon senaryoları](docs/cart-sync-acceptance.md), ardından F5 ortak Woo düğme sınırı ve F6 performans ölçümü. F3 kodu yayınlandı; gerçek kabul tamamlanmadan F3/F4 bütünüyle kapandı denmez. F1/F2 önceki yayın kapsamıyla korunur.
+- F7 güncel durum/tarihçe ayrımı tamamlandı; eski kararlar [tarihçede](AGENTS-history-2026-10-12.md). Önceki “taslak PR #16” ve bekletme notları güncel görev değildir.
 
 ## Başlangıçta okunacaklar
 
