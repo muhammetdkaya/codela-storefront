@@ -1,6 +1,6 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Theme 0.1.22 initial shared foundation. Use this before making any new
+**Status:** Current shared architecture; production theme 0.1.50. Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
 
 ## One design, not one enormous universal widget
@@ -129,17 +129,13 @@ functionality or keyboard accessibility.
 7. Manual mobile browser acceptance is separate from CI. Test dock touch,
    scroll animations, focus and safe area on device.
 
-## Next refactoring steps (do not regress production)
+## Current follow-up (12 October 2026)
 
-- Extract the isolated dock gesture controller, fullscreen modal lifecycle,
-  Store API cart and search into separately tested JavaScript modules, *without*
-  loading duplicate listeners or separate navigation states.
-- Continue extracting feature-only overlay, search and cart rules from the
-  remaining storefront layout stylesheet using visual equivalence tests.
-  The shared component stylesheet stays the sole source for control design.
-- Add an admin-only or development-only UI Kit playground preview showing
-  real controls in default, pressed, focus, disabled and loading states;
-  do not ship test content on public store pages.
+- Controller extraction and private CI UI Kit previews are already implemented; do not repeat them.
+- F5: move the remaining generic Woo button paint into scoped shared adapters, preserving the parallel Button/IconButton work and plugin account ownership.
+- F3/F4 synchronization is tracked in draft PR #16 and requires real WP/Woo acceptance before release.
+- F6: measure cold/warm and interaction performance before changing asset loading or blur.
+- Current state and deployment evidence live in AGENTS.md and docs/storefront-theme.md; dated notes below preserve prior decisions.
 
 ## Feature stylesheet isolation (0.1.25)
 
