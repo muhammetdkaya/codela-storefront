@@ -12,6 +12,8 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'sf-modules-'));
   const assets = path.join(dir, 'assets');
   fs.cpSync(path.resolve('theme/codela-storefront/assets'), assets, {recursive: true});
+  // functions.php loads the genuine inc/ modules through get_template_directory().
+  fs.cpSync(path.resolve('theme/codela-storefront/inc'), path.join(dir, 'inc'), {recursive: true});
   const formatFile = path.join(assets, 'scripts/format.js');
   const original = fs.readFileSync(formatFile, 'utf8');
   const revision = v => original + '\nwindow.__sfFormatRevision = ' + JSON.stringify(v) + ';\n';
