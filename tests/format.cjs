@@ -23,6 +23,6 @@ assert.equal(safeURL('https://store.test/cart/'),'https://store.test/cart/');
 assert.match(money('1000',{currency_minor_unit:2,currency_code:'TRY'}),/10,00/);
 for (const feature of ['search-controller.js','cart-controller.js']) {
  const src=fs.readFileSync('theme/codela-storefront/assets/scripts/'+feature,'utf8');
- assert.ok(src.includes("from './format.js'"),feature+' imports the shared formatter');
+ assert.ok(src.includes("from 'codela-storefront/format'"),feature+' imports the shared formatter');
 }
 console.log('Shared format module: escaping, URL safety, HTML decoding and currency rendering passed.');

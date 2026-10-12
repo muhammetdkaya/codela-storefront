@@ -2,7 +2,7 @@
  * WooCommerce Store API cart controller.
  * Session nonce, in-flight requests and updates belong to one instance.
  */
-import { escape, decode, safeURL, money } from './format.js';
+import { escape, decode, safeURL, money } from 'codela-storefront/format';
 
 export function createCartController({ $, config, t, getCurrent, getDialog }) {
     let cartNonce = '', cartData = null, cartPending = null, mutating = false, cartRevision = 0;

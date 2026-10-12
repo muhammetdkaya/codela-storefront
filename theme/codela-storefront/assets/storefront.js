@@ -1,8 +1,8 @@
 import { store } from '@wordpress/interactivity';
-import { createSearchController } from './scripts/search-controller.js';
-import { createCartController } from './scripts/cart-controller.js';
-import { createOverlayController } from './scripts/overlay-controller.js';
-import { createDockController } from './scripts/dock-controller.js';
+import { createSearchController } from 'codela-storefront/search';
+import { createCartController } from 'codela-storefront/cart';
+import { createOverlayController } from 'codela-storefront/overlay';
+import { createDockController } from 'codela-storefront/dock';
 
 let menuPath = [];
 const $ = s => document.querySelector(s);

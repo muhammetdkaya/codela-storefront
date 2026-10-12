@@ -2,7 +2,7 @@
  * Product search controller: request cancellation, busy state and field events.
  * One instance is created by the storefront entry module.
  */
-import { escape, decode, safeURL } from './format.js';
+import { escape, decode, safeURL } from 'codela-storefront/format';
 
 export function createSearchController({ $, config, t, getCurrent }) {
     let timer = null, controller = null, sequence = 0;

@@ -22,7 +22,7 @@ const moduleSource = name => fs.readFileSync(
 const inlineControllers = ['format','search-controller','cart-controller','overlay-controller','dock-controller']
  .map(moduleSource).join('\n');
 const js = fs.readFileSync('theme/codela-storefront/assets/storefront.js','utf8')
- .replace(/^import .*from '\.\/scripts\/[^']+';$/gm,'')
+ .replace(/^import .*from 'codela-storefront\/(?:search|cart|overlay|dock)';$/gm,'')
  .replace("import { store } from '@wordpress/interactivity';",`
 function store(namespace, options) {
  window.sfActions = options.actions;
