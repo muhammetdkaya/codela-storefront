@@ -1,7 +1,15 @@
-# Woo cart synchronization — draft acceptance gate
+## 0.1.51 yayın hazırlığı — 12 Ekim 2026
+
+Kullanıcı, gerçek WP/Woo kabul testinin henüz yapılmadığı açıklandıktan sonra **“Canlıya al”** talimatını verdi. Bu açık yayın talimatıyla PR #16 yayıma hazırlanıyor; önceki taslak bekletme notu yayın engeli değildir. Gerçek entegrasyon/Safari kabulü yapılmış sayılmaz ve F4 açık kalır.
+
+- Tema 0.1.50 → **0.1.51**; eklenti değişmedi. Koşullu Woo Blocks store gözlemi, başarılı tema mutasyonu sonrası Woo resolver yenilemesi ve yalnız gerçek classic formlarda yenileme eklendi.
+- Yerel cart-race/cart-sync ve önceki PR CI doğrulaması başarılı. Sürüm commit'inin CI ve gerçek FTP dağıtımı henüz bekleniyor; canlı başarısı takip eden kayıtta yazılacak.
+- Sıradaki iş: yeni source workflow validate + gerçek Deploy Storefront only adımını doğrulamak; sonra iki yönlü gerçek WP/Woo kabulü, ortak düğme kapsamı ve performans ölçümü.
+
+# Woo cart synchronization — outstanding acceptance
 
 The production deployment of `71fa373` is verified in Actions 38262389955.
-The subsequent synchronization adapter is **not released**. Do not close F3/F4
+The synchronization adapter is being released as 0.1.51 by explicit user instruction. Deployment is pending. Do not close F3/F4
 based on the controller contract tests or the PHP/Chromium fixture suite.
 
 ## Implemented boundary
@@ -35,7 +43,7 @@ WooCommerce 9.0.0 source inspected:
 These sources do not prove compatibility with the currently installed production
 Woo version. Confirm the actual WP/Woo/Codela versions in an isolated installation.
 
-## Required before merge/deploy
+## Outstanding real integration acceptance
 
 1. Install the ZIP built by **this standalone repository**, assert the active
    theme version and SHA, then activate it with actual compatible Codela and Woo.
