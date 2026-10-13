@@ -2,10 +2,10 @@
 
 ## Tek güncel devam noktası — 13 Ekim 2026 / 0.1.57
 
-- **Tema 0.1.56 → 0.1.57:** sepet panelindeki ürün listesi, ara toplam ve ödeme düğmesi ortak kenar boşluğu ve 780px içerik ekseninde hizalandı. Masaüstünde ödeme düğmesinin sola kaçmasına neden olan inline-flex yerleşimi düzeltildi.
+- **Tema 0.1.56 → 0.1.57 canlıda:** sepet panelindeki ürün listesi, ara toplam ve ödeme düğmesi ortak kenar boşluğu ve 780px içerik ekseninde hizalandı. Masaüstünde ödeme düğmesinin sola kaçmasına neden olan inline-flex yerleşimi düzeltildi.
 - Ürün görseli/başlık/fiyat aralıkları, miktar ve Kaldır satırı dengelendi. Uzun ad/varyasyon/tutar satırları taşmadan sarılır; görselsiz ürün boş görsel sütunu bırakmaz. Kontroller en az 44px kalır. Özet sabit kalırken ürün listesi bağımsız kayar; alt menü açıklığı korunur.
 - Ortak Button/IconButton ve 0.1.56 kayan Dock davranışı korunur. Sepet controller/Store API/parasal hesap/eklenti kodu değişmedi; yeni JS/istek/bağımlılık yok.
-- Doğrulama: yerel Chromium 320/390/700/1280px hizalama, uzun ad, kısa ekranda çok ürün/ödeme erişimi; ortak UI, cart-race/cart-sync ve 22 paket kontrolü başarılı. Kaynak commit ve gerçek CI/dağıtım bu kayıt sırasında bekliyor.
+- Doğrulama: yerel Chromium 320/390/700/1280px hizalama, uzun ad, kısa ekranda çok ürün/ödeme erişimi; ortak UI, cart-race/cart-sync ve 22 paket kontrolü başarılı. Kaynak [1d492fa](https://github.com/muhammetdkaya/codela-storefront/commit/1d492fa7bd4a5cd11502f1b67f207c07a8c7f7b2); [Actions 38332895672](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38332895672): validate ve deploy başarılı; gerçek **Deploy Storefront only=success**.
 - Kalan: fiziksel cihazda yeni sepet görünümü kabulü; gerçek WP/Woo F3/F4 kabulü, F5 kapsam sınırı ve F6 ölçümü açık. İlk sonraki adım uzun varyasyonlu/çok ürünlü sepeti fiziksel cihazda kontrol etmek.
 - Önceki 0.1.56 yayın kanıtı: [4b1adc5](https://github.com/muhammetdkaya/codela-storefront/commit/4b1adc5e9f987a1fac5d386e4d728faa331fedb6), [Actions 38331821841](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38331821841), validate ve gerçek Deploy Storefront only başarılı.
 
