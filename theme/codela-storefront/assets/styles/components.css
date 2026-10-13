@@ -90,6 +90,7 @@
 }
 .sf-shell .sf-ui-icon-button[hidden]{display:none!important}
 .sf-shell :is(.sf-ui-icon-button,.sf-ui-button,.sf-ui-pressable):focus-visible,
+body.single-product .woocommerce div.product form.cart button.single_add_to_cart_button:focus-visible,
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, #place_order):focus-visible{
   outline:2px solid var(--sf-ui-accent);
   outline-offset:3px;
@@ -100,6 +101,7 @@ body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-componen
   cursor:default;
 }
 .sf-shell .sf-ui-button,
+body.single-product .woocommerce div.product form.cart button.single_add_to_cart_button,
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, #place_order),
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit],
 #sf-panel.is-account-panel .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register) button[type=submit]{
@@ -122,6 +124,7 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
   transition:transform var(--sf-ui-motion-release) var(--sf-ui-ease-release);
 }
 .sf-shell .sf-ui-button--primary,
+body.single-product .woocommerce div.product form.cart button.single_add_to_cart_button,
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, #place_order),
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit],
 #sf-panel.is-account-panel .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register) button[type=submit]{
@@ -176,6 +179,7 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
 }
 
 .sf-shell .sf-ui-button:is(:disabled,[aria-disabled="true"],[aria-busy="true"]),
+body.single-product .woocommerce div.product form.cart button.single_add_to_cart_button:is(:disabled,[aria-disabled="true"],[aria-busy="true"]),
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, #place_order):is(:disabled,[aria-disabled="true"],[aria-busy="true"]),
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit]:is(:disabled,[aria-disabled="true"],[aria-busy="true"]),
 #sf-panel.is-account-panel .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register) button[type=submit]:is(:disabled,[aria-disabled="true"],[aria-busy="true"]){
@@ -184,6 +188,7 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
   pointer-events:none;
 }
 .sf-shell .sf-ui-button:is(:disabled,[aria-disabled="true"],[aria-busy="true"]):active,
+body.single-product .woocommerce div.product form.cart button.single_add_to_cart_button:is(:disabled,[aria-disabled="true"],[aria-busy="true"]):active,
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, #place_order):is(:disabled,[aria-disabled="true"],[aria-busy="true"]):active,
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit]:is(:disabled,[aria-disabled="true"],[aria-busy="true"]):active,
 #sf-panel.is-account-panel .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register) button[type=submit]:is(:disabled,[aria-disabled="true"],[aria-busy="true"]):active{
@@ -202,6 +207,7 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
 @keyframes sf-ui-spin{to{transform:rotate(360deg)}}
 
 .sf-shell .sf-ui-button:active,
+body.single-product .woocommerce div.product form.cart button.single_add_to_cart_button:active,
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, #place_order):active,
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit]:active,
 #sf-panel.is-account-panel .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register) button[type=submit]:active{
@@ -221,6 +227,7 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
 /* The press light is a static paint change. Only transform is animated;
    blur/shadows never interpolate and native Woo spinner pseudo-elements stay free. */
 .sf-shell .sf-ui-button--primary:active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]),
+body.single-product .woocommerce div.product form.cart button.single_add_to_cart_button:active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]),
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, #place_order):active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]),
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit]:active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]),
 #sf-panel.is-account-panel .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register) button[type=submit]:active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]){
@@ -239,7 +246,8 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
   .sf-shell .sf-ui-icon-button,
   .sf-shell .sf-ui-icon-button .sf-icon,
   .sf-shell .sf-ui-button,
-  body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, #place_order),
+  body.single-product .woocommerce div.product form.cart button.single_add_to_cart_button,
+body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, #place_order),
   body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit], #sf-panel.is-account-panel .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register) button[type=submit],
   .sf-shell .sf-ui-pressable{transition:none!important}
   .sf-shell .sf-ui-spinner{animation:none!important}
@@ -248,6 +256,7 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
 /* Opaque materials keep contrast where backdrop sampling is unavailable. */
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
 .sf-shell .sf-ui-button--primary,
+body.single-product .woocommerce div.product form.cart button.single_add_to_cart_button,
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, #place_order),
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit],
 #sf-panel.is-account-panel .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register) button[type=submit]{background:var(--sf-ui-ink);}
@@ -256,6 +265,7 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
 }
 @media(prefers-reduced-transparency:reduce){
 .sf-shell .sf-ui-button--primary,
+body.single-product .woocommerce div.product form.cart button.single_add_to_cart_button,
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, #place_order),
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit],
 #sf-panel.is-account-panel .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register) button[type=submit]{background:var(--sf-ui-ink);-webkit-backdrop-filter:none;backdrop-filter:none;}
@@ -269,6 +279,7 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
 }
 @media(forced-colors:active){
 .sf-shell .sf-ui-button--primary,
+body.single-product .woocommerce div.product form.cart button.single_add_to_cart_button,
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, #place_order),
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit],
 #sf-panel.is-account-panel .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register) button[type=submit],
