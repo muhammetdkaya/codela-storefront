@@ -10,7 +10,7 @@ const css=['assets/styles/tokens.css','assets/storefront.css','assets/styles/ove
  .map(p=>fs.readFileSync('theme/codela-storefront/'+p,'utf8')).join('\n');
 const thumb='<li><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22240%22/%3E" alt="Ürün görünümü"></li>';
 const related='<li class="product"><a href="/product"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22400%22/%3E"><h2 class="woocommerce-loop-product__title">Ürün</h2></a><span class="price">₺500</span></li>';
-const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>.woocommerce div.product div.images .flex-control-thumbs{padding:0}${css}</style></head>
+const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>.woocommerce div.product div.images .flex-control-thumbs{padding:0}.woocommerce div.product div.images .flex-control-thumbs li img{opacity:.5}${css}</style></head>
 <body class="single-product woocommerce woocommerce-page">${header}<main class="sf-content"><div data-block-name="woocommerce/legacy-template" class="content-area alignwide"><main class="site-main">
 <div class="product type-product"><div class="woocommerce-product-gallery images sf-ui-gallery sf-ui-gallery--hero"><a href="#" class="woocommerce-product-gallery__trigger">+</a><div class="woocommerce-product-gallery__wrapper">
 <div class="woocommerce-product-gallery__image"><a href="/full-image" aria-label="Görseli büyüt" aria-haspopup="dialog"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%221000%22/%3E" alt="Ürün"></a></div></div>
@@ -73,6 +73,7 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
    assert(rail.top>70&&rail.bottom<=result.gallery.bottom,'Rail overlays gallery below header');
    assert(rail.left>=19&&rail.right<=width-19,'Rail keeps equal viewport insets');
    assert(Math.abs((rail.left+rail.right)/2-width/2)<1,'Rail is centered');
+   assert.equal(await page.locator('.flex-control-thumbs img').nth(1).evaluate(el=>getComputedStyle(el).opacity),'1','Native Woo opacity cannot fade other previews');
    assert(rail.thumbWidth>=44&&rail.thumbHeight>=44,'Native thumbnail click target remains at least 44px');
    assert.equal(rail.padding,'6px','Native Woo rule cannot erase rail spacing');
    assert.equal(rail.background,'rgba(250, 250, 252, 0.28)','Rail reuses floating glass surface');

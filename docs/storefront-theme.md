@@ -1,12 +1,20 @@
 # Codela Storefront — güncel teknik durum
 
 
+## Son doğrulanmış devam noktası — 13 Ekim 2026 / 0.1.66
+
+- Tema 0.1.65 → 0.1.66: canlı Woo 11.2.1 thumbnail `li img` opacity:.5 kuralı adaptörü eziyordu. Ortak galeri seçicisine `li` eklendi; tüm önizlemeler net, seçili görsel yalnız 1px kenarla ayrılır. Fixture gerçek native opacity kuralını içerir.
+- Kapsül ortalanmış, içerik kadar geniş, eşit boşluklu; ayrı büyüteç gizli. Native görsel linki/lightbox/slider korunur. Küçük indirim etiketi ortak cam yüzey kullanır. Yeni runtime JS yok.
+- Doğrulama/yayın: 23 yerel paket testi başarılı. Yerel Chromium runtime SIGSEGV ile açılamadı; 5 genişlikte tarayıcı regresyonunun CI sonucu ve canlı opacity kabulü bekleniyor. Fiziksel mobil swipe ve F3/F4/F5/F6 açık.
+- Sonraki iş: mevcut Codela satın alma barını ürün ekranında alt menü yerine geçirmek; ürün deneyimi planı ile dönüşüm araçlarını bütünleştirmek.
+
+
 ## Son doğrulanmış devam noktası — 13 Ekim 2026 / 0.1.65
 
 - Tema 0.1.64 → 0.1.65: ayrı büyüteç CSS adaptöründe gizlendi; görsel bağlantıları native Woo lightbox açar. 0.1.64 canlı parametrelerinde zoom_enabled hâlâ 1 olduğundan etkisiz zoom filtresi kaldırıldı; Woo yakınlaştırma ayarına müdahale edilmez. Linklere erişilebilir büyütme adı/dialog ipucu eklendi. Slider, swipe, varyasyon ve lightbox motoru Woo'ya aittir.
 - Kapsül eşit 6px iç boşluk, 1px seçili kenar ve net (opacity=1) önizlemeler kullanır. Yuvarlak önizleme köşeleri dış kapsülde kırpılmaz; kontrol için ayrılan boş alan kaldırıldı. Uzun liste hâlâ kayar, tek görselde kapsül gizlenir.
 - İndirim etiketi küçük metin kapsülü; native ürün etiketi ortak cam/fallback/forced-colors yüzeyine bağlandı. Yeni runtime JS veya kütüphane yok.
-- Doğrulama/yayın: 5 genişlikte ürün tarayıcı testi, PHP medya adaptörü ve 23 paket testi geçti. 0.1.64 kaynak d9dbcd84d46ee75313346e9753ca634003c12c26 / Actions 38424850968 validate ve gerçek Deploy Storefront only başarılı. Canlı Demo 06 görsele click/Enter ile lightbox açılması/kapanması doğrulandı. 0.1.65 görünür büyüteci gizleme düzeltmesi için CI ve canlı kabul bekliyor.
+- Doğrulama/yayın: 5 genişlikte ürün tarayıcı testi, PHP medya adaptörü ve 23 paket testi geçti. 0.1.64 kaynak d9dbcd84d46ee75313346e9753ca634003c12c26 / Actions 38424850968 validate ve gerçek Deploy Storefront only başarılı. Canlı Demo 06 görsele click/Enter ile lightbox açılması/kapanması doğrulandı. 0.1.65 kaynak 10114fff4744a5a6f24acbdb5ce86ce9ea73e81b / Actions 38426236830 validate, deploy ve gerçek Deploy Storefront only başarılı. Canlı büyüteç display:none; görsele click ile lightbox açılma/kapanma doğrulandı.
 - Sonraki iş: mevcut Codela satın alma barını ürün ekranında alt menü yerine geçirmek; dönüşüm araçlarını mevcut planla bütünleştirmek. Fiziksel mobil swipe ve F3/F4/F5/F6 kabulü açık.
 
 

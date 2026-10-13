@@ -47,13 +47,13 @@
 .woocommerce div.product div.sf-ui-gallery .flex-control-thumbs li:has(img.flex-active){
   border-color:var(--sf-ui-glass-ink);
 }
-.woocommerce div.product div.sf-ui-gallery .flex-control-thumbs img{
+.woocommerce div.product div.sf-ui-gallery .flex-control-thumbs li img{
   display:block;width:100%;height:100%;object-fit:contain;
   border-radius:var(--sf-ui-pill);
   background:var(--sf-gallery-surface);opacity:1;cursor:pointer;
 }
-.woocommerce div.product div.sf-ui-gallery .flex-control-thumbs img:is(.flex-active,:hover,:focus-visible){opacity:1}
-.woocommerce div.product div.sf-ui-gallery .flex-control-thumbs img:focus-visible{
+.woocommerce div.product div.sf-ui-gallery .flex-control-thumbs li img:is(.flex-active,:hover,:focus-visible){opacity:1}
+.woocommerce div.product div.sf-ui-gallery .flex-control-thumbs li img:focus-visible{
   outline:2px solid var(--sf-ui-accent);outline-offset:-2px;
 }
 @media(min-width:701px){
