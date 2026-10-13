@@ -43,6 +43,20 @@
       ]
     },
     {
+      "id": "product",
+      "label": "Product page",
+      "description": "Product gallery presentation.",
+      "fields": [
+        {
+          "id": "product_gallery_thumbnails",
+          "type": "checkbox",
+          "default": true,
+          "label": "Show gallery thumbnails",
+          "description": "Show selectable thumbnails below the product gallery. Swipe remains available."
+        }
+      ]
+    },
+    {
       "id": "footer",
       "label": "Footer",
       "description": "Compact, one-line copyright and legal links.",

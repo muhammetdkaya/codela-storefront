@@ -1,6 +1,6 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.59 (product page successfully deployed). Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.60 (gallery; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
 
 ## One design, not one enormous universal widget
@@ -229,6 +229,22 @@ functionality or keyboard accessibility.
 - Apply material changes through shared tokens, never cart/header/dock copies.
   Keep reduced-transparency/forced-color and motion behavior unchanged.
   Private visual references now include plain white and text/color backdrops.
+
+## Reusable media presentation (0.1.60)
+
+- inc/media.php and styles/gallery.css bind native Woo gallery markup and
+  the standard core/gallery style sf-media-slider to one media surface.
+  Woo keeps its carousel/variation/lightbox engine; core Gallery uses
+  native scrolling and scroll snap. Never install a second engine on Woo.
+- Product gallery spans the viewport behind the fixed header; native breadcrumb
+  moves below the gallery before the title. Images use contain and an 82svh cap;
+  preserve responsive sources and native loading.
+- Core Gallery style is reusable in page content/templates, keyboard focusable,
+  and registered with shared tokens for editor and frontend.
+- Native Woo gallery trigger joins common IconButton declarations. Append
+  separate selectors; raising specificity with :is() can break Menu/X placement.
+- Read [the phased product plan](product-experience-plan.md) before purchase-bar
+  or conversion-widget work. Existing Codela implementations own those behaviors.
 
 ## Contribution checklist
 

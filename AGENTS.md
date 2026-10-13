@@ -1,6 +1,14 @@
 # Codela Storefront — güncel çalışma kuralları
 
-## Tek güncel devam noktası — 13 Ekim 2026 / 0.1.59
+## Tek güncel devam noktası — 13 Ekim 2026 / 0.1.60
+
+- **Tema 0.1.59 → 0.1.60:** yeni yön: önce tam genişlikte, header arkasından başlayan galeri; sonra alt menünün yerini alan satın alma barı ve Codela dönüşüm araçlarıyla bütünleşme. [Güncel plan](docs/product-experience-plan.md).
+- İlk aşama: ortak gallery.css + inc/media.php; Woo native galeri motoru korunur. Aynı sunum standart Galeri bloğunda “Kaydırılabilir galeri” stiliyle kullanılabilir. Yeni runtime JS/kütüphane/API yok.
+- Sonraki iş mevcut codela-sticky-cart.js ve conversion-tools.php sahiplik/yerleşim uyarlamasıdır. İkinci motor kurulmayacak; bu sürüm alt bar/dönüşüm araçlarını değiştirmez.
+- Doğrulama: PHP adaptör/ayar, 5 genişlikte üst kenar/tam genişlik, core Gallery klavye kaydırması, ortak UI, mevcut gezinme ve 23 paket testi başarılı. Gerçek Woo çok görselli swipe/varyasyon/lightbox ve fiziksel cihaz kabulü açık.
+- Yayın: kaynak ve gerçek CI/dağıtım bekliyor. F3/F4/F5/F6 kapanmadı.
+
+## Önceki canlı devam noktası — 13 Ekim 2026 / 0.1.59
 
 - **Tema 0.1.58 → 0.1.59 canlıda:** WooCommerce native single-product şablonunu bozmadan ürün detay sayfasına özgü responsive yerleşim eklendi. Galeri, küçük resimler, sağ bilgi/fiyat sütunu, varyasyon ve miktar alanı, açıklama sekmeleri, benzer ürün kartları düzenlendi. Mobilde tek sütun.
 - Satın alma düğmesi doğrudan merkezi `assets/styles/components.css` Button/pressed/focus/disabled/loading/fallback sözleşmesine bağlandı. `assets/styles/product.css` yalnız ürün ekranı yerleşimi ve boyut token'larını yönetir; WooCommerce varyasyon/galeri/sepete ekleme işlevi native kalır. Yeni JS/API/kütüphane yoktur.

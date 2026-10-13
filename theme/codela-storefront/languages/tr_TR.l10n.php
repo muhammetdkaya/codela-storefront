@@ -95,5 +95,11 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'Our collection is coming soon.' => 'Koleksiyonumuz yakında burada.',
 'The store is temporarily unavailable. Please try again later.' => 'Mağaza geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.',
 'Codela Storefront requires the current Codela Commerce Toolkit plugin with theme support and WooCommerce 9.0+. Activate or update these plugins, or switch to another theme.' => 'Codela Storefront için tema destekli güncel Codela Commerce Toolkit ve WooCommerce 9.0+ gereklidir. Eklentileri etkinleştirin veya güncelleyin; ya da başka bir temaya geçin.',
+'Sliding gallery' => 'Kaydırılabilir galeri',
+'Image gallery' => 'Görsel galerisi',
+'Product page' => 'Ürün sayfası',
+'Product gallery presentation.' => 'Ürün galerisinin görünümü.',
+'Show gallery thumbnails' => 'Galeri küçük görsellerini göster',
+'Show selectable thumbnails below the product gallery. Swipe remains available.' => 'Ürün galerisinin altında seçilebilir küçük görselleri göster. Kaydırma kullanılmaya devam eder.',
 ] ];
 
