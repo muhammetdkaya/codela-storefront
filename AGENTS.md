@@ -2,11 +2,11 @@
 
 ## Tek güncel devam noktası — 13 Ekim 2026 / 0.1.60
 
-- **Tema 0.1.59 → 0.1.60:** yeni yön: önce tam genişlikte, header arkasından başlayan galeri; sonra alt menünün yerini alan satın alma barı ve Codela dönüşüm araçlarıyla bütünleşme. [Güncel plan](docs/product-experience-plan.md).
+- **Tema 0.1.59 → 0.1.60 canlıda:** yeni yön: önce tam genişlikte, header arkasından başlayan galeri; sonra alt menünün yerini alan satın alma barı ve Codela dönüşüm araçlarıyla bütünleşme. [Güncel plan](docs/product-experience-plan.md).
 - İlk aşama: ortak gallery.css + inc/media.php; Woo native galeri motoru korunur. Aynı sunum standart Galeri bloğunda “Kaydırılabilir galeri” stiliyle kullanılabilir. Yeni runtime JS/kütüphane/API yok.
 - Sonraki iş mevcut codela-sticky-cart.js ve conversion-tools.php sahiplik/yerleşim uyarlamasıdır. İkinci motor kurulmayacak; bu sürüm alt bar/dönüşüm araçlarını değiştirmez.
 - Doğrulama: PHP adaptör/ayar, 5 genişlikte üst kenar/tam genişlik, core Gallery klavye kaydırması, ortak UI, mevcut gezinme ve 23 paket testi başarılı. Gerçek Woo çok görselli swipe/varyasyon/lightbox ve fiziksel cihaz kabulü açık.
-- Yayın: kaynak ve gerçek CI/dağıtım bekliyor. F3/F4/F5/F6 kapanmadı.
+- Yayın: [kaynak 8f4a2e3](https://github.com/muhammetdkaya/codela-storefront/commit/8f4a2e32c346a04466393cab006e884bf3e785c5); [Actions 38377864718](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38377864718): validate ve deploy başarılı; gerçek **Deploy Storefront only=success**. F3/F4/F5/F6 kapanmadı.
 
 ## Önceki canlı devam noktası — 13 Ekim 2026 / 0.1.59
 
