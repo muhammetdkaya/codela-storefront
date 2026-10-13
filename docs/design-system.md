@@ -1,6 +1,6 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.68 (gallery; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.69 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
 
 ## One design, not one enormous universal widget
@@ -530,3 +530,7 @@ Woo before/after add-to-cart-button hooks wrap its original quantity and submit 
 ### Shared bottom-bar geometry — 0.1.68
 
 Navigation and mobile purchase share `sf-ui-bottom-bar-*` tokens: height 58px, inner controls 48px, padding 4px, maximum width 430px, side inset 16px, bottom gap 12px plus safe area. Geometry belongs to tokens; product and navigation compositions consume it. The purchase remains the original Woo quantity/submit inside its form.
+
+### Native product information — 0.1.69
+
+SKU/category/tags use Woo's existing metadata template inside the native Additional information action, alongside attributes/weight/dimensions. A missing native tab is added with Woo's existing callback; an existing callback is preserved. General stock markup is rendered there; Woo variation availability HTML bypasses the placement filter so live selection remains informative. No separate tab system, data calculation or runtime is introduced.

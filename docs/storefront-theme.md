@@ -5,8 +5,8 @@
 
 - Tema 0.1.68 → 0.1.69: stok kodu/kategori/etiketler ve genel stok bilgisi native Ek bilgi sekmesine taşındı. Sekme yoksa Woo'nun mevcut additional_information callback'iyle eklenir; var olan sekme/özellik/ağırlık/boyut ve extension hook'ları korunur.
 - Native meta summary hook'undan kaldırılır, additional-information action'ında render edilir. Genel stock HTML yalnız bu sekmede; varyasyonun canlı availability HTML'i korunur. İkinci tabs/form/JS/API yok.
-- Doğrulama/yayın: PHP hook/sekme/stok kontrolleri ve 23 paket testi başarılı. Mevcut sekme callback'ini koruma, sekme yokken ekleme, genel stok taşıma, varyasyon availability ve diğer sayfalardaki stok HTML'i kontrol edildi. CI/yayın ve canlı kabul bekliyor.
-- Kalan/sıradaki: fiziksel mobil klavye/safe-area ve gerçek varyasyon/grup/harici satın alma kabulü, dönüşüm araçları bütünlüğü. Slider duraklatıldı; F3/F4/F5/F6 açık.
+- Doğrulama/yayın: PHP hook/sekme/stok kontrolleri ve 23 paket testi başarılı. Mevcut sekme callback'ini koruma, sekme yokken ekleme, genel stok taşıma, varyasyon availability ve diğer sayfalardaki stok HTML'i kontrol edildi. Kaynak a96958760251c7d5f18d2cecd8266d8d215122ad / Actions 38468155710 attempt 2: validate=success, deploy=success; gerçek Deploy Storefront only başarılı (deploy.py ve 'Storefront deployed; checks passed.' log kanıtı). İlk deneme mevcut navigation-browser 55ms animasyon ara-konum kontrolünde durdu; aynı kodla tekrar geçti. Canlı Demo 12: summary meta/stock=0, Ek bilgi meta=1 ve '25 adet stokta', Koleksiyon/Günlük özelliği korundu, satın alma butonu=1. Demo 19: stok yalnız sekmede 'Stokta yok', satın alma alanı=0 ve dock=1. Yeni variation availability guard PHP testinde doğrulandı; gerçek varyasyon kabulü hâlâ açık.
+- Kalan/sıradaki: fiziksel mobil klavye/safe-area ve gerçek varyasyon/grup/harici satın alma kabulü, dönüşüm araçları bütünlüğü. Slider duraklatıldı; F3/F4/F5/F6 açık. Mevcut 55ms ara-konum animasyon testinin CI zamanlaması kararlılığı ayrıca takip edilmeli.
 
 ## Son doğrulanmış devam noktası — 13 Ekim 2026 / 0.1.68
 
