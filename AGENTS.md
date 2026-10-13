@@ -1,13 +1,11 @@
 # Codela Storefront — güncel çalışma kuralları
 
 
-## Son doğrulanmış devam noktası — 13 Ekim 2026 / 0.1.67
+## Son doğrulanmış devam noktası — 13 Ekim 2026 / 0.1.68
 
-- Tema 0.1.66 → 0.1.67: kullanıcı slider çalışmasına ara verdi; öncelik satın alma. Mobilde Woo'nun gerçek miktar/submit alanı `.sf-product-purchase` olarak aynı form içinde sabit alttadır. Ortak cam yüzey + Button, safe-area, 430px sınır; desktop inline kalır. İkinci form/klon/click proxy/istek/JS yok.
-- Codela `codela-sticky-cart.js` incelendi: classic+swipe+layout-ready gate ve scroll-past davranışı bu ekranı karşılamıyor. Onu kopyalamak veya ikinci motor eklemek yerine native Woo hook'larıyla yalnız yerleşim yapıldı. Varyasyon/grup/harici eylem ve stok sahipliği Woo'dadır.
-- Satın alma alanı olan belgede alt dock gizlenir; mevcut dialog içine taşınan tek dock görünür, ürün satın alma barı modal açıkken gizlenir ve kapanınca geri gelir. Satın alma formu olmayan stok dışı üründe dock korunur. Ürün header'ı mevcut araçlı düzene geçer; arama/sepet/hesap ulaşılabilir.
-- Doğrulama: PHP native hook ve 23 paket testi geçti. Tarayıcı regresyonuna tek submit, doğal min doğrulaması, 5 genişlikte alt yerleşim, dialog sahipliği ve stoksuz fallback eklendi. Yerel Chromium mevcut runtime'da açılamadı; CI tarayıcı kontrolleri başarılı. Kaynak 682d0d5a5cfaa564af305a4b766cb28e1adbfa78; Actions 38465051069 validate=success, deploy=success. Connector job steps verisini boş döndürdüğü için adım düzeyinde sonuç ayrıca doğrulanamadı; canlı yeni PHP/CSS ve formun tek wrapper/tek gerçek buton/quantity alanı doğrulandı. Gerçek Demo 06 tek tıklama: sepet 0→1, popup'ta tek ürün/adet=1, kaldırma sonrası 0; test sepeti temizlendi. Demo 19 stok dışı: satın alma wrapper yok, tek dock korunuyor. Masaüstü native form inline; mobil 320/390/700px yerleşim ve popup sahipliği CI'da geçti.
-- Kalan: fiziksel mobil klavye/safe-area, gerçek varyasyonlu/grup/harici ürün örneklemi ve F3/F4/F5/F6. Slider kullanıcı isteğiyle duraklatıldı; sonraki iş satın alma görünümünün cihaz kabulü, ardından dönüşüm araçları bütünlüğü.
+- Tema 0.1.67 → 0.1.68: kullanıcı ürün sayfasındaki Ana Sayfa / kategori / ürün yol bilgisini istemiyor. Native Woo breadcrumb ürün belgesinde kaldırılır, summary'ye yeniden eklenmez. Başlık/fiyat doğrudan galeri ardından gelir. Kullanıcının ek isteği: satın alma alanı normal alt menüyle aynı 58px yüksekliğe, 430px azami genişliğe, 16px yan ve 12px safe-area alt boşluğa bağlandı. Navigation/purchase tek bottom-bar ölçü token'larını kullanır; 48px iç kontrol hedefleri korunur.
+- Doğrulama: mevcut PHP breadcrumb sözleşmesi yeni karara uyarlandı; PHP ve 23 paket testi başarılı. Tarayıcı kontrolü ortak 58px ölçüyü doğrular; CI/yayın sonucu kapanışta eklenecek.
+- Kalan/sıradaki: 0.1.67 satın alma alanının fiziksel mobil klavye/safe-area ve gerçek varyasyon/grup/harici ürün kabulü; dönüşüm araçları bütünlüğü. Slider duraklatıldı; F3/F4/F5/F6 açık.
 
 ## Başlangıçta okunacaklar
 

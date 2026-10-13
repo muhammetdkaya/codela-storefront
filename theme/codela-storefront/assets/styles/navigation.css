@@ -34,19 +34,19 @@
   }
   :is(.has-mobile-dock,.has-checkout-header) .sf-header .sf-actions{display:none}
   .sf-mobile-dock{
-    --sf-dock-bottom:calc(12px + env(safe-area-inset-bottom,0px));
+    --sf-dock-bottom:calc(var(--sf-ui-bottom-bar-gap) + env(safe-area-inset-bottom,0px));
     --sf-dock-travel:0px;
     --sf-dock-scale:1;
     --sf-dock-index:0;
     display:block;
     position:fixed;
     z-index:1000;
-    left:16px;
-    right:16px;
+    left:var(--sf-ui-bottom-bar-inset);
+    right:var(--sf-ui-bottom-bar-inset);
     bottom:var(--sf-dock-bottom);
-    max-width:430px;
+    max-width:var(--sf-ui-bottom-bar-max-width);
     margin:0 auto;
-    min-height:58px;
+    min-height:var(--sf-ui-bottom-bar-height);
     border-radius:999px;
     color:var(--sf-ui-glass-ink);
     isolation:isolate;
@@ -60,8 +60,8 @@
     grid-template-columns:repeat(4,minmax(0,1fr));
     position:relative;
     isolation:isolate;
-    min-height:56px;
-    padding:4px;
+    min-height:var(--sf-ui-bottom-bar-height);
+    padding:var(--sf-ui-bottom-bar-padding);
     border:1px solid transparent;
     border-radius:999px;
     transform-origin:50% 100%;
@@ -103,7 +103,7 @@
     justify-content:center;
     gap:2px;
     min-width:0;
-    min-height:48px;
+    min-height:var(--sf-ui-bottom-bar-control-height);
     border-radius:999px;
     color:var(--sf-ui-glass-ink);
     background:transparent;

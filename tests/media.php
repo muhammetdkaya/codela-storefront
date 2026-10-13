@@ -22,8 +22,8 @@ foreach ([false,0,'0',''] as $value) { $settings=['product_gallery_thumbnails'=>
 foreach ($actions['init'][10] as $callback) { $callback(); }
 check($block_style[0] === 'core/gallery' && $block_style[1]['style_handle'] === $style[0], 'Reusable native gallery style');
 foreach ($actions['wp'][10] as $callback) { $callback(); }
-check($removed === ['woocommerce_before_main_content','woocommerce_breadcrumb',20], 'Breadcrumb moves after hero');
-check(in_array('woocommerce_breadcrumb',$actions['woocommerce_single_product_summary'][1],true), 'Breadcrumb remains before title');
+check($removed === ['woocommerce_before_main_content','woocommerce_breadcrumb',20], 'Product breadcrumb removed');
+check(!in_array('woocommerce_breadcrumb',$actions['woocommerce_single_product_summary'][1] ?? [],true), 'Product breadcrumb is not reinserted');
 unset($GLOBALS['removed']);$product_page=false;
 foreach ($actions['wp'][10] as $callback) { $callback(); }
 check(!isset($GLOBALS['removed']), 'Non-product breadcrumb unchanged');

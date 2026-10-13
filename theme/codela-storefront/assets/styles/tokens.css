@@ -30,6 +30,13 @@
   --sf-ui-icon-close:22px;
   --sf-ui-icon-clear:12px;
   --sf-ui-action-height:54px;
+  /* One mobile bottom-bar geometry for navigation and product purchase. */
+  --sf-ui-bottom-bar-height:58px;
+  --sf-ui-bottom-bar-control-height:48px;
+  --sf-ui-bottom-bar-padding:4px;
+  --sf-ui-bottom-bar-max-width:430px;
+  --sf-ui-bottom-bar-inset:16px;
+  --sf-ui-bottom-bar-gap:12px;
   --sf-ui-control-radius:var(--cdl-ct-radius,12px);
   --sf-ui-pill:999px;
   /* Shared control material: tint preserves contrast over changing content. */

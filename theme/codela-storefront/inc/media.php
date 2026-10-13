@@ -33,8 +33,8 @@ add_action( 'after_setup_theme', function() {
 add_action( 'init', function() {
     // Standard Gallery blocks can select this style without a new custom block or script.
     if ( ! function_exists( 'register_block_style' ) ) { return; }
-    wp_register_style( 'codela-storefront-tokens', get_template_directory_uri() . '/assets/styles/tokens.css', [], '0.1.67' );
-    wp_register_style( 'codela-storefront-gallery', get_template_directory_uri() . '/assets/styles/gallery.css', [ 'codela-storefront-tokens' ], '0.1.67' );
+    wp_register_style( 'codela-storefront-tokens', get_template_directory_uri() . '/assets/styles/tokens.css', [], '0.1.68' );
+    wp_register_style( 'codela-storefront-gallery', get_template_directory_uri() . '/assets/styles/gallery.css', [ 'codela-storefront-tokens' ], '0.1.68' );
     register_block_style( 'core/gallery', [
         'name' => 'sf-media-slider',
         'label' => __( 'Sliding gallery', 'codela-storefront' ),
@@ -55,7 +55,6 @@ add_action( 'init', function() {
 
 add_action( 'wp', function() {
     if ( ! function_exists( 'is_product' ) || ! is_product() ) { return; }
-    // Keep the native breadcrumb, below the edge-to-edge gallery and above the title.
+    // Product details start directly with the title; no breadcrumb trail.
     remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20 );
-    add_action( 'woocommerce_single_product_summary', 'woocommerce_breadcrumb', 1 );
 } );

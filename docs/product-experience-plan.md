@@ -39,3 +39,7 @@ Woo blok şablonunun `.woocommerce` sınıfı body üzerinde; descendant wrapper
 ### 0.1.67 satın alma kararı — slider duraklatıldı
 
 Kullanıcı 13 Ekim 23:37'de slider'a ara verilmesini, sepete ekleme eyleminin alta alınmasını istedi. Eklenti sticky-cart kaynağı incelendi; classic/swipe/layout-ready koşulları ve scroll-past görünürlük bu tema akışına uygun değil. Native Woo formundaki gerçek miktar ve butonun hook ile ortak yüzeyde sabitlenmesi seçildi. Yeni satın alma motoru veya eklenti kopyası yok; bu adım için eklenti yayını gerekmez. Genel dock yalnız ürün belgesinde ve satın alma alanı varsa gizlenir; dialogda tek dock korunur. Masaüstü inline form, stok dışı dock, native varyasyon/grup/harici akış korunur. Fiyat/stock tema tarafından hesaplanmaz. Fiziksel klavye/safe-area ve tüm gerçek ürün türü kabulü açık; önce canlı satın alma görünümü kabulü.
+
+### 0.1.68 sade ürün bilgisi
+
+Kullanıcı ürün sayfasındaki yol bilgisini kaldırdı. Breadcrumb ürün belgesinde render edilmez; native başlık ve fiyat galeri ardından gelir. Eski galeri sonrası breadcrumb yerleşimi kararı bu taleple değişti.

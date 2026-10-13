@@ -15,7 +15,7 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
 <div class="product type-product"><div class="woocommerce-product-gallery images sf-ui-gallery sf-ui-gallery--hero"><a href="#" class="woocommerce-product-gallery__trigger">+</a><div class="woocommerce-product-gallery__wrapper">
 <div class="woocommerce-product-gallery__image"><a href="/full-image" aria-label="Görseli büyüt" aria-haspopup="dialog"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%221000%22/%3E" alt="Ürün"></a></div></div>
 <ol class="flex-control-thumbs">${thumb.replace('<img ' ,'<img class="flex-active" ')+thumb.repeat(6)}</ol></div>
-<div class="summary entry-summary"><nav class="woocommerce-breadcrumb">Mağaza / Kategori / Ürün</nav><h1 class="product_title entry-title">Minimal Ürün Başlığı</h1><p class="price">₺1.250</p>
+<div class="summary entry-summary"><h1 class="product_title entry-title">Minimal Ürün Başlığı</h1><p class="price">₺1.250</p>
 <div class="woocommerce-product-details__short-description"><p>Ürün açıklaması. Kumaş ve bakım bilgileri.</p></div>
 <form class="cart" method="post"><div class="sf-product-purchase"><div class="quantity"><input class="qty" type="number" value="1" min="1"></div>
 <button type="submit" name="add-to-cart" value="123" class="single_add_to_cart_button button alt">Sepete Ekle</button></div></form>
@@ -50,8 +50,8 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
      relatedColumns:getComputedStyle(related).gridTemplateColumns.split(' ').length};
    });
    assert(!result.overflow,'No horizontal overflow at '+width+': '+JSON.stringify(result));
-   assert(result.buttonHeight>=54,'Shared 54px purchase button at '+width);
-   assert(result.inputHeight>=54,'Shared control height for quantity at '+width);
+   assert(result.buttonHeight>=(width<=700?48:54),'Shared purchase target at '+width);
+   assert(result.inputHeight>=(width<=700?48:54),'Shared control height for quantity at '+width);
    assert.equal(result.buttonBackground,'color(srgb 0.133333 0.137255 0.121569 / 0.9)','Shared primary UI color');
    assert.equal(result.buttonTransition,'transform','Only shared transform animates');
    assert.equal(result.buttonType,'submit','Native cart submission preserved');
@@ -65,6 +65,7 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
    assert.equal(await page.locator('form.cart .single_add_to_cart_button').count(),1,'One native submit control');
    if(width<=700){
     assert.equal(purchase.position,'fixed','Purchase occupies bottom on mobile');
+    assert(Math.abs(purchase.rect.height-58)<1,'Purchase matches the 58px navigation bar');
     assert(purchase.rect.bottom<=900-11&&purchase.rect.bottom>=900-15,'Purchase clears bottom safe area');
     assert.equal(await page.locator('.sf-shell > .sf-mobile-dock').evaluate(el=>getComputedStyle(el).display),'none','Document dock is replaced by purchase');
     assert.equal(await page.locator('.sf-actions').evaluate(el=>getComputedStyle(el).display),'flex','Store tools remain available in header');
@@ -105,6 +106,7 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
   await page.locator('#sf-panel').evaluate(dialog=>{dialog.append(document.querySelector('.sf-mobile-dock'));dialog.showModal()});
   assert.equal(await page.locator('.sf-product-purchase').evaluate(el=>getComputedStyle(el).visibility),'hidden','Purchase hides while dialog owns bottom');
   assert.equal(await page.locator('#sf-panel .sf-mobile-dock').evaluate(el=>getComputedStyle(el).display),'block','Same dock available in dialog');
+  assert.equal(await page.locator('#sf-panel .sf-mobile-dock').evaluate(el=>el.getBoundingClientRect().height),58,'Navigation and purchase share the same height');
   await page.locator('#sf-panel').evaluate(dialog=>{dialog.close();document.querySelector('.sf-shell').append(dialog.querySelector('.sf-mobile-dock'))});
   assert.equal(await page.locator('.sf-product-purchase').evaluate(el=>getComputedStyle(el).visibility),'visible','Purchase restores after dialog');
   await page.locator('.sf-product-purchase').evaluate(el=>el.remove());

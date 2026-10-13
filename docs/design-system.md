@@ -1,6 +1,6 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.67 (gallery; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.68 (gallery; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
 
 ## One design, not one enormous universal widget
@@ -526,3 +526,7 @@ Native thumbnail image selectors include `li img` so Woo 11.2.1 opacity rules ca
 ### Native product purchase surface — 0.1.67
 
 Woo before/after add-to-cart-button hooks wrap its original quantity and submit inside the existing form. `sf-product-purchase` uses common floating material in components.css, while product.css owns layout. On <=700px it replaces the document dock at the bottom; desktop remains inline. The single dock still moves into the native dialog, where it is available; the document purchase hides while that dialog or the Woo lightbox is open. No clone/proxy/new purchase runtime. Header tools use the existing non-dock layout. A product without the wrapper retains its dock.
+
+### Shared bottom-bar geometry — 0.1.68
+
+Navigation and mobile purchase share `sf-ui-bottom-bar-*` tokens: height 58px, inner controls 48px, padding 4px, maximum width 430px, side inset 16px, bottom gap 12px plus safe area. Geometry belongs to tokens; product and navigation compositions consume it. The purchase remains the original Woo quantity/submit inside its form.

@@ -1,6 +1,12 @@
 # Codela Storefront — güncel teknik durum
 
 
+## Son doğrulanmış devam noktası — 13 Ekim 2026 / 0.1.68
+
+- Tema 0.1.67 → 0.1.68: kullanıcı ürün sayfasındaki Ana Sayfa / kategori / ürün yol bilgisini istemiyor. Native Woo breadcrumb ürün belgesinde kaldırılır, summary'ye yeniden eklenmez. Başlık/fiyat doğrudan galeri ardından gelir. Kullanıcının ek isteği: satın alma alanı normal alt menüyle aynı 58px yüksekliğe, 430px azami genişliğe, 16px yan ve 12px safe-area alt boşluğa bağlandı. Navigation/purchase tek bottom-bar ölçü token'larını kullanır; 48px iç kontrol hedefleri korunur.
+- Doğrulama: mevcut PHP breadcrumb sözleşmesi yeni karara uyarlandı; PHP ve 23 paket testi başarılı. Tarayıcı kontrolü ortak 58px ölçüyü doğrular; CI/yayın sonucu kapanışta eklenecek.
+- Kalan/sıradaki: 0.1.67 satın alma alanının fiziksel mobil klavye/safe-area ve gerçek varyasyon/grup/harici ürün kabulü; dönüşüm araçları bütünlüğü. Slider duraklatıldı; F3/F4/F5/F6 açık.
+
 ## Son doğrulanmış devam noktası — 13 Ekim 2026 / 0.1.67
 
 - Tema 0.1.66 → 0.1.67: kullanıcı slider çalışmasına ara verdi; öncelik satın alma. Mobilde Woo'nun gerçek miktar/submit alanı `.sf-product-purchase` olarak aynı form içinde sabit alttadır. Ortak cam yüzey + Button, safe-area, 430px sınır; desktop inline kalır. İkinci form/klon/click proxy/istek/JS yok.
