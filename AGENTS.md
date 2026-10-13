@@ -1,5 +1,11 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Aktif ürün sayfası çalışması — 13 Ekim 2026 / 0.1.59
+
+- [Ürün detay tasarım PR #17](https://github.com/muhammetdkaya/codela-storefront/pull/17) açıldı: WooCommerce native single-product şablonu, ürün galerisi, varyasyon/sepet işlevleri korunuyor. `assets/styles/product.css` yalnız yerleşimi, `assets/styles/components.css` ortak satın alma butonu durumlarını yönetiyor.
+- **0.1.59 kodu PR aşamasında; 0.1.58 canlıdır.** PR testleri/yayın kanıtı doğrulanana kadar 0.1.59'u canlı ilan etmeyin. Testler güncellendi; gerçek WP/Woo ve fiziksel cihaz kabulü açık.
+- Devam adımı: PR #17 test ve tarayıcı kabulünü incele, başarılıysa main'e birleştirip GitHub Actions'da gerçek `Deploy Storefront only` sonucunu doğrula. Sonra bu dosya ile `docs/storefront-theme.md` içindeki son durum/kanıt/sıradaki işi güncelle.
+
 ## Tek güncel devam noktası — 13 Ekim 2026 / 0.1.58
 
 - **Tema 0.1.57 → 0.1.58 canlıda:** kullanıcı görsel/sağ sütun yükseklik farkını bildirdi. Sepet görsel kutusu içerik satırının tamamına uzanır; fotoğraf contain ile oranını korur, kesilmez. Uzun adlarda da üst/alt hizalar aynıdır; görselsiz ürün davranışı korunur.
