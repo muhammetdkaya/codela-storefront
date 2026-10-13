@@ -1,6 +1,6 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.58. Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.59 (product page successfully deployed). Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
 
 ## One design, not one enormous universal widget
