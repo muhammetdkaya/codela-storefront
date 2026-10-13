@@ -41,6 +41,9 @@ const demoCSS=[
     await page.locator('.sf-mobile-dock').evaluate(el=>el.classList.add('is-pressing'));
     await page.waitForTimeout(150);
     await page.screenshot({path:'qa/storefront-ui-kit-glass-pressed-'+width+'.png'});
+    await page.locator('.sf-mobile-dock').evaluate(el=>el.classList.remove('is-pressing'));
+    await page.addStyleTag({content:'body{background:#fff}.qa-band{display:none}'});
+    await page.screenshot({path:'qa/storefront-ui-kit-white-'+width+'.png',animations:'disabled'});
    }
    await page.close();
   }

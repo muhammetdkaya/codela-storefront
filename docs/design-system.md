@@ -1,6 +1,6 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.57. Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.58. Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
 
 ## One design, not one enormous universal widget
@@ -216,6 +216,19 @@ functionality or keyboard accessibility.
 - Responsive browser coverage checks 320–1280px, long unbroken names,
   short-screen list scrolling and checkout/dock separation. Real Woo
   integration and physical-device acceptance remain separate gates.
+
+## Cart image and light backdrop refinement (0.1.58)
+
+- The cart image link stretches to the detail column height. Its image fills
+  that box using contain, preserving the entire product and its aspect ratio.
+  Shared neutral surface fills any letterboxing. Avoid a fixed image ratio
+  that becomes shorter than quantity controls or long product content.
+- Floating glass retains 28% tint and 8px blur. Brightness is 1.5 so sampled
+  white remains white; stronger top light, lower edge and diffuse shadow
+  separate the surface on white. Border remains transparent.
+- Apply material changes through shared tokens, never cart/header/dock copies.
+  Keep reduced-transparency/forced-color and motion behavior unchanged.
+  Private visual references now include plain white and text/color backdrops.
 
 ## Contribution checklist
 

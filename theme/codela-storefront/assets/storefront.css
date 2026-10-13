@@ -43,8 +43,8 @@ body{margin:0;-webkit-font-smoothing:antialiased}
 /* Cart layout only: UI Kit owns buttons, icons and pressed feedback. */
 .sf-cart-row{display:grid;grid-template-columns:96px minmax(0,1fr);gap:20px;padding:24px 0;border-bottom:1px solid var(--sf-ui-border);max-width:780px;margin:auto}
 .sf-cart-row:first-child{padding-top:0}
-.sf-cart-row>a{display:block;align-self:start}
-.sf-cart-photo{display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:cover;border-radius:var(--sf-ui-control-radius)}
+.sf-cart-row>a{display:block;position:relative;align-self:stretch;min-height:120px}
+.sf-cart-photo{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain;background:var(--sf-ui-surface-muted);border-radius:var(--sf-ui-control-radius)}
 .sf-cart-detail{display:flex;flex-direction:column;min-width:0;min-height:120px}
 .sf-cart-row h3{font-size:17px;line-height:1.35;font-weight:500;margin:0 0 8px;overflow-wrap:anywhere}
 .sf-cart-row h3 a{text-decoration:none;color:inherit}
@@ -103,7 +103,7 @@ body{margin:0;-webkit-font-smoothing:antialiased}
 .sf-products{grid-template-columns:repeat(2,1fr);gap:18px}
 .sf-cart-row{grid-template-columns:80px minmax(0,1fr);gap:16px;padding:20px 0}
 .sf-cart-detail{min-height:100px}
-.sf-cart-photo{width:100%;height:auto}
+.sf-cart-row>a{min-height:100px}
 .sf-cart-row h3{font-size:16px}
 .sf-cart-bottom{padding-left:20px;padding-right:20px;padding-top:16px}
 .sf-menu-secondary{gap:24px;flex-wrap:wrap}
