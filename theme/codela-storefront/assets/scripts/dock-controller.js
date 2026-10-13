@@ -8,6 +8,7 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
     const dockScrollPositions = new WeakMap();
     const $ = s => document.querySelector(s);
     let initialized = false;
+    let dockPositionFrame = 0;
     // Opposing scroll motions must not toggle the dock on every small reversal.
     const DOCK_REST_MS = 650, HIDE_TRAVEL_PX = 44, SHOW_TRAVEL_PX = 28;
     let lastDockChangeAt = Date.now(), pendingDockTransition = null;
@@ -53,23 +54,53 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
         }, remaining);
         pendingDockTransition = pending;
     }
+    // Reparenting resets CSS transitions. Carry the rendered capsule position
+    // into the new layer, then let the existing CSS transition reach its target.
+    function preserveDockPosition(dock) {
+        const surface = dock.querySelector('.sf-dock-surface');
+        if (!surface) return () => {};
+        if (dockPositionFrame) cancelAnimationFrame(dockPositionFrame);
+        dockPositionFrame = 0;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            dock.style.removeProperty('--sf-dock-position');
+            return () => {};
+        }
+        const style = getComputedStyle(surface, '::before');
+        const width = parseFloat(style.width);
+        const rendered = width > 0 ? new DOMMatrixReadOnly(style.transform).e / width : NaN;
+        const index = Number.isFinite(rendered) ? rendered :
+            Number(dock.style.getPropertyValue('--sf-dock-position') || dock.style.getPropertyValue('--sf-dock-index'));
+        dock.style.setProperty('--sf-dock-position', index);
+        return () => {
+            dockPositionFrame = requestAnimationFrame(() => {
+                dockPositionFrame = 0;
+                // Resolve the carried start position after showModal/relocation.
+                surface.getBoundingClientRect();
+                dock.style.removeProperty('--sf-dock-position');
+            });
+        };
+    }
     // A native modal makes outside nodes inert; move the one real dock into its top layer.
     function mountDock() {
         const dock = mobileDock();
         const dialog = getDialog();
         if (dock && dock.parentElement !== dialog) {
+            const resume = preserveDockPosition(dock);
             dockHome ||= document.createComment('mobile-navigation');
             dock.before(dockHome);
             dialog.appendChild(dock);
+            resume();
         }
     }
     function restoreDock() {
         const dock = mobileDock();
         if (!dock) return;
+        const resume = preserveDockPosition(dock);
         dock.hidden = false;
         if (dock.parentElement === getDialog()) dockHome.after(dock);
         setDockCollapsed(false);
         markDockActive(null);
+        resume();
     }
     function markDockActive(name) {
         const dock = mobileDock();
@@ -157,10 +188,15 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
             press = null;
             clearVisuals(restoreSelection);
         };
-        const preview = item => {
+        const preview = (item, x) => {
             items().forEach(el => el.classList.toggle('is-preview', el === item));
             if (press) press.choice = item;
-            if (item) dock.style.setProperty('--sf-dock-index', tabs.indexOf(item));
+            if (item) {
+                const bounds = dock.getBoundingClientRect();
+                const index = x === undefined ? tabs.indexOf(item) :
+                    Math.max(0, Math.min(tabs.length - 1, (x - bounds.left) / bounds.width * tabs.length - .5));
+                dock.style.setProperty('--sf-dock-index', index);
+            }
             dock.classList.toggle('has-selection', !!item);
         };
         const activate = () => {
@@ -169,7 +205,7 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
             if (press.pointer) dock.setPointerCapture(press.id);
             dock.classList.add('is-scrubbing');
             press.item.classList.remove('is-pressed');
-            preview(press.choice);
+            preview(press.choice, press.lastX);
         };
         const begin = (item, x, y, id) => {
             // A new physical press (including the reveal handle) is never a ghost click.
@@ -177,7 +213,7 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
             if (!item || dock.classList.contains('is-collapsed')) return;
             stop();
             dock.classList.add('is-pressing');
-            press = {id, item, choice:item, x, y, dragging:false, timer:null};
+            press = {id, item, choice:item, x, y, lastX:x, dragging:false, timer:null};
             item.classList.add('is-pressed');
             preview(item);
             const gestureId = id;
@@ -188,12 +224,13 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
         };
         const move = (event, x, y, id) => {
             if (!press || press.id !== id) return;
+            press.lastX = x;
             const dx = Math.abs(x - press.x), dy = Math.abs(y - press.y);
             if (!press.dragging && dy > 18 && dy > dx) { stop(); return; }
             if (!press.dragging && dx > 9) activate();
             if (press?.dragging) {
                 if (event.cancelable !== false) event.preventDefault();
-                preview(dockCandidate(dock, x, y));
+                preview(dockCandidate(dock, x, y), x);
             }
         };
         const finish = (event, x, y, id) => {
@@ -211,6 +248,8 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
             const view = item.dataset.dockView;
             if (item.dataset.panel && ['search','cart','account'].includes(view)) open(view, {currentTarget:item, preventDefault(){}});
             else if (!activateCurrentPage(item, event) && item.href) window.location.assign(item.href);
+            // Even reselecting the already-open view settles to its exact slot.
+            dock.style.setProperty('--sf-dock-index', tabs.indexOf(item));
         };
         // Mobile browsers may cancel pointer capture when the finger leaves an <a>.
         // Track the original touch identifier instead and always receive touchend.

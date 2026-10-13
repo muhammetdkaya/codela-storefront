@@ -18,9 +18,10 @@ const items=['home','search','cart','account'].map((name,i)=>({
 const handlers={};
 const handle={tabIndex:-1,attrs:new Map(),setAttribute(k,v){this.attrs.set(k,v)},addEventListener(k,fn){this[k]=fn}};
 const shell={};
+const dockStyle=new Map();
 const dock={
  parentElement:shell,hidden:false,classList:classList(),
- style:{setProperty(){}},before(){},setPointerCapture(){},
+ style:{setProperty(k,v){dockStyle.set(k,String(v))}},before(){},setPointerCapture(){},
  getBoundingClientRect:()=>({left:0,right:320,top:20,bottom:106,width:320,height:86}),
  querySelectorAll:sel=>sel==='.sf-dock-item'?items:[],
  querySelector:sel=>sel==='.sf-dock-handle'?handle:null,
@@ -123,9 +124,13 @@ e=ev(items[0],touch(40,55,2),'start');handlers.touchstart(e);
 let m=ev(items[0],touch(171,55,2),'move');handlers.touchmove(m);
 assert.equal(dock.classList.contains('is-scrubbing'),true,'Horizontal finger motion enters scrub');
 assert.equal(items[2].classList.contains('is-preview'),true,'Target tab is previewed');
+assert(Math.abs(Number(dockStyle.get('--sf-dock-index'))-1.6375)<.001,'Capsule follows a fractional finger position between icon centers');
+handlers.touchmove(ev(items[0],touch(185,55,2),'move'));
+assert(Number(dockStyle.get('--sf-dock-index'))>1.6375,'Capsule continues moving inside the same target slot');
 assert.equal(m.prevented,true,'Native horizontal scroll suppressed only while scrubbing');
 let up=ev(items[0],touch(171,55,2),'end');handlers.touchend(up);
 assert.equal(opened.at(-1),'cart','Releasing on Cart switches panel');
+assert.equal(dockStyle.get('--sf-dock-index'),'2','Release settles at the selected icon center');
 assert.equal(up.prevented,true,'Native click is suppressed on drag');
 let prevented=false;
 handlers.click({detail:1,preventDefault(){prevented=true},stopImmediatePropagation(){}});

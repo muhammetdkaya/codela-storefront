@@ -130,6 +130,37 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  const dock=page.locator('.sf-mobile-dock');
  assert.deepEqual(await dock.locator('a').evaluateAll(xs=>xs.map(x=>x.dataset.dockView)),['home','search','cart','account']);
  const click=async view=>page.locator(`.sf-mobile-dock [data-dock-view="${view}"]`).click();
+ // Moving the same dock into/out of the native modal must not teleport selection.
+ const capsule=()=>page.locator('.sf-dock-surface').evaluate(el=>{
+  const style=getComputedStyle(el,'::before');return {x:new DOMMatrix(style.transform).e,width:parseFloat(style.width)};
+ });
+ await page.evaluate(()=>window.sfActions.search());
+ await page.waitForTimeout(55);
+ const openingSlide=await capsule();
+ assert(openingSlide.x>0 && openingSlide.x<openingSlide.width-1,'Opening popup slides through an intermediate position');
+ await page.waitForTimeout(280);
+ assert(Math.abs((await capsule()).x-openingSlide.width)<1,'Popup selection settles at Search');
+ await page.evaluate(()=>window.sfActions.close());
+ await page.waitForTimeout(55);
+ const closingSlide=await capsule();
+ assert(closingSlide.x>0 && closingSlide.x<closingSlide.width-1,'Returning dock slides toward the page selection');
+ await page.waitForTimeout(280);
+ assert(Math.abs((await capsule()).x)<1,'Return settles at Home');
+ // Moving inside one icon slot also moves the capsule; it is not an integer hop.
+ for(const [fraction,type] of [[.43,'touchstart'],[.46,'touchmove']]){
+  await page.evaluate(({fraction,type})=>{
+   const dock=document.querySelector('.sf-mobile-dock'),bounds=dock.getBoundingClientRect();
+   const target=dock.querySelector('[data-dock-view="home"]'),box=target.getBoundingClientRect();
+   const emit=(type,x)=>{const touch=new Touch({identifier:81,target,clientX:x,clientY:box.top+box.height/2});target.dispatchEvent(new TouchEvent(type,{bubbles:true,cancelable:true,touches:[touch],changedTouches:[touch]}));};
+   if(type==='touchstart')emit('touchstart',box.left+box.width/2);
+   emit('touchmove',bounds.left+bounds.width*fraction);
+  },{fraction,type});
+  const tracked=await capsule();
+  assert(Math.abs(tracked.x/tracked.width-(fraction*4-.5))<.02,'Capsule continuously follows finger position');
+ }
+ await page.locator('[data-dock-view="home"]').evaluate(el=>el.dispatchEvent(new TouchEvent('touchcancel',{bubbles:true})));
+ await page.waitForTimeout(280);
+ assert(Math.abs((await capsule()).x)<1,'Cancel slides back without navigating');
  // A physical touch previews the touched capsule immediately; cancelling restores the active tab.
  await page.evaluate(()=>{
   const target=document.querySelector('[data-dock-view="search"]'), b=target.getBoundingClientRect();

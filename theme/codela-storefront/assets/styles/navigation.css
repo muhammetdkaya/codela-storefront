@@ -83,7 +83,7 @@
     background:rgba(118,118,128,.16);
     opacity:0;
     z-index:-1;
-    transform:translate3d(calc(var(--sf-dock-index)*100%),0,0) scale(var(--sf-dock-press-scale,1));
+    transform:translate3d(calc(var(--sf-dock-position,var(--sf-dock-index))*100%),0,0) scale(var(--sf-dock-press-scale,1));
     transition:transform var(--sf-ui-motion-selection) var(--sf-ui-ease-press),opacity 140ms ease;
     pointer-events:none;
   }
@@ -94,7 +94,8 @@
     transition:transform var(--sf-ui-motion-dock) var(--sf-ui-ease-dock),
       scale var(--sf-ui-motion-engage) var(--sf-ui-ease-press),opacity 100ms ease;
   }
-  .sf-mobile-dock.is-scrubbing .sf-dock-surface::before{transition-duration:90ms}
+  /* Finger tracking is continuous; release/taps use the normal slide above. */
+  .sf-mobile-dock.is-scrubbing .sf-dock-surface::before{transition:opacity 140ms ease}
   .sf-mobile-dock .sf-dock-item{
     display:flex;
     flex-direction:column;

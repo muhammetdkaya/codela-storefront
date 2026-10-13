@@ -1,6 +1,6 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.55. Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.56. Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
 
 ## One design, not one enormous universal widget
@@ -185,6 +185,23 @@ functionality or keyboard accessibility.
 - Browser checks verify label size, weight, color and available slot width;
   private references place real fixed controls over text/color backgrounds.
   Test physical-device readability separately from automated source checks.
+
+## Continuous Dock selection (0.1.56)
+
+- Keep routing/gesture ownership in the one existing Dock controller. During
+  scrubbing the capsule follows a fractional position across stable parent
+  layout slots; icons do not move their hit targets. Preview/activation still
+  chooses an actual item. Release settles to its center, including reselection.
+- Direct finger tracking has no transform transition; taps, release and cancel
+  use the existing selection transition. Opening/closing a popup remains instant.
+- Reparenting into/out of a native modal resets CSS transitions. Carry the
+  currently rendered capsule position in a temporary CSS variable, resolve it
+  in the new layer, then remove that override next frame so CSS slides to the
+  target. Cancel obsolete frame callbacks; reduced motion bypasses the carry.
+- Browser regressions measure intermediate positions on modal open/return,
+  continuous positions within the same item slot, release and cancellation;
+  server-rendered initial selection must still appear directly with no hydration
+  sweep. Existing gesture, ghost-click and scroll behavior stays authoritative.
 
 ## Contribution checklist
 
