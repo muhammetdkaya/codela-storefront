@@ -41,6 +41,7 @@ jobs:
           npx playwright install --with-deps chromium
           node tests/navigation-browser.cjs
           node tests/checkout-browser.cjs
+          node tests/product-browser.cjs
           node tests/ui-kit-browser.cjs
           node tests/account-browser.cjs
           node tests/ui-kit-preview.cjs
