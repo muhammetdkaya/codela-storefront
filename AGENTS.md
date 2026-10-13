@@ -4,7 +4,7 @@
 ## Son doğrulanmış devam noktası — 13 Ekim 2026 / 0.1.68
 
 - Tema 0.1.67 → 0.1.68: kullanıcı ürün sayfasındaki Ana Sayfa / kategori / ürün yol bilgisini istemiyor. Native Woo breadcrumb ürün belgesinde kaldırılır, summary'ye yeniden eklenmez. Başlık/fiyat doğrudan galeri ardından gelir. Kullanıcının ek isteği: satın alma alanı normal alt menüyle aynı 58px yüksekliğe, 430px azami genişliğe, 16px yan ve 12px safe-area alt boşluğa bağlandı. Navigation/purchase tek bottom-bar ölçü token'larını kullanır; 48px iç kontrol hedefleri korunur.
-- Doğrulama: mevcut PHP breadcrumb sözleşmesi yeni karara uyarlandı; PHP ve 23 paket testi başarılı. Tarayıcı kontrolü ortak 58px ölçüyü doğrular; CI/yayın sonucu kapanışta eklenecek.
+- Doğrulama: mevcut PHP breadcrumb sözleşmesi yeni karara uyarlandı; PHP ve 23 paket testi başarılı. CI 5 genişlikte ürün ve gezinme kontrolleri başarılı; 390px fixture'da satın alma ve dialog dock'u aynı 58px yüksekliği doğrulandı. Kaynak 93d0927b0c0c76a1a7f4479ae0609c53cd94a886 / Actions 38467160794 validate=success, deploy=success. Canlı Demo 20: breadcrumb sayısı=0, başlık mevcut, ortak height=58px/max-width=430px token'ları yüklü. Connector adım metadata'sı boş; yayın ayrıca canlı kaynak/DOM ile doğrulandı.
 - Kalan/sıradaki: 0.1.67 satın alma alanının fiziksel mobil klavye/safe-area ve gerçek varyasyon/grup/harici ürün kabulü; dönüşüm araçları bütünlüğü. Slider duraklatıldı; F3/F4/F5/F6 açık.
 
 ## Başlangıçta okunacaklar
