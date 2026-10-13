@@ -224,6 +224,15 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
   transition-timing-function:var(--sf-ui-ease-press);
 }
 
+/* WooCommerce variation selection and loading use CSS states in addition to
+   native disabled. All product-state treatment remains in the shared primitive. */
+body.single-product .woocommerce div.product form.cart button.single_add_to_cart_button:is(.disabled,.loading){
+  opacity:.44;
+  cursor:default;
+  pointer-events:none;
+  transform:none;
+}
+
 /* The press light is a static paint change. Only transform is animated;
    blur/shadows never interpolate and native Woo spinner pseudo-elements stay free. */
 .sf-shell .sf-ui-button--primary:active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]),
