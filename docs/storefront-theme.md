@@ -1,18 +1,18 @@
 # Codela Storefront — güncel teknik durum
 
-13 Ekim 2026. Canlı tema **0.1.58**; ürün detay çalışması **0.1.59 (PR #17, henüz canlı değil)**. Bağımsız kaynak: `theme/codela-storefront/`.
+13 Ekim 2026. Canlı tema **0.1.59** (ürün detay tasarımı, dağıtım doğrulandı). Bağımsız kaynak: `theme/codela-storefront/`.
 [Kalıcı kurallar](../AGENTS.md) · [Tasarım sözleşmesi](design-system.md) · [Tarihçe](storefront-theme-history-2026-10-12.md)
 
-## Ürün detay sayfası — 0.1.59 çalışma durumu
+## Ürün detay sayfası — 0.1.59 canlıda
 
 - 13 Ekim 2026: [PR #17](https://github.com/muhammetdkaya/codela-storefront/pull/17) ile native WooCommerce single-product şablonu korunarak ürün özel CSS katmanı eklendi.
 - Masaüstü galeri + bilgi sütunları, mobil tek sütun, oran koruyan görseller, küçük resimler, fiyat/açıklama, native varyasyon ve miktar alanları, sekmeler ve ilgili ürünler sade yerleşime geçti.
 - Gerçek WooCommerce `single_add_to_cart_button`, merkezi `components.css` Button sunumu/press/focus/disabled/fallback kurallarıyla aynı gruptadır. `product.css` düğme görünümünü kopyalamaz; yeni JS, router, API veya kütüphane yoktur.
-- Sürüm: **0.1.58 → 0.1.59** (kod PR'da; henüz yayınlandı veya gerçek WP/Woo üzerinde kabul edildi denmez). Kaynak commit [8a0c8da](https://github.com/muhammetdkaya/codela-storefront/commit/8a0c8da89eaf16cf0898c9e03630ae7459c43175).
-- Doğrulama: yapısal ürün testi ve mevcut CI tarayıcı/paket testleri PR'da çalışacak. Gerçek varyasyon, stok, galeri zoom/lightbox, küçük ekran ve üçüncü taraf add-to-cart entegrasyon kabulü ayrıca gerekli.
-- İlk sonraki adım: PR doğrulamasını kontrol et; başarılıysa birleştir, bağımsız tema deploy'unu doğrula, 0.1.59'u canlı ve kaynak kanıtıyla kapat. Ardından fiziksel cihaz ve gerçek Woo ürün türleri kabulü.
+- Sürüm: **0.1.58 → 0.1.59** canlıya dağıtıldı. [PR #17](https://github.com/muhammetdkaya/codela-storefront/pull/17), [merge e72d3c1](https://github.com/muhammetdkaya/codela-storefront/commit/e72d3c1e248ee7096c0b167fe163926a653a9cdd), [Actions 38346747050](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38346747050): validate success, deploy success, **gerçek Deploy Storefront only success**.
+- Doğrulama: yapısal ürün testi ve mevcut CI tarayıcı/paket testleri başarılı; yeni Playwright ürün düzen testi 320/390/700/900/1280px genişliklerde galeri/sağ kolon/mobil, related grid, doğal submit ve Button durumlarını doğruladı. Gerçek varyasyon, stok, galeri zoom/lightbox, fiziksel cihaz ve üçüncü taraf add-to-cart entegrasyon kabulü hâlâ gerekli.
+- İlk sonraki adım: fiziksel cihazda canlı ürün sayfasını ve gerçek Woo simple/variable/grouped/external ürün türlerini kabul et; bulgu varsa native Woo işleyişini bozmadan ürün adaptörünü düzelt. F3/F4 gerçek Woo sepet/checkout çift yönlü kabulü de açık.
 
-## Tek güncel devam noktası — 13 Ekim 2026 / 0.1.58
+## Önceki canlı devam noktası — 13 Ekim 2026 / 0.1.58
 
 - **Tema 0.1.57 → 0.1.58 canlıda:** kullanıcı görsel/sağ sütun yükseklik farkını bildirdi. Sepet görsel kutusu içerik satırının tamamına uzanır; fotoğraf contain ile oranını korur, kesilmez. Uzun adlarda da üst/alt hizalar aynıdır; görselsiz ürün davranışı korunur.
 - Beyaz zeminde ortak cam yüzeyin gri/silik görünümü düzeltildi: ortak brightness 1.5, üst kenar ışığı ve alt kenar/gölge biraz güçlendirildi. 28% tint, 8px blur, saydam border, koyu ikonlar, mevcut basma/kayma ve erişilebilirlik tercihleri korunur. Header, soft IconButton ve Dock aynı token'ı kullanır.
