@@ -4,9 +4,9 @@
 
 - Tema 0.1.60 → 0.1.61: canlı Woo blok şablonunda `.woocommerce` sınıfı body üzerindedir; fazladan alt kapsayıcı bekleyen ürün ve ortak satın alma düğmesi seçicileri düzeltildi. Gerçek legacy-template `data-block-name` kapsayıcısının 1200px sınırı kaldırıldı.
 - Hero fotoğraf artık ortak `--sf-gallery-fit:cover` ayarıyla alanı doldurur; üst/alt contain boşlukları kalkar. Kenarlardan kırpma olabilir; native lightbox orijinal görseli korur. Diğer galeri kullanımları contain kalır. Büyütme düğmesi header yerine galeri sağ altındadır.
-- Doğrulama: canlı DOM incelendi; regresyon fixture artık gerçek body/legacy-template yapısını ve WP genişlik sınırını içerir. 5 genişlikte galeri/geometri, ortak UI ve 23 paket testi başarılı. CI/dağıtım henüz bekliyor.
-- Test ürünleri: kullanıcı yaklaşık 20 galerili demo ürün eklenmesini yetkilendirdi. Yönetim oturumu bu tarayıcıda açık değil; ürün oluşturulmadı. Oturum açıldıktan sonra açıkça demo etiketli, benzersiz SKU ve galerili örnekler eklenip çok görselli native Woo swipe/lightbox kontrol edilmeli. Mevcut ürünler değiştirilmemeli.
-- Sonraki iş: canlı düzeltmeyi doğrula; ardından mevcut Codela satın alma barının alt menü yerine geçmesi. F3/F4/F5/F6 kabulü açık.
+- Doğrulama: canlı DOM incelendi; regresyon fixture artık gerçek body/legacy-template yapısını ve WP genişlik sınırını içerir. 5 genişlikte galeri/geometri, ortak UI ve 23 paket testi başarılı. [Kaynak f5d5247](https://github.com/muhammetdkaya/codela-storefront/commit/f5d5247b41f2ea4ccf4632f62cfc7de1c9f4723b); [Actions 38417125395](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38417125395): validate=success, deploy=success, gerçek Deploy Storefront only=success. Canlı 0.1.61 DOM ölçümü: galeri x=0/y=0, genişlik=1348px viewport; büyütme sağ altta; satın alma düğmesi ortak tasarımda 58px. Fiziksel mobil ve çok görselli kabul açık.
+- Test ürünleri: kullanıcı yaklaşık 20 galerili demo ürün eklenmesini yetkilendirdi. Güvenli giriş denendi ancak yönetim tekrar giriş ekranına döndü; ürün oluşturulmadı. Manuel yönetim girişi gerekiyor. Oturum açıldıktan sonra açıkça demo etiketli, benzersiz SKU ve galerili örnekler eklenip çok görselli native Woo swipe/lightbox kontrol edilmeli. Mevcut ürünler değiştirilmemeli.
+- Sonraki iş: yönetim oturumuyla galerili test ürünlerini oluştur ve gerçek mobil kabulü yap; ardından mevcut Codela satın alma barının alt menü yerine geçmesi. F3/F4/F5/F6 kabulü açık.
 
 
 ## Tek güncel devam noktası — 13 Ekim 2026 / 0.1.60
