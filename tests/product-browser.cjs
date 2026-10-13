@@ -11,7 +11,7 @@ const css=['assets/styles/tokens.css','assets/storefront.css','assets/styles/ove
 const thumb='<li><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22240%22/%3E" alt="Ürün görünümü"></li>';
 const related='<li class="product"><a href="/product"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22400%22/%3E"><h2 class="woocommerce-loop-product__title">Ürün</h2></a><span class="price">₺500</span></li>';
 const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>${css}</style></head>
-<body class="single-product">${header}<main class="sf-content"><div class="woocommerce">
+<body class="single-product woocommerce woocommerce-page">${header}<main class="sf-content"><div data-block-name="woocommerce/legacy-template" class="content-area alignwide"><main class="site-main">
 <div class="product type-product"><div class="woocommerce-product-gallery sf-ui-gallery sf-ui-gallery--hero"><a href="#" role="button" aria-label="Galeriyi aç" class="woocommerce-product-gallery__trigger">+</a><div class="woocommerce-product-gallery__wrapper">
 <div class="woocommerce-product-gallery__image"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%221000%22/%3E" alt="Ürün"></div></div>
 <ol class="flex-control-thumbs">${thumb.repeat(5)}</ol></div>
@@ -22,13 +22,15 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
 <div class="product_meta"><span class="sku_wrapper">SKU: 123</span></div></div>
 <div class="woocommerce-tabs"><ul class="tabs"><li class="active"><a href="#details">Açıklama</a></li><li><a href="#info">Bilgiler</a></li></ul><div class="panel" id="details"><h2>Ürün Bilgisi</h2><p>Detaylı açıklama</p></div></div>
 <section class="related products"><h2>Benzer Ürünler</h2><ul class="products columns-4">${related.repeat(4)}</ul></section>
-</div></div></main></body></html>`;
+</div></main></div></main></body></html>`;
 (async()=>{
  const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_BIN?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-gpu','--disable-dev-shm-usage']}:{})});
  try{
   const page=await browser.newPage();
   await page.route('**/assets/icons/**',route=>route.fulfill({contentType:'image/svg+xml',body:fs.readFileSync('theme/codela-storefront/assets/icons/'+new URL(route.request().url()).pathname.split('/').at(-1),'utf8')}));
-  await page.setContent(documentHtml);
+  // Match the live block-theme DOM: Woo class is on body, not a descendant wrapper.
+  // Include the constrained WordPress block rule that previously masked this bug.
+  await page.setContent(documentHtml.replace('</head>', '<style>.sf-content > .alignwide{max-width:1200px;margin-inline:auto}</style></head>'));
   for(const width of [320,390,700,900,1280]){
    await page.setViewportSize({width,height:900});
    const result=await page.evaluate(()=>{
@@ -57,6 +59,7 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
    assert(result.detail.top>=result.gallery.bottom-1,'Details follow full-width gallery at '+width);
    assert(Math.abs(result.gallery.left)<1&&Math.abs(result.gallery.right-width)<1,'Gallery spans viewport at '+width);
    assert(Math.abs(result.gallery.top)<1,'Gallery begins at document top at '+width);
+   assert.equal(await page.locator('.woocommerce-product-gallery__image img').evaluate(el=>getComputedStyle(el).objectFit),'cover','Hero fills frame without contain letterboxing');
    assert.equal(result.relatedColumns,width>=901?4:2,'Related product grid at '+width);
    const trigger=await page.locator('.woocommerce-product-gallery__trigger').evaluate(el=>{
     const r=el.getBoundingClientRect();return {width:r.width,height:r.height,y:r.y,bg:getComputedStyle(el).backgroundColor};

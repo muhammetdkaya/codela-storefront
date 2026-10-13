@@ -31,3 +31,7 @@
 ## Kapsam ve kabul
 
 0.1.60 yalnız ilk aşamayı uygular. Satın alma barı ve dönüşüm araçlarının tema uyarlaması henüz tamamlanmış değildir. Fiziksel cihaz/gerçek Woo kabulü ve F3/F4/F5/F6 açık kalır.
+
+### 0.1.61 canlı DOM düzeltmesi
+
+Woo blok şablonunun `.woocommerce` sınıfı body üzerinde; descendant wrapper varsayımı kaldırıldı. Hero `cover` kullanır (kenar kırpması olabilir), diğer galeri kullanımları contain kalır. Galeri kontrolü sağ altta. Regresyon gerçek legacy-template kapsayıcısını içerir. Kullanıcı yaklaşık 20 galerili test ürünü eklenmesini yetkilendirdi; yönetim girişi gerekli, henüz oluşturulmadı.

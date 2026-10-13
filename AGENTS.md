@@ -1,5 +1,14 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Son doğrulanmış devam noktası — 13 Ekim 2026 / 0.1.61
+
+- Tema 0.1.60 → 0.1.61: canlı Woo blok şablonunda `.woocommerce` sınıfı body üzerindedir; fazladan alt kapsayıcı bekleyen ürün ve ortak satın alma düğmesi seçicileri düzeltildi. Gerçek legacy-template `data-block-name` kapsayıcısının 1200px sınırı kaldırıldı.
+- Hero fotoğraf artık ortak `--sf-gallery-fit:cover` ayarıyla alanı doldurur; üst/alt contain boşlukları kalkar. Kenarlardan kırpma olabilir; native lightbox orijinal görseli korur. Diğer galeri kullanımları contain kalır. Büyütme düğmesi header yerine galeri sağ altındadır.
+- Doğrulama: canlı DOM incelendi; regresyon fixture artık gerçek body/legacy-template yapısını ve WP genişlik sınırını içerir. 5 genişlikte galeri/geometri, ortak UI ve 23 paket testi başarılı. CI/dağıtım henüz bekliyor.
+- Test ürünleri: kullanıcı yaklaşık 20 galerili demo ürün eklenmesini yetkilendirdi. Yönetim oturumu bu tarayıcıda açık değil; ürün oluşturulmadı. Oturum açıldıktan sonra açıkça demo etiketli, benzersiz SKU ve galerili örnekler eklenip çok görselli native Woo swipe/lightbox kontrol edilmeli. Mevcut ürünler değiştirilmemeli.
+- Sonraki iş: canlı düzeltmeyi doğrula; ardından mevcut Codela satın alma barının alt menü yerine geçmesi. F3/F4/F5/F6 kabulü açık.
+
+
 ## Tek güncel devam noktası — 13 Ekim 2026 / 0.1.60
 
 - **Tema 0.1.59 → 0.1.60 canlıda:** yeni yön: önce tam genişlikte, header arkasından başlayan galeri; sonra alt menünün yerini alan satın alma barı ve Codela dönüşüm araçlarıyla bütünleşme. [Güncel plan](docs/product-experience-plan.md).
