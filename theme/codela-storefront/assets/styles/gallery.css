@@ -79,3 +79,6 @@
   .sf-ui-gallery :is(.woocommerce-product-gallery__wrapper,.flex-viewport){transition-duration:0ms!important}
   .wp-block-gallery.is-style-sf-media-slider{scroll-behavior:auto}
 }
+
+/* Native Woo may still create its optional trigger; the image link is the control. */
+.woocommerce div.product div.sf-ui-gallery .woocommerce-product-gallery__trigger{display:none}

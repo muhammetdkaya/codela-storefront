@@ -1,12 +1,12 @@
 # Codela Storefront — güncel çalışma kuralları
 
 
-## Son doğrulanmış devam noktası — 13 Ekim 2026 / 0.1.64
+## Son doğrulanmış devam noktası — 13 Ekim 2026 / 0.1.65
 
-- Tema 0.1.63 → 0.1.64: ayrı büyüteç kaldırıldı; hover zoom kapalıyken görsel bağlantıları native Woo lightbox açar. Linklere erişilebilir büyütme adı/dialog ipucu eklendi. Slider, swipe, varyasyon ve lightbox motoru Woo'ya aittir.
+- Tema 0.1.64 → 0.1.65: ayrı büyüteç CSS adaptöründe gizlendi; görsel bağlantıları native Woo lightbox açar. 0.1.64 canlı parametrelerinde zoom_enabled hâlâ 1 olduğundan etkisiz zoom filtresi kaldırıldı; Woo yakınlaştırma ayarına müdahale edilmez. Linklere erişilebilir büyütme adı/dialog ipucu eklendi. Slider, swipe, varyasyon ve lightbox motoru Woo'ya aittir.
 - Kapsül eşit 6px iç boşluk, 1px seçili kenar ve net (opacity=1) önizlemeler kullanır. Yuvarlak önizleme köşeleri dış kapsülde kırpılmaz; kontrol için ayrılan boş alan kaldırıldı. Uzun liste hâlâ kayar, tek görselde kapsül gizlenir.
 - İndirim etiketi küçük metin kapsülü; native ürün etiketi ortak cam/fallback/forced-colors yüzeyine bağlandı. Yeni runtime JS veya kütüphane yok.
-- Doğrulama/yayın: 5 genişlikte ürün tarayıcı testi, PHP medya adaptörü ve 23 paket testi geçti. CI ve canlı görsel/klavye lightbox kabulü bekliyor; dağıtım henüz doğrulanmadı.
+- Doğrulama/yayın: 5 genişlikte ürün tarayıcı testi, PHP medya adaptörü ve 23 paket testi geçti. 0.1.64 kaynak d9dbcd84d46ee75313346e9753ca634003c12c26 / Actions 38424850968 validate ve gerçek Deploy Storefront only başarılı. Canlı Demo 06 görsele click/Enter ile lightbox açılması/kapanması doğrulandı. 0.1.65 görünür büyüteci gizleme düzeltmesi için CI ve canlı kabul bekliyor.
 - Sonraki iş: mevcut Codela satın alma barını ürün ekranında alt menü yerine geçirmek; dönüşüm araçlarını mevcut planla bütünleştirmek. Fiziksel mobil swipe ve F3/F4/F5/F6 kabulü açık.
 
 

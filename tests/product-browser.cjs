@@ -12,7 +12,7 @@ const thumb='<li><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/
 const related='<li class="product"><a href="/product"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22400%22/%3E"><h2 class="woocommerce-loop-product__title">Ürün</h2></a><span class="price">₺500</span></li>';
 const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>.woocommerce div.product div.images .flex-control-thumbs{padding:0}${css}</style></head>
 <body class="single-product woocommerce woocommerce-page">${header}<main class="sf-content"><div data-block-name="woocommerce/legacy-template" class="content-area alignwide"><main class="site-main">
-<div class="product type-product"><div class="woocommerce-product-gallery images sf-ui-gallery sf-ui-gallery--hero"><div class="woocommerce-product-gallery__wrapper">
+<div class="product type-product"><div class="woocommerce-product-gallery images sf-ui-gallery sf-ui-gallery--hero"><a href="#" class="woocommerce-product-gallery__trigger">+</a><div class="woocommerce-product-gallery__wrapper">
 <div class="woocommerce-product-gallery__image"><a href="/full-image" aria-label="Görseli büyüt" aria-haspopup="dialog"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%221000%22/%3E" alt="Ürün"></a></div></div>
 <ol class="flex-control-thumbs">${thumb.replace('<img ' ,'<img class="flex-active" ')+thumb.repeat(6)}</ol></div>
 <div class="summary entry-summary"><nav class="woocommerce-breadcrumb">Mağaza / Kategori / Ürün</nav><h1 class="product_title entry-title">Minimal Ürün Başlığı</h1><p class="price">₺1.250</p>
@@ -61,7 +61,7 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
    assert(Math.abs(result.gallery.top)<1,'Gallery begins at document top at '+width);
    assert.equal(await page.locator('.woocommerce-product-gallery__image img').evaluate(el=>getComputedStyle(el).objectFit),'cover','Hero fills frame without contain letterboxing');
    assert.equal(result.relatedColumns,width>=901?4:2,'Related product grid at '+width);
-   assert.equal(await page.locator('.woocommerce-product-gallery__trigger').count(),0,'No separate zoom button');
+   assert.equal(await page.locator('.woocommerce-product-gallery__trigger').evaluate(el=>getComputedStyle(el).display),'none','Native optional zoom button stays hidden');
    const rail=await page.locator('.flex-control-thumbs').evaluate(el=>{
     const r=el.getBoundingClientRect();
     const active=el.querySelector('img.flex-active'),image=active.getBoundingClientRect();

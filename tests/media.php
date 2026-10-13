@@ -14,7 +14,6 @@ require __DIR__ . '/../theme/codela-storefront/inc/media.php';
 function check( $result, $message ) { if ( ! $result ) { throw new RuntimeException( $message ); } }
 foreach ($actions['after_setup_theme'][10] as $callback) { $callback(); }
 check(isset($filters['woocommerce_single_product_image_gallery_classes']), 'Native gallery class hook');
-check($filters['woocommerce_single_product_zoom_enabled'] === '__return_false', 'Native direct image lightbox instead of hover zoom');
 check(isset($filters['woocommerce_single_product_image_thumbnail_html']), 'Accessible native image link hook');
 check(codela_sf_gallery_classes(['original'])[0] === 'original', 'Existing gallery classes retained');
 $options = codela_sf_gallery_options(['rtl'=>true,'animationSpeed'=>500]);

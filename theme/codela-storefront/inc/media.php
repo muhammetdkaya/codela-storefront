@@ -20,8 +20,6 @@ function codela_sf_gallery_options( array $options ): array {
 add_action( 'after_setup_theme', function() {
     add_filter( 'woocommerce_single_product_image_gallery_classes', 'codela_sf_gallery_classes' );
     add_filter( 'woocommerce_single_product_carousel_options', 'codela_sf_gallery_options' );
-    // Without hover zoom Woo binds image links directly to its native lightbox.
-    add_filter( 'woocommerce_single_product_zoom_enabled', '__return_false' );
     add_filter( 'woocommerce_single_product_image_thumbnail_html', function( string $html ): string {
         $tags = new WP_HTML_Tag_Processor( $html );
         if ( $tags->next_tag( 'a' ) ) {
@@ -35,8 +33,8 @@ add_action( 'after_setup_theme', function() {
 add_action( 'init', function() {
     // Standard Gallery blocks can select this style without a new custom block or script.
     if ( ! function_exists( 'register_block_style' ) ) { return; }
-    wp_register_style( 'codela-storefront-tokens', get_template_directory_uri() . '/assets/styles/tokens.css', [], '0.1.64' );
-    wp_register_style( 'codela-storefront-gallery', get_template_directory_uri() . '/assets/styles/gallery.css', [ 'codela-storefront-tokens' ], '0.1.64' );
+    wp_register_style( 'codela-storefront-tokens', get_template_directory_uri() . '/assets/styles/tokens.css', [], '0.1.65' );
+    wp_register_style( 'codela-storefront-gallery', get_template_directory_uri() . '/assets/styles/gallery.css', [ 'codela-storefront-tokens' ], '0.1.65' );
     register_block_style( 'core/gallery', [
         'name' => 'sf-media-slider',
         'label' => __( 'Sliding gallery', 'codela-storefront' ),

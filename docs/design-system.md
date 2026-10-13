@@ -1,6 +1,6 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.64 (gallery; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.65 (gallery; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
 
 ## One design, not one enormous universal widget
@@ -517,6 +517,6 @@ The native Woo thumbnail list adapts to the reusable `.sf-ui-gallery-nav` layout
 
 Native Woo thumbnail adapter uses `div.sf-ui-gallery` specificity so Woo `div.images` spacing does not override the rail. This is verified with the native padding rule in the regression fixture.
 
-### Gallery refinement — 0.1.64
+### Gallery refinement — 0.1.65
 
-The image link opens the native Woo lightbox; hover zoom is disabled using the Woo filter so it creates no separate magnifier. PHP labels the existing image link for keyboard/screen-reader access. The rail no longer reserves space for a separate control: equal insets, clear previews, rounded cells and a 1px active outline. Sale badges on the main product use the existing floating-surface material and accessibility fallbacks, with compact placement in product.css. No new gallery runtime.
+The image link opens the native Woo lightbox; the optional native magnifier is hidden by the gallery CSS adapter. Woo retains its zoom configuration; the live site kept zoom_enabled=1 despite the filter, so that ineffective filter was removed. PHP labels the existing image link for keyboard/screen-reader access. The rail no longer reserves space for a separate control: equal insets, clear previews, rounded cells and a 1px active outline. Sale badges on the main product use the existing floating-surface material and accessibility fallbacks, with compact placement in product.css. No new gallery runtime.
