@@ -5,7 +5,7 @@
 
 - Tema 0.1.65 → 0.1.66: canlı Woo 11.2.1 thumbnail `li img` opacity:.5 kuralı adaptörü eziyordu. Ortak galeri seçicisine `li` eklendi; tüm önizlemeler net, seçili görsel yalnız 1px kenarla ayrılır. Fixture gerçek native opacity kuralını içerir.
 - Kapsül ortalanmış, içerik kadar geniş, eşit boşluklu; ayrı büyüteç gizli. Native görsel linki/lightbox/slider korunur. Küçük indirim etiketi ortak cam yüzey kullanır. Yeni runtime JS yok.
-- Doğrulama/yayın: 23 yerel paket testi başarılı. Yerel Chromium runtime SIGSEGV ile açılamadı; 5 genişlikte tarayıcı regresyonunun CI sonucu ve canlı opacity kabulü bekleniyor. Fiziksel mobil swipe ve F3/F4/F5/F6 açık.
+- Doğrulama/yayın: 23 yerel paket testi ve CI tarayıcı regresyonu başarılı (320/390/700/900/1280px). Yerel Chromium runtime açılmadığı için tarayıcı sonucu CI'dan doğrulandı. Kaynak 655eeaf7c0cf3134eb8886fcd4ed800a2ecd8209 / Actions 38461141925: validate=success, gerçek Deploy Storefront only=success (13 Ekim 2026 20:19:41 UTC). Canlı Demo 06: dört önizleme yüklü ve opacity=1, ayrı büyüteç display:none; 0.1.65'te görsele click ile native lightbox açılma/kapanma doğrulandı. Fiziksel mobil swipe ve F3/F4/F5/F6 açık.
 - Sonraki iş: mevcut Codela satın alma barını ürün ekranında alt menü yerine geçirmek; ürün deneyimi planı ile dönüşüm araçlarını bütünleştirmek.
 
 
