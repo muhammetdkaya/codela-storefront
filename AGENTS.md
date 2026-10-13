@@ -1,11 +1,19 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Son doğrulanmış devam noktası — 13 Ekim 2026 / 0.1.63
+
+- Tema 0.1.62 → 0.1.63: gerçek Woo CSS `.woocommerce div.product div.images .flex-control-thumbs` kapsülün 6px iç boşluğunu eziyordu. Native galeri adaptörüne eşdeğer `div.sf-ui-gallery` seçicisi eklendi; ortak yüzey veya thumbnail motoru değişmedi. Regresyon artık bu gerçek Woo kuralını içerir ve 5 genişlikte iç boşluğu doğrular.
+- Yüzen cam galeri kapsülü, seçili koyu kenar, en az 44px native img hedefi, uzun listede scroll, tek görselde gizleme hazır. 5 genişlikte ürün testi ve 23 paket testi geçti. CI/0.1.63 dağıtım bekliyor.
+- 0.1.62 yayın kanıtı: kaynak 73016244f4c269c9e530dab9175779238aaa4257; Actions 38422176540 validate=success, deploy=success, gerçek Deploy Storefront only=success. Canlı Demo 20'de ortak glass/blur, üç görsel yüklenmesi, ikinci thumbnail seçimi ve seçili koyu kenar doğrulandı. Başlangıç galeri yüksekliği Woo init sonunda beklenen değere oturuyor; ikinci galeri motoru eklenmedi.
+- Sonraki iş: fiziksel telefonda kapsül/swipe görünümü kabulü; ardından mevcut Codela satın alma barını alt menü yerine geçirmek. Test ürünleri zaten eklendi; yeniden üretmeyin. F3/F4/F5/F6 genel kabulü açık.
+
+
 ## Son doğrulanmış devam noktası — 13 Ekim 2026 / 0.1.62
 
 - Tema 0.1.61 → 0.1.62: native Woo thumbnail listesi, galeri alt kenarında ortalanmış yüzen cam kapsüle geçti. Tam genişlikte beyaz thumbnail satırı kaldırıldı. Woo `.flex-active` seçimi koyu çerçeve ile belirgin; diğer önizlemeler sakin. Fotoğraf geçişleri ve lightbox hâlâ native.
 - Gallery navigation yerleşimi `gallery.css`; `.sf-ui-gallery-nav` ve native Woo adaptörü `components.css` ortak cam yüzey/opaque fallback/reduced-transparency/forced-colors grubunda. Yeni JS, istek veya slider motoru yok.
 - Kapsül 54px mobil/56px geniş ekran thumbnail hedefleriyle içerik kadar genişler; uzun liste yatay kayar. Galeri kontrolünün 44px hedefi sağda ayrı kalır. Tek görselde liste yok/gizli; thumbnail ayarı korunur. Native img hedefinin kullanılabilir boyutu en az 44px.
-- Doğrulama: 320/390/700/900/1280px galeri/şerit/zoom çakışması, şerit yatay kaydırması, tek görsel gizlenmesi, seçili kenar, ortak blur ve UI; 23 paket testi başarılı. CI ve canlı dağıtım bekliyor. Gerçek galerili ürün thumbnail/lightbox kontrolü dağıtımdan sonra yapılmalı.
+- Doğrulama: 320/390/700/900/1280px galeri/şerit/zoom çakışması, şerit yatay kaydırması, tek görsel gizlenmesi, seçili kenar, ortak blur ve UI; 23 paket testi başarılı. 0.1.62 CI ve gerçek Deploy Storefront only başarılı (Actions 38422176540). Canlı thumbnail seçimi doğrulandı; aşağıdaki native boşluk uyumu 0.1.63 ile tamamlanır.
 - Test ürünleri zaten eklendi: 20 demo + önceki 1; tekrar oluşturmayın. Sonraki iş: fiziksel telefonda şerit/swipe kabulü; ardından mevcut Codela satın alma barının alt menü yerine geçmesi. F3/F4/F5/F6 genel kabulü açık.
 
 
