@@ -62,7 +62,10 @@ function codela_sf_header(): string {
     $show_mobile_dock = ! $checkout_page && ! in_array( $settings['mobile_dock_enabled'] ?? true, [ false, 0, '0', '' ], true );
     // Checkout is a full page without the mobile dock, but uses the same
     // compact mobile header layout as pages with the dock enabled.
-    $header_mode = $show_mobile_dock ? 'has-mobile-dock' : ( $checkout_page ? 'has-checkout-header' : 'has-header-tools' );
+    $product_page = function_exists( 'is_product' ) && is_product();
+    // Product document uses header tools while purchase occupies the bottom.
+    // Keep the single real dock available when it moves into the dialog.
+    $header_mode = $product_page ? 'has-header-tools' : ( $show_mobile_dock ? 'has-mobile-dock' : ( $checkout_page ? 'has-checkout-header' : 'has-header-tools' ) );
     $labels = [];
     foreach ( [ 'Loading…', 'Search products', 'No matching products.', 'Something went wrong. Please try again.', 'Your cart is empty.', 'Remove', 'Quantity', 'Decrease quantity', 'Increase quantity', 'Back', 'View all', 'Cart updated.', 'Retry', 'Your cart', 'Item added to cart.', 'Subtotal', 'Shipping and discounts are calculated at checkout.', 'My account' ] as $label ) {
         $labels[ $label ] = __( $label, 'codela-storefront' ); // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText

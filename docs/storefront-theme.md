@@ -1,6 +1,14 @@
 # Codela Storefront — güncel teknik durum
 
 
+## Son doğrulanmış devam noktası — 13 Ekim 2026 / 0.1.67
+
+- Tema 0.1.66 → 0.1.67: kullanıcı slider çalışmasına ara verdi; öncelik satın alma. Mobilde Woo'nun gerçek miktar/submit alanı `.sf-product-purchase` olarak aynı form içinde sabit alttadır. Ortak cam yüzey + Button, safe-area, 430px sınır; desktop inline kalır. İkinci form/klon/click proxy/istek/JS yok.
+- Codela `codela-sticky-cart.js` incelendi: classic+swipe+layout-ready gate ve scroll-past davranışı bu ekranı karşılamıyor. Onu kopyalamak veya ikinci motor eklemek yerine native Woo hook'larıyla yalnız yerleşim yapıldı. Varyasyon/grup/harici eylem ve stok sahipliği Woo'dadır.
+- Satın alma alanı olan belgede alt dock gizlenir; mevcut dialog içine taşınan tek dock görünür, ürün satın alma barı modal açıkken gizlenir ve kapanınca geri gelir. Satın alma formu olmayan stok dışı üründe dock korunur. Ürün header'ı mevcut araçlı düzene geçer; arama/sepet/hesap ulaşılabilir.
+- Doğrulama: PHP native hook ve 23 paket testi geçti. Tarayıcı regresyonuna tek submit, doğal min doğrulaması, 5 genişlikte alt yerleşim, dialog sahipliği ve stoksuz fallback eklendi. Yerel Chromium mevcut runtime'da SIGSEGV verdi; tarayıcı kontrolleri CI kapısında doğrulanacak. CI/canlı kabul ve dağıtım sonucu bekliyor.
+- Kalan: fiziksel mobil klavye/safe-area, gerçek varyasyonlu/grup/harici ürün örneklemi ve F3/F4/F5/F6. Slider kullanıcı isteğiyle duraklatıldı; sonraki iş satın alma görünümünün cihaz kabulü, ardından dönüşüm araçları bütünlüğü.
+
 ## Son doğrulanmış devam noktası — 13 Ekim 2026 / 0.1.66
 
 - Tema 0.1.65 → 0.1.66: canlı Woo 11.2.1 thumbnail `li img` opacity:.5 kuralı adaptörü eziyordu. Ortak galeri seçicisine `li` eklendi; tüm önizlemeler net, seçili görsel yalnız 1px kenarla ayrılır. Fixture gerçek native opacity kuralını içerir.

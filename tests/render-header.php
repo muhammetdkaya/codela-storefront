@@ -25,6 +25,7 @@ function wp_interactivity_state( ...$args ) {}
 function get_option( ...$args ) { return ''; }
 function get_bloginfo( ...$args ) { return 'CODELA'; }
 function has_custom_logo() { return false; }
+function is_product() { return getenv('FIXTURE_PRODUCT') === '1'; }
 function is_checkout() { return getenv('FIXTURE_CHECKOUT') === '1'; }
 function is_front_page() { return getenv('FIXTURE_ACCOUNT') !== '1' && getenv('FIXTURE_GUEST_ACCOUNT') !== '1'; }
 function is_account_page() { return getenv('FIXTURE_ACCOUNT') === '1' || getenv('FIXTURE_GUEST_ACCOUNT') === '1'; }

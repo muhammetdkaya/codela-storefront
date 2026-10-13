@@ -3,7 +3,7 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const {execFileSync}=require('node:child_process');
-const header=execFileSync(process.env.PHP_BIN||'php',['tests/render-header.php'],{encoding:'utf8'});
+const header=execFileSync(process.env.PHP_BIN||'php',['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_PRODUCT:'1'}});
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const css=['assets/styles/tokens.css','assets/storefront.css','assets/styles/overlay.css',
  'assets/styles/navigation.css','assets/styles/components.css','assets/styles/gallery.css','assets/styles/product.css']
@@ -17,8 +17,8 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
 <ol class="flex-control-thumbs">${thumb.replace('<img ' ,'<img class="flex-active" ')+thumb.repeat(6)}</ol></div>
 <div class="summary entry-summary"><nav class="woocommerce-breadcrumb">Mağaza / Kategori / Ürün</nav><h1 class="product_title entry-title">Minimal Ürün Başlığı</h1><p class="price">₺1.250</p>
 <div class="woocommerce-product-details__short-description"><p>Ürün açıklaması. Kumaş ve bakım bilgileri.</p></div>
-<form class="cart" method="post"><div class="quantity"><input class="qty" type="number" value="1" min="1"></div>
-<button type="submit" name="add-to-cart" value="123" class="single_add_to_cart_button button alt">Sepete Ekle</button></form>
+<form class="cart" method="post"><div class="sf-product-purchase"><div class="quantity"><input class="qty" type="number" value="1" min="1"></div>
+<button type="submit" name="add-to-cart" value="123" class="single_add_to_cart_button button alt">Sepete Ekle</button></div></form>
 <div class="product_meta"><span class="sku_wrapper">SKU: 123</span></div></div>
 <div class="woocommerce-tabs"><ul class="tabs"><li class="active"><a href="#details">Açıklama</a></li><li><a href="#info">Bilgiler</a></li></ul><div class="panel" id="details"><h2>Ürün Bilgisi</h2><p>Detaylı açıklama</p></div></div>
 <section class="related products"><h2>Benzer Ürünler</h2><ul class="products columns-4">${related.repeat(4)}</ul></section>
@@ -61,6 +61,15 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
    assert(Math.abs(result.gallery.top)<1,'Gallery begins at document top at '+width);
    assert.equal(await page.locator('.woocommerce-product-gallery__image img').evaluate(el=>getComputedStyle(el).objectFit),'cover','Hero fills frame without contain letterboxing');
    assert.equal(result.relatedColumns,width>=901?4:2,'Related product grid at '+width);
+   const purchase=await page.locator('.sf-product-purchase').evaluate(el=>({position:getComputedStyle(el).position,rect:el.getBoundingClientRect().toJSON()}));
+   assert.equal(await page.locator('form.cart .single_add_to_cart_button').count(),1,'One native submit control');
+   if(width<=700){
+    assert.equal(purchase.position,'fixed','Purchase occupies bottom on mobile');
+    assert(purchase.rect.bottom<=900-11&&purchase.rect.bottom>=900-15,'Purchase clears bottom safe area');
+    assert.equal(await page.locator('.sf-shell > .sf-mobile-dock').evaluate(el=>getComputedStyle(el).display),'none','Document dock is replaced by purchase');
+    assert.equal(await page.locator('.sf-actions').evaluate(el=>getComputedStyle(el).display),'flex','Store tools remain available in header');
+   }else assert.equal(purchase.position,'static','Desktop keeps native inline form');
+
    assert.equal(await page.locator('.woocommerce-product-gallery__trigger').evaluate(el=>getComputedStyle(el).display),'none','Native optional zoom button stays hidden');
    const rail=await page.locator('.flex-control-thumbs').evaluate(el=>{
     const r=el.getBoundingClientRect();
@@ -85,6 +94,21 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
     await page.screenshot({path:'qa/storefront-ui-kit-gallery-'+width+'.png',fullPage:true});
    }
   }
+
+  await page.setViewportSize({width:390,height:900});
+  await page.locator('form.cart').evaluate(el=>{el.addEventListener('submit',event=>{event.preventDefault();el.dataset.submits=String(Number(el.dataset.submits||0)+1)});el.querySelector('input.qty').value='0'});
+  await page.locator('.single_add_to_cart_button').click();
+  assert.equal(await page.locator('form.cart').getAttribute('data-submits'),null,'Native quantity validation blocks invalid submission');
+  await page.locator('input.qty').fill('2');
+  await page.locator('.single_add_to_cart_button').click();
+  assert.equal(await page.locator('form.cart').getAttribute('data-submits'),'1','One click produces one native submit');
+  await page.locator('#sf-panel').evaluate(dialog=>{dialog.append(document.querySelector('.sf-mobile-dock'));dialog.showModal()});
+  assert.equal(await page.locator('.sf-product-purchase').evaluate(el=>getComputedStyle(el).visibility),'hidden','Purchase hides while dialog owns bottom');
+  assert.equal(await page.locator('#sf-panel .sf-mobile-dock').evaluate(el=>getComputedStyle(el).display),'block','Same dock available in dialog');
+  await page.locator('#sf-panel').evaluate(dialog=>{dialog.close();document.querySelector('.sf-shell').append(dialog.querySelector('.sf-mobile-dock'))});
+  assert.equal(await page.locator('.sf-product-purchase').evaluate(el=>getComputedStyle(el).visibility),'visible','Purchase restores after dialog');
+  await page.locator('.sf-product-purchase').evaluate(el=>el.remove());
+  assert.equal(await page.locator('.sf-shell > .sf-mobile-dock').evaluate(el=>getComputedStyle(el).display),'block','No purchase form retains navigation (out of stock)');
   await page.setViewportSize({width:320,height:900});
   await page.locator('.flex-control-thumbs').evaluate(el=>{el.scrollLeft=el.scrollWidth});
   assert(await page.locator('.flex-control-thumbs').evaluate(el=>el.scrollLeft>0),'Overflowing thumbnails can scroll');

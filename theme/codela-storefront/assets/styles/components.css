@@ -58,6 +58,7 @@
 /* The same surface primitive styles all floating header islands and the X.
    Placement belongs to navigation/overlay; touch and appearance live here. */
 body.single-product div.product > .onsale,
+.sf-product-purchase,
 .sf-ui-gallery-nav,
 .woocommerce div.product div.sf-ui-gallery .flex-control-thumbs,
 .sf-shell .sf-ui-surface,
@@ -84,6 +85,7 @@ body.single-product div.product > .onsale,
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   .woocommerce div.product .sf-ui-gallery .woocommerce-product-gallery__trigger,
   body.single-product div.product > .onsale,
+.sf-product-purchase,
 .sf-ui-gallery-nav,.woocommerce div.product div.sf-ui-gallery .flex-control-thumbs,
   .sf-shell .sf-ui-surface,.sf-shell .sf-dock-surface,#sf-panel .sf-dock-surface,.sf-shell .sf-ui-icon-button--soft,
   #sf-panel button.sf-ui-icon-button--soft{background:var(--sf-ui-glass-opaque)!important}
@@ -296,6 +298,7 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
 .sf-shell .sf-ui-button--secondary,
 .woocommerce .sf-shell .sf-ui-button--secondary{background:var(--sf-ui-surface);-webkit-backdrop-filter:none;backdrop-filter:none;}
 body.single-product div.product > .onsale,
+.sf-product-purchase,
 .sf-ui-gallery-nav,
 .woocommerce div.product div.sf-ui-gallery .flex-control-thumbs,
 .sf-shell .sf-ui-surface,
@@ -314,6 +317,7 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
 .sf-shell .sf-ui-button--secondary,
 .woocommerce .sf-shell .sf-ui-button--secondary,
 body.single-product div.product > .onsale,
+.sf-product-purchase,
 .sf-ui-gallery-nav,
 .woocommerce div.product div.sf-ui-gallery .flex-control-thumbs,
 .sf-shell .sf-ui-surface,

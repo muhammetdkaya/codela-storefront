@@ -362,3 +362,32 @@ body.single-product div.product > .onsale{
   display:inline-flex;align-items:center;min-width:0;min-height:0;
   margin:0;padding:7px 12px;font-size:12px;font-weight:500;line-height:1.4;
 }
+
+/* Existing Woo form controls compose one purchase surface; no second button. */
+body.single-product div.product form.cart .sf-product-purchase{
+  display:flex;align-items:stretch;gap:8px;flex:1 1 100%;min-width:0;
+  padding:6px;
+}
+body.single-product div.product form.cart .sf-product-purchase .single_add_to_cart_button{
+  --sf-ui-control-radius:var(--sf-ui-pill);
+  flex:1 1 auto;min-width:0;
+}
+body.single-product div.product form.cart .sf-product-purchase .quantity input.qty{
+  width:64px;border:0;background:transparent;border-radius:var(--sf-ui-pill);
+}
+@media(max-width:700px){
+  body.single-product:has(.sf-product-purchase) .sf-content{
+    padding-bottom:calc(112px + env(safe-area-inset-bottom,0px));
+  }
+  body.single-product div.product form.cart .sf-product-purchase{
+    position:fixed;z-index:1000;left:16px;right:16px;
+    bottom:calc(12px + env(safe-area-inset-bottom,0px));
+    width:auto;max-width:430px;margin:0 auto;
+  }
+  body.single-product:has(.sf-product-purchase) .sf-shell > .sf-mobile-dock{display:none}
+  /* The modal receives the existing dock. The document's purchase stays inert. */
+  body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-purchase{visibility:hidden}
+  body.single-product div.product form.cart:has(.sf-product-purchase){
+    border:0;padding:0;
+  }
+}

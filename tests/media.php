@@ -28,3 +28,10 @@ unset($GLOBALS['removed']);$product_page=false;
 foreach ($actions['wp'][10] as $callback) { $callback(); }
 check(!isset($GLOBALS['removed']), 'Non-product breadcrumb unchanged');
 echo "Media adapters and settings passed.\n";
+
+// Product composition uses native Woo hooks, only on the product document.
+$product_page=true;
+require __DIR__ . '/../theme/codela-storefront/inc/product.php';
+$callbacks=$actions['wp'][10];$callbacks[count($callbacks)-1]();
+ob_start();$actions['woocommerce_before_add_to_cart_button'][0][0]();echo '<button type="submit">Native</button>';$actions['woocommerce_after_add_to_cart_button'][PHP_INT_MAX][0]();
+check(ob_get_clean()==='<div class="sf-product-purchase"><button type="submit">Native</button></div>', 'One wrapper retains native form control');
