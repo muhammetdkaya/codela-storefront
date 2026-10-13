@@ -30,7 +30,7 @@ function store(namespace, options) {
 }
 `)
  .replace("let menuPath = [];",inlineControllers + '\nlet menuPath = [];');
-const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/product/',images:[],quantity:1,totals:{line_subtotal:'1000',line_subtotal_tax:'0',currency_code:'TRY',currency_minor_unit:2}}],totals:{total_items:'1000',total_items_tax:'0',currency_code:'TRY',currency_minor_unit:2}};
+const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',permalink:'/product/',images:[{thumbnail:'https://store.test/fixture-product.svg'}],quantity:1,totals:{line_subtotal:'1000',line_subtotal_tax:'0',currency_code:'TRY',currency_minor_unit:2}}],totals:{total_items:'1000',total_items_tax:'0',currency_code:'TRY',currency_minor_unit:2}};
 (async()=>{
  const browser = await chromium.launch({headless:true,...(process.env.CHROMIUM_BIN ? {executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-gpu','--use-gl=disabled','--disable-software-rasterizer','--disable-dev-shm-usage','--no-zygote','--single-process']} : {})});
  try {
@@ -40,6 +40,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  await page.route('**/*', async route=>{
   const url=route.request().url();
   if(url.includes('/api/cart')) {cartRequests++;return route.fulfill({json:cart,headers:{Nonce:'test'}});}
+  if(url.endsWith('/fixture-product.svg'))return route.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="100"><rect width="80" height="100" fill="#eeeae4"/></svg>'});
   if(url.includes('/search-api')) {searchRequests++;const q=new URL(url).searchParams.get('q');await new Promise(r=>setTimeout(r,q==='old'?180:10));return route.fulfill({json:[{name:q,url:'/product/',image:'',price:'10',sku:q}]});}
   if(url.includes('/assets/icons/')) return route.fulfill({contentType:'image/svg+xml',body:fs.readFileSync('theme/codela-storefront/assets/icons/'+new URL(url).pathname.split('/').at(-1),'utf8')});
   return route.fulfill({contentType:'text/html',body:`<!doctype html><html lang="en"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>.screen-reader-text{position:absolute!important;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}${css}</style></head><body>${activeHeader}<main style="height:3200px;padding:30px">Store content</main>${footer}</body></html>`});
@@ -228,6 +229,52 @@ const cart = {items_count:1, items:[{key:'one',name:'Test product',permalink:'/p
  });
  assert(Math.abs(checkoutWidth.width-checkoutWidth.contentWidth)<2,'Checkout fills its summary content area');
  assert(checkoutWidth.fontSize<=16,'Compact checkout uses shared typography');
+ // Cart content and summary share an axis, including the centered desktop CTA.
+ await page.waitForTimeout(350);
+ const title=await page.locator('.sf-cart-row h3 a').innerText();
+ for(const width of [320,390,700,1280]){
+  await page.setViewportSize({width,height:844});
+  await page.locator('.sf-cart-row h3 a').evaluate(el=>el.textContent='Uzun ürün adı / Natural Canvas Everyday Collection '+ 'ABC'.repeat(30));
+  const layout=await page.evaluate(()=>{
+   const rect=s=>document.querySelector(s).getBoundingClientRect().toJSON();
+   const body=document.querySelector('#sf-cart');
+   return {row:rect('.sf-cart-row'),summary:rect('.sf-subtotal'),cta:rect('.sf-cart-bottom .sf-ui-button'),
+    stepper:rect('.sf-stepper'),remove:rect('.sf-remove'),detail:rect('.sf-cart-detail'),
+    buttons:[...document.querySelectorAll('.sf-stepper button,.sf-remove')].map(el=>el.getBoundingClientRect().toJSON()),
+    overflow:body.scrollWidth>body.clientWidth};
+  });
+  assert(!layout.overflow,'Long cart title does not cause horizontal scrolling at '+width);
+  assert(Math.abs(layout.row.x-layout.summary.x)<1,'List and summary share left edge at '+width);
+  assert(Math.abs(layout.row.x-layout.cta.x)<1,'Checkout is centered on list axis at '+width);
+  assert(Math.abs(layout.row.width-layout.cta.width)<1,'Checkout and list share width at '+width);
+  assert(Math.abs(layout.stepper.y+layout.stepper.height/2-layout.remove.y-layout.remove.height/2)<1,'Quantity and removal share baseline at '+width);
+  for(const button of layout.buttons)assert(button.width>=43.99&&button.height>=43.99,'Cart touch targets remain at least 44px');
+  assert(layout.remove.x+layout.remove.width<=layout.detail.x+layout.detail.width+1,'Actions stay inside item');
+ }
+ await page.setViewportSize({width:390,height:844});
+ await page.locator('.sf-cart-row h3 a').evaluate((el,title)=>el.textContent=title,title);
+ if(process.env.QA_CART)await page.screenshot({path:process.env.QA_CART});
+ // A long list scrolls behind neither the summary nor the dock, even on short screens.
+ await page.evaluate(()=>{
+  const root=document.querySelector('#sf-cart-items'),row=root.firstElementChild;
+  for(let i=0;i<8;i++)root.append(row.cloneNode(true));
+ });
+ await page.setViewportSize({width:390,height:568});
+ const scrolling=await page.evaluate(()=>{
+  const body=document.querySelector('#sf-cart'),summary=document.querySelector('.sf-cart-bottom');
+  body.scrollTop=body.scrollHeight;
+  const last=body.querySelector('.sf-cart-row:last-child').getBoundingClientRect();
+  const cta=summary.querySelector('.sf-ui-button').getBoundingClientRect();
+  const dock=document.querySelector('.sf-dock-surface').getBoundingClientRect();
+  return {scrollable:body.scrollHeight>body.clientHeight,lastBottom:last.bottom,
+   bodyBottom:body.getBoundingClientRect().bottom,summaryTop:summary.getBoundingClientRect().top,
+   ctaBottom:cta.bottom,dockTop:dock.top};
+ });
+ assert(scrolling.scrollable,'Long cart retains an independent scroll area');
+ assert(scrolling.lastBottom<=scrolling.bodyBottom+1&&scrolling.bodyBottom<=scrolling.summaryTop+1,'Last item remains reachable above summary');
+ assert(scrolling.ctaBottom<scrolling.dockTop,'Dock does not cover checkout');
+ await page.evaluate(()=>{const root=document.querySelector('#sf-cart-items');while(root.children.length>1)root.lastElementChild.remove();});
+ await page.setViewportSize({width:390,height:844});
  const fetched=cartRequests;
  await click('cart');
  assert.equal(cartRequests,fetched,'Current tab is a no-op');

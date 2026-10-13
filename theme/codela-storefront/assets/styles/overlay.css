@@ -218,3 +218,23 @@
 
 /* Reset initial pointer focus after the search control rule; Tab removes this class. */
 #sf-panel .sf-close.sf-initial-focus:focus-visible{outline:none!important;box-shadow:none!important}
+
+/* Cart uses the toolbar gutter for its list, feedback and summary.
+   Keep the scrollable list independent of the checkout/dock area. */
+#sf-panel.is-cart-panel #sf-cart{
+  padding:24px var(--sf-overlay-gutter) 28px;
+  scrollbar-width:thin;
+}
+#sf-panel.is-cart-panel .sf-cart-bottom{
+  padding-inline:var(--sf-overlay-gutter);
+  padding-top:20px;
+}
+#sf-panel.is-cart-panel .sf-cart-bottom .sf-ui-button{display:flex}
+#sf-panel.is-cart-panel .sf-status{padding-inline:var(--sf-overlay-gutter)}
+#sf-panel.is-cart-panel #sf-cart-items{max-width:780px;margin-inline:auto}
+@media(max-width:360px){
+  #sf-panel.is-cart-panel .sf-cart-row{grid-template-columns:64px minmax(0,1fr);gap:12px}
+}
+
+#sf-panel.is-cart-panel .sf-cart-row:not(:has(.sf-cart-photo)){grid-template-columns:minmax(0,1fr)}
+#sf-panel.is-cart-panel .sf-cart-row>a:empty{display:none}

@@ -1,11 +1,13 @@
 # Codela Storefront — güncel çalışma kuralları
 
-## Tek güncel devam noktası — 13 Ekim 2026 / 0.1.56
+## Tek güncel devam noktası — 13 Ekim 2026 / 0.1.57
 
-- **Tema 0.1.55 → 0.1.56 canlıda:** kullanıcı alt menü seçim alanının ikonlar arasında doğrudan atlamadan kaymasını istedi. Mevcut Dock controller parmak konumunu kesirli slot değeriyle izler; aynı ikon alanı içinde de kapsül hareket eder. Bırakınca hedef ikonun merkezine mevcut CSS geçişiyle yerleşir.
-- Tek Dock'un native dialog içine/dışına taşınması CSS geçişini sıfırlıyordu. Görünen kapsül konumu geçici değişkende taşınır; bir render-frame sonra CSS yeni hedefe kayar. Navigasyon/panel açılışı geciktirilmez. Yeni dialog/controller/modül/kütüphane/istek yok; mevcut controller geliştirilir.
-- Yerel gerçek Chromium, modal açılış/kapanışında ara kapsül konumları, sürekli parmak takibi ve iptal/yerleşme; ayrıca mevcut hold/scrub/scroll/reduced-motion/tek tıklama testleri başarılı. 22 paket testi ve gerçek CI PHP/Node/paket/Chromium kontrolleri başarılı. Kaynak [4b1adc5](https://github.com/muhammetdkaya/codela-storefront/commit/4b1adc5e9f987a1fac5d386e4d728faa331fedb6); [Actions 38331821841](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38331821841): `validate=success`, `deploy=success` ve gerçek **Deploy Storefront only=success**.
-- 0.1.55 kabul edilen cam yüzey ve okunabilirlik korunur. Sıradaki iş: fiziksel cihazda tek dokunma/parmakla gezinme kayma kabulü; ardından mevcut gerçek WP/Woo senaryoları, F5 kapsam sınırı ve F6 ölçümü. Bu çalışma F3/F4/F5/F6'yı kapatmaz.
+- **Tema 0.1.56 → 0.1.57:** sepet panelindeki ürün listesi, ara toplam ve ödeme düğmesi ortak kenar boşluğu ve 780px içerik ekseninde hizalandı. Masaüstünde ödeme düğmesinin sola kaçmasına neden olan inline-flex yerleşimi düzeltildi.
+- Ürün görseli/başlık/fiyat aralıkları, miktar ve Kaldır satırı dengelendi. Uzun ad/varyasyon/tutar satırları taşmadan sarılır; görselsiz ürün boş görsel sütunu bırakmaz. Kontroller en az 44px kalır. Özet sabit kalırken ürün listesi bağımsız kayar; alt menü açıklığı korunur.
+- Ortak Button/IconButton ve 0.1.56 kayan Dock davranışı korunur. Sepet controller/Store API/parasal hesap/eklenti kodu değişmedi; yeni JS/istek/bağımlılık yok.
+- Doğrulama: yerel Chromium 320/390/700/1280px hizalama, uzun ad, kısa ekranda çok ürün/ödeme erişimi; ortak UI, cart-race/cart-sync ve 22 paket kontrolü başarılı. Kaynak commit ve gerçek CI/dağıtım bu kayıt sırasında bekliyor.
+- Kalan: fiziksel cihazda yeni sepet görünümü kabulü; gerçek WP/Woo F3/F4 kabulü, F5 kapsam sınırı ve F6 ölçümü açık. İlk sonraki adım uzun varyasyonlu/çok ürünlü sepeti fiziksel cihazda kontrol etmek.
+- Önceki 0.1.56 yayın kanıtı: [4b1adc5](https://github.com/muhammetdkaya/codela-storefront/commit/4b1adc5e9f987a1fac5d386e4d728faa331fedb6), [Actions 38331821841](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38331821841), validate ve gerçek Deploy Storefront only başarılı.
 
 ## Başlangıçta okunacaklar
 

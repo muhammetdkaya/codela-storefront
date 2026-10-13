@@ -1,6 +1,6 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.56. Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.57. Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
 
 ## One design, not one enormous universal widget
@@ -202,6 +202,20 @@ functionality or keyboard accessibility.
   continuous positions within the same item slot, release and cancellation;
   server-rendered initial selection must still appear directly with no hydration
   sweep. Existing gesture, ghost-click and scroll behavior stays authoritative.
+
+## Cart composition (0.1.57)
+
+- Cart list, feedback and summary inherit the dialog gutter. Item rows and
+  summary content share a centered 780px maximum width; the checkout link
+  participates in block layout so auto margins center it on wide screens.
+- Keep quantity/removal controls at least 44px, aligned on one action row
+  where space permits. Long names, variations and totals may wrap. An item
+  without an image must not retain an empty thumbnail column.
+- The list is the scroll container; the summary and existing dock clearance
+  stay outside it. Keep shared Button/pressable paint and motion unchanged.
+- Responsive browser coverage checks 320–1280px, long unbroken names,
+  short-screen list scrolling and checkout/dock separation. Real Woo
+  integration and physical-device acceptance remain separate gates.
 
 ## Contribution checklist
 
