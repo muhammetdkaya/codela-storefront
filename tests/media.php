@@ -35,3 +35,17 @@ require __DIR__ . '/../theme/codela-storefront/inc/product.php';
 $callbacks=$actions['wp'][10];$callbacks[count($callbacks)-1]();
 ob_start();$actions['woocommerce_before_add_to_cart_button'][0][0]();echo '<button type="submit">Native</button>';$actions['woocommerce_after_add_to_cart_button'][PHP_INT_MAX][0]();
 check(ob_get_clean()==='<div class="sf-product-purchase"><button type="submit">Native</button></div>', 'One wrapper retains native form control');
+
+function doing_action( $hook ) { return $GLOBALS['stock_in_tab'] ?? false; }
+class TestStockProduct { public function __construct( public string $type ) {} public function is_type( $type ) { return $type === $this->type; } }
+$tabs=codela_sf_product_information_tabs(['description'=>['title'=>'Existing']]);
+check($tabs['description']['title']==='Existing' && $tabs['additional_information']['callback']==='woocommerce_product_additional_information_tab', 'Native extra-info tab added without losing tabs');
+$custom=['additional_information'=>['title'=>'Custom','callback'=>'custom']];
+check(codela_sf_product_information_tabs($custom)===$custom, 'Existing extra-info tab preserved');
+check($removed===['woocommerce_single_product_summary','woocommerce_template_single_meta',40], 'Metadata leaves summary');
+check(codela_sf_product_stock_placement('Native stock',new TestStockProduct('simple'))==='', 'General stock leaves summary');
+check(codela_sf_product_stock_placement('Variation stock',new TestStockProduct('variation'))==='Variation stock', 'Variation availability remains live');
+$GLOBALS['stock_in_tab']=true;
+check(codela_sf_product_stock_placement('Native stock',new TestStockProduct('simple'))==='Native stock', 'Tab retains native stock');
+$GLOBALS['stock_in_tab']=false;$product_page=false;
+check(codela_sf_product_stock_placement('Native stock',new TestStockProduct('simple'))==='Native stock', 'Other pages retain stock');

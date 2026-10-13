@@ -1,11 +1,12 @@
 # Codela Storefront — güncel çalışma kuralları
 
 
-## Son doğrulanmış devam noktası — 13 Ekim 2026 / 0.1.68
+## Son doğrulanmış devam noktası — 14 Ekim 2026 / 0.1.69
 
-- Tema 0.1.67 → 0.1.68: kullanıcı ürün sayfasındaki Ana Sayfa / kategori / ürün yol bilgisini istemiyor. Native Woo breadcrumb ürün belgesinde kaldırılır, summary'ye yeniden eklenmez. Başlık/fiyat doğrudan galeri ardından gelir. Kullanıcının ek isteği: satın alma alanı normal alt menüyle aynı 58px yüksekliğe, 430px azami genişliğe, 16px yan ve 12px safe-area alt boşluğa bağlandı. Navigation/purchase tek bottom-bar ölçü token'larını kullanır; 48px iç kontrol hedefleri korunur.
-- Doğrulama: mevcut PHP breadcrumb sözleşmesi yeni karara uyarlandı; PHP ve 23 paket testi başarılı. CI 5 genişlikte ürün ve gezinme kontrolleri başarılı; 390px fixture'da satın alma ve dialog dock'u aynı 58px yüksekliği doğrulandı. Kaynak 93d0927b0c0c76a1a7f4479ae0609c53cd94a886 / Actions 38467160794 validate=success, deploy=success. Canlı Demo 20: breadcrumb sayısı=0, başlık mevcut, ortak height=58px/max-width=430px token'ları yüklü. Connector adım metadata'sı boş; yayın ayrıca canlı kaynak/DOM ile doğrulandı.
-- Kalan/sıradaki: 0.1.67 satın alma alanının fiziksel mobil klavye/safe-area ve gerçek varyasyon/grup/harici ürün kabulü; dönüşüm araçları bütünlüğü. Slider duraklatıldı; F3/F4/F5/F6 açık.
+- Tema 0.1.68 → 0.1.69: stok kodu/kategori/etiketler ve genel stok bilgisi native Ek bilgi sekmesine taşındı. Sekme yoksa Woo'nun mevcut additional_information callback'iyle eklenir; var olan sekme/özellik/ağırlık/boyut ve extension hook'ları korunur.
+- Native meta summary hook'undan kaldırılır, additional-information action'ında render edilir. Genel stock HTML yalnız bu sekmede; varyasyonun canlı availability HTML'i korunur. İkinci tabs/form/JS/API yok.
+- Doğrulama/yayın: PHP hook/sekme/stok kontrolleri ve 23 paket testi başarılı. Mevcut sekme callback'ini koruma, sekme yokken ekleme, genel stok taşıma, varyasyon availability ve diğer sayfalardaki stok HTML'i kontrol edildi. CI/yayın ve canlı kabul bekliyor.
+- Kalan/sıradaki: fiziksel mobil klavye/safe-area ve gerçek varyasyon/grup/harici satın alma kabulü, dönüşüm araçları bütünlüğü. Slider duraklatıldı; F3/F4/F5/F6 açık.
 
 ## Başlangıçta okunacaklar
 

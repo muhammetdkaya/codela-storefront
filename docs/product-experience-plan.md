@@ -43,3 +43,7 @@ Kullanıcı 13 Ekim 23:37'de slider'a ara verilmesini, sepete ekleme eyleminin a
 ### 0.1.68 sade ürün bilgisi
 
 Kullanıcı ürün sayfasındaki yol bilgisini kaldırdı. Breadcrumb ürün belgesinde render edilmez; native başlık ve fiyat galeri ardından gelir. Eski galeri sonrası breadcrumb yerleşimi kararı bu taleple değişti.
+
+### 0.1.69 ürün teknik bilgileri
+
+SKU/kategori/etiketler ve genel stok bilgisi native Ek bilgi sekmesindedir. Native attributes/weight/dimensions ve var olan tab/extension callback'leri korunur. Varyasyonun satın alma için gereken canlı stok mesajı seçeneklerin yanında kalır. Ana ürün özeti başlık/fiyat/açıklama/seçenek ve satın alma odaklıdır.
