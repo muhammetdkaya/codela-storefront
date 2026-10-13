@@ -1,9 +1,19 @@
 # Codela Storefront — güncel çalışma kuralları
 
+
+## Son doğrulanmış devam noktası — 13 Ekim 2026 / 0.1.64
+
+- Tema 0.1.63 → 0.1.64: ayrı büyüteç kaldırıldı; hover zoom kapalıyken görsel bağlantıları native Woo lightbox açar. Linklere erişilebilir büyütme adı/dialog ipucu eklendi. Slider, swipe, varyasyon ve lightbox motoru Woo'ya aittir.
+- Kapsül eşit 6px iç boşluk, 1px seçili kenar ve net (opacity=1) önizlemeler kullanır. Yuvarlak önizleme köşeleri dış kapsülde kırpılmaz; kontrol için ayrılan boş alan kaldırıldı. Uzun liste hâlâ kayar, tek görselde kapsül gizlenir.
+- İndirim etiketi küçük metin kapsülü; native ürün etiketi ortak cam/fallback/forced-colors yüzeyine bağlandı. Yeni runtime JS veya kütüphane yok.
+- Doğrulama/yayın: 5 genişlikte ürün tarayıcı testi, PHP medya adaptörü ve 23 paket testi geçti. CI ve canlı görsel/klavye lightbox kabulü bekliyor; dağıtım henüz doğrulanmadı.
+- Sonraki iş: mevcut Codela satın alma barını ürün ekranında alt menü yerine geçirmek; dönüşüm araçlarını mevcut planla bütünleştirmek. Fiziksel mobil swipe ve F3/F4/F5/F6 kabulü açık.
+
+
 ## Son doğrulanmış devam noktası — 13 Ekim 2026 / 0.1.63
 
 - Tema 0.1.62 → 0.1.63: gerçek Woo CSS `.woocommerce div.product div.images .flex-control-thumbs` kapsülün 6px iç boşluğunu eziyordu. Native galeri adaptörüne eşdeğer `div.sf-ui-gallery` seçicisi eklendi; ortak yüzey veya thumbnail motoru değişmedi. Regresyon artık bu gerçek Woo kuralını içerir ve 5 genişlikte iç boşluğu doğrular.
-- Yüzen cam galeri kapsülü, seçili koyu kenar, en az 44px native img hedefi, uzun listede scroll, tek görselde gizleme hazır. 5 genişlikte ürün testi ve 23 paket testi geçti. CI/0.1.63 dağıtım bekliyor.
+- Yüzen cam galeri kapsülü, seçili koyu kenar, en az 44px native img hedefi, uzun listede scroll, tek görselde gizleme hazır. 5 genişlikte ürün testi ve 23 paket testi geçti. 0.1.63 Actions 38423013801: validate=success, deploy=success, gerçek Deploy Storefront only=success; kaynak 0e0bb6e7573bad7e7aa22fe34ea70dff66b3465e. Canlı Demo 06 kapsülü 6px iç boşlukla içerik kadar genişliyor (4 görsel, 256px).
 - 0.1.62 yayın kanıtı: kaynak 73016244f4c269c9e530dab9175779238aaa4257; Actions 38422176540 validate=success, deploy=success, gerçek Deploy Storefront only=success. Canlı Demo 20'de ortak glass/blur, üç görsel yüklenmesi, ikinci thumbnail seçimi ve seçili koyu kenar doğrulandı. Başlangıç galeri yüksekliği Woo init sonunda beklenen değere oturuyor; ikinci galeri motoru eklenmedi.
 - Sonraki iş: fiziksel telefonda kapsül/swipe görünümü kabulü; ardından mevcut Codela satın alma barını alt menü yerine geçirmek. Test ürünleri zaten eklendi; yeniden üretmeyin. F3/F4/F5/F6 genel kabulü açık.
 

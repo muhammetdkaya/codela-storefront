@@ -12,9 +12,9 @@ const thumb='<li><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/
 const related='<li class="product"><a href="/product"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22400%22/%3E"><h2 class="woocommerce-loop-product__title">Ürün</h2></a><span class="price">₺500</span></li>';
 const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>.woocommerce div.product div.images .flex-control-thumbs{padding:0}${css}</style></head>
 <body class="single-product woocommerce woocommerce-page">${header}<main class="sf-content"><div data-block-name="woocommerce/legacy-template" class="content-area alignwide"><main class="site-main">
-<div class="product type-product"><div class="woocommerce-product-gallery images sf-ui-gallery sf-ui-gallery--hero"><a href="#" role="button" aria-label="Galeriyi aç" class="woocommerce-product-gallery__trigger">+</a><div class="woocommerce-product-gallery__wrapper">
-<div class="woocommerce-product-gallery__image"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%221000%22/%3E" alt="Ürün"></div></div>
-<ol class="flex-control-thumbs">${thumb.replace('<img ' ,'<img class="flex-active" ')+thumb.repeat(4)}</ol></div>
+<div class="product type-product"><div class="woocommerce-product-gallery images sf-ui-gallery sf-ui-gallery--hero"><div class="woocommerce-product-gallery__wrapper">
+<div class="woocommerce-product-gallery__image"><a href="/full-image" aria-label="Görseli büyüt" aria-haspopup="dialog"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%221000%22/%3E" alt="Ürün"></a></div></div>
+<ol class="flex-control-thumbs">${thumb.replace('<img ' ,'<img class="flex-active" ')+thumb.repeat(6)}</ol></div>
 <div class="summary entry-summary"><nav class="woocommerce-breadcrumb">Mağaza / Kategori / Ürün</nav><h1 class="product_title entry-title">Minimal Ürün Başlığı</h1><p class="price">₺1.250</p>
 <div class="woocommerce-product-details__short-description"><p>Ürün açıklaması. Kumaş ve bakım bilgileri.</p></div>
 <form class="cart" method="post"><div class="quantity"><input class="qty" type="number" value="1" min="1"></div>
@@ -61,22 +61,18 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
    assert(Math.abs(result.gallery.top)<1,'Gallery begins at document top at '+width);
    assert.equal(await page.locator('.woocommerce-product-gallery__image img').evaluate(el=>getComputedStyle(el).objectFit),'cover','Hero fills frame without contain letterboxing');
    assert.equal(result.relatedColumns,width>=901?4:2,'Related product grid at '+width);
-   const trigger=await page.locator('.woocommerce-product-gallery__trigger').evaluate(el=>{
-    const r=el.getBoundingClientRect();return {width:r.width,height:r.height,y:r.y,bg:getComputedStyle(el).backgroundColor};
-   });
-   assert(trigger.width>=44&&trigger.height>=44,'Gallery uses shared IconButton target');
-   assert(trigger.y>70&&trigger.y+trigger.height<=result.gallery.bottom,'Gallery control clears header and stays inside media');
-   assert.equal(trigger.bg,'rgba(250, 250, 252, 0.28)','Gallery uses shared glass');
+   assert.equal(await page.locator('.woocommerce-product-gallery__trigger').count(),0,'No separate zoom button');
    const rail=await page.locator('.flex-control-thumbs').evaluate(el=>{
-    const r=el.getBoundingClientRect(),trigger=document.querySelector('.woocommerce-product-gallery__trigger').getBoundingClientRect();
+    const r=el.getBoundingClientRect();
     const active=el.querySelector('img.flex-active'),image=active.getBoundingClientRect();
-    return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,triggerLeft:trigger.left,
+    return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,
       background:getComputedStyle(el).backgroundColor,blur:getComputedStyle(el).backdropFilter,
       thumbWidth:image.width,thumbHeight:image.height,padding:getComputedStyle(el).paddingLeft,
       border:getComputedStyle(active.parentElement).borderColor,scrollable:el.scrollWidth>el.clientWidth};
    });
    assert(rail.top>70&&rail.bottom<=result.gallery.bottom,'Rail overlays gallery below header');
-   assert(rail.left>=20&&rail.right+8<=rail.triggerLeft,'Rail never overlaps the separate zoom target');
+   assert(rail.left>=19&&rail.right<=width-19,'Rail keeps equal viewport insets');
+   assert(Math.abs((rail.left+rail.right)/2-width/2)<1,'Rail is centered');
    assert(rail.thumbWidth>=44&&rail.thumbHeight>=44,'Native thumbnail click target remains at least 44px');
    assert.equal(rail.padding,'6px','Native Woo rule cannot erase rail spacing');
    assert.equal(rail.background,'rgba(250, 250, 252, 0.28)','Rail reuses floating glass surface');

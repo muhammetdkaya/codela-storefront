@@ -1,6 +1,6 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.63 (gallery; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.64 (gallery; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
 
 ## One design, not one enormous universal widget
@@ -516,3 +516,7 @@ the bundled default targets the native legacy template.
 The native Woo thumbnail list adapts to the reusable `.sf-ui-gallery-nav` layout: content-sized floating rail at the gallery bottom, with space for the separate lightbox target. Shared surface paint, transparency preferences and forced colors stay in components.css; gallery.css owns geometry and native `.flex-active` selection. Mobile cells are 54px with at least 44px usable image target; wide-screen cells are 56px. Overflow scrolls horizontally, single-image rails hide. Keep previews recognizable and do not replace the Woo track, variation updates, thumbnail activation or lightbox with another carousel. The core Gallery block retains its own native scroll adapter; it does not gain a duplicated thumbnail strip in this release.
 
 Native Woo thumbnail adapter uses `div.sf-ui-gallery` specificity so Woo `div.images` spacing does not override the rail. This is verified with the native padding rule in the regression fixture.
+
+### Gallery refinement — 0.1.64
+
+The image link opens the native Woo lightbox; hover zoom is disabled using the Woo filter so it creates no separate magnifier. PHP labels the existing image link for keyboard/screen-reader access. The rail no longer reserves space for a separate control: equal insets, clear previews, rounded cells and a 1px active outline. Sale badges on the main product use the existing floating-surface material and accessibility fallbacks, with compact placement in product.css. No new gallery runtime.

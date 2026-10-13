@@ -359,8 +359,6 @@ body.single-product div.product > :is(.woocommerce-tabs,.related,.upsells){
 }
 body.single-product div.product > .onsale{
   position:absolute;z-index:2;top:calc(88px + var(--sf-header-offset,0px));left:20px;
+  display:inline-flex;align-items:center;min-width:0;min-height:0;
+  margin:0;padding:7px 12px;font-size:12px;font-weight:500;line-height:1.4;
 }
-body.single-product div.product .sf-ui-gallery .woocommerce-product-gallery__trigger{
-  position:absolute;top:auto;bottom:20px;right:20px;
-}
-
