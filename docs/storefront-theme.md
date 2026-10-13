@@ -5,9 +5,9 @@
 
 ## Tek güncel devam noktası — 13 Ekim 2026 / 0.1.56
 
-- **Tema 0.1.55 → 0.1.56:** kullanıcı alt menü seçim alanının ikonlar arasında doğrudan atlamadan kaymasını istedi. Mevcut Dock controller parmak konumunu kesirli slot değeriyle izler; aynı ikon alanı içinde de kapsül hareket eder. Bırakınca hedef ikonun merkezine mevcut CSS geçişiyle yerleşir.
+- **Tema 0.1.55 → 0.1.56 canlıda:** kullanıcı alt menü seçim alanının ikonlar arasında doğrudan atlamadan kaymasını istedi. Mevcut Dock controller parmak konumunu kesirli slot değeriyle izler; aynı ikon alanı içinde de kapsül hareket eder. Bırakınca hedef ikonun merkezine mevcut CSS geçişiyle yerleşir.
 - Tek Dock'un native dialog içine/dışına taşınması CSS geçişini sıfırlıyordu. Görünen kapsül konumu geçici değişkende taşınır; bir render-frame sonra CSS yeni hedefe kayar. Navigasyon/panel açılışı geciktirilmez. Yeni dialog/controller/modül/kütüphane/istek yok; mevcut controller geliştirilir.
-- Yerel gerçek Chromium, modal açılış/kapanışında ara kapsül konumları, sürekli parmak takibi ve iptal/yerleşme; ayrıca mevcut hold/scrub/scroll/reduced-motion/tek tıklama testleri başarılı. 22 paket testi geçti; gerçek CI ayrıca doğrulanacak. Bu kaynak kaydında CI/dağıtım bekliyor.
+- Yerel gerçek Chromium, modal açılış/kapanışında ara kapsül konumları, sürekli parmak takibi ve iptal/yerleşme; ayrıca mevcut hold/scrub/scroll/reduced-motion/tek tıklama testleri başarılı. 22 paket testi ve gerçek CI PHP/Node/paket/Chromium kontrolleri başarılı. Kaynak [4b1adc5](https://github.com/muhammetdkaya/codela-storefront/commit/4b1adc5e9f987a1fac5d386e4d728faa331fedb6); [Actions 38331821841](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38331821841): `validate=success`, `deploy=success` ve gerçek **Deploy Storefront only=success**.
 - 0.1.55 kabul edilen cam yüzey ve okunabilirlik korunur. Sıradaki iş: fiziksel cihazda tek dokunma/parmakla gezinme kayma kabulü; ardından mevcut gerçek WP/Woo senaryoları, F5 kapsam sınırı ve F6 ölçümü. Bu çalışma F3/F4/F5/F6'yı kapatmaz.
 
 ## Mimari ve sınırlar
