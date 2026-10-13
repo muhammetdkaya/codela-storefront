@@ -472,3 +472,25 @@ create parallel stores or second navigation listeners.
   geometry** at 320, 390, 700, 1024 and 1360px, including icon visibility.
   Woo checkout native markup and gateway mechanics remain untouched.
 - [GitHub Actions 38202574916](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38202574916) verified both browser tests and independent FTPS deployment at `c015e9c`. Physical Safari acceptance still required.
+
+
+## Product detail adapter (0.1.59)
+
+The product screen uses the existing WooCommerce legacy single-product template
+rather than replacing its hooks or request lifecycle. `assets/styles/product.css`
+owns only the gallery/summary composition, variations/quantity **layout**,
+description tabs, and related-products responsive grid, scoped to
+`body.single-product`. It is enqueued only when `is_product()`.
+
+The native WooCommerce `single_add_to_cart_button` is added to the shared
+Button selector groups in `assets/styles/components.css`, including primary
+appearance, focus, pressed, disabled and accessibility fallbacks. Product CSS
+may change its width and size tokens but must not clone button paint or
+animations. The product form keeps native variation switching, stock checks,
+validation, third-party hooks and WooCommerce add-to-cart submission.
+Gallery zoom/lightbox/slider come from registered WooCommerce supports; no
+new runtime, AJAX request or product-price calculation is introduced.
+
+Checkout and authenticated Codela account are outside this selector scope.
+A Site Editor override of the product template may require separate acceptance;
+the bundled default targets the native legacy template.

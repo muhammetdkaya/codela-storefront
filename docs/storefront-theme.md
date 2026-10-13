@@ -1,7 +1,16 @@
 # Codela Storefront — güncel teknik durum
 
-13 Ekim 2026. Tema **0.1.58**, bağımsız kaynak: `theme/codela-storefront/`.
+13 Ekim 2026. Canlı tema **0.1.58**; ürün detay çalışması **0.1.59 (PR #17, henüz canlı değil)**. Bağımsız kaynak: `theme/codela-storefront/`.
 [Kalıcı kurallar](../AGENTS.md) · [Tasarım sözleşmesi](design-system.md) · [Tarihçe](storefront-theme-history-2026-10-12.md)
+
+## Ürün detay sayfası — 0.1.59 çalışma durumu
+
+- 13 Ekim 2026: [PR #17](https://github.com/muhammetdkaya/codela-storefront/pull/17) ile native WooCommerce single-product şablonu korunarak ürün özel CSS katmanı eklendi.
+- Masaüstü galeri + bilgi sütunları, mobil tek sütun, oran koruyan görseller, küçük resimler, fiyat/açıklama, native varyasyon ve miktar alanları, sekmeler ve ilgili ürünler sade yerleşime geçti.
+- Gerçek WooCommerce `single_add_to_cart_button`, merkezi `components.css` Button sunumu/press/focus/disabled/fallback kurallarıyla aynı gruptadır. `product.css` düğme görünümünü kopyalamaz; yeni JS, router, API veya kütüphane yoktur.
+- Sürüm: **0.1.58 → 0.1.59** (kod PR'da; henüz yayınlandı veya gerçek WP/Woo üzerinde kabul edildi denmez). Kaynak commit [8a0c8da](https://github.com/muhammetdkaya/codela-storefront/commit/8a0c8da89eaf16cf0898c9e03630ae7459c43175).
+- Doğrulama: yapısal ürün testi ve mevcut CI tarayıcı/paket testleri PR'da çalışacak. Gerçek varyasyon, stok, galeri zoom/lightbox, küçük ekran ve üçüncü taraf add-to-cart entegrasyon kabulü ayrıca gerekli.
+- İlk sonraki adım: PR doğrulamasını kontrol et; başarılıysa birleştir, bağımsız tema deploy'unu doğrula, 0.1.59'u canlı ve kaynak kanıtıyla kapat. Ardından fiziksel cihaz ve gerçek Woo ürün türleri kabulü.
 
 ## Tek güncel devam noktası — 13 Ekim 2026 / 0.1.58
 
