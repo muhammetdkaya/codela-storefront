@@ -1,5 +1,14 @@
 # Codela Storefront — güncel teknik durum
 
+## Son doğrulanmış devam noktası — 13 Ekim 2026 / 0.1.62
+
+- Tema 0.1.61 → 0.1.62: native Woo thumbnail listesi, galeri alt kenarında ortalanmış yüzen cam kapsüle geçti. Tam genişlikte beyaz thumbnail satırı kaldırıldı. Woo `.flex-active` seçimi koyu çerçeve ile belirgin; diğer önizlemeler sakin. Fotoğraf geçişleri ve lightbox hâlâ native.
+- Gallery navigation yerleşimi `gallery.css`; `.sf-ui-gallery-nav` ve native Woo adaptörü `components.css` ortak cam yüzey/opaque fallback/reduced-transparency/forced-colors grubunda. Yeni JS, istek veya slider motoru yok.
+- Kapsül 54px mobil/56px geniş ekran thumbnail hedefleriyle içerik kadar genişler; uzun liste yatay kayar. Galeri kontrolünün 44px hedefi sağda ayrı kalır. Tek görselde liste yok/gizli; thumbnail ayarı korunur. Native img hedefinin kullanılabilir boyutu en az 44px.
+- Doğrulama: 320/390/700/900/1280px galeri/şerit/zoom çakışması, şerit yatay kaydırması, tek görsel gizlenmesi, seçili kenar, ortak blur ve UI; 23 paket testi başarılı. CI ve canlı dağıtım bekliyor. Gerçek galerili ürün thumbnail/lightbox kontrolü dağıtımdan sonra yapılmalı.
+- Test ürünleri zaten eklendi: 20 demo + önceki 1; tekrar oluşturmayın. Sonraki iş: fiziksel telefonda şerit/swipe kabulü; ardından mevcut Codela satın alma barının alt menü yerine geçmesi. F3/F4/F5/F6 genel kabulü açık.
+
+
 ## Son doğrulanmış devam noktası — 13 Ekim 2026 / 0.1.61
 
 - Tema 0.1.60 → 0.1.61: canlı Woo blok şablonunda `.woocommerce` sınıfı body üzerindedir; fazladan alt kapsayıcı bekleyen ürün ve ortak satın alma düğmesi seçicileri düzeltildi. Gerçek legacy-template `data-block-name` kapsayıcısının 1200px sınırı kaldırıldı.

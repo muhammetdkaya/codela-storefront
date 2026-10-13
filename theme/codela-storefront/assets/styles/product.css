@@ -361,7 +361,6 @@ body.single-product div.product > .onsale{
   position:absolute;z-index:2;top:calc(88px + var(--sf-header-offset,0px));left:20px;
 }
 body.single-product div.product .sf-ui-gallery .woocommerce-product-gallery__trigger{
-  position:absolute;top:auto;bottom:84px;right:20px;
+  position:absolute;top:auto;bottom:20px;right:20px;
 }
 
-body.single-product div.product .sf-ui-gallery:not(:has(.flex-control-thumbs)) .woocommerce-product-gallery__trigger{bottom:20px}

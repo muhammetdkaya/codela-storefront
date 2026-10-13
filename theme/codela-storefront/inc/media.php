@@ -25,8 +25,8 @@ add_action( 'after_setup_theme', function() {
 add_action( 'init', function() {
     // Standard Gallery blocks can select this style without a new custom block or script.
     if ( ! function_exists( 'register_block_style' ) ) { return; }
-    wp_register_style( 'codela-storefront-tokens', get_template_directory_uri() . '/assets/styles/tokens.css', [], '0.1.61' );
-    wp_register_style( 'codela-storefront-gallery', get_template_directory_uri() . '/assets/styles/gallery.css', [ 'codela-storefront-tokens' ], '0.1.61' );
+    wp_register_style( 'codela-storefront-tokens', get_template_directory_uri() . '/assets/styles/tokens.css', [], '0.1.62' );
+    wp_register_style( 'codela-storefront-gallery', get_template_directory_uri() . '/assets/styles/gallery.css', [ 'codela-storefront-tokens' ], '0.1.62' );
     register_block_style( 'core/gallery', [
         'name' => 'sf-media-slider',
         'label' => __( 'Sliding gallery', 'codela-storefront' ),
