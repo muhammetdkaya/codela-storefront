@@ -26,6 +26,9 @@ jobs:
           node --input-type=module --check < theme/codela-storefront/assets/scripts/overlay-controller.js
           node --input-type=module --check < theme/codela-storefront/assets/scripts/dock-controller.js
           php tests/media.php
+          php tests/media-optimization.php
+          node --check theme/codela-storefront/assets/scripts/gallery-defer.js
+          node --check theme/codela-storefront/assets/scripts/media-admin.js
           node tests/cart-race.cjs
           node tests/cart-sync.cjs
           node tests/search-panel.cjs
