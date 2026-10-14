@@ -1,0 +1,28 @@
+name: Storefront live shell navigation acceptance
+on:
+  push:
+    branches: [main]
+    paths: ['tools/shell-live-check.cjs', '.github/workflows/shell-live-check.yml']
+  workflow_run:
+    workflows: ['Deploy Codela Storefront']
+    branches: [main]
+    types: [completed]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  shell:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install --no-save --package-lock=false playwright@1.62.1
+      - run: npx playwright install --with-deps chromium
+      - run: node tools/shell-live-check.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: storefront-shell-acceptance
+          path: qa/navigation/
+          retention-days: 30
