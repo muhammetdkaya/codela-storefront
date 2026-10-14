@@ -121,6 +121,7 @@ add_action( 'wp_enqueue_scripts', function() {
     }
     wp_enqueue_script_module( 'codela-storefront' );
     if ( codela_sf_seamless_allowed() ) {
+        wp_enqueue_style( 'codela-storefront-route-loading', $root_uri . 'styles/navigation-loading.css', [ 'codela-storefront-components' ], $style_version );
         wp_enqueue_script_module( 'codela-storefront/navigation' );
     }
     if ( function_exists( 'codela_storefront_design_enqueue' ) ) { codela_storefront_design_enqueue( 'codela-storefront-theme' ); }
