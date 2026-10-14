@@ -1,0 +1,23 @@
+// Scope regression: native theme-owned Woo controls share Button; plugin account keeps Woo/plugin paint.
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const {chromium}=require('playwright');
+const root='theme/codela-storefront/';
+const css=['assets/styles/tokens.css','assets/storefront.css','assets/styles/components.css'].map(p=>fs.readFileSync(root+p,'utf8')).join('\n');
+(async()=>{const browser=await chromium.launch();
+try{const page=await browser.newPage({viewport:{width:390,height:844}});
+await page.setContent('<style>.woocommerce a.button,.woocommerce button.button,.woocommerce input.button{background:rgb(235,233,235);color:rgb(81,81,81);padding:10px 16px;border-radius:3px}'+css+'</style><body class="woocommerce"><div class="sf-shell"><main class="sf-content"><div class="woocommerce"><a href="#target" class="button" id="native">Native action</a><button class="button" disabled>Disabled action</button><input class="button" type="submit" value="Submit"><a href="#target" class="sf-ui-button sf-ui-button--primary" id="reference">Shared Button</a></div></main></div></body>');
+const paint=selector=>page.locator(selector).evaluate(el=>{const c=getComputedStyle(el);return{background:c.backgroundColor,color:c.color,padding:c.padding,borderRadius:c.borderRadius,transition:c.transitionProperty,height:el.getBoundingClientRect().height}});
+assert.deepEqual(await paint('#native'),await paint('#reference'),'Native Woo uses the same complete Button primitive');
+assert((await paint('#native')).height>=54);
+await page.locator('#native').hover();await page.mouse.down();await page.waitForTimeout(150);
+assert(await page.locator('#native').evaluate(e=>new DOMMatrix(getComputedStyle(e).transform).a>1.02),'Native action shares press feedback');await page.mouse.up();
+assert.equal(await page.locator('button.button').evaluate(e=>getComputedStyle(e).pointerEvents),'none','Disabled native control cannot activate');
+await page.locator('body').evaluate(e=>e.classList.add('logged-in','woocommerce-account','codela-my-account-layout'));
+const plugin=await paint('#native');
+assert.equal(plugin.background,'rgb(235, 233, 235)','Signed-in Codela account keeps native/plugin background');
+assert.equal(plugin.padding,'10px 16px','Theme does not leak Button sizing into plugin account');
+assert.equal(plugin.borderRadius,'3px','Plugin controls retain their own radius');
+assert.notEqual(plugin.background,(await paint('#reference')).background,'Theme shell Button continues working on plugin account page');
+console.log('Native Woo shared Button and Codela account isolation passed.');
+}finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1});

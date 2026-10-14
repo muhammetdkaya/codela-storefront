@@ -86,7 +86,7 @@ body{margin:0;-webkit-font-smoothing:antialiased}
 .sf-products h3{font-size:16px;font-weight:400;margin:12px 0 5px}
 .sf-products article>div{font-size:14px;color:var(--sf-muted)}
 .sf-footer{margin-top:38px;padding:18px max(5vw,24px);background:#fff;border-top:1px solid #e8e8e8;color:#292929}
-.woocommerce a.button,.woocommerce button.button,.woocommerce input.button{border-radius:var(--cdl-ct-radius,12px);background:var(--sf-ink);color:white;padding:16px 22px}
+
 .woocommerce div.product .product_title{font-weight:400;letter-spacing:-1px}
 .woocommerce ul.products li.product .woocommerce-loop-product__title{font-weight:400}
 .sf-cart-row a:focus-visible{outline-offset:2px}

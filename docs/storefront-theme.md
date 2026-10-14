@@ -1,5 +1,13 @@
 # Codela Storefront — güncel teknik durum
 
+## 14 Ekim 2026 / 0.1.82 — ortak native Woo Button sınırı (doğrulama/yayın bekliyor)
+
+- 0.1.81 canlı kaynak korunarak F5'in hâlâ mevcut genel `.woocommerce ... .button` paint kuralı storefront.css içinden kaldırıldı. Tema içerik alanındaki native Woo link/button/input düğmeleri mevcut components.css Button gruplarına bağlandı; focus, disabled, press, reduced-motion ve erişilebilirlik aynı primitive'dir.
+- Giriş yapılmış `.codela-my-account-layout` bu adaptörün dışında; açık secondary/quiet variant'ları ezilmez. Header/dock cam yüzeyi ve Woo form/nonce/POST sahipliği değişmez. Yeni runtime JS yok.
+- Yeni browser regresyonu native Woo ve ortak Button computed paint/ölçü, dokunma, disabled ve plugin account dışlamasını kontrol eder. Gerçek WP/Woo/Codela kabul otomasyonu eklenti deposundaki tools/storefront-integration içinde hazırlanıyor; yayımlanan bağımsız tema ZIP'i SHA-256 ile kuruluyor, donmuş 0.1.1 yedeği kullanılmıyor.
+- Şu ana kadar gerçek WordPress 7.1.3 / Woo 11.2.1 / Codela 1.1.1 / tema 0.1.81 üzerinde gerçek WebP encoder, kategori fiyat filtre/sıralama/AJAX ekleme, tüm ürün form türleri ve iki yönlü Cart block miktarı doğrulandı. Test altyapısındaki boş blok seed'i ve native/tema POST sayımlarının karışması düzeltildi; tam suite henüz geçmedi.
+- CI → gerçek FTP → yeni paketle izolasyon suite ve canlı perf/galeri/shell/WebKit kontrolleri bekliyor. Canlı eski medya backfill'i WordPress admin oturumu olmadan yapılamıyor; giriş ekranı gözlendi. Fiziksel Safari manuel kabulü ayrıca açık.
+
 ## 14 Ekim 2026 / 0.1.81 — canlı yüzen yüzey görünürlüğü düzeltmesi TAMAMLANDI
 
 - Kullanıcı iPhone ekranında header ve alt menünün arkasından ürün metninin görünmesini bildirdi. Önceki ortak token `--sf-ui-glass-surface:rgba(250,250,252,.28)` idi; şeffaflık yüksekti ve kontrast/brightness filtreleri arka planı ağartıyordu.
