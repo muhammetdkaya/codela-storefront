@@ -7,10 +7,13 @@
   --sf-gallery-surface:var(--sf-ui-surface-muted);
   position:relative;
   min-width:0;
+  /* Reserve the initial slide before WooCommerce constructs FlexSlider. */
+  min-height:var(--sf-gallery-height);
   background:var(--sf-gallery-surface);
 }
 .sf-ui-gallery--hero{--sf-gallery-radius:0;--sf-gallery-fit:cover}
 .woocommerce div.product .sf-ui-gallery .woocommerce-product-gallery__wrapper{margin:0}
+.woocommerce div.product .sf-ui-gallery .flex-viewport{min-height:var(--sf-gallery-height)}
 .woocommerce div.product .sf-ui-gallery :is(.woocommerce-product-gallery__image,.woocommerce-product-gallery__image--placeholder){
   height:var(--sf-gallery-height);
   overflow:hidden;

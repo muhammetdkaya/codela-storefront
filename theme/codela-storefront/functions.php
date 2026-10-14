@@ -24,6 +24,17 @@ add_action( 'template_redirect', function() {
         wp_die( esc_html__( 'The store is temporarily unavailable. Please try again later.', 'codela-storefront' ), esc_html( get_bloginfo( 'name' ) ), [ 'response' => 503 ] );
     }
 }, 1 );
+/**
+ * Unified stylesheet cache key. WordPress caches the theme's Version metadata
+ * and every registered/enqueued CSS handle receives the same release key.
+ */
+function codela_sf_style_version(): string {
+    static $version = null;
+    if ( null === $version ) {
+        $version = (string) wp_get_theme()->get( 'Version' );
+    }
+    return $version;
+}
 require_once get_template_directory() . '/inc/render.php';
 require_once get_template_directory() . '/inc/media.php';
 require_once get_template_directory() . '/inc/product.php';
@@ -73,30 +84,31 @@ add_action( 'init', function() {
 add_action( 'wp_enqueue_scripts', function() {
     if ( ! codela_sf_ready() ) { return; }
     $root_uri = get_template_directory_uri() . '/assets/';
-    wp_enqueue_style( 'codela-storefront-tokens', $root_uri . 'styles/tokens.css', [], '0.1.72' );
-    wp_enqueue_style( 'codela-storefront-theme', $root_uri . 'storefront.css', [ 'codela-storefront-tokens' ], '0.1.72' );
-    wp_enqueue_style( 'codela-storefront-overlay', $root_uri . 'styles/overlay.css', [ 'codela-storefront-theme' ], '0.1.72' );
-    wp_enqueue_style( 'codela-storefront-navigation', $root_uri . 'styles/navigation.css', [ 'codela-storefront-overlay' ], '0.1.72' );
-    wp_enqueue_style( 'codela-storefront-components', $root_uri . 'styles/components.css', [ 'codela-storefront-navigation' ], '0.1.72' );
+    $style_version = codela_sf_style_version();
+    wp_enqueue_style( 'codela-storefront-tokens', $root_uri . 'styles/tokens.css', [], $style_version );
+    wp_enqueue_style( 'codela-storefront-theme', $root_uri . 'storefront.css', [ 'codela-storefront-tokens' ], $style_version );
+    wp_enqueue_style( 'codela-storefront-overlay', $root_uri . 'styles/overlay.css', [ 'codela-storefront-theme' ], $style_version );
+    wp_enqueue_style( 'codela-storefront-navigation', $root_uri . 'styles/navigation.css', [ 'codela-storefront-overlay' ], $style_version );
+    wp_enqueue_style( 'codela-storefront-components', $root_uri . 'styles/components.css', [ 'codela-storefront-navigation' ], $style_version );
     if ( function_exists( 'is_product' ) && is_product() ) {
         wp_enqueue_style( 'codela-storefront-gallery' );
         // Product-only layout; WooCommerce gallery, variations and cart stay native.
-        wp_enqueue_style( 'codela-storefront-product', $root_uri . 'styles/product.css', [ 'codela-storefront-components', 'codela-storefront-gallery' ], '0.1.72' );
+        wp_enqueue_style( 'codela-storefront-product', $root_uri . 'styles/product.css', [ 'codela-storefront-components', 'codela-storefront-gallery' ], $style_version );
     }
     if ( function_exists( 'is_checkout' ) && is_checkout() ) {
         // Presentation adapter only; no Woo checkout/gateway logic is changed.
-        wp_enqueue_style( 'codela-storefront-checkout', $root_uri . 'styles/checkout.css', [ 'codela-storefront-components' ], '0.1.72' );
+        wp_enqueue_style( 'codela-storefront-checkout', $root_uri . 'styles/checkout.css', [ 'codela-storefront-components' ], $style_version );
     }
     if ( function_exists( 'is_account_page' ) && is_account_page() ) {
-        wp_enqueue_style( 'codela-storefront-account', $root_uri . 'styles/account.css', [ 'codela-storefront-components' ], '0.1.72' );
+        wp_enqueue_style( 'codela-storefront-account', $root_uri . 'styles/account.css', [ 'codela-storefront-components' ], $style_version );
     }
     if ( ! is_user_logged_in() ) {
         // Guest account opens inside the existing panel on store pages. Reuse the
         // same tiny tab script and Woo native forms as the fallback Account page.
         if ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) {
-            wp_enqueue_style( 'codela-storefront-account-overlay', $root_uri . 'styles/account-overlay.css', [ 'codela-storefront-components' ], '0.1.72' );
+            wp_enqueue_style( 'codela-storefront-account-overlay', $root_uri . 'styles/account-overlay.css', [ 'codela-storefront-components' ], $style_version );
         }
-        wp_enqueue_script( 'codela-storefront-auth', $root_uri . 'scripts/auth.js', [], '0.1.72', true );
+        wp_enqueue_script( 'codela-storefront-auth', $root_uri . 'scripts/auth.js', [], $style_version, true );
     }
     wp_enqueue_script_module( 'codela-storefront' );
     if ( function_exists( 'codela_storefront_design_enqueue' ) ) { codela_storefront_design_enqueue( 'codela-storefront-theme' ); }
@@ -108,3 +120,16 @@ add_action( 'wp_enqueue_scripts', function() {
 
 
 
+
+/**
+ * The plugin's Advanced Checkout stylesheet is only needed on checkout and
+ * account pages. Dequeue the known plugin handle from catalog/product pages;
+ * do not remove WooCommerce base styles or alter any checkout JS.
+ */
+add_action( 'wp_print_styles', function() {
+    if ( ( function_exists( 'is_checkout' ) && is_checkout() )
+        || ( function_exists( 'is_account_page' ) && is_account_page() ) ) {
+        return;
+    }
+    wp_dequeue_style( 'codela-checkout-pro' );
+}, 100 );

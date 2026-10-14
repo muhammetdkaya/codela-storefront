@@ -96,7 +96,26 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
    }
   }
 
+  // Woo FlexSlider replaces the initial image wrapper with a floated track.
+  // Simulate its temporary zero-height viewport and ensure summary never jumps.
   await page.setViewportSize({width:390,height:900});
+  const stableTopBefore=await page.locator('.summary').evaluate(el=>el.getBoundingClientRect().top);
+  await page.locator('.woocommerce-product-gallery__wrapper').evaluate(wrapper=>{
+    const viewport=document.createElement('div');
+    viewport.className='flex-viewport';
+    viewport.style.height='0px';
+    viewport.style.overflow='hidden';
+    wrapper.parentNode.insertBefore(viewport,wrapper);
+    viewport.append(wrapper);
+    wrapper.style.float='left';
+  });
+  const stableTopDuring=await page.locator('.summary').evaluate(el=>el.getBoundingClientRect().top);
+  assert(Math.abs(stableTopDuring-stableTopBefore)<1,'FlexSlider initialization reserves the gallery footprint');
+  await page.locator('.flex-viewport').evaluate(viewport=>{
+    const wrapper=viewport.querySelector('.woocommerce-product-gallery__wrapper');
+    wrapper.style.float='';
+    viewport.replaceWith(wrapper);
+  });
   await page.locator('form.cart').evaluate(el=>{el.addEventListener('submit',event=>{event.preventDefault();el.dataset.submits=String(Number(el.dataset.submits||0)+1)});el.querySelector('input.qty').value='0'});
   await page.locator('.single_add_to_cart_button').click();
   assert.equal(await page.locator('form.cart').getAttribute('data-submits'),null,'Native quantity validation blocks invalid submission');

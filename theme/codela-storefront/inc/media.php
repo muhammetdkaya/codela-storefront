@@ -20,11 +20,39 @@ function codela_sf_gallery_options( array $options ): array {
 add_action( 'after_setup_theme', function() {
     add_filter( 'woocommerce_single_product_image_gallery_classes', 'codela_sf_gallery_classes' );
     add_filter( 'woocommerce_single_product_carousel_options', 'codela_sf_gallery_options' );
-    add_filter( 'woocommerce_single_product_image_thumbnail_html', function( string $html ): string {
+    add_filter( 'woocommerce_single_product_image_thumbnail_html', function( string $html, $attachment_id = 0 ): string {
+        // Only promote the featured image; all other Woo gallery slides keep
+        // their native lazy loading and slider/variation functionality.
+        global $product;
+        $main_id = is_object( $product ) && method_exists( $product, 'get_image_id' )
+            ? (int) $product->get_image_id() : 0;
+        $is_hero = function_exists( 'is_product' ) && is_product()
+            && $main_id > 0 && $main_id === (int) $attachment_id;
         $tags = new WP_HTML_Tag_Processor( $html );
         if ( $tags->next_tag( 'a' ) ) {
             $tags->set_attribute( 'aria-label', __( 'Enlarge product image', 'codela-storefront' ) );
             $tags->set_attribute( 'aria-haspopup', 'dialog' );
+        }
+        if ( $is_hero && $tags->next_tag( 'img' ) ) {
+            $tags->set_attribute( 'loading', 'eager' );
+            $tags->set_attribute( 'fetchpriority', 'high' );
+        }
+        return $tags->get_updated_html();
+    }, 10, 2 );
+    // Select a responsive logo size matching its real painted header width,
+    // rather than choosing a near-full-resolution source for a tiny logo.
+    add_filter( 'get_custom_logo', function( string $html ): string {
+        $id = (int) get_theme_mod( 'custom_logo' );
+        $metadata = $id ? wp_get_attachment_metadata( $id ) : false;
+        if ( ! is_array( $metadata ) || empty( $metadata['width'] ) || empty( $metadata['height'] ) ) {
+            return $html;
+        }
+        $display_width = max( 1, (int) ceil( 34 * (int) $metadata['width'] / (int) $metadata['height'] ) );
+        $desktop = min( 180, $display_width );
+        $mobile = min( 145, $display_width );
+        $tags = new WP_HTML_Tag_Processor( $html );
+        if ( $tags->next_tag( 'img' ) ) {
+            $tags->set_attribute( 'sizes', "(max-width: 700px) {$mobile}px, {$desktop}px" );
         }
         return $tags->get_updated_html();
     } );
@@ -33,8 +61,8 @@ add_action( 'after_setup_theme', function() {
 add_action( 'init', function() {
     // Standard Gallery blocks can select this style without a new custom block or script.
     if ( ! function_exists( 'register_block_style' ) ) { return; }
-    wp_register_style( 'codela-storefront-tokens', get_template_directory_uri() . '/assets/styles/tokens.css', [], '0.1.71' );
-    wp_register_style( 'codela-storefront-gallery', get_template_directory_uri() . '/assets/styles/gallery.css', [ 'codela-storefront-tokens' ], '0.1.71' );
+    wp_register_style( 'codela-storefront-tokens', get_template_directory_uri() . '/assets/styles/tokens.css', [], codela_sf_style_version() );
+    wp_register_style( 'codela-storefront-gallery', get_template_directory_uri() . '/assets/styles/gallery.css', [ 'codela-storefront-tokens' ], codela_sf_style_version() );
     register_block_style( 'core/gallery', [
         'name' => 'sf-media-slider',
         'label' => __( 'Sliding gallery', 'codela-storefront' ),
