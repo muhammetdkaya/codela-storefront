@@ -47,9 +47,36 @@ add_action( 'after_setup_theme', function() {
             $tags->set_attribute( 'aria-label', __( 'Enlarge product image', 'codela-storefront' ) );
             $tags->set_attribute( 'aria-haspopup', 'dialog' );
         }
-        if ( $is_hero && $tags->next_tag( 'img' ) ) {
-            $tags->set_attribute( 'loading', 'eager' );
-            $tags->set_attribute( 'fetchpriority', 'high' );
+        if ( $tags->next_tag( 'img' ) ) {
+            if ( $is_hero ) {
+                $tags->set_attribute( 'loading', 'eager' );
+                $tags->set_attribute( 'fetchpriority', 'high' );
+            } elseif ( function_exists( 'is_product' ) && is_product() && $attachment_id ) {
+                // Reuse Woo's native thumbnail until this slide is selected.
+                // The original image URL, srcset and sizes remain in data attrs;
+                // PhotoSwipe's href and data-large_image are never changed.
+                $thumb = new WP_HTML_Tag_Processor( $html );
+                if ( $thumb->next_tag( [ 'class_name' => 'woocommerce-product-gallery__image' ] ) ) {
+                    $preview = $thumb->get_attribute( 'data-thumb' );
+                    $source = $tags->get_attribute( 'src' );
+                    if ( is_string( $preview ) && is_string( $source ) && $preview && $source && $preview !== $source ) {
+                        $tags->set_attribute( 'data-sf-gallery-src', $source );
+                        $srcset = $tags->get_attribute( 'srcset' );
+                        $sizes = $tags->get_attribute( 'sizes' );
+                        if ( is_string( $srcset ) && $srcset ) {
+                            $tags->set_attribute( 'data-sf-gallery-srcset', $srcset );
+                            $tags->remove_attribute( 'srcset' );
+                        }
+                        if ( is_string( $sizes ) && $sizes ) {
+                            $tags->set_attribute( 'data-sf-gallery-sizes', $sizes );
+                            $tags->remove_attribute( 'sizes' );
+                        }
+                        $tags->set_attribute( 'src', $preview );
+                        $tags->set_attribute( 'loading', 'lazy' );
+                        $tags->set_attribute( 'fetchpriority', 'low' );
+                    }
+                }
+            }
         }
         return $tags->get_updated_html();
     }, 10, 2 );
