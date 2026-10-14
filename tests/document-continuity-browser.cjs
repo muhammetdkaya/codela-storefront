@@ -13,13 +13,12 @@ const doc=(path)=>{
  const style=checkout?'':css;
  const links=path==='/'?'<a id="open-category" href="/category/">Category</a>':category?'<a id="open-product" href="/product/">Product</a>':'<a id="back-home" href="/">Home</a>';
  return '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1">'+
-  '<style>'+baseCss+style+'</style></head><body class="'+(product?'single-product':'')+'">'+
+  '<style>'+baseCss+style+'</style><script>window.addEventListener("pageswap",e=>sessionStorage.setItem("continuity-pageswap",String(Boolean(e.viewTransition))));window.addEventListener("pagereveal",e=>sessionStorage.setItem("continuity-pagereveal",String(Boolean(e.viewTransition))));</script></head><body class="'+(product?'single-product':'')+'">'+
   '<header class="sf-header" id="native-header">Codela</header><div class="sf-shell">'+
   '<nav class="sf-mobile-dock" id="native-dock">Navigation</nav></div>'+
   '<main><h1>'+path+'</h1>'+links+'<a id="open-checkout" href="/checkout/">Checkout</a>'+
   (product?'<div class="product"><form class="cart" method="post" action="/purchase"><div class="sf-product-purchase"><input name="quantity" value="1"><button type="submit" name="add-to-cart" value="42">Add to cart</button></div></form></div>':'')+
-  '</main><script>window.addEventListener("pageswap",e=>sessionStorage.setItem("continuity-pageswap",String(Boolean(e.viewTransition))));'+
-  'window.addEventListener("pagereveal",e=>sessionStorage.setItem("continuity-pagereveal",String(Boolean(e.viewTransition))));</script></body></html>';
+  '</main></body></html>';
 };
 (async()=>{
  let purchases=0;
@@ -41,6 +40,8 @@ const doc=(path)=>{
   await page.locator('#open-category').click();
   assert(page.url().endsWith('/category/'),'Native category page navigation');
   const swapped=await page.evaluate(()=>sessionStorage.getItem('continuity-pageswap'));
+  // The head observer catches pagereveal even when it fires before body parses.
+  await page.waitForFunction(()=>sessionStorage.getItem('continuity-pagereveal')==='true',{timeout:5000});
   const revealed=await page.evaluate(()=>sessionStorage.getItem('continuity-pagereveal'));
   assert.equal(swapped,'true','Cross-document old header snapshot exists');
   assert.equal(revealed,'true','Cross-document new header snapshot exists');

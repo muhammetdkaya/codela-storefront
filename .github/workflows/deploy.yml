@@ -32,6 +32,7 @@ jobs:
           node --check tests/document-continuity-browser.cjs
           node --input-type=module --check < theme/codela-storefront/assets/scripts/navigation-controller.js
           node --check tests/shell-navigation-browser.cjs
+          node --check tools/floating-surfaces-live.cjs
           node --check theme/codela-storefront/assets/scripts/gallery-defer.js
           node --check theme/codela-storefront/assets/scripts/media-admin.js
           node tests/cart-race.cjs
