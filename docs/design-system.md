@@ -1,6 +1,6 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.71 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.72 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
 
 ## One design, not one enormous universal widget
@@ -542,3 +542,7 @@ The common bottom-bar gap is 4px (previously 12px), plus the full safe-area inse
 ### Single subtle glass edge — 0.1.71
 
 Shared glass uses a soft outer shadow and one half-pixel white inset highlight at 35% opacity. The dark lower inset is removed; static and pressed white gradients are softer. This avoids a second perimeter/raised-rim appearance across header islands and other shared floating surfaces. Material/contrast, focus and press behavior remain in the shared primitives; never add an independent header surface or paint a nested logo/link background to reproduce this material.
+
+## Single-surface light backdrop separation (0.1.72)
+
+Floating controls retain one shared tint and transparent perimeter. Use one diffuse outer shadow (0 3px 12px at 10% black), with no inset edge; backdrop brightness is 1.42. Do not add a second fill, nested frame, or page-specific material to improve visibility. Geometry, press states and accessibility fallbacks remain unchanged.

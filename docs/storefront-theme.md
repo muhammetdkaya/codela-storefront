@@ -1,6 +1,14 @@
 # Codela Storefront — güncel teknik durum
 
 
+## Son doğrulanmış devam noktası — 14 Ekim 2026 / 0.1.72
+
+- Tema 0.1.71 → 0.1.72: açık zeminde kaybolan ortak cam yüzeyin ayrımı tek dış gölgeyle artırıldı (0 3px 12px / %10). İç üst ışık kaldırıldı; ikinci dolgu, iç çerçeve veya yeni katman eklenmedi. Cam brightness 1.5 → 1.42; 28% tint, blur ve saydam kenar korunur.
+- Header, alt menü ve satın alma ortak token değişikliğini tüketir. Ölçüler, etkileşimler ve koyu birincil buton değişmedi.
+- Doğrulama: kaynak farkı incelendi; yalnız ortak gölge/parlaklık ve sürüm referansları değişti. Yerel Git klon erişimi olmadığı için testler CI doğrulamasına bırakıldı; tarayıcı ve fiziksel mobil kabul henüz yapılmadı.
+- Yayın: kaynak hazırlanıyor; CI ve dağıtım sonucu bekleniyor.
+- Kalan/sıradaki: CI validate/deploy sonucunu kaydet; fiziksel mobil açık zemin üzerinde tek yüzey görünümünü kontrol et. Önceki safe-area, gerçek Woo ürün türleri, F3/F4/F5/F6 kabulleri açık; slider duraklatıldı.
+
 ## Son doğrulanmış devam noktası — 14 Ekim 2026 / 0.1.71
 
 - Tema 0.1.70 → 0.1.71: kullanıcı header'daki cam kapsüllerin çift arka plan/kenar hissini düzelttirdi. Ortak glass shadow üç katmandan hafif dış gölge + 0.5px/35% tek üst ışığa indirildi; koyu alt inset kaldırıldı. Beyaz gradient parlaması ve pressed parlaması azaltıldı. Header'a ayrı kopya yüzey eklenmedi.
