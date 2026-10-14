@@ -4,7 +4,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 /** WordPress owns the responsive metadata and the original file. Never convert PNG/GIF. */
 function codela_sf_webp_output( array $formats ): array {
-    if ( function_exists( 'wp_image_editor_supports' )
+    if ( ! isset( $formats['image/jpeg'] ) && function_exists( 'wp_image_editor_supports' )
         && wp_image_editor_supports( [ 'mime_type' => 'image/webp' ] ) ) {
         $formats['image/jpeg'] = 'image/webp';
     }
