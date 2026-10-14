@@ -27,7 +27,10 @@ const PRODUCT='https://codela.dev/urun/demo-20-v-yaka-tisort-secki/';
    const styles=await page.locator('link[href*="document-continuity.css"]').count();
    assert.equal(styles,1,'Home includes native continuity CSS');
    const version=await page.locator('link[href*="styles/tokens.css"]').first().getAttribute('href');
-   assert(version.includes('ver=0.1.80'),'Expected deployed 0.1.80, received '+version);
+   // A new release must not break QA simply because the theme version increases.
+   const parts=(new URL(version)).searchParams.get('ver')?.split('.').map(Number);
+   assert(parts?.length===3 && parts.every(Number.isInteger) &&
+     (parts[0]>0 || parts[1]>1 || parts[2]>=80),'Expected 0.1.80 or newer, received '+version);
    assert.equal(await page.locator('.sf-header').evaluate(el=>getComputedStyle(el).viewTransitionName),'sf-persistent-header','Home header shared name');
    const start=await page.evaluate(()=>performance.timeOrigin);
    await page.evaluate(href=>{
