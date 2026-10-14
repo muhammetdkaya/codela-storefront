@@ -13,7 +13,7 @@
   --sf-ui-glass-opaque:#f5f5f6;
   --sf-ui-glass-border:transparent;
   /* A light top edge, not a solid perimeter stroke. */
-  --sf-ui-glass-shadow:0 3px 14px rgba(0,0,0,.065),inset 0 1px 0 rgba(255,255,255,.80),inset 0 -.5px 0 rgba(35,35,40,.18);
+  --sf-ui-glass-shadow:0 2px 10px rgba(0,0,0,.045),inset 0 .5px 0 rgba(255,255,255,.35);
   --sf-ui-glass-ink:#1c1c1e;
   --sf-ui-control-soft:var(--sf-ui-glass-surface);
   --sf-ui-header-surface:var(--sf-ui-glass-surface);
@@ -45,8 +45,8 @@
   /* Diffuse dark backdrops while retaining the shared dark foreground. */
   --sf-ui-glass-contrast:.35;
   --sf-ui-glass-brightness:1.5;
-  --sf-ui-glass-highlight:linear-gradient(160deg,rgba(255,255,255,.12),rgba(255,255,255,0) 48%,rgba(255,255,255,.04));
-  --sf-ui-glass-highlight-pressed:linear-gradient(160deg,rgba(255,255,255,.20),rgba(255,255,255,.02) 48%,rgba(255,255,255,.08));
+  --sf-ui-glass-highlight:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,0) 48%,rgba(255,255,255,.02));
+  --sf-ui-glass-highlight-pressed:linear-gradient(160deg,rgba(255,255,255,.12),rgba(255,255,255,.01) 48%,rgba(255,255,255,.04));
   --sf-ui-action-highlight:linear-gradient(160deg,rgba(255,255,255,.10),transparent 52%,rgba(255,255,255,.025));
   --sf-ui-action-highlight-pressed:linear-gradient(160deg,rgba(255,255,255,.18),rgba(255,255,255,.015) 52%,rgba(255,255,255,.06));
   --sf-ui-action-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(0,0,0,.10),0 3px 9px rgba(0,0,0,.06);

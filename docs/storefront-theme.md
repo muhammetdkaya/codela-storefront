@@ -1,6 +1,13 @@
 # Codela Storefront — güncel teknik durum
 
 
+## Son doğrulanmış devam noktası — 14 Ekim 2026 / 0.1.71
+
+- Tema 0.1.70 → 0.1.71: kullanıcı header'daki cam kapsüllerin çift arka plan/kenar hissini düzelttirdi. Ortak glass shadow üç katmandan hafif dış gölge + 0.5px/35% tek üst ışığa indirildi; koyu alt inset kaldırıldı. Beyaz gradient parlaması ve pressed parlaması azaltıldı. Header'a ayrı kopya yüzey eklenmedi.
+- Ortak yüzeyi tüketen kontroller aynı düzeltmeyi alır. Saydam tint, blur, ikon kontrastı, focus/press, fallback, bottom-bar ölçüleri korunur. Logo görsel dosyası değiştirilmedi.
+- Doğrulama/yayın: 23 paket testi başarılı. Ortak UI/CI/yayın ve canlı yüzey kontrolü bekliyor.
+- Kalan/sıradaki: fiziksel mobil cam yüzey/beyaz zemin kabulü, tarayıcı araç çubuğu ve klavye/safe-area, gerçek varyasyon/grup/harici ürün kabulü, dönüşüm araçları. Slider duraklatıldı; F3/F4/F5/F6 ve mevcut animasyon CI zamanlaması açık.
+
 ## Son doğrulanmış devam noktası — 14 Ekim 2026 / 0.1.70
 
 - Tema 0.1.69 → 0.1.70: kullanıcı satın alma ve genel alt menünün birlikte daha aşağıda olmasını istedi. Ortak `sf-ui-bottom-bar-gap` 12px → 4px; normal dock, dialog dock ve satın alma aynı alt hizayı tüketir. Tam safe-area payı korunur; 58px yükseklik ve 430px azami genişlik değişmez.

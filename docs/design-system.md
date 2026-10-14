@@ -1,6 +1,6 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.70 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.71 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
 
 ## One design, not one enormous universal widget
@@ -538,3 +538,7 @@ SKU/category/tags use Woo's existing metadata template inside the native Additio
 ### Lower shared baseline — 0.1.70
 
 The common bottom-bar gap is 4px (previously 12px), plus the full safe-area inset. Navigation, popup navigation and native product purchase consume the same token; height/width/hit targets stay as defined by the shared geometry. Physical mobile browser toolbar acceptance remains open.
+
+### Single subtle glass edge — 0.1.71
+
+Shared glass uses a soft outer shadow and one half-pixel white inset highlight at 35% opacity. The dark lower inset is removed; static and pressed white gradients are softer. This avoids a second perimeter/raised-rim appearance across header islands and other shared floating surfaces. Material/contrast, focus and press behavior remain in the shared primitives; never add an independent header surface or paint a nested logo/link background to reproduce this material.
