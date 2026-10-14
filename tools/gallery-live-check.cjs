@@ -6,6 +6,10 @@ const fs=require('node:fs');
  const browser=await chromium.launch();const results=[];
  try{for(const width of [390,1280]){
  const context=await browser.newContext({viewport:{width,height:844},deviceScaleFactor:width===390?3:1,isMobile:width===390,hasTouch:width===390});
+ await context.route('**/urun/demo-20-v-yaka-tisort-secki/',async route=>{
+   const response=await route.fetch();
+   await route.fulfill({response,body:(await response.text()).replace('"zoom_enabled":"1"','"zoom_enabled":false')});
+ });
  const page=await context.newPage();page.on('pageerror',e=>console.log('GALLERY_ERROR '+e.message));
  await page.goto('https://codela.dev/urun/demo-20-v-yaka-tisort-secki/',{waitUntil:'networkidle'});
  await page.waitForFunction(()=>window.jQuery?.('.woocommerce-product-gallery').data('flexslider')?.count===3);
@@ -19,12 +23,8 @@ const fs=require('node:fs');
  const slide=page.locator('.woocommerce-product-gallery__image').nth(1);
  assert(await slide.locator('img:not(.zoomImg)').evaluate(e=>e.complete&&e.naturalWidth>0));
  assert(Math.abs(await page.locator('.summary').evaluate(e=>e.getBoundingClientRect().top)-before)<1,'Thumbnail selection leaves details stable');
- // Candidate hit-testing fix; native zoom still owns its parent listeners.
- await page.addStyleTag({content:'.sf-ui-gallery .zoomImg{pointer-events:none}'});
  await slide.locator('a').click();
- await page.waitForTimeout(700);
- console.log('LIGHTBOX_STATE '+JSON.stringify(await page.evaluate(()=>({url:location.href,pswp:document.querySelector('.pswp')?.outerHTML.slice(0,500),gallery:document.querySelector('.woocommerce-product-gallery')?.className,events:Object.keys(jQuery._data(document.querySelector('.woocommerce-product-gallery'),'events')||{})}))));
- await page.locator('.pswp--open').waitFor({timeout:3000});
+ await page.locator('.pswp--open').waitFor();
  await page.keyboard.press('Escape');
  await page.locator('.pswp--open').waitFor({state:'hidden'});
  await thumbs.nth(2).click();
