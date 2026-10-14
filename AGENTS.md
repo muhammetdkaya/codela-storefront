@@ -1,5 +1,13 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 14 Ekim 2026 / 0.1.78 — canlı doğrulandı: otomatik WebP ve ihtiyaç halinde galeri tam görseli
+
+- **0.1.77 → 0.1.78** [PR #22](https://github.com/muhammetdkaya/codela-storefront/pull/22), [merge c0e5a28](https://github.com/muhammetdkaya/codela-storefront/commit/c0e5a287b1f58a7845c6769761e4efd4199d6c70). [CI + gerçek deploy 38578243841](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38578243841) başarılı; [mobil/masaüstü canlı native galeri kabulü 38578622890](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38578622890) başarılı; [24 örneklik canlı performans 38578623047](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38578623047) bütçe **geçti**.
+- Soğuk mobil medyan LCP: ürün **1592ms**, ana sayfa **2312ms**; cold CLS **0**. Görünmeyen iki büyük galeri JPEG transferi ilk sayfa açılışında **223188 byte → 8458 byte thumbnail** (aynı iki kaynak grubunun tarayıcı transferi); yaklaşık %96 düşüş. Bu gerçek kullanıcı CWV, genel bant genişliği veya WebP dönüşüm kazancı değildir; ana tasarruf **istek ertelemesi** kaynaklıdır.
+- JPEG yeni yüklemelerinde sunucu WebP encoder destekliyorsa WordPress native `image_editor_output_format` ile otomatik WebP ara boyutları, orijinaller korunur. Mevcut JPEG'ler **kendiliğinden dönüştürülmedi**. Yönetici Medya → Görsel optimizasyonu aracından kontrollü toplu işlemi başlatabilir; Codela.dev mevcut JPEG'ler için henüz admin backfill çalıştırılmadı. AVIF varsayılan değil. PNG/GIF etkilenmez. Başka format dönüşüm eklentisi mevcutsa onun JPEG haritası ezilmez.
+- Woo'nun hero eager/high, FlexSlider, varyasyon ve native PhotoSwipe linkleri korunur; gallery JS sadece ikincil görselleri seçildiğinde ister. Ürün dışı sayfalara yüklenmez. Farklı Woo/medya eklentisi, fiziksel Safari, gerçek sunucuda yeni JPG yükleme ve mevcut görsel optimizasyonunun yönetici testi açık.
+- **Sıradaki somut iş:** Medya ekranındaki batch optimizasyonunun canlı sunucu encoding sonucunu ve farklı ürün türlerini (varyasyon, stoksuz, grouped/external), Safari safe-area ve tam ekran fotoğrafları gerçek cihazda kabul et. Performans ölçümünü yeni sürümde regressions üzerinden takip et. Bu sürümün CI/yayın işi kapatıldı, tekrar yapma.
+
 ## 14 Ekim 2026 / 0.1.78 — native WebP türevleri ve ikincil galeri yükleme (CI/yayın bekliyor)
 
 - 0.1.77 canlı durumu korunur; 0.1.78 kaynak geliştirme dalında hazırlanıyor. Tema yüklü mağazalarda, sunucu destekliyorsa yeni JPEG yüklemelerinin WordPress ara boyutları native `image_editor_output_format` ile WebP üretilir. PNG/GIF/animasyon ve orijinal dosyalar değiştirilmez. Format sunucu desteklemiyorsa otomatik eski işleyiş devam eder; AVIF varsayılan değil.
