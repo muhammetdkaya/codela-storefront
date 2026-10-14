@@ -1,5 +1,15 @@
 # Codela Storefront — güncel teknik durum
 
+## 14 Ekim 2026 / 0.1.79 — güvenli sayfalarda kalıcı üst/alt navigasyon (canlıda)
+
+- Tema **0.1.78 → 0.1.79**; [PR #23](https://github.com/muhammetdkaya/codela-storefront/pull/23), [squash commit 551341b](https://github.com/muhammetdkaya/codela-storefront/commit/551341b35be3bef06aff913b09b24b165ea57975), [CI + Deploy 38584666763](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38584666763) başarılı, gerçek FTP dağıtımı doğrulandı. Codela eklenti sürümü/WordPress.org değiştirilmedi.
+- `@wordpress/interactivity-router` (WordPress Core) ve yalnız izinli sayfalarda `#sf-content[data-wp-router-region]` ile main yenilenir; header/dock/single dialog aynı DOM öğeleridir. Client Navigation desteklemeyen WP ve Woo ürün/kategori/cart/checkout/account/dinamik formlu sayfalarda normal belge yüklemesi korunur. Kendi SPA ve ikinci fetch/cache/checkout motoru yok.
+- Kullanıcı 160ms üzerinde beklerse hedef sayfa tipine göre sade skeleton; hızlı cached geçişte gizli. `prefers-reduced-motion` ve forced-colors uygulanır; shell stylesi tek merkezde. Navigasyonda popup mevcut overlay içinden gecikmesiz kapanır; dock active/aria-current yenilenir ve yeni main klavye odağını alır.
+- [Canlı browser acceptance 38586324215](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38586324215): router modülü + region mevcut; ana sayfa URL varyasyonunda header/dialog/dock aynı referanslar; browser back same header; **gerçek Ana Sayfa→/blog/** statik sayfada içerik bölgesi değişir ve header referansı korunur; JS pageerror yok. Hızlı testte skeleton görünmedi; canlı yavaş ağda skeleton ayrı test edilecek.
+- [Galeri 38585183010](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38585183010) başarılı. [24 örneklik performance 38585182538](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38585182538) geçti: cold mobil home LCP **2380ms**, product **1692ms**, CLS **0**; ikincil iki thumbnail **8458 bytes**. Gerçek Core Web Vitals değil.
+- **Bilinen sınırlar:** Woo legacy gallery/single-product native JS, Blocks checkout, Codela account ve üçüncü taraf kodlar resmi client-navigation uyumluluğu kanıtlanmadan router region'a alınmaz; bu sayfalarda header tam sayfa yenilenebilir. Fiziksel mobil Safari, ters farklı sayfa geçişi, admin bar ve canlı yavaş ağ skeleton testi açık.
+- **Sıradaki test/iş:** gerçek telefonda Ana Sayfa → Blog → Ana Sayfa menü navigasyon, UI renk/yükseklik/scroll/focus, 160ms skeleton eşiği (throttle) ve kategori/ürün sayfasında mevcut full navigation fallback. Yalnız kabul sonrası dinamik Woo kapsamını fazlara böl.
+
 ## 14 Ekim 2026 / 0.1.79 — kesintisiz shell + koşullu skeleton (CI ve yayın bekliyor)
 
 - **Sürüm:** 0.1.78 → 0.1.79, sadece `codela-storefront` tema. Eklenti/WordPress.org değişmez.
