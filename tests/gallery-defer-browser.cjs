@@ -21,7 +21,7 @@ const {chromium}=require('playwright');
   await page.waitForFunction(()=>document.querySelectorAll('.woocommerce-product-gallery__image img')[1].getAttribute('src').endsWith('full2.jpg'));
   assert(requested.includes('full2.jpg'),'Selecting native thumb promotes exact requested slide');
   assert(!requested.includes('full3.jpg'),'Another slide stays deferred');
-  await page.locator('.woocommerce-product-gallery__image').nth(2).evaluate(el=>el.classList.add('flex-active-slide'));
+  await page.locator('.woocommerce-product-gallery__image').nth(2).evaluate(el=>{el.parentNode.querySelector('.flex-active-slide')?.classList.remove('flex-active-slide');el.classList.add('flex-active-slide')});
   await page.waitForFunction(()=>document.querySelectorAll('.woocommerce-product-gallery__image img')[2].getAttribute('src').endsWith('full3.jpg'));
   assert(requested.includes('full3.jpg'),'Native active class mutation promotes slide');
   assert.equal(await page.locator('.woocommerce-product-gallery__image').nth(2).locator('a').getAttribute('href'),'https://media.example/full3.jpg','PhotoSwipe href untouched');
