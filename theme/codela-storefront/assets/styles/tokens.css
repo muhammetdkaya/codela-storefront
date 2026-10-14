@@ -8,9 +8,9 @@
   --sf-ui-ink:var(--sf-ink,#22231f);
   --sf-ui-surface:#ffffff;
   --sf-ui-surface-muted:#f3f3f3;
-  /* Shared floating surface: brand, header actions, menu and dialog close. */
-  --sf-ui-glass-surface:rgba(250,250,252,.28);
-  --sf-ui-glass-opaque:#f5f5f6;
+  /* One legible floating material for header, dock, purchase bar and soft controls. */
+  --sf-ui-glass-surface:rgba(247,247,249,.96);
+  --sf-ui-glass-opaque:#f7f7f9;
   --sf-ui-glass-border:transparent;
   /* One diffuse outer shadow separates the single surface on light backdrops. */
   --sf-ui-glass-shadow:0 3px 12px rgba(0,0,0,.10);
@@ -40,11 +40,11 @@
   --sf-ui-control-radius:var(--cdl-ct-radius,12px);
   --sf-ui-pill:999px;
   /* Shared control material: tint preserves contrast over changing content. */
-  --sf-ui-glass-blur:8px;
-  --sf-ui-glass-saturation:150%;
-  /* Diffuse dark backdrops while retaining the shared dark foreground. */
-  --sf-ui-glass-contrast:.35;
-  --sf-ui-glass-brightness:1.42;
+  --sf-ui-glass-blur:10px;
+  --sf-ui-glass-saturation:115%;
+  /* Keep the real backdrop contrast; an opaque tint hides overlapping text. */
+  --sf-ui-glass-contrast:1;
+  --sf-ui-glass-brightness:1;
   --sf-ui-glass-highlight:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,0) 48%,rgba(255,255,255,.02));
   --sf-ui-glass-highlight-pressed:linear-gradient(160deg,rgba(255,255,255,.12),rgba(255,255,255,.01) 48%,rgba(255,255,255,.04));
   --sf-ui-action-highlight:linear-gradient(160deg,rgba(255,255,255,.10),transparent 52%,rgba(255,255,255,.025));
