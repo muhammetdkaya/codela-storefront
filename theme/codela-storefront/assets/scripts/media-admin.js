@@ -8,18 +8,18 @@
   const msg=config.messages||{};
   let running=false;
   let offset=0,changed=0,saved=0,errors=0;
-  let controller=null;
   const present=message=>{status.textContent=message;};
-  stop.addEventListener('click',()=>{running=false;controller?.abort();start.disabled=false;stop.disabled=true;present((msg.paused||'Paused')+': '+offset+'.');});
+  // Stop after the in-flight request; aborting only the browser could leave
+  // the server encoding the same attachment during an immediate restart.
+  stop.addEventListener('click',()=>{running=false;stop.disabled=true;present((msg.paused||'Paused')+': '+offset+'.');});
   start.addEventListener('click',async()=>{
     if(running)return;
     running=true;start.disabled=true;stop.disabled=false;
     offset=0;changed=0;saved=0;errors=0;
     while(running){
-      controller=new AbortController();
       try{
         const body=new URLSearchParams({action:'codela_sf_optimize_media',nonce:config.nonce,offset:String(offset)});
-        const response=await fetch(config.url,{method:'POST',body,credentials:'same-origin',signal:controller.signal});
+        const response=await fetch(config.url,{method:'POST',body,credentials:'same-origin'});
         const json=await response.json();
         if(!response.ok||!json.success)throw Error(json.data?.message||'Request failed');
         if(json.data.done){present((msg.complete||'Complete')+': '+(msg.scanned||'Scanned')+' '+offset+' · '+(msg.optimized||'Optimized')+' '+changed+' · '+(msg.saved||'Saved')+' ~'+Math.round(saved/1024)+' KB.');break;}
@@ -35,6 +35,6 @@
         break;
       }
     }
-    running=false;controller=null;start.disabled=false;stop.disabled=true;
+    running=false;start.disabled=false;stop.disabled=true;
   });
 })();
