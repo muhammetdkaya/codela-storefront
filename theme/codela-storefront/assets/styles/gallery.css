@@ -11,6 +11,13 @@
   min-height:var(--sf-gallery-height);
   background:var(--sf-gallery-surface);
 }
+/* Woo initially lays later slides on a second row, then floats the track.
+   Keep that transient track inside the same viewport without hiding slides
+   or changing the native slider's sizing/selection lifecycle. */
+.woocommerce div.product .sf-ui-gallery{
+  height:var(--sf-gallery-height);
+  overflow:hidden;
+}
 .sf-ui-gallery--hero{--sf-gallery-radius:0;--sf-gallery-fit:cover}
 .woocommerce div.product .sf-ui-gallery .woocommerce-product-gallery__wrapper{margin:0}
 .woocommerce div.product .sf-ui-gallery .flex-viewport{min-height:var(--sf-gallery-height)}

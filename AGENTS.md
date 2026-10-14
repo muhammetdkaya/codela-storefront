@@ -1,5 +1,13 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 14 Ekim 2026 / 0.1.76 — galeri yerleşimi ve önizleme indirmeleri (yayın bekliyor)
+
+- 0.1.75 canlı audit 38540948506: mobil ürün cold LCP 1.504s, CLS 0.231; deploy 38540669202 başarılı.
+- Canlı teşhis [38546872117](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38546872117): Woo başlangıcında sonraki slaytlar ikinci satırda; galeri 984→487.5px, özet y=1008→511.5px. Üç baseline örnekte CLS 0.231; aynı sayfaya sabit yükseklik/overflow uygulanan üç örnekte CLS 0.
+- 0.1.76: galeri dış alanı mevcut responsive yükseklikte tutulur; slaytlar gizlenmez, native track/zoom/lightbox değiştirilmez. Önizleme sizes 100px yerine gerçek 46–48px alana uygun 48px; mevcut srcset korunur.
+- Çok görselli başlangıç regresyonu eklendi. CI, canlı deploy ve standart 24 cold/warm ölçüm henüz bekliyor. Teşhiste LCP adayı eski sayfada logo, düzeltilmiş sayfada ürün başlığı: bunu ürün görselinin görünme süresi olarak yorumlamayın.
+- Kalan: WebP/AVIF mevcut medya türevlerini dönüştürme, görünmeyen tam galeri görselleri, gerçek Safari/ürün türü kabulü. Önce bu sürümün canlı CLS ve native galeri kontrollerini doğrula.
+
 ## 14 Ekim 2026 / 0.1.75 — 0.1.74 CLS regresyonu geri alma (dağıtım bekliyor)
 
 - 0.1.74 [24 canlı performans ölçümünde](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38539801980) mobil ürün soğuk CLS'yi **0.231'den 0.462'ye yükseltti**; LCP 1.620s, galeri CSS geçici slayt gizleme hipotezi başarısız. Bu sürümün [deploy](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38539458112) başarılı olsa da **performans kabulü başarısız**. Ölçüm testindeki arama cleanup hataları giderildi, checkout-pro.css katalogda yüklenmiyor, tokens.css 0.1.74.

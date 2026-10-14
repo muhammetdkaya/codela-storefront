@@ -28,6 +28,14 @@ add_action( 'after_setup_theme', function() {
             ? (int) $product->get_image_id() : 0;
         $is_hero = function_exists( 'is_product' ) && is_product()
             && $main_id > 0 && $main_id === (int) $attachment_id;
+        // FlexSlider copies data-thumb-sizes to its native thumbnail images.
+        // The rail paints 46px images on mobile and 48px on desktop.
+        $thumb_tags = new WP_HTML_Tag_Processor( $html );
+        if ( $thumb_tags->next_tag( [ 'class_name' => 'woocommerce-product-gallery__image' ] )
+            && null !== $thumb_tags->get_attribute( 'data-thumb' ) ) {
+            $thumb_tags->set_attribute( 'data-thumb-sizes', '48px' );
+            $html = $thumb_tags->get_updated_html();
+        }
         $tags = new WP_HTML_Tag_Processor( $html );
         if ( $tags->next_tag( 'a' ) ) {
             $tags->set_attribute( 'aria-label', __( 'Enlarge product image', 'codela-storefront' ) );

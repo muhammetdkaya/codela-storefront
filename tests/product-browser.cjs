@@ -99,6 +99,16 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
   // Woo FlexSlider replaces the initial image wrapper with a floated track.
   // Simulate its temporary zero-height viewport and ensure summary never jumps.
   await page.setViewportSize({width:390,height:900});
+  // Reproduce live Woo's pre-init second row (not display:none).
+  const initialTop=await page.locator('.summary').evaluate(el=>el.getBoundingClientRect().top);
+  await page.locator('.woocommerce-product-gallery__wrapper').evaluate(wrapper=>{
+    for(let i=0;i<2;i++){
+      const slide=wrapper.firstElementChild.cloneNode(true);
+      slide.style.display='inline-block';slide.style.width='25%';
+      slide.dataset.fixtureExtra='1';wrapper.append(slide);
+    }
+  });
+  assert.equal(await page.locator('.summary').evaluate(el=>el.getBoundingClientRect().top),initialTop,'Pre-init extra slides cannot push product details below the viewport');
   const stableTopBefore=await page.locator('.summary').evaluate(el=>el.getBoundingClientRect().top);
   await page.locator('.woocommerce-product-gallery__wrapper').evaluate(wrapper=>{
     const viewport=document.createElement('div');
