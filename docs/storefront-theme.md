@@ -1,5 +1,14 @@
 # Codela Storefront — güncel teknik durum
 
+## 14 Ekim 2026 / 0.1.81 — canlı yüzen yüzey görünürlüğü düzeltmesi TAMAMLANDI
+
+- Kullanıcı iPhone ekranında header ve alt menünün arkasından ürün metninin görünmesini bildirdi. Önceki ortak token `--sf-ui-glass-surface:rgba(250,250,252,.28)` idi; şeffaflık yüksekti ve kontrast/brightness filtreleri arka planı ağartıyordu.
+- 0.1.81 [PR #25](https://github.com/muhammetdkaya/codela-storefront/pull/25), [merge ecc2f936](https://github.com/muhammetdkaya/codela-storefront/commit/ecc2f936504385a4ef0b13822155249261309fbe): tek ortak yüzey `rgba(247,247,249,.96)`, yalnız tek `background` (ikinci gradient katmanı yok), `blur(10px)`, saturate(115%), contrast(1), brightness(1). Header logo/menu/actions, dock, Woo purchase ve soft iconlar aynı shared primitive; gölge, safe-area, dokunma ve layout korunur. Görünür veya gizli kontrolleri mobil/ürün modunda ayrıca kontrol et.
+- [CI + **gerçek FTP** 38599841201](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38599841201) başarıyla bitti (deploy step success).
+- [Canlı WebKit 390px 38600552295](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38600552295) **başarılı**: home .sf-brand/menu/dock ve ürün brand/menu/actions/purchase `alpha=.96`, `backgroundImage=none`, `blur(10px)`, gölge mevcut, header ve bar ölçüleri korunuyor. QA PNG'ler workflow artifact içinde, fiziksel iPhone manuel ekran testi ayrı.
+- [Native ürün geçişi 38600548198](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38600548198), [galeri 38600245107](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38600245107), [kalıcı shell 38600245164](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38600245164), [perf 38600245123](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38600245123) hepsi başarıyla bitti. Mobil cold medyan LCP ana sayfa **2364ms**, ürün **1628ms**, CLS **0**, iki galeri thumbnail 8458 byte.
+- **Sıradaki** fiziksel iPhone Safari ekranında header/dock bir kez doğrulama ve önceki ürün/kategori kapsamının Woo varyasyon/filtre/kategori uçtan uca kontrolü. Bu görsel sorun kaynakta çözülüp live WebKit ile doğrulandı; gerçek donanım görsel farkı bildirilirse screenshot üzerinden dar kapsamlı ayar yap.
+
 ## 14 Ekim 2026 / 0.1.81 — yüzen yüzeylerin opaklık/okunurluk düzeltmesi (CI ve canlı doğrulama bekliyor)
 
 - Kullanıcı gerçek iPhone Safari ekran görüntüsünde **header arkasındaki ürün metni ve alt menü içinden sayfa metni okunuyor**. Kaynak: tek merkezde tokens.css `--sf-ui-glass-surface:rgba(250,250,252,.28)` ve çok güçlü arka plan filtresi `contrast(.35) brightness(1.42)`. Bu yüzeyler header brand/actions/menu, mobil dock, product purchase, gallery ve soft icon kontrolünde ortak kullanılıyor.
