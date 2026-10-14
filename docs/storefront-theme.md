@@ -1,5 +1,11 @@
 # Codela Storefront — güncel teknik durum
 
+## 14 Ekim 2026 / 0.1.75 — 0.1.74 CLS regresyonu geri alma (dağıtım bekliyor)
+
+- 0.1.74 [24 canlı performans ölçümünde](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38539801980) mobil ürün soğuk CLS'yi **0.231'den 0.462'ye yükseltti**; LCP 1.620s, galeri CSS geçici slayt gizleme hipotezi başarısız. Bu sürümün [deploy](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38539458112) başarılı olsa da **performans kabulü başarısız**. Ölçüm testindeki arama cleanup hataları giderildi, checkout-pro.css katalogda yüklenmiyor, tokens.css 0.1.74.
+- 0.1.75'te yalnız 0.1.74'ün CLS regresyonuna neden olan slayt gizleme CSS kuralı ve bunu yanlış güvenle onaylayan dört görselli fixture geri alınıyor; 0.1.73'ün LCP/asset iyileştirmeleri kalır. Önceki 0.1.73 CLS 0.231 idi; **0.1.75 CLS değeri canlı ölçümle yeniden doğrulanmalı**. Hâlâ kabul hedefi ≤0.1 altında değil; sorunun gerçek tetikleyicisi belirlenmeden yeni CSS varsayımı yapılmamalı.
+- Sıradaki: 0.1.75 test + deploy → canlı audit; derin yükleme/CLS teşhisi (Woo galerinin başlangıç CSS ve JS koşulları, kullanıcıya görünen özet alanı). Saha Safari ve gerçek ürün türü kabulü ayrı açık.
+
 ## 14 Ekim 2026 / 0.1.74 — CLS takip düzeltmesi (CI ve canlı onayı bekliyor)
 
 - 0.1.73 üretimde, [Actions 38537660826](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38537660826) validate/deploy başarılı. [Canlı 24 ölçüm](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38537975758) product mobile cold LCP'yi 2.940→1.524s, home LCP'yi 2.472→2.240s gösterdi. Hero eager/high ve tokens.css 0.1.73 canlıda; CLS 0.231 kaldı. Detay: [performans raporu](performance/2026-10-14.md).
