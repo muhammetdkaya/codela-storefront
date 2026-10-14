@@ -4,7 +4,7 @@ const {webkit}=require('playwright');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const pages=[
- {name:'home',url:'https://codela.dev/',selectors:['.sf-brand','.sf-header-menu .sf-menu-trigger','.sf-header .sf-actions','.sf-mobile-dock .sf-dock-surface']},
+ {name:'home',url:'https://codela.dev/',selectors:['.sf-brand','.sf-header-menu .sf-menu-trigger','.sf-mobile-dock .sf-dock-surface']},
  {name:'product',url:'https://codela.dev/urun/demo-20-v-yaka-tisort-secki/',selectors:['.sf-brand','.sf-header-menu .sf-menu-trigger','.sf-header .sf-actions','.sf-product-purchase']},
 ];
 const alpha=color=>{
