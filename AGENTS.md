@@ -1,5 +1,13 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 0.1.73 performans düzeltmesi — 14 Ekim 2026 (doğrulama/yayın devam ediyor)
+
+- 14 Ekim [ilk ölçümü](docs/performance/2026-10-14.md) esas alındı: mobil ürün cold LCP 2.940s, CLS 0.231. Bu değerler **önceki sürüme** aittir, 0.1.73 için yeni sonuç uydurulmaz.
+- 0.1.72 → 0.1.73: Woo ürün galerisinde yalnız öne çıkan görsel eager/high, diğer görseller native davranışta; FlexSlider kurulurken galeri/viewport yüksekliği ayrılıyor. Logonun srcset sizes bilgisi boyut oranına göre düzeltiliyor.
+- Tüm tema CSS'leri style.css Version üzerinden aynı cache anahtarını kullanıyor. Codela checkout-pro stil handle'ı sadece katalog/ürün gibi checkout/hesap dışı sayfalarda dequeue edilir; Woo veya sepet/ödeme JS'i değişmedi.
+- Tarayıcıda FlexSlider başlangıç kaymasını doğrulayan test ve CI'dan sonra canlı read-only performans audit çalıştıran otomasyon eklendi. İlk PR CI sonucu incelenmeli, ölçümler canlı dağıtım **sonrasında** tekrar alınmalı.
+- Kaynak: [PR #18](https://github.com/muhammetdkaya/codela-storefront/pull/18). Sonraki iş: validation başarısını, gerçekten gerçekleşen dağıtımı ve live audit LCP/CLS/hero/CSS URL değerlerini kontrol edip raporlamak. Gerçek mobil Safari ve Woo ödeme/çeşitli ürün tipi kabulü ayrı açık.
+
 
 ## Hız önceliği — 14 Ekim 2026
 
