@@ -69,7 +69,8 @@ body.single-product div.product > .onsale,
 #sf-panel button.sf-ui-icon-button--soft{
   border:1px solid var(--sf-ui-glass-border);
   border-radius:var(--sf-ui-pill);
-  background:var(--sf-ui-glass-highlight),var(--sf-ui-glass-surface)!important;
+  /* A single tinted layer, never a stacked white overlay/gradient. */
+  background:var(--sf-ui-glass-surface)!important;
   color:var(--sf-ui-glass-ink);
   box-shadow:var(--sf-ui-glass-shadow)!important;
   -webkit-backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation)) contrast(var(--sf-ui-glass-contrast)) brightness(var(--sf-ui-glass-brightness));
