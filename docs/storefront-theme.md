@@ -1,5 +1,14 @@
 # Codela Storefront — güncel teknik durum
 
+## 14 Ekim 2026 / 0.1.79 — kesintisiz shell + koşullu skeleton (CI ve yayın bekliyor)
+
+- **Sürüm:** 0.1.78 → 0.1.79, sadece `codela-storefront` tema. Eklenti/WordPress.org değişmez.
+- **Doğru mekanizma:** WordPress `@wordpress/interactivity-router` resmi script module ve `data-wp-router-region="codela/storefront/main"`; URL, history, fetch, cache ve hatada normal belgeye dönme core'a ait. Kendi SPA/router/back-forward/sunucu response parser yapılmaz. Core 6.9+ client navigation support metodu yoksa özellik açılmaz; tema asgari WP 6.5 desteği kalır.
+- **Kapsam sınırı:** yalnız ana sayfa ve sade, herkese açık core-blok WordPress `page` içerikleri; PHP shortcode/özel blok, embed form, WC checkout/cart/account, product/archive/taxonomy ve kimlik bağımlı alanlarda tam sayfa yükleme korunur. `wp_interactivity_config('core/router', ['clientNavigationDisabled'=>true])` hedef sayfada zorunlu fallback işaretidir. Ürün galeri, varyasyon ve gateway hazır olma döngüsü router ile yapılmış varsayılmaz. Header/dock **yalnız kapsamdaki geçişlerde** aynı DOM referansı kalır.
+- **Görünüm:** 160ms bekleme sonrası içerik alanında skeleton; hızlı geçişte yok. Home hedefi hero/kart, normal sayfa hedefi satır/başlık; header/dock/popup tarafında ikinci katman yok; reduced-motion, forced-colors/klavye odağı. Popup içindeki güvenli link navigasyonu için overlay mevcut `closeForNavigation` ile anında açılır kapanır, scroll konumu geri zıplatmaz.
+- **Test/güvenlik:** tests/navigation.php ve tests/shell-navigation-browser.cjs, eski CI testleri. WordPress gerçekte route/back/forward ve eklenti script/katalog uyumu henüz kanıtlanmadı; canlı/saha kabul olmadan kapsam genişletmeyin. Kendi router cache'i yok; müşteri cart, login, POST, ödeme olaylarına müdahale edilmez.
+- **Sonraki iş:** PR CI → merge/deploy → gerçek canlı navigasyon DOM kimlikleri, history/scroll/focus, kısa-uzun bekleme, geri/ileri ve WP sayfa düzenleyici ile uyum kontrolü. Ardından yalnız doğrulanmış Woo listelerinde kapsam genişletme planı.
+
 ## 14 Ekim 2026 / 0.1.78 — otomatik WebP üretimi, kontrollü eski görsel dönüşümü ve galeri aktarımı (canlıda)
 
 - **Kaynak/yayın:** 0.1.77 → **0.1.78**; [PR #22](https://github.com/muhammetdkaya/codela-storefront/pull/22), [squash c0e5a28](https://github.com/muhammetdkaya/codela-storefront/commit/c0e5a287b1f58a7845c6769761e4efd4199d6c70), [CI + Deploy 38578243841](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38578243841) validate ve Deploy Storefront only başarılı. Eklenti sürümü değişmedi.
