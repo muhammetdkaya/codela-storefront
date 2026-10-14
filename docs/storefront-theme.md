@@ -1,5 +1,13 @@
 # Codela Storefront — güncel teknik durum
 
+## 14 Ekim 2026 / 0.1.77 — canlı doğrulama, medya maliyeti ve post-deploy koruması
+
+- Sürüm **0.1.77** canlıda: [commit 3d16be3](https://github.com/muhammetdkaya/codela-storefront/commit/3d16be31688c51fdf33d0fd7e10764db157c25e5), [deploy 38548542214](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38548542214), [galeri kabulü 38548935704](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38548935704) başarılı. 0.1.77 için önceki “yayın bekliyor” kaydı sürüm anındaki tarihsel nottur.
+- [24 canlı performans örneği 38548935685](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38548935685): mobil cold medyan LCP ürün 1488ms, ana sayfa 2220ms; üçer soğuk ölçümde CLS 0. Hero eager/high. LCP adayı bazen metindir; bu sayılar tam görsel ekrana gelme süresi ya da sahadaki Core Web Vitals değildir.
+- Tek mobil soğuk ürün örneğinde iki ikincil galeri JPEG'i 120526 + 102662 = **223188 byte** transfer etti, başlangıçları yaklaşık 2151ms. HTML lazy yükleme açık olsa da tarayıcı bunları indirdi. Buna çözüm diye slider'ı devre dışı bırakmak veya tam ekran/orijinal kaliteyi kaybetmek kabul edilmez.
+- Sonraki çalışmada sürümü değiştirmeyen **sadece ölçüm aracı değişikliği**: audit cold mobil medyanları CLS ≤0.1 ve ürün LCP ≤2500ms / ana sayfa LCP ≤2800ms ile test eder; eksik veya HTTP hatalı üçlü ölçümü başarısız sayar. Audit ikincil galeri görsellerinin ayrı ağ transferini sonuç dosyasına yazar. Bunlar **dağıtım sonrası alarmdır, üretime çıkmadan önceki engel değildir**. Test/CI/canlı sonuç henüz doğrulanmadı.
+- Açık: WebP/AVIF mevcut medya türevlerini opt-in ve güvenli biçimde dönüştürme, görüntü kalitesi/gerçek Woo swipe-lightbox kabulü, fiziksel Safari, stok/kupon/varyasyon/gruplu/harici ürün ve checkout kabulü.
+
 ## 14 Ekim 2026 / 0.1.77 — native büyütme dokunma düzeltmesi (yayın bekliyor)
 
 - 0.1.76 [deploy 38547199284](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38547199284) gerçek dağıtım adımı başarılı. [24 canlı ölçüm 38547572075](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38547572075): mobil ürün CLS tüm cold/warm örneklerde 0; cold LCP medyan 1.596s (artık ürün başlığı), ana sayfa cold 2.268s. Önceki 1.504s ürün LCP logosuydu; doğrudan görsel hız karşılaştırması değildir.
