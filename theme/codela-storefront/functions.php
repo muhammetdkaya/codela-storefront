@@ -37,6 +37,7 @@ function codela_sf_style_version(): string {
 }
 require_once get_template_directory() . '/inc/render.php';
 require_once get_template_directory() . '/inc/media.php';
+require_once get_template_directory() . '/inc/media-optimization.php';
 require_once get_template_directory() . '/inc/product.php';
 require_once get_template_directory() . '/inc/account.php';
 require_once get_template_directory() . '/inc/google-auth.php';
@@ -94,6 +95,8 @@ add_action( 'wp_enqueue_scripts', function() {
         wp_enqueue_style( 'codela-storefront-gallery' );
         // Product-only layout; WooCommerce gallery, variations and cart stay native.
         wp_enqueue_style( 'codela-storefront-product', $root_uri . 'styles/product.css', [ 'codela-storefront-components', 'codela-storefront-gallery' ], $style_version );
+        // Restore deferred full slide images only when the Woo native carousel needs them.
+        wp_enqueue_script( 'codela-storefront-gallery-defer', $root_uri . 'scripts/gallery-defer.js', [ 'wc-single-product' ], $style_version, true );
     }
     if ( function_exists( 'is_checkout' ) && is_checkout() ) {
         // Presentation adapter only; no Woo checkout/gateway logic is changed.

@@ -1,5 +1,15 @@
 # Codela Storefront — güncel teknik durum
 
+## 14 Ekim 2026 / 0.1.78 — otomatik WebP ve ihtiyaç üzerine ürün görseli (doğrulama bekliyor)
+
+**Kapsam:** 0.1.77 → 0.1.78 yalnız medya üretimi, Media bakım aracı ve Woo ürün galerisinde veri aktarımı. Codela eklenti sürümü değişmez. Native Woo slider, cart/checkout, ortak UI ve tam ekran orijinal görseller korunur.
+
+- Yeni JPEG yüklemelerinde WordPress'in `image_editor_output_format` haritasıyla, sunucu WebP encoder destekliyorsa, ara boyutlar WebP yazılır. Bu **her seferinde sayfa açarken yapılan dönüşüm değildir**. Orijinal JPG saklanır. AVIF varsayılan değil (encoding CPU maliyeti/sunucu desteği değişken); PNG ve GIF dönüşmez.
+- **Mevcut görseller:** Medya → Image Optimization → Optimize existing images. Bounded admin AJAX (manage_options, nonce, tek JPEG attachment/istek, durdurulabilir). Meta veride JPG ara boyutlar WebP küçükse değiştirilir; JPEG ve full dosyaları silinmez. Bakım işlemi yönetici başlatmadan **otomatik çalışmaz**. Cloud/offload eklentilerinde ve mevcut medya birikiminde ayrıca kabul gerekir.
+- Ürünün **ilk görünür görseli eager/high**; diğer büyük slaytlar başlangıçta Woo'nun thumbnail URL'siyle açılır, image/full `src/srcset/sizes` data attribute'unda tutulur. Seçili thumbnail, Woo `flex-active-slide`, gerçek touch/pointer veya klavye yönünde gerektiğinde tam görsel aktif edilir. Woo full-screen bağlantısı ve `data-large_image` hiçbir şekilde değiştirilmez. JS kapalıysa küçük önizleme img kalabilir, bağlantı yine yüksek çözünürlüklüdür.
+- Ölçüm hedefi: 0.1.77'de 223188 byte olan ikincil tam JPEG başlangıç aktarımının kullanıcı slayta geçmedikçe oluşmaması; ürün LCP ≤2.5s, CLS ≤0.1, native galeri click/swipe/lightbox ve varyasyon etkilenmemesi. Bu değerler **0.1.78 için ölçülmüş sonuç değildir**.
+- CI/browser ve deploy **bekliyor**. Fiziksel Safari, gerçek WordPress yeni medya yükleme, WebP desteklemeyen host, üçüncü taraf medya saklama, varyasyon/gruplu/harici ürün kabulü açık.
+
 ## 14 Ekim 2026 / 0.1.77 — canlı doğrulama, medya maliyeti ve post-deploy koruması
 
 - Sürüm **0.1.77** canlıda: [commit 3d16be3](https://github.com/muhammetdkaya/codela-storefront/commit/3d16be31688c51fdf33d0fd7e10764db157c25e5), [deploy 38548542214](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38548542214), [galeri kabulü 38548935704](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38548935704) başarılı. 0.1.77 için önceki “yayın bekliyor” kaydı sürüm anındaki tarihsel nottur.
