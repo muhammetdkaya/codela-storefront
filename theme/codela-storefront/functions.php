@@ -38,6 +38,7 @@ function codela_sf_style_version(): string {
 require_once get_template_directory() . '/inc/render.php';
 require_once get_template_directory() . '/inc/media.php';
 require_once get_template_directory() . '/inc/navigation.php';
+require_once get_template_directory() . '/inc/document-continuity.php';
 require_once get_template_directory() . '/inc/media-optimization.php';
 require_once get_template_directory() . '/inc/product.php';
 require_once get_template_directory() . '/inc/account.php';
@@ -97,6 +98,9 @@ add_action( 'wp_enqueue_scripts', function() {
     wp_enqueue_style( 'codela-storefront-overlay', $root_uri . 'styles/overlay.css', [ 'codela-storefront-theme' ], $style_version );
     wp_enqueue_style( 'codela-storefront-navigation', $root_uri . 'styles/navigation.css', [ 'codela-storefront-overlay' ], $style_version );
     wp_enqueue_style( 'codela-storefront-components', $root_uri . 'styles/components.css', [ 'codela-storefront-navigation' ], $style_version );
+    if ( codela_sf_document_continuity_allowed() ) {
+        wp_enqueue_style( 'codela-storefront-document-continuity', $root_uri . 'styles/document-continuity.css', [ 'codela-storefront-components' ], $style_version );
+    }
     if ( function_exists( 'is_product' ) && is_product() ) {
         wp_enqueue_style( 'codela-storefront-gallery' );
         // Product-only layout; WooCommerce gallery, variations and cart stay native.
