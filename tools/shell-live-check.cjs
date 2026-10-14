@@ -6,9 +6,10 @@ const fs=require('node:fs');
 (async()=>{
  const browser=await chromium.launch();
  const report={status:'pending',url:'https://codela.dev/',checks:{}};
+ let page;
  try {
   const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
-  const page=await context.newPage();
+  page=await context.newPage();
   const errors=[];const navigationRequests=[];
   page.on('pageerror',err=>errors.push(err.message));
   page.on('request',req=>{if(req.url().includes('codela_sf_navigation_qa'))navigationRequests.push({url:req.url(),resourceType:req.resourceType()});});
@@ -55,6 +56,9 @@ const fs=require('node:fs');
   report.status='passed';
   await context.close();
  }catch(error){
+  if(page && !page.isClosed()) {
+    report.debug=await page.evaluate(()=>({url:location.href,ready:document.readyState,routeLink:!!document.querySelector('#sf-route-qa-link'),region:!!document.querySelector('#sf-content[data-wp-router-region]'),mainRegionHTML:document.querySelector('#sf-content')?.outerHTML.slice(0,350),scripts:[...document.querySelectorAll('script[src]')].filter(x=>x.src.includes('navigation')).map(x=>({src:x.src,type:x.type})),skeleton:!!document.querySelector('.sf-route-skeleton'),routerModule:!!document.querySelector('script[type=importmap]')})).catch(e=>({evaluateError:e.message}));
+  }
   report.checks.pageErrors=typeof errors==='undefined'?[]:errors;
   report.checks.navigationRequests=typeof navigationRequests==='undefined'?[]:navigationRequests;
   report.error=error.message;
