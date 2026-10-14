@@ -1,38 +1,6 @@
-/** Mobile header modes, floating dock and touch feedback. Theme-owned. */
-/* Checkout shares the dock-mode Header geometry without mounting the dock itself. */
+/** Shared mobile header, floating dock and touch feedback. Theme-owned. */
 .sf-mobile-dock{display:none}
 @media(max-width:700px){
-  .sf-shell.has-header-tools .sf-header{
-    grid-template-columns:44px minmax(0,1fr) auto;
-    column-gap:4px;
-    padding-left:16px;
-    padding-right:16px;
-  }
-  .has-header-tools .sf-header .sf-brand{max-width:100%;font-size:clamp(16px,5vw,24px)}
-  .has-header-tools .sf-header .sf-brand .custom-logo{max-width:100%;height:auto}
-  .has-header-tools .sf-header .sf-actions{gap:0}
-
-  .sf-shell:is(.has-mobile-dock,.has-checkout-header) .sf-header{
-    grid-template-columns:minmax(0,1fr) 44px;
-    column-gap:8px;
-    padding-left:20px;
-    padding-right:20px;
-  }
-  :is(.has-mobile-dock,.has-checkout-header) .sf-header .sf-header-menu{
-    grid-column:2;
-    grid-row:1;
-    justify-self:end;
-    width:44px;
-    height:44px;
-  }
-  :is(.has-mobile-dock,.has-checkout-header) .sf-header .sf-brand{
-    grid-column:1;
-    grid-row:1;
-    justify-self:start;
-    max-width:100%;
-    text-align:left;
-  }
-  :is(.has-mobile-dock,.has-checkout-header) .sf-header .sf-actions{display:none}
   .sf-mobile-dock{
     --sf-dock-bottom:calc(var(--sf-ui-bottom-bar-gap) + env(safe-area-inset-bottom,0px));
     --sf-dock-travel:0px;
@@ -216,22 +184,25 @@ body.admin-bar{--sf-header-offset:32px}
 .sf-shell .sf-header .sf-actions .sf-ui-icon-button{border-radius:var(--sf-ui-pill);color:var(--sf-ui-glass-ink)}
 .sf-shell .sf-header .sf-actions .sf-ui-icon-button .sf-icon{filter:brightness(0)}
 @media(max-width:700px){
-  .sf-shell .sf-header{height:68px}
-  .sf-shell:is(.has-mobile-dock,.has-checkout-header) .sf-header{
-    grid-template-columns:minmax(0,1fr) var(--sf-ui-hit);
-    padding-left:20px;padding-right:20px;column-gap:12px;
+  /* Logo and Menu keep their slots across catalog, product and checkout. */
+  .sf-shell .sf-header{
+    height:68px;grid-template-columns:minmax(0,1fr) auto var(--sf-ui-hit);
+    column-gap:8px;padding-left:20px;padding-right:20px;
   }
-  .sf-shell:is(.has-mobile-dock,.has-checkout-header) .sf-header .sf-brand{
-    max-width:min(220px,calc(100vw - 108px));justify-self:start;
+  .sf-shell .sf-header .sf-brand{
+    grid-column:1;grid-row:1;justify-self:start;max-width:100%;
+    text-align:left;padding:0 8px;font-size:clamp(15px,4.6vw,23px);
   }
-  .sf-shell.has-header-tools .sf-header{
-    grid-template-columns:var(--sf-ui-hit) minmax(0,1fr) auto;
-    column-gap:8px;padding-left:12px;padding-right:12px;
+  .sf-shell .sf-header .sf-brand .custom-logo{max-width:100%;height:auto}
+  .sf-shell .sf-header .sf-header-menu{
+    grid-column:3;grid-row:1;justify-self:end;width:var(--sf-ui-hit);height:var(--sf-ui-hit);
   }
-  .sf-shell.has-header-tools .sf-header .sf-brand{
-    max-width:100%;padding:0 7px;font-size:clamp(15px,4.6vw,23px);
-  }
-  .sf-shell.has-header-tools .sf-header .sf-actions{gap:0}
+  .sf-shell .sf-header .sf-actions{grid-column:2;grid-row:1;gap:0}
+  .sf-shell:is(.has-mobile-dock,.has-checkout-header) .sf-header .sf-actions{display:none}
+  .sf-shell.has-product-header .sf-header .sf-actions{display:flex}
+  .has-product-header .sf-actions > :not(.sf-cart-trigger){display:none}
+  /* Without a purchase form, the existing dock remains the cart entry. */
+  body.single-product:not(:has(.sf-product-purchase)) .has-product-header.has-mobile-dock .sf-header .sf-actions{display:none}
 }
 
 

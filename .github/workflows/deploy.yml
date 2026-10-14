@@ -25,6 +25,7 @@ jobs:
           node --input-type=module --check < theme/codela-storefront/assets/scripts/cart-controller.js
           node --input-type=module --check < theme/codela-storefront/assets/scripts/overlay-controller.js
           node --input-type=module --check < theme/codela-storefront/assets/scripts/dock-controller.js
+          php tests/catalog.php
           php tests/media.php
           php tests/media-optimization.php
           php tests/navigation.php
@@ -51,6 +52,7 @@ jobs:
           npx playwright install --with-deps chromium
           node tests/navigation-browser.cjs
           node tests/checkout-browser.cjs
+          node tests/catalog-browser.cjs
           node tests/product-browser.cjs
           node tests/shell-navigation-browser.cjs
           node tests/document-continuity-browser.cjs

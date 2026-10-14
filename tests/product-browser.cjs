@@ -6,7 +6,7 @@ const {execFileSync}=require('node:child_process');
 const header=execFileSync(process.env.PHP_BIN||'php',['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_PRODUCT:'1'}});
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const css=['assets/styles/tokens.css','assets/storefront.css','assets/styles/overlay.css',
- 'assets/styles/navigation.css','assets/styles/components.css','assets/styles/gallery.css','assets/styles/product.css']
+ 'assets/styles/navigation.css','assets/styles/components.css','assets/styles/catalog.css','assets/styles/gallery.css','assets/styles/product.css']
  .map(p=>fs.readFileSync('theme/codela-storefront/'+p,'utf8')).join('\n');
 const thumb='<li><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22240%22/%3E" alt="Ürün görünümü"></li>';
 const related='<li class="product"><a href="/product"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22400%22/%3E"><h2 class="woocommerce-loop-product__title">Ürün</h2></a><span class="price">₺500</span></li>';
@@ -60,7 +60,7 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
    assert(Math.abs(result.gallery.left)<1&&Math.abs(result.gallery.right-width)<1,'Gallery spans viewport at '+width);
    assert(Math.abs(result.gallery.top)<1,'Gallery begins at document top at '+width);
    assert.equal(await page.locator('.woocommerce-product-gallery__image img').evaluate(el=>getComputedStyle(el).objectFit),'cover','Hero fills frame without contain letterboxing');
-   assert.equal(result.relatedColumns,width>=901?4:2,'Related product grid at '+width);
+   assert.equal(result.relatedColumns,width>1024?4:width>700?3:2,'Related product grid at '+width);
    const purchase=await page.locator('.sf-product-purchase').evaluate(el=>({position:getComputedStyle(el).position,rect:el.getBoundingClientRect().toJSON(),bg:getComputedStyle(el).backgroundColor,image:getComputedStyle(el).backgroundImage}));
    assert.equal(purchase.bg,'rgba(247, 247, 249, 0.96)','Product purchase uses the one opaque-tinted shared material');
    assert.equal(purchase.image,'none','Product purchase has no stacked white gradient');

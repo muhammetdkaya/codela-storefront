@@ -1,7 +1,13 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.84 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.85 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
+
+## Shared Header and native product cards —15 October2026
+
+All mobile store headers anchor Logo left and Menu at the far right. Product purchase replaces the document dock; only Cart appears immediately before Menu. Without purchase, an enabled dock remains the cart entry. Checkout has the same anchors, no dock. Dock-disabled mode retains the existing tools before Menu. Desktop stays Menu/centered Logo/tools; guest auth retains its quiet header.
+
+Native Woo content-product.php is the card owner for home, shop, category, product search, related/upsell/cross-sell. catalog.css owns their one card/grid presentation; product.css owns only product-detail placement.4:5 contain image, two-line title, native price/sale/availability, shared Button;2/3/4 responsive columns. Product search keeps Woo toolbar/pagination; post/page search stays core Query. No new card JS/carousel/API. A single update changes every native card surface. Historical page-specific Header/card notes below are superseded.
 
 ## Current material — 14 October2026
 

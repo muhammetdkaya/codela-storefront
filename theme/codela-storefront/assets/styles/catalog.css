@@ -1,0 +1,67 @@
+/**
+ * One native Woo card/grid for home, shop, categories, product search,
+ * related, upsells and cross-sells. No page-specific card paint or JS.
+ * Button states/paint remain in the shared components.css adapter.
+ */
+body:not(.codela-my-account-layout) .sf-content ul.products{
+  --sf-catalog-columns:4;
+  display:grid;grid-template-columns:repeat(var(--sf-catalog-columns),minmax(0,1fr));
+  gap:clamp(14px,2.4vw,28px);list-style:none;padding:0;margin:0 0 32px;
+  clear:both;
+}
+body:not(.codela-my-account-layout) .sf-content ul.products::before,body:not(.codela-my-account-layout) .sf-content ul.products::after{display:none}
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product{
+  position:relative;display:flex;flex-direction:column;float:none;
+  width:auto!important;min-width:0;margin:0!important;padding:0;
+  background:transparent;border:0;box-shadow:none;text-align:start;
+}
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product > a.woocommerce-loop-product__link{
+  display:block;flex:1;min-width:0;color:var(--sf-ui-ink);text-decoration:none;
+}
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product a img{
+  display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:contain;
+  margin:0;background:var(--sf-ui-surface-muted);border-radius:var(--sf-ui-control-radius);
+}
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product .woocommerce-loop-product__title{
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;
+  margin:12px 0 6px;padding:0;min-height:2.9em;
+  font-family:inherit;font-size:15px;font-weight:500;line-height:1.45;
+  letter-spacing:-.015em;color:var(--sf-ui-ink);overflow-wrap:anywhere;
+}
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product .price{
+  display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;
+  margin:0;color:var(--sf-ui-control-ink);font-size:14px;font-weight:500;
+  line-height:1.5;font-variant-numeric:tabular-nums;
+}
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product .price del{color:var(--sf-muted);opacity:1;font-weight:400}
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product .price ins{background:none;text-decoration:none;color:inherit}
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product .star-rating{margin:0 0 8px;font-size:12px}
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product .onsale{
+  position:absolute;inset:10px auto auto 10px;z-index:1;min-width:0;min-height:0;
+  margin:0;padding:5px 9px;border-radius:var(--sf-ui-pill);
+  background:var(--sf-ui-surface);color:var(--sf-ui-ink);
+  font-size:11px;font-weight:600;line-height:1.5;
+}
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product > .button{
+  width:100%;min-width:0;margin:12px 0 0;white-space:normal;text-align:center;
+  --sf-ui-button-height:44px;--sf-ui-button-font-size:13px;
+  --sf-ui-button-padding-y:9px;--sf-ui-button-padding-x:12px;
+}
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product > .added_to_cart{
+  display:block;padding:10px 0 0;min-height:44px;color:var(--sf-ui-control-ink);
+  font-size:13px;text-align:center;text-decoration:underline;text-underline-offset:3px;
+}
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product > a:focus-visible{
+  outline:2px solid var(--sf-ui-accent);outline-offset:4px;
+}
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-stock{display:block;margin-top:8px;color:var(--sf-muted);font-size:12px;line-height:1.5}
+.sf-catalog{max-width:1200px!important;margin-inline:auto}
+.sf-catalog > h1{font-size:clamp(25px,4vw,36px);line-height:1.2;font-weight:400;overflow-wrap:anywhere}
+@media(max-width:1024px){
+  body:not(.codela-my-account-layout) .sf-content ul.products{--sf-catalog-columns:3}
+}
+@media(max-width:700px){
+  body:not(.codela-my-account-layout) .sf-content ul.products{--sf-catalog-columns:2}
+  body:not(.codela-my-account-layout) .sf-content ul.products > li.product .woocommerce-loop-product__title{font-size:14px}
+  body:not(.codela-my-account-layout) .sf-content ul.products > li.product .price{font-size:13px}
+}

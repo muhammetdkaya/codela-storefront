@@ -41,6 +41,7 @@ require_once get_template_directory() . '/inc/navigation.php';
 require_once get_template_directory() . '/inc/document-continuity.php';
 require_once get_template_directory() . '/inc/media-optimization.php';
 require_once get_template_directory() . '/inc/product.php';
+require_once get_template_directory() . '/inc/catalog.php';
 require_once get_template_directory() . '/inc/account.php';
 require_once get_template_directory() . '/inc/google-auth.php';
 /**
@@ -87,6 +88,7 @@ add_action( 'init', function() {
     }
     register_block_type( 'codela/storefront-header', [ 'api_version' => 3, 'render_callback' => 'codela_sf_header', 'supports' => [ 'interactivity' => true, 'html' => false, 'inserter' => false ] ] );
     register_block_type( 'codela/storefront-home', [ 'api_version' => 3, 'render_callback' => 'codela_sf_home', 'supports' => [ 'html' => false, 'inserter' => false ] ] );
+    register_block_type( 'codela/storefront-search', [ 'api_version' => 3, 'render_callback' => 'codela_sf_search_results', 'supports' => [ 'html' => false, 'inserter' => false ] ] );
     register_block_type( 'codela/storefront-footer', [ 'api_version' => 3, 'render_callback' => 'codela_sf_footer', 'supports' => [ 'html' => false, 'inserter' => false ] ] );
 } );
 add_action( 'wp_enqueue_scripts', function() {
@@ -98,6 +100,8 @@ add_action( 'wp_enqueue_scripts', function() {
     wp_enqueue_style( 'codela-storefront-overlay', $root_uri . 'styles/overlay.css', [ 'codela-storefront-theme' ], $style_version );
     wp_enqueue_style( 'codela-storefront-navigation', $root_uri . 'styles/navigation.css', [ 'codela-storefront-overlay' ], $style_version );
     wp_enqueue_style( 'codela-storefront-components', $root_uri . 'styles/components.css', [ 'codela-storefront-navigation' ], $style_version );
+    wp_enqueue_style( 'codela-storefront-catalog', $root_uri . 'styles/catalog.css', [ 'codela-storefront-components' ], $style_version );
+    if ( is_front_page() || is_search() ) { wp_enqueue_script( 'wc-add-to-cart' ); }
     if ( codela_sf_document_continuity_allowed() ) {
         wp_enqueue_style( 'codela-storefront-document-continuity', $root_uri . 'styles/document-continuity.css', [ 'codela-storefront-components' ], $style_version );
     }

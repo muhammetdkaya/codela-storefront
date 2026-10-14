@@ -1,5 +1,19 @@
 # Codela Storefront — güncel teknik durum
 
+## 15 Ekim2026 / 0.1.84 → 0.1.85 — ortak Header ve ürün kartı (kabul/yayın bekliyor)
+
+Mobilde Header'ın logo ve menü slotları sabittir: logo solda, menü en sağda. Ürün purchase alanı dock'u değiştirince sepet menünün hemen solunda görünür; arama/hesap tam ekran menü üzerinden erişilir. Purchase olmayan ve dock'u açık üründe dock korunur, üstte ikinci sepet gösterilmez. Dock kapalı ayarda araçlar üstte kalır. Checkout logo/menu aynı slotlarda, docksuz; masaüstü düzeni aynı. Guest login'in ayrı sessiz header'ı ve plugin-owned hesap sınırı korunur.
+
+Ana sayfa ayrı article kartı yerine native Woo content-product döngüsünü kullanır. Mağaza/kategori/related/upsell/cross-sell zaten bu native şablondadır; görünümü tek catalog.css belirler. Kart:4:5 contain görsel, iki satır başlık, native fiyat/indirim/stok, ortak Button. Mobil2, orta genişlik3, geniş ekran4 sütun. Ürün araması da aynı kart, native ordering/result-count/pagination kullanır; normal post/page araması core Query'de kalır. Yeni slider, kart JS'i, sorgu motoru veya API yok. Native Woo add-to-cart ve varyasyon semantiği korunur.
+
+Native helper iç içe WP post/product/Woo loop context'ini başarıda ve extension hatasında geri yükler. Home koleksiyon thumbnail'leri lazy, hero önceliği aynı. Eski related kart paint'i product.css'ten çıkarıldı; product.css yalnız ürün ekranı yerleşimini yönetir. Tek96% yüzen materyal korunur.
+
+**Doğrulama:** tests/catalog.php context/error/search sınırları; tests/catalog-browser.cjs beş yüzey/beş viewport + Header slotları; mevcut product/checkout/navigation/native Button regression'ları. CI/gerçek FTP/canlı ve gerçek WP-Woo kabulü henüz bekliyor. Eski0.1.84 sonuçları aşağıda tarihlidir; yeni sürümün kabulü gibi sunulmaz.
+
+**Kalan/ilk iş:** CI ve gerçek deploy sonuçlarını kapat; canlı kart/header, galeri ve performans regresyonlarını kontrol et; gerçek WP/Woo suite paket/hash/source pin'ini0.1.85'e güncelleyip ilgili kabulü çalıştır. Codela eklentisi1.1.1 runtime/WordPress.org yayını değişmez. Eski JPEG canlı dönüşümü (yönetici girişi tamamlanmadı) ve fiziksel iPhone kabulü açık.
+
+## Önceki doğrulanmış0.1.84 — tarihli kayıt
+
 14 Ekim 2026: tema **0.1.84 canlı**, Codela eklentisi **1.1.1**. [Kaynak ae1f412](https://github.com/muhammetdkaya/codela-storefront/commit/ae1f412794cb9c24be3dbd944d603e149e2e2344), [validate + gerçek FTP](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38616608720) başarılı. Eklentide yalnız test/workflow/docs değişti; runtime ve WordPress.org yayını değişmedi.
 
 ## Bitenler

@@ -143,3 +143,18 @@ Kullanıcı yeni özellik/tasarım öncesinde hız testi istedi. Canlı tema de�
 - Yayın: [kaynak e8f2415](https://github.com/muhammetdkaya/codela-storefront/commit/e8f24154dfe7cf7985ddfa37436b2ade28635dd7); [Actions 38514144873](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38514144873) validate=success, deploy=success. Gerçek Deploy Storefront only adımı ve deploy.py 'Storefront deployed; checks passed.' logu doğrulandı (14 Ekim 2026 05:00 UTC).
 - Kalan/sıradaki: fiziksel mobil açık zemin üzerinde tek yüzey görünümünü kontrol et. Önceki safe-area, gerçek Woo ürün türleri, F3/F4/F5/F6 kabulleri açık; slider duraklatıldı.
 
+
+
+# Codela Storefront — güncel çalışma kuralları
+
+## Son doğrulanmış devam noktası — 14 Ekim 2026 / 0.1.84
+
+- Tema **0.1.81 → 0.1.84 canlıda**; kaynak `ae1f412794cb9c24be3dbd944d603e149e2e2344`, [validate + gerçek FTP](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38616608720) başarılı. Codela eklentisi **1.1.1**; eklenti runtime/WordPress.org yayını değiştirilmedi.
+- Ortak yüzen yüzey `rgba(247,247,249,.96)`, tek background, gradient yok; blur10px/saturate115%/contrast1/brightness1. İkinci renk katmanı ekleme.
+- Native Woo düğmeleri ortak Button'a uyarlandı, eski global paint kaldırıldı; Codela oturum içi hesap dışlanır. Woo9 public `wc/store/cart` fallback'i aynı controller'da, yeni motor/polling/bundle yok.
+- Native navigate promise'i160ms skeleton'ı yönetir; kurulu router'da olmayan `state.navigating` alanına bağımlılık kaldırıldı. Explicit tık focus/scroll-top yapar; history konumunu browser/core yönetir. Güvenli home/statik kapsamını Woo sayfalarına SPA olarak genişletme.
+- Native PhotoSwipe, hero eager/high, ihtiyaç halinde ikincil görsel yükleme ve yeni JPEG WebP türevleri korunur.
+- [Kabul kaydı](docs/acceptance/2026-10-14.md): canlı beş gate başarılı; mobil cold lab medyan LCP home2468ms/ürün1768ms, CLS0. İki WP/Woo ailesinde Chromium ve WebKit'in 11'er gerçek akışı başarılı (4/4 ortam).
+- **Kalan / ilk iş:** Canlı eski JPEG backfill **yapılmadı**. WordPress yönetici giriş ekranı görüldü; güvenli giriş isteği kullanıcı tarafından iptal edildi, yönetici oturumu doğrulanmadı. Tekrar giriş isteme; kullanıcı devam etmek isterse metadata/dosya yedeği ve küçük örnekten sonra native Medya → Image Optimization batch'ini doğrula. İzole CI encoder başarısı canlı host desteğini kanıtlamaz. Fiziksel iPhone Safari GPU/toolbar/safe-area kabulü ayrıca açık; CI WebKit fiziksel cihaz değildir.
+- [Devam noktası tarihçesi](AGENTS-history-2026-10-14.md), [teknik tarihçe](docs/storefront-theme-history-2026-10-14.md). Tamamlanan yayınları yeniden yapma. Yeni tema sürümünde gerçek entegrasyon workflow paket/hash/source pin'ini güncelle.
+

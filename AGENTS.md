@@ -1,15 +1,13 @@
 # Codela Storefront — güncel çalışma kuralları
 
-## Son doğrulanmış devam noktası — 14 Ekim 2026 / 0.1.84
+## Son doğrulanmış devam noktası — 15 Ekim 2026 / 0.1.85 (kabul ve yayın bekliyor)
 
-- Tema **0.1.81 → 0.1.84 canlıda**; kaynak `ae1f412794cb9c24be3dbd944d603e149e2e2344`, [validate + gerçek FTP](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38616608720) başarılı. Codela eklentisi **1.1.1**; eklenti runtime/WordPress.org yayını değiştirilmedi.
-- Ortak yüzen yüzey `rgba(247,247,249,.96)`, tek background, gradient yok; blur10px/saturate115%/contrast1/brightness1. İkinci renk katmanı ekleme.
-- Native Woo düğmeleri ortak Button'a uyarlandı, eski global paint kaldırıldı; Codela oturum içi hesap dışlanır. Woo9 public `wc/store/cart` fallback'i aynı controller'da, yeni motor/polling/bundle yok.
-- Native navigate promise'i160ms skeleton'ı yönetir; kurulu router'da olmayan `state.navigating` alanına bağımlılık kaldırıldı. Explicit tık focus/scroll-top yapar; history konumunu browser/core yönetir. Güvenli home/statik kapsamını Woo sayfalarına SPA olarak genişletme.
-- Native PhotoSwipe, hero eager/high, ihtiyaç halinde ikincil görsel yükleme ve yeni JPEG WebP türevleri korunur.
-- [Kabul kaydı](docs/acceptance/2026-10-14.md): canlı beş gate başarılı; mobil cold lab medyan LCP home2468ms/ürün1768ms, CLS0. İki WP/Woo ailesinde Chromium ve WebKit'in 11'er gerçek akışı başarılı (4/4 ortam).
-- **Kalan / ilk iş:** Canlı eski JPEG backfill **yapılmadı**. WordPress yönetici giriş ekranı görüldü; güvenli giriş isteği kullanıcı tarafından iptal edildi, yönetici oturumu doğrulanmadı. Tekrar giriş isteme; kullanıcı devam etmek isterse metadata/dosya yedeği ve küçük örnekten sonra native Medya → Image Optimization batch'ini doğrula. İzole CI encoder başarısı canlı host desteğini kanıtlamaz. Fiziksel iPhone Safari GPU/toolbar/safe-area kabulü ayrıca açık; CI WebKit fiziksel cihaz değildir.
-- [Devam noktası tarihçesi](AGENTS-history-2026-10-14.md), [teknik tarihçe](docs/storefront-theme-history-2026-10-14.md). Tamamlanan yayınları yeniden yapma. Yeni tema sürümünde gerçek entegrasyon workflow paket/hash/source pin'ini güncelle.
+- Kullanıcının onayıyla mobil Header konumları birleştirildi: logo solda, menü en sağda. Üründe tek native purchase alanı dock yerini aldığında yalnız sepet menünün solunda; checkout aynı logo/menu konumunda ve docksuz. Masaüstü ve guest auth sahipliği korunur.
+- Tek native Woo content-product.php + ortak catalog.css: ana sayfa koleksiyonu, mağaza, kategori, ürün araması, related/upsell/cross-sell. Eski home article kartı ve ürüne özel kart stilleri kaldırıldı. Ürün araması native Woo toolbar/pagination, normal yazı araması core Query kullanır. Ana hero önceliği ve home thumbnail lazy korunur; yeni kart JS/slider/API yok.
+- Ortak Button, stok/fiyat/varyasyon/AJAX sözleşmesi ve Codela oturum içi hesap izolasyonu korunur. Ortak yüzey96%, tek background; ikinci gradient/renk katmanı eklenmedi.
+- CI PHP context restore/search testi ve kart/header viewport testi eklendi. Gerçek CI, deploy, canlı görünüm/galeri/performans ve native Woo kabulü henüz sonuçlanmadı; tamamlanmadan canlı diye işaretleme.
+- Codela eklentisi1.1.1 runtime/WordPress.org yayını değişmez. Eski JPEG admin dönüşümü ve fiziksel iPhone kabulü önceki erişim/cihaz sınırlarıyla açık; tekrar yönetici girişi isteme.
+- [Önceki doğrulanmış0.1.84](AGENTS-history-2026-10-14.md), [güncel teknik durum](docs/storefront-theme.md). Sıradaki: CI→gerçek deploy→ilgili canlı ve native Woo kabulü, ardından bu kayıtları kanıtla kapat.
 
 ## Başlangıçta okunacaklar
 
@@ -59,7 +57,7 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - Tema ayarlarının altında Header (Üst alan), Footer (Alt alan) ve geliştirilen diğer bölümler için ayrı alt menüler bulunmalı; tüm ayarları tek uzun forma yığma. Bir tema bölümü geliştirilirken gerekli ayarları aynı çalışmada ilgili alt menüye ekle; temanın tamamlanmasını bekleme.
 - Küçük değişikliklerde de mevcut codela.dev otomatik dağıtımı açık kalır. Bağlantılı değişiklikleri topluca yap, yalnız ilgili dosyaları incele ve dağıtım sonuçlarını gereksiz tekrarlarla sorgulama. WordPress.org yayını ayrı yetki gerektirir.
 - Tasarım sade ve ürün odaklıdır. Kullanıcının aradığı özgünlük, karmaşık veya bilim kurgu dekorları eklemek anlamına gelmez. Sayfaları kullanım amacı ve örneklerle değerlendirerek tek tek geliştir.
-- Header: mobil alt menü varsayılan açık ve Header ayarından kapatılabilir. Açıkken logo solda/menü sağda; kapalıyken desktop ile ortak menü/marka/arama-sepet-hesap düzeni. Masaüstünde alt menü yok, Hesabım dahil araçlar header içinde.
+- Header: mobilde logo solda, Menü en sağda sabit konumdadır. Alt menü varsayılan açık, Header ayarından kapatılabilir. Üründe satın alma alanı dock yerini aldığında sepet menünün hemen solunda görünür; arama ve hesap menüden erişilir. Satın alma formu olmayan üründe açık dock korunur. Alt menü kapalıysa mevcut araçlar üstte kalır; masaüstü menü/orta marka/sağ araçlar düzeni korunur.
 - Menü, arama ve sepet aynı görsel/etkileşim dilinde **tam ekran** açılır. Onaylanan yön Apple örneğindeki tam ekran menüdür; sayfayı yana iten menü önceki alternatifti.
 - Menü/arama/sepet aynı native dialog içinde açılır. Güncel kaynakta dialog geometrisi sabit kalır; overlay controller içerik geçişlerini ve Menu/X açma-kapama zamanlamasını yönetir. 0.1.35 ile gelen aynı DOM düğmesinin animasyonlu Menu/X dönüşümü korunur; eski “kapatma bekletmez” notuna dönülmez. Dialog'a ikon kökenli büyüme uygulanmaz. Hareket azaltma tercihi, klavye, odak ve kaydırma konumu korunur.
 - Arama hızlı ve doğru olmalı; gecikmiş eski sonuç yeni sorguyu ezmemeli. Mevcut sürümün yazım hatası toleransı olmayan aramasını gelişmiş arama gibi tanıtma.
