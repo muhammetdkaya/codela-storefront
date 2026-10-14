@@ -12,13 +12,6 @@
   background:var(--sf-gallery-surface);
 }
 .sf-ui-gallery--hero{--sf-gallery-radius:0;--sf-gallery-fit:cover}
-/* Before FlexSlider wraps the images, only the first slide may contribute
-   to page height. The selector stops matching as soon as the native slider
-   inserts .flex-viewport, restoring all slides for swipe/variation changes.
-   Without this the initial vertical stack pushes the summary far below view. */
-.woocommerce div.product .sf-ui-gallery > .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image:not(:first-child){
-  display:none;
-}
 .woocommerce div.product .sf-ui-gallery .woocommerce-product-gallery__wrapper{margin:0}
 .woocommerce div.product .sf-ui-gallery .flex-viewport{min-height:var(--sf-gallery-height)}
 .woocommerce div.product .sf-ui-gallery :is(.woocommerce-product-gallery__image,.woocommerce-product-gallery__image--placeholder){
