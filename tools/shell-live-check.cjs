@@ -54,6 +54,38 @@ const fs=require('node:fs');
   await page.waitForURL(url=>!url.searchParams.has('codela_sf_navigation_qa'),{timeout:15000});
   report.checks.backNavigation=await page.evaluate(()=>window.__shellOriginal?.header===document.querySelector('.sf-header'));
   assert(report.checks.backNavigation,'Back traversal unexpectedly reloaded header');
+  // Look for a genuinely different *public* WP page with the same router
+  // region. No test content is created or written to the site.
+  report.checks.staticPageCrossNavigation='no eligible public page discovered';
+  try {
+    const response=await page.request.get('https://codela.dev/wp-json/wp/v2/pages?per_page=30&_fields=link,status',{timeout:9000});
+    if(response.ok()){
+      const pages=await response.json();
+      for(const candidate of (Array.isArray(pages)?pages:[]).slice(0,15)){
+        if(candidate.status!=='publish'||!candidate.link||new URL(candidate.link).origin!==new URL(report.url).origin)continue;
+        const result=await page.request.get(candidate.link,{timeout:9000});
+        const html=result.ok()?await result.text():'';
+        if(!html.includes('data-wp-router-region="codela/storefront/main"')||!html.includes('data-sf-route-type="page"'))continue;
+        await page.evaluate(url=>{
+          const anchor=document.createElement('a');
+          anchor.id='sf-qa-static-page';
+          anchor.href=url;
+          anchor.dataset.sfRoute='content';
+          anchor.textContent='QA static page';
+          document.querySelector('.sf-shell').appendChild(anchor);
+        },candidate.link);
+        await page.locator('#sf-qa-static-page').click({noWaitAfter:true});
+        await page.waitForURL(candidate.link,{timeout:15000});
+        await page.waitForTimeout(250);
+        assert(await page.evaluate(()=>window.__shellOriginal?.header===document.querySelector('.sf-header')),'Static page lost persistent header');
+        assert(await page.locator('main#sf-content[data-sf-route-type="page"]').count()===1,'Destination static content missing');
+        report.checks.staticPageCrossNavigation='passed: '+new URL(candidate.link).pathname;
+        break;
+      }
+    }
+  } catch(error) {
+    report.checks.staticPageCrossNavigation='not verified: '+error.message;
+  }
   report.checks.pageErrors=errors;
   assert(errors.length===0,'JavaScript errors during navigation: '+errors.join('; '));
   report.status='passed';
