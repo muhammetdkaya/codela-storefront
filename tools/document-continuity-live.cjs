@@ -12,8 +12,14 @@ const PRODUCT='https://codela.dev/urun/demo-20-v-yaka-tisort-secki/';
   for(const width of [390,1280]){
    const context=await browser.newContext({viewport:{width,height:844},isMobile:width===390,hasTouch:width===390});
    await context.addInitScript(()=>{
-     addEventListener('pageswap',event=>sessionStorage.setItem('sf-qa-page-swap',String(!!event.viewTransition)));
-     addEventListener('pagereveal',event=>sessionStorage.setItem('sf-qa-page-reveal',String(!!event.viewTransition)));
+     // Embedded checkout/media frames can block storage. Only instrument the
+     // real top-level document; this observer is not storefront application code.
+     if (window !== window.top) return;
+     const record = (name, event) => {
+       try { sessionStorage.setItem(name, String(!!event.viewTransition)); } catch {}
+     };
+     addEventListener('pageswap',event=>record('sf-qa-page-swap',event));
+     addEventListener('pagereveal',event=>record('sf-qa-page-reveal',event));
    });
    const page=await context.newPage();
    const errors=[];page.on('pageerror',err=>errors.push(err.message));
