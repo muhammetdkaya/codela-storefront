@@ -1,6 +1,7 @@
 // Read-only lab audit of public storefront pages. No order, login or cart writes.
 const {chromium}=require('playwright');
 const fs=require('node:fs');
+const {evaluateBudget}=require('./performance-budget.cjs');
 const OUT='qa/performance';fs.mkdirSync(OUT,{recursive:true});
 const pages={home:'https://codela.dev/',product:'https://codela.dev/urun/demo-20-v-yaka-tisort-secki/'};
 const profiles=[{name:'desktop',viewport:{width:1280,height:900},cpu:1},{name:'mobile',viewport:{width:390,height:844},deviceScaleFactor:3,isMobile:true,hasTouch:true,cpu:4,latency:150,download:1600000/8,upload:750000/8}];
@@ -22,6 +23,7 @@ async function snapshot(page){return page.evaluate(()=>{
   const resources=performance.getEntriesByType('resource').map(e=>({url:e.name,type:e.initiatorType,start:e.startTime,duration:e.duration,ttfb:e.responseStart?e.responseStart-e.requestStart:null,transfer:e.transferSize,encoded:e.encodedBodySize,decoded:e.decodedBodySize}));
   const fcp=performance.getEntriesByName('first-contentful-paint')[0]?.startTime;
   return {url:location.href,title:document.title,ttfb:n.responseStart,serverWait:n.responseStart-n.requestStart,domReady:n.domContentLoadedEventEnd,load:n.loadEventEnd,fcp,lcp:a.lcp,cls,longTasks:a.longTasks,blockingAfterFCP:a.longTasks.filter(e=>e.startTime>=(fcp||0)).reduce((s,e)=>s+Math.max(e.duration-50,0),0),htmlBytes:n.transferSize,resources,images:[...document.images].map(e=>({src:e.currentSrc,naturalWidth:e.naturalWidth,width:e.clientWidth,loading:e.loading,priority:e.fetchPriority})),themeVersion:document.querySelector('link[href*="styles/tokens.css"]')?.href,domNodes:document.querySelectorAll('*').length,
+  galleryImages:[...document.querySelectorAll('.woocommerce-product-gallery__image > a > img:not(.zoomImg)')].map(img=>({src:img.currentSrc,loading:img.loading,priority:img.fetchPriority})),
   hero:(()=>{const img=document.querySelector('.woocommerce-product-gallery__image img.wp-post-image');
     return img?{loading:img.loading,priority:img.fetchPriority,width:img.clientWidth}:null;})()};
 });}
@@ -60,5 +62,9 @@ async function snapshot(page){return page.evaluate(()=>{
   }
   await context.close();
  }}}}finally{save();await browser.close();}
+ const budget=evaluateBudget(report);
+ fs.writeFileSync(OUT+'/summary.json',JSON.stringify(budget,null,2));
+ console.log('PERF_BUDGET '+JSON.stringify(budget));
+ if(!budget.pass){console.error('PERF_BUDGET_FAILED '+budget.failures.join('; '));process.exitCode=1;}
  console.log('PERF_RESULT '+JSON.stringify(report));
 })().catch(e=>{console.error(e);save();process.exitCode=1;});

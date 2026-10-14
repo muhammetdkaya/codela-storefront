@@ -1,5 +1,8 @@
 name: Storefront live performance audit
 on:
+  push:
+    branches: [main]
+    paths: ['tools/performance-budget.cjs', 'tools/performance-budget-test.cjs', 'tools/performance-audit.cjs', '.github/workflows/performance-audit.yml']
   workflow_dispatch:
   workflow_run:
     workflows: ['Deploy Codela Storefront']
