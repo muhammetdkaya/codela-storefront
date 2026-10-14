@@ -1,5 +1,11 @@
 # Codela Storefront — güncel teknik durum
 
+## 15 Ekim2026 /0.1.85→0.1.86 — Woo ürün arama şablonu düzeltmesi (yayın/kabul bekliyor)
+
+0.1.85 CI+gerçek FTP38646541097 ve beş canlı gate başarılı; home/shop/category ortak native kart ve mobil Header canlı. Gerçek WP7/Woo11 kabulü, ürün aramasında Woo'nun kendi product-search-results block template'ini seçtiğini ve search.html'in bu sayfaya uygulanmadığını gösterdi.0.1.86 templates/product-search-results.html'i açıkça aynı codela/storefront-search/native Woo kartına bağlar; yeni ürün sorgusu/JS/API eklenmez. Ürün araması5-context kabulü ve önceki Woo akışları yeniden doğrulanacak. Codela eklentisi1.1.1 runtime/WordPress.org yayını değişmez.
+
+**Sıradaki:**86 CI→gerçek FTP→canlı gate ve gerçek Woo kart/Header matrisi.0.1.85'in genel matrisi başarılı değildir; aşağıdaki tasarım/kod açıklamaları önceki aşamanın kaydıdır.
+
 ## 15 Ekim2026 / 0.1.84 → 0.1.85 — ortak Header ve ürün kartı (kabul/yayın bekliyor)
 
 Mobilde Header'ın logo ve menü slotları sabittir: logo solda, menü en sağda. Ürün purchase alanı dock'u değiştirince sepet menünün hemen solunda görünür; arama/hesap tam ekran menü üzerinden erişilir. Purchase olmayan ve dock'u açık üründe dock korunur, üstte ikinci sepet gösterilmez. Dock kapalı ayarda araçlar üstte kalır. Checkout logo/menu aynı slotlarda, docksuz; masaüstü düzeni aynı. Guest login'in ayrı sessiz header'ı ve plugin-owned hesap sınırı korunur.

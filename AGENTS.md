@@ -1,11 +1,11 @@
 # Codela Storefront — güncel çalışma kuralları
 
-## Son doğrulanmış devam noktası — 15 Ekim 2026 / 0.1.85 (kabul ve yayın bekliyor)
+## Son doğrulanmış devam noktası — 15 Ekim 2026 / 0.1.86 (ürün araması native şablon düzeltmesi; kabul/yayın bekliyor)
 
 - Kullanıcının onayıyla mobil Header konumları birleştirildi: logo solda, menü en sağda. Üründe tek native purchase alanı dock yerini aldığında yalnız sepet menünün solunda; checkout aynı logo/menu konumunda ve docksuz. Masaüstü ve guest auth sahipliği korunur.
 - Tek native Woo content-product.php + ortak catalog.css: ana sayfa koleksiyonu, mağaza, kategori, ürün araması, related/upsell/cross-sell. Eski home article kartı ve ürüne özel kart stilleri kaldırıldı. Ürün araması native Woo toolbar/pagination, normal yazı araması core Query kullanır. Ana hero önceliği ve home thumbnail lazy korunur; yeni kart JS/slider/API yok.
 - Ortak Button, stok/fiyat/varyasyon/AJAX sözleşmesi ve Codela oturum içi hesap izolasyonu korunur. Ortak yüzey96%, tek background; ikinci gradient/renk katmanı eklenmedi.
-- CI PHP context restore/search testi ve kart/header viewport testi eklendi. Gerçek CI, deploy, canlı görünüm/galeri/performans ve native Woo kabulü henüz sonuçlanmadı; tamamlanmadan canlı diye işaretleme.
+-0.1.85 gerçek FTP38646541097 ve beş canlı gate başarılı. Gerçek WP/Woo kabulünde Woo11'in product-search-results şablonunun search.html'i atladığı görüldü; ürün araması henüz ortak native kartta değildi.0.1.86, templates/product-search-results.html'i aynı dinamik native karta bağlar. Sürüm86 CI/deploy ve native matris bekliyor;85 matrisini geçti diye sunma.
 - Codela eklentisi1.1.1 runtime/WordPress.org yayını değişmez. Eski JPEG admin dönüşümü ve fiziksel iPhone kabulü önceki erişim/cihaz sınırlarıyla açık; tekrar yönetici girişi isteme.
 - [Önceki doğrulanmış0.1.84](AGENTS-history-2026-10-14.md), [güncel teknik durum](docs/storefront-theme.md). Sıradaki: CI→gerçek deploy→ilgili canlı ve native Woo kabulü, ardından bu kayıtları kanıtla kapat.
 
