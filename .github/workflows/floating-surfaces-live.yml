@@ -1,0 +1,25 @@
+name: Storefront live WebKit surface visibility
+on:
+  workflow_run:
+    workflows: ['Deploy Codela Storefront']
+    branches: [main]
+    types: [completed]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  visual:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install --no-save --package-lock=false playwright@1.62.1
+      - run: npx playwright install --with-deps webkit
+      - run: node tools/floating-surfaces-live.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: storefront-webkit-surfaces
+          path: qa/surfaces/
+          retention-days: 30
