@@ -51,7 +51,13 @@
   // FlexSlider changes this existing class on slide transitions. No polling,
   // carousel replacement or synthetic selection is introduced.
   const observer=new MutationObserver(mutations=>{
-    if(mutations.some(m=>m.type==='attributes'||m.addedNodes.length))activateVisible();
+    for(const m of mutations){
+      if(m.type==='attributes' && m.target.classList?.contains('flex-active-slide')
+          && m.target.classList.contains('woocommerce-product-gallery__image')){
+        activate(m.target.querySelector('a > img:not(.zoomImg)'));
+      }
+    }
+    if(mutations.some(m=>m.type==='childList'))activateVisible();
   });
   observer.observe(gallery,{subtree:true,attributes:true,attributeFilter:['class'],childList:true});
   activateVisible();
