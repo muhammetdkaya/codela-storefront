@@ -83,6 +83,10 @@ function init() {
     dock.init(dialog);
     searchFeature.bind();
     cartFeature.bind();
+    // Core Router navigation keeps the one real header/dialog/dock mounted.
+    // Never create a second navigation controller or dock instance.
+    window.addEventListener('codela:before-route', () => overlay.closeForNavigation());
+    window.addEventListener('codela:route-committed', () => dock.markDockActive(null));
     const menu = $('#sf-menu .sf-menu-list');
     menu?.classList.add('enhanced');
     menu?.querySelectorAll('.sub-menu').forEach(sub => {
