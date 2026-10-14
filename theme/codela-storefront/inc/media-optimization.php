@@ -118,6 +118,15 @@ add_action( 'admin_enqueue_scripts', function( $hook ) {
     wp_add_inline_script( 'codela-sf-media-admin', 'window.codelaSfMedia=' . wp_json_encode( [
         'url' => admin_url( 'admin-ajax.php' ),
         'nonce' => wp_create_nonce( 'codela_sf_optimize_media' ),
+        'messages' => [
+            'paused' => __( 'Paused', 'codela-storefront' ),
+            'complete' => __( 'Complete', 'codela-storefront' ),
+            'scanned' => __( 'Scanned', 'codela-storefront' ),
+            'optimized' => __( 'Optimized', 'codela-storefront' ),
+            'saved' => __( 'Saved', 'codela-storefront' ),
+            'errors' => __( 'Errors', 'codela-storefront' ),
+            'failed' => __( 'Stopped at image', 'codela-storefront' ),
+        ],
     ] ) . ';', 'before' );
 } );
 add_action( 'wp_ajax_codela_sf_optimize_media', function() {
