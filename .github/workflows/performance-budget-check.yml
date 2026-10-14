@@ -1,0 +1,17 @@
+name: Storefront performance budget unit checks
+on:
+  pull_request:
+    paths: ['tools/performance-budget.cjs', 'tools/performance-budget-test.cjs', 'tools/performance-audit.cjs', '.github/workflows/performance-budget-check.yml']
+  push:
+    branches: [main]
+    paths: ['tools/performance-budget.cjs', 'tools/performance-budget-test.cjs', 'tools/performance-audit.cjs', '.github/workflows/performance-budget-check.yml']
+permissions:
+  contents: read
+jobs:
+  budget:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: node --check tools/performance-audit.cjs
+      - run: node --check tools/performance-budget.cjs
+      - run: node tools/performance-budget-test.cjs
