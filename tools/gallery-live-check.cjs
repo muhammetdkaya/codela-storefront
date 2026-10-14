@@ -19,6 +19,8 @@ const fs=require('node:fs');
  const slide=page.locator('.woocommerce-product-gallery__image').nth(1);
  assert(await slide.locator('img:not(.zoomImg)').evaluate(e=>e.complete&&e.naturalWidth>0));
  assert(Math.abs(await page.locator('.summary').evaluate(e=>e.getBoundingClientRect().top)-before)<1,'Thumbnail selection leaves details stable');
+ // Candidate hit-testing fix; native zoom still owns its parent listeners.
+ await page.addStyleTag({content:'.sf-ui-gallery .zoomImg{pointer-events:none}'});
  await slide.locator('a').click();
  await page.locator('.pswp--open').waitFor();
  await page.keyboard.press('Escape');
