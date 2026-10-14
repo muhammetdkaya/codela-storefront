@@ -86,3 +86,12 @@ add_filter( 'nav_menu_link_attributes', function( array $attrs, $item ) {
     }
     return $attrs;
 }, 10, 2 );
+
+add_filter( 'get_custom_logo', function( string $html ): string {
+    if ( ! codela_sf_seamless_allowed() ) { return $html; }
+    $tag = new WP_HTML_Tag_Processor( $html );
+    if ( $tag->next_tag( 'a' ) ) {
+        $tag->set_attribute( 'data-sf-route', 'home' );
+    }
+    return $tag->get_updated_html();
+}, 30 );
