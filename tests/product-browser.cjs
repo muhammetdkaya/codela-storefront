@@ -9,11 +9,12 @@ const css=['assets/styles/tokens.css','assets/storefront.css','assets/styles/ove
  'assets/styles/navigation.css','assets/styles/components.css','assets/styles/gallery.css','assets/styles/product.css']
  .map(p=>fs.readFileSync('theme/codela-storefront/'+p,'utf8')).join('\n');
 const thumb='<li><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22240%22/%3E" alt="Ürün görünümü"></li>';
+const extraSlide='<div class="woocommerce-product-gallery__image"><a href="/gallery"><img alt="İkinci görünüm" src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%221000%22/%3E"></a></div>';
 const related='<li class="product"><a href="/product"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22400%22/%3E"><h2 class="woocommerce-loop-product__title">Ürün</h2></a><span class="price">₺500</span></li>';
 const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>.woocommerce div.product div.images .flex-control-thumbs{padding:0}.woocommerce div.product div.images .flex-control-thumbs li img{opacity:.5}${css}</style></head>
 <body class="single-product woocommerce woocommerce-page">${header}<main class="sf-content"><div data-block-name="woocommerce/legacy-template" class="content-area alignwide"><main class="site-main">
 <div class="product type-product"><div class="woocommerce-product-gallery images sf-ui-gallery sf-ui-gallery--hero"><a href="#" class="woocommerce-product-gallery__trigger">+</a><div class="woocommerce-product-gallery__wrapper">
-<div class="woocommerce-product-gallery__image"><a href="/full-image" aria-label="Görseli büyüt" aria-haspopup="dialog"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%221000%22/%3E" alt="Ürün"></a></div></div>
+<div class="woocommerce-product-gallery__image"><a href="/full-image" aria-label="Görseli büyüt" aria-haspopup="dialog"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%221000%22/%3E" alt="Ürün"></a></div>${extraSlide.repeat(3)}</div>
 <ol class="flex-control-thumbs">${thumb.replace('<img ' ,'<img class="flex-active" ')+thumb.repeat(6)}</ol></div>
 <div class="summary entry-summary"><h1 class="product_title entry-title">Minimal Ürün Başlığı</h1><p class="price">₺1.250</p>
 <div class="woocommerce-product-details__short-description"><p>Ürün açıklaması. Kumaş ve bakım bilgileri.</p></div>
@@ -50,6 +51,14 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
      relatedColumns:getComputedStyle(related).gridTemplateColumns.split(' ').length};
    });
    assert(!result.overflow,'No horizontal overflow at '+width+': '+JSON.stringify(result));
+   // Only the first of four pre-init slides may occupy layout space.
+   // Otherwise the summary starts outside the viewport and counts as CLS.
+   const initialSlides=await page.locator('.woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image').evaluateAll(nodes=>
+     nodes.map(el=>({display:getComputedStyle(el).display,height:el.getBoundingClientRect().height})));
+   assert.equal(initialSlides.length,4,'Fixture covers multiple native Woo slides');
+   assert(initialSlides[0].display!=='none'&&initialSlides.slice(1).every(s=>s.display==='none'),'Secondary slides do not stack before slider init');
+   const expectedHeight=Math.min(width*1.25,900*.82);
+   assert(result.gallery.bottom-result.gallery.top<=expectedHeight+2,'Uninitialized gallery has a single hero height at '+width);
    assert(result.buttonHeight>=(width<=700?48:54),'Shared purchase target at '+width);
    assert(result.inputHeight>=(width<=700?48:54),'Shared control height for quantity at '+width);
    assert.equal(result.buttonBackground,'color(srgb 0.133333 0.137255 0.121569 / 0.9)','Shared primary UI color');
@@ -109,6 +118,7 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
     viewport.append(wrapper);
     wrapper.style.float='left';
   });
+  assert.equal(await page.locator('.flex-viewport .woocommerce-product-gallery__image').nth(1).evaluate(el=>getComputedStyle(el).display),'block','Native FlexSlider restores subsequent images');
   const stableTopDuring=await page.locator('.summary').evaluate(el=>el.getBoundingClientRect().top);
   assert(Math.abs(stableTopDuring-stableTopBefore)<1,'FlexSlider initialization reserves the gallery footprint');
   await page.locator('.flex-viewport').evaluate(viewport=>{
