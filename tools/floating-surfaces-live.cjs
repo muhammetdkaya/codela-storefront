@@ -5,6 +5,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const pages=[
  {name:'home',url:'https://codela.dev/',selectors:['.sf-brand','.sf-header-menu .sf-menu-trigger','.sf-mobile-dock .sf-dock-surface']},
+ {name:'product-search',url:'https://codela.dev/?s=Demo&post_type=product',selectors:['.sf-brand','.sf-header-menu .sf-menu-trigger','.sf-mobile-dock .sf-dock-surface']},
  {name:'product',url:'https://codela.dev/urun/demo-20-v-yaka-tisort-secki/',selectors:['.sf-brand','.sf-header-menu .sf-menu-trigger','.sf-header .sf-actions','.sf-product-purchase']},
 ];
 const alpha=color=>{
@@ -46,6 +47,15 @@ const alpha=color=>{
    if(check.name==='product'){
     const dock=await page.locator('.sf-shell > .sf-mobile-dock').evaluate(el=>getComputedStyle(el).display);
     assert.equal(dock,'none','No duplicate dock behind purchase bar');
+   }
+   if(check.name==='product-search'){
+    assert(parts[0]>0||parts[1]>1||parts[2]>=86,'Product search requires the86 native template');
+    const grid=page.locator('.sf-content ul.products').first();
+    assert(await grid.locator('li.product').count()>0,'Live product search uses shared native cards');
+    await grid.locator('li.product').first().scrollIntoViewIfNeeded();
+    await page.waitForFunction(()=>{const img=document.querySelector('.sf-content ul.products li.product img');return img?.complete&&img.naturalWidth>0;});
+    const card=await grid.locator('li.product').first().evaluate(el=>{const img=getComputedStyle(el.querySelector('img')),title=getComputedStyle(el.querySelector('.woocommerce-loop-product__title'));return{fit:img.objectFit,ratio:img.aspectRatio,lines:title.webkitLineClamp};});
+    assert.equal(card.fit,'contain');assert.equal(card.ratio,'4 / 5');assert.equal(card.lines,'2');
    }
    fs.mkdirSync('qa/surfaces',{recursive:true});
    await page.screenshot({path:'qa/surfaces/'+check.name+'-webkit-390.png'});
