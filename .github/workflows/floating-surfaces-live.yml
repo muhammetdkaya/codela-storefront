@@ -1,5 +1,8 @@
 name: Storefront live WebKit surface visibility
 on:
+  push:
+    branches: [main]
+    paths: ['tools/floating-surfaces-live.cjs', '.github/workflows/floating-surfaces-live.yml']
   workflow_run:
     workflows: ['Deploy Codela Storefront']
     branches: [main]
