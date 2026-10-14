@@ -53,7 +53,7 @@ async function snapshot(page){return page.evaluate(()=>{
     }
     report.interactions.push(interaction);console.log('PERF_INTERACTION '+JSON.stringify(interaction));save();
      // Search Escape clears its query first; use the actual visible close button.
-     if(panel==='search')await page.locator('#sf-panel button.sf-close').click({timeout:10000});
+     if(panel==='search')await page.locator('#sf-panel button.sf-search-cancel:visible').click({timeout:10000});
      else await page.keyboard.press('Escape');
      await page.locator('#sf-panel').waitFor({state:'hidden',timeout:10000});
    }catch(e){report.interactions.push({profile:profileName,repeat,panel,error:e.message});save();console.log('PERF_INTERACTION_ERROR '+e.message);break;}

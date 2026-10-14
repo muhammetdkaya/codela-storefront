@@ -1,5 +1,12 @@
 # Codela Storefront — güncel teknik durum
 
+## 14 Ekim 2026 / 0.1.74 — CLS takip düzeltmesi (CI ve canlı onayı bekliyor)
+
+- 0.1.73 üretimde, [Actions 38537660826](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38537660826) validate/deploy başarılı. [Canlı 24 ölçüm](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38537975758) product mobile cold LCP'yi 2.940→1.524s, home LCP'yi 2.472→2.240s gösterdi. Hero eager/high ve tokens.css 0.1.73 canlıda; CLS 0.231 kaldı. Detay: [performans raporu](performance/2026-10-14.md).
+- 0.1.73'ün min-height önlemi tek başına CLS'yi çözmedi. 0.1.74'te FlexSlider başlangıcından önce wrapper içinde yalnız ilk galeri slaytı yer kaplar; native flex-viewport kurulduğunda diğerleri yeniden görünür. Dört görselli tarayıcı regresyonu ve audit arama X seçici düzeltmesi eklendi.
+- [PR #19](https://github.com/muhammetdkaya/codela-storefront/pull/19): Kod/test/doküman aşamasında; CI doğrulaması ve **0.1.74 canlı dağıtımı henüz doğrulanmadı**. Sıradaki: CI → merge → gerçek deploy → 24 cold/warm audit. Beklenen CLS ≤0.1; ulaşmazsa kaymanın başka tetikleyicisi için tekrar teşhis yapılmalı.
+- Gerçek Safari, uzun kaydırma, dolu sepet ve Woo ürün türleri için saha kabulü ayrıca açık.
+
 ## 0.1.73 performans düzeltmesi — 14 Ekim 2026 (doğrulama/yayın devam ediyor)
 
 - 14 Ekim [ilk ölçümü](performance/2026-10-14.md) esas alındı: mobil ürün cold LCP 2.940s, CLS 0.231. Bu değerler **önceki sürüme** aittir, 0.1.73 için yeni sonuç uydurulmaz.
