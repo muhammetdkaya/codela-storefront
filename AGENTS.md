@@ -1,13 +1,14 @@
 # Codela Storefront — güncel çalışma kuralları
 
-## Son doğrulanmış devam noktası — 15 Ekim 2026 / 0.1.86 (ürün araması native şablon düzeltmesi; kabul/yayın bekliyor)
+## Son doğrulanmış devam noktası — 15 Ekim2026 /0.1.86 canlı
 
-- Kullanıcının onayıyla mobil Header konumları birleştirildi: logo solda, menü en sağda. Üründe tek native purchase alanı dock yerini aldığında yalnız sepet menünün solunda; checkout aynı logo/menu konumunda ve docksuz. Masaüstü ve guest auth sahipliği korunur.
-- Tek native Woo content-product.php + ortak catalog.css: ana sayfa koleksiyonu, mağaza, kategori, ürün araması, related/upsell/cross-sell. Eski home article kartı ve ürüne özel kart stilleri kaldırıldı. Ürün araması native Woo toolbar/pagination, normal yazı araması core Query kullanır. Ana hero önceliği ve home thumbnail lazy korunur; yeni kart JS/slider/API yok.
-- Ortak Button, stok/fiyat/varyasyon/AJAX sözleşmesi ve Codela oturum içi hesap izolasyonu korunur. Ortak yüzey96%, tek background; ikinci gradient/renk katmanı eklenmedi.
--0.1.85 gerçek FTP38646541097 ve beş canlı gate başarılı. Gerçek WP/Woo kabulünde Woo11'in product-search-results şablonunun search.html'i atladığı görüldü; ürün araması henüz ortak native kartta değildi.0.1.86, templates/product-search-results.html'i aynı dinamik native karta bağlar. Sürüm86 CI/deploy ve native matris bekliyor;85 matrisini geçti diye sunma.
-- Codela eklentisi1.1.1 runtime/WordPress.org yayını değişmez. Eski JPEG admin dönüşümü ve fiziksel iPhone kabulü önceki erişim/cihaz sınırlarıyla açık; tekrar yönetici girişi isteme.
-- [Önceki doğrulanmış0.1.84](AGENTS-history-2026-10-14.md), [güncel teknik durum](docs/storefront-theme.md). Sıradaki: CI→gerçek deploy→ilgili canlı ve native Woo kabulü, ardından bu kayıtları kanıtla kapat.
+- Tema **0.1.84→0.1.85→0.1.86**; son kaynak `86681e46cb43e072ce556b7e1a0575557a11eb3a`, [CI + gerçek FTP38654572606](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38654572606) başarılı. Deploy logu23:34:42Z “Storefront deployed; checks passed.” Eklenti1.1.1 runtime/WordPress.org yayını değişmedi.
+- Mobil Logo solda, Menu en sağda sabit; ürün purchase dock yerini aldığında Cart Menu'nün hemen solunda. Arama ve hesap menüden erişilir. Purchase olmayan ve dock'u açık üründe dock korunur, üstte ikinci Cart yok. Checkout aynı logo/Menu slotlarında, docksuz. Desktop ve guest auth sahipliği korunur.
+- Tek native Woo content-product.php + ortak catalog.css: home koleksiyonu/shop/category/ürün arama sayfası/related/upsell/cross-sell.4:5 contain, iki satır ad, native fiyat/indirim/stok ve ortak Button. Eski home article/related paint kaldırıldı. Normal post/page araması core Query; hero high/home thumbnail lazy korunur. Yeni kart JS/carousel/API yok.
+-0.1.85'in gerçek kabulünde Woo11'in search.html'i atlayan kendi Product Search Results template'i görüldü.0.1.86 açık product-search-results.html'i aynı native karta bağladı.85 matrisi geçti diye sunulmaz; nihai kabul86'dır.
+- [Tam kabul/ham kanıt](docs/acceptance/2026-10-15.md): CI ve beş canlı gate başarılı; [canlı WebKit ürün araması38655009070](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38655009070) native kart+görsel yükleme doğrulandı. İki WP/Woo ailesinde Chromium ve WebKit'in13'er gerçek akışı başarılı (4/4 ortam,52 kontrol).24 lab ölçümünde mobil cold LCP home2352ms/ürün1612ms, CLS0 ve CSS0.1.86.
+- Açık: eski JPEG canlı admin backfill (giriş tamamlanmadı), fiziksel iPhone Safari/GPU/toolbar/safe-area, gerçek payment-provider ve üçüncü taraf medya/offload kabulü. Kullanıcı istemeden tekrar admin girişi isteme. Bu sürümün yayın/testini yeniden yapma; sonraki iş bu erişim/cihaz kabulü.
+- Ortak yüzey96%, tek background/gradient yok; Codela oturum içi hesap izolasyonu ve native Woo form/gallery/Store API sahipliği korunur. Yeni tema sürümünde gerçek entegrasyon workflow paket/hash/source pin'ini güncelle.
 
 ## Başlangıçta okunacaklar
 
