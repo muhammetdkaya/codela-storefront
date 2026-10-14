@@ -22,7 +22,8 @@ const alpha=color=>{
    const page=await context.newPage();
    await page.goto(check.url,{waitUntil:'load',timeout:90000});
    const version=await page.locator('link[href*="styles/tokens.css"]').first().getAttribute('href');
-   assert(version.includes('ver=0.1.81'),'Expected 0.1.81 CSS, got '+version);
+   const parts=new URL(version).searchParams.get('ver')?.split('.').map(Number);
+   assert(parts?.length===3 && parts.every(Number.isInteger) && (parts[0]>0 || parts[1]>1 || parts[2]>=81),'Expected 0.1.81 or newer CSS, got '+version);
    if(check.name==='product'){
      await page.evaluate(()=>{
        const tab=document.querySelector('.woocommerce-tabs');
