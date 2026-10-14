@@ -1,5 +1,11 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 14 Ekim 2026 / 0.1.80 — Woo sayfaları için native görsel süreklilik (test/yayın bekliyor)
+
+- WooCommerce kategori/ürün sayfaları mevcut WordPress Router bölgesine eklenmiyor. Legacy FlexSlider, varyasyon ve sepete ekle betikleri gerçek sayfa açılışına ihtiyaç duyduğu için ürün ve kategoride **tam belge yükleme korunuyor**. Yeni CSS cross-document View Transitions yalnız destekleyen tarayıcıda header ve mobil alt bar/purchase görüntüsünün kısa süreli sürekliliğini sağlar; DOM kalıcılığı iddia edilmez.
+- Kod: inc/document-continuity.php koşul kapısı; styles/document-continuity.css native view-transition, prefers-reduced-motion no-preference. Home/statik WP sayfa ile Woo product/shop/product_cat/product_tag izinli; checkout/cart/account/admin hariç. Woo Store API/cart, gateway, form ve JS'e müdahale yok, ek fetch/router motoru yok.
+- Test: tests/document-continuity.php ve tests/document-continuity-browser.cjs (gerçek HTTP document navigation, tek native form POST, reduced motion), eski tüm Woo browser regresyonları. CI→deployment→read-only canlı QA ve mobil LCP/CLS sonucunu doğrula. Fiziksel Safari ve gerçek same-DOM Woo routing **açık**.
+
 ## 14 Ekim 2026 / 0.1.79 — canlıda, çekirdek router shell kabulü
 
 - **0.1.78 → 0.1.79:** [PR #23](https://github.com/muhammetdkaya/codela-storefront/pull/23), [merge 551341b](https://github.com/muhammetdkaya/codela-storefront/commit/551341b35be3bef06aff913b09b24b165ea57975). [CI + Deploy 38584666763](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38584666763) başarılı; gerçek Deploy Storefront only adımı başarılı.

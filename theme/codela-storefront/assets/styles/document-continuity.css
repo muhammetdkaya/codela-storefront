@@ -1,0 +1,35 @@
+/**
+ * Progressive document continuity for legacy Woo storefront pages.
+ * Chrome and other supporting browsers retain the old header/bottom surface
+ * visually until the new document is ready. PHP and native WC scripts still
+ * get their regular full navigation and fresh initialization.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+
+  .sf-header { view-transition-name: sf-persistent-header; }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 110ms;
+    animation-timing-function: ease-out;
+  }
+  ::view-transition-old(sf-persistent-header),
+  ::view-transition-new(sf-persistent-header) {
+    animation-duration: 140ms;
+    animation-timing-function: cubic-bezier(.2,.8,.2,1);
+  }
+
+  @media (max-width:700px) {
+    /* Only one of these is visible on a given product document.
+       Non-product documents use the actual dock, including sold-out pages. */
+    .sf-shell > .sf-mobile-dock:not([hidden]),
+    body.single-product div.product form.cart .sf-product-purchase {
+      view-transition-name: sf-persistent-bottom;
+    }
+    ::view-transition-old(sf-persistent-bottom),
+    ::view-transition-new(sf-persistent-bottom) {
+      animation-duration: 160ms;
+      animation-timing-function: cubic-bezier(.2,.8,.2,1);
+    }
+  }
+}

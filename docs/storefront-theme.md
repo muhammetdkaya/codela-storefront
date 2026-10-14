@@ -1,5 +1,12 @@
 # Codela Storefront — güncel teknik durum
 
+## 14 Ekim 2026 / 0.1.80 — Woo ürün/kategori geçişinde native görüntü sürekliliği (test/yayın bekliyor)
+
+- 0.1.79 temel statik-page router korunur; Woo ürün/kategori sayfaları WordPress Core Router'a alınmaz. Header ve alt menü için CSS View Transition ile desteklenen tarayıcıda **görsel süreklilik** sunulur. Tam sayfa yenilemesi ve Woo'nun normal gallery/variation/cart/form başlatması devam eder. Kaynaklar: inc/document-continuity.php, styles/document-continuity.css.
+- Yalnız home, izinli statik page, product, shop, product_cat ve product_tag. Checkout/cart/account/admin durumlarında stil yüklenmez. CSS prefers-reduced-motion no-preference; desteklemeyen tarayıcıda doğal yükleme. Mobilde dock ve ürün sayfasının mevcut tek sf-product-purchase alanı aynı görünüm yuvasını paylaşır, ikisi birden görünür yapılmaz.
+- Başarının kapsamı: gerçek DOM üzerinde kesintisiz product navigation **değil**; eski document snapshot'ının yeni HTML yüklenirken korunması. Ek JavaScript, ikinci router, prefetch, WooCommerce Store API mutasyonu veya yeni sepet mekanizması yok.
+- Tests/document-continuity.php ve tests/document-continuity-browser.cjs ile native navigation, tek POST ve reduced-motion kontrolü; PR CI, canlı ürün/kategori / galeri, mobil/desktop ve perf audit sonuçları **henüz doğrulanmadı**. Sonraki mühendislik fazında gerçek same-DOM Woo için Woo legacy betik ömrü ve WC Blocks davranışı önce izole WordPress/Woo üzerinde test edilmeli.
+
 ## 14 Ekim 2026 / 0.1.79 — güvenli sayfalarda kalıcı üst/alt navigasyon (canlıda)
 
 - Tema **0.1.78 → 0.1.79**; [PR #23](https://github.com/muhammetdkaya/codela-storefront/pull/23), [squash commit 551341b](https://github.com/muhammetdkaya/codela-storefront/commit/551341b35be3bef06aff913b09b24b165ea57975), [CI + Deploy 38584666763](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38584666763) başarılı, gerçek FTP dağıtımı doğrulandı. Codela eklenti sürümü/WordPress.org değiştirilmedi.

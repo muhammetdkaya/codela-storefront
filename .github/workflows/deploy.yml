@@ -28,6 +28,8 @@ jobs:
           php tests/media.php
           php tests/media-optimization.php
           php tests/navigation.php
+          php tests/document-continuity.php
+          node --check tests/document-continuity-browser.cjs
           node --input-type=module --check < theme/codela-storefront/assets/scripts/navigation-controller.js
           node --check tests/shell-navigation-browser.cjs
           node --check theme/codela-storefront/assets/scripts/gallery-defer.js
@@ -50,6 +52,7 @@ jobs:
           node tests/checkout-browser.cjs
           node tests/product-browser.cjs
           node tests/shell-navigation-browser.cjs
+          node tests/document-continuity-browser.cjs
           node tests/gallery-defer-browser.cjs
           node tests/ui-kit-browser.cjs
           node tests/account-browser.cjs
