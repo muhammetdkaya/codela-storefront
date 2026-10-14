@@ -6,7 +6,10 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 function codela_sf_document_continuity_allowed(): bool {
-    if ( is_admin() || ( function_exists( 'is_checkout' ) && is_checkout() )
+    if ( is_admin()
+        || ( function_exists( 'is_preview' ) && is_preview() )
+        || ( function_exists( 'is_customize_preview' ) && is_customize_preview() )
+        || ( function_exists( 'is_checkout' ) && is_checkout() )
         || ( function_exists( 'is_cart' ) && is_cart() )
         || ( function_exists( 'is_account_page' ) && is_account_page() ) ) {
         return false;
