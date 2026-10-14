@@ -1,5 +1,12 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 14 Ekim 2026 / 0.1.77 — doğrulanmış canlı durum ve hız koruması
+
+- 0.1.77 kaynak [3d16be3](https://github.com/muhammetdkaya/codela-storefront/commit/3d16be31688c51fdf33d0fd7e10764db157c25e5); [deploy 38548542214](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38548542214) başarılı. [Galeri kabulü 38548935704](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38548935704) başarılı. [24 canlı ölçüm 38548935685](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38548935685) tamamlandı.
+- Son mobil cold medyan LCP: ürün 1.488s, ana sayfa 2.220s; mobil cold CLS her iki sayfada 0 (Chromium lab, fiziksel Safari/field CWV değil). İki görünmeyen büyük galeri görseli bir örnekte 223188 transfer byte; dosyalar JPEG, mevcut lazy loading buna rağmen ağ transferini engellemiyor.
+- Devam: tema sürümü **değişmeden** performans auditine cold mobil LCP/CLS başarısızlık eşiği ve ikincil galeri transfer raporu ekleniyor. Bu iş üretim hızını artırdığı iddiasında değildir; regrese olmuş yayını sonradan fark etmek içindir. CI ve yeni canlı audit sonucu henüz doğrulanmadı. WebP/AVIF dönüştürme, gerçek Woo ürün türleri ve fiziksel Safari kabulü açık.
+- Sıradaki somut iş: koruma testini doğrula ve gözlemlenen JPEG transferini azaltacak medya türevlerini **önce bağımsız ölçüm ve Woo lightbox/swipe testiyle** değerlendir. Yeni galeri motoru/JS kopyası ekleme.
+
 ## 14 Ekim 2026 / 0.1.77 — native büyütme dokunma düzeltmesi (yayın bekliyor)
 
 - 0.1.76 [deploy 38547199284](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38547199284) gerçek dağıtım adımı başarılı. [24 canlı ölçüm 38547572075](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38547572075): mobil ürün CLS tüm cold/warm örneklerde 0; cold LCP medyan 1.596s (artık ürün başlığı), ana sayfa cold 2.268s. Önceki 1.504s ürün LCP logosuydu; doğrudan görsel hız karşılaştırması değildir.
