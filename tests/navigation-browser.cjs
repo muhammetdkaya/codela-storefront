@@ -66,7 +66,14 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
 
  // Fixed header leaves text clearance, while the home hero begins at the top.
  assert.equal(await page.locator('.sf-header').evaluate(el=>getComputedStyle(el).position),'fixed');
- assert.equal(surfaces.menuBg,'rgba(250, 250, 252, 0.28)','Shared surfaces are light');
+ assert.equal(surfaces.menuBg,'rgba(247, 247, 249, 0.96)','Header material must obscure text beneath');
+ const materials=await page.locator('.sf-brand,.sf-header-menu .sf-ui-icon-button,.sf-header .sf-actions,.sf-dock-surface').evaluateAll(nodes=>nodes.map(el=>({name:el.className,bg:getComputedStyle(el).backgroundColor,image:getComputedStyle(el).backgroundImage,blur:getComputedStyle(el).backdropFilter,shadow:getComputedStyle(el).boxShadow})));
+ for(const material of materials){
+   assert.equal(material.bg,surfaces.brandBg,'Floating surfaces must share one tint: '+material.name);
+   assert.equal(material.image,'none','No stacked white gradient on '+material.name);
+   assert(material.blur.includes('blur(10px)'),'Shared subtle blur survives on '+material.name);
+   assert.notEqual(material.shadow,'none','Shadow separates surface from white content: '+material.name);
+ }
  assert.equal(await page.locator('.sf-dock-surface').evaluate(el=>getComputedStyle(el).borderTopColor),'rgba(0, 0, 0, 0)','Dock has no solid perimeter stroke');
  const dockLabels=await page.locator('.sf-dock-item>span:last-child').evaluateAll(xs=>xs.map(el=>({font:getComputedStyle(el).fontSize,weight:getComputedStyle(el).fontWeight,color:getComputedStyle(el).color,clipped:el.scrollWidth>el.clientWidth})));
  for(const label of dockLabels){
