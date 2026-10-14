@@ -1,5 +1,13 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 14 Ekim 2026 / 0.1.79 — canlıda, çekirdek router shell kabulü
+
+- **0.1.78 → 0.1.79:** [PR #23](https://github.com/muhammetdkaya/codela-storefront/pull/23), [merge 551341b](https://github.com/muhammetdkaya/codela-storefront/commit/551341b35be3bef06aff913b09b24b165ea57975). [CI + Deploy 38584666763](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38584666763) başarılı; gerçek Deploy Storefront only adımı başarılı.
+- [Canlı shell kabulü 38586324215](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38586324215) başarılı. WP Core router: home URL varyasyonu ve **gerçek Ana Sayfa → /blog/** statik sayfa geçişi; header/dialog/dock referansları değişmedi; geri navigasyonda aynı header; konsol pageerror yok. Sorgu parametreli hızlı cache geçişinde skeleton görünmedi (doğru); **yavaş ağda skeleton 160 ms** yalnız browser fixture'ında doğrulandı, canlı slow-path hâlâ açık. Bu sürüm ürün/kategori/cart/checkout/account için kesintisizliği iddia etmez.
+- [Galeri canlı kabulü 38585183010](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38585183010) başarılı. [24 performans ölçümü 38585182538](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38585182538) geçti: mobil cold medyan ana sayfa LCP **2380ms**, ürün **1692ms**, CLS her iki sayfada **0**, iki ikincil thumbnail transferi **8458B**. Laboratuvar ölçümü; gerçek kullanıcı saha CWV değil.
+- **Açık:** fiziksel Safari/safe-area, canlı yavaş ağ skeleton ve gerçek iki yönlü farklı sayfa history/refresh, WP/Woo tüm ürün türleri, kart/sepet/ödeme uyumu. Mevcut Woo klasik ürün ve işlem sayfalarını tam sayfa gezinmeye bırakmaya devam et. 
+- **Sıradaki:** gerçek mobil cihazda kapsamdaki home/blog menü geçişi ve kötü ağ skeleton kabulü; dinamik Woo navigasyonunun gerçek entegrasyon testleri olmadan kapsama alınması yasak. 0.1.79'un kodu ve yayını tekrar yapılmamalı.
+
 ## 14 Ekim 2026 / 0.1.79 — kesintisiz güvenli sayfa geçişleri (test ve yayın bekliyor)
 
 - 0.1.78 → 0.1.79 **WordPress çekirdeğinin Interactivity Router** modülüne seçmeli entegrasyon. Yeni SPA, fetch/historical cache motoru veya ikinci header/dock/dialog yaratılmaz. Destekleyen WP (script module client navigation API mevcut) ve **güvenli** yerel ana sayfa/statik WordPress blok sayfalarında `sf-content` router region olur; dok header/popup sabit DOM'dadır.
