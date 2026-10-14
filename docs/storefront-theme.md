@@ -1,6 +1,13 @@
 # Codela Storefront — güncel teknik durum
 
 
+## Son doğrulanmış devam noktası — 14 Ekim 2026 / 0.1.70
+
+- Tema 0.1.69 → 0.1.70: kullanıcı satın alma ve genel alt menünün birlikte daha aşağıda olmasını istedi. Ortak `sf-ui-bottom-bar-gap` 12px → 4px; normal dock, dialog dock ve satın alma aynı alt hizayı tüketir. Tam safe-area payı korunur; 58px yükseklik ve 430px azami genişlik değişmez.
+- Yalnız ortak ölçü token'ı değişti; yeni JS/istek/cihaz dalı yok. Tarayıcı kontrolü satın alma ve dialog dock'unun alt hizasını karşılaştırır.
+- Doğrulama/yayın: 23 paket testi başarılı. CI alt-hiza karşılaştırması ve dağıtım/canlı kaynak doğrulaması bekliyor.
+- Kalan/sıradaki: fiziksel mobil tarayıcı araç çubuğu ve klavye/safe-area kabulü, gerçek varyasyon/grup/harici ürün kabulü, dönüşüm araçları bütünlüğü. Slider duraklatıldı; F3/F4/F5/F6 ve mevcut animasyon testinin CI zamanlaması kararlılığı açık.
+
 ## Son doğrulanmış devam noktası — 14 Ekim 2026 / 0.1.69
 
 - Tema 0.1.68 → 0.1.69: stok kodu/kategori/etiketler ve genel stok bilgisi native Ek bilgi sekmesine taşındı. Sekme yoksa Woo'nun mevcut additional_information callback'iyle eklenir; var olan sekme/özellik/ağırlık/boyut ve extension hook'ları korunur.

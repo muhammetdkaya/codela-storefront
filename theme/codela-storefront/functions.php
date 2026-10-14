@@ -73,30 +73,30 @@ add_action( 'init', function() {
 add_action( 'wp_enqueue_scripts', function() {
     if ( ! codela_sf_ready() ) { return; }
     $root_uri = get_template_directory_uri() . '/assets/';
-    wp_enqueue_style( 'codela-storefront-tokens', $root_uri . 'styles/tokens.css', [], '0.1.69' );
-    wp_enqueue_style( 'codela-storefront-theme', $root_uri . 'storefront.css', [ 'codela-storefront-tokens' ], '0.1.69' );
-    wp_enqueue_style( 'codela-storefront-overlay', $root_uri . 'styles/overlay.css', [ 'codela-storefront-theme' ], '0.1.69' );
-    wp_enqueue_style( 'codela-storefront-navigation', $root_uri . 'styles/navigation.css', [ 'codela-storefront-overlay' ], '0.1.69' );
-    wp_enqueue_style( 'codela-storefront-components', $root_uri . 'styles/components.css', [ 'codela-storefront-navigation' ], '0.1.69' );
+    wp_enqueue_style( 'codela-storefront-tokens', $root_uri . 'styles/tokens.css', [], '0.1.70' );
+    wp_enqueue_style( 'codela-storefront-theme', $root_uri . 'storefront.css', [ 'codela-storefront-tokens' ], '0.1.70' );
+    wp_enqueue_style( 'codela-storefront-overlay', $root_uri . 'styles/overlay.css', [ 'codela-storefront-theme' ], '0.1.70' );
+    wp_enqueue_style( 'codela-storefront-navigation', $root_uri . 'styles/navigation.css', [ 'codela-storefront-overlay' ], '0.1.70' );
+    wp_enqueue_style( 'codela-storefront-components', $root_uri . 'styles/components.css', [ 'codela-storefront-navigation' ], '0.1.70' );
     if ( function_exists( 'is_product' ) && is_product() ) {
         wp_enqueue_style( 'codela-storefront-gallery' );
         // Product-only layout; WooCommerce gallery, variations and cart stay native.
-        wp_enqueue_style( 'codela-storefront-product', $root_uri . 'styles/product.css', [ 'codela-storefront-components', 'codela-storefront-gallery' ], '0.1.69' );
+        wp_enqueue_style( 'codela-storefront-product', $root_uri . 'styles/product.css', [ 'codela-storefront-components', 'codela-storefront-gallery' ], '0.1.70' );
     }
     if ( function_exists( 'is_checkout' ) && is_checkout() ) {
         // Presentation adapter only; no Woo checkout/gateway logic is changed.
-        wp_enqueue_style( 'codela-storefront-checkout', $root_uri . 'styles/checkout.css', [ 'codela-storefront-components' ], '0.1.69' );
+        wp_enqueue_style( 'codela-storefront-checkout', $root_uri . 'styles/checkout.css', [ 'codela-storefront-components' ], '0.1.70' );
     }
     if ( function_exists( 'is_account_page' ) && is_account_page() ) {
-        wp_enqueue_style( 'codela-storefront-account', $root_uri . 'styles/account.css', [ 'codela-storefront-components' ], '0.1.69' );
+        wp_enqueue_style( 'codela-storefront-account', $root_uri . 'styles/account.css', [ 'codela-storefront-components' ], '0.1.70' );
     }
     if ( ! is_user_logged_in() ) {
         // Guest account opens inside the existing panel on store pages. Reuse the
         // same tiny tab script and Woo native forms as the fallback Account page.
         if ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) {
-            wp_enqueue_style( 'codela-storefront-account-overlay', $root_uri . 'styles/account-overlay.css', [ 'codela-storefront-components' ], '0.1.69' );
+            wp_enqueue_style( 'codela-storefront-account-overlay', $root_uri . 'styles/account-overlay.css', [ 'codela-storefront-components' ], '0.1.70' );
         }
-        wp_enqueue_script( 'codela-storefront-auth', $root_uri . 'scripts/auth.js', [], '0.1.69', true );
+        wp_enqueue_script( 'codela-storefront-auth', $root_uri . 'scripts/auth.js', [], '0.1.70', true );
     }
     wp_enqueue_script_module( 'codela-storefront' );
     if ( function_exists( 'codela_storefront_design_enqueue' ) ) { codela_storefront_design_enqueue( 'codela-storefront-theme' ); }

@@ -66,7 +66,7 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
    if(width<=700){
     assert.equal(purchase.position,'fixed','Purchase occupies bottom on mobile');
     assert(Math.abs(purchase.rect.height-58)<1,'Purchase matches the 58px navigation bar');
-    assert(purchase.rect.bottom<=900-11&&purchase.rect.bottom>=900-15,'Purchase clears bottom safe area');
+    assert(purchase.rect.bottom<=900-3&&purchase.rect.bottom>=900-7,'Purchase clears bottom safe area');
     assert.equal(await page.locator('.sf-shell > .sf-mobile-dock').evaluate(el=>getComputedStyle(el).display),'none','Document dock is replaced by purchase');
     assert.equal(await page.locator('.sf-actions').evaluate(el=>getComputedStyle(el).display),'flex','Store tools remain available in header');
    }else assert.equal(purchase.position,'static','Desktop keeps native inline form');
@@ -107,6 +107,7 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
   assert.equal(await page.locator('.sf-product-purchase').evaluate(el=>getComputedStyle(el).visibility),'hidden','Purchase hides while dialog owns bottom');
   assert.equal(await page.locator('#sf-panel .sf-mobile-dock').evaluate(el=>getComputedStyle(el).display),'block','Same dock available in dialog');
   assert.equal(await page.locator('#sf-panel .sf-mobile-dock').evaluate(el=>el.getBoundingClientRect().height),58,'Navigation and purchase share the same height');
+  assert(await page.evaluate(()=>Math.abs(document.querySelector('#sf-panel .sf-mobile-dock').getBoundingClientRect().bottom-document.querySelector('.sf-product-purchase').getBoundingClientRect().bottom)<1),'Navigation and purchase share the lower baseline');
   await page.locator('#sf-panel').evaluate(dialog=>{dialog.close();document.querySelector('.sf-shell').append(dialog.querySelector('.sf-mobile-dock'))});
   assert.equal(await page.locator('.sf-product-purchase').evaluate(el=>getComputedStyle(el).visibility),'visible','Purchase restores after dialog');
   await page.locator('.sf-product-purchase').evaluate(el=>el.remove());
