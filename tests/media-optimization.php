@@ -29,6 +29,7 @@ require __DIR__ . '/../theme/codela-storefront/inc/media-optimization.php';
 $filter = $GLOBALS['filters']['image_editor_output_format'][0] ?? null;
 test( is_callable($filter), 'WordPress output-format filter registered' );
 test( $filter(['image/heic'=>'image/jpeg']) === ['image/heic'=>'image/jpeg','image/jpeg'=>'image/webp'], 'Other mime mappings preserved and JPEG becomes WebP' );
+test( $filter(['image/jpeg'=>'image/avif'])['image/jpeg'] === 'image/avif', 'Existing converter mapping is not overridden' );
 $GLOBALS['supports_webp'] = false;
 test( $filter([]) === [], 'Unsupported server keeps default image formats' );
 $GLOBALS['supports_webp'] = true;
