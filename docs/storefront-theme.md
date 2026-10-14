@@ -1,5 +1,11 @@
 # Codela Storefront — güncel teknik durum
 
+## 14 Ekim 2026 / 0.1.81 — yüzen yüzeylerin opaklık/okunurluk düzeltmesi (CI ve canlı doğrulama bekliyor)
+
+- Kullanıcı gerçek iPhone Safari ekran görüntüsünde **header arkasındaki ürün metni ve alt menü içinden sayfa metni okunuyor**. Kaynak: tek merkezde tokens.css `--sf-ui-glass-surface:rgba(250,250,252,.28)` ve çok güçlü arka plan filtresi `contrast(.35) brightness(1.42)`. Bu yüzeyler header brand/actions/menu, mobil dock, product purchase, gallery ve soft icon kontrolünde ortak kullanılıyor.
+- 0.1.81 tek CSS primitive ile `rgba(247,247,249,.96)`, 10px blur, 115% saturation, doğal contrast/brightness (1), **ek beyaz gradient katmanı olmadan** tek background. Mevcut pill, gölge, animasyon, offset, tek dock/tek purchase bar, iOS safe-area ve Woo davranışları değişmez. Reduced-transparency ve no-filter fallback opaque kalır.
+- tests/navigation-browser.cjs, product-browser.cjs ve ui-kit-browser.cjs gerçek computed opacity ve tek arka plan katmanını doğrular; WebKit/iPhone benzeri canlı kontrol ayrıca çalıştırılmalı. CI→deploy FTP adımını kontrol et; sonrasında live Safari/WebKit ve LCP/CLS ölçümüyle kapat. Görünüm devreye girene kadar 0.1.80'i düzeltildi sayma.
+
 ## 14 Ekim 2026 / 0.1.80 — canlı native Woo belge geçişi doğrulaması
 
 - [PR #24](https://github.com/muhammetdkaya/codela-storefront/pull/24), [merge commit 7f55ee9](https://github.com/muhammetdkaya/codela-storefront/commit/7f55ee9dd6d15986fcd7a9cbccf11875d2fdd1c3), [CI + **gerçek** FTP dağıtımı 38595615015](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38595615015) başarılı. Version: 0.1.80. Daha önceki 38595265913 'success' olsa da FTP guard'da **skipped**; bu eski çalışma dağıtımı değildir.
