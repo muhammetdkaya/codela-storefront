@@ -1,6 +1,10 @@
 # Codela Storefront — güncel teknik durum
 
 
+## Hız önceliği — 14 Ekim 2026
+
+Kullanıcı yeni özellik/tasarım öncesinde hız testi istedi. Canlı tema değiştirilmeden 24 cold/warm sayfa ölçümü ve üç hedefli mobil teşhis tamamlandı. [Rapor](performance/2026-10-14.md), [ham sonuçlar](performance/2026-10-14-results.json). Mobil cold medyan LCP: ana sayfa 2.472s, ürün 2.940s; ürün CLS 0.231. İlk ürün görseli lazy, ürün özeti ilk yüklemede kayıyor. Popup ilk tepki yaklaşık 34–59ms medyan; ağır JS kilitlenmesi gözlenmedi. Ortak tokens.css hâlâ 0.1.71 URL'siyle ve bir haftalık cache ile servis ediliyor. Sıradaki iş: hero yükleme önceliği + galeri başlangıç geometrisi; ardından koşullu CSS ve tek asset sürüm kaynağı. F6 kapatılmadı; fiziksel Safari/GPU ve gerçek kullanıcı ölçümü hâlâ açık. Bu turda optimizasyon/canlı yayın yapılmadı, tema 0.1.72.
+
 ## Son doğrulanmış devam noktası — 14 Ekim 2026 / 0.1.72
 
 - Tema 0.1.71 → 0.1.72: açık zeminde kaybolan ortak cam yüzeyin ayrımı tek dış gölgeyle artırıldı (0 3px 12px / %10). İç üst ışık kaldırıldı; ikinci dolgu, iç çerçeve veya yeni katman eklenmedi. Cam brightness 1.5 → 1.42; 28% tint, blur ve saydam kenar korunur.
