@@ -8,12 +8,16 @@ function codela_theme_settings() { return $GLOBALS['settings']; }
 function is_product() { return $GLOBALS['product_page']; }
 function __( $text, $domain ) { return $text; }
 function get_template_directory_uri() { return '/theme'; }
-function codela_sf_style_version() { return '0.1.76'; }
+function codela_sf_style_version() { return '0.1.77'; }
 function wp_register_style( ...$args ) { $GLOBALS['style'] = $args; }
 function register_block_style( ...$args ) { $GLOBALS['block_style'] = $args; }
 require __DIR__ . '/../theme/codela-storefront/inc/media.php';
 function check( $result, $message ) { if ( ! $result ) { throw new RuntimeException( $message ); } }
 foreach ($actions['after_setup_theme'][10] as $callback) { $callback(); }
+check($filters['woocommerce_single_product_zoom_enabled'](true)===false, 'Product uses native lightbox without conflicting inline click zoom');
+$product_page=false;
+check($filters['woocommerce_single_product_zoom_enabled'](true)===true, 'Other gallery contexts keep their zoom setting');
+$product_page=true;
 check(isset($filters['woocommerce_single_product_image_gallery_classes']), 'Native gallery class hook');
 check(isset($filters['woocommerce_single_product_image_thumbnail_html']), 'Accessible native image link hook');
 check(codela_sf_gallery_classes(['original'])[0] === 'original', 'Existing gallery classes retained');

@@ -1,5 +1,13 @@
 # Codela Storefront — güncel teknik durum
 
+## 14 Ekim 2026 / 0.1.77 — native büyütme dokunma düzeltmesi (yayın bekliyor)
+
+- 0.1.76 [deploy 38547199284](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38547199284) gerçek dağıtım adımı başarılı. [24 canlı ölçüm 38547572075](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38547572075): mobil ürün CLS tüm cold/warm örneklerde 0; cold LCP medyan 1.596s (artık ürün başlığı), ana sayfa cold 2.268s. Önceki 1.504s ürün LCP logosuydu; doğrudan görsel hız karşılaştırması değildir.
+- Ek canlı test önceden var olan inline zoom/tam ekran galeri çakışmasını yakaladı: zoomImg bağlantıyı örter; pointer-events:none tek başına yetmez, touch zoom click handler da olayı durdurur. İlk iki aday testi başarısız kayıtlıdır.
+- [Aday test 38548314033](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38548314033) yalnız test yanıtında zoom_enabled=false ile mobil/masaüstü görsel seçimi, gerçek bağlantı tıklaması, PhotoSwipe aç/kapat ve sabit özet konumu geçti.
+- 0.1.77 ürün sayfasında inline zoom'u native filtreyle kapatır; native slider/variation/PhotoSwipe korunur. ClassicTemplate priority 10 ile zoom'u zorla açtığı için filtre priority 100'dedir. Tam ekran galeri tek büyütme eylemidir; ürün dışında ayar korunur. Yeni JS yok.
+- CI, canlı dağıtım, canlı galeri kabulü ve performans yeniden ölçümü bekliyor. Medya WebP/AVIF dönüşümü ve görünmeyen tam görsellerin ertelenmesi açık; fiziksel Safari kabulü açık.
+
 ## 14 Ekim 2026 / 0.1.76 — galeri yerleşimi ve önizleme indirmeleri (yayın bekliyor)
 
 - 0.1.75 canlı audit 38540948506: mobil ürün cold LCP 1.504s, CLS 0.231; deploy 38540669202 başarılı.

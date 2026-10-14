@@ -546,3 +546,8 @@ Shared glass uses a soft outer shadow and one half-pixel white inset highlight a
 ## Single-surface light backdrop separation (0.1.72)
 
 Floating controls retain one shared tint and transparent perimeter. Use one diffuse outer shadow (0 3px 12px at 10% black), with no inset edge; backdrop brightness is 1.42. Do not add a second fill, nested frame, or page-specific material to improve visibility. Geometry, press states and accessibility fallbacks remain unchanged.
+
+
+## Product enlargement ownership (0.1.77)
+
+The product image link opens native Woo PhotoSwipe directly. Disable inline zoom on the product document with the native zoom-enabled filter at priority 100: ClassicTemplate forces it on at priority 10, and its touch click handler intercepts the lightbox link. Other contexts keep their own setting. This supersedes the 0.1.65 note about retaining product inline zoom. Native slider, variation updates and fullscreen zoom remain owned by Woo; do not add a second gallery engine.

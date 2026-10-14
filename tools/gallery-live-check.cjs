@@ -6,13 +6,10 @@ const fs=require('node:fs');
  const browser=await chromium.launch();const results=[];
  try{for(const width of [390,1280]){
  const context=await browser.newContext({viewport:{width,height:844},deviceScaleFactor:width===390?3:1,isMobile:width===390,hasTouch:width===390});
- await context.route('**/urun/demo-20-v-yaka-tisort-secki/',async route=>{
-   const response=await route.fetch();
-   await route.fulfill({response,body:(await response.text()).replace('"zoom_enabled":"1"','"zoom_enabled":false')});
- });
- const page=await context.newPage();page.on('pageerror',e=>console.log('GALLERY_ERROR '+e.message));
+ const page=await context.newPage();
  await page.goto('https://codela.dev/urun/demo-20-v-yaka-tisort-secki/',{waitUntil:'networkidle'});
  await page.waitForFunction(()=>window.jQuery?.('.woocommerce-product-gallery').data('flexslider')?.count===3);
+ assert.equal(await page.locator('.zoomImg').count(),0,'No inline zoom intercepts the image link');
  const before=await page.locator('.summary').evaluate(e=>e.getBoundingClientRect().top);
  const thumbs=page.locator('.flex-control-thumbs img');
  assert.equal(await thumbs.count(),3);
