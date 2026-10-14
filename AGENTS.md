@@ -5,9 +5,9 @@
 
 - Tema 0.1.71 → 0.1.72: açık zeminde kaybolan ortak cam yüzeyin ayrımı tek dış gölgeyle artırıldı (0 3px 12px / %10). İç üst ışık kaldırıldı; ikinci dolgu, iç çerçeve veya yeni katman eklenmedi. Cam brightness 1.5 → 1.42; 28% tint, blur ve saydam kenar korunur.
 - Header, alt menü ve satın alma ortak token değişikliğini tüketir. Ölçüler, etkileşimler ve koyu birincil buton değişmedi.
-- Doğrulama: kaynak farkı incelendi; yalnız ortak gölge/parlaklık ve sürüm referansları değişti. Yerel Git klon erişimi olmadığı için testler CI doğrulamasına bırakıldı; tarayıcı ve fiziksel mobil kabul henüz yapılmadı.
-- Yayın: kaynak hazırlanıyor; CI ve dağıtım sonucu bekleniyor.
-- Kalan/sıradaki: CI validate/deploy sonucunu kaydet; fiziksel mobil açık zemin üzerinde tek yüzey görünümünü kontrol et. Önceki safe-area, gerçek Woo ürün türleri, F3/F4/F5/F6 kabulleri açık; slider duraklatıldı.
+- Doğrulama: PHP/JS ve 23 paket testi, ortak UI, gezinme, ürün, ödeme ve hesap tarayıcı kontrolleri CI'da başarılı. İlk çalışmadaki eski 0.1.71 test beklentileri 0.1.72'ye güncellendi. Fiziksel mobil görsel kabul henüz yapılmadı.
+- Yayın: [kaynak e8f2415](https://github.com/muhammetdkaya/codela-storefront/commit/e8f24154dfe7cf7985ddfa37436b2ade28635dd7); [Actions 38514144873](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38514144873) validate=success, deploy=success. Gerçek Deploy Storefront only adımı ve deploy.py 'Storefront deployed; checks passed.' logu doğrulandı (14 Ekim 2026 05:00 UTC).
+- Kalan/sıradaki: fiziksel mobil açık zemin üzerinde tek yüzey görünümünü kontrol et. Önceki safe-area, gerçek Woo ürün türleri, F3/F4/F5/F6 kabulleri açık; slider duraklatıldı.
 
 ## Başlangıçta okunacaklar
 
