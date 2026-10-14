@@ -68,7 +68,7 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
    assert(result.detail.top>=result.gallery.bottom-1,'Details follow full-width gallery at '+width);
    assert(Math.abs(result.gallery.left)<1&&Math.abs(result.gallery.right-width)<1,'Gallery spans viewport at '+width);
    assert(Math.abs(result.gallery.top)<1,'Gallery begins at document top at '+width);
-   assert.equal(await page.locator('.woocommerce-product-gallery__image img').evaluate(el=>getComputedStyle(el).objectFit),'cover','Hero fills frame without contain letterboxing');
+   assert.equal(await page.locator('.woocommerce-product-gallery__image img').first().evaluate(el=>getComputedStyle(el).objectFit),'cover','Hero fills frame without contain letterboxing');
    assert.equal(result.relatedColumns,width>=901?4:2,'Related product grid at '+width);
    const purchase=await page.locator('.sf-product-purchase').evaluate(el=>({position:getComputedStyle(el).position,rect:el.getBoundingClientRect().toJSON()}));
    assert.equal(await page.locator('form.cart .single_add_to_cart_button').count(),1,'One native submit control');
