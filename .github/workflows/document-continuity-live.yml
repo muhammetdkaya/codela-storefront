@@ -1,5 +1,8 @@
 name: Storefront live document continuity
 on:
+  push:
+    branches: [main]
+    paths: ['tools/document-continuity-live.cjs', '.github/workflows/document-continuity-live.yml']
   workflow_run:
     workflows: ['Deploy Codela Storefront']
     branches: [main]
