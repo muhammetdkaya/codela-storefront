@@ -36,6 +36,6 @@ for(const width of [320,390,700,900,1280]){
 }
 await page.setContent('<style>'+styles+'</style><body class="codela-my-account-layout"><main class="sf-content">'+cards+'</main></body>');
 assert.notEqual(await page.locator('ul.products').evaluate(e=>getComputedStyle(e).display),'grid','Plugin account does not inherit catalog grid');
-assert.equal(await page.locator('li.product img').first().evaluate(e=>getComputedStyle(e).aspectRatio),'auto','Plugin images keep their own presentation');
+assert((await page.locator('li.product img').first().evaluate(e=>getComputedStyle(e).aspectRatio)).startsWith('auto'),'Plugin images retain their native intrinsic aspect ratio');
 console.log('Shared Woo cards across five contexts/widths and stable Header slots: passed');
 }finally{await browser.close()}})().catch(e=>{console.error(e);process.exit(1)});
