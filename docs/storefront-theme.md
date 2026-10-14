@@ -5,7 +5,7 @@
 
 - Tema 0.1.70 → 0.1.71: kullanıcı header'daki cam kapsüllerin çift arka plan/kenar hissini düzelttirdi. Ortak glass shadow üç katmandan hafif dış gölge + 0.5px/35% tek üst ışığa indirildi; koyu alt inset kaldırıldı. Beyaz gradient parlaması ve pressed parlaması azaltıldı. Header'a ayrı kopya yüzey eklenmedi.
 - Ortak yüzeyi tüketen kontroller aynı düzeltmeyi alır. Saydam tint, blur, ikon kontrastı, focus/press, fallback, bottom-bar ölçüleri korunur. Logo görsel dosyası değiştirilmedi.
-- Doğrulama/yayın: 23 paket testi başarılı. Ortak UI/CI/yayın ve canlı yüzey kontrolü bekliyor.
+- Doğrulama/yayın: 23 paket testi ve CI ortak UI/ürün/gezinme tarayıcı kontrolleri başarılı. Kaynak [6d9493f](https://github.com/muhammetdkaya/codela-storefront/commit/6d9493fd6f3c745ef2ac2e0856583e4f0a1d6ce3); [Actions 38512337635](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38512337635) validate=success, deploy=success. Gerçek deploy.py logunda 'Storefront deployed; checks passed.' doğrulandı. Canlı Demo 20 menü/marka/araç kapsülleri aynı hafif dış gölge + 0.5px/35% üst ışığı kullanıyor; koyu alt inset yok, blur(8px) ve ortak saydamlık korunuyor. Masaüstü canlı ekran görüntüsü kontrol edildi; fiziksel mobil/beyaz zemin kabulü açık.
 - Kalan/sıradaki: fiziksel mobil cam yüzey/beyaz zemin kabulü, tarayıcı araç çubuğu ve klavye/safe-area, gerçek varyasyon/grup/harici ürün kabulü, dönüşüm araçları. Slider duraklatıldı; F3/F4/F5/F6 ve mevcut animasyon CI zamanlaması açık.
 
 ## Son doğrulanmış devam noktası — 14 Ekim 2026 / 0.1.70
