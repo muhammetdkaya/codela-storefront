@@ -8,7 +8,7 @@ function codela_theme_settings() { return $GLOBALS['settings']; }
 function is_product() { return $GLOBALS['product_page']; }
 function __( $text, $domain ) { return $text; }
 function get_template_directory_uri() { return '/theme'; }
-function codela_sf_style_version() { return '0.1.82'; }
+function codela_sf_style_version() { return '0.1.83'; }
 function wp_register_style( ...$args ) { $GLOBALS['style'] = $args; }
 function register_block_style( ...$args ) { $GLOBALS['block_style'] = $args; }
 require __DIR__ . '/../theme/codela-storefront/inc/media.php';

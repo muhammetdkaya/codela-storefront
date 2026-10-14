@@ -1,5 +1,13 @@
 # Codela Storefront — güncel teknik durum
 
+## 14 Ekim 2026 / 0.1.83 — gerçek WP/Woo kabulünde bulunan uyumluluk düzeltmeleri (yayın bekliyor)
+
+- 0.1.82 canlıda; native Woo Button adaptörü ve plugin account dışlaması CI'da geçti, gerçek FTP 38613631082 başarılı. Canlı galeri/shell/native continuity ve WebKit 38614373732 başarılı. 24 lab audit 38614000776: mobil cold medyan home LCP 2496ms, product 1816ms, CLS 0. İlk WebKit kontrolü eski sürüm sabiti nedeniyle yanlış alarm verdi; test >=0.1.81 için düzeltildi ve tekrar geçti.
+- Gerçek WP 7.1.3 / Woo 11.2.1 / Codela 1.1.1 kabulü: yeni WebP encoder/eski batch orijinal koruma, kategori fiyat filtre/sıralama/AJAX ekleme, simple/variable/stoksuz/grouped/external formlar, gerçek modül-cache güncellemesi, gecikmiş GET→yeni POST yarışı, Cart block çift yönlü miktar/silme/kupon, classic cart çift yönlü miktar ve classic checkout native COD siparişi, Checkout block güncellemesi geçti.
+- Açılan iki gerçek kusur: (1) Woo 9 global cartStore descriptor sunmuyor, public wc/store/cart adıyla kayıtlı store'a bağlanma gerekir. (2) Kurulu router JS'inde state.navigating alanı yok; loadingAnimation=false iken eski navigation.hasStarted da yayınlanmaz. Yavaş ağda skeleton bu yüzden hiç başlamıyor. Kaynak kurulu /wp-includes/js/dist/script-modules/interactivity-router/index.min.js ile doğrulandı; yeni dokümantasyon kurulu runtime yerine varsayılmamalı.
+- 0.1.83 aynı cart controller'da descriptor veya public store adına bağlanır; bilinmeyen store dispatch edilmez, load retry ve tek subscription korunur. Mevcut navigation controller 160ms feedback'i native actions.navigate() promise'ine bağlar, URL watcher history/focus'u günceller; ikinci fetch/cache/router yok. Eskimiş hızlı navigasyonun cleanup'ı yenisini ezmez.
+- Unit regresyonu descriptor olmayan ve geç gelen store'u; shell fixture lifecycle state anahtarı hiç olmadan slow/fast davranışı kontrol eder. Gerçek current/minimum WP-Woo matrisinde ve canlıda son kabul bekliyor. Admin backfill için gerçek sitede yönetici oturumu, fiziksel Safari için cihaz erişimi ayrı engel.
+
 ## 14 Ekim 2026 / 0.1.82 — ortak native Woo Button sınırı (doğrulama/yayın bekliyor)
 
 - 0.1.81 canlı kaynak korunarak F5'in hâlâ mevcut genel `.woocommerce ... .button` paint kuralı storefront.css içinden kaldırıldı. Tema içerik alanındaki native Woo link/button/input düğmeleri mevcut components.css Button gruplarına bağlandı; focus, disabled, press, reduced-motion ve erişilebilirlik aynı primitive'dir.

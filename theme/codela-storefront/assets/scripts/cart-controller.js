@@ -20,11 +20,13 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
     function bindWooStore() {
         if (wooStore) return;
         const registry = window.wp?.data;
-        const store = window.wc?.wcBlocksData?.cartStore;
+        // Woo 9 registers the public store name without exporting its descriptor.
+        const store = window.wc?.wcBlocksData?.cartStore || 'wc/store/cart';
         if (!store || !registry?.select || !registry?.subscribe || !registry?.dispatch || !registry?.resolveSelect) return;
         const selectors = registry.select(store);
+        if (!selectors?.getCartData) return;
         const actions = registry.dispatch(store);
-        if (!selectors?.getCartData || !actions?.invalidateResolution) return;
+        if (!actions?.invalidateResolution) return;
         wooStore = { registry, store };
         wooSnapshot = cartSignature(selectors.getCartData());
         registry.subscribe(() => {

@@ -1,13 +1,14 @@
 // Controller contract tests. Real WP/Woo browser acceptance remains a separate gate.
 const assert = require('node:assert/strict');
 const {setup, snapshot, tick} = require('./cart-race.cjs');
-function setupWoo({classic = false, late = false, failRefresh = false, holdRefresh = false} = {}) {
+function setupWoo({classic = false, late = false, failRefresh = false, holdRefresh = false, legacy = false} = {}) {
     let subscriber, current = snapshot(1), subscriptions = 0, resolves = 0;
     const invalidations = [], outgoing = [], events = {}, windowEvents = {};
     const releases = [];
     const store = {};
+    let registered = !late;
     const registry = {
-        select: () => ({getCartData: () => current}),
+        select: key => registered && (key === store || key === 'wc/store/cart') ? {getCartData: () => current} : undefined,
         dispatch: () => ({invalidateResolution: (...args) => invalidations.push(args)}),
         resolveSelect: () => ({getCartData: async () => {
             resolves++;
@@ -21,7 +22,7 @@ function setupWoo({classic = false, late = false, failRefresh = false, holdRefre
     const x = setup((ctx, nodes) => {
         context = ctx;
         ctx.window.wp = {data:registry};
-        if (!late) ctx.window.wc = {wcBlocksData:{cartStore:store}};
+        if (!late && !legacy) ctx.window.wc = {wcBlocksData:{cartStore:store}};
         ctx.window.addEventListener = (name, fn) => {windowEvents[name] = fn;};
         ctx.window.jQuery = () => ({
             on: (names, fn) => names.split(' ').forEach(name => events[name] = fn),
@@ -36,7 +37,7 @@ function setupWoo({classic = false, late = false, failRefresh = false, holdRefre
         get subscriptions() {return subscriptions;},
         get resolves() {return resolves;},
         emit: data => {current = data; subscriber();},
-        load: () => {context.window.wc = {wcBlocksData:{cartStore:store}}; windowEvents.load();},
+        load: () => {registered = true; context.window.wc = {wcBlocksData:{cartStore:store}}; windowEvents.load();},
     };
 }
 async function initialize(x) {
@@ -54,8 +55,8 @@ async function change(x, {remove = false, fail = false} = {}) {
     await pending; await tick(); await tick();
 }
 (async () => {
-    {
-        const x = setupWoo(); await initialize(x);
+    for (const legacy of [false, true]) {
+        const x = setupWoo({legacy}); await initialize(x);
         assert.equal(x.subscriptions, 1);
         x.emit(snapshot(1)); await tick();
         assert.equal(x.requests.length, 1, 'Unrelated/identical store updates do not fetch');

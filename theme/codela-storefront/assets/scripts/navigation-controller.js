@@ -7,7 +7,7 @@ const { state: routerState } = store('core/router');
 const REGION = '#sf-content[data-wp-router-region="codela/storefront/main"]';
 const DELAY_MS = 160;
 let timer = 0;
-let busy = false;
+let navigationGeneration = 0;
 let desired = 'content';
 let previousUrl = routerState.url || location.href;
 
@@ -69,24 +69,29 @@ function applyLocation() {
     document.body.classList.toggle('page', !isHome);
     window.dispatchEvent(new Event('codela:route-committed'));
 }
-watch(() => {
-    const navigating = !!routerState.navigating;
+function finishLoading() {
+    window.clearTimeout(timer);
+    clearPlaceholder();
+}
+function commitLocation() {
     const url = routerState.url || location.href;
-    if (navigating && !busy) {
-        busy = true;
-        timer = window.setTimeout(renderPlaceholder, DELAY_MS);
-    } else if (!navigating && busy) {
-        busy = false;
-        window.clearTimeout(timer);
-        clearPlaceholder();
-        if (previousUrl !== url && document.querySelector(REGION)) {
-            previousUrl = url;
-            applyLocation();
-            window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-            const main = document.querySelector(REGION);
-            main.setAttribute('tabindex', '-1');
-            main.focus({ preventScroll: true });
-        }
+    if (previousUrl === url) return;
+    previousUrl = url;
+    if (!document.querySelector(REGION)) return;
+    applyLocation();
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    const main = document.querySelector(REGION);
+    main.setAttribute('tabindex', '-1');
+    main.focus({ preventScroll: true });
+}
+// URL is public across supported core versions; lifecycle flags are not.
+// Explicit clicks use the native navigate() promise for loading feedback.
+// The URL watcher also handles native router history traversal.
+watch(() => {
+    const url = routerState.url || location.href;
+    if (previousUrl !== url) {
+        finishLoading();
+        commitLocation();
     }
 });
 // Document delegation survives successive region replacements. Route only
@@ -100,12 +105,20 @@ document.addEventListener('click', event => {
         window.dispatchEvent(new Event('codela:before-route'));
     }
     const url = link.href;
+    const generation = ++navigationGeneration;
+    finishLoading();
+    timer = window.setTimeout(renderPlaceholder, DELAY_MS);
     // Dynamic import means the router is paid for only on actual navigation.
     import('@wordpress/interactivity-router').then(({actions}) =>
         actions.navigate(url, { timeout: 7000, loadingAnimation: false })
     ).catch(() => {
+        if (generation !== navigationGeneration) return;
         // No custom fetch/caching: if the router module cannot load, restore
         // normal navigation for this click.
         window.location.assign(url);
+    }).finally(() => {
+        if (generation !== navigationGeneration) return;
+        finishLoading();
+        commitLocation();
     });
 });
