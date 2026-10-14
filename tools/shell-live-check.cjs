@@ -57,6 +57,7 @@ const fs=require('node:fs');
   // Look for a genuinely different *public* WP page with the same router
   // region. No test content is created or written to the site.
   report.checks.staticPageCrossNavigation='no eligible public page discovered';
+  let attemptingStaticPage=false;
   try {
     const response=await page.request.get('https://codela.dev/wp-json/wp/v2/pages?per_page=30&_fields=link,status',{timeout:9000});
     if(response.ok()){
@@ -74,6 +75,7 @@ const fs=require('node:fs');
           anchor.textContent='QA static page';
           document.querySelector('.sf-shell').appendChild(anchor);
         },candidate.link);
+        attemptingStaticPage=true;
         await page.locator('#sf-qa-static-page').click({noWaitAfter:true});
         await page.waitForURL(candidate.link,{timeout:15000});
         await page.waitForTimeout(250);
@@ -84,6 +86,7 @@ const fs=require('node:fs');
       }
     }
   } catch(error) {
+    if(attemptingStaticPage)throw error;
     report.checks.staticPageCrossNavigation='not verified: '+error.message;
   }
   report.checks.pageErrors=errors;
