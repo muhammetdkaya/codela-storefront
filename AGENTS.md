@@ -1,5 +1,13 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 14 Ekim 2026 / 0.1.78 — native WebP türevleri ve ikincil galeri yükleme (CI/yayın bekliyor)
+
+- 0.1.77 canlı durumu korunur; 0.1.78 kaynak geliştirme dalında hazırlanıyor. Tema yüklü mağazalarda, sunucu destekliyorsa yeni JPEG yüklemelerinin WordPress ara boyutları native `image_editor_output_format` ile WebP üretilir. PNG/GIF/animasyon ve orijinal dosyalar değiştirilmez. Format sunucu desteklemiyorsa otomatik eski işleyiş devam eder; AVIF varsayılan değil.
+- Eski JPEG'ler Medya → Image Optimization yönetici aracında bir görsel/istek işlenir; istenirse durdurulur. Mevcut türevlerin JPEG dosyaları ve full/orijinal tutulur; yalnız küçülen WebP ara boyutlarının metadata kaydı değiştirilir. Bu işlem önceden yüklenen görsellere **kendiliğinden uygulanmaz**; yöneticinin başlatması gerekir. Medya yüklemeleri harici depolama/özel WordPress medya eklentileriyle ayrıca test edilmeli.
+- Ürün galerisinde ana görsel eager/high kalır; diğer Woo HTML img'leri native `data-thumb` önizlemesiyle çıkar, tam `src/srcset/sizes` seçildiğinde ürün sayfasına özel hafif JS ile yüklenir. Native Woo FlexSlider, href/lightbox ve varyasyon bağlantıları değiştirilmez. Tam görüntü için WebP kullanımını garanti etmez; PhotoSwipe tam kaynak JPEG kalır.
+- Yeni tests/media-optimization.php ve tests/gallery-defer-browser.cjs CI'da; gerçek WordPress/Woo/cihaz ve canlı LCP/CLS/galeri kabulü henüz doğrulanmadı. 0.1.77 canlıda kalır, CI→deploy→24 örnek audit→galeri kabulü olmadan yayında denmez.
+- Sıradaki: yeni sürümün CI sonuçlarını incele; canlı çıktıda full img gereksiz istekleri ve full-screen/swap testini doğrula. Sonrasında yönetici işlemiyle eski dosyalar kontrollü optimize edilebilir; otomatik dönüşen yeni dosya için gerçek yükleme testi gerekli.
+
 ## 14 Ekim 2026 / 0.1.77 — doğrulanmış canlı durum ve hız koruması
 
 - 0.1.77 kaynak [3d16be3](https://github.com/muhammetdkaya/codela-storefront/commit/3d16be31688c51fdf33d0fd7e10764db157c25e5); [deploy 38548542214](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38548542214) başarılı. [Galeri kabulü 38548935704](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38548935704) başarılı. [24 canlı ölçüm 38548935685](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38548935685) tamamlandı.
