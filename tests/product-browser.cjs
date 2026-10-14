@@ -61,7 +61,9 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
    assert(Math.abs(result.gallery.top)<1,'Gallery begins at document top at '+width);
    assert.equal(await page.locator('.woocommerce-product-gallery__image img').evaluate(el=>getComputedStyle(el).objectFit),'cover','Hero fills frame without contain letterboxing');
    assert.equal(result.relatedColumns,width>=901?4:2,'Related product grid at '+width);
-   const purchase=await page.locator('.sf-product-purchase').evaluate(el=>({position:getComputedStyle(el).position,rect:el.getBoundingClientRect().toJSON()}));
+   const purchase=await page.locator('.sf-product-purchase').evaluate(el=>({position:getComputedStyle(el).position,rect:el.getBoundingClientRect().toJSON(),bg:getComputedStyle(el).backgroundColor,image:getComputedStyle(el).backgroundImage}));
+   assert.equal(purchase.bg,'rgba(247, 247, 249, 0.96)','Product purchase uses the one opaque-tinted shared material');
+   assert.equal(purchase.image,'none','Product purchase has no stacked white gradient');
    assert.equal(await page.locator('form.cart .single_add_to_cart_button').count(),1,'One native submit control');
    if(width<=700){
     assert.equal(purchase.position,'fixed','Purchase occupies bottom on mobile');
@@ -86,8 +88,8 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
    assert.equal(await page.locator('.flex-control-thumbs img').nth(1).evaluate(el=>getComputedStyle(el).opacity),'1','Native Woo opacity cannot fade other previews');
    assert(rail.thumbWidth>=44&&rail.thumbHeight>=44,'Native thumbnail click target remains at least 44px');
    assert.equal(rail.padding,'6px','Native Woo rule cannot erase rail spacing');
-   assert.equal(rail.background,'rgba(250, 250, 252, 0.28)','Rail reuses floating glass surface');
-   assert(rail.blur.includes('blur(8px)'),'Rail reuses shared blur');
+   assert.equal(rail.background,'rgba(247, 247, 249, 0.96)','Rail reuses floating glass surface');
+   assert(rail.blur.includes('blur(10px)'),'Rail reuses shared blur');
    assert.notEqual(rail.border,'rgba(0, 0, 0, 0)','Active image has visible selection edge');
    if(width<=390)assert(rail.scrollable,'Long gallery rail scrolls on narrow screens');
    if([390,1280].includes(width)){
