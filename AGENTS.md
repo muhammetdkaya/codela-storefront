@@ -1,5 +1,13 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 14 Ekim 2026 / 0.1.79 — kesintisiz güvenli sayfa geçişleri (test ve yayın bekliyor)
+
+- 0.1.78 → 0.1.79 **WordPress çekirdeğinin Interactivity Router** modülüne seçmeli entegrasyon. Yeni SPA, fetch/historical cache motoru veya ikinci header/dock/dialog yaratılmaz. Destekleyen WP (script module client navigation API mevcut) ve **güvenli** yerel ana sayfa/statik WordPress blok sayfalarında `sf-content` router region olur; dok header/popup sabit DOM'dadır.
+- WordPress'in kendi `navigate` / tarihçe / hata halinde tam sayfa fallback işleyişi kullanılır. Yalnız `data-sf-route` işaretli header logo, dock Home ve güvenli menü page bağlantıları yakalanır. WooCommerce **ürün, kategori, sepet, ödeme, hesap, formlar, özel blok/shortcode** sayfalarında tam belge navigasyonu kalır. Bunlarda header'ın hiç kaybolmaması **bu sürümde garanti edilmez**. WP 6.5-6.8 gibi client-navigation script desteği eksik ortamlarda da tam yükleme korunur.
+- Core router navigasyon 160ms üzerindeyse yalnız içerikte hedefsiz veri göstermeyen uyarlanmış skeleton (home/content), hızlı geçişte sıfır flash, reduced-motion destekli. Eski menü modalını 280ms gecikme/scroll restore olmadan kapatmak için **mevcut overlay**'e küçük `closeForNavigation` metodu eklendi. Route sonrası home aria-current ve dock highlight yenilenir, ana içeriğe focus verilir; WC checkout/cart oturumuna dokunulmaz.
+- Test: tests/navigation.php karar ve işaretleme; tests/shell-navigation-browser.cjs gecikme, tek header/dock, focus ve güvenli link. **Gerçek WP router/back-forward ve canlı Safari kabulü ayrıca gerekli; unit/browser fixture gerçek router değildir.**
+- **Sıradaki:** PR/CI ve deploy kontrolü; canlıda gerçek iki statik sayfa ile router DOM kimliği + geri/ileri doğrula. Tam WooCommerce ürün ve kategori geçişlerini ancak ilgili JS sürümleriyle *gerçek uçtan uca* testten sonra kapsama al.
+
 ## 14 Ekim 2026 / 0.1.78 — canlı doğrulandı: otomatik WebP ve ihtiyaç halinde galeri tam görseli
 
 - **0.1.77 → 0.1.78** [PR #22](https://github.com/muhammetdkaya/codela-storefront/pull/22), [merge c0e5a28](https://github.com/muhammetdkaya/codela-storefront/commit/c0e5a287b1f58a7845c6769761e4efd4199d6c70). [CI + gerçek deploy 38578243841](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38578243841) başarılı; [mobil/masaüstü canlı native galeri kabulü 38578622890](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38578622890) başarılı; [24 örneklik canlı performans 38578623047](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38578623047) bütçe **geçti**.

@@ -37,6 +37,7 @@ function codela_sf_style_version(): string {
 }
 require_once get_template_directory() . '/inc/render.php';
 require_once get_template_directory() . '/inc/media.php';
+require_once get_template_directory() . '/inc/navigation.php';
 require_once get_template_directory() . '/inc/media-optimization.php';
 require_once get_template_directory() . '/inc/product.php';
 require_once get_template_directory() . '/inc/account.php';
@@ -67,6 +68,7 @@ add_action( 'init', function() {
         'codela-storefront/cart'    => [ 'scripts/cart-controller.js', [ 'codela-storefront/format' ] ],
         'codela-storefront/overlay' => [ 'scripts/overlay-controller.js', [] ],
         'codela-storefront/dock'    => [ 'scripts/dock-controller.js', [] ],
+        'codela-storefront/navigation' => [ 'scripts/navigation-controller.js', [ '@wordpress/interactivity', [ 'id' => '@wordpress/interactivity-router', 'import' => 'dynamic' ] ] ],
         'codela-storefront'         => [ 'storefront.js', [
             '@wordpress/interactivity',
             'codela-storefront/search',
@@ -77,6 +79,10 @@ add_action( 'init', function() {
     ];
     foreach ( $modules as $id => [ $file, $deps ] ) {
         wp_register_script_module( $id, $asset_url . $file, $deps, codela_sf_script_module_version( $file ) );
+    }
+    // Core 6.9+ marks non-block script modules explicitly for router reuse.
+    if ( codela_sf_seamless_core_supported() ) {
+        wp_interactivity()->add_client_navigation_support_to_script_module( 'codela-storefront/navigation' );
     }
     register_block_type( 'codela/storefront-header', [ 'api_version' => 3, 'render_callback' => 'codela_sf_header', 'supports' => [ 'interactivity' => true, 'html' => false, 'inserter' => false ] ] );
     register_block_type( 'codela/storefront-home', [ 'api_version' => 3, 'render_callback' => 'codela_sf_home', 'supports' => [ 'html' => false, 'inserter' => false ] ] );
@@ -114,6 +120,10 @@ add_action( 'wp_enqueue_scripts', function() {
         wp_enqueue_script( 'codela-storefront-auth', $root_uri . 'scripts/auth.js', [], $style_version, true );
     }
     wp_enqueue_script_module( 'codela-storefront' );
+    if ( codela_sf_seamless_allowed() ) {
+        wp_enqueue_style( 'codela-storefront-route-loading', $root_uri . 'styles/navigation-loading.css', [ 'codela-storefront-components' ], $style_version );
+        wp_enqueue_script_module( 'codela-storefront/navigation' );
+    }
     if ( function_exists( 'codela_storefront_design_enqueue' ) ) { codela_storefront_design_enqueue( 'codela-storefront-theme' ); }
     if ( class_exists( '\Codela\Includes\StoreAppearance' ) ) {
         $accent = \Codela\Includes\StoreAppearance::get_accent_color();

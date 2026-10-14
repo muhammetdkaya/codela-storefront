@@ -45,7 +45,7 @@ function codela_sf_header(): string {
             <header class="sf-auth-site-header" aria-label="<?php esc_attr_e( 'Your account', 'codela-storefront' ); ?>">
                 <div class="sf-auth-brand">
                     <?php if ( has_custom_logo() ) { the_custom_logo(); } else { ?>
-                    <a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( $settings['brand'] ?: get_bloginfo( 'name' ) ); ?></a>
+                    <a data-sf-route="home" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( $settings['brand'] ?: get_bloginfo( 'name' ) ); ?></a>
                     <?php } ?>
                 </div>
                 <a class="sf-auth-store-link sf-ui-pressable" href="<?php echo esc_url( home_url( '/' ) ); ?>">
@@ -99,7 +99,7 @@ function codela_sf_header(): string {
         <?php if ( $show_mobile_dock ) : ?>
         <nav class="sf-mobile-dock<?php echo is_front_page() || is_account_page() ? ' has-selection' : ''; ?>" style="--sf-dock-index:<?php echo is_account_page() ? 3 : 0; ?>" aria-label="<?php esc_attr_e( 'Mobile navigation', 'codela-storefront' ); ?>">
             <div class="sf-dock-surface">
-            <a data-dock-view="home" class="sf-dock-item sf-ui-nav-tab <?php echo esc_attr( is_front_page() ? 'is-active' : '' ); ?>" href="<?php echo esc_url( home_url( '/' ) ); ?>" <?php if ( is_front_page() ) : ?>aria-current="page"<?php endif; ?>>
+            <a data-dock-view="home" data-sf-route="home" class="sf-dock-item sf-ui-nav-tab <?php echo esc_attr( is_front_page() ? 'is-active' : '' ); ?>" href="<?php echo esc_url( home_url( '/' ) ); ?>" <?php if ( is_front_page() ) : ?>aria-current="page"<?php endif; ?>>
                 <?php echo codela_sf_icon( 'house' ); ?><span><?php esc_html_e( 'Home', 'codela-storefront' ); ?></span>
             </a>
             <a data-dock-view="search" class="sf-dock-item sf-ui-nav-tab" href="<?php echo esc_url( add_query_arg( [ 's' => '', 'post_type' => 'product' ], home_url( '/' ) ) ); ?>" data-wp-on--click="actions.search" data-panel="search" aria-haspopup="dialog" aria-expanded="false" aria-label="<?php esc_attr_e( 'Search', 'codela-storefront' ); ?>">

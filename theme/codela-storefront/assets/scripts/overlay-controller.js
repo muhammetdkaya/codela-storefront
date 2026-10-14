@@ -187,12 +187,12 @@ export function createOverlayController({
                 {opacity:1,transform:'translate3d(0,0,0)'},
                 {opacity:0,transform:'translate3d(0,-12px,0)'},
             ], {duration:280,easing:'ease-in',fill:'forwards'});
-            panelMotion.onfinish = finishClose;
+            panelMotion.onfinish = () => finishClose();
             return;
         }
         finishClose();
     }
-    function finishClose() {
+    function finishClose(navigating = false) {
         surfaceMotion?.cancel(); surfaceMotion = null;
         panelMotion?.cancel(); panelMotion = null;
         closing = false;
@@ -204,11 +204,23 @@ export function createOverlayController({
         restoreStyle(document.body, savedBodyStyle); savedBodyStyle = null;
         const bar = $('#wpadminbar'); if (bar) restoreStyle(bar, savedAdminStyle);
         savedAdminStyle = null; dialog.style.removeProperty('--sf-admin-offset');
-        window.scrollTo({top:savedY, left:0, behavior:'instant'});
-        dockScrollPositions.set(window, {position:savedY, distance:0});
-        if (opener?.isConnected) opener.focus({preventScroll:true});
+        if (!navigating) {
+            window.scrollTo({top:savedY, left:0, behavior:'instant'});
+            dockScrollPositions.set(window, {position:savedY, distance:0});
+            if (opener?.isConnected) opener.focus({preventScroll:true});
+        }
+        opener = null;
     }
     
+    function closeForNavigation() {
+        // Closing the menu before a router click must not jump to the old
+        // scroll position, restore focus to stale content, or wait 280ms.
+        if (!dialog?.open) return;
+        panelMotion?.cancel(); panelMotion = null;
+        surfaceMotion?.cancel(); surfaceMotion = null;
+        finishClose(true);
+    }
+
     function bind(element) {
         if (dialog && dialog !== element) throw new Error('Overlay controller already bound');
         if (dialog) return;
@@ -238,6 +250,7 @@ export function createOverlayController({
         open,
         toggleMenu,
         close,
+        closeForNavigation,
         animateContent: animatePanelContent,
         getCurrent: () => current,
         getDialog: () => dialog,
