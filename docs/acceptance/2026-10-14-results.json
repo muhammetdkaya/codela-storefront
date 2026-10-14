@@ -1,0 +1,263 @@
+{
+  "date": "2026-10-14T19:51:20.392Z",
+  "theme": {
+    "version": "0.1.84",
+    "source_sha": "ae1f412794cb9c24be3dbd944d603e149e2e2344",
+    "package_sha256": "034e0533ded81d72be9bce31879f2168d0f63d222531f703e8619a1f6933687a"
+  },
+  "test_source": "81761b4996c62e0a858c018b48edd53c16489b8f",
+  "workflow_run": 38626619124,
+  "jobs": [
+    {
+      "id": 116067278951,
+      "name": "acceptance (7.1.3, 11.2.1)",
+      "conclusion": "success"
+    },
+    {
+      "id": 116067279685,
+      "name": "acceptance (6.5.5, 9.0.2)",
+      "conclusion": "success"
+    }
+  ],
+  "results": [
+    {
+      "versions": {
+        "wordpress": "7.1.3",
+        "woocommerce": "11.2.1",
+        "codela": "1.1.1",
+        "theme": "0.1.84"
+      },
+      "engine": "chromium",
+      "checks": [
+        {
+          "name": "real category, price order/filter and native AJAX add"
+        },
+        {
+          "name": "real simple, out-of-stock, grouped, external and variable product forms"
+        },
+        {
+          "name": "Real WP import map and child-module update in an existing browser cache"
+        },
+        {
+          "name": "Delayed real Store API GET cannot overwrite a newer successful theme POST"
+        },
+        {
+          "name": "Cart block ↔ theme quantity/remove, coupon and single theme POST",
+          "mutations": [
+            "/wp-json/wc/store/v1/cart/update-item",
+            "/wp-json/wc/store/v1/cart/update-item",
+            "/wp-json/wc/store/v1/batch",
+            "/wp-json/wc/store/v1/cart/update-item",
+            "/wp-json/wc/store/v1/cart/update-item",
+            "/wp-json/wc/store/v1/batch",
+            "/wp-json/wc/store/v1/cart/update-item",
+            "/wp-json/wc/store/v1/cart/update-item",
+            "/wp-json/wc/store/v1/cart/update-item"
+          ]
+        },
+        {
+          "name": "Classic cart ↔ theme quantity synchronization"
+        },
+        {
+          "name": "Classic checkout recalculation preserves fields; real local COD order succeeds"
+        },
+        {
+          "name": "Real Checkout block consumes theme cart updates"
+        },
+        {
+          "name": "Actual core router slow skeleton, same shell, back/forward and refresh"
+        },
+        {
+          "name": "Admin batch real WebP encode, anonymous denial and nonce enforcement",
+          "optimized": 7
+        },
+        {
+          "name": "Actual Codela signed-in account/dashboard/orders ownership"
+        }
+      ],
+      "status": "passed"
+    },
+    {
+      "versions": {
+        "wordpress": "7.1.3",
+        "woocommerce": "11.2.1",
+        "codela": "1.1.1",
+        "theme": "0.1.84"
+      },
+      "engine": "webkit",
+      "checks": [
+        {
+          "name": "real category, price order/filter and native AJAX add"
+        },
+        {
+          "name": "real simple, out-of-stock, grouped, external and variable product forms"
+        },
+        {
+          "name": "Real WP import map and child-module update in an existing browser cache"
+        },
+        {
+          "name": "Delayed real Store API GET cannot overwrite a newer successful theme POST"
+        },
+        {
+          "name": "Cart block ↔ theme quantity/remove, coupon and single theme POST",
+          "mutations": [
+            "/wp-json/wc/store/v1/cart/update-item",
+            "/wp-json/wc/store/v1/cart/update-item",
+            "/wp-json/wc/store/v1/batch",
+            "/wp-json/wc/store/v1/cart/update-item",
+            "/wp-json/wc/store/v1/cart/update-item",
+            "/wp-json/wc/store/v1/batch",
+            "/wp-json/wc/store/v1/cart/update-item",
+            "/wp-json/wc/store/v1/cart/update-item",
+            "/wp-json/wc/store/v1/cart/update-item"
+          ]
+        },
+        {
+          "name": "Classic cart ↔ theme quantity synchronization"
+        },
+        {
+          "name": "Classic checkout recalculation preserves fields; real local COD order succeeds"
+        },
+        {
+          "name": "Real Checkout block consumes theme cart updates"
+        },
+        {
+          "name": "Actual core router slow skeleton, same shell, back/forward and refresh"
+        },
+        {
+          "name": "Admin batch real WebP encode, anonymous denial and nonce enforcement",
+          "optimized": 7
+        },
+        {
+          "name": "Actual Codela signed-in account/dashboard/orders ownership"
+        }
+      ],
+      "adminPageErrors": [
+        "/127.0.0.1:8888/wp-admin/admin-ajax.php due to access control checks.",
+        "/127.0.0.1:8888/wp-admin/admin-ajax.php?redacted due to access control checks.",
+        "/127.0.0.1:8888/wp-admin/admin-ajax.php?redacted due to access control checks."
+      ],
+      "status": "passed"
+    },
+    {
+      "versions": {
+        "wordpress": "6.5.5",
+        "woocommerce": "9.0.2",
+        "codela": "1.1.1",
+        "theme": "0.1.84"
+      },
+      "engine": "chromium",
+      "checks": [
+        {
+          "name": "real category, price order/filter and native AJAX add"
+        },
+        {
+          "name": "real simple, out-of-stock, grouped, external and variable product forms"
+        },
+        {
+          "name": "Real WP import map and child-module update in an existing browser cache"
+        },
+        {
+          "name": "Delayed real Store API GET cannot overwrite a newer successful theme POST"
+        },
+        {
+          "name": "Cart block ↔ theme quantity/remove, coupon and single theme POST",
+          "mutations": [
+            "/wp-json/wc/store/v1/batch",
+            "/wp-json/wc/store/v1/cart/update-item",
+            "/wp-json/wc/store/v1/batch",
+            "/wp-json/wc/store/v1/batch",
+            "/wp-json/wc/store/v1/cart/update-item",
+            "/wp-json/wc/store/v1/batch",
+            "/wp-json/wc/store/v1/cart/update-item",
+            "/wp-json/wc/store/v1/cart/update-item",
+            "/wp-json/wc/store/v1/cart/update-item"
+          ]
+        },
+        {
+          "name": "Classic cart ↔ theme quantity synchronization"
+        },
+        {
+          "name": "Classic checkout recalculation preserves fields; real local COD order succeeds"
+        },
+        {
+          "name": "Real Checkout block consumes theme cart updates"
+        },
+        {
+          "name": "Core router unsupported: native document fallback retained"
+        },
+        {
+          "name": "Admin batch real WebP encode, anonymous denial and nonce enforcement",
+          "optimized": 7
+        },
+        {
+          "name": "Actual Codela signed-in account/dashboard/orders ownership"
+        }
+      ],
+      "status": "passed"
+    },
+    {
+      "versions": {
+        "wordpress": "6.5.5",
+        "woocommerce": "9.0.2",
+        "codela": "1.1.1",
+        "theme": "0.1.84"
+      },
+      "engine": "webkit",
+      "checks": [
+        {
+          "name": "real category, price order/filter and native AJAX add"
+        },
+        {
+          "name": "real simple, out-of-stock, grouped, external and variable product forms"
+        },
+        {
+          "name": "Real WP import map and child-module update in an existing browser cache"
+        },
+        {
+          "name": "Delayed real Store API GET cannot overwrite a newer successful theme POST"
+        },
+        {
+          "name": "Cart block ↔ theme quantity/remove, coupon and single theme POST",
+          "mutations": [
+            "/wp-json/wc/store/v1/batch",
+            "/wp-json/wc/store/v1/cart/update-item",
+            "/wp-json/wc/store/v1/batch",
+            "/wp-json/wc/store/v1/batch",
+            "/wp-json/wc/store/v1/cart/update-item",
+            "/wp-json/wc/store/v1/batch",
+            "/wp-json/wc/store/v1/cart/update-item",
+            "/wp-json/wc/store/v1/cart/update-item",
+            "/wp-json/wc/store/v1/cart/update-item"
+          ]
+        },
+        {
+          "name": "Classic cart ↔ theme quantity synchronization"
+        },
+        {
+          "name": "Classic checkout recalculation preserves fields; real local COD order succeeds"
+        },
+        {
+          "name": "Real Checkout block consumes theme cart updates"
+        },
+        {
+          "name": "Core router unsupported: native document fallback retained"
+        },
+        {
+          "name": "Admin batch real WebP encode, anonymous denial and nonce enforcement",
+          "optimized": 7
+        },
+        {
+          "name": "Actual Codela signed-in account/dashboard/orders ownership"
+        }
+      ],
+      "browserNotifications": [
+        "ResizeObserver loop completed with undelivered notifications."
+      ],
+      "adminPageErrors": [
+        "/127.0.0.1:8888/wp-admin/admin-ajax.php due to access control checks."
+      ],
+      "status": "passed"
+    }
+  ]
+}

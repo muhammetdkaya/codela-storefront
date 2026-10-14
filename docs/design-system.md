@@ -1,7 +1,13 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.72 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.84 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
+
+## Current material — 14 October2026
+
+Current shared floating surface: `rgba(247,247,249,.96)`, single background, no gradient; blur10px/saturate115%/contrast1/brightness1. Historical28% alpha/contrast-brightness notes below are superseded; do not add a second visible colour layer.
+
+Native Woo controls under theme .sf-content use the existing shared Button presentation, excluding explicit quiet/secondary variants and body.codela-my-account-layout. Legacy global Woo button paint was removed in0.1.82; signed-in Codela account remains plugin-owned. [Current acceptance](acceptance/2026-10-14.md).
 
 ## One design, not one enormous universal widget
 

@@ -1,3 +1,15 @@
+# Woo cart synchronization — current acceptance
+
+14 October2026: theme0.1.84 deployed; İki WP/Woo ailesinde Chromium ve WebKit'in 11'er gerçek akışı başarılı (4/4 ortam) in [real WP/Woo/Codela workflow](https://github.com/muhammetdkaya/codela/actions/runs/38626619124). [Evidence and limits](acceptance/2026-10-14.md).
+
+The single existing cart controller observes an already registered store by exported wc.wcBlocksData.cartStore descriptor, otherwise public wc/store/cart (Woo9); selectors are checked first. No new Blocks bundle, polling, normalized REST JSON injection, subscription or second cart engine.
+
+Real Cart/Checkout Blocks, classic cart/checkout field retention/local COD, AJAX add, coupons/removal and delayed GET/new POST are exercised in both WP/Woo families under Chromium/WebKit. Contract tests retain failed-POST/nonce/trailing-refresh coverage. Do not claim those error cases were exercised in live production.
+
+## Historical0.1.51 record
+
+The “outstanding” statements below describe the earlier stage, not the current acceptance. Physical device/payment-provider/offload limits remain explicit in the current report.
+
 # Woo cart synchronization — outstanding acceptance
 
 The production deployment of `71fa373` is verified in Actions 38262389955.
