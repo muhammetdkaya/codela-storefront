@@ -73,16 +73,20 @@ function finishLoading() {
     window.clearTimeout(timer);
     clearPlaceholder();
 }
-function commitLocation() {
+function commitLocation({ focus = false } = {}) {
     const url = routerState.url || location.href;
-    if (previousUrl === url) return;
+    const changed = previousUrl !== url;
     previousUrl = url;
-    if (!document.querySelector(REGION)) return;
-    applyLocation();
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     const main = document.querySelector(REGION);
-    main.setAttribute('tabindex', '-1');
-    main.focus({ preventScroll: true });
+    if (!main) return;
+    if (changed) applyLocation();
+    // Explicit clicks start at the new content. History traversal keeps the
+    // browser/core scroll restoration and focus rather than forcing the top.
+    if (focus) {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+        main.setAttribute('tabindex', '-1');
+        main.focus({ preventScroll: true });
+    }
 }
 // URL is public across supported core versions; lifecycle flags are not.
 // Explicit clicks use the native navigate() promise for loading feedback.
@@ -119,6 +123,6 @@ document.addEventListener('click', event => {
     }).finally(() => {
         if (generation !== navigationGeneration) return;
         finishLoading();
-        commitLocation();
+        commitLocation({ focus: true });
     });
 });

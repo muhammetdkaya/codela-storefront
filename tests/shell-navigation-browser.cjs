@@ -38,6 +38,17 @@ const main=(type='home')=>'<main id="sf-content" class="sf-content" data-wp-rout
   await page.waitForTimeout(70);
   assert.equal(await page.locator('.sf-route-skeleton').count(),0,'Quick navigation never displays placeholder');
   assert.equal(await page.locator('.sf-dock-item').getAttribute('aria-current'),'page','Home active again');
+  // A history URL update does not force scroll/focus as an explicit click does.
+  await page.evaluate(()=>{
+    window.__historyScrollCalls=0;
+    const original=window.scrollTo;
+    window.scrollTo=()=>{window.__historyScrollCalls++};
+    window.__routeState.url='https://store.test/about/';
+    window.__watchers.forEach(fn=>fn());
+    window.scrollTo=original;
+  });
+  assert.equal(await page.evaluate(()=>window.__historyScrollCalls),0,'History traversal retains browser/core scroll ownership');
+  assert.equal(await page.locator('.sf-dock-item').getAttribute('aria-current'),null,'History updates dock selection');
   // Native checkout and modified-clicks are not intercepted.
   const before=await page.evaluate(()=>window.__routeCalls||0);
   await page.locator('#to-content').click({modifiers:['Control']});

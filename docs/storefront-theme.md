@@ -1,5 +1,12 @@
 # Codela Storefront — güncel teknik durum
 
+## 14 Ekim 2026 / 0.1.84 — navigasyon yükleme geri bildirimi ve history sahipliği (yayın bekliyor)
+
+- 0.1.83'ün cart store fallback'i ve native navigate promise düzeltmesi korunur. Aynı URL watcher explicit tık ve history dönüşünü ayırır: yalnız explicit geçiş yeni main'e focus/scroll-top yapar; geri/ileri tarayıcı/WordPress scroll ve focus sahipliğini korur.
+- Eski kurulu WordPress router'ı state.navigating sunmuyor ve loadingAnimation=false halinde kendi eski hasStarted bayrağını da yayımlamıyor; 160ms skeleton mevcut controller'ın native navigate promise'inden başlar. Yeni router/cache/history motoru eklenmedi.
+- Descriptor olmayan Woo store ve lifecycle anahtarı olmayan router regresyonları eklendi; history URL değişiminin scroll-top yapmadığı ayrıca kontrol edilir.
+- CI, gerçek FTP, current/minimum WP-Woo Chromium/WebKit matrisi ve canlı post-deploy sonuçları kapanışta kaydedilecek. 0.1.83 ara çalışma; son hedef 0.1.84. Canlı admin backfill ve fiziksel cihaz erişimi aynı engellerdir.
+
 ## 14 Ekim 2026 / 0.1.83 — gerçek WP/Woo kabulünde bulunan uyumluluk düzeltmeleri (yayın bekliyor)
 
 - 0.1.82 canlıda; native Woo Button adaptörü ve plugin account dışlaması CI'da geçti, gerçek FTP 38613631082 başarılı. Canlı galeri/shell/native continuity ve WebKit 38614373732 başarılı. 24 lab audit 38614000776: mobil cold medyan home LCP 2496ms, product 1816ms, CLS 0. İlk WebKit kontrolü eski sürüm sabiti nedeniyle yanlış alarm verdi; test >=0.1.81 için düzeltildi ve tekrar geçti.
