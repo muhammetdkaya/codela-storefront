@@ -1,0 +1,46 @@
+/* Only the router-owned main region changes; header, dialog and dock stay mounted.
+   The 160ms JS delay prevents placeholder flashes on cache-hot transitions. */
+#sf-content.sf-route-loading{
+  position:relative;
+  min-height:clamp(420px,72svh,820px);
+  isolation:isolate;
+}
+#sf-content.sf-route-loading > :not(.sf-route-skeleton){visibility:hidden}
+#sf-content > .sf-route-skeleton{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  min-height:100%;
+  box-sizing:border-box;
+  padding:clamp(22px,5vw,52px) max(20px,5vw);
+  background:var(--sf-ui-surface,#fff);
+  pointer-events:none;
+}
+.sf-route-skeleton :is(.sf-route-hero,.sf-route-line,.sf-route-cards>div,.sf-route-heading,.sf-route-entry i,.sf-route-entry span){
+  display:block;
+  background:#eeeeee;
+  border-radius:12px;
+  animation:sf-route-pulse 1.5s ease-in-out infinite;
+}
+.sf-route-skeleton .sf-route-heading{width:min(62%,430px);height:28px;margin:6px 0 38px}
+.sf-route-skeleton .sf-route-entry{display:flex;align-items:center;gap:22px;max-width:730px;margin:0 0 28px}
+.sf-route-skeleton .sf-route-entry i{flex:0 0 76px;height:76px;border-radius:50%}
+.sf-route-skeleton .sf-route-entry>div{width:75%;display:grid;gap:12px}
+.sf-route-skeleton .sf-route-entry span{height:14px;width:100%}
+.sf-route-skeleton .sf-route-entry span:last-child{width:68%;height:12px}
+.sf-route-skeleton .sf-route-hero{width:100%;height:min(54svh,450px);border-radius:16px;margin:0 0 32px}
+.sf-route-skeleton .sf-route-line{width:min(50%,300px);height:22px;margin:0 0 22px}
+.sf-route-skeleton .sf-route-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.sf-route-skeleton .sf-route-cards>div{height:clamp(120px,18vw,200px)}
+@keyframes sf-route-pulse{0%,100%{opacity:.78}50%{opacity:1}}
+@media(max-width:700px){
+  .sf-route-skeleton .sf-route-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .sf-route-skeleton .sf-route-entry{gap:16px}
+  .sf-route-skeleton .sf-route-entry i{flex-basis:64px;height:64px}
+}
+@media(prefers-reduced-motion:reduce){
+  .sf-route-skeleton *{animation:none!important}
+}
+@media(forced-colors:active){
+  .sf-route-skeleton :is(.sf-route-hero,.sf-route-line,.sf-route-cards>div,.sf-route-heading,.sf-route-entry i,.sf-route-entry span){border:1px solid CanvasText}
+}
