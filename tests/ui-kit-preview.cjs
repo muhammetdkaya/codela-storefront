@@ -36,7 +36,7 @@ const demoCSS=[
    await page.screenshot({path:'qa/storefront-ui-kit-'+width+'.png',fullPage:true,animations:'disabled'});
    if(width===390){
     // Actual fixed Header/Dock over text and color, not a blank white backdrop.
-    await page.setContent('<style>'+css+'body{margin:0;background:#f8f7f4;font:18px system-ui}.qa-band{position:fixed;left:0;right:0;padding:4px;font-size:23px;line-height:30px;letter-spacing:1px;background:linear-gradient(90deg,#dfdbd4,#c4d1d3,#f3e1c9);z-index:0}.qa-top{top:0;height:70px}.qa-bottom{bottom:0;height:100px}.qa-copy{margin:110px 20px;line-height:1.6}</style><div class="qa-band qa-top">BACKDROP TEXT AND CONTENT<br>234567890 · products · store</div><div class="qa-band qa-bottom">BACKDROP TEXT AND CONTENT<br>234567890 · products · store</div>'+header+'<div class="qa-copy">Shared glass material<br>Content shows through the surface.</div>');
+    await page.setContent('<style>'+css+'body{margin:0;background:#f8f7f4;font:18px system-ui}.qa-band{position:fixed;left:0;right:0;padding:4px;font-size:23px;line-height:30px;letter-spacing:1px;background:linear-gradient(90deg,#dfdbd4,#c4d1d3,#f3e1c9);z-index:0}.qa-top{top:0;height:70px}.qa-bottom{bottom:0;height:100px}.qa-copy{margin:110px 20px;line-height:1.6}</style><div class="qa-band qa-top">BACKDROP TEXT AND CONTENT<br>234567890 · products · store</div><div class="qa-band qa-bottom">BACKDROP TEXT AND CONTENT<br>234567890 · products · store</div>'+header+'<div class="qa-copy">Shared legible material<br>Content remains behind the surface.</div>');
     await page.screenshot({path:'qa/storefront-ui-kit-glass-'+width+'.png'});
     await page.locator('.sf-mobile-dock').evaluate(el=>el.classList.add('is-pressing'));
     await page.waitForTimeout(150);
