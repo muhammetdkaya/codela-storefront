@@ -5,7 +5,7 @@
 
 - Tema 0.1.69 → 0.1.70: kullanıcı satın alma ve genel alt menünün birlikte daha aşağıda olmasını istedi. Ortak `sf-ui-bottom-bar-gap` 12px → 4px; normal dock, dialog dock ve satın alma aynı alt hizayı tüketir. Tam safe-area payı korunur; 58px yükseklik ve 430px azami genişlik değişmez.
 - Yalnız ortak ölçü token'ı değişti; yeni JS/istek/cihaz dalı yok. Tarayıcı kontrolü satın alma ve dialog dock'unun alt hizasını karşılaştırır.
-- Doğrulama/yayın: 23 paket testi başarılı. CI alt-hiza karşılaştırması ve dağıtım/canlı kaynak doğrulaması bekliyor.
+- Doğrulama/yayın: 23 paket testi başarılı. CI 5 genişlikte ürün/gezinme kontrolleri ve satın alma/dialog dock alt-kenar eşitliği başarılı. Kaynak 9f06b3f36e4d2f7455515a970c8f047d3bc6c89a / Actions 38511205343 validate=success, deploy=success. Gerçek Deploy Storefront only deploy.py başarı loguyla doğrulandı. Canlı Demo 20 CSSOM: ortak gap=4px, height=58px; navigation ve purchase aynı gap+safe-area formülünü kullanıyor. Fiziksel mobil tarayıcı araç çubuğu kontrolü bu otomatik ölçümün yerine geçmez.
 - Kalan/sıradaki: fiziksel mobil tarayıcı araç çubuğu ve klavye/safe-area kabulü, gerçek varyasyon/grup/harici ürün kabulü, dönüşüm araçları bütünlüğü. Slider duraklatıldı; F3/F4/F5/F6 ve mevcut animasyon testinin CI zamanlaması kararlılığı açık.
 
 ## Son doğrulanmış devam noktası — 14 Ekim 2026 / 0.1.69
