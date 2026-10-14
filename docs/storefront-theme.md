@@ -1,5 +1,16 @@
 # Codela Storefront — güncel teknik durum
 
+## 14 Ekim 2026 / 0.1.78 — otomatik WebP üretimi, kontrollü eski görsel dönüşümü ve galeri aktarımı (canlıda)
+
+- **Kaynak/yayın:** 0.1.77 → **0.1.78**; [PR #22](https://github.com/muhammetdkaya/codela-storefront/pull/22), [squash c0e5a28](https://github.com/muhammetdkaya/codela-storefront/commit/c0e5a287b1f58a7845c6769761e4efd4199d6c70), [CI + Deploy 38578243841](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38578243841) validate ve Deploy Storefront only başarılı. Eklenti sürümü değişmedi.
+- **WebP otomasyonu:** WordPress `image_editor_output_format` mapping ile, sunucu WebP yazabiliyorsa yeni JPEG ara boyutları WebP olur; varsa başka JPEG dönüşüm haritası ezilmez. Full orijinal JPEG ve eski dosyalar korunur. GIF/PNG'ye müdahale yok. AVIF otomatik seçilmez. Sayfa açılışında PHP resim dönüştürmez.
+- **Mevcut dosyalar:** Medya → Görsel optimizasyonu `manage_options` + nonce ile bir dosya/istek; yalnız daha küçük WebP ara boyutu WordPress `sizes` metadata'sına alınır. Eski JPEG ara dosyası/fulls silinmez. İşlem yönetici tarafından başlatılır; **codela.dev eski JPEG dosyaları henüz dönüştürülmedi**. Sitede gerçek encode, özel medya ve offload eklentileriyle bütünleşme açık.
+- **Galeri:** yalnız hero eager/high; ikincil büyük görseller başlangıçta küçük Woo thumbnail `src` olarak gelir; `srcset/sizes` ve full URL data'da korunur. Native slider aktif sınıfı/thumbnail etkileşimi/touch/klavye ile gerektiğinde gerçek görsel istenir. Woo PhotoSwipe bağlantısı, varyasyon ve satın alma kodu değişmez.
+- **Gerçek kabul:** [galeri acceptance 38578622890](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38578622890): 390/1280px native slide seçimleri, PhotoSwipe aç/kapat, galeri ve özet stabil, canlı tokens.css?ver=0.1.78; başarılı.
+- [24 örneklik post-deploy audit 38578623047](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38578623047): mobil cold ürün LCP medyan 1592ms (bütçe ≤2500), ana sayfa 2312ms (≤2800), CLS **0** (≤0.1). İki görünmeyen ikincil galeri büyük JPG'inin önceki 223188 byte başlangıç transferi yeni sayfada **8458 byte** küçük thumbnail transferi oldu (yaklaşık **%96.2 daha az**, ikincil grup); bu jpeg→WebP kazancı değil, ilk yüklemede büyük isteklerin ertelenmesidir. Üç cold örnekte aynı. Lab ortamı ile fiziksel Safari/field CWV ayrımı korunur.
+- **Açık:** gerçek WordPress sunucusunda yeni JPEG upload'ın codec uyumu; Media admin batch backfill/özellikle çok büyük dosya ve nonlocal medya; gerçek varying/gallery uyumu; görsel kalitesi ve fiziksel cihaz; F3/F4/F5/F6'nın diğer açık kabulleri.
+- **Sıradaki iş:** admin backfill'i az sayıda JPG üzerinde doğrula, önce-sonra JPEG/WebP dosya ve WordPress metadata değişimini karşılaştır, sonra kontrollü eski medya gruplarında ilerle. Müşteri/kullanıcıya ait medya işlemi yapmadan önce görsel yedeği al. Native galeriyi ve Safari'yi test etmeye devam et.
+
 ## 14 Ekim 2026 / 0.1.78 — otomatik WebP ve ihtiyaç üzerine ürün görseli (doğrulama bekliyor)
 
 **Kapsam:** 0.1.77 → 0.1.78 yalnız medya üretimi, Media bakım aracı ve Woo ürün galerisinde veri aktarımı. Codela eklenti sürümü değişmez. Native Woo slider, cart/checkout, ortak UI ve tam ekran orijinal görseller korunur.
