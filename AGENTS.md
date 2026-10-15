@@ -1,12 +1,12 @@
 # Codela Storefront — güncel çalışma kuralları
 
-## Son doğrulanmış devam noktası —15 Ekim2026 /0.1.88 hazırlanıyor
+## Son doğrulanmış devam noktası —15 Ekim2026 /0.1.88 canlı
 
-- Kullanıcı örnek listeleme tasarımlarını inceletti ve ortak kart iyileştirmesini onayladı.88: görsel1:1 contain/şeffaf dış yüzey; küçük iki satır başlık; native fiyat ve mevcut secondary Button aynı alt satırda. Simple “Add”, variable “Options”; external/grouped native metinleri korunur. Stoksuz ürün badge ile gösterilir, satın alma/Read more düğmesi kaldırılır.
-- Tek native Woo content-product.php korunur. inc/catalog.php yalnız mevcut hook sırasını düzenler: link5'te kapanır, footer6'da native fiyatı açar, Woo10'da kendi aksiyonunu basar, footer99'da kapanır. Woo AJAX/URL/data/ARIA değiştirilmez; yeni kart JS/carousel/API veya sahte renk göstergesi yok.
-- Button paint/focus/pressed/disabled/a11y mevcut components.css'te; aynı primitive selector'ları tema sf-content için genişletildi, catalog.css yalnız kart/ölçü/hiza. Signed-in Codela hesap dışlanır. Header87 eşitliği ve tek store/dialog/dock korunur.
--88 kaynak hazır; CI/FTP/canlı ve güncel native matris henüz bekliyor. Son doğrulanmış canlı87; [87 kabul](docs/acceptance/2026-10-15-icon-buttons.md) yeni88 sonucu sayılmaz. Yeni paket/hash/source pin'ini yayın sonrası güncelle.
-- Eklenti runtime1.1.1/WordPress.org ve dondurulmuş0.1.1 tema değişmez. Açık: fiziksel iPhone Safari/GPU/toolbar/safe-area, eski JPEG canlı admin backfill (kullanıcı istemeden giriş isteme), gerçek payment-provider/üçüncü taraf medya kabulü. Sıradaki iş88 CI/FTP/canlı/native sonucu ve görsel kabulü.
+- Tema0.1.87→0.1.88; [kaynakd64106c4](https://github.com/muhammetdkaya/codela-storefront/commit/d64106c4d12e58e57d459eb802d5238c7a5a568b), [CI+gerçek FTP38678440344](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38678440344) başarılı; deploy03:54:21.1422094Z. Eklenti1.1.1 runtime/WordPress.org değişmedi.
+- Ortak native kart home/shop/category/ürün arama/related/upsell/cross-sell:1:1 contain/şeffaf dış yüzey, küçük iki satır normal başlık, native fiyat+mevcut44px secondary Button aynı footer'da. Simple Ekle, variable Seçenekler; grouped/external native metinleri korunur. Stoksuz badge var, satın alma/Read more aksiyonu yok. Sahte renk noktası/puan yok.
+- Tek content-product.php ve native hook/URL/AJAX/data/ARIA korunur. components.css aynı Button deklarasyonlarını sf-content'e bağlar; catalog.css boyut/hiza. Google grid aynı primitive specialization içinde korunur; signed-in Codela hesap dışlanır. Yeni JS/kopya paint/controller yok. Header87 Cart/Menu44×44 ve tek store/dialog/dock değişmedi.
+- [88 kabul/ham sonuç](docs/acceptance/2026-10-15-catalog.md): tüm CI/beş canlı gate başarılı. Gerçek Türkçe WebKit ekranı incelendi; yeni kart/stockless/secondary ve Header eşitliği doğrulandı. Yeni gerçek WP6.5.5/Woo9.0.2 ile WP7.1.3/Woo11.2.1, Chromium/WebKit13'er check (4/4 ortam,52 kayıt). Test kaynağıb684671cfad86573043da579a32760e25d395e1f; paket/hash/source pin'i güncel.87 kanıtı88 sayılmadı.
+- Bu uygulama/yayın/test tamamlandı; yeniden başlatma. Sonraki iş kullanıcının görsel beğeni onayı ve fiziksel iPhone Safari/GPU/toolbar/safe-area kabulü. Eski JPEG canlı admin backfill (kullanıcı istemeden giriş isteme), gerçek payment-provider ve üçüncü taraf medya kabulü açık. Dondurulmuş0.1.1 tema değişmez.
 
 ## Başlangıçta okunacaklar
 

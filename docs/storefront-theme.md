@@ -1,18 +1,20 @@
 # Codela Storefront — güncel teknik durum
 
-15 Ekim2026: **tema0.1.87→0.1.88 hazırlanıyor**. Son doğrulanmış canlı87; Codela eklentisi1.1.1 runtime/WordPress.org değişmedi.88 CI/gerçek FTP/canlı ve native matris henüz bekliyor.
+15 Ekim2026: **tema0.1.87→0.1.88 canlı**, Codela1.1.1 runtime/WordPress.org değişmedi. [Kaynakd64106c4](https://github.com/muhammetdkaya/codela-storefront/commit/d64106c4d12e58e57d459eb802d5238c7a5a568b), [CI+gerçek FTP38678440344](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38678440344) başarılı; deploy03:54:21.1422094Z.
 
-## Ortak ürün kartı —onaylı tasarım yönü
+## Biten iş
 
-Everlane ürün odaklı görsel ve Aesop düzenli bilgi yaklaşımı: tek kare1:1 contain görsel, ikinci gri letterbox yüzeyi yok; daha küçük iki satır başlık; native fiyat solda ve mevcut secondary Button sağda.44px hedef korunur. Simple kısa Add, variable Options; external/grouped native eylem metinleri korunur. Stoksuz badge görselde; Read more/satın alma düğmesi yok. Veri olmayan renk noktaları/yorumlar/dekoratif özellikler eklenmez.
+Tek native content-product.php bütün kart bağlamlarının sahibi.1:1 contain/şeffaf dış görsel yüzeyi, küçük iki satır başlık, native fiyat ve mevcut secondary Button aynı footer'da.44px hedef, simple Ekle/variable Seçenekler; grouped/external native metinleri korunur. Stoksuz badge ve aksiyonsuz kart. Veri olmayan renk noktaları/puan yok.
 
-Home/shop/category/ürün search/related/upsell/cross-sell aynı native content-product.php ve catalog.css kullanır. inc/catalog.php yalnız native hook bileşimi ve Button class adapter'ı sağlar; Woo URL, AJAX, data/ARIA, fiyat/indirim ve form sahipliği korunur. Button görseli/state'leri components.css'teki aynı primitive'dir; yeni kopya paint veya JS yok. Signed-in Codela hesabı dışlanır.
+catalog.php native link kapandıktan sonra mevcut hook'ları birleştirir, Woo URL/AJAX/data/ARIA/fiyat/indirim korunur. components.css aynı Button primitive'ini tema sf-content'e bağlar; catalog.css kart/ölçü/hiza. Google grid specialization korunur; Codela signed-in hesap dışlanır. Yeni JS/carousel/listener/controller/paint kopyası yok. Header87 eşitliği, native Woo form/gallery, tek dialog/dock/store değişmedi.
 
-## Doğrulama ve sonraki iş
+## Doğrulama
 
-Güncellenen hızlı kontroller: PHP hook/bağlam/stock/action/account sınırı;320–1280 ortak kart 5 bağlam,1:1/tek yüzey/fiyat-aksiyon hiza,44px ve stockless/variable ayrımı. Canlı WebKit native footer ve secondary Button kontrolü. Sonuçlar henüz bekliyor;88 paket/hash/source native pin'i yayın sonrası güncellenecek. Header87 ortak44×44, native Woo akışları ve hesap izolasyonu korunmalı.
+[88 kabul/ham sonuç](acceptance/2026-10-15-catalog.md): tüm PHP/JS/24 paket ve Chromium regresyonları; beş canlı gate başarılı. Gerçek Türkçe ürün arama screenshot'ı incelendi;1:1/tek yüzey, fiyat/Ekle, stockless/native footer ve header44×44 doğrulandı. İki WP/Woo ailesinde Chromium/WebKit13'er gerçek check (4/4 ortam,52 kayıt), yeni5 bağlam kart alt kontrolleri dahil; test kaynağıb684671cfad86573043da579a32760e25d395e1f. Paket/hash/source pin'i güncel; önceki87 sonuçları88 diye sunulmadı.
 
-Fiziksel iPhone Safari/GPU/toolbar/safe-area, eski JPEG canlı admin backfill, gerçek payment-provider/üçüncü taraf medya kabulü açık. Kullanıcı istemeden admin girişi isteme.
+## Kalan / sıradaki iş
+
+88 kod/yayın/otomatik kabul tamamlandı; yeniden uygulama/yayın başlatma. Kullanıcının görsel beğeni onayı ve fiziksel iPhone Safari/GPU/toolbar/safe-area ayrıdır. Eski JPEG canlı admin backfill (kullanıcı istemeden giriş isteme), gerçek ödeme sağlayıcısı ve üçüncü taraf medya kabulü açık. Canlı medya işlemi öncesi yedek ve küçük örnek gerekir.
 
 ## Önceki87 teknik kayıt —tarihli
 
