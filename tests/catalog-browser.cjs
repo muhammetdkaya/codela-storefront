@@ -14,7 +14,7 @@ const cards='<ul class="products columns-4">'+[0,1,2,3].map(card).join('')+'</ul
 
 // Verify actual pointer/touch hit testing rather than counting link markup.
 // The native link remains the only details URL; Woo action anchors are independent.
-async function verifyCardHitArea(page,mode,width){
+async function verifyCardHitArea(page,mode,width,useTouch=false){
  const catalog=page.locator('.sf-content ul.products > li.product');
  await page.evaluate(()=>{
   window.__sfCardClickKinds=[];
@@ -28,7 +28,7 @@ async function verifyCardHitArea(page,mode,width){
  const first=catalog.first();
  const rect=async locator=>{const box=await locator.boundingBox();assert(box,'Missing hit-test surface');return box;};
  const tapAt=async (x,y,expected,label)=>{
-  if(width<=700) await page.touchscreen.tap(x,y); else await page.mouse.click(x,y);
+  if(useTouch) await page.touchscreen.tap(x,y); else await page.mouse.click(x,y);
   const got=await page.evaluate(()=>window.__sfCardClickKinds.at(-1)||null);
   assert.equal(got,expected,mode+'/'+width+' '+label+' must click '+expected);
   await page.evaluate(()=>window.__sfCardClickKinds.length=0);
@@ -56,7 +56,7 @@ async function verifyCardHitArea(page,mode,width){
  assert.equal(await first.locator('.sf-product-card-footer > .button').count(),1,'One separate native purchase action');
 }
 (async()=>{const browser=await chromium.launch();
-try{const context=await browser.newContext({hasTouch:true});const page=await context.newPage();await page.route('**/assets/icons/**',r=>r.fulfill({contentType:'image/svg+xml',body:fs.readFileSync(root+'assets/icons/'+new URL(r.request().url()).pathname.split('/').at(-1),'utf8')}));
+try{const page=await browser.newPage();await page.route('**/assets/icons/**',r=>r.fulfill({contentType:'image/svg+xml',body:fs.readFileSync(root+'assets/icons/'+new URL(r.request().url()).pathname.split('/').at(-1),'utf8')}));
 for(const width of [320,390,700,900,1280]){
  await page.setViewportSize({width,height:900});let expectedPaint;
  for(const mode of ['home','shop','category','search','related']){
@@ -155,6 +155,14 @@ for(const width of [320,390,700,900,1280]){
   }else{assert.equal(layout.tools.length,3,'Desktop keeps all tools');assert(layout.menu.x<layout.brand.x);}
  }
 }
+// Separate touch-only context: preserving a keyboard-pointer page keeps
+// :focus-visible regression meaningful on Chromium and WebKit.
+const touchContext=await browser.newContext({hasTouch:true,viewport:{width:390,height:900}});
+const touchPage=await touchContext.newPage();
+await touchPage.route('**/assets/icons/**',r=>r.fulfill({contentType:'image/svg+xml',body:fs.readFileSync(root+'assets/icons/'+new URL(r.request().url()).pathname.split('/').at(-1),'utf8')}));
+await touchPage.setContent('<style>.screen-reader-text{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}'+wooImageCss+wooButtonCss+styles+'</style><body class="woocommerce home"><main class="sf-content"><section class="sf-selection woocommerce">'+cards+'</section></main></body>');
+await verifyCardHitArea(touchPage,'touch-home',390,true);
+await touchContext.close();
 await page.setContent('<style>'+wooImageCss+wooButtonCss+styles+'</style><body class="codela-my-account-layout"><main class="sf-content">'+cards+'</main></body>');
 assert.notEqual(await page.locator('ul.products').evaluate(e=>getComputedStyle(e).display),'grid','Plugin account does not inherit catalog grid');
 assert((await page.locator('li.product img').first().evaluate(e=>getComputedStyle(e).aspectRatio)).startsWith('auto'),'Plugin images retain their native intrinsic aspect ratio');
