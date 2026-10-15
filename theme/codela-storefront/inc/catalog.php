@@ -113,7 +113,7 @@ function codela_sf_catalog_footer_close(): void { echo '</div>'; }
 /** Add only shared Button classes; Woo retains URL, AJAX classes and all data/ARIA. */
 function codela_sf_catalog_button_args( array $args, $item ): array {
     if ( codela_sf_catalog_enabled() && $item instanceof WC_Product ) {
-        $args['class'] = trim( ( $args['class'] ?? '' ) . ' sf-ui-button sf-ui-button--secondary' );
+        $args['class'] = trim( ( $args['class'] ?? '' ) . ' sf-ui-button sf-ui-button--secondary sf-ui-surface' );
     }
     return $args;
 }

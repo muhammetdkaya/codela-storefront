@@ -16,7 +16,7 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product{
   box-sizing:border-box;isolation:isolate;
   /* One light shell. Never stack image and information backgrounds. */
   background:var(--sf-ui-surface);
-  border:1px solid color-mix(in srgb,var(--sf-ui-border) 55%,white);
+  border:0;
   border-radius:20px;box-shadow:0 5px 20px rgba(0,0,0,.035);text-align:start;overflow:hidden;
 }
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product > a.woocommerce-loop-product__link{
@@ -29,12 +29,12 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product a img{
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product .woocommerce-loop-product__title{
   display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;
   margin:14px 14px 0;padding:0;min-height:2.8em;
-  font-family:Georgia,"Times New Roman",serif;font-size:15px;font-weight:400;line-height:1.4;
+  font-family:var(--wp--preset--font-family--system,Arial,Helvetica,sans-serif);font-size:14px;font-weight:500;line-height:1.45;
   letter-spacing:-.01em;color:var(--sf-ui-control-ink);opacity:1;overflow-wrap:anywhere;
 }
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product .price{
   display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;
-  min-width:0;flex:1 1 55px;margin:0;color:var(--sf-ui-control-ink);font-size:16px;font-weight:700;overflow-wrap:anywhere;
+  min-width:0;flex:1 1 55px;margin:0;color:var(--sf-ui-control-ink);font-size:17px;font-weight:500;overflow-wrap:anywhere;
   line-height:1.5;font-variant-numeric:tabular-nums;
 }
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product .price del{color:var(--sf-muted);opacity:1;font-weight:400}
@@ -50,7 +50,7 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product .onsale
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer{
   display:grid;grid-template-columns:minmax(0,1fr) 44px;align-items:center;gap:6px;
   min-height:var(--sf-ui-hit);margin:12px 14px 0;padding:10px 0 13px;
-  border-top:1px solid var(--sf-ui-border);
+  border-top:1px solid var(--sf-ui-surface-muted);
 }
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer > .button{
   flex:0 0 auto;max-width:100%;min-width:var(--sf-ui-hit);margin:0;
@@ -77,10 +77,10 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product:has(.sf
 }
 @media(max-width:700px){
   body:not(.codela-my-account-layout) .sf-content ul.products{--sf-catalog-columns:2}
-  body:not(.codela-my-account-layout) .sf-content ul.products > li.product .woocommerce-loop-product__title{font-size:14px;margin:11px 10px 0}
-  body:not(.codela-my-account-layout) .sf-content ul.products > li.product .price{font-size:15px}
+  body:not(.codela-my-account-layout) .sf-content ul.products > li.product .woocommerce-loop-product__title{font-size:13px;margin:13px 12px 0}
+  body:not(.codela-my-account-layout) .sf-content ul.products > li.product .price{font-size:16px}
   body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer{
-    display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:6px;margin:10px 10px 0;padding:9px 0 11px;
+    display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:6px;margin:13px 12px 0;padding:10px 0 12px;
   }
   body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer > .button{
     box-sizing:border-box;width:44px;max-width:44px;min-width:44px;

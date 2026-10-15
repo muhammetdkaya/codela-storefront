@@ -69,7 +69,7 @@ ob_start();codela_sf_catalog_footer_open();echo 'Native Woo action';codela_sf_ca
 check( $footer === '<div class="sf-product-card-footer"><span class="price">Native price</span>Native Woo action</div>', 'Native price and action share one footer' );
 $args=['class'=>'button ajax_add_to_cart','quantity'=>1,'attributes'=>['aria-label'=>'Add real product','data-product_id'=>42]];
 $adapted=codela_sf_catalog_button_args($args,new WC_Product(42));
-check( str_contains($adapted['class'],'sf-ui-button sf-ui-button--secondary') && str_contains($adapted['class'],'ajax_add_to_cart') && $adapted['attributes']===$args['attributes'] && $adapted['quantity']===1, 'Shared Button classes preserve native AJAX and accessible attributes' );
+check( str_contains($adapted['class'],'sf-ui-button sf-ui-button--secondary') && str_contains($adapted['class'],'sf-ui-surface') && str_contains($adapted['class'],'ajax_add_to_cart') && $adapted['attributes']===$args['attributes'] && $adapted['quantity']===1, 'Shared Button classes preserve native AJAX and accessible attributes' );
 check( codela_sf_catalog_button_text('Native',new WC_Product(1))==='Add', 'Simple action is compact' );
 check( codela_sf_catalog_button_text('Native',new WC_Product(1,true,'variable'))==='Options', 'Variable action keeps a distinct options label' );
 check( codela_sf_catalog_button_text('Visit partner',new WC_Product(1,true,'external'))==='Visit partner', 'External native action preserved' );

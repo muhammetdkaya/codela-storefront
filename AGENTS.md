@@ -1,6 +1,12 @@
 # Codela Storefront — güncel çalışma kuralları
 
-## Son doğrulanmış devam noktası —15 Ekim2026 /0.1.90 canlı
+## Güncel çalışma —0.1.91 doğrulama bekliyor
+
+15 Ekim2026: tema0.1.90→0.1.91 hazırlanıyor; Codela1.1.1 değişmedi. Kullanıcı cihaz ekranında serif başlık, ağır fiyat ve çift kenar hissini bildirdi. Ortak kart başlığı temanın sans-serif ailesine13/14px500, fiyat16/17px500 döndü. Kart dış sınırı kaldırıldı; fiyat ayırıcı ortak muted yüzeye hafifletildi. Native secondary Button mevcut sf-ui-surface materyaline bağlandı: Header ile aynı tek açık yüzey, saydam sınır, inset olmayan gölge ve erişilebilirlik fallback'leri. Mevcut44px hedef, SVG, Woo markup/AJAX ve geniş katalog korunur; yeni JS yok. CI/FTP/canlı kabul henüz bekliyor;90 sonuçlarını91 olarak sunma.
+
+Sıradaki iş:91 CI ve gerçek FTP adımını doğrula, canlı WebKit kart görünümünü kontrol et; sonra kanıtlarla bu özeti kapat.
+
+## Önceki doğrulanmış devam noktası —15 Ekim2026 /0.1.90 canlı
 
 - **0.1.90 canlı:** [kaynak 104b853d](https://github.com/muhammetdkaya/codela-storefront/commit/104b853d62ee73099923ecf0b35a0e79ebb8008f); [CI ve gerçek FTP 38709075916](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38709075916) başarılı (ikinci test denemesi); canlı WebKit [38709787224](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38709787224), galeri [38709787332](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38709787332), shell [38709787200](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38709787200), belge [38709787245](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38709787245), performans [38709787212](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38709787212) başarılı. Codela eklentisi1.1.1 değişmedi.
 - Ortak katalog için koyu ürün başlıkları, fiyat üstünde1px ayırıcı, native Button üzerinde mevcut shopping-bag.svg 44px yuvarlak aksiyon, varyasyon için mevcut arrow-right.svg; Woo AJAX/data/ARIA, sepet, stok kontrolü ve tek native kart korundu. 1360px üst sınır, mobil kenarda12px. 320px dahil fiyat/buton sütun hizası kalıcı browser testinde doğrulandı. Yeni JavaScript, çift kart, ikinci görsel zemini yok.

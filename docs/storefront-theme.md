@@ -1,5 +1,9 @@
 # Codela Storefront — güncel teknik durum
 
+15 Ekim2026: tema0.1.90→0.1.91 hazırlanıyor; Codela1.1.1 değişmedi. Kullanıcı cihaz ekranında serif başlık, ağır fiyat ve çift kenar hissini bildirdi. Ortak kart başlığı temanın sans-serif ailesine13/14px500, fiyat16/17px500 döndü. Kart dış sınırı kaldırıldı; fiyat ayırıcı ortak muted yüzeye hafifletildi. Native secondary Button mevcut sf-ui-surface materyaline bağlandı: Header ile aynı tek açık yüzey, saydam sınır, inset olmayan gölge ve erişilebilirlik fallback'leri. Mevcut44px hedef, SVG, Woo markup/AJAX ve geniş katalog korunur; yeni JS yok. CI/FTP/canlı kabul henüz bekliyor;90 sonuçlarını91 olarak sunma.
+
+## Önceki0.1.90 — tarihli kayıt
+
 15 Ekim2026: **tema0.1.89→0.1.90 canlı**, Codela1.1.1 eklenti sürümü değişmedi. [Kaynak 104b853d](https://github.com/muhammetdkaya/codela-storefront/commit/104b853d62ee73099923ecf0b35a0e79ebb8008f), [CI / gerçek FTP 38709075916](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38709075916) başarılı.
 
 ## Yapılan — referans ürün kartına eşleme

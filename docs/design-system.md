@@ -1,7 +1,11 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.90 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.91 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
+
+## Catalog typography and surface refinement —0.1.91
+
+Product names use the theme system sans-serif family (13px mobile/14px desktop,500 weight), prices16/17px500. Keep the single white card without a perimeter stroke and the subtle surface-muted footer rule. Native secondary Buttons also use existing sf-ui-surface; shared components declarations extend that material to theme-owned content, including reduced transparency/forced colors. Do not duplicate button paint in catalog.css. The90 native icon/44px/grid/wide-container architecture stays intact. No new JS or dependencies.
 
 ## Reference-faithful wide catalog —0.1.90 (live, verified)
 
