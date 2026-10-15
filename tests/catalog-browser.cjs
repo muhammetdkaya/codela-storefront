@@ -26,10 +26,18 @@ for(const width of [320,390,700,900,1280]){
   const detail=await page.locator('li.product').first().evaluate(el=>{
    const title=el.querySelector('h2'),footer=el.querySelector('.sf-product-card-footer'),price=footer.querySelector('.price'),button=footer.querySelector('.button');
    const p=price.getBoundingClientRect(),b=button.getBoundingClientRect();
-   return{weight:getComputedStyle(title).fontWeight,buttonWidth:b.width,cardWidth:el.getBoundingClientRect().width,priceX:p.x,buttonX:b.x,footerChildren:footer.children.length};
+   const footerStyle=getComputedStyle(footer),badge=getComputedStyle(button,'::before'),titleStyle=getComputedStyle(title);
+   return{weight:getComputedStyle(title).fontWeight,buttonWidth:b.width,cardWidth:el.getBoundingClientRect().width,priceX:p.x,buttonX:b.x,footerChildren:footer.children.length,divider:footerStyle.borderTopWidth,dividerColor:footerStyle.borderTopColor,
+     icon:badge.backgroundImage,iconWidth:badge.width,titleColor:titleStyle.color};
   });
-  assert.equal(detail.weight,'500');assert(detail.buttonWidth<detail.cardWidth*.7,'Action does not dominate card');
+  assert.equal(detail.weight,'400');assert(detail.buttonWidth<detail.cardWidth*.7,'Action does not dominate card');
   assert(detail.priceX<detail.buttonX,'Price left, shared action right');assert.equal(detail.footerChildren,2);
+  assert.equal(detail.divider,'1px','A subtle divider precedes the price/action row');
+  assert.equal(detail.titleColor,'rgb(32, 32, 32)','Readable dark product names');
+  assert(detail.icon.includes('shopping-bag.svg'),'Use the existing shopping-bag icon rather than a plus glyph');
+  assert.equal(detail.iconWidth,'22px','Uniform shared icon sizing');
+  assert(!await page.locator('.product_type_simple.add_to_cart_button').first().evaluate(e=>e.textContent.trim()===''),
+    'Keep the Woo native accessible link name');
   assert.equal(await page.locator('li.outofstock .button').count(),0,'Out-of-stock has no purchase action');
   assert.equal(await page.locator('li.outofstock .sf-product-stock').count(),1);
   assert.equal(await page.locator('.product_type_variable').textContent(),'Seçenekler');

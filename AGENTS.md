@@ -1,6 +1,9 @@
 # Codela Storefront — güncel çalışma kuralları
 
-## Son doğrulanmış devam noktası —15 Ekim2026 /0.1.89 canlı
+## Son doğrulanmış devam noktası —15 Ekim2026 /0.1.89 canlı;0.1.90 test/yayın bekliyor
+
+- Kullanıcının ürün listeleme referansına göre 0.1.90: yazılar koyu, fiyat üstünde ince çizgi, 44px yuvarlak ortak Button üzerinde shopping-bag.svg; daha geniş konteyner ve mobil kenar boşluğu. Tek native Woo kartı korunur; varyasyon oku/stockless davranışları ve Woo AJAX veri-ARIA değişmez. CI/FTP ve canlı kabul sonucu görülmeden 0.1.90 canlı olarak kaydetme.
+
 
 - Tema0.1.88→0.1.89 **canlı**: [son kaynak 4f162237](https://github.com/muhammetdkaya/codela-storefront/commit/4f162237ae5f323c50f3720582de82591cde92fb); [CI+gerçek FTP 38688395197](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38688395197) başarılı. Beş canlı denetim: WebKit, navigasyon, galeri, performans, belge sürekliliği başarılı. Eklenti1.1.1 değişmedi.
 - Ortak native ürün kartı: **tek beyaz 20px yüzey**, hafif tek sınır/gölge, şeffaf kare görsel, içeride başlık+native fiyat+ortak secondary Button kapsül. 320px dahil mobilde fiyat ve aksiyon yan yana, minimum44px dokunma alanı; yeni JS/HTML/yeni paint primitive yok. Home/shop/category/product search/related/upsell/cross-sell tek CSS. Stoksuz ve native varyasyon/indirim/sepete ekleme davranışı korunur. Fiziksel iPhone kabulü ve eski JPEG admin backfill ayrı.

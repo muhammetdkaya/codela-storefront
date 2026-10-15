@@ -1,5 +1,19 @@
 # Codela Storefront — güncel teknik durum
 
+15 Ekim2026: **tema0.1.89→0.1.90 kaynak oluşturuldu; CI ve canlı yayın henüz doğrulanmadı.** Codela1.1.1 eklenti sürümü değişmedi.
+
+## Yapılan — referans ürün kartına eşleme
+
+Geniş (1360px üst sınır / mobil12px içerik kenarı) katalog; koyu ürün başlığı/fiyat; gerçek ayırıcı çizgi; native Woo Button üzerinde yerel shopping-bag SVG yuvarlak 44px aksiyon. Varyasyon ürünü seçenek okunu kullanır, stoksuz üründe sahte satın alma düğmesi yoktur. Aynı native kart her katalogda kullanılır. JavaScript veya ikinci stil yüzeyi eklenmedi.
+
+## Yayın durumu ve kalan kabul
+
+Gerçek CI ve FTP sonucu bekleniyor. Yayın sonrası WebKit/shell/gallery/performance canlı kontrolleri yapılmalı. Fiziksel iPhone/Safari, üretim ödeme sağlayıcısı, eski JPEG toplu dönüşüm ve üçüncü taraf medya ayrı konular.
+
+---
+
+
+
 15 Ekim2026: **tema0.1.88→0.1.89 canlı**; Codela eklentisi1.1.1 değişmedi. [Son kaynak 4f162237](https://github.com/muhammetdkaya/codela-storefront/commit/4f162237ae5f323c50f3720582de82591cde92fb), [CI+gerçek FTP 38688395197](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38688395197) başarılı.
 
 ## Açık ürün kartı güncellemesi

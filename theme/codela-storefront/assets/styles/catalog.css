@@ -6,7 +6,7 @@
 body:not(.codela-my-account-layout) .sf-content ul.products{
   --sf-catalog-columns:4;
   display:grid;grid-template-columns:repeat(var(--sf-catalog-columns),minmax(0,1fr));
-  column-gap:clamp(12px,2vw,24px);row-gap:clamp(18px,3vw,28px);list-style:none;padding:0;margin:0 0 32px;
+  column-gap:clamp(10px,1.65vw,22px);row-gap:clamp(18px,2.8vw,30px);list-style:none;padding:0;margin:0 0 32px;
   clear:both;
 }
 body:not(.codela-my-account-layout) .sf-content ul.products::before,body:not(.codela-my-account-layout) .sf-content ul.products::after{display:none}
@@ -17,7 +17,7 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product{
   /* One light shell. Never stack image and information backgrounds. */
   background:var(--sf-ui-surface);
   border:1px solid color-mix(in srgb,var(--sf-ui-border) 55%,white);
-  border-radius:20px;box-shadow:0 5px 20px rgba(0,0,0,.035);text-align:start;
+  border-radius:20px;box-shadow:0 5px 20px rgba(0,0,0,.035);text-align:start;overflow:hidden;
 }
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product > a.woocommerce-loop-product__link{
   display:block;flex:0 0 auto;min-width:0;color:var(--sf-ui-ink);text-decoration:none;
@@ -28,9 +28,9 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product a img{
 }
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product .woocommerce-loop-product__title{
   display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;
-  margin:11px 12px 0;padding:0;min-height:2.8em;
-  font-family:inherit;font-size:14px;font-weight:500;line-height:1.4;
-  letter-spacing:-.015em;color:var(--sf-ui-ink);overflow-wrap:anywhere;
+  margin:14px 14px 0;padding:0;min-height:2.8em;
+  font-family:Georgia,"Times New Roman",serif;font-size:15px;font-weight:400;line-height:1.4;
+  letter-spacing:-.01em;color:var(--sf-ui-control-ink);opacity:1;overflow-wrap:anywhere;
 }
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product .price{
   display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;
@@ -48,11 +48,12 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product .onsale
   font-size:11px;font-weight:600;line-height:1.5;
 }
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer{
-  display:flex;flex-wrap:nowrap;align-items:center;justify-content:space-between;gap:6px;
-  min-height:var(--sf-ui-hit);margin-top:4px;padding:0 12px 12px;
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;
+  min-height:var(--sf-ui-hit);margin:12px 14px 0;padding:10px 0 13px;
+  border-top:1px solid var(--sf-ui-border);
 }
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer > .button{
-  flex:0 1 auto;max-width:100%;min-width:var(--sf-ui-hit);margin:0;
+  flex:0 0 auto;max-width:100%;min-width:var(--sf-ui-hit);margin:0;
   white-space:normal;overflow-wrap:anywhere;text-align:center;
   /* Shared Button owns paint/pressed/focus; card only specifies geometry. */
   --sf-ui-control-radius:var(--sf-ui-pill);
@@ -76,11 +77,10 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product:has(.sf
 }
 @media(max-width:700px){
   body:not(.codela-my-account-layout) .sf-content ul.products{--sf-catalog-columns:2}
-  body:not(.codela-my-account-layout) .sf-content ul.products > li.product .woocommerce-loop-product__title{font-size:13px;margin:10px 10px 0}
+  body:not(.codela-my-account-layout) .sf-content ul.products > li.product .woocommerce-loop-product__title{font-size:14px;margin:11px 10px 0}
   body:not(.codela-my-account-layout) .sf-content ul.products > li.product .price{font-size:15px}
   body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer{
-    display:grid;grid-template-columns:minmax(0,1fr) 44px;
-    gap:5px;padding:0 10px 10px;
+    display:flex;flex-wrap:wrap;gap:6px;margin:10px 10px 0;padding:9px 0 11px;
   }
   body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer > .button{
     box-sizing:border-box;width:44px;max-width:44px;min-width:44px;
@@ -89,20 +89,51 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product:has(.sf
   }
 }
 
-/* The shared Woo button remains the sole interactive control. For direct-add
-   products only, show a compact icon in the same button; variable products
-   retain readable text and an accessible action. */
-body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer > .button.product_type_simple.add_to_cart_button{
-  position:relative;width:44px;max-width:44px;min-width:44px;
-  font-size:0;overflow:hidden;
-  --sf-ui-button-padding-x:0px;--sf-ui-button-font-size:0px;
+
+/* Catalog cards share the native WooCommerce product template and the existing
+   UI Kit Button primitive. Only their placement and compact icon composition
+   live here; control surface/press/focus/busy states stay in components.css. */
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer > .button.product_type_simple.add_to_cart_button,
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer > .button.product_type_variable{
+  box-sizing:border-box;position:relative;display:inline-flex;align-items:center;justify-content:center;
+  width:44px;min-width:44px;max-width:44px;height:44px;padding:0;
+  flex:0 0 44px;overflow:hidden;white-space:nowrap;
+  font-size:0;--sf-ui-button-font-size:0px;--sf-ui-button-padding-x:0px;
+  --sf-ui-control-radius:var(--sf-ui-pill);
 }
-body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer > .button.product_type_simple.add_to_cart_button::after{
-  content:"+";display:block;font-size:25px;font-weight:400;line-height:1;
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer > .button.product_type_simple.add_to_cart_button::before,
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer > .button.product_type_variable::before{
+  content:"";display:block;width:22px;height:22px;flex:none;
+  background-position:center;background-repeat:no-repeat;background-size:contain;
+  /* CSS icon uses the same local SVG asset as Header/Dock. No second icon set. */
+}
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer > .button.product_type_simple.add_to_cart_button::before{
+  background-image:url("../icons/shopping-bag.svg");
+}
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer > .button.product_type_variable::before{
+  background-image:url("../icons/arrow-right.svg");
+}
+/* Native Woo adds its loading spinner in ::after; keep it unobstructed. */
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer > .button.loading::before{opacity:.18}
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer > .added_to_cart{
+  flex:0 0 100%;min-width:0;
+}
+
+/* The reference is wide, not a 760px WordPress constrained-column layout.
+   Keep catalog surfaces broad without affecting checkout, product details or
+   the Codela plugin-owned signed-in account. */
+body:not(.codela-my-account-layout) .sf-content > :is(.sf-selection,.sf-catalog,.wp-block-woocommerce-legacy-template){
+  width:100%;max-width:1360px!important;margin-inline:auto!important;
+}
+body:not(.codela-my-account-layout) .sf-content > .sf-selection{
+  padding:34px clamp(12px,2.2vw,30px);
+}
+body:not(.codela-my-account-layout):not(.single-product):not(.woocommerce-checkout) .sf-content > .woocommerce{
+  width:100%;max-width:1360px!important;margin-inline:auto!important;
 }
 @media(max-width:700px){
-  body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer > .button:not(.product_type_simple){
-    width:44px;max-width:44px;min-width:44px;font-size:10px;
-    --sf-ui-button-font-size:10px;overflow-wrap:anywhere;
+  body:not(.codela-my-account-layout) .sf-content > .sf-selection{padding:28px 12px}
+  body:not(.codela-my-account-layout):not(.single-product):not(.woocommerce-checkout) .sf-content:has(> .sf-catalog,> .wp-block-woocommerce-legacy-template){
+    padding-inline:12px;
   }
 }
