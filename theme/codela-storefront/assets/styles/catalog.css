@@ -78,5 +78,12 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product:has(.sf
   body:not(.codela-my-account-layout) .sf-content ul.products{--sf-catalog-columns:2}
   body:not(.codela-my-account-layout) .sf-content ul.products > li.product .woocommerce-loop-product__title{font-size:13px;margin:12px 11px 0}
   body:not(.codela-my-account-layout) .sf-content ul.products > li.product .price{font-size:15px}
-  body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer{padding:0 11px 11px}
+  body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer{
+    display:grid;grid-template-columns:minmax(0,1fr) 60px;
+    gap:6px;padding:0 11px 11px;
+  }
+  body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer > .button{
+    box-sizing:border-box;width:60px;max-width:60px;min-width:44px;
+    --sf-ui-button-font-size:11px;--sf-ui-button-padding-x:4px;
+  }
 }
