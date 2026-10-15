@@ -110,10 +110,16 @@ function codela_sf_catalog_footer_open(): void {
 }
 function codela_sf_catalog_footer_close(): void { echo '</div>'; }
 
+function codela_sf_catalog_action_icon( $item ): string {
+    if ( ! $item instanceof WC_Product || ! $item->is_in_stock() ) { return ''; }
+    if ( $item->is_type( 'variable' ) ) { return 'arrow-right'; }
+    return $item->is_type( 'simple' ) && $item->is_purchasable() ? 'shopping-bag' : '';
+}
 /** Add only shared Button classes; Woo retains URL, AJAX classes and all data/ARIA. */
 function codela_sf_catalog_button_args( array $args, $item ): array {
     if ( codela_sf_catalog_enabled() && $item instanceof WC_Product ) {
-        $args['class'] = trim( ( $args['class'] ?? '' ) . ' sf-ui-button sf-ui-button--secondary sf-ui-surface' );
+        $classes = codela_sf_catalog_action_icon( $item ) ? implode( ' ', codela_sf_ui_icon_button_classes( 'soft' ) ) : 'sf-ui-button sf-ui-button--secondary sf-ui-surface';
+        $args['class'] = trim( ( $args['class'] ?? '' ) . ' ' . $classes );
     }
     return $args;
 }
@@ -126,6 +132,15 @@ function codela_sf_catalog_button_text( string $text, $item ): string {
 }
 add_filter( 'woocommerce_product_add_to_cart_text', 'codela_sf_catalog_button_text', 20, 2 );
 function codela_sf_catalog_button_visibility( string $html, $item ): string {
-    return codela_sf_catalog_enabled() && $item instanceof WC_Product && ! $item->is_in_stock() ? '' : $html;
+    if ( ! codela_sf_catalog_enabled() || ! $item instanceof WC_Product ) { return $html; }
+    if ( ! $item->is_in_stock() ) { return ''; }
+    $icon = codela_sf_catalog_action_icon( $item );
+    if ( $icon ) {
+        $label = esc_html( $item->add_to_cart_text() );
+        $content = codela_sf_ui_icon_button_content( $icon ) . '<span class="screen-reader-text">' . $label . '</span>';
+        // Retain Woo's original URL, AJAX/data/ARIA attributes and trailing extension markup.
+        $html = str_replace( '>' . $label . '</a>', '>' . $content . '</a>', $html );
+    }
+    return $html;
 }
 add_filter( 'woocommerce_loop_add_to_cart_link', 'codela_sf_catalog_button_visibility', 20, 2 );

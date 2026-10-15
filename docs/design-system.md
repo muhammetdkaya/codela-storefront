@@ -1,7 +1,11 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.91 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.92 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
+
+## Native catalog IconButton adapter —0.1.92
+
+Header and native Woo catalog simple/variable actions share codela_sf_ui_icon_button_classes/content and the exact IconButton declaration groups. Native Woo anchors retain URL,AJAX,data,ARIA and translated screen-reader text. The content scope explicitly excludes Codela signed-in accounts. Native primary Button adapters exclude IconButton; grouped/external remain text Buttons. catalog.css has no pseudo-icon,icon sizing or duplicated control geometry; only card/grid placement. Native loading/added ::after occupies the shared glyph slot. No new JS. Five-width tests compare Header/card44px material,22px centered glyph and pressed scale.
 
 ## Catalog typography and surface refinement —0.1.91
 

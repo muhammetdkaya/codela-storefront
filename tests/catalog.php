@@ -3,6 +3,7 @@
 define( 'ABSPATH', __DIR__ );
 class WC_Product {
     public function __construct( private int $id, private bool $visible = true, private string $type = 'simple', private bool $stock = true, private bool $purchasable = true ) {}
+    public function add_to_cart_text() { return $this->type === 'variable' ? 'Options' : 'Add'; }
     public function get_id() { return $this->id; }
     public function is_visible() { return $this->visible; }
     public function is_type( $type ) { return $this->type === $type; }
@@ -37,6 +38,8 @@ function esc_html__( $s, ...$args ) { return htmlspecialchars( $s, ENT_QUOTES );
 function esc_html( $s ) { return htmlspecialchars( $s, ENT_QUOTES ); }
 function do_blocks( $s ) { return 'core-query-fallback'; }
 function check( $value, $message ) { if ( ! $value ) { throw new RuntimeException( $message ); } }
+function codela_sf_icon($name) { return '<img class="sf-icon" alt="" src="'.$name.'.svg">'; }
+require __DIR__ . '/../theme/codela-storefront/inc/ui.php';
 require __DIR__ . '/../theme/codela-storefront/inc/catalog.php';
 $post = (object) [ 'ID' => 99 ]; $product = new WC_Product( 99 );
 $woocommerce_loop = [ 'name' => 'outer-loop', 'loop' => 6 ];
@@ -69,13 +72,17 @@ ob_start();codela_sf_catalog_footer_open();echo 'Native Woo action';codela_sf_ca
 check( $footer === '<div class="sf-product-card-footer"><span class="price">Native price</span>Native Woo action</div>', 'Native price and action share one footer' );
 $args=['class'=>'button ajax_add_to_cart','quantity'=>1,'attributes'=>['aria-label'=>'Add real product','data-product_id'=>42]];
 $adapted=codela_sf_catalog_button_args($args,new WC_Product(42));
-check( str_contains($adapted['class'],'sf-ui-button sf-ui-button--secondary') && str_contains($adapted['class'],'sf-ui-surface') && str_contains($adapted['class'],'ajax_add_to_cart') && $adapted['attributes']===$args['attributes'] && $adapted['quantity']===1, 'Shared Button classes preserve native AJAX and accessible attributes' );
+check( str_contains($adapted['class'],implode(' ',codela_sf_ui_icon_button_classes('soft'))) && str_contains($adapted['class'],'ajax_add_to_cart') && $adapted['attributes']===$args['attributes'] && $adapted['quantity']===1, 'Shared Button classes preserve native AJAX and accessible attributes' );
 check( codela_sf_catalog_button_text('Native',new WC_Product(1))==='Add', 'Simple action is compact' );
 check( codela_sf_catalog_button_text('Native',new WC_Product(1,true,'variable'))==='Options', 'Variable action keeps a distinct options label' );
 check( codela_sf_catalog_button_text('Visit partner',new WC_Product(1,true,'external'))==='Visit partner', 'External native action preserved' );
 check( codela_sf_catalog_button_visibility('<a>Read more</a>',new WC_Product(1,true,'simple',false))==='', 'No misleading out-of-stock action' );
 ob_start();$product=new WC_Product(1,true,'simple',false);codela_sf_catalog_stock_label();$stock=ob_get_clean();
 check( str_contains($stock,'sf-product-stock') && str_contains($stock,'Out of stock'), 'Out-of-stock badge retained' );
+$native='<a class="button ajax_add_to_cart" href="/?add-to-cart=42" data-product_id="42" aria-label="Add product">Add</a><span>Extension</span>';
+$adapted_html=codela_sf_catalog_button_visibility($native,new WC_Product(42));
+check(str_contains($adapted_html,codela_sf_ui_icon_button_content('shopping-bag')) && str_contains($adapted_html,'<span class="screen-reader-text">Add</span>') && str_contains($adapted_html,'data-product_id="42" aria-label="Add product"') && str_ends_with($adapted_html,'<span>Extension</span>'),'Native anchor attributes, accessible name and extensions preserved');
+check(str_contains(codela_sf_catalog_button_args($args,new WC_Product(42,true,'external'))['class'],'sf-ui-button--secondary'),'External action stays a text Button');
 $account=true;$signed_in=true;$before=count($actions);codela_sf_catalog_layout();
 check(count($actions)===$before && codela_sf_catalog_button_args($args,new WC_Product(42))===$args && codela_sf_catalog_button_text('Native',new WC_Product(1))==='Native' && codela_sf_catalog_button_visibility('Original',new WC_Product(1,true,'simple',false))==='Original', 'Plugin-owned signed-in account remains untouched' );
 echo "Native catalog footer, stock/action semantics and shared Button reuse passed.\n";

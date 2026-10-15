@@ -68,7 +68,7 @@ const alpha=color=>{
     assert(await grid.locator('.sf-product-card-footer').count()>0,'Native price/action footer');
     assert.equal(await grid.locator('li.outofstock .button').count(),0,'No stockless purchase action');
     const action=grid.locator('a.button').first();
-    assert(await action.evaluate(e=>e.classList.contains('sf-ui-button--secondary')),'Existing shared secondary Button');
+    assert(await action.evaluate(e=>e.classList.contains('sf-ui-icon-button--soft') || e.classList.contains('sf-ui-button--secondary')),'Existing shared secondary Button');
    }
    fs.mkdirSync('qa/surfaces',{recursive:true});
    await page.screenshot({path:'qa/surfaces/'+check.name+'-webkit-390.png'});

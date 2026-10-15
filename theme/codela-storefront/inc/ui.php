@@ -21,6 +21,17 @@ function codela_sf_ui_attributes( array $attributes ): string {
     return $output;
 }
 
+/** Shared content and class contract for native adapters and the renderer. */
+function codela_sf_ui_icon_button_classes( string $variant = 'bare' ): array {
+    if ( ! in_array( $variant, [ 'bare', 'soft', 'clear' ], true ) ) { $variant = 'bare'; }
+    return [ 'sf-ui-icon-button', 'sf-ui-icon-button--' . $variant, 'sf-icon-button' ];
+}
+function codela_sf_ui_icon_button_content( string $icon, string $after_html = '' ): string {
+    $glyph = 'menu' === $icon ? '<span class="sf-menu-mark" aria-hidden="true"><span></span><span></span></span>' : codela_sf_icon( $icon );
+    // Keep an IconButton badge anchored to the glyph rather than the hit target.
+    return $after_html ? '<span class="sf-ui-icon-badged">' . $glyph . $after_html . '</span>' : $glyph;
+}
+
 /**
  * One icon-button renderer for header, dialog close and search clear.
  * $after_html is trusted internal decoration (e.g. the cart-count badge).
@@ -29,14 +40,12 @@ function codela_sf_ui_icon_button( string $icon, string $label, array $options =
     $variant = (string) ( $options['variant'] ?? 'bare' );
     if ( ! in_array( $variant, [ 'bare', 'soft', 'clear' ], true ) ) { $variant = 'bare'; }
     $extra = preg_split( '/\s+/', trim( (string) ( $options['class'] ?? '' ) ) ) ?: [];
-    $classes = array_merge( [ 'sf-ui-icon-button', 'sf-ui-icon-button--' . $variant, 'sf-icon-button' ], array_filter( array_map( 'sanitize_html_class', $extra ) ) );
+    $classes = array_merge( codela_sf_ui_icon_button_classes( $variant ), array_filter( array_map( 'sanitize_html_class', $extra ) ) );
     $attributes = (array) ( $options['attributes'] ?? [] );
     $attributes['aria-label'] = $label;
     $html = ' class="' . esc_attr( implode( ' ', array_unique( $classes ) ) ) . '"';
     $html .= codela_sf_ui_attributes( $attributes );
-    $glyph = 'menu' === $icon ? '<span class="sf-menu-mark" aria-hidden="true"><span></span><span></span></span>' : codela_sf_icon( $icon );
-    // Keep an IconButton badge anchored to the glyph rather than the hit target.
-    $content = $after_html ? '<span class="sf-ui-icon-badged">' . $glyph . $after_html . '</span>' : $glyph;
+    $content = codela_sf_ui_icon_button_content( $icon, $after_html );
     if ( isset( $options['href'] ) ) {
         return '<a href="' . esc_url( (string) $options['href'] ) . '"' . $html . '>' . $content . '</a>';
     }
