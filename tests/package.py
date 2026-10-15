@@ -117,7 +117,7 @@ class Tests(unittest.TestCase):
         self.assertNotIn('PANEL_MOTION_MS',js)
         self.assertIn('transition:none!important',css)
         self.assertIn('#sf-panel.is-search-panel',css)
-        self.assertIn('background:#ffffff',css)
+        self.assertIn('background:var(--sf-ui-page)',css)
         self.assertIn('color-scheme:light',css)
         self.assertNotIn('background:#0b0d12',css)
         self.assertIn('--sf-overlay-toolbar-height:68px',css)
