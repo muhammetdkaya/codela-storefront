@@ -83,11 +83,6 @@ function init() {
     overlay.bind(dialog);
     dock.init(dialog);
     searchFeature.bind();
-    $('#sf-filters form')?.addEventListener('submit', event => {
-        event.target.querySelectorAll('input[type="number"]').forEach(input => {
-            input.disabled = input.value === '';
-        });
-    });
     cartFeature.bind();
     // Core Router navigation keeps the one real header/dialog/dock mounted.
     // Never create a second navigation controller or dock instance.
