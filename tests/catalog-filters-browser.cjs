@@ -33,6 +33,7 @@ const overlay=fs.readFileSync(root+'assets/scripts/overlay-controller.js','utf8'
    await page.locator('[name=min_price]').fill('10');await page.locator('[name=max_price]').fill('50');
    const action=await page.locator('#sf-filters form').getAttribute('action');
    assert(action.endsWith(mode==='shop'?'/shop/':'/category/7/'));
+   if(mode==='category'&&dock==='1'&&width===390) {fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:'qa/storefront-ui-catalog-filters.png'});}
    await page.keyboard.press('Escape');
    assert(!(await page.locator('#sf-panel').evaluate(el=>el.open)));
    assert(await page.locator('.sf-filter-trigger').evaluate(el=>el===document.activeElement));

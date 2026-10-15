@@ -222,3 +222,16 @@ function codela_sf_catalog_filters(): string {
     </div>
     <?php return ob_get_clean();
 }
+
+/** Empty optional GET bounds mean no bound, including without JavaScript. */
+function codela_sf_catalog_empty_bounds( $query ): void {
+    if ( is_admin() || ! $query->is_main_query() || ! (
+        $query->is_post_type_archive( 'product' ) || $query->is_tax( get_object_taxonomies( 'product' ) )
+    ) ) { return; }
+    foreach ( [ 'min_price', 'max_price' ] as $key ) {
+        if ( isset( $_GET[ $key ] ) && is_string( $_GET[ $key ] ) && '' === trim( $_GET[ $key ] ) ) {
+            unset( $_GET[ $key ] );
+        }
+    }
+}
+add_action( 'pre_get_posts', 'codela_sf_catalog_empty_bounds', 9 );
