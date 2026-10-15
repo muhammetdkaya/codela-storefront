@@ -120,16 +120,16 @@ export function createOverlayController({
         if (dock && dock.parentElement === dialog) dock.hidden = name === 'menu';
         markDockActive(name);
         const menuTrigger = findMenuTrigger();
-        dialog.setAttribute('aria-label', name === 'menu' ? menuLabel : name === 'search' ? t('Search products') : name === 'account' ? t('My account') : t('Your cart'));
+        dialog.setAttribute('aria-label', name === 'menu' ? menuLabel : name === 'search' ? t('Search products') : name === 'account' ? t('My account') : name === 'filters' ? t('Filters') : t('Your cart'));
         $('.sf-panel-top .sf-close').hidden = name === 'menu';
         dialog.removeAttribute('aria-labelledby');
-        for (const section of ['menu','search','cart','account']) {
+        for (const section of ['menu','search','cart','account','filters']) {
             const panel = $(`#sf-${section}`);
             if (panel) panel.hidden = name !== section;
         }
         $('.sf-cart-bottom').hidden = name !== 'cart' || !cartFeature.getData()?.items.length;
         $('#sf-status').textContent = '';
-        $('#sf-panel-title').textContent = name === 'menu' ? '' : name === 'search' ? t('Search products') : name === 'account' ? t('My account') : t('Your cart');
+        $('#sf-panel-title').textContent = name === 'menu' ? '' : name === 'search' ? t('Search products') : name === 'account' ? t('My account') : name === 'filters' ? t('Filters') : t('Your cart');
         document.querySelectorAll('[data-panel]').forEach(el => el.setAttribute('aria-expanded', String(el.dataset.panel === name && name !== 'menu')));
         dialog.classList.add('is-open');
         // Automatically focused controls should not display a giant focus ring
@@ -256,4 +256,3 @@ export function createOverlayController({
         getDialog: () => dialog,
     };
 }
-

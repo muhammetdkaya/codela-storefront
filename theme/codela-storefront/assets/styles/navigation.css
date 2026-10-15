@@ -217,3 +217,11 @@ body.admin-bar{--sf-header-offset:32px}
 #sf-panel.is-menu-panel .sf-panel-top{border-bottom:0}
 #sf-panel.is-menu-panel .sf-panel-top .sf-close{display:none!important}
 @media(prefers-reduced-motion:reduce){.sf-shell .sf-menu-trigger .sf-menu-mark>span{transition:none!important}}
+
+/* Catalog filter occupies the existing tools slot before Menu. */
+@media(max-width:700px){
+  .sf-shell.has-catalog-header.has-mobile-dock .sf-header .sf-actions{display:flex}
+  .has-catalog-header.has-mobile-dock .sf-actions > :not(.sf-filter-trigger){display:none}
+  .sf-shell.has-catalog-header.has-header-tools .sf-header{padding-inline:12px;column-gap:4px}
+  .sf-shell.has-catalog-header.has-header-tools .sf-header .sf-brand{font-size:14px;padding-inline:4px}
+}

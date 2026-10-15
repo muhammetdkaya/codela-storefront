@@ -11,6 +11,7 @@ const { state } = store('codela/storefront', {
         menu: event => overlay.toggleMenu(event),
         search: event => overlay.open('search', event),
         cart: event => overlay.open('cart', event),
+        filters: event => overlay.open('filters', event),
         account: event => overlay.open('account', event),
         close: () => overlay.close(),
     },
@@ -82,6 +83,11 @@ function init() {
     overlay.bind(dialog);
     dock.init(dialog);
     searchFeature.bind();
+    $('#sf-filters form')?.addEventListener('submit', event => {
+        event.target.querySelectorAll('input[type="number"]').forEach(input => {
+            input.disabled = input.value === '';
+        });
+    });
     cartFeature.bind();
     // Core Router navigation keeps the one real header/dialog/dock mounted.
     // Never create a second navigation controller or dock instance.
@@ -104,5 +110,3 @@ function init() {
 
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',init,{once:true}); else init();
-
-

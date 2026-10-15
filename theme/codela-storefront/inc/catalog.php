@@ -144,3 +144,81 @@ function codela_sf_catalog_button_visibility( string $html, $item ): string {
     return $html;
 }
 add_filter( 'woocommerce_loop_add_to_cart_link', 'codela_sf_catalog_button_visibility', 20, 2 );
+
+/** Archive composition only; keep Woo's main query, pagination and native hooks. */
+function codela_sf_is_catalog_archive(): bool {
+    return ( function_exists( 'is_shop' ) && is_shop() )
+        || ( function_exists( 'is_product_taxonomy' ) && is_product_taxonomy() );
+}
+function codela_sf_catalog_archive_layout(): void {
+    if ( ! codela_sf_is_catalog_archive() ) { return; }
+    remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20 );
+    // Sorting lives in the existing fullscreen panel; notices and extension hooks remain.
+    remove_action( 'woocommerce_before_shop_loop', 'woocommerce_catalog_ordering', 30 );
+}
+add_action( 'wp', 'codela_sf_catalog_archive_layout' );
+
+/** A normal GET form: Woo owns price filtering, ordering and pagination. */
+function codela_sf_catalog_filters(): string {
+    $shop = wc_get_page_permalink( 'shop' );
+    $term = is_product_taxonomy() ? get_queried_object() : null;
+    $base = $term instanceof WP_Term ? get_term_link( $term ) : $shop;
+    if ( is_wp_error( $base ) ) { $base = $shop; }
+    $order = isset( $_GET['orderby'] ) && is_scalar( $_GET['orderby'] )
+        ? wc_clean( wp_unslash( $_GET['orderby'] ) ) : get_option( 'woocommerce_default_catalog_orderby', 'menu_order' );
+    $options = apply_filters( 'woocommerce_catalog_orderby', [
+        'menu_order' => __( 'Default sorting', 'woocommerce' ),
+        'popularity' => __( 'Sort by popularity', 'woocommerce' ),
+        'rating' => __( 'Sort by average rating', 'woocommerce' ),
+        'date' => __( 'Sort by latest', 'woocommerce' ),
+        'price' => __( 'Sort by price: low to high', 'woocommerce' ),
+        'price-desc' => __( 'Sort by price: high to low', 'woocommerce' ),
+    ] );
+    if ( 'no' === get_option( 'woocommerce_enable_review_rating' ) ) { unset( $options['rating'] ); }
+    $terms = get_terms( [ 'taxonomy' => 'product_cat', 'hide_empty' => true ] );
+    ob_start(); ?>
+    <div class="sf-catalog-filters">
+        <form method="get" action="<?php echo esc_url( $base ); ?>">
+            <?php
+            // Preserve attribute/plugin filters and plain-permalink query vars.
+            // Remove page vars so every changed filter starts on its first page.
+            wc_query_string_form_fields( null, [ 'orderby', 'min_price', 'max_price', 'paged', 'product-page', 'submit' ] );
+            $base_args = wp_parse_url( $base, PHP_URL_QUERY );
+            if ( $base_args ) {
+                parse_str( $base_args, $args );
+                wc_query_string_form_fields( $args );
+            }
+            ?>
+            <label for="sf-catalog-order"><?php esc_html_e( 'Sort by', 'codela-storefront' ); ?></label>
+            <select id="sf-catalog-order" name="orderby">
+                <?php foreach ( $options as $value => $label ) : ?>
+                <option value="<?php echo esc_attr( $value ); ?>" <?php selected( $order, $value ); ?>><?php echo esc_html( $label ); ?></option>
+                <?php endforeach; ?>
+            </select>
+            <fieldset><legend><?php echo esc_html__( 'Price range', 'codela-storefront' ) . ' (' . esc_html( get_woocommerce_currency_symbol() ) . ')'; ?></legend>
+                <div class="sf-filter-prices">
+                <?php foreach ( [ 'min_price' => 'Minimum price', 'max_price' => 'Maximum price' ] as $key => $label ) :
+                    $value = isset( $_GET[ $key ] ) && is_scalar( $_GET[ $key ] ) ? wc_format_decimal( wp_unslash( $_GET[ $key ] ) ) : ''; ?>
+                    <label><?php echo esc_html__( $label, 'codela-storefront' ); ?><input type="number" name="<?php echo esc_attr( $key ); ?>" value="<?php echo esc_attr( $value ); ?>" min="0" step="any" inputmode="decimal"></label>
+                <?php endforeach; ?>
+                </div>
+            </fieldset>
+            <div class="sf-filter-actions">
+                <?php echo codela_sf_ui_button( __( 'Apply filters', 'codela-storefront' ), [ 'type' => 'submit' ] ); ?>
+                <?php echo codela_sf_ui_button( __( 'Clear filters', 'codela-storefront' ), [ 'href' => $base, 'variant' => 'secondary' ] ); ?>
+            </div>
+        </form>
+        <?php if ( ! is_wp_error( $terms ) && $terms ) : ?>
+        <nav class="sf-filter-categories" aria-label="<?php esc_attr_e( 'Categories', 'codela-storefront' ); ?>">
+            <h3><?php esc_html_e( 'Categories', 'codela-storefront' ); ?></h3>
+            <a class="sf-ui-pressable" href="<?php echo esc_url( $shop ); ?>" <?php if ( ! $term ) { echo 'aria-current="page"'; } ?>><?php esc_html_e( 'All products', 'codela-storefront' ); ?></a>
+            <?php foreach ( $terms as $category ) :
+                $url = get_term_link( $category );
+                if ( is_wp_error( $url ) ) { continue; } ?>
+                <a class="sf-ui-pressable" href="<?php echo esc_url( $url ); ?>" <?php if ( $term && $term->taxonomy === 'product_cat' && $term->term_id === $category->term_id ) { echo 'aria-current="page"'; } ?>><?php echo esc_html( $category->name ); ?><span><?php echo esc_html( $category->count ); ?></span></a>
+            <?php endforeach; ?>
+        </nav>
+        <?php endif; ?>
+    </div>
+    <?php return ob_get_clean();
+}

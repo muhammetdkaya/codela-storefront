@@ -2,7 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 require_once __DIR__ . '/ui.php';
 function codela_sf_icon( string $name ): string {
-    if ( ! in_array( $name, [ 'search', 'shopping-bag', 'menu', 'x', 'arrow-left', 'arrow-right', 'plus', 'minus', 'house', 'user-round' ], true ) ) { return ''; }
+    if ( ! in_array( $name, [ 'sliders-horizontal', 'search', 'shopping-bag', 'menu', 'x', 'arrow-left', 'arrow-right', 'plus', 'minus', 'house', 'user-round' ], true ) ) { return ''; }
     static $versions = [];
     $versions[ $name ] ??= hash_file( 'crc32b', __DIR__ . '/../assets/icons/' . $name . '.svg' );
     return '<img class="sf-icon" width="22" height="22" alt="" src="' . esc_url( get_template_directory_uri() . '/assets/icons/' . $name . '.svg?ver=' . $versions[ $name ] ) . '">';
@@ -57,6 +57,7 @@ function codela_sf_header(): string {
         <?php return ob_get_clean();
     }
     $settings = codela_theme_settings();
+    $catalog_page = function_exists( 'codela_sf_is_catalog_archive' ) && codela_sf_is_catalog_archive();
     $guest_account = ! is_user_logged_in();
     $checkout_page = is_checkout();
     $show_mobile_dock = ! $checkout_page && ! in_array( $settings['mobile_dock_enabled'] ?? true, [ false, 0, '0', '' ], true );
@@ -67,7 +68,7 @@ function codela_sf_header(): string {
     // Keep the single real dock available when it moves into the dialog.
     $header_mode = $product_page ? 'has-product-header' . ( $show_mobile_dock ? ' has-mobile-dock' : '' ) : ( $show_mobile_dock ? 'has-mobile-dock' : ( $checkout_page ? 'has-checkout-header' : 'has-header-tools' ) );
     $labels = [];
-    foreach ( [ 'Loading…', 'Search products', 'No matching products.', 'Something went wrong. Please try again.', 'Your cart is empty.', 'Remove', 'Quantity', 'Decrease quantity', 'Increase quantity', 'Back', 'View all', 'Cart updated.', 'Retry', 'Your cart', 'Item added to cart.', 'Subtotal', 'Shipping and discounts are calculated at checkout.', 'My account' ] as $label ) {
+    foreach ( [ 'Loading…', 'Search products', 'No matching products.', 'Something went wrong. Please try again.', 'Your cart is empty.', 'Remove', 'Quantity', 'Decrease quantity', 'Increase quantity', 'Back', 'View all', 'Cart updated.', 'Retry', 'Your cart', 'Item added to cart.', 'Subtotal', 'Shipping and discounts are calculated at checkout.', 'My account', 'Filters' ] as $label ) {
         $labels[ $label ] = __( $label, 'codela-storefront' ); // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
     }
     wp_interactivity_state( 'codela/storefront', [ 'config' => [
@@ -80,14 +81,15 @@ function codela_sf_header(): string {
         'labels' => $labels,
     ] ] );
     ob_start(); ?>
-    <div data-wp-interactive="codela/storefront" class="sf-shell <?php echo esc_attr( $header_mode ); ?>">
+    <div data-wp-interactive="codela/storefront" class="sf-shell <?php echo esc_attr( $header_mode . ( $catalog_page ? ' has-catalog-header' : '' ) ); ?>">
         <a class="sf-skip" href="#sf-content"><?php esc_html_e( 'Skip to content', 'codela-storefront' ); ?></a>
         <header class="sf-header">
             <nav class="sf-header-menu" aria-label="<?php esc_attr_e( 'Main menu', 'codela-storefront' ); ?>">
                 <?php echo codela_sf_ui_icon_button( 'menu', __( 'Menu', 'codela-storefront' ), [ 'variant' => 'soft', 'class' => 'sf-menu-trigger', 'href' => '#sf-menu-fallback', 'attributes' => [ 'data-wp-on--click' => 'actions.menu', 'data-panel' => 'menu', 'aria-haspopup' => 'dialog', 'aria-controls' => 'sf-panel', 'aria-expanded' => 'false' ] ] ); ?>
             </nav>
             <div class="sf-brand sf-ui-surface"><?php if ( has_custom_logo() ) { the_custom_logo(); } else { ?><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( $settings['brand'] ?: get_bloginfo( 'name' ) ); ?></a><?php } ?></div>
-            <nav class="sf-actions sf-ui-surface<?php echo $product_page ? ' sf-ui-icon-group--single-mobile' : ''; ?>" aria-label="<?php esc_attr_e( 'Store tools', 'codela-storefront' ); ?>">
+            <nav class="sf-actions sf-ui-surface<?php echo $product_page || ( $catalog_page && $show_mobile_dock ) ? ' sf-ui-icon-group--single-mobile' : ''; ?>" aria-label="<?php esc_attr_e( 'Store tools', 'codela-storefront' ); ?>">
+                <?php if ( $catalog_page ) { echo codela_sf_ui_icon_button( 'sliders-horizontal', __( 'Filters', 'codela-storefront' ), [ 'variant' => $show_mobile_dock ? 'soft' : 'bare', 'class' => 'sf-filter-trigger', 'href' => '#sf-filters', 'attributes' => [ 'data-wp-on--click' => 'actions.filters', 'data-panel' => 'filters', 'aria-haspopup' => 'dialog', 'aria-controls' => 'sf-panel', 'aria-expanded' => 'false' ] ] ); } ?>
                 <?php echo codela_sf_ui_icon_button( 'search', __( 'Search', 'codela-storefront' ), [ 'href' => add_query_arg( [ 's' => '', 'post_type' => 'product' ], home_url( '/' ) ), 'attributes' => [ 'data-wp-on--click' => 'actions.search', 'data-panel' => 'search', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] ] ); ?>
                 <?php echo codela_sf_ui_icon_button( 'shopping-bag', __( 'Your cart', 'codela-storefront' ), [ 'variant' => $product_page ? 'soft' : 'bare', 'href' => wc_get_cart_url(), 'class' => 'sf-cart-trigger', 'attributes' => [ 'data-wp-on--click' => 'actions.cart', 'data-panel' => 'cart', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] ], '<span class="sf-badge" aria-hidden="true"></span>' ); ?>
                 <?php echo codela_sf_ui_icon_button( 'user-round', __( 'My account', 'codela-storefront' ), [
@@ -138,11 +140,12 @@ function codela_sf_header(): string {
                     <div id="sf-results" aria-live="polite"></div>
                 </div>
             </section>
+            <?php if ( $catalog_page ) : ?><section class="sf-panel-body" id="sf-filters" hidden><?php echo codela_sf_catalog_filters(); ?></section><?php endif; ?>
             <section class="sf-panel-body" id="sf-cart" hidden><div id="sf-cart-items"></div></section>
             <div class="sf-cart-bottom" hidden><div class="sf-subtotal"><span><?php esc_html_e( 'Subtotal', 'codela-storefront' ); ?></span><strong id="sf-subtotal"></strong></div><p><?php esc_html_e( 'Shipping and discounts are calculated at checkout.', 'codela-storefront' ); ?></p><?php echo codela_sf_ui_primary_link( wc_get_checkout_url(), __( 'Checkout', 'codela-storefront' ) ); ?></div>
             <p class="sf-status" id="sf-status" role="status" aria-live="polite"></p>
         </dialog>
-        <noscript><nav id="sf-menu-fallback"><?php echo codela_sf_menu(); ?></nav></noscript>
+        <noscript><style>#sf-filters{display:block!important}#sf-panel:not([open]):has(#sf-filters){display:block;position:static;height:auto}#sf-panel:not([open])>:not(#sf-filters){display:none}</style><nav id="sf-menu-fallback"><?php echo codela_sf_menu(); ?></nav></noscript>
     </div>
     <?php return ob_get_clean();
 }
@@ -196,6 +199,3 @@ function codela_sf_footer(): string {
 
     return $html . '</div></footer>';
 }
-
-
-

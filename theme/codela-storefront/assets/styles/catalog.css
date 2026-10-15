@@ -129,3 +129,24 @@ body:not(.codela-my-account-layout):not(.single-product):not(.woocommerce-checko
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer > .button:not(.product_type_simple):not(.product_type_variable){
   grid-column:1 / -1;justify-self:stretch;
 }
+
+/* One compact archive heading for shop and all product taxonomies. */
+body:is(.post-type-archive-product,.tax-product_cat,.tax-product_tag) .sf-content{padding:24px clamp(12px,2.2vw,30px) 36px}
+body:is(.post-type-archive-product,.tax-product_cat,.tax-product_tag) .sf-content .woocommerce-products-header{margin:0 0 20px}
+body:is(.post-type-archive-product,.tax-product_cat,.tax-product_tag) .sf-content .woocommerce-products-header__title{margin:0;font-size:clamp(26px,4vw,40px);font-weight:500;line-height:1.2;letter-spacing:-.025em}
+body:is(.post-type-archive-product,.tax-product_cat,.tax-product_tag) .sf-content .term-description{max-width:65ch;color:var(--sf-muted);font-size:14px;line-height:1.6}
+body:is(.post-type-archive-product,.tax-product_cat,.tax-product_tag) .sf-content .woocommerce-result-count{float:none;margin:0 0 20px;font-size:13px;color:var(--sf-muted)}
+.sf-catalog-filters{max-width:640px;margin-inline:auto;padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
+.sf-catalog-filters form{display:grid;gap:14px}
+.sf-catalog-filters label,.sf-catalog-filters legend{font-size:14px;font-weight:500}
+.sf-catalog-filters select,.sf-catalog-filters input{font:inherit;width:100%;min-height:48px;padding:10px 12px;border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius,12px);color:var(--sf-ui-ink);background:var(--sf-ui-surface)}
+.sf-catalog-filters fieldset{min-width:0;margin:10px 0;padding:0;border:0}
+.sf-catalog-filters legend{margin-bottom:12px}
+.sf-filter-prices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.sf-filter-prices label{display:grid;gap:8px}
+.sf-filter-actions{display:flex;flex-wrap:wrap;gap:10px}
+.sf-filter-categories{margin-top:32px}
+.sf-filter-categories h3{font-size:16px;font-weight:500;margin:0 0 12px}
+.sf-filter-categories a{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:10px 4px;color:inherit;text-decoration:none;border-bottom:1px solid var(--sf-ui-border)}
+.sf-filter-categories a[aria-current]{font-weight:600}
+.sf-filter-categories a span{font-size:13px;color:var(--sf-muted)}
