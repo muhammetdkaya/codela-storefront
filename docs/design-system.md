@@ -1,7 +1,11 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.92 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.93 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
+
+## Native Woo image margin isolation — 0.1.93
+
+The generic Woo loop selector `.woocommerce ul.products li.product a img` also matches SVG icon images nested in native catalog anchors. Its native `margin-bottom:1em` moves the glyph away from the center despite the common 44px IconButton target and 22px icon. The **existing** `.sf-ui-icon-button .sf-icon` declaration now resets `margin:0` and removes image baseline/flex effects; no catalog-page repaint or duplicated button geometry. The Chromium fixture includes Woo's native image rule, and the real WP/Woo Chromium+WebKit matrix must verify the glyph center before acceptance.
 
 ## Native catalog IconButton adapter —0.1.92
 

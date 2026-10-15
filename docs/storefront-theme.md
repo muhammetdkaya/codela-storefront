@@ -1,5 +1,11 @@
 # Codela Storefront — güncel teknik durum
 
+## Güncel: 0.1.93 native Woo ikon merkezi (CI bekliyor)
+
+15 Ekim 2026: 0.1.92 [commit fae7ca4](https://github.com/muhammetdkaya/codela-storefront/commit/fae7ca4ba2ebe77bfe009fbe230302ff76786194) ve [gerçek FTP dağıtımı 38716613763](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38716613763) başarılı; beş canlı kabul ve WebKit 0.1.92 çalıştı. Önceden eksik olan yeni [gerçek WP/Woo 0.1.92 matrisi 38719692867](https://github.com/muhammetdkaya/codela/actions/runs/38719692867) **başarısız**: Woo'nun `.woocommerce ul.products li.product a img` kuralındaki 1em resim alt marjı shared IconButton'ın native glyph'ine de etki ederek merkezden kaydırdı. İlk sentetik test Woo kuralını taklit etmiyordu. Bu sonuçlar 0.1.91 başarısıyla karıştırılmamalı.
+
+0.1.93: `components.css` ortak glyph deklarasyonuna yalnız Woo image margin reseti ekle; katalog testinde gerçek Woo kuralını simüle et ve computed margin=0 doğrula. Ortak Button/IconButton / header / Woo varsayılan URL, AJAX, data ve ARIA bozulmasın. CI+FTP+canlı + yeni sürüme sabitlenmiş iki WordPress/Woo ve iki browser native matrisi ayrı doğrulanacak. Codela 1.1.1 runtime değişmedi. Fiziksel iPhone Safari/GPU ve ödeme sağlayıcısı/üçüncü taraf görsel kabulü açık.
+
 15 Ekim2026: tema0.1.91→0.1.92 hazırlanıyor; Codela1.1.1 değişmedi. Katalog simple/variable native düğmesi artık Header ile aynı IconButton sınıf/içerik yardımcılarını ve components.css deklarasyonlarını kullanır. Karttaki ::before SVG ve ayrı44px/ikon geometrisi kaldırıldı; native URL/AJAX/data/ARIA korunur. Ortak glyph22px, hedef44px,soft yüzey,scale1.08,focus/disabled/erişilebilirlik aynı. Native loading/added göstergesi ortak glyph slotunda; grouped/external metinli Button kalır. Yeni JS yok. CI,gerçek FTP,canlı ve yeni paket native kabulü bekliyor.
 
 ## Önceki0.1.91
