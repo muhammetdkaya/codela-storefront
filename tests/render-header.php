@@ -32,7 +32,7 @@ function is_account_page() { return getenv('FIXTURE_ACCOUNT') === '1' || getenv(
 function is_user_logged_in() { return getenv('FIXTURE_ACCOUNT') === '1' && getenv('FIXTURE_GUEST_ACCOUNT') !== '1'; }
 function get_privacy_policy_url() { return ''; }
 function add_query_arg( $args, $url ) { return $url.'?'.http_build_query($args); }
-function get_terms( ...$args ) { return [(object)['parent'=>0,'term_id'=>1,'name'=>'Collection'],(object)['parent'=>1,'term_id'=>2,'name'=>'Shoes']]; }
+function get_terms( ...$args ) { return [(object)['parent'=>0,'term_id'=>1,'name'=>'Collection','count'=>3],(object)['parent'=>1,'term_id'=>2,'name'=>'Shoes','count'=>2]]; }
 function get_term_link( $term ) { return home_url('/category/'.$term->term_id.'/'); }
 function is_wp_error( ...$args ) { return false; }
 function add_action(...$args) {}
@@ -47,6 +47,6 @@ function wc_get_template( $name ) {
         . '</form></div>';
 }
 require __DIR__.'/../theme/codela-storefront/inc/account.php';
+if (getenv('FIXTURE_CATALOG')) { require __DIR__.'/catalog-filter-fixture.php'; }
 require __DIR__.'/../theme/codela-storefront/inc/render.php';
 echo codela_sf_header();
-

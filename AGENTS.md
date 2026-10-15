@@ -1,5 +1,12 @@
 # Codela Storefront — güncel çalışma kuralları
 
+
+## Güncel çalışma — 0.1.96 mağaza/kategori filtreleri (doğrulama bekliyor)
+
+15 Ekim 2026: Kullanıcının mağaza/kategori ekranı üzerine ortak native arşiv başlığı ve filtre kompozisyonu hazırlandı. Header'ın mevcut tools slotunda aynı IconButton ile filtre; tek mevcut dialog/controller içinde Filters bölümü. Yerel sliders-horizontal SVG; kategori bağlantıları, native Woo GET fiyat/sıralama formu, ilk sayfaya dönüş ve temizleme. Kategori/etiket template'leri aynı legacy archive-product template'ini kullanır; ürün kartı/main query/pagination/native Woo hook'ları korunur. Ayrı modal, sepet veya filtre API motoru yok. Tema 0.1.95→0.1.96; eklenti 1.1.1 değişmedi.
+
+Doğrulama: JS syntax kontrolü geçti. Yerel ortamda PHP CLI bulunmuyor; PHP/browser ve paket kontrolleri GitHub CI'da çalıştırılacak. Bu kayıt yayın/kabul kanıtı değildir. Sıradaki iş PR CI, gerçek FTP ve canlı mağaza/kategori/filtre kabulü; native Woo fiyat/sıralama ve kategori kapsamının gerçek ortamda doğrulanması. 0.1.95 önceki tamamlanan iş, yeniden açılmadı. Fiziksel Safari ve gerçek ödeme sağlayıcısı ayrı kalır.
+
 ## Son doğrulanmış durum — 0.1.95 ürün kartı tıklaması canlı ve kabul tamam
 
 15 Ekim 2026: **Codela Storefront 0.1.94→0.1.95 canlı, gerçek WP/Woo kabulü tamam.** Mevcut Woo ürün linkinin `::after` hit alanı görsel, başlık, fiyat, kart içi boşluk ve stoksuz kartı kapsar; native `Sepete ekle`, `Seçenekler`, grouped/external ve `Sepeti Görüntüle` ayrı tıklanır. `catalog.css` düzeni dışında yeni JS, nested anchor, kart kopyası veya ikinci sepet motoru yok. Codela eklentisi **1.1.1 değişmedi**. Erişilebilir isim/Tab focus korunur.
@@ -128,4 +135,3 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - `muhammetdkaya/codela-site` tanıtım temasını değiştirme.
 - Küçük tema değişiklikleri bu deponun bağımsız dağıtımıyla canlıya gidebilir. Gerekli ayarları ilgili eklenti alt menüsüne aynı geliştirme kapsamında GitHub'da ekle; eklenti ayar değişikliklerini ara ara toplu yayınla.
 - Şifreleri kodda, belgede veya günlükte tutma.
-

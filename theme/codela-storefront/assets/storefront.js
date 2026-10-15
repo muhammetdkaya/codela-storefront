@@ -11,6 +11,7 @@ const { state } = store('codela/storefront', {
         menu: event => overlay.toggleMenu(event),
         search: event => overlay.open('search', event),
         cart: event => overlay.open('cart', event),
+        filters: event => overlay.open('filters', event),
         account: event => overlay.open('account', event),
         close: () => overlay.close(),
     },
@@ -104,5 +105,3 @@ function init() {
 
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',init,{once:true}); else init();
-
-

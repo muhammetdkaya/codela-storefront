@@ -1,5 +1,13 @@
 <?php
 return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR', 'plural-forms' => 'nplurals=2; plural=(n > 1);', 'messages' => [
+'Filters' => 'Filtreler',
+'Price range' => 'Fiyat aralığı',
+'Minimum price' => 'En düşük fiyat',
+'Maximum price' => 'En yüksek fiyat',
+'Apply filters' => 'Filtreleri uygula',
+'Clear filters' => 'Filtreleri temizle',
+'Categories' => 'Kategoriler',
+'Sort by' => 'Sıralama',
 'Mobile bottom navigation' => 'Mobil alt menü',
 'Show the bottom navigation on mobile. When disabled, search, cart and account appear in the header, as on desktop.' => 'Mobilde alt menüyü göster. Kapatıldığında arama, sepet ve hesabım ikonları masaüstündeki gibi üst alanda görünür.',
 'Theme' => 'Tema',
@@ -116,4 +124,3 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'Optimize existing images' => 'Mevcut görselleri optimize et',
 'Stop' => 'Durdur',
 ] ];
-

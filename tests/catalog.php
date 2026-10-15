@@ -86,3 +86,17 @@ check(str_contains(codela_sf_catalog_button_args($args,new WC_Product(42,true,'e
 $account=true;$signed_in=true;$before=count($actions);codela_sf_catalog_layout();
 check(count($actions)===$before && codela_sf_catalog_button_args($args,new WC_Product(42))===$args && codela_sf_catalog_button_text('Native',new WC_Product(1))==='Native' && codela_sf_catalog_button_visibility('Original',new WC_Product(1,true,'simple',false))==='Original', 'Plugin-owned signed-in account remains untouched' );
 echo "Native catalog footer, stock/action semantics and shared Button reuse passed.\n";
+
+function is_admin() { return false; }
+function get_object_taxonomies($type) { return ['product_cat','product_tag']; }
+$query = new class {
+    public function is_main_query() { return true; }
+    public function is_post_type_archive($type) { return true; }
+    public function is_tax($taxonomies) { return false; }
+};
+$_GET = ['min_price'=>'10','max_price'=>'','orderby'=>'price'];
+codela_sf_catalog_empty_bounds($query);
+check($_GET === ['min_price'=>'10','orderby'=>'price'], 'No-JS empty max is unbounded, not a zero-price cap');
+$_GET = ['min_price'=>'0','max_price'=>'0'];
+codela_sf_catalog_empty_bounds($query);
+check($_GET === ['min_price'=>'0','max_price'=>'0'], 'Explicit zero remains a real price bound');
