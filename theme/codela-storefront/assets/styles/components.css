@@ -82,7 +82,10 @@ body:not(.codela-my-account-layout) .sf-content .sf-ui-button.sf-ui-surface,
 .woocommerce div.product .sf-ui-gallery .woocommerce-product-gallery__trigger,
 .sf-shell .sf-ui-icon-button--soft,
 #sf-panel button.sf-ui-icon-button--soft,
-body:not(.codela-my-account-layout) .sf-content .sf-ui-icon-button--soft{
+body:not(.codela-my-account-layout) .sf-content .sf-ui-icon-button--soft,
+/* Same native Woo specificity for soft material so the base reset cannot
+   override the single shared transparent border / pill radius. */
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product a.sf-ui-icon-button--soft{
   border:1px solid var(--sf-ui-glass-border);
   border-radius:var(--sf-ui-pill);
   /* A single tinted layer, never a stacked white overlay/gradient. */
