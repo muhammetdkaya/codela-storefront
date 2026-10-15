@@ -1,7 +1,11 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.86 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.87 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
+
+## Single mobile control inside a desktop group —0.1.87
+
+Use the existing soft IconButton for a tool that stands alone on mobile. The shared sf-ui-icon-group--single-mobile composition removes the group's material/border/padding at <=700px, leaving the same44px soft control as Menu. Above700px the group retains its material and the nested soft control becomes bare. Never retain group padding around one visible tool or paint two nested surfaces. This is a composition of existing primitives, not a second Cart button, page-specific paint or new interaction.
 
 ## Shared Header and native product cards —15 October2026
 

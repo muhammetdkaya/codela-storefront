@@ -6,7 +6,7 @@ const fs=require('node:fs');
 const pages=[
  {name:'home',url:'https://codela.dev/',selectors:['.sf-brand','.sf-header-menu .sf-menu-trigger','.sf-mobile-dock .sf-dock-surface']},
  {name:'product-search',url:'https://codela.dev/?s=Demo&post_type=product',selectors:['.sf-brand','.sf-header-menu .sf-menu-trigger','.sf-mobile-dock .sf-dock-surface']},
- {name:'product',url:'https://codela.dev/urun/demo-20-v-yaka-tisort-secki/',selectors:['.sf-brand','.sf-header-menu .sf-menu-trigger','.sf-header .sf-actions','.sf-product-purchase']},
+ {name:'product',url:'https://codela.dev/urun/demo-20-v-yaka-tisort-secki/',selectors:['.sf-brand','.sf-header-menu .sf-menu-trigger','.sf-header .sf-cart-trigger','.sf-product-purchase']},
 ];
 const alpha=color=>{
  const parsed=color.match(/rgba?\(([^)]+)\)/);
@@ -45,6 +45,14 @@ const alpha=color=>{
     surfaces.push({selector,alpha:a,...item});
    }
    if(check.name==='product'){
+    assert(parts[0]>0||parts[1]>1||parts[2]>=87,'Single cart surface requires87');
+    const parity=await page.locator('.sf-header').evaluate(el=>{
+     const read=e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return{width:r.width,height:r.height,background:s.backgroundColor,image:s.backgroundImage,border:s.borderTopWidth,radius:s.borderRadius,shadow:s.boxShadow,filter:s.webkitBackdropFilter||s.backdropFilter};};
+     return{menu:read(el.querySelector('.sf-menu-trigger')),cart:read(el.querySelector('.sf-cart-trigger')),group:read(el.querySelector('.sf-actions'))};
+    });
+    assert.deepEqual(parity.cart,parity.menu,'Live Cart and Menu use identical soft IconButton');
+    assert.equal(parity.cart.width,44);assert.equal(parity.cart.height,44);
+    assert.equal(parity.group.width,44);assert.equal(parity.group.background,'rgba(0, 0, 0, 0)');assert.equal(parity.group.shadow,'none');
     const dock=await page.locator('.sf-shell > .sf-mobile-dock').evaluate(el=>getComputedStyle(el).display);
     assert.equal(dock,'none','No duplicate dock behind purchase bar');
    }

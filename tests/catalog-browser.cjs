@@ -29,6 +29,37 @@ for(const width of [320,390,700,900,1280]){
   await page.setContent('<style>'+styles+'</style><body class="'+(mode==='product'?'single-product woocommerce':'')+'">'+headers[mode]+purchase+'</body>');
   const layout=await page.locator('.sf-header').evaluate(el=>({brand:el.querySelector('.sf-brand').getBoundingClientRect().toJSON(),menu:el.querySelector('.sf-header-menu').getBoundingClientRect().toJSON(),tools:[...el.querySelectorAll('.sf-actions a')].filter(x=>getComputedStyle(x).display!=='none'&&getComputedStyle(x.parentElement).display!=='none').map(x=>x.dataset.panel||'account'),overflow:document.documentElement.scrollWidth>innerWidth+1}));
   assert(!layout.overflow,mode+' header fits '+width);
+  if(mode==='product'){
+   const measure=()=>page.locator('.sf-header').evaluate(el=>{
+    const read=e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return{width:r.width,height:r.height,background:s.backgroundColor,image:s.backgroundImage,radius:s.borderRadius,border:s.borderTopWidth,shadow:s.boxShadow,filter:s.backdropFilter,transition:s.transitionProperty,transform:s.transform,outline:s.outlineStyle};};
+    return{menu:read(el.querySelector('.sf-menu-trigger')),cart:read(el.querySelector('.sf-cart-trigger')),group:read(el.querySelector('.sf-actions'))};
+   });
+   if(width<=700){
+    for(const count of ['', '2', '99']){
+     await page.locator('.sf-cart-trigger .sf-badge').evaluate((el,count)=>el.textContent=count,count);
+     const v=await measure();
+     assert.deepEqual(v.cart,v.menu,'Same soft IconButton geometry/material for cart count '+count+' at '+width);
+     assert.equal(v.cart.width,44);assert.equal(v.cart.height,44);
+     assert.equal(v.group.width,44,'No group padding enlarges the cart surface');
+     assert.equal(v.group.background,'rgba(0, 0, 0, 0)');assert.equal(v.group.shadow,'none');assert.equal(v.group.border,'0px');
+    }
+    await page.locator('.sf-cart-trigger,.sf-menu-trigger').evaluateAll(els=>els.forEach(el=>el.classList.add('is-pressed')));
+    await page.waitForTimeout(160);
+    const pressed=await measure();assert.deepEqual(pressed.cart,pressed.menu,'Shared whole-control press feedback');
+    assert(parseFloat(pressed.cart.transform.slice(7).split(',')[0])>1,'Same shared press scale');
+    await page.locator('.sf-cart-trigger,.sf-menu-trigger').evaluateAll(els=>els.forEach(el=>el.classList.remove('is-pressed')));
+    await page.waitForTimeout(440);
+    for(const selector of ['.sf-cart-trigger','.sf-menu-trigger']){
+     await page.locator(selector).focus();
+     assert.equal(await page.locator(selector).evaluate(e=>getComputedStyle(e).outlineStyle),'solid','Shared keyboard focus');
+    }
+    await page.locator('.sf-menu-trigger').evaluate(e=>e.blur());
+    if(width===390){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:'qa/storefront-ui-kit-header-single-390.png'});}
+   }else{
+    const v=await measure();assert.equal(v.cart.background,'rgba(0, 0, 0, 0)');assert.equal(v.cart.shadow,'none','No nested desktop cart surface');
+    assert.equal(v.group.width,140,'Desktop retains its three-control shared island');
+   }
+  }
   if(width<=700){assert(layout.brand.x<layout.menu.x,'Logo stays left');if(anchor)assert(Math.abs(layout.menu.x-anchor)<1,'Menu never changes slot');else anchor=layout.menu.x;
    assert.deepEqual(layout.tools,mode==='product'?['cart']:mode==='no-dock'?['search','cart','account']:[]);
   }else{assert.equal(layout.tools.length,3,'Desktop keeps all tools');assert(layout.menu.x<layout.brand.x);}

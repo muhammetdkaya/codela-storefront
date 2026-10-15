@@ -344,6 +344,22 @@ body.single-product div.product > .onsale,
 }
 }
 
+/* Responsive composition of existing soft IconButtons: the group owns the
+   desktop surface; its one remaining mobile control owns its own surface.
+   Never paint both layers or enlarge the 44px primitive with group padding. */
+@media(max-width:700px){
+  .sf-shell .sf-ui-icon-group--single-mobile.sf-ui-surface{
+    padding:0;border:0;background:transparent!important;
+    box-shadow:none!important;-webkit-backdrop-filter:none;backdrop-filter:none;
+  }
+}
+@media(min-width:701px){
+  .sf-shell .sf-ui-icon-group--single-mobile > .sf-ui-icon-button--soft{
+    border:0;background:transparent!important;
+    box-shadow:none!important;-webkit-backdrop-filter:none;backdrop-filter:none;
+  }
+}
+
 /* Native Woo input/layout adapter: labels occupy the existing field surface,
    using the same spacing, radius and action-height tokens as other UI controls.
    No new input markup or JS; labels keep their real for/id relationship. */
