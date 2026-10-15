@@ -1,8 +1,10 @@
 # Codela Storefront — güncel çalışma kuralları
 
-## Son doğrulanmış devam noktası —15 Ekim2026 /0.1.89 canlı;0.1.90 test/yayın bekliyor
+## Son doğrulanmış devam noktası —15 Ekim2026 /0.1.90 canlı
 
-- Kullanıcının ürün listeleme referansına göre 0.1.90: yazılar koyu, fiyat üstünde ince çizgi, 44px yuvarlak ortak Button üzerinde shopping-bag.svg; daha geniş konteyner ve mobil kenar boşluğu. Tek native Woo kartı korunur; varyasyon oku/stockless davranışları ve Woo AJAX veri-ARIA değişmez. CI/FTP ve canlı kabul sonucu görülmeden 0.1.90 canlı olarak kaydetme.
+- **0.1.90 canlı:** [kaynak 104b853d](https://github.com/muhammetdkaya/codela-storefront/commit/104b853d62ee73099923ecf0b35a0e79ebb8008f); [CI ve gerçek FTP 38709075916](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38709075916) başarılı (ikinci test denemesi); canlı WebKit [38709787224](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38709787224), galeri [38709787332](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38709787332), shell [38709787200](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38709787200), belge [38709787245](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38709787245), performans [38709787212](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38709787212) başarılı. Codela eklentisi1.1.1 değişmedi.
+- Ortak katalog için koyu ürün başlıkları, fiyat üstünde1px ayırıcı, native Button üzerinde mevcut shopping-bag.svg 44px yuvarlak aksiyon, varyasyon için mevcut arrow-right.svg; Woo AJAX/data/ARIA, sepet, stok kontrolü ve tek native kart korundu. 1360px üst sınır, mobil kenarda12px. 320px dahil fiyat/buton sütun hizası kalıcı browser testinde doğrulandı. Yeni JavaScript, çift kart, ikinci görsel zemini yok.
+- **Kalan:** fiziksel iPhone Safari (ikonun gerçek dokunma/renk/toolbar kabulü), gerçek ödeme sağlayıcısı ve üçüncü taraf görsel ortamı; eski JPEG admin backfill ancak yetkili oturum ve yedekle. Sıradaki tasarım işi için0.1.90 kart altyapısını yeniden kurma.
 
 
 - Tema0.1.88→0.1.89 **canlı**: [son kaynak 4f162237](https://github.com/muhammetdkaya/codela-storefront/commit/4f162237ae5f323c50f3720582de82591cde92fb); [CI+gerçek FTP 38688395197](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38688395197) başarılı. Beş canlı denetim: WebKit, navigasyon, galeri, performans, belge sürekliliği başarılı. Eklenti1.1.1 değişmedi.

@@ -3,7 +3,7 @@
 **Status:** Current shared architecture; theme source 0.1.90 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
 
-## Reference-faithful wide catalog —0.1.90 (pending CI/live confirmation)
+## Reference-faithful wide catalog —0.1.90 (live, verified)
 
 The existing single Woo card now uses dark readable headings, a fine internal rule above the native price/action row, and a true round 44px action that renders the existing local shopping-bag SVG (simple products) or arrow-right SVG (variation choices) via ::before. Native Woo button/link markup, accessible link name, busy spinner and data/AJAX semantics are unchanged. No extra image layer, duplicate controls or JS. Stockless products do not expose fake purchase controls. Catalog containers are allowed up to 1360px with tighter mobile gutters; product/checkout and plugin-owned account layout remain independent.
 

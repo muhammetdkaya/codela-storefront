@@ -1,6 +1,6 @@
 # Codela Storefront — güncel teknik durum
 
-15 Ekim2026: **tema0.1.89→0.1.90 kaynak oluşturuldu; CI ve canlı yayın henüz doğrulanmadı.** Codela1.1.1 eklenti sürümü değişmedi.
+15 Ekim2026: **tema0.1.89→0.1.90 canlı**, Codela1.1.1 eklenti sürümü değişmedi. [Kaynak 104b853d](https://github.com/muhammetdkaya/codela-storefront/commit/104b853d62ee73099923ecf0b35a0e79ebb8008f), [CI / gerçek FTP 38709075916](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38709075916) başarılı.
 
 ## Yapılan — referans ürün kartına eşleme
 
@@ -8,7 +8,9 @@ Geniş (1360px üst sınır / mobil12px içerik kenarı) katalog; koyu ürün ba
 
 ## Yayın durumu ve kalan kabul
 
-Gerçek CI ve FTP sonucu bekleniyor. Yayın sonrası WebKit/shell/gallery/performance canlı kontrolleri yapılmalı. Fiziksel iPhone/Safari, üretim ödeme sağlayıcısı, eski JPEG toplu dönüşüm ve üçüncü taraf medya ayrı konular.
+CI paket, PHP, JS, katalog (320/390/700/900/1280), ortak Button ve header, galeri, checkout, shell/navigasyon browser regresyonları başarılı. Tek geçici CI press zamanlama hatası üzerine aynı commit'in ikinci çalışması tam geçti. Gerçek FTP dağıtımı ve public source/store sağlık doğrulaması başarılı. Canlı [WebKit](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38709787224), [shell](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38709787200), [galeri](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38709787332), [belge](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38709787245), [performans](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38709787212) testleri başarılı.
+
+Kalanlar: fiziksel iPhone/Safari dokunma-görsel kabulü, üretim ödeme sağlayıcısı, eski JPEG toplu dönüşüm (yetkili oturum/yedek gerekir) ve üçüncü taraf medya. Bundan sonra yeni görsel revizyon yapılacaksa mevcut ortak kart ve UI Button sistemini kullan; checkout/header/sepete ait ayrı yeni bileşen kurma.
 
 ---
 
