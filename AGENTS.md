@@ -1,5 +1,11 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Güncel çalışma — 0.1.94 native IconButton flex önceliği (CI ve gerçek kabul bekliyor)
+
+15 Ekim 2026: 0.1.93 [CI+gerçek FTP 38720668607](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38720668607) ve beş canlı denetim başarılı; Codela eklentisi 1.1.1 değişmedi. Ancak [0.1.93 gerçek WP/Woo matrisi 38721596389](https://github.com/muhammetdkaya/codela/actions/runs/38721596389) ikon merkezleme kontrolünde başarısız: ikon SVG 22px ve margin=0 olmasına rağmen button sol üstünde kalıyor (centerX/Y=-10px). Gerçek WooCommerce `.woocommerce ul.products li.product a.button{display:inline-block}` seçicisi merkezi `inline-flex` kuralını eziyor. Ayrıca ayrı lazy testinde ürün görseli ile buton SVG'si ayırt edildi (test-only, Codela eklenti runtime değişmedi).
+
+0.1.94: yeni buton veya paint kopyalamadan **aynı ortak** `components.css` IconButton deklarasyonuna yüksek özgüllüklü native Woo katalog seçicisi ekle. `tests/catalog-browser.cjs` Woo button `display:inline-block` kuralını da fixture'da simüle eder; Header/kart 44px & glyph merkez/22px regresyonu bunu kapsar. Sürüm yükseltmesi teknik notlarla takip ediliyor. **Bu commit CI, gerçek FTP, beş canlı denetim ve güncel kaynak+ZIP hash bağlı gerçek WP6.5/Woo9 ile WP7.1/Woo11 Chromium+WebKit matrisinden geçene kadar tamamlandı demeyin.** Fiziksel iPhone Safari ve gerçek ödeme sağlayıcısı ayrı kabul.
+
 ## Güncel çalışma — 0.1.93 düzeltmesi CI bekliyor
 
 15 Ekim 2026: 0.1.92 kaynak fae7ca4 [CI+FTP](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38716613763), beş canlı kontrol ve WebKit ekran görüntüsüyle gerçekten canlıya alındı. Ancak 0.1.92 için yeni açılan [gerçek WP/Woo matrisi](https://github.com/muhammetdkaya/codela/actions/runs/38719692867), Chromium'da **native ikon merkezi hizası** kontrolünde başarısız oldu. WooCommerce'in ul.products a img kuralındaki 1em alt margin ortak SVG'ye de uygulanıyordu; sentetik browser CSS bu native kuralı içermiyordu.

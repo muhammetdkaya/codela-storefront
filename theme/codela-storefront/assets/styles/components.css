@@ -7,7 +7,11 @@
  */
 .woocommerce div.product .sf-ui-gallery .woocommerce-product-gallery__trigger,
 .sf-shell .sf-ui-icon-button,
-body:not(.codela-my-account-layout) .sf-content .sf-ui-icon-button{
+body:not(.codela-my-account-layout) .sf-content .sf-ui-icon-button,
+/* Woo's more-specific native product a.button selector sets display:inline-block.
+   Include native actions in the SAME shared IconButton declaration so flex
+   centering wins without a second paint or control geometry. */
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product a.sf-ui-icon-button{
   display:inline-flex;
   align-items:center;
   justify-content:center;
