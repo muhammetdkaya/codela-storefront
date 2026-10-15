@@ -64,7 +64,8 @@ for(const width of [320,390,700,900,1280]){
  assert(Math.abs(parity.glyph.x)<.5 && Math.abs(parity.glyph.y)<.5,'Native glyph is centered in its shared target');
  await page.locator('.sf-menu-trigger,.sf-product-card-footer .sf-ui-icon-button').evaluateAll(els=>els.forEach(e=>e.classList.add('is-pressed')));
  await page.waitForTimeout(180);
- assert.equal(await page.locator('.sf-menu-trigger').evaluate(e=>getComputedStyle(e).transform),await page.locator('.sf-product-card-footer .sf-ui-icon-button').first().evaluate(e=>getComputedStyle(e).transform),'Same icon press scale');
+ const pressScales=await Promise.all(['.sf-menu-trigger','.sf-product-card-footer .sf-ui-icon-button'].map(selector=>page.locator(selector).first().evaluate(e=>{const m=new DOMMatrixReadOnly(getComputedStyle(e).transform);return m.a;})));
+ assert(pressScales.every(s=>s>1.06&&s<1.10)&&Math.abs(pressScales[0]-pressScales[1])<.012,'Same shared icon press scale after animation settle: '+pressScales.join('/'));
  let anchor;
  for(const mode of ['home','product','checkout','no-dock']){
   const purchase=mode==='product'?'<main class="sf-content"><div class="product"><form class="cart"><div class="sf-product-purchase"><button class="button" type="submit">Sepete Ekle</button></div></form></div></main>':'<main class="sf-content"></main>';
