@@ -1,6 +1,9 @@
 # Codela Storefront — güncel çalışma kuralları
 
-## Son doğrulanmış devam noktası —15 Ekim2026 /0.1.88 canlı
+## Son doğrulanmış devam noktası —15 Ekim2026 /0.1.88 canlı,0.1.89 yayın bekliyor
+
+- 0.1.89 kodu: açık tek katmanlı katalog kartı, bütünleşik başlık/fiyat/secondary Button yerleşimi; yalnız ortak katalog CSS ve test beklentileri değişti. Kod/CI/canlı yayın durumunu ayrı izle; eski 0.1.88 kanıtını yeni sürüm için kullanma.
+
 
 - Tema0.1.87→0.1.88; [kaynakd64106c4](https://github.com/muhammetdkaya/codela-storefront/commit/d64106c4d12e58e57d459eb802d5238c7a5a568b), [CI+gerçek FTP38678440344](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38678440344) başarılı; deploy03:54:21.1422094Z. Eklenti1.1.1 runtime/WordPress.org değişmedi.
 - Ortak native kart home/shop/category/ürün arama/related/upsell/cross-sell:1:1 contain/şeffaf dış yüzey, küçük iki satır normal başlık, native fiyat+mevcut44px secondary Button aynı footer'da. Simple Ekle, variable Seçenekler; grouped/external native metinleri korunur. Stoksuz badge var, satın alma/Read more aksiyonu yok. Sahte renk noktası/puan yok.

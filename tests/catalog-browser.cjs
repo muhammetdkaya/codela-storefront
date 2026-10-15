@@ -17,16 +17,18 @@ for(const width of [320,390,700,900,1280]){
   const inside=mode==='related'?'<div class="product type-product"><section class="related products"><h2>İlgili Ürünler</h2>'+cards+'</section></div>':'<section class="sf-selection woocommerce"><h2>Koleksiyon</h2>'+cards+'</section>';
   await page.setContent('<style>.woocommerce ul.products li.product{float:left;width:22%;margin:0 3% 2em 0}.woocommerce ul.products::before{content:" ";display:table}'+styles+'</style><body class="woocommerce '+(mode==='home'?'home':mode==='related'?'single-product':'')+'"><main class="sf-content">'+inside+'</main></body>');
   const actual=await page.locator('ul.products').evaluate(el=>{const li=el.querySelector('li'),img=li.querySelector('img'),title=li.querySelector('h2'),price=li.querySelector('.price'),button=li.querySelector('.button');const a=getComputedStyle(img),b=getComputedStyle(title),c=getComputedStyle(price),d=getComputedStyle(button);
-   return{columns:getComputedStyle(el).gridTemplateColumns.split(' ').length,overflow:document.documentElement.scrollWidth>innerWidth+1,paint:{fit:a.objectFit,ratio:a.aspectRatio,background:a.backgroundColor,radius:a.borderRadius,title:b.fontSize,lines:b.webkitLineClamp,price:c.fontSize,button:d.backgroundColor,transition:d.transitionProperty},target:button.getBoundingClientRect().height,width:li.getBoundingClientRect().width};});
+   return{columns:getComputedStyle(el).gridTemplateColumns.split(' ').length,overflow:document.documentElement.scrollWidth>innerWidth+1,paint:{fit:a.objectFit,ratio:a.aspectRatio,background:a.backgroundColor,radius:a.borderRadius,title:b.fontSize,lines:b.webkitLineClamp,price:c.fontSize,button:d.backgroundColor,transition:d.transitionProperty,card:getComputedStyle(li).backgroundColor,cardRadius:getComputedStyle(li).borderRadius},target:button.getBoundingClientRect().height,width:li.getBoundingClientRect().width};});
   assert(!actual.overflow,mode+' overflow at '+width);assert.equal(actual.columns,width>1024?4:width>700?3:2);assert(actual.target>=44,'Accessible card action');
   assert.equal(actual.paint.fit,'contain');assert.equal(actual.paint.ratio,'1 / 1');assert.equal(actual.paint.lines,'2');
   assert.equal(actual.paint.background,'rgba(0, 0, 0, 0)','No second image surface');
+  assert.equal(actual.paint.card,'rgb(255, 255, 255)','Single light card shell');
+  assert.equal(actual.paint.cardRadius,'20px','Integrated card corners');
   const detail=await page.locator('li.product').first().evaluate(el=>{
    const title=el.querySelector('h2'),footer=el.querySelector('.sf-product-card-footer'),price=footer.querySelector('.price'),button=footer.querySelector('.button');
    const p=price.getBoundingClientRect(),b=button.getBoundingClientRect();
    return{weight:getComputedStyle(title).fontWeight,buttonWidth:b.width,cardWidth:el.getBoundingClientRect().width,priceX:p.x,buttonX:b.x,footerChildren:footer.children.length};
   });
-  assert.equal(detail.weight,'400');assert(detail.buttonWidth<detail.cardWidth*.7,'Action does not dominate card');
+  assert.equal(detail.weight,'500');assert(detail.buttonWidth<detail.cardWidth*.7,'Action does not dominate card');
   assert(detail.priceX<detail.buttonX,'Price left, shared action right');assert.equal(detail.footerChildren,2);
   assert.equal(await page.locator('li.outofstock .button').count(),0,'Out-of-stock has no purchase action');
   assert.equal(await page.locator('li.outofstock .sf-product-stock').count(),1);
