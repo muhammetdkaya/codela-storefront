@@ -183,6 +183,7 @@ body:not(.codela-my-account-layout) .sf-content .sf-ui-button .sf-ui-button-labe
 /* Google is the standard secondary UI Kit Button. Only internal alignment
    belongs here: its text is mathematically centered in the entire button,
    while the mark sits alongside it rather than shifting the text off center. */
+body:not(.codela-my-account-layout) .sf-content .sf-auth-google.sf-ui-button,
 .sf-shell .sf-auth-google.sf-ui-button{
   display:grid;
   grid-template-columns:minmax(0,1fr) max-content minmax(0,1fr);
@@ -190,6 +191,7 @@ body:not(.codela-my-account-layout) .sf-content .sf-ui-button .sf-ui-button-labe
   column-gap:10px;
   text-align:center;
 }
+body:not(.codela-my-account-layout) .sf-content .sf-auth-google.sf-ui-button .sf-google-glyph,
 .sf-shell .sf-auth-google.sf-ui-button .sf-google-glyph{
   grid-column:1;
   justify-self:end;
@@ -198,6 +200,7 @@ body:not(.codela-my-account-layout) .sf-content .sf-ui-button .sf-ui-button-labe
   width:22px;
   height:22px;
 }
+body:not(.codela-my-account-layout) .sf-content .sf-auth-google.sf-ui-button .sf-ui-button-label,
 .sf-shell .sf-auth-google.sf-ui-button .sf-ui-button-label{
   grid-column:2;
   justify-self:center;
