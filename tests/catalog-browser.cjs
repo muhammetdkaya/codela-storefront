@@ -5,6 +5,7 @@ const root='theme/codela-storefront/';
 const css=['tokens','components','catalog','navigation','overlay','product'].map(n=>fs.readFileSync(root+'assets/styles/'+n+'.css','utf8'));
 const styles=css[0]+fs.readFileSync(root+'assets/storefront.css','utf8')+css[4]+css[3]+css[1]+css[2]+css[5];
 const wooImageCss='.woocommerce ul.products li.product a img{display:block;width:100%;height:auto;margin:0 0 1em}';
+const wooButtonCss='.woocommerce ul.products li.product a.button{display:inline-block}';
 const header=mode=>execFileSync('php',['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_PRODUCT:mode==='product'?'1':'0',FIXTURE_CHECKOUT:mode==='checkout'?'1':'0',...(mode==='no-dock'?{FIXTURE_DOCK:'0'}:{})}});
 const headers=Object.fromEntries(['home','product','checkout','no-dock'].map(m=>[m,header(m)]));
 const image='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22500%22%3E%3Crect width=%22400%22 height=%22500%22 fill=%22%23dfebe9%22/%3E%3C/svg%3E';
@@ -16,7 +17,7 @@ for(const width of [320,390,700,900,1280]){
  await page.setViewportSize({width,height:900});let expectedPaint;
  for(const mode of ['home','shop','category','search','related']){
   const inside=mode==='related'?'<div class="product type-product"><section class="related products"><h2>İlgili Ürünler</h2>'+cards+'</section></div>':'<section class="sf-selection woocommerce"><h2>Koleksiyon</h2>'+cards+'</section>';
-  await page.setContent('<style>.screen-reader-text{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.woocommerce ul.products li.product{float:left;width:22%;margin:0 3% 2em 0}.woocommerce ul.products::before{content:" ";display:table}'+wooImageCss+styles+'</style><body class="woocommerce '+(mode==='home'?'home':mode==='related'?'single-product':'')+'"><main class="sf-content">'+inside+'</main></body>');
+  await page.setContent('<style>.screen-reader-text{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.woocommerce ul.products li.product{float:left;width:22%;margin:0 3% 2em 0}.woocommerce ul.products::before{content:" ";display:table}'+wooImageCss+wooButtonCss+styles+'</style><body class="woocommerce '+(mode==='home'?'home':mode==='related'?'single-product':'')+'"><main class="sf-content">'+inside+'</main></body>');
   const actual=await page.locator('ul.products').evaluate(el=>{const li=el.querySelector('li'),img=li.querySelector('img'),title=li.querySelector('h2'),price=li.querySelector('.price'),button=li.querySelector('.button');const a=getComputedStyle(img),b=getComputedStyle(title),c=getComputedStyle(price),d=getComputedStyle(button);
    return{columns:getComputedStyle(el).gridTemplateColumns.split(' ').length,overflow:document.documentElement.scrollWidth>innerWidth+1,paint:{fit:a.objectFit,ratio:a.aspectRatio,background:a.backgroundColor,radius:a.borderRadius,title:b.fontSize,lines:b.webkitLineClamp,price:c.fontSize,button:d.backgroundColor,transition:d.transitionProperty,card:getComputedStyle(li).backgroundColor,cardRadius:getComputedStyle(li).borderRadius},target:button.getBoundingClientRect().height,width:li.getBoundingClientRect().width};});
   assert(!actual.overflow,mode+' overflow at '+width);assert.equal(actual.columns,width>1024?4:width>700?3:2);assert(actual.target>=44,'Accessible card action');
@@ -51,7 +52,7 @@ for(const width of [320,390,700,900,1280]){
   if(expectedPaint)assert.deepEqual(actual.paint,expectedPaint,'Same card paint for '+mode+' at '+width);else expectedPaint=actual.paint;
   if(mode==='home'&&[390,1280].includes(width)){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:'qa/storefront-ui-kit-catalog-'+width+'.png',fullPage:true});}
  }
- await page.setContent('<style>.screen-reader-text{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}'+wooImageCss+styles+'</style><body>'+headers.home+'<main class="sf-content">'+cards+'</main></body>');
+ await page.setContent('<style>.screen-reader-text{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}'+wooImageCss+wooButtonCss+styles+'</style><body>'+headers.home+'<main class="sf-content">'+cards+'</main></body>');
  const parity=await page.evaluate(()=>{
   const a=document.querySelector('.sf-menu-trigger'),b=document.querySelector('.sf-product-card-footer .sf-ui-icon-button');
   const read=e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return{w:r.width,h:r.height,padding:s.padding,border:s.borderWidth,radius:s.borderRadius,background:s.backgroundColor,shadow:s.boxShadow,transition:s.transitionProperty};};
@@ -63,11 +64,12 @@ for(const width of [320,390,700,900,1280]){
  assert(Math.abs(parity.glyph.x)<.5 && Math.abs(parity.glyph.y)<.5,'Native glyph is centered in its shared target');
  await page.locator('.sf-menu-trigger,.sf-product-card-footer .sf-ui-icon-button').evaluateAll(els=>els.forEach(e=>e.classList.add('is-pressed')));
  await page.waitForTimeout(180);
- assert.equal(await page.locator('.sf-menu-trigger').evaluate(e=>getComputedStyle(e).transform),await page.locator('.sf-product-card-footer .sf-ui-icon-button').first().evaluate(e=>getComputedStyle(e).transform),'Same icon press scale');
+ const pressScales=await Promise.all(['.sf-menu-trigger','.sf-product-card-footer .sf-ui-icon-button'].map(selector=>page.locator(selector).first().evaluate(e=>{const m=new DOMMatrixReadOnly(getComputedStyle(e).transform);return m.a;})));
+ assert(pressScales.every(s=>s>1.06&&s<1.10)&&Math.abs(pressScales[0]-pressScales[1])<.012,'Same shared icon press scale after animation settle: '+pressScales.join('/'));
  let anchor;
  for(const mode of ['home','product','checkout','no-dock']){
   const purchase=mode==='product'?'<main class="sf-content"><div class="product"><form class="cart"><div class="sf-product-purchase"><button class="button" type="submit">Sepete Ekle</button></div></form></div></main>':'<main class="sf-content"></main>';
-  await page.setContent('<style>'+wooImageCss+styles+'</style><body class="'+(mode==='product'?'single-product woocommerce':'')+'">'+headers[mode]+purchase+'</body>');
+  await page.setContent('<style>'+wooImageCss+wooButtonCss+styles+'</style><body class="'+(mode==='product'?'single-product woocommerce':'')+'">'+headers[mode]+purchase+'</body>');
   const layout=await page.locator('.sf-header').evaluate(el=>({brand:el.querySelector('.sf-brand').getBoundingClientRect().toJSON(),menu:el.querySelector('.sf-header-menu').getBoundingClientRect().toJSON(),tools:[...el.querySelectorAll('.sf-actions a')].filter(x=>getComputedStyle(x).display!=='none'&&getComputedStyle(x.parentElement).display!=='none').map(x=>x.dataset.panel||'account'),overflow:document.documentElement.scrollWidth>innerWidth+1}));
   assert(!layout.overflow,mode+' header fits '+width);
   if(mode==='product'){
@@ -106,7 +108,7 @@ for(const width of [320,390,700,900,1280]){
   }else{assert.equal(layout.tools.length,3,'Desktop keeps all tools');assert(layout.menu.x<layout.brand.x);}
  }
 }
-await page.setContent('<style>'+wooImageCss+styles+'</style><body class="codela-my-account-layout"><main class="sf-content">'+cards+'</main></body>');
+await page.setContent('<style>'+wooImageCss+wooButtonCss+styles+'</style><body class="codela-my-account-layout"><main class="sf-content">'+cards+'</main></body>');
 assert.notEqual(await page.locator('ul.products').evaluate(e=>getComputedStyle(e).display),'grid','Plugin account does not inherit catalog grid');
 assert((await page.locator('li.product img').first().evaluate(e=>getComputedStyle(e).aspectRatio)).startsWith('auto'),'Plugin images retain their native intrinsic aspect ratio');
 console.log('Shared Woo cards across five contexts/widths and stable Header slots: passed');

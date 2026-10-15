@@ -1,7 +1,11 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.93 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.94 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
+
+## Native Woo button display specificity — 0.1.94
+
+On real WooCommerce the native `ul.products li.product a.button { display:inline-block }` declaration overrides the lower-specificity shared IconButton `display:inline-flex`. The 22px glyph aligns top-left inside the 44px button despite margin reset. Extend the ONE `components.css` shared IconButton selector group with `body:not(.codela-my-account-layout) .sf-content ul.products > li.product a.sf-ui-icon-button` so it wins native Woo specificity; this is not a new paint/control or per-page layout rule. Browser fixtures must include native Woo `a.button` display and assert the shared Header/card paint, geometry, glyph center and pressing.
 
 ## Native Woo image margin isolation — 0.1.93
 
