@@ -3,7 +3,7 @@
 **Status:** Current shared architecture; theme source 0.1.89 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
 
-## Integrated light catalog card —0.1.89 (deployment pending)
+## Integrated light catalog card —0.1.89 (live, verified)
 
 One white 20px-radius card with only a hairline/shadow; square transparent contain media sits flush at the top, then the two-line title and native price/secondary Button share padded space inside the same card. The Button uses the existing shared paint, focus and interaction, with only pill geometry overridden. No second card color, dark panel, Woo template fork or new JavaScript. Out-of-stock and variable/product-type semantics remain native.
 

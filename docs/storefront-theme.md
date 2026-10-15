@@ -1,6 +1,6 @@
 # Codela Storefront — güncel teknik durum
 
-15 Ekim2026: **0.1.89 kod oluşturuldu; otomatik test ve canlı yayın henüz doğrulanmadı.** Eklenti1.1.1 değişmedi.
+15 Ekim2026: **tema0.1.88→0.1.89 canlı**; Codela eklentisi1.1.1 değişmedi. [Son kaynak 4f162237](https://github.com/muhammetdkaya/codela-storefront/commit/4f162237ae5f323c50f3720582de82591cde92fb), [CI+gerçek FTP 38688395197](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38688395197) başarılı.
 
 ## Açık ürün kartı güncellemesi
 

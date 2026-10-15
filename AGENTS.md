@@ -1,8 +1,9 @@
 # Codela Storefront — güncel çalışma kuralları
 
-## Son doğrulanmış devam noktası —15 Ekim2026 /0.1.88 canlı,0.1.89 yayın bekliyor
+## Son doğrulanmış devam noktası —15 Ekim2026 /0.1.89 canlı
 
-- 0.1.89 kodu: açık tek katmanlı katalog kartı, bütünleşik başlık/fiyat/secondary Button yerleşimi; yalnız ortak katalog CSS ve test beklentileri değişti. Kod/CI/canlı yayın durumunu ayrı izle; eski 0.1.88 kanıtını yeni sürüm için kullanma.
+- Tema0.1.88→0.1.89 **canlı**: [son kaynak 4f162237](https://github.com/muhammetdkaya/codela-storefront/commit/4f162237ae5f323c50f3720582de82591cde92fb); [CI+gerçek FTP 38688395197](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38688395197) başarılı. Beş canlı denetim: WebKit, navigasyon, galeri, performans, belge sürekliliği başarılı. Eklenti1.1.1 değişmedi.
+- Ortak native ürün kartı: **tek beyaz 20px yüzey**, hafif tek sınır/gölge, şeffaf kare görsel, içeride başlık+native fiyat+ortak secondary Button kapsül. 320px dahil mobilde fiyat ve aksiyon yan yana, minimum44px dokunma alanı; yeni JS/HTML/yeni paint primitive yok. Home/shop/category/product search/related/upsell/cross-sell tek CSS. Stoksuz ve native varyasyon/indirim/sepete ekleme davranışı korunur. Fiziksel iPhone kabulü ve eski JPEG admin backfill ayrı.
 
 
 - Tema0.1.87→0.1.88; [kaynakd64106c4](https://github.com/muhammetdkaya/codela-storefront/commit/d64106c4d12e58e57d459eb802d5238c7a5a568b), [CI+gerçek FTP38678440344](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38678440344) başarılı; deploy03:54:21.1422094Z. Eklenti1.1.1 runtime/WordPress.org değişmedi.
