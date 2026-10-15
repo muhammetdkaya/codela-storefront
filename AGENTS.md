@@ -1,5 +1,13 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Son doğrulanmış durum — 0.1.95 canlı, gerçek WP/Woo yeni hit-area matrisi açık
+
+15 Ekim 2026: tek native ürün kartı linki artık fiyat ve kartın boş bölgelerini de şeffaf `::after` ile kapsıyor; Woo simple/variable/grouped/external eylemleri ve `added_to_cart` ayrı hit target olarak üstte kalıyor. Yeni JS/router, kopya kart veya ikinci link eklenmedi. [Kaynak 2adf5c16](https://github.com/muhammetdkaya/codela-storefront/commit/2adf5c16d91f47fe8fa2ac3953437cde33f24b83), [CI+gerçek FTP 38732771167](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38732771167) başarılı. Beş canlı WebKit/shell/document/gallery/performance denetimi: 38733587291, 38733587240, 38733587219, 38733587322, 38733587209 başarılı. Tema **0.1.94→0.1.95**, eklenti **1.1.1 değişmedi**.
+
+Chromium katalog fixtures 320/390/1280px ve home/shop/category/search/related alanlarında mouse/touch ile resim, başlık, fiyat, boşluk, stoksuz alt alan, sepet, varyasyon ve view cart hit-testlerini geçmiştir. Gerçek WP/Woo'da [38733644050](https://github.com/muhammetdkaya/codela/actions/runs/38733644050) ilk yeni kabulü sabit mobil dock'un altında kalan card'a scrollIntoViewIfNeeded ile dokunulduğundan başarısız oldu. Tanı [38733998567](https://github.com/muhammetdkaya/codela/actions/runs/38733998567) fiyatın native product link'ine gittiğini, alt dock'un viewport altında açılan aksiyonu örttüğünü gösterdi. Test kartı dock'un üstündeki görünür orta alana getirerek yeniden [38734453585](https://github.com/muhammetdkaya/codela/actions/runs/38734453585) koşuluyor. **Bu son gerçek matrisin sonucu henüz doğrulanmadı; 0.1.94 sonucunu 0.1.95 sayma.**
+
+Sıradaki iş: 0.1.95 WP6.5/Woo9 + WP7.1/Woo11 Chromium/WebKit native fiyat→ürün navigasyonu ve Woo AJAX kabul sonucunu kontrol edip kaynak/hash ve sonucu kaydet; fiziksel Safari/GPU/toolbar, üretim ödeme sağlayıcısı ve yetkili JPEG backfill ayrıdır.
+
 ## Güncel çalışma — 0.1.95 ürün kartı tam yüzey bağlantısı (kabul bekliyor)
 
 15 Ekim 2026: 0.1.94 CI+gerçek FTP [38723030129](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38723030129), beş canlı gate ve gerçek WP/Woo [38723703294](https://github.com/muhammetdkaya/codela/actions/runs/38723703294) başarılıdır. Kullanıcı ürün kartına dokunmanın tutarsız olduğunu bildirdi. Mevcut tek Woo link yalnız görsel+başlık alanını kapsıyor; fiyat/alt boşluk hit target değil.
