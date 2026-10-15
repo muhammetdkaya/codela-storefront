@@ -1,5 +1,21 @@
 # Codela Storefront — güncel teknik durum
 
+15 Ekim2026: **tema0.1.87→0.1.88 hazırlanıyor**. Son doğrulanmış canlı87; Codela eklentisi1.1.1 runtime/WordPress.org değişmedi.88 CI/gerçek FTP/canlı ve native matris henüz bekliyor.
+
+## Ortak ürün kartı —onaylı tasarım yönü
+
+Everlane ürün odaklı görsel ve Aesop düzenli bilgi yaklaşımı: tek kare1:1 contain görsel, ikinci gri letterbox yüzeyi yok; daha küçük iki satır başlık; native fiyat solda ve mevcut secondary Button sağda.44px hedef korunur. Simple kısa Add, variable Options; external/grouped native eylem metinleri korunur. Stoksuz badge görselde; Read more/satın alma düğmesi yok. Veri olmayan renk noktaları/yorumlar/dekoratif özellikler eklenmez.
+
+Home/shop/category/ürün search/related/upsell/cross-sell aynı native content-product.php ve catalog.css kullanır. inc/catalog.php yalnız native hook bileşimi ve Button class adapter'ı sağlar; Woo URL, AJAX, data/ARIA, fiyat/indirim ve form sahipliği korunur. Button görseli/state'leri components.css'teki aynı primitive'dir; yeni kopya paint veya JS yok. Signed-in Codela hesabı dışlanır.
+
+## Doğrulama ve sonraki iş
+
+Güncellenen hızlı kontroller: PHP hook/bağlam/stock/action/account sınırı;320–1280 ortak kart 5 bağlam,1:1/tek yüzey/fiyat-aksiyon hiza,44px ve stockless/variable ayrımı. Canlı WebKit native footer ve secondary Button kontrolü. Sonuçlar henüz bekliyor;88 paket/hash/source native pin'i yayın sonrası güncellenecek. Header87 ortak44×44, native Woo akışları ve hesap izolasyonu korunmalı.
+
+Fiziksel iPhone Safari/GPU/toolbar/safe-area, eski JPEG canlı admin backfill, gerçek payment-provider/üçüncü taraf medya kabulü açık. Kullanıcı istemeden admin girişi isteme.
+
+## Önceki87 teknik kayıt —tarihli
+
 15 Ekim2026: **tema0.1.86→0.1.87 canlı**, eklenti1.1.1 runtime/WordPress.org yayını değişmedi. [Kaynak252b51d5](https://github.com/muhammetdkaya/codela-storefront/commit/252b51d5a9574e8ac3073ce9227b5d348dd8107b), [CI+gerçek FTP38676747269](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38676747269) başarılı; deploy2026-10-15T03:35:48.5889670Z.
 
 ## Biten iş

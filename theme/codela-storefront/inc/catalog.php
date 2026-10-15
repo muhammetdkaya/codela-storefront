@@ -79,7 +79,7 @@ function codela_sf_catalog_stock_label(): void {
         echo '<span class="sf-product-stock">' . esc_html__( 'Out of stock', 'woocommerce' ) . '</span>';
     }
 }
-add_action( 'woocommerce_after_shop_loop_item_title', 'codela_sf_catalog_stock_label', 15 );
+add_action( 'woocommerce_before_shop_loop_item_title', 'codela_sf_catalog_stock_label', 11 );
 
 /** Preserve deferred home collection thumbnails without delaying the hero. */
 function codela_sf_catalog_image_attributes( array $attributes ): array {
@@ -91,3 +91,41 @@ function codela_sf_catalog_image_attributes( array $attributes ): array {
     return $attributes;
 }
 add_filter( 'wp_get_attachment_image_attributes', 'codela_sf_catalog_image_attributes', 20 );
+
+/** Compose the existing native loop hooks; never replace content-product.php. */
+function codela_sf_catalog_enabled(): bool {
+    return ! ( function_exists( 'is_account_page' ) && is_account_page() && is_user_logged_in() );
+}
+function codela_sf_catalog_layout(): void {
+    if ( ! codela_sf_catalog_enabled() ) { return; }
+    remove_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_price', 10 );
+    // The native product link closes at5; native add-to-cart stays at10.
+    add_action( 'woocommerce_after_shop_loop_item', 'codela_sf_catalog_footer_open', 6 );
+    add_action( 'woocommerce_after_shop_loop_item', 'codela_sf_catalog_footer_close', 99 );
+}
+add_action( 'wp', 'codela_sf_catalog_layout' );
+function codela_sf_catalog_footer_open(): void {
+    echo '<div class="sf-product-card-footer">';
+    woocommerce_template_loop_price();
+}
+function codela_sf_catalog_footer_close(): void { echo '</div>'; }
+
+/** Add only shared Button classes; Woo retains URL, AJAX classes and all data/ARIA. */
+function codela_sf_catalog_button_args( array $args, $item ): array {
+    if ( codela_sf_catalog_enabled() && $item instanceof WC_Product ) {
+        $args['class'] = trim( ( $args['class'] ?? '' ) . ' sf-ui-button sf-ui-button--secondary' );
+    }
+    return $args;
+}
+add_filter( 'woocommerce_loop_add_to_cart_args', 'codela_sf_catalog_button_args', 20, 2 );
+function codela_sf_catalog_button_text( string $text, $item ): string {
+    if ( ! codela_sf_catalog_enabled() || ! $item instanceof WC_Product || ! $item->is_in_stock() ) { return $text; }
+    if ( $item->is_type( 'simple' ) && $item->is_purchasable() ) { return __( 'Add' ); }
+    if ( $item->is_type( 'variable' ) ) { return __( 'Options' ); }
+    return $text;
+}
+add_filter( 'woocommerce_product_add_to_cart_text', 'codela_sf_catalog_button_text', 20, 2 );
+function codela_sf_catalog_button_visibility( string $html, $item ): string {
+    return codela_sf_catalog_enabled() && $item instanceof WC_Product && ! $item->is_in_stock() ? '' : $html;
+}
+add_filter( 'woocommerce_loop_add_to_cart_link', 'codela_sf_catalog_button_visibility', 20, 2 );

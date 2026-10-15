@@ -7,7 +7,7 @@ const styles=css[0]+fs.readFileSync(root+'assets/storefront.css','utf8')+css[4]+
 const header=mode=>execFileSync('php',['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_PRODUCT:mode==='product'?'1':'0',FIXTURE_CHECKOUT:mode==='checkout'?'1':'0',...(mode==='no-dock'?{FIXTURE_DOCK:'0'}:{})}});
 const headers=Object.fromEntries(['home','product','checkout','no-dock'].map(m=>[m,header(m)]));
 const image='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22500%22%3E%3Crect width=%22400%22 height=%22500%22 fill=%22%23dfebe9%22/%3E%3C/svg%3E';
-const card=(i)=>'<li class="product"><a class="woocommerce-LoopProduct-link woocommerce-loop-product__link" href="/product/"><img width="400" height="500" src="'+image+'" alt="Ürün"><h2 class="woocommerce-loop-product__title">'+(i?'Kısa ürün':'İki satırı aşan çok uzun ürün başlığı taşma ve hizalama kontrolü')+'</h2><span class="price"><del>₺1.000</del><ins>₺850</ins></span></a><a class="button product_type_simple add_to_cart_button ajax_add_to_cart" href="/?add-to-cart=1" data-product_id="1">Sepete Ekle</a></li>';
+const card=(i)=>'<li class="product '+(i===3?'outofstock':'instock')+'"><a class="woocommerce-LoopProduct-link woocommerce-loop-product__link" href="/product/">'+(i===3?'<span class="sf-product-stock">Stokta yok</span>':'')+'<img width="400" height="500" src="'+image+'" alt="Ürün"><h2 class="woocommerce-loop-product__title">'+(i?'Kısa ürün':'İki satırı aşan çok uzun ürün başlığı taşma ve hizalama kontrolü')+'</h2></a><div class="sf-product-card-footer"><span class="price">'+(i===0?'<del>₺1.000</del><ins>₺850</ins>':'₺850')+'</span>'+(i===3?'':'<a class="button sf-ui-button sf-ui-button--secondary '+(i===2?'product_type_variable':'product_type_simple add_to_cart_button ajax_add_to_cart')+'" href="/?add-to-cart=1" data-product_id="1">'+(i===2?'Seçenekler':'Ekle')+'</a>')+'</div></li>';
 const cards='<ul class="products columns-4">'+[0,1,2,3].map(card).join('')+'</ul>';
 (async()=>{const browser=await chromium.launch();
 try{const page=await browser.newPage();await page.route('**/assets/icons/**',r=>r.fulfill({contentType:'image/svg+xml',body:fs.readFileSync(root+'assets/icons/'+new URL(r.request().url()).pathname.split('/').at(-1),'utf8')}));
@@ -19,7 +19,18 @@ for(const width of [320,390,700,900,1280]){
   const actual=await page.locator('ul.products').evaluate(el=>{const li=el.querySelector('li'),img=li.querySelector('img'),title=li.querySelector('h2'),price=li.querySelector('.price'),button=li.querySelector('.button');const a=getComputedStyle(img),b=getComputedStyle(title),c=getComputedStyle(price),d=getComputedStyle(button);
    return{columns:getComputedStyle(el).gridTemplateColumns.split(' ').length,overflow:document.documentElement.scrollWidth>innerWidth+1,paint:{fit:a.objectFit,ratio:a.aspectRatio,background:a.backgroundColor,radius:a.borderRadius,title:b.fontSize,lines:b.webkitLineClamp,price:c.fontSize,button:d.backgroundColor,transition:d.transitionProperty},target:button.getBoundingClientRect().height,width:li.getBoundingClientRect().width};});
   assert(!actual.overflow,mode+' overflow at '+width);assert.equal(actual.columns,width>1024?4:width>700?3:2);assert(actual.target>=44,'Accessible card action');
-  assert.equal(actual.paint.fit,'contain');assert.equal(actual.paint.ratio,'4 / 5');assert.equal(actual.paint.lines,'2');
+  assert.equal(actual.paint.fit,'contain');assert.equal(actual.paint.ratio,'1 / 1');assert.equal(actual.paint.lines,'2');
+  assert.equal(actual.paint.background,'rgba(0, 0, 0, 0)','No second image surface');
+  const detail=await page.locator('li.product').first().evaluate(el=>{
+   const title=el.querySelector('h2'),footer=el.querySelector('.sf-product-card-footer'),price=footer.querySelector('.price'),button=footer.querySelector('.button');
+   const p=price.getBoundingClientRect(),b=button.getBoundingClientRect();
+   return{weight:getComputedStyle(title).fontWeight,buttonWidth:b.width,cardWidth:el.getBoundingClientRect().width,priceX:p.x,buttonX:b.x,footerChildren:footer.children.length};
+  });
+  assert.equal(detail.weight,'400');assert(detail.buttonWidth<detail.cardWidth*.7,'Action does not dominate card');
+  assert(detail.priceX<detail.buttonX,'Price left, shared action right');assert.equal(detail.footerChildren,2);
+  assert.equal(await page.locator('li.outofstock .button').count(),0,'Out-of-stock has no purchase action');
+  assert.equal(await page.locator('li.outofstock .sf-product-stock').count(),1);
+  assert.equal(await page.locator('.product_type_variable').textContent(),'Seçenekler');
   if(expectedPaint)assert.deepEqual(actual.paint,expectedPaint,'Same card paint for '+mode+' at '+width);else expectedPaint=actual.paint;
   if(mode==='home'&&[390,1280].includes(width)){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:'qa/storefront-ui-kit-catalog-'+width+'.png',fullPage:true});}
  }

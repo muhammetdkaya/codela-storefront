@@ -1,7 +1,13 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.87 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.88 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
+
+## Refined native catalog card —0.1.88
+
+One native content-product.php remains the owner across all catalog contexts. inc/catalog.php moves the native price callback into a footer after Woo closes the product link (priority5); footer opens6, native add-to-cart stays10, closes99. Existing secondary Button classes are appended through Woo args without replacing its HTML/URL/AJAX/data/ARIA. Stale/out-of-stock actions disappear; stock badge remains. Simple Add and variable Options use translated core labels; external/grouped keep native wording. Signed-in Codela account bypasses adapters.
+
+catalog.css composes1:1 contain images with transparent outer fill, small two-line titles and aligned native price/compact44px secondary action. The shared Button primitive now also scopes to theme sf-content outside sf-shell, explicitly excluding plugin-owned account; paint/state/a11y declarations are not copied. No fake swatches or new JS. Historical4:5 card ratio below is superseded for catalog cards only; product-gallery geometry stays unchanged.
 
 ## Single mobile control inside a desktop group —0.1.87
 

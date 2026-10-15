@@ -1,13 +1,12 @@
 # Codela Storefront — güncel çalışma kuralları
 
-## Son doğrulanmış devam noktası —15 Ekim2026 /0.1.87 canlı
+## Son doğrulanmış devam noktası —15 Ekim2026 /0.1.88 hazırlanıyor
 
-- Tema0.1.86→0.1.87; [kaynak252b51d5](https://github.com/muhammetdkaya/codela-storefront/commit/252b51d5a9574e8ac3073ce9227b5d348dd8107b), [CI+gerçek FTP38676747269](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38676747269) başarılı; deploy03:35:48.5889670Z. Eklenti1.1.1 runtime/WordPress.org değişmedi.
-- Kullanıcının Menu/Cart farkı: ortak IconButton olsa da tek mobil Cart52×46 padded araç yüzeyinde kalmıştı.87'de ikisi aynı mevcut soft IconButton44×44. Ortak responsive grup bileşimi mobil dış katmanı kaldırır; desktop eski üç araçlı grup korunur. Yeni paint/JS/controller/kopya düğme yok. Gelecekte hitbox yanında tüm görünür dış yüzeyi de karşılaştır.
-- [87 kabul/kanıt](docs/acceptance/2026-10-15-icon-buttons.md): CI, beş canlı gate ve gerçek WP/Woo matris başarılı. Canlı WebKit aynı44×44/material ve tek yüzey;320/390/700 rozet/press/focus;900/1280 desktop. Gerçek iki WP/Woo ailesinde Chromium/WebKit13'er check (4/4 ortam,52 kayıt); genişletilmiş Header kontrolü87'de geçti. Eklenti test kaynağıd51f6e13cf84254c913bcd840db0b4fec3882308; paket/hash/source pin'i güncel.
--86'da tamamlanan tek native Woo kartı home/shop/category/ürün search/related/upsell/cross-sell ve açık product-search-results.html korunur. Mobil Logo solda/Menu en sağda; ürün purchase dock yerine geçtiğinde Cart hemen solda; purchase yok+açık dock'ta ikinci Cart yok. Checkout aynı slotlar; desktop/guest auth sahipliği değişmedi.
-- Ortak yüzey96%, tek background/gradient yok; tek dialog/dock/store/native Woo ve plugin-owned hesap izolasyonu korunur. Dondurulmuş0.1.1 tema kopyasını değiştirme.
-- Açık: fiziksel iPhone Safari/GPU/toolbar/safe-area, eski JPEG canlı admin backfill, gerçek payment-provider ve üçüncü taraf medya/offload kabulü. Kullanıcı istemeden tekrar admin girişi isteme. Bu87 yayını/testi tamamlandı; sonraki somut iş cihaz kabulü, yeniden uygulama değil.
+- Kullanıcı örnek listeleme tasarımlarını inceletti ve ortak kart iyileştirmesini onayladı.88: görsel1:1 contain/şeffaf dış yüzey; küçük iki satır başlık; native fiyat ve mevcut secondary Button aynı alt satırda. Simple “Add”, variable “Options”; external/grouped native metinleri korunur. Stoksuz ürün badge ile gösterilir, satın alma/Read more düğmesi kaldırılır.
+- Tek native Woo content-product.php korunur. inc/catalog.php yalnız mevcut hook sırasını düzenler: link5'te kapanır, footer6'da native fiyatı açar, Woo10'da kendi aksiyonunu basar, footer99'da kapanır. Woo AJAX/URL/data/ARIA değiştirilmez; yeni kart JS/carousel/API veya sahte renk göstergesi yok.
+- Button paint/focus/pressed/disabled/a11y mevcut components.css'te; aynı primitive selector'ları tema sf-content için genişletildi, catalog.css yalnız kart/ölçü/hiza. Signed-in Codela hesap dışlanır. Header87 eşitliği ve tek store/dialog/dock korunur.
+-88 kaynak hazır; CI/FTP/canlı ve güncel native matris henüz bekliyor. Son doğrulanmış canlı87; [87 kabul](docs/acceptance/2026-10-15-icon-buttons.md) yeni88 sonucu sayılmaz. Yeni paket/hash/source pin'ini yayın sonrası güncelle.
+- Eklenti runtime1.1.1/WordPress.org ve dondurulmuş0.1.1 tema değişmez. Açık: fiziksel iPhone Safari/GPU/toolbar/safe-area, eski JPEG canlı admin backfill (kullanıcı istemeden giriş isteme), gerçek payment-provider/üçüncü taraf medya kabulü. Sıradaki iş88 CI/FTP/canlı/native sonucu ve görsel kabulü.
 
 ## Başlangıçta okunacaklar
 

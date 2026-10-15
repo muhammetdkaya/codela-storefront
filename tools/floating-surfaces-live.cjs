@@ -63,7 +63,12 @@ const alpha=color=>{
     await grid.locator('li.product').first().scrollIntoViewIfNeeded();
     await page.waitForFunction(()=>{const img=document.querySelector('.sf-content ul.products li.product img');return img?.complete&&img.naturalWidth>0;});
     const card=await grid.locator('li.product').first().evaluate(el=>{const img=getComputedStyle(el.querySelector('img')),title=getComputedStyle(el.querySelector('.woocommerce-loop-product__title'));return{fit:img.objectFit,ratio:img.aspectRatio,lines:title.webkitLineClamp};});
-    assert.equal(card.fit,'contain');assert.equal(card.ratio,'4 / 5');assert.equal(card.lines,'2');
+    assert(parts[0]>0||parts[1]>1||parts[2]>=88,'Refined native cards require88');
+    assert.equal(card.fit,'contain');assert.equal(card.ratio,'1 / 1');assert.equal(card.lines,'2');
+    assert(await grid.locator('.sf-product-card-footer').count()>0,'Native price/action footer');
+    assert.equal(await grid.locator('li.outofstock .button').count(),0,'No stockless purchase action');
+    const action=grid.locator('a.button').first();
+    assert(await action.evaluate(e=>e.classList.contains('sf-ui-button--secondary')),'Existing shared secondary Button');
    }
    fs.mkdirSync('qa/surfaces',{recursive:true});
    await page.screenshot({path:'qa/surfaces/'+check.name+'-webkit-390.png'});
