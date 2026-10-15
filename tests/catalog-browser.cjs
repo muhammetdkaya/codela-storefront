@@ -139,6 +139,9 @@ for(const width of [320,390,700,900,1280]){
     assert(parseFloat(pressed.cart.transform.slice(7).split(',')[0])>1,'Same shared press scale');
     await page.locator('.sf-cart-trigger,.sf-menu-trigger').evaluateAll(els=>els.forEach(el=>el.classList.remove('is-pressed')));
     await page.waitForTimeout(440);
+    // Earlier real mouse hit tests switch :focus-visible modality to pointer.
+    // Restore keyboard navigation before asserting accessible focus rings.
+    await page.keyboard.press('Tab');
     for(const selector of ['.sf-cart-trigger','.sf-menu-trigger']){
      await page.locator(selector).focus();
      assert.equal(await page.locator(selector).evaluate(e=>getComputedStyle(e).outlineStyle),'solid','Shared keyboard focus');
