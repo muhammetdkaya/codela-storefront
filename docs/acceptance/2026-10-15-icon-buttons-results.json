@@ -1,0 +1,257 @@
+{
+  "version": "0.1.87",
+  "source": "252b51d5a9574e8ac3073ce9227b5d348dd8107b",
+  "manifest": {
+    "package": "https://codela.dev/wp-content/themes/codela-storefront/support/packages/codela-storefront-0.1.87.zip",
+    "sha256": "74acd93066dd2cbc428b2a5280a296fdb58f9f65aed19be97d338152399b8f6d",
+    "source_sha": "252b51d5a9574e8ac3073ce9227b5d348dd8107b",
+    "theme": "codela-storefront",
+    "version": "0.1.87"
+  },
+  "ci": {
+    "run": 38676747269,
+    "validate": 116231979533,
+    "deploy": 116232295577
+  },
+  "live": {
+    "webkit": 38677093388,
+    "shell": 38677093317,
+    "gallery": 38677093323,
+    "document": 38677093363,
+    "performance": 38677093330
+  },
+  "native": {
+    "run": 38677123189,
+    "source": "d51f6e13cf84254c913bcd840db0b4fec3882308",
+    "results": [
+      {
+        "job": 116233153755,
+        "engine": "chromium",
+        "versions": {
+          "wordpress": "6.5.5",
+          "woocommerce": "9.0.2",
+          "codela": "1.1.1",
+          "theme": "0.1.87"
+        },
+        "checks": [
+          "Shared native cards across home/shop/category/product search/related; stable mobile Header and lazy home thumbnails",
+          "Native home AJAX add, Menu to Search and checkout/out-of-stock Header continuity",
+          "real category, price order/filter and native AJAX add",
+          "real simple, out-of-stock, grouped, external and variable product forms",
+          "Real WP import map and child-module update in an existing browser cache",
+          "Delayed real Store API GET cannot overwrite a newer successful theme POST",
+          "Cart block ↔ theme quantity/remove, coupon and single theme POST",
+          "Classic cart ↔ theme quantity synchronization",
+          "Classic checkout recalculation preserves fields; real local COD order succeeds",
+          "Real Checkout block consumes theme cart updates",
+          "Core router unsupported: native document fallback retained",
+          "Admin batch real WebP encode, anonymous denial and nonce enforcement",
+          "Actual Codela signed-in account/dashboard/orders ownership"
+        ],
+        "headerIconButtons": {
+          "menu": {
+            "width": 44,
+            "height": 44,
+            "background": "rgba(247, 247, 249, 0.96)",
+            "image": "none",
+            "border": "1px",
+            "radius": "999px",
+            "shadow": "rgba(0, 0, 0, 0.1) 0px 3px 12px 0px",
+            "filter": "blur(10px) saturate(1.15) contrast(1) brightness(1)"
+          },
+          "cart": {
+            "width": 44,
+            "height": 44,
+            "background": "rgba(247, 247, 249, 0.96)",
+            "image": "none",
+            "border": "1px",
+            "radius": "999px",
+            "shadow": "rgba(0, 0, 0, 0.1) 0px 3px 12px 0px",
+            "filter": "blur(10px) saturate(1.15) contrast(1) brightness(1)"
+          },
+          "group": {
+            "width": 44,
+            "height": 44,
+            "background": "rgba(0, 0, 0, 0)",
+            "image": "none",
+            "border": "0px",
+            "radius": "999px",
+            "shadow": "none",
+            "filter": "none"
+          }
+        }
+      },
+      {
+        "job": 116233153755,
+        "engine": "webkit",
+        "versions": {
+          "wordpress": "6.5.5",
+          "woocommerce": "9.0.2",
+          "codela": "1.1.1",
+          "theme": "0.1.87"
+        },
+        "checks": [
+          "Shared native cards across home/shop/category/product search/related; stable mobile Header and lazy home thumbnails",
+          "Native home AJAX add, Menu to Search and checkout/out-of-stock Header continuity",
+          "real category, price order/filter and native AJAX add",
+          "real simple, out-of-stock, grouped, external and variable product forms",
+          "Real WP import map and child-module update in an existing browser cache",
+          "Delayed real Store API GET cannot overwrite a newer successful theme POST",
+          "Cart block ↔ theme quantity/remove, coupon and single theme POST",
+          "Classic cart ↔ theme quantity synchronization",
+          "Classic checkout recalculation preserves fields; real local COD order succeeds",
+          "Real Checkout block consumes theme cart updates",
+          "Core router unsupported: native document fallback retained",
+          "Admin batch real WebP encode, anonymous denial and nonce enforcement",
+          "Actual Codela signed-in account/dashboard/orders ownership"
+        ],
+        "headerIconButtons": {
+          "menu": {
+            "width": 44,
+            "height": 44,
+            "background": "rgba(247, 247, 249, 0.96)",
+            "image": "none",
+            "border": "1px",
+            "radius": "999px",
+            "shadow": "rgba(0, 0, 0, 0.1) 0px 3px 12px 0px",
+            "filter": "blur(10px) saturate(1.15) contrast(1) brightness(1)"
+          },
+          "cart": {
+            "width": 44,
+            "height": 44,
+            "background": "rgba(247, 247, 249, 0.96)",
+            "image": "none",
+            "border": "1px",
+            "radius": "999px",
+            "shadow": "rgba(0, 0, 0, 0.1) 0px 3px 12px 0px",
+            "filter": "blur(10px) saturate(1.15) contrast(1) brightness(1)"
+          },
+          "group": {
+            "width": 44,
+            "height": 44,
+            "background": "rgba(0, 0, 0, 0)",
+            "image": "none",
+            "border": "0px",
+            "radius": "999px",
+            "shadow": "none",
+            "filter": "none"
+          }
+        }
+      },
+      {
+        "job": 116233153768,
+        "engine": "chromium",
+        "versions": {
+          "wordpress": "7.1.3",
+          "woocommerce": "11.2.1",
+          "codela": "1.1.1",
+          "theme": "0.1.87"
+        },
+        "checks": [
+          "Shared native cards across home/shop/category/product search/related; stable mobile Header and lazy home thumbnails",
+          "Native home AJAX add, Menu to Search and checkout/out-of-stock Header continuity",
+          "real category, price order/filter and native AJAX add",
+          "real simple, out-of-stock, grouped, external and variable product forms",
+          "Real WP import map and child-module update in an existing browser cache",
+          "Delayed real Store API GET cannot overwrite a newer successful theme POST",
+          "Cart block ↔ theme quantity/remove, coupon and single theme POST",
+          "Classic cart ↔ theme quantity synchronization",
+          "Classic checkout recalculation preserves fields; real local COD order succeeds",
+          "Real Checkout block consumes theme cart updates",
+          "Actual core router slow skeleton, same shell, back/forward and refresh",
+          "Admin batch real WebP encode, anonymous denial and nonce enforcement",
+          "Actual Codela signed-in account/dashboard/orders ownership"
+        ],
+        "headerIconButtons": {
+          "menu": {
+            "width": 44,
+            "height": 44,
+            "background": "rgba(247, 247, 249, 0.96)",
+            "image": "none",
+            "border": "1px",
+            "radius": "999px",
+            "shadow": "rgba(0, 0, 0, 0.1) 0px 3px 12px 0px",
+            "filter": "blur(10px) saturate(1.15) contrast(1) brightness(1)"
+          },
+          "cart": {
+            "width": 44,
+            "height": 44,
+            "background": "rgba(247, 247, 249, 0.96)",
+            "image": "none",
+            "border": "1px",
+            "radius": "999px",
+            "shadow": "rgba(0, 0, 0, 0.1) 0px 3px 12px 0px",
+            "filter": "blur(10px) saturate(1.15) contrast(1) brightness(1)"
+          },
+          "group": {
+            "width": 44,
+            "height": 44,
+            "background": "rgba(0, 0, 0, 0)",
+            "image": "none",
+            "border": "0px",
+            "radius": "999px",
+            "shadow": "none",
+            "filter": "none"
+          }
+        }
+      },
+      {
+        "job": 116233153768,
+        "engine": "webkit",
+        "versions": {
+          "wordpress": "7.1.3",
+          "woocommerce": "11.2.1",
+          "codela": "1.1.1",
+          "theme": "0.1.87"
+        },
+        "checks": [
+          "Shared native cards across home/shop/category/product search/related; stable mobile Header and lazy home thumbnails",
+          "Native home AJAX add, Menu to Search and checkout/out-of-stock Header continuity",
+          "real category, price order/filter and native AJAX add",
+          "real simple, out-of-stock, grouped, external and variable product forms",
+          "Real WP import map and child-module update in an existing browser cache",
+          "Delayed real Store API GET cannot overwrite a newer successful theme POST",
+          "Cart block ↔ theme quantity/remove, coupon and single theme POST",
+          "Classic cart ↔ theme quantity synchronization",
+          "Classic checkout recalculation preserves fields; real local COD order succeeds",
+          "Real Checkout block consumes theme cart updates",
+          "Actual core router slow skeleton, same shell, back/forward and refresh",
+          "Admin batch real WebP encode, anonymous denial and nonce enforcement",
+          "Actual Codela signed-in account/dashboard/orders ownership"
+        ],
+        "headerIconButtons": {
+          "menu": {
+            "width": 44,
+            "height": 44,
+            "background": "rgba(247, 247, 249, 0.96)",
+            "image": "none",
+            "border": "1px",
+            "radius": "999px",
+            "shadow": "rgba(0, 0, 0, 0.1) 0px 3px 12px 0px",
+            "filter": "blur(10px) saturate(1.15) contrast(1) brightness(1)"
+          },
+          "cart": {
+            "width": 44,
+            "height": 44,
+            "background": "rgba(247, 247, 249, 0.96)",
+            "image": "none",
+            "border": "1px",
+            "radius": "999px",
+            "shadow": "rgba(0, 0, 0, 0.1) 0px 3px 12px 0px",
+            "filter": "blur(10px) saturate(1.15) contrast(1) brightness(1)"
+          },
+          "group": {
+            "width": 44,
+            "height": 44,
+            "background": "rgba(0, 0, 0, 0)",
+            "image": "none",
+            "border": "0px",
+            "radius": "999px",
+            "shadow": "none",
+            "filter": "none"
+          }
+        }
+      }
+    ]
+  }
+}

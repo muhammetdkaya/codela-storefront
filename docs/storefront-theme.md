@@ -1,16 +1,24 @@
 # Codela Storefront — güncel teknik durum
 
-15 Ekim2026: **tema0.1.86→0.1.87 hazırlanıyor**, Codela eklentisi1.1.1 runtime değişmedi. Son doğrulanmış canlı sürüm86.87'nin CI/FTP ve canlı kabulü henüz bekliyor.
+15 Ekim2026: **tema0.1.86→0.1.87 canlı**, eklenti1.1.1 runtime/WordPress.org yayını değişmedi. [Kaynak252b51d5](https://github.com/muhammetdkaya/codela-storefront/commit/252b51d5a9574e8ac3073ce9227b5d348dd8107b), [CI+gerçek FTP38676747269](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38676747269) başarılı; deploy2026-10-15T03:35:48.5889670Z.
 
-## Header IconButton bileşimi düzeltmesi
+## Biten iş
 
-86'da Menu ve Cart aynı IconButton renderer'ını kullanıyordu, fakat tek mobil Cart eski üç araç grubunun padding/border yüzeyi içinde kalıyordu. Bu, Menu'nün44px dairesiyle farklı dış ölçü oluşturuyordu.
+Mobil Cart/Menu aynı mevcut soft IconButton44×44. Önceden Cart'ın52×46 dış araç grubu yüzeyi vardı; şimdi ortak components.css responsive grup bileşimi tek kontrolün padding/border/dış materyalini kaldırır. Desktop üç araçlı grup korunur. Yeni paint/JS/listener/controller veya kopya düğme yok; tek arka plan ve ortak pressed/focus/erişilebilirlik korunur. Logo/Menu slotları, native Woo kartlar/form/gallery, tek dialog/dock/store ve plugin-owned hesap değişmedi.
 
-87: Cart mevcut soft IconButton varyantına bağlı. Ortak components.css içindeki sf-ui-icon-group--single-mobile bileşimi mobilde yalnız düğmenin yüzeyini, desktop'ta yalnız grubun yüzeyini bırakır. Mobil dış grup padding/border yok; Menu/Cart aynı44×44 ve ortak materyal/pressed/focus kullanır. İç içe ikinci arka plan, yeni düğme paint'i, JS/listener veya controller yok. Header logo/menu konumları ve native Woo akışları değişmedi.
+## Doğrulama
 
-Regresyonlar:320/390/700px mobilde boş/2/99 rozetle gerçek dış ölçü/materyal eşitliği; aynı press ve keyboard focus;900/1280px desktop üç araçlı eski yüzey korunur. Canlı read-only WebKit de Cart/Menu yüzeylerini birebir karşılaştırır. Test sonuçları yayın sonrası eklenecek.
+[87 kabul kaydı](acceptance/2026-10-15-icon-buttons.md): CI (320/390/700 mobil,900/1280 desktop, boş/2/99 badge, pressed/focus dahil), gerçek FTP ve beş canlı gate başarılı. Canlı WebKit gerçek Cart/Menu dış44×44 ve materyal eşitliğini doğruladı; CSS0.1.87. Yeni gerçek WP6.5.5/Woo9.0.2 ve WP7.1.3/Woo11.2.1 matrisinde Chromium/WebKit13'er check başarılı (4/4 ortam,52 kayıt); native Header eşitlik kontrolü de bu pakete eklendi. Eklenti workflow paket/hash/source pin'i güncel; kaynakd51f6e13cf84254c913bcd840db0b4fec3882308. Eski86 sonucu yeni sürüme mal edilmedi.
 
-## Korunan önceki iş ve kanıt
+## Kalan / sıradaki iş
+
+Bu boyut düzeltmesi, yayın ve otomatik kabul tamamlandı; tekrar uygulama/yayın başlatma. Fiziksel iPhone Safari/GPU/toolbar/safe-area, eski JPEG canlı admin backfill, gerçek payment-provider ve üçüncü taraf medya/offload kabulü açık. Kullanıcı istemeden yeni admin giriş isteği açma. Sonraki cihaz kabulünde Cart/Menu eşitliği ve Menu/X hareketini fiziksel tarayıcıda kontrol et. Canlı medya değişiminden önce yedek ve küçük örnek gerekir.
+
+## Önceki0.1.86 teknik kayıt —tarihli
+
+15 Ekim2026: **tema0.1.86 canlı**, Codela eklentisi1.1.1. [Kaynak86681e46](https://github.com/muhammetdkaya/codela-storefront/commit/86681e46cb43e072ce556b7e1a0575557a11eb3a), [CI+gerçek FTP38654572606](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38654572606) başarılı. Eklenti runtime/WordPress.org yayını değişmedi.
+
+## Header ve ortak ürün kartı tamamlandı
 
 Mobilde logo solda/Menu en sağda sabit. Ürün purchase dock yerine geçtiğinde yalnız Cart menünün solunda; Search/Account menüde. Purchase olmayan ve dock'u açık üründe dock korunur, ikinci Cart yok. Checkout aynı logo/Menu slotlarında, docksuz. Alt menü kapalı ayarda araçlar üstte kalır; desktop ve guest auth düzeni korunur.
 
@@ -26,7 +34,7 @@ Tek Store API/cart controller, tek Interactivity store/dialog/dock, native Woo f
 
 ## Kalan ve sonraki iş
 
-87 CI/FTP/canlı kabulünü tamamla, paket/hash/source entegrasyon pin'ini güncelle.86 kabulünü87'nin sonucu gibi sunma. Eski JPEG canlı admin backfill (giriş tamamlanmadı; kullanıcı istemeden yeniden isteme), fiziksel iPhone Safari/GPU/toolbar/safe-area, gerçek ödeme sağlayıcıları ve üçüncü taraf medya/offload kabulü açık. Sonraki somut iş bu erişim/cihaz kabulüdür; canlı medya değişiminden önce yedek+kısa örnek gerekir.
+Bu Header/katalog kodu, yayın ve otomatik kabul işi tamamlandı. Aynı yayını/testleri yeniden başlatma. Eski JPEG canlı admin backfill (giriş tamamlanmadı; kullanıcı istemeden yeniden isteme), fiziksel iPhone Safari/GPU/toolbar/safe-area, gerçek ödeme sağlayıcıları ve üçüncü taraf medya/offload kabulü açık. Sonraki somut iş bu erişim/cihaz kabulüdür; canlı medya değişiminden önce yedek+kısa örnek gerekir.
 
 ## Kaynaklar
 

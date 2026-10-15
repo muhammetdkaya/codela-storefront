@@ -1,12 +1,13 @@
 # Codela Storefront — güncel çalışma kuralları
 
-## Son doğrulanmış devam noktası — 15 Ekim2026 /0.1.87 hazırlanıyor
+## Son doğrulanmış devam noktası —15 Ekim2026 /0.1.87 canlı
 
-- Kullanıcı Header Menu/Cart boyut farkını bildirdi.86'da ortak IconButton kullanılsa da tek kalan mobil Cart, üç araçlık padded yüzey içinde bırakılmıştı.87'de Cart mevcut soft IconButton'ı kullanır; ortak responsive grup bileşimi mobilde dış yüzeyi/padding'i kaldırır, desktop'ta iç soft yüzeyi kaldırıp eski araç grubunu korur. Yeni paint/JS/controller yok.
--87 kaynak hazır; CI, gerçek FTP ve canlı WebKit eşitlik kontrolü henüz bekliyor. Son doğrulanmış canlı sürüm86; [önceki kabul](docs/acceptance/2026-10-15.md) yalnız86'ya aittir,87 için52 kontrol geçti denmez.
-- Regresyon:320/390/700px Menu/Cart44×44, aynı materyal/pressed/focus, boş/2/99 rozet;900/1280 desktop grup korunur. Canlı WebKit gerçek dış kontrolü karşılaştırır. Yeni sürüm paket/hash/source entegrasyon pin'i yayın sonrası güncellenmeli.
-- Ortak kartlar, tek native dialog/dock/store ve Codela plugin-owned hesap izolasyonu korunur. Tema87, eklenti runtime1.1.1 değişmez; dondurulmuş0.1.1 tema kopyasına dokunulmaz.
-- Açık: eski JPEG canlı admin backfill (kullanıcı istemeden yeniden giriş isteme), fiziksel iPhone Safari/GPU/toolbar/safe-area, gerçek payment-provider/üçüncü taraf medya kabulü. Sıradaki somut iş87 CI+FTP+canlı doğrulama sonucunu kaydetmek.
+- Tema0.1.86→0.1.87; [kaynak252b51d5](https://github.com/muhammetdkaya/codela-storefront/commit/252b51d5a9574e8ac3073ce9227b5d348dd8107b), [CI+gerçek FTP38676747269](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38676747269) başarılı; deploy03:35:48.5889670Z. Eklenti1.1.1 runtime/WordPress.org değişmedi.
+- Kullanıcının Menu/Cart farkı: ortak IconButton olsa da tek mobil Cart52×46 padded araç yüzeyinde kalmıştı.87'de ikisi aynı mevcut soft IconButton44×44. Ortak responsive grup bileşimi mobil dış katmanı kaldırır; desktop eski üç araçlı grup korunur. Yeni paint/JS/controller/kopya düğme yok. Gelecekte hitbox yanında tüm görünür dış yüzeyi de karşılaştır.
+- [87 kabul/kanıt](docs/acceptance/2026-10-15-icon-buttons.md): CI, beş canlı gate ve gerçek WP/Woo matris başarılı. Canlı WebKit aynı44×44/material ve tek yüzey;320/390/700 rozet/press/focus;900/1280 desktop. Gerçek iki WP/Woo ailesinde Chromium/WebKit13'er check (4/4 ortam,52 kayıt); genişletilmiş Header kontrolü87'de geçti. Eklenti test kaynağıd51f6e13cf84254c913bcd840db0b4fec3882308; paket/hash/source pin'i güncel.
+-86'da tamamlanan tek native Woo kartı home/shop/category/ürün search/related/upsell/cross-sell ve açık product-search-results.html korunur. Mobil Logo solda/Menu en sağda; ürün purchase dock yerine geçtiğinde Cart hemen solda; purchase yok+açık dock'ta ikinci Cart yok. Checkout aynı slotlar; desktop/guest auth sahipliği değişmedi.
+- Ortak yüzey96%, tek background/gradient yok; tek dialog/dock/store/native Woo ve plugin-owned hesap izolasyonu korunur. Dondurulmuş0.1.1 tema kopyasını değiştirme.
+- Açık: fiziksel iPhone Safari/GPU/toolbar/safe-area, eski JPEG canlı admin backfill, gerçek payment-provider ve üçüncü taraf medya/offload kabulü. Kullanıcı istemeden tekrar admin girişi isteme. Bu87 yayını/testi tamamlandı; sonraki somut iş cihaz kabulü, yeniden uygulama değil.
 
 ## Başlangıçta okunacaklar
 
