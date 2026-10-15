@@ -21,6 +21,17 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product{
 }
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product > a.woocommerce-loop-product__link{
   display:block;flex:0 0 auto;min-width:0;color:var(--sf-ui-ink);text-decoration:none;
+  /* The native product link already owns image/title. Its transparent hit area
+     extends across card whitespace and the price; not across Woo actions. */
+  position:static;
+}
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product > a.woocommerce-loop-product__link::after{
+  content:"";position:absolute;inset:0;z-index:1;cursor:pointer;
+}
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer :is(a,button,input,select,textarea){
+  /* Native add-to-cart/Options/View Cart and extension actions remain ABOVE
+     the stretched product link. No nested links, JS click proxies or redirects. */
+  position:relative;z-index:2;
 }
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product > a.woocommerce-loop-product__link > img{
   display:block;width:100%;height:auto;aspect-ratio:1;object-fit:contain;
@@ -68,6 +79,10 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product .added_
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product > a:focus-visible{
   outline:2px solid var(--sf-ui-accent);outline-offset:4px;
 }
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product:has(> a.woocommerce-loop-product__link:focus-visible){
+  outline:2px solid var(--sf-ui-accent);outline-offset:3px;
+}
+
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-stock{pointer-events:none}
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product:has(.sf-product-stock) .onsale{left:auto;right:10px}
 .sf-catalog{max-width:1200px!important;margin-inline:auto}
