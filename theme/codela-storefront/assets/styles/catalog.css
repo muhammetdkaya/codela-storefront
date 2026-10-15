@@ -48,7 +48,7 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product .onsale
   font-size:11px;font-weight:600;line-height:1.5;
 }
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer{
-  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;
+  display:grid;grid-template-columns:minmax(0,1fr) 44px;align-items:center;gap:6px;
   min-height:var(--sf-ui-hit);margin:12px 14px 0;padding:10px 0 13px;
   border-top:1px solid var(--sf-ui-border);
 }
@@ -61,7 +61,7 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-pro
   --sf-ui-button-padding-y:8px;--sf-ui-button-padding-x:12px;
 }
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product .added_to_cart{
-  flex-basis:100%;display:flex;align-items:center;justify-content:flex-end;
+  grid-column:1 / -1;display:flex;align-items:center;justify-content:flex-end;
   min-height:var(--sf-ui-hit);color:var(--sf-ui-control-ink);
   font-size:12px;text-decoration:underline;text-underline-offset:3px;
 }
@@ -80,7 +80,7 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product:has(.sf
   body:not(.codela-my-account-layout) .sf-content ul.products > li.product .woocommerce-loop-product__title{font-size:14px;margin:11px 10px 0}
   body:not(.codela-my-account-layout) .sf-content ul.products > li.product .price{font-size:15px}
   body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer{
-    display:flex;flex-wrap:wrap;gap:6px;margin:10px 10px 0;padding:9px 0 11px;
+    display:grid;grid-template-columns:minmax(0,1fr) 44px;gap:6px;margin:10px 10px 0;padding:9px 0 11px;
   }
   body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer > .button{
     box-sizing:border-box;width:44px;max-width:44px;min-width:44px;
@@ -136,4 +136,10 @@ body:not(.codela-my-account-layout):not(.single-product):not(.woocommerce-checko
   body:not(.codela-my-account-layout):not(.single-product):not(.woocommerce-checkout) .sf-content:has(> .sf-catalog,> .wp-block-woocommerce-legacy-template){
     padding-inline:12px;
   }
+}
+
+/* Grouped/external buttons must preserve their native visible wording rather
+   than silently clipping it into the circular simple/variable icon slot. */
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer > .button:not(.product_type_simple):not(.product_type_variable){
+  grid-column:1 / -1;justify-self:stretch;
 }
