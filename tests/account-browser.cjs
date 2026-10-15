@@ -130,7 +130,7 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
       assert(compact.brandHeight>=30,'Brand remains readable on phone');
       if(type==='login')assert.equal(compact.headings,0,'Single login page hides duplicated WooCommerce heading');
       const background=await page.locator('.sf-account-intro').evaluate(el=>getComputedStyle(document.body).backgroundColor);
-      assert.equal(background,'rgb(255, 255, 255)','Guest account stays neutral white');
+      assert.equal(background,'rgb(248, 247, 244)','Guest account shares the theme page canvas');
       if(type==='login'){
         await page.locator('.woocommerce').evaluate(node=>node.insertAdjacentHTML('beforeend',
           '<div class="sf-shell sf-auth-social"><div class="sf-auth-divider"><span>or</span></div>'+
