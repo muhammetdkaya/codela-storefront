@@ -11,6 +11,50 @@ const headers=Object.fromEntries(['home','product','checkout','no-dock'].map(m=>
 const image='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22500%22%3E%3Crect width=%22400%22 height=%22500%22 fill=%22%23dfebe9%22/%3E%3C/svg%3E';
 const card=(i)=>'<li class="product '+(i===3?'outofstock':'instock')+'"><a class="woocommerce-LoopProduct-link woocommerce-loop-product__link" href="/product/">'+(i===3?'<span class="sf-product-stock">Stokta yok</span>':'')+'<img width="400" height="500" src="'+image+'" alt="Ürün"><h2 class="woocommerce-loop-product__title">'+(i?'Kısa ürün':'İki satırı aşan çok uzun ürün başlığı taşma ve hizalama kontrolü')+'</h2></a><div class="sf-product-card-footer"><span class="price">'+(i===0?'<del>₺1.000</del><ins>₺850</ins>':'₺850')+'</span>'+(i===3?'':'<a class="button sf-ui-icon-button sf-ui-icon-button--soft sf-icon-button '+(i===2?'product_type_variable':'product_type_simple add_to_cart_button ajax_add_to_cart')+'" href="/?add-to-cart=1" data-product_id="1">'+'<img class="sf-icon" width="22" height="22" alt="" src="https://fixture.test/assets/icons/'+(i===2?'arrow-right':'shopping-bag')+'.svg"><span class="screen-reader-text">'+(i===2?'Seçenekler':'Ekle')+'</span></a>')+'</div></li>';
 const cards='<ul class="products columns-4">'+[0,1,2,3].map(card).join('')+'</ul>';
+
+// Verify actual pointer/touch hit testing rather than counting link markup.
+// The native link remains the only details URL; Woo action anchors are independent.
+async function verifyCardHitArea(page,mode,width,useTouch=false){
+ const catalog=page.locator('.sf-content ul.products > li.product');
+ await page.evaluate(()=>{
+  window.__sfCardClickKinds=[];
+  document.querySelectorAll('.sf-content ul.products > li.product').forEach(card=>card.addEventListener('click',event=>{
+   const link=event.target.closest('a');
+   if(!link)return;
+   event.preventDefault();
+   window.__sfCardClickKinds.push(link.matches('.woocommerce-loop-product__link')?'details':link.matches('.added_to_cart')?'view-cart':link.matches('.button')?'action':'other');
+  }));
+ });
+ const first=catalog.first();
+ const rect=async locator=>{const box=await locator.boundingBox();assert(box,'Missing hit-test surface');return box;};
+ const tapAt=async (x,y,expected,label)=>{
+  if(useTouch) await page.touchscreen.tap(x,y); else await page.mouse.click(x,y);
+  const got=await page.evaluate(()=>window.__sfCardClickKinds.at(-1)||null);
+  assert.equal(got,expected,mode+'/'+width+' '+label+' must click '+expected);
+  await page.evaluate(()=>window.__sfCardClickKinds.length=0);
+ };
+ const center=async (locator,expected,label)=>{
+  const b=await rect(locator);await tapAt(b.x+b.width/2,b.y+b.height/2,expected,label);
+ };
+ await center(first.locator(':scope > a.woocommerce-loop-product__link > img'),'details','product image');
+ await center(first.locator('.woocommerce-loop-product__title'),'details','product title');
+ await center(first.locator('.sf-product-card-footer > .price'),'details','native price');
+ const cardBox=await rect(first);
+ const linkBox=await rect(first.locator(':scope > a.woocommerce-loop-product__link'));
+ const footerBox=await rect(first.locator('.sf-product-card-footer'));
+ if(footerBox.y-linkBox.y-linkBox.height>2){
+  await tapAt(cardBox.x+Math.min(16,cardBox.width/4),(linkBox.y+linkBox.height+footerBox.y)/2,'details','blank image/footer gap');
+ }
+ await tapAt(footerBox.x+3,footerBox.y+footerBox.height-3,'details','bottom footer padding');
+ await center(first.locator('.sf-product-card-footer > .button'),'action','native add-to-cart');
+ await center(catalog.nth(2).locator('.sf-product-card-footer > .button'),'action','native variable Options');
+ await center(catalog.nth(3).locator('.sf-product-card-footer'),'details','stockless footer');
+ await first.locator('.sf-product-card-footer').evaluate(el=>el.insertAdjacentHTML('beforeend','<a class="added_to_cart" href="/cart/">View cart</a>'));
+ await center(first.locator('.added_to_cart'),'view-cart','native View Cart');
+ await first.locator('.added_to_cart').evaluate(el=>el.remove());
+ assert.equal(await first.locator(':scope > a.woocommerce-loop-product__link').count(),1,'One native product detail link');
+ assert.equal(await first.locator('.sf-product-card-footer > .button').count(),1,'One separate native purchase action');
+}
 (async()=>{const browser=await chromium.launch();
 try{const page=await browser.newPage();await page.route('**/assets/icons/**',r=>r.fulfill({contentType:'image/svg+xml',body:fs.readFileSync(root+'assets/icons/'+new URL(r.request().url()).pathname.split('/').at(-1),'utf8')}));
 for(const width of [320,390,700,900,1280]){
@@ -51,6 +95,9 @@ for(const width of [320,390,700,900,1280]){
   assert.equal(await page.locator('.product_type_variable').textContent(),'Seçenekler');
   if(expectedPaint)assert.deepEqual(actual.paint,expectedPaint,'Same card paint for '+mode+' at '+width);else expectedPaint=actual.paint;
   if(mode==='home'&&[390,1280].includes(width)){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:'qa/storefront-ui-kit-catalog-'+width+'.png',fullPage:true});}
+  if((width===390&&['home','related','search'].includes(mode))||(width===1280&&mode==='shop')||(width===320&&mode==='category')){
+   await verifyCardHitArea(page,mode,width);
+  }
  }
  await page.setContent('<style>.screen-reader-text{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}'+wooImageCss+wooButtonCss+styles+'</style><body>'+headers.home+'<main class="sf-content">'+cards+'</main></body>');
  const parity=await page.evaluate(()=>{
@@ -92,6 +139,9 @@ for(const width of [320,390,700,900,1280]){
     assert(parseFloat(pressed.cart.transform.slice(7).split(',')[0])>1,'Same shared press scale');
     await page.locator('.sf-cart-trigger,.sf-menu-trigger').evaluateAll(els=>els.forEach(el=>el.classList.remove('is-pressed')));
     await page.waitForTimeout(440);
+    // Earlier real mouse hit tests switch :focus-visible modality to pointer.
+    // Restore keyboard navigation before asserting accessible focus rings.
+    await page.keyboard.press('Tab');
     for(const selector of ['.sf-cart-trigger','.sf-menu-trigger']){
      await page.locator(selector).focus();
      assert.equal(await page.locator(selector).evaluate(e=>getComputedStyle(e).outlineStyle),'solid','Shared keyboard focus');
@@ -108,6 +158,14 @@ for(const width of [320,390,700,900,1280]){
   }else{assert.equal(layout.tools.length,3,'Desktop keeps all tools');assert(layout.menu.x<layout.brand.x);}
  }
 }
+// Separate touch-only context: preserving a keyboard-pointer page keeps
+// :focus-visible regression meaningful on Chromium and WebKit.
+const touchContext=await browser.newContext({hasTouch:true,viewport:{width:390,height:900}});
+const touchPage=await touchContext.newPage();
+await touchPage.route('**/assets/icons/**',r=>r.fulfill({contentType:'image/svg+xml',body:fs.readFileSync(root+'assets/icons/'+new URL(r.request().url()).pathname.split('/').at(-1),'utf8')}));
+await touchPage.setContent('<style>.screen-reader-text{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}'+wooImageCss+wooButtonCss+styles+'</style><body class="woocommerce home"><main class="sf-content"><section class="sf-selection woocommerce">'+cards+'</section></main></body>');
+await verifyCardHitArea(touchPage,'touch-home',390,true);
+await touchContext.close();
 await page.setContent('<style>'+wooImageCss+wooButtonCss+styles+'</style><body class="codela-my-account-layout"><main class="sf-content">'+cards+'</main></body>');
 assert.notEqual(await page.locator('ul.products').evaluate(e=>getComputedStyle(e).display),'grid','Plugin account does not inherit catalog grid');
 assert((await page.locator('li.product img').first().evaluate(e=>getComputedStyle(e).aspectRatio)).startsWith('auto'),'Plugin images retain their native intrinsic aspect ratio');

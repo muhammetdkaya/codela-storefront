@@ -1,5 +1,11 @@
 # Codela Storefront — güncel teknik durum
 
+## Güncel — 0.1.95 tam ürün kartı tıklama yüzeyi (CI/yayın bekliyor)
+
+15 Ekim 2026: 0.1.94 [CI+canlı FTP 38723030129](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38723030129), beş canlı gate ve [gerçek WP/Woo matrisi 38723703294](https://github.com/muhammetdkaya/codela/actions/runs/38723703294) başarılı. Yeni şikâyet: görsel+başlık native Woo link, ancak fiyat/alt kart boşlukları link dışı. `catalog.css` tek native detail link'in transparent `::after` click hitbox'ını `li.product` tüm boyuna yayar; footer native Woo actions/eklenti kontrolleri üst z-index'te bağımsız kalır. Ek JS, başlık/görsel ikinci anchor'ı, fiyat için DOM/anchor değişimi, yeni cart/controller yok. Focus ring kart çevresine de eklenir. `catalog-browser.cjs` mouse/touch hit tests 320/390/1280, home/shop/category/search/related bağlamlarında çalışacak. Eklenti 1.1.1 ve native Woo add-to-cart semantiği değişmez.
+
+**Kalan kabul:** 0.1.95 CI + gerçek FTP + canlı WebKit/galeri/shell/navigasyon/perf; yeni ZIP/hash ve source ile gerçek WP/Woo Chromium+WebKit native dokunma, fiyat → product URL ve AJAX aksiyon kontrolü. Fiziksel Safari ve üretim ödeme kabulü ayrı.
+
 ## Güncel — 0.1.94 ortak IconButton native Woo yerleşimi (test bekliyor)
 
 15 Ekim 2026: 0.1.93 kaynak [4e4a8be5](https://github.com/muhammetdkaya/codela-storefront/commit/4e4a8be5366dea67e9a3ac534508604b19577240) [CI+gerçek FTP 38720668607](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38720668607) ve beş canlı gate başarıyla yayınlandı. Bununla birlikte [gerçek WP/Woo 0.1.93 matrisi 38721596389](https://github.com/muhammetdkaya/codela/actions/runs/38721596389) hatayı yakaladı. `margin:0` ve 22×22 ikon doğru, ama Woo `a.button` genel selector'ü daha spesifik `display:inline-block` verdiği için 44px kapsayıcıda glif (−10px,−10px) kayıyordu. Tek merkezi `components.css` IconButton flex kuralına daha spesifik native Woo katalog selector'ü ekleniyor; ikon veya kart için bağımsız paint/pressed/controller oluşturulmuyor. Katalog Chromium fixture'ına bu gerçek native `display` kuralı ekleniyor.

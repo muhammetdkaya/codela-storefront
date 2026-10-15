@@ -1,7 +1,11 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.94 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.95 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
+
+## One full-card native product-link hit area — 0.1.95
+
+The existing `a.woocommerce-loop-product__link` still owns Woo image/title, product URL, and keyboard semantics. A transparent absolute `::after` layer spans the native `li.product` card, including price, footer whitespace, and out-of-stock cards; this is **one native anchor, not a click proxy/JS router/new nested link**. The actual Woo footer `a.button`, `.added_to_cart`, and any other interactive controls are positioned above the detail hit layer via one layout-only rule. Keep their Woo URL/AJAX/data/ARIA and keyboard operation. No new paint or event listeners. Plugin-owned account explicitly excluded. Browser acceptance probes actual pointer and touch hit targets across contexts/widths.
 
 ## Native Woo button display specificity — 0.1.94
 

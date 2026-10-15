@@ -1,5 +1,13 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Güncel çalışma — 0.1.95 ürün kartı tam yüzey bağlantısı (kabul bekliyor)
+
+15 Ekim 2026: 0.1.94 CI+gerçek FTP [38723030129](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38723030129), beş canlı gate ve gerçek WP/Woo [38723703294](https://github.com/muhammetdkaya/codela/actions/runs/38723703294) başarılıdır. Kullanıcı ürün kartına dokunmanın tutarsız olduğunu bildirdi. Mevcut tek Woo link yalnız görsel+başlık alanını kapsıyor; fiyat/alt boşluk hit target değil.
+
+0.1.95: `catalog.css` mevcut Woo detail anchor'ı `::after` ile tüm kartın şeffaf tıklama alanı olacak şekilde genişletir; native Woo add-to-cart/Options/View Cart ve footer'daki diğer kontroller `z-index` ile üstte kalır. Yeni nested link, JS listener/router, HTML değişikliği, ürün kartı kopyası, renk veya animasyon yok. Klavye focus ring'i kart çevresine de yansır. `catalog-browser.cjs` gerçek mouse/touch noktalarını (görsel, başlık, fiyat, boşluk, stoksuz kart, ikon/Options/View Cart) 320/390/1280 ve farklı kataloglarda dener. Tema 0.1.94→0.1.95; eklenti 1.1.1 değişmez.
+
+**Sıradaki iş:** PR CI, gerçek FTP ve beş canlı gate; yeni paket/hash/source'a pin'li gerçek WP6.5/Woo9 ile WP7.1/Woo11 Chromium+WebKit matrisinde fiyat ve boş alandan ürün açılışı ve native AJAX checkout doğrulaması. Sonra kanıtla AGENTS ve teknik durumu kapat; fiziksel iPhone Safari testi, gerçek ödeme sağlayıcısı ve eski JPEG backfill ayrı açık kalır.
+
 ## Güncel çalışma — 0.1.94 native IconButton flex önceliği (CI ve gerçek kabul bekliyor)
 
 15 Ekim 2026: 0.1.93 [CI+gerçek FTP 38720668607](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38720668607) ve beş canlı denetim başarılı; Codela eklentisi 1.1.1 değişmedi. Ancak [0.1.93 gerçek WP/Woo matrisi 38721596389](https://github.com/muhammetdkaya/codela/actions/runs/38721596389) ikon merkezleme kontrolünde başarısız: ikon SVG 22px ve margin=0 olmasına rağmen button sol üstünde kalıyor (centerX/Y=-10px). Gerçek WooCommerce `.woocommerce ul.products li.product a.button{display:inline-block}` seçicisi merkezi `inline-flex` kuralını eziyor. Ayrıca ayrı lazy testinde ürün görseli ile buton SVG'si ayırt edildi (test-only, Codela eklenti runtime değişmedi).
