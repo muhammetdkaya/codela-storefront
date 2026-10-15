@@ -15,7 +15,7 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout){
   --sf-ui-button-padding-y:12px;
   --sf-ui-button-padding-x:20px;
   --sf-ui-button-font-size:15px;
-  background:#fff;
+  background:var(--sf-ui-page);
   color:#222428;
   color-scheme:light;
 }

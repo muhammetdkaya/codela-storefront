@@ -7,7 +7,7 @@ body.single-product .sf-content{
   width:100%;
   max-width:none!important;
   padding:0 0 64px;
-  background:var(--sf-ui-surface);
+  background:var(--sf-ui-page);
 }
 body.single-product .sf-content > :is(.woocommerce,.wp-block-woocommerce-legacy-template,[data-block-name="woocommerce/legacy-template"]){
   width:100%;

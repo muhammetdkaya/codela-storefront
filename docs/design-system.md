@@ -1,7 +1,11 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.95 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.97 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
+
+## Common page canvas — 0.1.97
+
+`--sf-ui-page` follows the WordPress `base` palette (default #f8f7f4). Body, product/checkout/guest account page canvases, shared dialog and search/account views, footer and route-loading canvas consume this same token. `--sf-ui-surface` remains the separate white card/input surface. Do not use card white as a page background or add per-page canvas colours. Shared Header/dock glass and plugin-owned account interiors keep their own component material.
 
 ## One full-card native product-link hit area — 0.1.95
 
