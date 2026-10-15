@@ -38,7 +38,7 @@ assert.ok(css.includes('#sf-panel .sf-panel-top{'), 'Menu and cart have a shared
 assert.ok(css.includes('#sf-panel.is-search-panel .sf-search-toolbar{'), 'Search uses matching toolbar tokens');
 assert.ok(css.includes('height:46px'), 'Search field is reduced from 52px to 46px');
 assert.ok(fs.readFileSync('theme/codela-storefront/assets/styles/tokens.css','utf8').includes('--sf-ui-icon-close:22px'), 'X glyph token matches shared icon sizing');
-assert.ok(css.includes('background:#ffffff'), 'Panel backgrounds are white');
+assert.ok(css.includes('background:var(--sf-ui-page)'), 'Panels inherit the common page canvas');
 assert.ok(css.includes('color-scheme:light'), 'Search uses light input/color controls');
 assert.ok(!css.includes('background:#0b0d12'), 'Dark search background must be removed');
 assert.ok(css.includes('#sf-panel.is-search-panel .sf-panel-top{display:none!important}'),'Only the inline X appears in search');

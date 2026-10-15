@@ -5,6 +5,8 @@
  * Theme style/theme.json own site palette; Codela plugin keeps its own modules.
  */
 :root {
+  /* Page canvas follows the WordPress palette; cards keep their own surface. */
+  --sf-ui-page:var(--wp--preset--color--base,#f8f7f4);
   --sf-ui-ink:var(--sf-ink,#22231f);
   --sf-ui-surface:#ffffff;
   --sf-ui-surface-muted:#f3f3f3;

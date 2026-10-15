@@ -2,7 +2,7 @@
  * Checkout-only composition for WooCommerce Block and classic checkout.
  * No cloned forms, payment handlers, or visual Button implementations.
  */
-body.woocommerce-checkout{background:var(--sf-ui-surface);color:var(--sf-ui-ink)}
+body.woocommerce-checkout{background:var(--sf-ui-page);color:var(--sf-ui-ink)}
 .sf-checkout-page{
  --sf-checkout-width:1120px;
  width:100%;max-width:none!important;min-height:55vh;margin:0 auto!important;

@@ -7,7 +7,7 @@
   --sf-ui-button-padding-y:12px;
   --sf-ui-button-padding-x:20px;
   --sf-ui-button-font-size:15px;
-  background:#fff;color:#222428;color-scheme:light;
+  background:var(--sf-ui-page);color:#222428;color-scheme:light;
 }
 #sf-panel.is-account-panel .sf-account-body{
   padding:16px 26px calc(110px + env(safe-area-inset-bottom,0px));

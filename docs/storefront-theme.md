@@ -1,5 +1,10 @@
 # Codela Storefront — güncel teknik durum
 
+## Güncel çalışma — 0.1.97 ortak sayfa zemini (doğrulama/yayın bekliyor)
+
+15 Ekim2026: Kullanıcının kategori/ürün screenshot'ındaki zemin farkı düzeltildi. Tek `--sf-ui-page` token'ı WordPress base paletini izler (varsayılan #f8f7f4). Body, ürün main, checkout body, guest hesap, tek dialog/search/account, footer ve navigation loading canvas aynı token'ı kullanır. Beyaz `--sf-ui-surface` kart/input/control olarak kalır; Header/dock materyali, eklenti-owned signed-in hesap içeriği ve JS/Woo davranışı değişmez. Tema0.1.96→0.1.97; eklenti1.1.1 değişmedi. CSS-only düzeltme; CI/paket/browser, gerçek FTP ve canlı computed background kabulü bekliyor. Önceki0.1.96 gerçek64 kontrol sonucu bu sürümün sonucu diye sunulmaz. Sıradaki iş CI+dağıtım, canlı sayfa/panel canvas eşitliği ve güncel paket hash/source kabulüdür.
+
+
 
 ## Son doğrulanmış durum — 0.1.96 mağaza/kategori filtreleri canlı
 15 Ekim 2026: Tema **0.1.95→0.1.96 canlı**, Codela eklentisi **1.1.1 değişmedi**. Mağaza ve kategori/etiket arşivlerinde ortak kompakt başlık/sonuç sayısı, breadcrumbsız düzen; sıralama mevcut tek tam ekran dialog içindeki Filters görünümüne taşındı. Header'ın mevcut tools slotunda ortak soft IconButton ve yerel sliders-horizontal SVG kullanılır; mobilde Menu'nün hemen solunda. Kategori bağlantıları, native Woo GET fiyat aralığı/sıralama, kategori kapsamını koruyan Uygula ve Temizle. Empty bounds native Woo sorgusundan önce normalize edilir; açık 0 fiyatı korunur. Yeni filtre API'si, modal/controller, kart kopyası veya satın alma motoru yok. Kategori/etiket template'leri aynı native archive-product bloğunu kullanır.

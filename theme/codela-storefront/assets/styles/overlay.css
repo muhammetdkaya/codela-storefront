@@ -32,7 +32,7 @@
   --sf-overlay-gutter:clamp(16px,5vw,32px);
   --sf-overlay-toolbar-height:68px;
   --sf-overlay-control-size:44px;
-  background:#ffffff;
+  background:var(--sf-ui-page);
   color:#22231f;
   color-scheme:light;
 }
@@ -69,7 +69,7 @@
   padding:10px var(--sf-overlay-gutter);
   margin:0;
   border-bottom:1px solid #eeeeee;
-  background:#ffffff;
+  background:var(--sf-ui-page);
   box-sizing:border-box;
 }
 #sf-panel.is-search-panel .sf-search-form{
@@ -140,7 +140,7 @@
   min-height:60vh;
   padding:14px var(--sf-overlay-gutter) 40px;
   border:0;
-  background:#ffffff;
+  background:var(--sf-ui-page);
 }
 #sf-panel.is-search-panel #sf-results{
   max-width:950px;

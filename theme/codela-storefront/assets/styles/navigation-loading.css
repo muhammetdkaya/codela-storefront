@@ -13,7 +13,7 @@
   min-height:100%;
   box-sizing:border-box;
   padding:clamp(22px,5vw,52px) max(20px,5vw);
-  background:var(--sf-ui-surface,#fff);
+  background:var(--sf-ui-page);
   pointer-events:none;
 }
 .sf-route-skeleton :is(.sf-route-hero,.sf-route-line,.sf-route-cards>div,.sf-route-heading,.sf-route-entry i,.sf-route-entry span){
