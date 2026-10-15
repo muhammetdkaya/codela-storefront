@@ -34,6 +34,11 @@ body:not(.codela-my-account-layout) .sf-content .sf-ui-icon-button{
 body:not(.codela-my-account-layout) .sf-content .sf-ui-icon-button .sf-icon{
   width:var(--sf-ui-icon);
   height:var(--sf-ui-icon);
+  /* Woo's product-loop a img rule applies a 1em bottom margin to every img,
+     including our native button glyph. Reset it in the shared primitive. */
+  display:block;
+  flex:none;
+  margin:0;
 }
 /* Move the complete control, never counter-scale its glyph or badge. */
 .woocommerce div.product .sf-ui-gallery .woocommerce-product-gallery__trigger:is(:active,.is-pressed):not(:disabled,[aria-disabled="true"],[aria-busy="true"]),

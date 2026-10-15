@@ -1,5 +1,11 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Güncel çalışma — 0.1.93 düzeltmesi CI bekliyor
+
+15 Ekim 2026: 0.1.92 kaynak fae7ca4 [CI+FTP](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38716613763), beş canlı kontrol ve WebKit ekran görüntüsüyle gerçekten canlıya alındı. Ancak 0.1.92 için yeni açılan [gerçek WP/Woo matrisi](https://github.com/muhammetdkaya/codela/actions/runs/38719692867), Chromium'da **native ikon merkezi hizası** kontrolünde başarısız oldu. WooCommerce'in ul.products a img kuralındaki 1em alt margin ortak SVG'ye de uygulanıyordu; sentetik browser CSS bu native kuralı içermiyordu.
+
+0.1.93 çalışması: yeni buton/painter/JS kurmadan mevcut components.css IconButton glyph kuralında margin:0, display:block, flex:none. Katalog fixture'ına gerçek Woo genel resim margin kuralı ve 0px glyph-margin regresyonu eklendi. Header/dock/format/galeri yerleşimi, Woo AJAX/URL/ARIA değişmez. **CI, gerçek FTP, canlı WebKit ve 0.1.93 ZIP kaynak/hash pin'li yeni WP6.5/Woo9 ile WP7.1/Woo11 Chromium+WebKit testleri tamamlanmadan kapatma.** Plugin Codela 1.1.1 değişmedi.
+
 ## Güncel çalışma —0.1.92 test/yayın bekliyor
 
 15 Ekim2026: tema0.1.91→0.1.92 hazırlanıyor; Codela1.1.1 değişmedi. Katalog simple/variable native düğmesi artık Header ile aynı IconButton sınıf/içerik yardımcılarını ve components.css deklarasyonlarını kullanır. Karttaki ::before SVG ve ayrı44px/ikon geometrisi kaldırıldı; native URL/AJAX/data/ARIA korunur. Ortak glyph22px, hedef44px,soft yüzey,scale1.08,focus/disabled/erişilebilirlik aynı. Native loading/added göstergesi ortak glyph slotunda; grouped/external metinli Button kalır. Yeni JS yok. CI,gerçek FTP,canlı ve yeni paket native kabulü bekliyor.
