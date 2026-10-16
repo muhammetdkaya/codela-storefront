@@ -1,5 +1,11 @@
 # Codela Storefront UI Kit — source of truth
 
+## Product sheet composition — 0.1.99 (acceptance pending)
+
+On mobile the original Woo gallery scrolls vertically; a persistent bottom sheet exposes native product information on demand. product-information.js only reparents the original nodes and restores exact comment anchors on desktop. The native form and all original fields/submit controls remain descendants of their original form. The shared surface owns sheet material; the purchase footer is transparent inside it. No second store/dialog/cart engine. Header dragging and a real shared Button both toggle the sheet, Escape closes, missing variation/native validity/hash targets expose their original content. Open content makes the gallery inert; global dialog/PhotoSwipe hide the sheet. Footer/legal links and recommendations stay reachable inside details. Stockless products retain the existing navigation dock and have no fabricated purchase.
+
+Native gallery scrolling replaces FlexSlider for this composition, retaining Woo PhotoSwipe and variation image updates. Desktop is horizontal and mobile vertical. Existing deferred source attributes are promoted by visibility; full secondary images are not all eagerly fetched. Without enhancement, original document/forms and native horizontal gallery remain usable. Historical FlexSlider-specific layout rules describe earlier releases.
+
 **Status:** Current shared architecture; theme source 0.1.98 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
 
@@ -613,4 +619,5 @@ Floating controls retain one shared tint and transparent perimeter. Use one diff
 ## Product enlargement ownership (0.1.77)
 
 The product image link opens native Woo PhotoSwipe directly. Disable inline zoom on the product document with the native zoom-enabled filter at priority 100: ClassicTemplate forces it on at priority 10, and its touch click handler intercepts the lightbox link. Other contexts keep their own setting. This supersedes the 0.1.65 note about retaining product inline zoom. Native slider, variation updates and fullscreen zoom remain owned by Woo; do not add a second gallery engine.
+
 

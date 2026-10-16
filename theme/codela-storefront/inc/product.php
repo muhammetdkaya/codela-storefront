@@ -139,3 +139,23 @@ add_action( 'wp', function() {
 } );
 add_action( 'wp', 'codela_sf_product_modules', 100 );
 
+/** Progressive mobile sheet: the script moves existing nodes, never copies a form. */
+function codela_sf_product_sheet_template(): void {
+    ?>
+    <template id="sf-product-sheet-template" data-gallery-label="<?php esc_attr_e( 'Product images', 'codela-storefront' ); ?>">
+        <section class="sf-product-sheet" aria-label="<?php esc_attr_e( 'Product details', 'codela-storefront' ); ?>">
+            <header class="sf-product-sheet-header">
+                <div class="sf-product-sheet-heading"></div>
+                <?php echo codela_sf_ui_button( __( 'Options and details', 'codela-storefront' ), [
+                    'variant' => 'quiet', 'class' => 'sf-product-sheet-toggle',
+                    'attributes' => [ 'aria-expanded' => 'false', 'aria-controls' => 'sf-product-sheet-body' ],
+                ] ); ?>
+            </header>
+            <div class="sf-product-sheet-body" id="sf-product-sheet-body"></div>
+        </section>
+    </template>
+    <?php
+}
+add_action( 'woocommerce_after_single_product_summary', 'codela_sf_product_sheet_template', 99 );
+
+

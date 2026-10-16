@@ -1,5 +1,16 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Güncel çalışma — 16 Ekim 2026 / 0.1.99 dikey galeri ve ürün paneli
+
+Kullanıcı iki durumlu mobil ürün sayfasını uygulamaya yetkilendirdi. Tema **0.1.98 → 0.1.99** hazırlanıyor; eklenti **1.1.1 değişmedi**. Mobilde yalnız orijinal ürün fotoğrafları dikey native scroll-snap ile gezilir. Alt panel kapalıyken özgün başlık/fiyat/urgency ve native satın alma kontrolleri görünür; dokunma veya başlıktan sürükleme paneli açar. Açık panel kendi içinde seçenekleri, etkin modülleri, orijinal Woo bilgi/yorum callback'lerini, güven vaatlerini, önerileri ve footer bağlantılarını kaydırır. Galeri inert olur; satın alma sabit kalır. Eksik varyasyon/invalid native input ve yorum hash'i paneli açar. Global dialog/lightbox sırasında ürün paneli görünmez. Masaüstüne geçince aynı DOM düğümleri tam yerlerine döner.
+
+Galeride FlexSlider bu ürün kompozisyonunda kapalı; native Woo image/variation/PhotoSwipe sahipliği korunur. Masaüstü aynı görselleri yatay native scroll ile gezer. İkincil tam görseller yalnız görünürken promote edilir. Orijinal form/quantity/submit/variation_id kopyalanmaz veya başka forma taşınmaz; hesap/sepet router'ı eklenmedi. Ortak materyal/Button kullanılır. JS yoksa orijinal ürün dokümanı ve yatay galeri çalışır. Kapalı modüller açılmaz; sahte stok/ziyaretçi/teslimat verisi yok.
+
+**Doğrulanan:** yerel JS syntax ve 24 paket testi geçti. Yerelde PHP ve tarayıcı executable'ı yok; tarayıcı indirmesi ağ tarafından eksik dosya döndürdü. Yeni gerçek-template browser kabulü CI'a eklendi. **Henüz yayınlanmadı veya tarayıcıda kabul edildi denemez.**
+
+**Sıradaki:** PR CI'da eski regresyonlar + yeni panel kabulü; hataları düzelt, gerçek FTP ve canlı dikey galeri/panel/varyasyon kabulünü doğrula. Gerçek WP/Woo matrisi yeni paket/hash'e pin'lenmeli. Fiziksel Safari/toolbar/safe-area ve gerçek payment provider ayrı kabul.
+
+
 ## Son doğrulanmış durum — 16 Ekim 2026 / 0.1.98 ürün modülleri canlı ve kabul tamam
 
 Tema **0.1.97→0.1.98 canlı**. Codela eklentisi **1.1.1 runtime değişmedi**, WordPress.org ve dondurulmuş0.1.1 tema paketi değişmedi. Kullanıcının onayladığı sade modül düzeni: ziyaretçi galeri köşesinde, urgency fiyat yanında, kompakt teslimat/WhatsApp, ücretsiz kargo çizgisi içerik genişliğinin tamamında, güven vaatleri bilgi bölümlerinin altında ve önerilerden önce. Native Woo tab callback'leri details/summary içinde; açıklama açık, diğerleri kapalı. Mevcut modül ayarları/mesajları korunur; canlıda kapalı modüller açılmadı, sahte değer eklenmedi.
@@ -178,4 +189,5 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - `muhammetdkaya/codela-site` tanıtım temasını değiştirme.
 - Küçük tema değişiklikleri bu deponun bağımsız dağıtımıyla canlıya gidebilir. Gerekli ayarları ilgili eklenti alt menüsüne aynı geliştirme kapsamında GitHub'da ekle; eklenti ayar değişikliklerini ara ara toplu yayınla.
 - Şifreleri kodda, belgede veya günlükte tutma.
+
 
