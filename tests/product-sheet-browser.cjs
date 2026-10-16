@@ -54,6 +54,9 @@ for(const width of [320,390,700]){
  await page.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
  await page.waitForFunction(()=>Math.abs(scrollY-(document.documentElement.scrollHeight-innerHeight))<1);
  const bottom=await page.evaluate(()=>({y:scrollY,height:document.documentElement.scrollHeight}));
+ const reserve=await page.locator('.sf-product-discovery').evaluate(e=>({minHeight:getComputedStyle(e).minHeight,bottom:parseFloat(getComputedStyle(e).paddingBottom),normal:parseFloat(getComputedStyle(document.querySelector('.woocommerce-product-gallery')).getPropertyValue('--sf-product-normal-height'))}));
+ assert.equal(reserve.minHeight,'0px','Related products follow their actual content height, not a minimum viewport');
+ assert(reserve.bottom<reserve.normal,'No full normal purchase-height spacer after the last related item');
  assert.equal(await page.locator('html').evaluate(e=>getComputedStyle(e).overscrollBehaviorY),'none','No bottom boundary rubber-band in recommendations');
  assert.equal(await page.locator('body').evaluate(e=>getComputedStyle(e).overscrollBehaviorY),'none');
  assert.equal(await page.locator('html').evaluate(e=>getComputedStyle(e).scrollSnapType),'none','Long recommendations scroll without snapping back to the section heading');

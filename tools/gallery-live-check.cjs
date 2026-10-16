@@ -111,6 +111,16 @@ const {liveProduct}=require('./live-product.cjs');
  await page.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
  await page.waitForFunction(()=>Math.abs(scrollY-(document.documentElement.scrollHeight-innerHeight))<1);
  const bottom=await page.evaluate(()=>({y:scrollY,height:document.documentElement.scrollHeight}));
+ const tail=await page.evaluate(()=>{
+  const cards=[...document.querySelectorAll('.sf-product-discovery :is(.related,.upsells) li.product')];
+  const last=Math.max(...cards.map(e=>e.getBoundingClientRect().bottom));
+  const sheet=document.querySelector('.sf-product-sheet').getBoundingClientRect();
+  const section=document.querySelector('.sf-product-discovery');
+  return {gap:sheet.top-last,sheetTop:sheet.top,lastBottom:last,reserve:getComputedStyle(section).paddingBottom,minHeight:getComputedStyle(section).minHeight};
+ });
+ console.log('GALLERY_LAST_CARD '+JSON.stringify(tail));
+ assert.equal(tail.minHeight,'0px','The final recommendation does not reserve a whole viewport');
+ assert(tail.gap>=-8&&tail.gap<=52,'Last recommendation is visible near the fixed purchase panel, without a large blank strip: '+JSON.stringify(tail));
  assert.equal(await page.locator('html').evaluate(e=>getComputedStyle(e).overscrollBehaviorY),'none','No bottom boundary rubber-band in recommendations');
  assert.equal(await page.locator('body').evaluate(e=>getComputedStyle(e).overscrollBehaviorY),'none');
  assert.equal(await page.locator('html').evaluate(e=>getComputedStyle(e).scrollSnapType),'none','Recommendations must scroll without photo snapping');

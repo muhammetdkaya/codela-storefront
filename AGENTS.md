@@ -1,5 +1,9 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Çalışma — 16 Ekim 2026 / 0.1.109 ilgili ürünlerin alt boşluğu
+
+Kullanıcı son satırdaki ürün kartları ile sabit satın alma paneli arasındaki görünür büyük boşluğun kaldırılmasını istedi. Mobil `.sf-product-discovery` için zorunlu `100svh` minimumu kaldırıldı; son native `.related/.upsells` grubunun fazladan alt marjı kaldırıldı, alt güvenlik payı sabit *normal* panel ölçüsünden 24px eksiltilerek fotoğraf geometrisi ve discovery geçişinde rezervin sabitliği korundu. Son ürünün sabit panel altında kalmadığını ve büyük boşluk oluşmadığını gerçek 390px galeri testi ölçer. 0.1.109 CI, FTP, canlı testleri sonucu doğrulanmadan tamamlandı yazılmaz; eklenti 1.1.1 değişmedi. Fiziksel Safari ve PNG/LCP performans konusu ayrı kalır.
+
 ## Çalışma —16 Ekim2026 /0.1.107→0.1.108 küçük resim ve alt sınır
 
 Tema0.1.108 hazırlanıyor; Codela1.1.1 runtime değişmedi. Seçili native thumbnail'ın siyah outline'ı kaldırılır; shared klavye focus-visible korunur. İlgili ürünler görünürken root/body overscroll-y:none, galeride auto: alt uç esneme/boşluk ve bırakma geri sekmesi engellenir, tepedeki native yenileme yolu korunur. 0.1.108 CI'de uzun öneri alanının zorunlu fotoğraf snap'ine takılıp alt uca ulaşamadığı görüldü: yalnız `.woocommerce-product-gallery.is-discovering` durumunda root snap `none`, galeriye dönünce `y mandatory` olur. Fotoğraf/snap hedef geometrisi ve normal panel rezervi değişmez; yeni touch/wheel engelleyici veya scroll motoru yok.
