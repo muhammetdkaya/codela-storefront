@@ -8,7 +8,7 @@
   var gallery = counter && counter.closest('.woocommerce-product-gallery');
   if (gallery && counter.parentElement !== gallery) gallery.appendChild(counter);
   function setupQuantities() {
-    document.querySelectorAll('div.product .quantity').forEach(function (quantity) {
+    document.querySelectorAll('div.product .sf-product-purchase .quantity').forEach(function (quantity) {
       var input = quantity.querySelector('input.qty');
       var buttons = quantity.querySelectorAll('[data-quantity-step]');
       if (!input || !buttons.length) return;

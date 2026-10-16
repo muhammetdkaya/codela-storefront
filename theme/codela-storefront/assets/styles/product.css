@@ -554,7 +554,7 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
 
 /* Quantity is still Woo's one input, composed with the existing quiet Button. */
 body.single-product div.product .sf-product-quantity{align-items:center;gap:0}
-body.single-product div.product .sf-product-quantity .sf-product-quantity-step.sf-ui-button{
+body.single-product div.product .sf-product-quantity-step.sf-ui-button{
   display:none;--sf-ui-button-height:44px;--sf-ui-button-padding-x:0px;
   min-width:44px;width:44px;min-height:44px;padding:0;font-size:20px;flex:none;
 }
