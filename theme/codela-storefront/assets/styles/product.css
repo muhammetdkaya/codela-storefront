@@ -492,12 +492,14 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
     position:fixed;top:calc(88px + var(--sf-header-offset,0px));bottom:auto!important;
   }
   body.sf-product-sheet-ready div.product > .sf-product-sheet{
-    position:fixed;z-index:1000;inset-inline:0;bottom:0;display:flex;flex-direction:column;
-    width:100%;max-height:calc(100svh - 84px - var(--sf-header-offset,0px));
-    height:calc(var(--sf-product-closed-height,190px) + env(safe-area-inset-bottom,0px));
+    position:fixed;z-index:1000;inset-inline:var(--sf-ui-bottom-bar-inset);
+    bottom:calc(var(--sf-ui-bottom-bar-gap) + env(safe-area-inset-bottom,0px));
+    display:flex;flex-direction:column;width:auto;max-width:var(--sf-ui-bottom-bar-max-width);
+    max-height:calc(100svh - 84px - var(--sf-header-offset,0px) - var(--sf-ui-bottom-bar-gap) - env(safe-area-inset-bottom,0px));
+    height:var(--sf-product-closed-height,190px);
     transition:height var(--sf-ui-motion-panel) var(--sf-ui-ease-press);
-    margin:0;padding:0 0 calc(var(--sf-product-footer-height,0px) + 8px + env(safe-area-inset-bottom,0px));
-    border-radius:var(--sf-ui-control-radius) var(--sf-ui-control-radius) 0 0;
+    margin:0 auto;padding:0 0 calc(var(--sf-product-footer-height,0px) + 8px);
+    border-radius:var(--sf-ui-control-radius);
     /* One stable containing block also when reduced transparency removes blur. */
     contain:layout;
   }
@@ -515,7 +517,7 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   body.sf-product-sheet-ready .sf-product-sheet.is-expanded .product_title{-webkit-line-clamp:3}
   body.sf-product-sheet-ready .sf-product-sheet-heading .price del{display:block;font-size:12px}
   body.sf-product-sheet-ready .sf-product-sheet-body{height:0;flex:0 1 auto;visibility:hidden}
-  body.single-product.sf-product-sheet-ready div.product > .sf-product-sheet.is-expanded{height:calc(100dvh - 84px - var(--sf-header-offset,0px))}
+  body.single-product.sf-product-sheet-ready div.product > .sf-product-sheet.is-expanded{height:calc(100dvh - 84px - var(--sf-header-offset,0px) - var(--sf-ui-bottom-bar-gap) - env(safe-area-inset-bottom,0px))}
   body.sf-product-sheet-ready .sf-product-sheet:is(.is-expanded,.is-dragging) .sf-product-sheet-body{
     height:auto;flex:1 1 auto;visibility:visible;padding-bottom:20px;
   }
@@ -528,7 +530,7 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   }
   body.sf-product-sheet-ready .sf-product-sheet-body .cdl-tb{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
   body.sf-product-sheet-ready div.product form.cart .sf-product-purchase{
-    visibility:visible;position:fixed;inset-inline:0;bottom:env(safe-area-inset-bottom,0px);
+    visibility:visible;position:fixed;inset-inline:0;bottom:0;
     max-width:none;width:100%;min-height:var(--sf-ui-bottom-bar-height);margin:0;
     padding:var(--sf-ui-bottom-bar-padding) 12px;
   }
@@ -555,7 +557,9 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
     bottom:calc(var(--sf-product-collapsed-height,210px) + 18px);
   }
   body.sf-product-sheet-ready:has(.sf-product-sheet.is-expanded) .sf-product-plugin-footer{visibility:hidden}
-  body.sf-product-sheet-ready .sf-product-sheet-body .sf-footer{padding:20px;margin-top:24px}
+  /* The native footer stays in the document, outside the product sheet.
+     Reserve only the overlay at its final links so they remain reachable. */
+  body.sf-product-sheet-ready .sf-footer{padding-bottom:calc(var(--sf-product-collapsed-height,140px) + var(--sf-ui-bottom-bar-gap) + env(safe-area-inset-bottom,0px) + 16px)}
 }
 
 /* Quantity is still Woo's one input, composed with the existing quiet Button. */

@@ -16,11 +16,14 @@ const {liveProduct}=require('./live-product.cjs');
  assert.equal(await images.count(),product.images,'Published gallery image count');const selected=product.images>1?1:0;
  if(width===390){
   const toggle=page.locator('.sf-product-sheet-toggle');
+  const panelBox=await page.locator('.sf-product-sheet').boundingBox();
+  assert(Math.abs(panelBox.width-Math.min(width-32,430))<1,'Live sheet matches dock width');
+  assert.equal(await page.locator('.sf-product-sheet .sf-footer').count(),0,'Live footer is outside the sheet');
   assert.equal(await toggle.getAttribute('aria-expanded'),'false');
   assert(await page.locator('.single_add_to_cart_button').isVisible());
   const release=await page.locator('link[href*="styles/product.css"]').getAttribute('href');
   const parts=new URL(release).searchParams.get('ver').split('.').map(Number);
-  assert(parts[0]>0||parts[1]>1||parts[2]>=113,'Updated purchase sheet must be live: '+release);
+  assert(parts[0]>0||parts[1]>1||parts[2]>=115,'Updated purchase sheet must be live: '+release);
   for(const node of await page.locator('.cdl-fsb-text,.cdl-fsb-track,.sf-product-sheet-body .cdl-wa').all()){
    assert(!(await node.isVisible()),'Closed panel contains no shipping or contact information');
   }
@@ -152,13 +155,17 @@ const {liveProduct}=require('./live-product.cjs');
   const sheet=document.querySelector('.sf-product-sheet').getBoundingClientRect();
   const section=document.querySelector('.sf-product-discovery');
   const lists=[...section.querySelectorAll(':is(.related,.upsells) ul.products')];
-  return {gap:sheet.top-last,sheetTop:sheet.top,lastBottom:last,reserve:getComputedStyle(section).paddingBottom,minHeight:getComputedStyle(section).minHeight,gridMargin:lists.map(e=>getComputedStyle(e).marginBottom)};
+  const footer=document.querySelector('.sf-footer');
+  const footerContent=footer && footer.querySelector('.sf-footer-inner');
+  const end=footerContent ? footerContent.getBoundingClientRect().bottom : last;
+  return {gap:sheet.top-end,sheetTop:sheet.top,lastBottom:last,footerOutside:!!footer && !footer.closest('.sf-product-sheet'),reserve:getComputedStyle(section).paddingBottom,minHeight:getComputedStyle(section).minHeight,gridMargin:lists.map(e=>getComputedStyle(e).marginBottom)};
  });
   assert.equal(await page.locator('.sf-product-sheet-heading .product_title').evaluate(e=>getComputedStyle(e).fontSize),titleFont,'Live title font remains stable over recommendations');
  console.log('GALLERY_LAST_CARD '+JSON.stringify(tail));
+ assert(tail.footerOutside,'Native footer stays outside the product panel');
  assert.equal(tail.minHeight,'0px','The final recommendation does not reserve a whole viewport');
  assert(tail.gridMargin.every(v=>v==='0px'),'Catalog grid does not add trailing margin under product discovery');
- assert(tail.gap>=-8&&tail.gap<=28,'Last recommendation sits immediately above the fixed purchase panel without overlap or blank strip: '+JSON.stringify(tail));
+ assert(tail.gap>=-8&&tail.gap<=28,'Final native footer links sit above the floating panel without overlap or blank strip: '+JSON.stringify(tail));
  assert.equal(await page.locator('html').evaluate(e=>getComputedStyle(e).overscrollBehaviorY),'none','No bottom boundary rubber-band in recommendations');
  assert.equal(await page.locator('body').evaluate(e=>getComputedStyle(e).overscrollBehaviorY),'none');
  assert.equal(await page.locator('html').evaluate(e=>getComputedStyle(e).scrollSnapType),'none','Recommendations must scroll without photo snapping');

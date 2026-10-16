@@ -1,5 +1,13 @@
 # Codela Storefront — güncel teknik durum
 
+## Çalışma — 17 Ekim 2026 / 0.1.114 → 0.1.115 alt panel ve ortak alt menü ölçüleri
+
+Kullanıcı yenileme/tutma işini bitmiş saydı; bu çalışma yalnız ortak alt menü arka planı/genişliği ve Footer'ın açılan ürün panelinden çıkarılması içindir. Var olan components.css tek cam materyali korunur; panel artık navigation dock ile aynı --sf-ui-bottom-bar-inset/max-width/gap token'larını kullanır (16px yan boşluk,430px tavan,4px alt mesafe + cihaz safe-area). Tek panel yüzeyi içinde native purchase şeffaf kalır, safe-area dışarıda bir kez hesaplanır; dört köşe ortak control radius. Açık panelde de aynı genişlik. Yeni buton/yüzey boyası/scroll motoru yok.
+
+Footer taşıma ve DOMContentLoaded taşıma dinleyicisi kaldırıldı. Özgün Footer sayfanın normal sonunda kalır, açık ürün içeriğine katılmaz. Yalnız mobil enhanced ürün Footer sonunda mevcut panel yüksekliği kadar örtüşme payı var; özgün linkler ulaşılır, desktop/no-JS özgün düzeni korur. İlgili ürünlerden sonra footer artık gerçek içeriktir; canlı alt sınır testi kart yerine son Footer linkini ve60-frame belge stabilitesini denetler.
+
+Yerel JS syntax ve24 paket kontrolü başarılı.320/390/700 CI panel genişlik/merkez/alt mesafe ve dock ile birebir material karşılaştırması; geç parse edilen Footer'ın panel dışında tek kalması eklendi. CI/FTP ve115 canlı kabulü bekleniyor. Eklenti1.1.1 runtime/WordPress.org değişmez. Önceki114 GitHub runner engeli/özel cross-repo erişim işi yeniden başlatılmadı; yeni gerçek WP/Woo matrisi çalıştırılmadı. Fiziksel cihaz ve önceden açık ağır PNG cold-LCP ayrı.
+ 
 ## Çalışma — 16 Ekim 2026 / 0.1.113 → 0.1.114 tekrar yenileme ve tutma düzeltmesi
 
 Kullanıcı113 sonrası yenilemede eski düzeni ve panel tutarken yukarı/aşağı tepkiyi tekrar bildirdi.113 kabulü fiziksel cihaz için yeterli değildi. Head guard provisional mobil viewport genişliğine bağlı olmadan işaretlenir; CSS media query karar verir.4s zaman aşımı kaldırıldı; parsing tamamlanınca veya adapter script error'ında native fail-open. Uzun ağ beklemesinde eski summary/purchase yeniden açılmaz. Header64px (discovery52px), user-select/touch-callout:none;8px jitter eşiği, pointerdown'da mevcut animasyon yüksekliğini dondurma ve capture, gecikmiş release-click engeli (yeni kasıtlı press/klavye serbest), height-only toolbar resize sırasında drag iptal edilmez. Yeni bağımlılık/form/motor yok. Eklenti1.1.1 değişmedi.

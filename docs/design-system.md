@@ -1,5 +1,9 @@
 # Codela Storefront UI Kit — source of truth
 
+## Product sheet dock geometry —0.1.115
+
+Use the existing dock inset/max-width/bottom-gap tokens for the same floating width in closed and open states. Retain the one shared components surface; the purchase inside remains transparent. Device safe-area is outside this floating sheet, counted once. The native site Footer remains at document end and never moves into expanded product content; reserve overlay space at its final links. Footer content after recommendations is real content, not empty tail padding.
+
 ## Product prepaint and touch grip —0.1.114
 
 Do not sample a provisional viewport width in the head bootstrap; CSS owns the mobile breakpoint. Keep the prepaint guard until enhancement, parser completion or script failure, never a wall-clock expiry during loading. Freeze the visual sheet height when re-grabbed, tolerate8px jitter, disable text selection on its64px header (52px discovery), preserve deliberate button/keyboard presses and suppress only stale release clicks. Height-only browser chrome resizing cannot cancel a held gesture. Use true touch events and a pre-meta mobile context in regressions.

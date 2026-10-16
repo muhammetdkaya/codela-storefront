@@ -175,7 +175,6 @@
         var trust = content.querySelector(':scope > .cdl-tb');
         if (trust) trust.before(contact);
       }
-      placeFooter();
       if (track && discovery.children.length) track.appendChild(discovery);
       product.appendChild(sheet);
       document.body.classList.add('sf-product-sheet-ready');
@@ -217,12 +216,6 @@
       mounted = false;
     }
     function adapt() { if (mobile.matches) mount(); else unmount(); }
-    function placeFooter() {
-      var footer = document.querySelector('.sf-footer');
-      if (mounted && footer && !content.contains(footer)) move(footer, content);
-    }
-    // The adapter can run before the parser reaches the document footer.
-    document.addEventListener('DOMContentLoaded', placeFooter, {once:true});
     toggle.addEventListener('click', function (event) {
       // Touch browsers can synthesize click well after pointerup. Keep that
       // release from toggling the snap state again; keyboard clicks stay usable.

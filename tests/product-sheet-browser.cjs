@@ -23,6 +23,19 @@ for(const width of [320,390,700]){
  assert.equal(await toggle.getAttribute('aria-expanded'),'false');assert(await buy.isVisible(),'Collapsed native purchase remains visible');
  assert.equal(await buy.evaluate(e=>e.form.id),'native-cart','Native form ownership retained');
  assert.equal(await page.locator('form.cart .single_add_to_cart_button').count(),1,'No copied submit');
+ const material=await page.evaluate(()=>{
+  const probe=document.createElement('div');probe.className='sf-dock-surface';probe.style.display='none';document.querySelector('.sf-shell').append(probe);
+  const props=['backgroundColor','backdropFilter','borderTopColor','boxShadow'];
+  const expected=getComputedStyle(probe),actual=getComputedStyle(document.querySelector('.sf-product-sheet'));
+  const same=props.every(key=>expected[key]===actual[key]);probe.remove();return same;
+ });
+ assert(material,'Panel and site dock use identical shared material');
+ const panelBox=await page.locator('.sf-product-sheet').boundingBox();
+ assert(Math.abs(panelBox.width-Math.min(width-32,430))<1,'Panel uses the same inset and max width as the site dock');
+ assert(Math.abs(panelBox.x-(width-panelBox.width)/2)<1,'Panel is centered like the dock');
+ assert(Math.abs(panelBox.y+panelBox.height-840)<1,'Panel uses the same bottom gap as the dock');
+ assert.equal(await page.locator('.sf-product-sheet .sf-footer').count(),0,'Footer is outside both panel states');
+ assert.equal(await page.locator('body > .sf-footer').count(),1,'Native footer remains at the end of the document');
  assert.equal(await page.locator('.sf-product-sheet .sf-product-purchase').evaluate(e=>getComputedStyle(e).backgroundColor),'rgba(0, 0, 0, 0)','One sheet material');
  const bounds=await buy.boundingBox();assert(bounds.y+bounds.height<=844&&bounds.y>700,'Purchase stays at bottom '+width);
  assert(!(await page.locator('.variations,.sf-product-information').last().isVisible()),'Details hidden while collapsed');
@@ -156,8 +169,9 @@ assert.equal(await page.evaluate(()=>document.readyState),'loading','Panel mount
 assert(await page.locator('.single_add_to_cart_button').isVisible());
 assert.equal(await page.locator('html').evaluate(e=>e.classList.contains('sf-product-sheet-pending')),false);
 releaseFooter();await streaming;
-await page.locator('.sf-product-sheet-body .sf-footer').waitFor({state:'attached'});
-assert.equal(await page.locator('.sf-footer').count(),1,'Late footer is moved once after parsing');
+await page.locator('body > .sf-footer').waitFor({state:'attached'});
+assert.equal(await page.locator('.sf-product-sheet .sf-footer').count(),0,'Late footer never enters the product panel');
+assert.equal(await page.locator('.sf-footer').count(),1,'Late native footer is preserved once');
 await page.unroute('https://sheet.test/**');
 // Once parsing completes without enhancement, native Woo fails open.
 await page.setContent(fixture({pending:true}));
