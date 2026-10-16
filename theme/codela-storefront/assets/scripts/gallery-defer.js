@@ -42,9 +42,9 @@
       const item=items[index];
       const bounds=track.getBoundingClientRect();
       const rect=item.getBoundingClientRect();
-      track.scrollTo({left:vertical?0:track.scrollLeft+rect.left-bounds.left,
-        top:vertical?track.scrollTop+rect.top-bounds.top:0,
-        behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'});
+      const behavior=matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth';
+      if(vertical)window.scrollTo({top:window.scrollY+rect.top,behavior});
+      else track.scrollTo({left:track.scrollLeft+rect.left-bounds.left,top:0,behavior});
     }
     items.forEach((item,index)=>{
       const button=document.createElement('button');
@@ -64,15 +64,19 @@
       [...nav.children].forEach((button,i)=>button.setAttribute('aria-current',String(i===index)));
       activate(imageAt(index));
     }
-    if('IntersectionObserver' in window){
-      const visible=new IntersectionObserver(entries=>{
+    let visible;
+    function observe(){
+      if(!('IntersectionObserver' in window)){items.forEach((_,i)=>activate(imageAt(i)));return;}
+      visible?.disconnect();
+      visible=new IntersectionObserver(entries=>{
         entries.forEach(entry=>{
           if(entry.isIntersecting){activate(entry.target.querySelector('a > img:not(.zoomImg)'));
             if(entry.intersectionRatio>=.55)update(items.indexOf(entry.target));}
         });
-      },{root:track,threshold:[0.05,.55]});
+      },{root:matchMedia('(max-width:700px)').matches?null:track,threshold:[0.05,.55]});
       items.forEach(item=>visible.observe(item));
-    }else items.forEach((_,i)=>activate(imageAt(i)));
+    }
+    observe();
     track.addEventListener('keydown',event=>{
       if(event.target!==track||!['ArrowDown','ArrowUp','ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
       const current=[...nav.children].findIndex(button=>button.getAttribute('aria-current')==='true');
@@ -82,7 +86,7 @@
         if(gallery.classList.contains('is-discovering')&&event.key!=='Home')return;
         if(event.key==='End'||(current===items.length-1&&['ArrowDown','ArrowRight'].includes(event.key))){
           event.preventDefault();
-          track.scrollTo({top:track.scrollTop+discovery.getBoundingClientRect().top-track.getBoundingClientRect().top,behavior:'instant'});
+          window.scrollTo({top:window.scrollY+discovery.getBoundingClientRect().top,behavior:'instant'});
           return;
         }
       }
@@ -92,7 +96,7 @@
     });
     // Woo replaces the featured image for a variation; reveal that same node.
     if(window.jQuery)window.jQuery(document).on('found_variation reset_data','.variations_form',()=>select(0));
-    matchMedia('(max-width:700px)').addEventListener('change',()=>{track.scrollTo(0,0);update(0);});
+    matchMedia('(max-width:700px)').addEventListener('change',()=>{track.scrollTo(0,0);window.scrollTo({top:0,behavior:'instant'});observe();update(0);});
     update(0);
     return;
   }

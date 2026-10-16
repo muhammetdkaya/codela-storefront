@@ -1,5 +1,12 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Güncel çalışma — 16 Ekim2026 / 0.1.102 kesintisiz fotoğraf ve native belge scroll
+
+Tema0.1.101→0.1.102 hazırlanıyor; eklenti1.1.1 değişmedi. Kullanıcı fotoğraf/panel ve ardışık fotoğraflardaki beyaz boşluğu, tepedeki aşağı çekişin Safari yenilemesine ulaşmamasını bildirdi. Mobil fotoğraflardaki panel rezerv padding'i kaldırıldı; gerçek img altına kadar uzanır, fotoğraflar bitişik100svh bloklardır. Kapalı üründe scroll sahibi normal belgedir: wrapper overflow visible; html/body overscroll-y auto. Özel refresh/reload/touchmove engelleme eklenmedi. Açık panelde html/body lock, inert galeri ve bağımsız panel scroll korunur. Görünür slayt IO root'u mobilde viewport, desktop'ta özgün track; medya sorgusunda yeniden bağlanır. Sabit nav/count/visitor ve keyboard/variation native belge koordinatını kullanır. İlgili ürünler aynı akışta kalır. Panel ve soft Button aynı components.css materyalini kullanmaya devam eder; renk değişmedi.
+
+Yerel JS/24 paket başarılı. Yeni browser ve gerçek Woo kabulü root scroll sahipliği,0px fotoğraf aralığı/padding, görselin panel altına uzanması, kapalıda overscroll auto/açıkta root lock ve desktop restorasyonunu doğrulayacak. CI/FTP/native Woo/canlı sonucu bekleniyor. Native Safari toolbar pull-to-refresh gerçek cihazda otomatik test edilemez; sadece browser scroll yolu/ayarı kanıtlanabilir. Önceki ağır PNG cold-LCP bulgusu ayrı açık, medya/ayarlar değişmedi.
+
+
 ## Son doğrulanmış durum — 16 Ekim 2026 / 0.1.101 ürün keşfi canlı ve kabul tamam
 
 Tema **0.1.99 → 0.1.101 canlı**; Codela eklentisi **1.1.1 runtime değişmedi**. Mobil related/upsell bölümleri özgün Woo kart/link/AJAX düğümleriyle son fotoğrafın ardından aynı dikey kaydırma alanındadır. Detay paneli yalnız mevcut ürün bilgilerini taşır. Kapalı panelde başlık/fiyat ve sağda44px açma kontrolü, altta aynı native quantity/submit vardır.320px'te yan yana kalırlar. İlgili ürünlerde panel daha da kısalır; fotoğraflara dönünce normal kapalı yüksekliğine döner. Ortak soft Button materyali kullanılır; satın alma footer'ı şeffaftır. Form/kart/sepet/galeri motoru kopyalanmadı; masaüstünde özgün DOM konumları geri gelir. Mevcut ürün sale etiketi keşifte gizlenir.

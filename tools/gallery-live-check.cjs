@@ -24,12 +24,12 @@ const {liveProduct}=require('./live-product.cjs');
  await slide.locator('a').click();await page.locator('.pswp--open').waitFor();
  await page.keyboard.press('Escape');await page.locator('.pswp--open').waitFor({state:'hidden'});
  if(width===390){
-  const track=page.locator('.woocommerce-product-gallery__wrapper');const before=await track.evaluate(e=>e.scrollTop);
+  const track=page.locator('.woocommerce-product-gallery__wrapper');const before=await page.evaluate(()=>scrollY);
   await page.locator('.sf-product-sheet-toggle').click();
   await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-expanded'));
   assert(await page.locator('.sf-product-information').isVisible());
   await page.locator('.sf-product-sheet-body').evaluate(e=>e.scrollTop=200);
-  assert.equal(await track.evaluate(e=>e.scrollTop),before,'Panel scroll leaves photos fixed');
+  assert.equal(await page.evaluate(()=>scrollY),before,'Panel scroll leaves photos fixed');
   assert.equal(await page.locator('form.cart .single_add_to_cart_button').count(),1);
   await page.locator('.sf-product-sheet-toggle').focus();await page.keyboard.press('Escape');
   await page.waitForFunction(()=>{const e=document.querySelector('.sf-product-sheet');return Math.abs(e.getBoundingClientRect().height-parseFloat(getComputedStyle(e).getPropertyValue('--sf-product-closed-height')))<2});
@@ -37,12 +37,12 @@ const {liveProduct}=require('./live-product.cjs');
   assert.equal(await page.locator('.sf-product-sheet .related').count(),0);
   assert(await page.locator('.sf-product-discovery .related li.product').count()>0,'Live native recommendations follow photographs');
   const material=await page.evaluate(()=>{const color=s=>getComputedStyle(document.querySelector(s)).backgroundColor;return{sheet:color('.sf-product-sheet'),button:color('.sf-menu-trigger')}});assert.equal(material.sheet,material.button);
-  await track.evaluate(e=>e.scrollTo({top:e.querySelector('.sf-product-discovery').offsetTop,behavior:'instant'}));
+  await page.evaluate(()=>{const e=document.querySelector('.sf-product-discovery');window.scrollTo({top:scrollY+e.getBoundingClientRect().top,behavior:'instant'})});
   await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-discovering'));
   await page.waitForFunction(previous=>{const e=document.querySelector('.sf-product-sheet'),target=parseFloat(getComputedStyle(e).getPropertyValue('--sf-product-closed-height'));return target<previous-1&&Math.abs(e.getBoundingClientRect().height-target)<2},closedHeight);
   assert(await page.locator('.single_add_to_cart_button').isVisible());
   fs.mkdirSync('qa/performance',{recursive:true});await page.screenshot({path:'qa/performance/gallery-live-discovery.png'});
-  await track.evaluate(e=>e.scrollTo({top:0,behavior:'instant'}));await page.waitForFunction(()=>!document.querySelector('.sf-product-sheet').classList.contains('is-discovering'));
+  await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));await page.waitForFunction(()=>!document.querySelector('.sf-product-sheet').classList.contains('is-discovering'));
 
  }
  const d=await page.evaluate(()=>({version:document.querySelector('link[href*="styles/tokens.css"]').href,images:document.querySelectorAll('.woocommerce-product-gallery__image').length,count:document.querySelector('.sf-product-gallery-count').textContent,sheet:document.querySelector('.sf-product-sheet-toggle')?.getAttribute('aria-expanded'),overflow:document.documentElement.scrollWidth>innerWidth+1}));

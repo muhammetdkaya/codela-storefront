@@ -52,9 +52,12 @@
       if (!mounted) return;
       expanded = open;
       if (open && !sheet.classList.contains('is-discovering')) {
-        if (track) track.scrollTo({left:track.scrollLeft, top:Math.round(track.scrollTop / track.clientHeight) * track.clientHeight, behavior:'instant'});
+        var photos = Array.from(media.querySelectorAll('.woocommerce-product-gallery__image,.woocommerce-product-gallery__image--placeholder'));
+        var nearest = photos.reduce(function (best, node) { return !best || Math.abs(node.getBoundingClientRect().top) < Math.abs(best.getBoundingClientRect().top) ? node : best; }, null);
+        if (nearest) window.scrollTo({top:window.scrollY + nearest.getBoundingClientRect().top, behavior:'instant'});
       }
       sheet.classList.toggle('is-expanded', open);
+      document.body.classList.toggle('sf-product-sheet-open', open);
       toggle.setAttribute('aria-expanded', String(open));
       media.inert = open;
       sheet.classList.toggle('is-discovering', !open && isDiscovering());
@@ -67,7 +70,7 @@
     }
     function isDiscovering() {
       return mounted && discovery.children.length > 0 && track &&
-        discovery.getBoundingClientRect().top < track.getBoundingClientRect().top + track.clientHeight * .6;
+        discovery.getBoundingClientRect().top < window.innerHeight * .6;
     }
     function updateDiscovery() {
       if (!mounted) return;
@@ -80,7 +83,7 @@
       // Measure this state boundary explicitly, including short product names.
       if (changed) measure();
     }
-    if (track) track.addEventListener('scroll', updateDiscovery, {passive:true});
+    window.addEventListener('scroll', updateDiscovery, {passive:true});
     function mount() {
       if (mounted) return;
       mounted = true;
@@ -117,7 +120,7 @@
       sheet.classList.remove('is-discovering');
       sheet.remove();
       sheet.classList.remove('is-expanded');
-      document.body.classList.remove('sf-product-sheet-ready');
+      document.body.classList.remove('sf-product-sheet-ready', 'sf-product-sheet-open');
       media.style.removeProperty('--sf-product-collapsed-height');
       document.body.style.removeProperty('--sf-product-collapsed-height');
       mounted = false;
