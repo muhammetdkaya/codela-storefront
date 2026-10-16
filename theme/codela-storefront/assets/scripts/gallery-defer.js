@@ -75,8 +75,18 @@
     }else items.forEach((_,i)=>activate(imageAt(i)));
     track.addEventListener('keydown',event=>{
       if(event.target!==track||!['ArrowDown','ArrowUp','ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
-      event.preventDefault();
       const current=[...nav.children].findIndex(button=>button.getAttribute('aria-current')==='true');
+      const discovery=track.querySelector('.sf-product-discovery');
+      if(discovery&&matchMedia('(max-width:700px)').matches){
+        // Native keys scroll long recommendation lists. Home returns to photos.
+        if(gallery.classList.contains('is-discovering')&&event.key!=='Home')return;
+        if(event.key==='End'||(current===items.length-1&&['ArrowDown','ArrowRight'].includes(event.key))){
+          event.preventDefault();
+          track.scrollTo({top:track.scrollTop+discovery.getBoundingClientRect().top-track.getBoundingClientRect().top,behavior:'instant'});
+          return;
+        }
+      }
+      event.preventDefault();
       const delta=['ArrowDown','ArrowRight'].includes(event.key)?1:-1;
       select(event.key==='Home'?0:event.key==='End'?items.length-1:Math.max(0,Math.min(items.length-1,current+delta)));
     });
