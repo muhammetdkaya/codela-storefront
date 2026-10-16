@@ -1,0 +1,22 @@
+# Storefront 0.1.99 — ürün paneli kabulü
+
+## Son doğrulanmış durum — 16 Ekim 2026 / 0.1.99 ürün paneli canlı
+
+Tema **0.1.98 → 0.1.99 canlı**; Codela eklentisi **1.1.1 runtime değişmedi**. Mobil fotoğraflar dikey native scroll-snap ile gezilir. Alt panel kapalıyken özgün başlık/fiyat/urgency ve aynı native satın alma kontrolleri görünür. Ortak Button veya başlığı sürükleyerek açılır; seçenekler, etkin modüller, Woo bilgi/yorum callback'leri, trust, öneriler ve footer bağlantıları bağımsız kayar. Açık panelde galeri inert/sabit; satın alma hep altta. Eksik varyasyon, grouped seçim ve native invalid input orijinal alanı açar. Escape/hash, global dialog/PhotoSwipe gizleme, reduced motion ve masaüstünde özgün DOM'a dönüş doğrulandı. Form/quantity/submit/variation_id kopyası veya ikinci cart/store/router yok. JS yoksa orijinal belge/yatay galeri kullanılabilir.
+
+**Yayın:** [PR32](https://github.com/muhammetdkaya/codela-storefront/pull/32), runtime kaynak **6e0f24bc142225b5520ebc65ab65343a648fe9df**; [CI+gerçek FTP38856773404](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38856773404) başarılı. CI ZIP ve canlı manifest SHA256 **729406f2c749ccb0df0fc2c23527727f9a09cfe1b1a5930db8e384dd87ec322f** aynı. Product helper hash1942e9d5f7d3030f2e1d ve product/gallery99 asset'leri gerçek Türkçe Luna ürününde doğrulandı. Sonraki QA-only commit'ler runtime paketini değiştirmedi.
+
+**Fonksiyonel kabul:** PHP/JS/24 paket ve önceki bütün browser regresyonları + yeni gerçek-template panel fixture'ı320/390/700 geçti. [Gerçek WP/Woo38857752496](https://github.com/muhammetdkaya/codela/actions/runs/38857752496) başarılı: WP6.5.5/Woo9.0.2 ve WP7.1.3/Woo11.2.1 × Chromium/WebKit; her ortam16 mevcut+5 growth+6 panel, **4/4 ortam ve108 başarılı kayıt**. Test kaynağı68870d15344e9b614e178f600d8611db10af0fe7; aynı99 ZIP/hash/source. İlk test variation_id atandığı anda Woo disabled sınıfı kalkmadan tıkladığı için POST beklerken durdu. Gerçek hazır durumunu bekleyen test düzeltildi; assertion kaldırılmadı, runtime/paket değişmedi.
+
+**Canlı:** WebKit38857865372, galeri/lightbox/panel38857865412, document continuity38857663132 ve shell38857375207 başarılı. Gerçek390px Luna WebKit ekranı incelendi. Eski demo ürünleri silindiğinden read-only QA public Store API'den güncel ürünü bulur; tek sonuçlu aramanın native ürüne yönlendirmesi katalog yüzeyi testinde önlendi. Canlıdaki10 dekorasyon ürününde **birer fotoğraf** var: canlı multi-image kabulü yapılamaz; çoklu gezinti izole gerçek3 görselli Woo ürününde4 ortamda geçti. Modüller, para birimi, ürünler ve satıcı ayarları değiştirilmedi.
+
+**Açık performans bulgusu:** [38857662928](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38857662928) tamamlandı; lab bütçesi **BAŞARISIZ**. Yeni mevcut PNG medya ile1.6Mbps/150ms/4x CPU koşulunda cold mobil median LCP home14708ms, ürün14772ms; CLS0 ve0.00806. Warm ürün örneği564ms. Bu saha/fiziksel cihaz ölçümü değildir; performansın geçtiği iddia edilmez. Ağır PNG türevlerini küçültme ayrı açık iş; orijinaller veya medya metadata'sı kendiliğinden değiştirilmedi.
+
+**Sıradaki:** kullanıcı görsel kabulü ve fiziksel Safari/toolbar/safe-area kontrolü. Performans iyileştirmesi istenirse PNG türevleri için yedekli optimizasyon değerlendirilmeli; gerçek gateway/üçüncü taraf medya ve yetkili eski JPEG backfill ayrıca açık. Paneli yeniden uygulama/yayınlama veya canlı modülleri kendiliğinden açma. [Kabul kaydı](https://github.com/muhammetdkaya/codela-storefront/blob/main/docs/acceptance/2026-10-16-product-sheet.md).
+
+## Test sırasında düzeltilenler
+
+Eski galeri wrapper özgüllüğü dikey overflow kuralını, root sheet özgüllüğü expanded height kuralını eziyordu; cascade düzeltildi. Açılışta devam eden native smooth-scroll/momentum en yakın fotoğrafta durdurulur. Drag testi kapanan panelin hedef konumu oturmadan koordinat aldığı için stabil hedef bekler. Shared disabled primitive yalnız wc-variation-selection-needed ve gerçekten enabled button için seçenek açmaya izin verir; loading/out-of-stock/native disabled bloke kalır. Gerçek varyasyon testinde Woo hazır sınıfı beklenir. Forced click veya assertion silme yok.
+
+Eski demo404 yüzünden ilk public kontroller başarısızdı; siteye demo ürün eklenmedi. QA-only product discovery ve native scroll seçicileriyle dört final fonksiyonel canlı kontrol geçti. Bütün kabuller aynı runtime ZIP'e aittir; başarısız performans sinyali ayrı korunmuştur.
+
