@@ -1,5 +1,9 @@
 # Codela Storefront — güncel teknik durum
 
+## Çalışma — 16 Ekim 2026 / 0.1.108 → 0.1.109 öneri listesi son boşluk
+
+Kullanıcı ekran görüntüsündeki son ilgili ürün kartı ile sabit satın alma paneli arasındaki boşluğun kaldırılmasını istedi. Mobil discovery `min-height:100svh` tabanı kaldırıldı, son `.related/.upsells` marjı sıfırlandı; sabit alt alan için ölçülmüş normal yükseklikten 24px az pay bırakıldı (kompakt panelin örtmesini önleme). Fotoğraf boyutları, 0.1.108 snap/overscroll sınırları ve native Woo form, ürün/kartlar değişmedi. Fixture bölüm yüksekliği ve alt payı kontrol ediyor; canlı galeri QA son kart–panel mesafesini doğrudan ölçüyor. CI/FTP/canlı sonuçları henüz bekleniyor; eski 0.1.108 başarılı koşular 0.1.109 kabulü değildir. Eklenti 1.1.1 değişmedi; fiziksel Safari, gerçek ödeme sağlayıcısı ve PNG cold-LCP ayrı açık.
+
 ## Çalışma —16 Ekim2026 /0.1.107→0.1.108 küçük resim ve alt sınır
 
 Tema0.1.108 hazırlanıyor; Codela1.1.1 runtime değişmedi. Seçili native thumbnail'ın siyah outline'ı kaldırılır; shared klavye focus-visible korunur. İlgili ürünler görünürken root/body overscroll-y:none, galeride auto: alt uç esneme/boşluk ve bırakma geri sekmesi engellenir, tepedeki native yenileme yolu korunur. 0.1.108 ilk CI uzun ilgili ürün listesinde root mandatory snap yüzünden en alta ulaşamadı; öneriler `.is-discovering` iken root snap devre dışı, galeriye dönüldüğünde mandatory yeniden etkin. Fotoğraf koordinatları, fotoğraf snap hedefleri ve normal panel rezervi değişmedi. Yeni touch/wheel engelleyici veya scroll motoru yok.
