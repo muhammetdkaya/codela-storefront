@@ -452,7 +452,13 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   body.sf-product-sheet-ready{overflow:visible;overscroll-behavior-y:auto}
   /* Suppress bottom rubber-band only in recommendations. Keep native
      pull-to-refresh on the photographs, without changing snap geometry. */
-  html:has(body.sf-product-sheet-ready .woocommerce-product-gallery.is-discovering),
+  /* The recommendation list is taller than one viewport. Disable mandatory
+     photo snapping only after entering it; otherwise the browser can snap a
+     bottomward scroll back to its sole discovery snap point. Photo snapping
+     and the native top-refresh path return on leaving discovery. */
+  html:has(body.sf-product-sheet-ready .woocommerce-product-gallery.is-discovering){
+    overscroll-behavior-y:none;scroll-snap-type:none;
+  }
   body.sf-product-sheet-ready:has(.woocommerce-product-gallery.is-discovering){overscroll-behavior-y:none}
   html:has(body.sf-product-sheet-open),body.sf-product-sheet-open{overflow:hidden;overscroll-behavior-y:contain;scroll-snap-type:none}
   body.sf-product-sheet-ready .sf-content{padding-bottom:0!important}
