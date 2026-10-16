@@ -1,7 +1,15 @@
 # Codela Storefront UI Kit — source of truth
 
-**Status:** Current shared architecture; theme source 0.1.97 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
+**Status:** Current shared architecture; theme source 0.1.98 (product information; deployment tracked in storefront-theme.md). Dated release notes below are historical. Use this before making any new
 Header, dock, cart, search, account-login or storefront screen.
+
+## Product growth module ownership — 0.1.98
+
+On the single-product page the theme owns presentation of the six enabled growth modules. `inc/product.php` moves only registered known public render callbacks, preserving instance/settings/conditions and accepted arguments. No disabled module is instantiated. Seven default module stylesheet handles are removed at wp_print_styles; plugin REST, live cart/counter/countdown scripts remain owners of data. Other themes and cart/checkout retain default CSS.
+
+Visitor uses the same shared floating surface (components.css) within native gallery, above the existing thumbnail rail. Stock/urgency sits beside price; delivery and the free-shipping host are compact unboxed summary content. The shipping track spans 100% of its content width with no icon-column inset. Trust promises are below all product information and before recommendations. WhatsApp uses the same soft IconButton material with the original escaped link/SVG; optional floating contact is retained above the purchase dock.
+
+Woo filtered tab callbacks render in native disclosure sections through the small tabs.php override. No tab controller or second review form. Product hash links open their containing details. Native quantity/add-to-cart/variation/gallery and shared Header/dock behavior stay intact. Closed modules must leave no placeholder rows; empty-cart shipping shows its true threshold message, never fabricated progress. See storefront-theme.md for actual CI/deployment acceptance.
 
 ## Common page canvas — 0.1.97
 
@@ -605,3 +613,4 @@ Floating controls retain one shared tint and transparent perimeter. Use one diff
 ## Product enlargement ownership (0.1.77)
 
 The product image link opens native Woo PhotoSwipe directly. Disable inline zoom on the product document with the native zoom-enabled filter at priority 100: ClassicTemplate forces it on at priority 10, and its touch click handler intercepts the lightbox link. Other contexts keep their own setting. This supersedes the 0.1.65 note about retaining product inline zoom. Native slider, variation updates and fullscreen zoom remain owned by Woo; do not add a second gallery engine.
+

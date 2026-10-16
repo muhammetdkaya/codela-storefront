@@ -1,5 +1,19 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Güncel çalışma — 16 Ekim 2026 / 0.1.98 ürün modülleri
+
+Tema **0.1.97 → 0.1.98** hazırlanıyor. Codela eklentisi **1.1.1 runtime değişmedi**; WordPress.org yayını yok. Kullanıcı son sade ürün tasarımını ve ücretsiz kargo ilerleme çizgisinin içerik alanının tamamına yayılmasını uygulamaya yetkilendirdi.
+
+- Etkin modüllerin mevcut public render callback'leri aynı instance ile yeniden konumlanır: ziyaretçi native galeri içinde köşede (önizlemelerin üzerinde çakışmasız), urgency fiyat satırında, teslimat/kargo/WhatsApp native satın alma formundan sonra, güven vaatleri ürün bilgi bölümlerinin altında ve upsell/related'dan önce. Kapalı modül örneklenmez veya zorla açılmaz; boş host eklenmez.
+- Ürün sayfasında yedi bilinen Conversion Tools stil handle'ı dequeue edilir. **Tek modül görünüm sahibi product.css**; scriptler, REST, gerçek sayaç/stok/tarih/kargo hesabı ve satıcı mesajları eklentide kalır. Sepet/ödeme/diğer temalar değişmez. İsteğe bağlı global WhatsApp aynı shared IconButton ile çalışır.
+- Tam genişlik `.cdl-fsb-track`: ikon sütunu/girinti/max-width olmadan kendi summary içerik genişliğinde %100. Boş sepetin gerçek eşik mesajı korunur; olmayan ilerleme veya sahte değer üretilmez.
+- Woo tab callback'leri native details/summary içinde; açıklama açık, ek bilgi/yorumlar kapalı. Native yorum formu ve extension callback argümanları korunur. Hash/review bağlantısı ilgili bölümü açar. İkinci başlıklar sadece bu bileşende kaldırılır. Yeni sepet/galeri/SPA controller yok.
+- Header/dock/galeri seçim-swipe/satın alma kontrolleri mevcut ortak altyapıda kalır. Galeri önizleme kapsülü bu işte yeniden tasarlanmadı; ziyaretçi onun üstünde konumlanır. Tema kodu modül özel ayarlarını okumaz.
+
+**Doğrulanan:** yerelde JS sözdizimi, 24 paket testi, cart-race/cart-sync/format geçti. PHP ve tarayıcı executable'ları yerelde yok; PHP/Chromium ve yeni callback/yerleşim kabulü CI'da çalıştırılacak. Native Woo matrisi ve canlı kabul henüz tamamlanmadı; kod/yayın başarılı sayılmaz.
+
+**Sıradaki:** PR CI, gerçek FTP; canlı gerçek trust/WhatsApp/accordion düzenini ve güncel asset sürümünü kontrol et. Yeni sürümün gerçek CI ZIP hash/source'una pin'li WP/Woo Chromium+WebKit kabulü gerekir. Tüm modüller açık/kapalı, uzun metin, 320px, gerçek script güncellemeleri ve kargo %100 hizası testlerle doğrulanmalı. Fiziksel Safari, gerçek gateway ve eski JPEG backfill ayrı kalır.
+
 ## Son doğrulanmış durum — 0.1.97 ortak sayfa zemini canlı
 
 15 Ekim2026: Tema **0.1.96→0.1.97 canlı**, Codela eklentisi **1.1.1 değişmedi**. Kullanıcının kategori/ürün screenshot farkının kaynağı ürün main, checkout body, guest hesap, footer ve dialog/search/account canvas'larının kart beyazını kullanmasıydı. Tek `--sf-ui-page:var(--wp--preset--color--base,#f8f7f4)` token'ı WordPress base paletini izler. Body, sayfa/panel/footer ve route-loading zeminleri onu kullanır; `--sf-ui-surface` beyaz kart/input/control yüzeyi olarak kalır. Header/dock materyali ve plugin-owned hesap içeriği değişmedi. JS/PHP/Woo davranışında değişiklik yok.
@@ -149,3 +163,4 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - `muhammetdkaya/codela-site` tanıtım temasını değiştirme.
 - Küçük tema değişiklikleri bu deponun bağımsız dağıtımıyla canlıya gidebilir. Gerekli ayarları ilgili eklenti alt menüsüne aynı geliştirme kapsamında GitHub'da ekle; eklenti ayar değişikliklerini ara ara toplu yayınla.
 - Şifreleri kodda, belgede veya günlükte tutma.
+
