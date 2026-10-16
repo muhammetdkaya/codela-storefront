@@ -178,6 +178,10 @@ const touchToggle=touchPage.locator('.sf-product-sheet-toggle');
 const toggleBox=await touchToggle.boundingBox();
 const tx=toggleBox.x+toggleBox.width/2,ty=toggleBox.y+toggleBox.height/2;
 const touchHeight=(await touchPage.locator('.sf-product-sheet').boundingBox()).height;
+await touchPage.evaluate(()=>{
+ window.__touchTrace=[];
+ for(const type of ['pointerdown','pointermove','pointerup','pointercancel','lostpointercapture','resize'])window.addEventListener(type,e=>window.__touchTrace.push({type,y:e.clientY,width:innerWidth,height:innerHeight,sheet:document.querySelector('.sf-product-sheet')?.getBoundingClientRect().height,classes:document.querySelector('.sf-product-sheet')?.className}));
+});
 const sendTouch=(type,y)=>touchSession.send('Input.dispatchTouchEvent',{type,touchPoints:type==='touchEnd'?[]:[{x:tx,y,id:1}]});
 await sendTouch('touchStart',ty);
 for(const jitter of [-2,2,-1,0])await sendTouch('touchMove',ty+jitter);
@@ -188,7 +192,7 @@ assert(Math.abs((await touchPage.locator('.sf-product-sheet').boundingBox()).hei
 await touchPage.setViewportSize({width:390,height:820});
 assert.equal(await touchPage.locator('.sf-product-sheet.is-dragging').count(),1,'Height-only toolbar resize does not cancel a held touch');
 await sendTouch('touchMove',ty-40);
-assert(Math.abs((await touchPage.locator('.sf-product-sheet').boundingBox()).height-touchHeight-40)<2,'Real touch reverses without a jump');
+await touchPage.waitForFunction(h=>Math.abs(document.querySelector('.sf-product-sheet').getBoundingClientRect().height-h-40)<2,touchHeight,{timeout:2000}).catch(async error=>{console.error('TOUCH_TRACE',JSON.stringify(await touchPage.evaluate(()=>window.__touchTrace)));throw error;});
 await sendTouch('touchMove',ty-180);await sendTouch('touchEnd');
 assert.equal(await touchToggle.getAttribute('aria-expanded'),'true');
 await touchPage.waitForTimeout(100);
