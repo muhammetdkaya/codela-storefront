@@ -33,7 +33,7 @@ for(const width of [320,390,700]){
  assert(closedHeight<180,'Compact collapsed panel '+width+' '+closedHeight);
  assert.equal(await page.locator('.sf-product-sheet .related').count(),0,'Recommendations are outside product details');
  assert.equal(await page.locator('.sf-product-discovery > .related a').getAttribute('href'),'/related','Native related anchor preserved');
- await page.locator('.woocommerce-product-gallery__wrapper').evaluate(e=>{const d=e.querySelector('.sf-product-discovery');e.scrollTo({top:d.offsetTop,behavior:'instant'})});
+ await page.locator('.woocommerce-product-gallery__wrapper').focus();await page.keyboard.press('End');
  await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-discovering'));
  await page.waitForFunction(()=>{const e=document.querySelector('.sf-product-sheet');return Math.abs(e.getBoundingClientRect().height-parseFloat(getComputedStyle(e).getPropertyValue('--sf-product-closed-height')))<2});
  assert(await page.locator('.sf-product-discovery .related').isVisible(),'Related products reachable without opening details');
