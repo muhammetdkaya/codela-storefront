@@ -35,8 +35,10 @@ const {liveProduct}=require('./live-product.cjs');
  fs.mkdirSync('qa/performance',{recursive:true});await page.screenshot({path:'qa/performance/gallery-live-selected-'+width+'.png'});
  assert.equal(await page.locator('.sf-product-gallery-thumb:visible').count(),Math.min(3,product.images),'At most three real preview controls');
  const originalURL=page.url(),photoPosition=await slide.evaluate(e=>scrollY+e.getBoundingClientRect().top);
- await slide.locator('a').click();
+ if(width===390)await slide.locator('a').tap();else await slide.locator('a').click();
  await page.waitForFunction(index=>document.querySelectorAll('.woocommerce-product-gallery__image')[index].querySelector('a').getAttribute('aria-pressed')==='true',selected);
+ await page.waitForFunction(index=>{const e=document.querySelectorAll('.woocommerce-product-gallery__image')[index].querySelector('.zoomImg');return e&&Number(getComputedStyle(e).opacity)>.99},selected);
+ await page.screenshot({path:'qa/performance/gallery-live-inline-zoom-'+width+'.png'});
  assert.equal(page.url(),originalURL,'Zoom stays on the product document');
  assert.equal(await page.locator('.pswp--open').count(),0,'No fullscreen popup');
  assert.equal(await slide.locator('.zoomImg').count(),1,'Same native Woo zoom plugin renders inside the original photo');
@@ -48,6 +50,13 @@ const {liveProduct}=require('./live-product.cjs');
  await page.waitForFunction(index=>document.querySelectorAll('.woocommerce-product-gallery__image')[index].querySelector('a').getAttribute('aria-pressed')==='true',selected);
  await slide.locator('a').click();
  await page.waitForFunction(index=>document.querySelectorAll('.woocommerce-product-gallery__image')[index].querySelector('a').getAttribute('aria-pressed')==='false',selected);
+ if(width===390&&selected<product.images-1){
+  await slide.locator('a').press('Space');
+  await page.waitForFunction(index=>document.querySelectorAll('.woocommerce-product-gallery__image')[index].querySelector('a').getAttribute('aria-pressed')==='true',selected);
+  await page.mouse.move(width/2,350);await page.mouse.wheel(0,await slide.evaluate(e=>e.getBoundingClientRect().height*.8));
+  await page.waitForFunction(index=>document.querySelectorAll('.woocommerce-product-gallery__image')[index].querySelector('a').getAttribute('aria-pressed')==='false',selected);
+  await page.waitForFunction(index=>Math.abs(document.querySelectorAll('.woocommerce-product-gallery__image')[index+1].getBoundingClientRect().top)<1,selected);
+ }
  console.log('GALLERY_INLINE_ZOOM '+JSON.stringify({width,popup:false,previewCount:await page.locator('.sf-product-gallery-thumb:visible').count(),nativeZoom:true}));
  if(width===390){
   const track=page.locator('.woocommerce-product-gallery__wrapper');const before=await page.evaluate(()=>scrollY);
