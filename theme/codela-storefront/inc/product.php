@@ -93,6 +93,15 @@ function codela_sf_product_module_output( array $callback ): void {
 /** One CSS owner on product pages; scripts and every other page stay native. */
 function codela_sf_product_module_styles(): void {
     if ( ! function_exists( 'is_product' ) || ! is_product() ) { return; }
+    // Shared saved corner/font tokens may have been attached to a plugin
+    // handle before the theme enqueued. Retain those settings on our sole
+    // product handle rather than retaining the plugin's component paint.
+    $tokens = function_exists( 'codela_storefront_design_tokens' ) ? codela_storefront_design_tokens() : null;
+    if ( is_array( $tokens ) ) {
+        wp_add_inline_style( 'codela-storefront-product', 'body{--cdl-ct-radius:' . $tokens[0]
+            . ';--cdl-ct-box-radius:' . $tokens[1] . ';'
+            . ( null !== $tokens[2] ? '--cdl-ct-font:' . $tokens[2] . ';' : '' ) . '}' );
+    }
     foreach ( [ 'conversion-tools', 'live-visitor', 'urgency-badge', 'delivery-eta', 'free-shipping-bar', 'trust-badges', 'whatsapp-button' ] as $handle ) {
         wp_dequeue_style( 'codela-' . $handle );
     }
