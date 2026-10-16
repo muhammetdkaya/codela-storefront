@@ -228,6 +228,7 @@
     header.addEventListener('pointerdown', function (event) {
       if (!mounted || drag || event.button !== 0 || event.isPrimary === false || event.target.closest('a,input,select,textarea')) return;
       cancelAnimationFrame(settleFrame);
+      sheet.style.removeProperty('height');
       var style = getComputedStyle(sheet);
       var height = sheet.getBoundingClientRect().height;
       drag = {id:event.pointerId, x:event.clientX, y:event.clientY, lastY:event.clientY,
@@ -277,6 +278,7 @@
     header.addEventListener('lostpointercapture', function (event) { if (drag && event.pointerId === drag.id) finishDrag(true); });
     window.addEventListener('blur', function () { finishDrag(true); });
     sheet.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && drag) { event.preventDefault(); finishDrag(true); return; }
       if (event.key === 'Escape' && expanded) { event.preventDefault(); setOpen(false); }
     });
     // A disabled native variation button still receives capture-phase clicks.
