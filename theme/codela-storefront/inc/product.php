@@ -158,7 +158,20 @@ add_action( 'woocommerce_after_quantity_input_field', static function() { codela
  */
 function codela_sf_product_sheet_bootstrap(): void {
     if ( ! function_exists( 'is_product' ) || ! is_product() ) { return; }
-    wp_print_inline_script_tag( "if(window.matchMedia('(max-width:700px)').matches){document.documentElement.classList.add('sf-product-sheet-pending');setTimeout(function(){document.documentElement.classList.remove('sf-product-sheet-pending');},4000);}", [ 'id' => 'sf-product-sheet-bootstrap' ] );
+    // The viewport meta may not have been parsed yet. Let the CSS media query
+    // decide visibility; never sample the provisional mobile layout width here.
+    // A slow parser/network must not expire the guard while still loading.
+    wp_print_inline_script_tag( <<<'JS'
+(function(){
+  document.documentElement.classList.add('sf-product-sheet-pending');
+  function reveal(){document.documentElement.classList.remove('sf-product-sheet-pending');}
+  document.addEventListener('DOMContentLoaded',reveal,{once:true});
+  window.addEventListener('error',function(event){
+    if(event.target && event.target.id==='codela-storefront-product-information-js') reveal();
+  },true);
+})();
+JS
+    , [ 'id' => 'sf-product-sheet-bootstrap' ] );
 }
 add_action( 'wp_head', 'codela_sf_product_sheet_bootstrap', 1 );
 

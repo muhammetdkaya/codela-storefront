@@ -1,5 +1,11 @@
 # Codela Storefront — güncel teknik durum
 
+## Çalışma — 16 Ekim 2026 / 0.1.113 → 0.1.114 tekrar yenileme ve tutma düzeltmesi
+
+Kullanıcı113 sonrası yenilemede eski düzeni ve panel tutarken yukarı/aşağı tepkiyi tekrar bildirdi.113 kabulü fiziksel cihaz için yeterli değildi. Head guard provisional mobil viewport genişliğine bağlı olmadan işaretlenir; CSS media query karar verir.4s zaman aşımı kaldırıldı; parsing tamamlanınca veya adapter script error'ında native fail-open. Uzun ağ beklemesinde eski summary/purchase yeniden açılmaz. Header64px (discovery52px), user-select/touch-callout:none;8px jitter eşiği, pointerdown'da mevcut animasyon yüksekliğini dondurma ve capture, gecikmiş release-click engeli (yeni kasıtlı press/klavye serbest), height-only toolbar resize sırasında drag iptal edilmez. Yeni bağımlılık/form/motor yok. Eklenti1.1.1 değişmedi.
+
+Yerel JS syntax/24 paket kontrolü geçti. Yeni CI regresyonları4.3s bekletilen adapter, meta viewport öncesi gerçek mobile context, CDP gerçek touchStart/move/end jitter/ters yön/toolbar-resize ve gecikmiş click'i içerir. CI/gerçek FTP/canlı ve güncel paketli Woo kabulü henüz bekleniyor. Önceki113 kanıtı114 kabulü değildir. GitHub runner'a son retry'da ortam atandı; yeni çalışma sonucu ayrıca doğrulanacak.
+
 ## Son doğrulanmış devam noktası — 16 Ekim 2026 / Storefront 0.1.111 → 0.1.113
 
 **Uygulandı ve canlıya aktarıldı:** yenilemede geçici native büyük başlık/açıklama/satın alma görünümü için erken, tek WordPress-queued adapter mount'u ve mobil pending/fail-open; native galeri ilk fotoğrafının opacity beklemesi kaldırıldı. Galeri→ilgili ürünlerde 15px başlık override'ı kaldırıldı. Mevcut alt panel pointermove sırasında parmağı cached sınırlar içinde anlık izler; ters yön ve bırakınca mesafe/hız snap'i, cancel/lostcapture/blur/resize/Escape temizliği, ilk mount transition engeli var. Kapalı panelde kargo/contact gizliliği korunur. Yeni bağımlılık, form/sepet/galeri motoru yok. Eklenti **1.1.1 runtime/WordPress.org değişmedi**.

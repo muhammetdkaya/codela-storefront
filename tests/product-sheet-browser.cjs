@@ -149,6 +149,8 @@ await page.locator('#sf-product-sheet-template').waitFor({state:'attached'});
 assert(!(await page.locator('.summary .product_title').isVisible()),'Old large title never paints while adapter is pending');
 assert(!(await page.locator('.sf-product-purchase').isVisible()),'Old detached purchase never paints while adapter is pending');
 assert.equal(await page.locator('.woocommerce-product-gallery').evaluate(e=>getComputedStyle(e).opacity),'1','Native first photo does not wait for Woo footer opacity');
+await page.waitForTimeout(4300);
+assert(!(await page.locator('.summary .product_title').isVisible()),'A network slower than four seconds never expires the prepaint guard');
 releaseAdapter();await page.locator('.sf-product-sheet').waitFor({state:'visible'});
 assert.equal(await page.evaluate(()=>document.readyState),'loading','Panel mounts before delayed footer/DOMContentLoaded');
 assert(await page.locator('.single_add_to_cart_button').isVisible());
@@ -157,10 +159,44 @@ releaseFooter();await streaming;
 await page.locator('.sf-product-sheet-body .sf-footer').waitFor({state:'attached'});
 assert.equal(await page.locator('.sf-footer').count(),1,'Late footer is moved once after parsing');
 await page.unroute('https://sheet.test/**');
-// If enhancement never arrives, the original Woo document remains usable.
+// Once parsing completes without enhancement, native Woo fails open.
 await page.setContent(fixture({pending:true}));
 await page.waitForFunction(()=>!document.documentElement.classList.contains('sf-product-sheet-pending'));
 assert(await page.locator('.summary .product_title').isVisible(),'Failed enhancement fails open to native Woo');
+// A real mobile viewport starts at a provisional desktop layout width before
+// its meta viewport. The guard must already exist before that meta is parsed.
+const touchContext=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+const touchPage=await touchContext.newPage();
+await touchPage.setContent(fixture({pending:true}).replace('<meta name="viewport"','<script>window.__guardBeforeViewport=document.documentElement.classList.contains("sf-product-sheet-pending")</script><meta name="viewport"'));
+assert.equal(await touchPage.evaluate(()=>window.__guardBeforeViewport),true,'Guard is independent of the provisional mobile viewport width');
+await load(touchPage);
+const touchSession=await touchContext.newCDPSession(touchPage);
+const headerBox=await touchPage.locator('.sf-product-sheet-header').boundingBox();
+assert(headerBox.height>=60,'Whole header provides a comfortable touch grip');
+assert.equal(await touchPage.locator('.sf-product-sheet-header').evaluate(e=>getComputedStyle(e).userSelect),'none','Holding the title never starts native text selection');
+const touchToggle=touchPage.locator('.sf-product-sheet-toggle');
+const toggleBox=await touchToggle.boundingBox();
+const tx=toggleBox.x+toggleBox.width/2,ty=toggleBox.y+toggleBox.height/2;
+const touchHeight=(await touchPage.locator('.sf-product-sheet').boundingBox()).height;
+const sendTouch=(type,y)=>touchSession.send('Input.dispatchTouchEvent',{type,touchPoints:type==='touchEnd'?[]:[{x:tx,y,id:1}]});
+await sendTouch('touchStart',ty);
+for(const jitter of [-2,2,-1,0])await sendTouch('touchMove',ty+jitter);
+assert.equal(await touchPage.locator('.sf-product-sheet.is-dragging').count(),0,'Small finger jitter never starts a panel gesture');
+assert(Math.abs((await touchPage.locator('.sf-product-sheet').boundingBox()).height-touchHeight)<1,'Holding leaves the panel still');
+await sendTouch('touchMove',ty-80);
+assert(Math.abs((await touchPage.locator('.sf-product-sheet').boundingBox()).height-touchHeight-80)<2,'Real touch follows the finger before release');
+await touchPage.setViewportSize({width:390,height:820});
+assert.equal(await touchPage.locator('.sf-product-sheet.is-dragging').count(),1,'Height-only toolbar resize does not cancel a held touch');
+await sendTouch('touchMove',ty-40);
+assert(Math.abs((await touchPage.locator('.sf-product-sheet').boundingBox()).height-touchHeight-40)<2,'Real touch reverses without a jump');
+await sendTouch('touchMove',ty-180);await sendTouch('touchEnd');
+assert.equal(await touchToggle.getAttribute('aria-expanded'),'true');
+await touchPage.waitForTimeout(100);
+await touchToggle.evaluate(e=>e.dispatchEvent(new MouseEvent('click',{bubbles:true,detail:1})));
+assert.equal(await touchToggle.getAttribute('aria-expanded'),'true','Delayed synthetic release click cannot toggle the sheet back');
+// A fresh intentional press can still close it immediately.
+await touchToggle.click();assert.equal(await touchToggle.getAttribute('aria-expanded'),'false');
+await touchContext.close();
 const noScriptContext=await browser.newContext({viewport:{width:390,height:844},javaScriptEnabled:false});
 const noScript=await noScriptContext.newPage();await noScript.setContent(fixture({pending:true}));
 assert(await noScript.locator('.summary .product_title').isVisible(),'No-JS native title remains available');

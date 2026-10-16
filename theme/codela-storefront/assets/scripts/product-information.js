@@ -61,7 +61,7 @@
     var expanded = false;
     var drag = null;
     var settleFrame = 0;
-    var dragged = false;
+    var suppressClickUntil = 0;
     var photoWidth = 0;
     var discoveryFrame = 0;
     var delivery = null;
@@ -74,7 +74,7 @@
       target.appendChild(node);
     }
     function measure() {
-      if (!mounted || drag?.active) return;
+      if (!mounted || drag) return;
       var footerHeight = purchase ? purchase.getBoundingClientRect().height : 0;
       sheet.style.setProperty('--sf-product-footer-height', footerHeight + 'px');
       sheet.style.setProperty('--sf-product-closed-height', (sheet.querySelector('.sf-product-sheet-header').getBoundingClientRect().height + footerHeight + 8) + 'px');
@@ -118,7 +118,7 @@
         discovery.getBoundingClientRect().top < window.innerHeight * (media.classList.contains('is-discovering') ? .65 : .55);
     }
     function updateDiscovery() {
-      if (!mounted || drag?.active) return;
+      if (!mounted || drag) return;
       var active = isDiscovering();
       media.classList.toggle('is-discovering', active);
       var compact = active && !expanded;
@@ -224,31 +224,38 @@
     // The adapter can run before the parser reaches the document footer.
     document.addEventListener('DOMContentLoaded', placeFooter, {once:true});
     toggle.addEventListener('click', function (event) {
-      if (dragged) { event.preventDefault(); dragged = false; return; }
+      // Touch browsers can synthesize click well after pointerup. Keep that
+      // release from toggling the snap state again; keyboard clicks stay usable.
+      if (event.detail !== 0 && performance.now() < suppressClickUntil) { event.preventDefault(); return; }
       setOpen(!expanded);
     });
     var header = sheet.querySelector('.sf-product-sheet-header');
     header.addEventListener('pointerdown', function (event) {
       if (!mounted || drag || event.button !== 0 || event.isPrimary === false || event.target.closest('a,input,select,textarea')) return;
-      cancelAnimationFrame(settleFrame);
-      sheet.style.removeProperty('height');
-      var style = getComputedStyle(sheet);
+      suppressClickUntil = 0; // A new deliberate press is never a stale release.
       var height = sheet.getBoundingClientRect().height;
+      cancelAnimationFrame(settleFrame);
+      // Catch the current visual height, including a still-settling transition.
+      // Removing its height before sampling made a rapid re-grab jump.
+      sheet.classList.add('is-holding');
+      sheet.style.height = height + 'px';
+      var style = getComputedStyle(sheet);
       drag = {id:event.pointerId, x:event.clientX, y:event.clientY, lastY:event.clientY,
         start:height, height:height, min:header.getBoundingClientRect().height + parseFloat(style.paddingBottom),
-        max:parseFloat(style.maxHeight), open:expanded, time:performance.now(), active:false};
+        max:parseFloat(style.maxHeight), open:expanded, time:performance.now(), active:false, width:innerWidth,
+        capture:event.target.closest('button') || header};
+      drag.capture.setPointerCapture(event.pointerId);
     });
     window.addEventListener('pointermove', function (event) {
       if (!drag || event.pointerId !== drag.id) return;
       var dy = event.clientY - drag.y, dx = event.clientX - drag.x;
       if (!drag.active) {
-        if (Math.max(Math.abs(dy), Math.abs(dx)) < 4) return;
-        if (Math.abs(dx) > Math.abs(dy)) { drag = null; return; }
+        if (Math.max(Math.abs(dy), Math.abs(dx)) < 8) return;
+        if (Math.abs(dx) > Math.abs(dy)) { finishDrag(true); return; }
         drag.active = true;
         sheet.classList.add('is-dragging');
         document.body.classList.add('sf-product-sheet-open');
         media.inert = true;
-        header.setPointerCapture(event.pointerId);
       }
       event.preventDefault();
       drag.lastY = event.clientY;
@@ -259,9 +266,10 @@
       if (!drag) return;
       var gesture = drag;
       drag = null;
-      if (header.hasPointerCapture(gesture.id)) header.releasePointerCapture(gesture.id);
-      if (!gesture.active) return;
-      dragged = true;
+      if (gesture.capture.hasPointerCapture(gesture.id)) gesture.capture.releasePointerCapture(gesture.id);
+      sheet.classList.remove('is-holding');
+      if (!gesture.active) { sheet.style.removeProperty('height'); return; }
+      suppressClickUntil = performance.now() + 700;
       var dy = gesture.lastY - gesture.y;
       var speed = Math.abs(dy) / Math.max(1, performance.now() - gesture.time);
       var progress = (gesture.height - gesture.min) / Math.max(1, gesture.max - gesture.min);
@@ -272,7 +280,6 @@
       sheet.getBoundingClientRect();
       setOpen(open, null, true);
       settleFrame = requestAnimationFrame(function () { sheet.style.removeProperty('height'); });
-      setTimeout(function () { dragged = false; }, 0);
     }
     window.addEventListener('pointerup', function (event) {
       if (drag && event.pointerId === drag.id) finishDrag(false);
@@ -308,7 +315,12 @@
       resize.observe(header);
       if (purchase) resize.observe(purchase);
     }
-    window.addEventListener('resize', function () { finishDrag(true); measure(); });
+    window.addEventListener('resize', function () {
+      // Browser chrome changes height while a finger is held. It must not
+      // cancel the gesture and snap the panel out from under that finger.
+      if (drag && innerWidth === drag.width) return;
+      finishDrag(true); measure();
+    });
     mobile.addEventListener('change', adapt);
     sheetState = {open: function () { setOpen(true); }};
     adapt();

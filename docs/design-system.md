@@ -1,5 +1,9 @@
 # Codela Storefront UI Kit — source of truth
 
+## Product prepaint and touch grip —0.1.114
+
+Do not sample a provisional viewport width in the head bootstrap; CSS owns the mobile breakpoint. Keep the prepaint guard until enhancement, parser completion or script failure, never a wall-clock expiry during loading. Freeze the visual sheet height when re-grabbed, tolerate8px jitter, disable text selection on its64px header (52px discovery), preserve deliberate button/keyboard presses and suppress only stale release clicks. Height-only browser chrome resizing cannot cancel a held gesture. Use true touch events and a pre-meta mobile context in regressions.
+
 ## Direct product sheet manipulation —0.1.112
 
 Print the dependency-free adapter once through the WordPress queue beside the completed product template; do not wait for unrelated footer scripts or DOMContentLoaded. A small mobile prepaint guard prevents the transient native summary, fails open if enhancement fails, and never blocks no-JS purchase. Native gallery opacity is visible from first paint. Keep one title font across discovery and photos. Header pointer movement directly updates this same sheet height with no transition while held, original photo geometry untouched; release/cancel restores native expanded/closed states and clears capture/inline styles. No new controller, form, scroll or cart engine.
