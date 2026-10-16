@@ -298,6 +298,11 @@ body.single-product div.product form.cart button.single_add_to_cart_button:is(.d
   pointer-events:none;
   transform:none;
 }
+/* Missing selections are an invitation to reveal the original selectors.
+   Loading, unavailable variations and truly disabled controls stay disabled. */
+body.single-product div.product .sf-product-sheet form.variations_form button.single_add_to_cart_button.wc-variation-selection-needed:not(:disabled,.loading,[aria-disabled="true"]){
+  pointer-events:auto;cursor:pointer;
+}
 
 /* The press light is a static paint change. Only transform is animated;
    blur/shadows never interpolate and native Woo spinner pseudo-elements stay free. */

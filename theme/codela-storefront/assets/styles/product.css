@@ -291,7 +291,7 @@ body.single-product .sf-product-visitor{
   position:absolute;z-index:4;inset-inline-start:16px;bottom:16px;
   max-width:calc(100% - 32px);pointer-events:none;
 }
-body.single-product .sf-ui-gallery:has(.flex-control-thumbs > :not(:only-child)) .sf-product-visitor{
+body.single-product .sf-ui-gallery:has(:is(.flex-control-thumbs,.sf-product-gallery-nav) > :not(:only-child)) .sf-product-visitor{
   bottom:96px;
 }
 body.single-product .sf-product-visitor[hidden]{display:none}
