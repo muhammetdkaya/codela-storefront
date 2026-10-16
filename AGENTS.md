@@ -1,6 +1,21 @@
 # Codela Storefront — güncel çalışma kuralları
 
-## Güncel çalışma — 16 Ekim 2026 / 0.1.98 ürün modülleri
+## Son doğrulanmış durum — 16 Ekim 2026 / 0.1.98 ürün modülleri canlı ve kabul tamam
+
+Tema **0.1.97→0.1.98 canlı**. Codela eklentisi **1.1.1 runtime değişmedi**, WordPress.org ve dondurulmuş0.1.1 tema paketi değişmedi. Kullanıcının onayladığı sade modül düzeni: ziyaretçi galeri köşesinde, urgency fiyat yanında, kompakt teslimat/WhatsApp, ücretsiz kargo çizgisi içerik genişliğinin tamamında, güven vaatleri bilgi bölümlerinin altında ve önerilerden önce. Native Woo tab callback'leri details/summary içinde; açıklama açık, diğerleri kapalı. Mevcut modül ayarları/mesajları korunur; canlıda kapalı modüller açılmadı, sahte değer eklenmedi.
+
+**Tek sahiplik:** yalnız ürün sayfasında yedi bilinen module CSS handle'ı kaldırılır; görünüm product.css ve mevcut ortak primitives'tadır. Orijinal plugin callback instance'ları, veri/REST/sayaç/ETA/kargo scriptleri ve şartları korunur. Galeri hook'u kayan track'in içinde olduğundan aynı gizli visitor host küçük mevcut ürün enhancement scriptiyle native galeri dış çerçevesine, DOM-ready başlangıcından önce taşınır; galeri/satın alma motoru kopyalanmaz. Script içerik hash'iyle cache'lenir. Ortak köşe/font token'ları korunur; opsiyonel global WhatsApp ortak IconButton kullanır. Sepet/ödeme ve diğer temalarda plugin CSS'i korunur.
+
+**Yayın:** [PR31](https://github.com/muhammetdkaya/codela-storefront/pull/31), son kaynak [e9ea84af](https://github.com/muhammetdkaya/codela-storefront/commit/e9ea84afba345be111597ae3101eebaab1ab5d74); [CI+gerçek FTP38844898361](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38844898361) başarılı. Gerçek CI ZIP SHA256 **8866f5171ba0ad964d9e94d5c961c9dfcf7e599275b4a2cbe11a24a6460a7569**. Önceki10e55669 koşusunda güncel kaynak superseded olduğu için gerçek deploy adımı atlandı; bu final koşu gerçek deploy yaptı. Source01a9475f ara paketi final kabul kaynağı değildir.
+
+**Kabul:** mevcut PHP/JS/24 paket ve bütün browser regresyonları, yeni callback sahipliği testi ve beş genişlikte tam genişlik/taşma/visitor-rail/keyboard/hash/kapalı durum testi geçti. Beş final canlı gate başarılı: WebKit38845519073, shell38845518991, gallery38845519057, document38845519422, performance38845519036. [Gerçek WP/Woo38845599342](https://github.com/muhammetdkaya/codela/actions/runs/38845599342) başarılı: WP6.5.5/Woo9.0.2 ve WP7.1.3/Woo11.2.1 × Chromium/WebKit; ortam başına16 mevcut akış +5 growth kabulü, **4/4 ortam ve84 başarılı kayıt**. Test kaynağı 3d658ba41296804a994e84d21099dd2905f26f52; aynı final98 ZIP/source/hash'e pin'li. İlk denemede eski ortam WebKit mevcut sepet rozet testinde timeout oldu ve growth kısmına ulaşmadı; kod/paket değişmeden failed job yeniden çalıştırıldı (attempt2) ve tüm kontroller geçti. İlk timeout'un nedeni kesinleştirilmedi; test kaldırılmadı/zayıflatılmadı.
+
+**Canlı ölçüm:** product.css0.1.98; product-information.js hash4b6d7bfcc766b685792e; default trust/WhatsApp/conversion CSS linkleri yok, WhatsApp ikonu rgb(31,168,85), ortak canvas rgb(248,247,244). Trust bilgi bileşeninin32px altında. Gerçek açıklama/ek bilgi açılımı, metadata/native stock ve ilgili ürünler görüldü. Canlıdaki pasif ziyaretçi/ETA/free-shipping koşulları gerçek hesapla CI'da test edildi; canlıda tüm modüller açıkmış gibi sunulmaz. [Ayrıntılı kabul](docs/acceptance/2026-10-16-product-modules.md).
+
+**Kalan / sıradaki:** bu tasarımın kod/yayın/otomatik kabulü tamam; yeniden uygulama veya varsayılan modül ayarlarını kendiliğinden değiştirme. Kullanıcının görsel kabulü ve fiziksel Safari/toolbar/safe-area kontrolü; gerçek ödeme sağlayıcısı/üçüncü taraf medya ve yetkili eski JPEG backfill ayrı kalır. Önceki97 matris38779779538 attempt2 ve performance38780472484 de başarılı doğrulandı; tarihî pending notlar kapanmıştır ve bu kanıtlar98'e mal edilmez.
+
+
+## Önceki hazırlık kaydı — 16 Ekim 2026 / 0.1.98 ürün modülleri
 
 Tema **0.1.97 → 0.1.98** hazırlanıyor. Codela eklentisi **1.1.1 runtime değişmedi**; WordPress.org yayını yok. Kullanıcı son sade ürün tasarımını ve ücretsiz kargo ilerleme çizgisinin içerik alanının tamamına yayılmasını uygulamaya yetkilendirdi.
 

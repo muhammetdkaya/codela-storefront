@@ -156,7 +156,7 @@ for normal buttons. The dock is a gesture controller, not an icon button.
 The theme owns Header, mobile dock, fullscreen Menu/Search/Cart overlays, guest
 login presentation and the theme's storefront controls. The **Codela plugin**
 owns the signed-in My Account dashboard, orders, addresses, shipments and
-its module UI. Do not add `sf-ui-*` to Codela plugin content; do not rewrite
+its module UI outside the explicitly theme-owned single-product growth adapter described above. Do not add `sf-ui-*` to Codela plugin content; do not rewrite
 the Codela account using the theme's UI Kit. Plugin tokens
 (`--cdl-ct-radius`, `--cdl-sf-*`) are integration inputs only where intended,
 not a reason for global CSS overrides.
