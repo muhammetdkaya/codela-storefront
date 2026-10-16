@@ -1,5 +1,10 @@
 # Codela Storefront — güncel teknik durum
 
+## Güncel çalışma — 0.1.103 native Woo ikinci görsel satır boşluğu
+
+102 native belge scroll ve padding kaldırma canlıya geçti;103 hazırlanıyor. Gerçek Woo CSS ikinci ve sonraki .woocommerce-product-gallery__image için display:inline-block verir.103 mobil akışta özgün görsel düğümlerini açık display:block/float:none yapar; satırın baseline boşluğu oluşmaz. Fixture artık gerçek Woo images sınıfını/inline-block kuralını içerir ve yalnız ilk çifti değil TÜM ardışık fotoğraf kenarlarını ölçer. Plugin1.1.1 değişmedi. Yerel JS/24 paket başarılı;103 CI/FTP ve103 ZIP/source/hash ile gerçek Woo/canlı kabulü bekleniyor. Native Safari pull-to-refresh fiziksel toolbar otomasyonu değildir; root scroll ve overscroll-auto yolu otomatik doğrulanır. Ağır PNG medya konusu ayrıca açık.
+
+
 ## Güncel çalışma — 16 Ekim2026 / 0.1.102 kesintisiz fotoğraf ve native belge scroll
 
 Tema0.1.101→0.1.102 hazırlanıyor; eklenti1.1.1 değişmedi. Kullanıcı fotoğraf/panel ve ardışık fotoğraflardaki beyaz boşluğu, tepedeki aşağı çekişin Safari yenilemesine ulaşmamasını bildirdi. Mobil fotoğraflardaki panel rezerv padding'i kaldırıldı; gerçek img altına kadar uzanır, fotoğraflar bitişik100svh bloklardır. Kapalı üründe scroll sahibi normal belgedir: wrapper overflow visible; html/body overscroll-y auto. Özel refresh/reload/touchmove engelleme eklenmedi. Açık panelde html/body lock, inert galeri ve bağımsız panel scroll korunur. Görünür slayt IO root'u mobilde viewport, desktop'ta özgün track; medya sorgusunda yeniden bağlanır. Sabit nav/count/visitor ve keyboard/variation native belge koordinatını kullanır. İlgili ürünler aynı akışta kalır. Panel ve soft Button aynı components.css materyalini kullanmaya devam eder; renk değişmedi.

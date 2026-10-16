@@ -460,7 +460,7 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
     display:block;height:auto;overflow:visible;overscroll-behavior:auto;scroll-snap-type:none;
   }
   body.single-product.sf-product-sheet-ready div.product .sf-ui-gallery--scroll .woocommerce-product-gallery__wrapper > :is(.woocommerce-product-gallery__image,.woocommerce-product-gallery__image--placeholder){
-    width:100%;height:100svh;min-height:100svh;margin:0;padding:0;border:0;
+    display:block;float:none;width:100%;height:100svh;min-height:100svh;margin:0;padding:0;border:0;
   }
   body.sf-product-sheet-ready .sf-product-gallery-nav{
     position:fixed;display:flex;flex-direction:column;gap:0;left:auto;right:8px;top:35%;bottom:auto;
