@@ -17,10 +17,18 @@ const {liveProduct}=require('./live-product.cjs');
   const toggle=page.locator('.sf-product-sheet-toggle');
   assert.equal(await toggle.getAttribute('aria-expanded'),'false');
   assert(await page.locator('.single_add_to_cart_button').isVisible());
-  if(selected){await page.locator('.woocommerce-product-gallery__wrapper').focus();await page.keyboard.press('ArrowDown');}
+  if(selected){
+   await page.mouse.move(width/2,350);await page.mouse.wheel(0,180);
+   await page.waitForFunction(()=>Math.abs(document.querySelectorAll('.woocommerce-product-gallery__image')[1].getBoundingClientRect().top)<1);
+  }
  }else if(selected)await page.locator('.sf-product-gallery-thumb').nth(selected).click();
  await page.waitForFunction(n=>document.querySelector('.sf-product-gallery-count').textContent.startsWith((n+1)+' /'),selected);
  const slide=images.nth(selected);await slide.locator('img:not(.zoomImg)').evaluate(e=>e.decode());
+ const quality=await images.evaluateAll(nodes=>nodes.map(node=>{const image=node.querySelector('img:not(.zoomImg)');return{width:Number(image.getAttribute('width')),height:Number(image.getAttribute('height')),largeWidth:Number(image.dataset.large_image_width),largeHeight:Number(image.dataset.large_image_height),src:image.getAttribute('src')}}));
+ for(const image of quality){assert(image.width>100,'Every native photo has a product-size source');assert(Math.abs(image.width/image.height-image.largeWidth/image.largeHeight)<.01,'Every product photo retains its original aspect ratio');assert(!/-100x100\./.test(image.src),'No thumbnail stretched into a full photograph');}
+ const decoded=await slide.locator('img:not(.zoomImg)').evaluate(e=>({width:e.naturalWidth,height:e.naturalHeight,src:e.currentSrc}));assert(decoded.width>100);assert(!/-(100x100|150x150|300x300)\./.test(decoded.src));
+ console.log('GALLERY_QUALITY '+JSON.stringify({width,quality,decoded}));
+ fs.mkdirSync('qa/performance',{recursive:true});await page.screenshot({path:'qa/performance/gallery-live-selected-'+width+'.png'});
  await slide.locator('a').click();await page.locator('.pswp--open').waitFor();
  await page.keyboard.press('Escape');await page.locator('.pswp--open').waitFor({state:'hidden'});
  if(width===390){

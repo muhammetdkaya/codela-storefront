@@ -24,6 +24,13 @@ for(const width of [320,390,700]){
  assert.equal(await page.locator('.sf-product-sheet .sf-product-purchase').evaluate(e=>getComputedStyle(e).backgroundColor),'rgba(0, 0, 0, 0)','One sheet material');
  const bounds=await buy.boundingBox();assert(bounds.y+bounds.height<=844&&bounds.y>700,'Purchase stays at bottom '+width);
  assert(!(await page.locator('.variations,.sf-product-information').last().isVisible()),'Details hidden while collapsed');
+ // A partial wheel gesture must finish on the next photograph, not rest
+ // between frames. Native root scrolling/overscroll stays available at top.
+ await page.mouse.move(width/2,350);await page.mouse.wheel(0,180);
+ await page.waitForFunction(()=>Math.abs(document.querySelectorAll('.woocommerce-product-gallery__image')[1].getBoundingClientRect().top)<1);
+ assert.equal(await page.locator('html').evaluate(e=>getComputedStyle(e).scrollSnapType),'y mandatory');
+ await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+ await page.waitForFunction(()=>Math.abs(scrollY)<1);
  await page.locator('.woocommerce-product-gallery__wrapper').focus();await page.keyboard.press('ArrowDown');
  await page.waitForFunction(()=>document.querySelector('.sf-product-gallery-count').textContent==='2 / 3');
  await page.waitForFunction(()=>Math.abs(document.querySelectorAll('.woocommerce-product-gallery__image')[1].getBoundingClientRect().top)<1);

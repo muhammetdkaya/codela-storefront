@@ -14,8 +14,10 @@ function register_block_style( ...$args ) { $GLOBALS['block_style'] = $args; }
 require __DIR__ . '/../theme/codela-storefront/inc/media.php';
 function check( $result, $message ) { if ( ! $result ) { throw new RuntimeException( $message ); } }
 foreach ($actions['after_setup_theme'][10] as $callback) { $callback(); }
+check($filters['woocommerce_gallery_image_size']('woocommerce_gallery_thumbnail')==='woocommerce_single', 'Secondary full-frame photos use uncropped single size even without FlexSlider');
 check($filters['woocommerce_single_product_zoom_enabled'](true)===false, 'Product uses native lightbox without conflicting inline click zoom');
 $product_page=false;
+check($filters['woocommerce_gallery_image_size']('custom')==='custom', 'Other image contexts retain their size');
 check($filters['woocommerce_single_product_zoom_enabled'](true)===true, 'Other gallery contexts keep their zoom setting');
 $product_page=true;
 check(isset($filters['woocommerce_single_product_image_gallery_classes']), 'Native gallery class hook');
@@ -54,3 +56,4 @@ $GLOBALS['stock_in_tab']=true;
 check(codela_sf_product_stock_placement('Native stock',new TestStockProduct('simple'))==='Native stock', 'Tab retains native stock');
 $GLOBALS['stock_in_tab']=false;$product_page=false;
 check(codela_sf_product_stock_placement('Native stock',new TestStockProduct('simple'))==='Native stock', 'Other pages retain stock');
+

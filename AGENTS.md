@@ -1,5 +1,12 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Çalışma — 16 Ekim 2026 / 0.1.105 galeri kalitesi ve fotoğraf adımları
+
+Tema **0.1.104 → 0.1.105 hazırlanıyor**, eklenti **1.1.1 değişmedi**. Canlı HTML incelemesi ikinci ve sonraki img kaynaklarının100×100 kare Woo thumbnail olduğunu kanıtladı: FlexSlider kapalıyken Woo secondary image size seçimi thumbnail'a düşüyordu. Ürün belgesindeki native `woocommerce_gallery_image_size` artık `woocommerce_single`; bütün fotoğrafların doğru oranlı responsive src/srcset/width/height bilgisi korunur. Kare thumbnail ile değiştirme kaldırılır; ilk fotoğraf eager/high, diğerleri native lazy/low. Orijinal medya, thumbnail rail ve PhotoSwipe büyük görseli değişmez.
+
+Mobil root snap proximity yerine mandatory; snapport alt payı normal fotoğraf inset ve safe-area ile eşleşir. Ardışık fotoğraflar arasında boşluk yok; native belge scroll ve overscroll:auto, ilgili ürünlerin uzun normal akışı ve açık panel kilidi korunur. Yeni küçük wheel hareketi testi fotoğrafın tam üst kenarına oturmasını doğrular. Kaynak boyutu filtresi unit kabulüne eklenir. Kod/CI/gerçek FTP, yeni gerçek ZIP hash/source pin'li WP/Woo matrisi ve canlı kalite/kaydırma kontrolü henüz bekleniyor. Fiziksel Safari çekerek yenileme ve önceki ağır PNG cold-LCP sorunu ayrıca açık.
+
+
 ## Son doğrulanmış durum — 16 Ekim2026 / 0.1.104 fotoğraf ve native kaydırma canlı
 
 Tema **0.1.101→0.1.104 canlı**; eklenti **1.1.1 runtime değişmedi**. Fotoğraf/panel arasındaki rezerv padding şeridi kaldırıldı. Native Woo'nun ikinci ve sonraki fotoğraflara verdiği inline-block düzeni mobilde açık block/float:none ile uyarlanır; bütün ardışık kenarlar bitişiktir. Fotoğraf blokları100dvh'den normal kapalı panel payı düşülerek ölçülür ve yaklaşık24px yuvarlak köşelerin arkasına uzanır. Böylece boşluk olmadan görünür ürün kadrajı korunur. Normal photo-inset keşif compaction sırasında değiştirilmez; önceki fotoğraflar yer değiştirmez. Safe-area CSS'te hesaba katılır.

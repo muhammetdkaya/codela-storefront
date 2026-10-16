@@ -47,7 +47,11 @@
       var height = sheet.querySelector('.sf-product-sheet-header').getBoundingClientRect().height + footerHeight + dockHeight + 16;
       // Preserve the visible product framing with a corner-sized overlap.
       // Discovery compaction must not resize all preceding photographs.
-      if (!expanded && !sheet.classList.contains('is-discovering')) media.style.setProperty('--sf-product-photo-inset', Math.max(0, height - 32) + 'px');
+      if (!expanded && !sheet.classList.contains('is-discovering')) {
+        var inset = Math.max(0, height - 32) + 'px';
+        media.style.setProperty('--sf-product-photo-inset', inset);
+        document.documentElement.style.setProperty('--sf-product-photo-inset', inset);
+      }
       media.style.setProperty('--sf-product-collapsed-height', height + 'px');
       document.body.style.setProperty('--sf-product-collapsed-height', height + 'px');
     }
@@ -126,6 +130,7 @@
       document.body.classList.remove('sf-product-sheet-ready', 'sf-product-sheet-open');
       media.style.removeProperty('--sf-product-collapsed-height');
       media.style.removeProperty('--sf-product-photo-inset');
+      document.documentElement.style.removeProperty('--sf-product-photo-inset');
       document.body.style.removeProperty('--sf-product-collapsed-height');
       mounted = false;
     }

@@ -25,6 +25,11 @@ function codela_sf_gallery_options( array $options ): array {
 add_action( 'after_setup_theme', function() {
     add_filter( 'woocommerce_single_product_image_gallery_classes', 'codela_sf_gallery_classes' );
     add_filter( 'woocommerce_single_product_carousel_options', 'codela_sf_gallery_options' );
+    // With FlexSlider disabled Woo otherwise renders secondary photos at the
+    // cropped gallery-thumbnail size. All full-frame photos need single size.
+    add_filter( 'woocommerce_gallery_image_size', function( $size ) {
+        return function_exists( 'is_product' ) && is_product() ? 'woocommerce_single' : $size;
+    } );
     // Native scrolling replaces the slider track for this product composition.
     // Woo's image nodes, variation updates and PhotoSwipe remain the owners.
     add_filter( 'woocommerce_single_product_flexslider_enabled', function( $enabled ) {
@@ -37,8 +42,8 @@ add_action( 'after_setup_theme', function() {
         return function_exists( 'is_product' ) && is_product() ? false : $enabled;
     }, 100 );
     add_filter( 'woocommerce_single_product_image_thumbnail_html', function( string $html, $attachment_id = 0 ): string {
-        // Only promote the featured image; all other Woo gallery slides keep
-        // their native lazy loading and slider/variation functionality.
+        // Only the featured image is eager; other full-size native photos
+        // retain responsive selection and browser lazy loading.
         global $product;
         $main_id = is_object( $product ) && method_exists( $product, 'get_image_id' )
             ? (int) $product->get_image_id() : 0;
@@ -62,30 +67,11 @@ add_action( 'after_setup_theme', function() {
                 $tags->set_attribute( 'loading', 'eager' );
                 $tags->set_attribute( 'fetchpriority', 'high' );
             } elseif ( function_exists( 'is_product' ) && is_product() && $attachment_id ) {
-                // Reuse Woo's native thumbnail until this slide is selected.
-                // The original image URL, srcset and sizes remain in data attrs;
-                // PhotoSwipe's href and data-large_image are never changed.
-                $thumb = new WP_HTML_Tag_Processor( $html );
-                if ( $thumb->next_tag( [ 'class_name' => 'woocommerce-product-gallery__image' ] ) ) {
-                    $preview = $thumb->get_attribute( 'data-thumb' );
-                    $source = $tags->get_attribute( 'src' );
-                    if ( is_string( $preview ) && is_string( $source ) && $preview && $source && $preview !== $source ) {
-                        $tags->set_attribute( 'data-sf-gallery-src', $source );
-                        $srcset = $tags->get_attribute( 'srcset' );
-                        $sizes = $tags->get_attribute( 'sizes' );
-                        if ( is_string( $srcset ) && $srcset ) {
-                            $tags->set_attribute( 'data-sf-gallery-srcset', $srcset );
-                            $tags->remove_attribute( 'srcset' );
-                        }
-                        if ( is_string( $sizes ) && $sizes ) {
-                            $tags->set_attribute( 'data-sf-gallery-sizes', $sizes );
-                            $tags->remove_attribute( 'sizes' );
-                        }
-                        $tags->set_attribute( 'src', $preview );
-                        $tags->set_attribute( 'loading', 'lazy' );
-                        $tags->set_attribute( 'fetchpriority', 'low' );
-                    }
-                }
+                // Keep the uncropped native src/srcset and intrinsic ratio.
+                // Browser lazy loading prepares nearby photos without stretching
+                // a square thumbnail over the full product frame.
+                $tags->set_attribute( 'loading', 'lazy' );
+                $tags->set_attribute( 'fetchpriority', 'low' );
             }
         }
         return $tags->get_updated_html();
