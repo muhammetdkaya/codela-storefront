@@ -1,5 +1,11 @@
 # Codela Storefront — güncel teknik durum
 
+## Çalışma — 16 Ekim 2026 / 0.1.109 → 0.1.110 son boşluğun kaldırılması
+
+0.1.109 test/gerçek FTP [38915360148](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38915360148) başarılı; fakat [canlı galeri 38916374019](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38916374019) **başarısız**: 390px mobilde son kart ile kapalı satın alma paneli **138.3125px** ayrı (kalan `padding-bottom:98.9219px` ve native `ul.products margin-bottom:32px`). Önceki 0.1.109 'tamam' sayılmaz.
+
+0.1.110: Mobil discovery altında ekstra panel rezervi yerine yalnız gerçek `env(safe-area-inset-bottom)` korunur; native Woo katalog gridinin 32px alt marjı yalnız discovery kapsamında sıfırlanır. Aynı native kart, 3 önizleme, ilk dokunmada inline zoom, 0.1.108 snap/overscroll sınırları ve fotoğraf koordinatları korunur. Genişlik başına normal fotoğraf hesapları değişmez. Canlı QA artık gerçek son kart ile sabit panel mesafesini ve grid marginini ölçüp uygun aralığı zorunlu kılıyor. Bu sürüm için CI, gerçek FTP, yayın sonrası galeri ve diğer canlı kontroller **henüz bekleniyor**. Eklenti1.1.1 değişmedi, ağır PNG cold-LCP ve fiziksel Safari/gerçek ödeme sağlayıcısı ayrı açık.
+
 ## Çalışma — 16 Ekim 2026 / 0.1.108 → 0.1.109 öneri listesi son boşluk
 
 Kullanıcı ekran görüntüsündeki son ilgili ürün kartı ile sabit satın alma paneli arasındaki boşluğun kaldırılmasını istedi. Mobil discovery `min-height:100svh` tabanı kaldırıldı, son `.related/.upsells` marjı sıfırlandı; sabit alt alan için ölçülmüş normal yükseklikten 24px az pay bırakıldı (kompakt panelin örtmesini önleme). Fotoğraf boyutları, 0.1.108 snap/overscroll sınırları ve native Woo form, ürün/kartlar değişmedi. Fixture bölüm yüksekliği ve alt payı kontrol ediyor; canlı galeri QA son kart–panel mesafesini doğrudan ölçüyor. CI/FTP/canlı sonuçları henüz bekleniyor; eski 0.1.108 başarılı koşular 0.1.109 kabulü değildir. Eklenti 1.1.1 değişmedi; fiziksel Safari, gerçek ödeme sağlayıcısı ve PNG cold-LCP ayrı açık.

@@ -1,5 +1,9 @@
 # Codela Storefront UI Kit — source of truth
 
+## Native recommendation tail — 0.1.110 correction
+
+Live 0.1.109 measured 138px between the final product card and fixed purchase sheet. The 99px leftover section padding plus the native shared grid's 32px bottom margin were redundant. The mobile discovery section now reserves only the device's safe area and scopes a 0px bottom margin for existing `ul.products` inside `.related`/`.upsells`; the shared catalog margin is unchanged everywhere else. Preserve photo coordinates, scroll snap/overscroll rules, and the native purchase UI; live acceptance enforces a small positive final card-to-sheet gap.
+
 ## Native recommendation tail — 0.1.109
 
 Use content-driven height for mobile recommendation groups, no forced `100svh` minimum and no last-child external margin. Keep only an inset derived from the cached normal purchase bar (minus 24px) to prevent the final card hiding behind the fixed compact sheet without producing a bottom whitespace strip. Retain existing native photo scroll snapping, discovery overscroll policy, photo geometry and Woo card markup. Live acceptance checks the last card against the fixed purchase panel.
