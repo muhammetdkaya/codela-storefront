@@ -5,6 +5,11 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 function codela_sf_gallery_classes( array $classes ): array {
     $classes[] = 'sf-ui-gallery';
     $classes[] = 'sf-ui-gallery--hero';
+    $classes[] = 'sf-ui-gallery--scroll';
+    $settings = codela_theme_settings();
+    if ( in_array( $settings['product_gallery_thumbnails'] ?? true, [ false, 0, '0', '' ], true ) ) {
+        $classes[] = 'sf-ui-gallery--no-thumbs';
+    }
     return array_values( array_unique( $classes ) );
 }
 
@@ -20,6 +25,11 @@ function codela_sf_gallery_options( array $options ): array {
 add_action( 'after_setup_theme', function() {
     add_filter( 'woocommerce_single_product_image_gallery_classes', 'codela_sf_gallery_classes' );
     add_filter( 'woocommerce_single_product_carousel_options', 'codela_sf_gallery_options' );
+    // Native scrolling replaces the slider track for this product composition.
+    // Woo's image nodes, variation updates and PhotoSwipe remain the owners.
+    add_filter( 'woocommerce_single_product_flexslider_enabled', function( $enabled ) {
+        return function_exists( 'is_product' ) && is_product() ? false : $enabled;
+    }, 100 );
     // ClassicTemplate installs __return_true at priority 10 during render.
     // Inline click-zoom consumes touch clicks before the native lightbox link.
     // The lightbox remains the product image's single enlargement action.
@@ -127,3 +137,4 @@ add_action( 'wp', function() {
     // Product details start directly with the title; no breadcrumb trail.
     remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20 );
 } );
+

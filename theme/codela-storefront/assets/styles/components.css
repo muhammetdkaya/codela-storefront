@@ -73,6 +73,7 @@ body:not(.codela-my-account-layout) .sf-content .sf-ui-icon-button--soft:is(:act
    Placement belongs to navigation/overlay; touch and appearance live here. */
 body.single-product .sf-product-visitor .cdl-lv,
 body.single-product div.product > .onsale,
+.sf-product-sheet,
 .sf-product-purchase,
 .sf-ui-gallery-nav,
 .woocommerce div.product div.sf-ui-gallery .flex-control-thumbs,
@@ -108,6 +109,7 @@ body:not(.codela-my-account-layout) .sf-content .sf-ui-icon-button--soft .sf-ico
   .woocommerce div.product .sf-ui-gallery .woocommerce-product-gallery__trigger,
   body.single-product .sf-product-visitor .cdl-lv,
 body.single-product div.product > .onsale,
+.sf-product-sheet,
 .sf-product-purchase,
 .sf-ui-gallery-nav,.woocommerce div.product div.sf-ui-gallery .flex-control-thumbs,
   body:not(.codela-my-account-layout) .sf-content .sf-ui-button.sf-ui-surface,
@@ -362,6 +364,7 @@ body:not(.codela-my-account-layout) .sf-content .sf-ui-button--secondary,
 .woocommerce .sf-shell .sf-ui-button--secondary{background:var(--sf-ui-surface);-webkit-backdrop-filter:none;backdrop-filter:none;}
 body.single-product .sf-product-visitor .cdl-lv,
 body.single-product div.product > .onsale,
+.sf-product-sheet,
 .sf-product-purchase,
 .sf-ui-gallery-nav,
 .woocommerce div.product div.sf-ui-gallery .flex-control-thumbs,
@@ -387,6 +390,7 @@ body:not(.codela-my-account-layout) .sf-content .sf-ui-button--secondary,
 .woocommerce .sf-shell .sf-ui-button--secondary,
 body.single-product .sf-product-visitor .cdl-lv,
 body.single-product div.product > .onsale,
+.sf-product-sheet,
 .sf-product-purchase,
 .sf-ui-gallery-nav,
 .woocommerce div.product div.sf-ui-gallery .flex-control-thumbs,
@@ -493,3 +497,10 @@ body:not(.codela-my-account-layout) .sf-content a.sf-ui-icon-button.loading{
   padding:0;pointer-events:none;transform:none;
 }
 
+
+
+/* A sheet and its native purchase footer are one material, not stacked glass. */
+.sf-product-sheet .sf-product-purchase{
+  background:transparent!important;box-shadow:none!important;border:0;
+  -webkit-backdrop-filter:none;backdrop-filter:none;
+}

@@ -58,6 +58,7 @@ jobs:
           node tests/catalog-filters-browser.cjs
           node tests/product-browser.cjs
           node tests/product-modules-browser.cjs
+          node tests/product-sheet-browser.cjs
           node tests/shell-navigation-browser.cjs
           node tests/document-continuity-browser.cjs
           node tests/gallery-defer-browser.cjs
@@ -117,6 +118,7 @@ jobs:
           path: ${{ runner.temp }}/storefront-rollback/
           if-no-files-found: ignore
           retention-days: 14
+
 
 
 

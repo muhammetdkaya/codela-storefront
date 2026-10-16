@@ -123,4 +123,8 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'This server image editor does not support WebP encoding. Nothing will be converted.' => 'Sunucu görsel işleyicisi WebP kodlamasını desteklemiyor. Görseller dönüştürülmeyecek.',
 'Optimize existing images' => 'Mevcut görselleri optimize et',
 'Stop' => 'Durdur',
+'Options and details' => 'Seçenekler ve detaylar',
+'Product details' => 'Ürün detayları',
+'Product images' => 'Ürün görselleri',
 ] ];
+
