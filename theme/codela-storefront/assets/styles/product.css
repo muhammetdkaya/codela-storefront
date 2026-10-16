@@ -348,7 +348,7 @@ body.single-product .cdl-wa-button{
   max-width:100%;color:var(--sf-ui-control-ink);font-size:13px;font-weight:500;
   line-height:1.5;text-decoration:none;
 }
-body.single-product .cdl-wa-ico{color:#1fa855}
+body.single-product .cdl-wa-ico{--sf-ui-control-ink:#1fa855;--sf-ui-glass-ink:#1fa855;color:#1fa855}
 .cdl-wa-ico svg{display:block;width:21px;height:21px;flex:none}
 body.single-product div.product > .cdl-tb{
   grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));

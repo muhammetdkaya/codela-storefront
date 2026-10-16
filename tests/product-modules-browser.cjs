@@ -19,6 +19,7 @@ assert(Math.abs(result.bar.left-result.text.left)<1&&Math.abs(result.bar.width-r
 assert(result.counter.bottom<result.rail.top,'Visitor does not overlap gallery rail '+width);
 assert(result.trust.top>=result.info.bottom-1&&result.related.top>=result.trust.bottom-1,'Trust follows information before related '+width);
 assert(result.contact.height>=44,'Contact touch target '+width);
+assert.equal(await page.locator('.cdl-wa-ico').evaluate(el=>getComputedStyle(el).color),'rgb(31, 168, 85)','Shared IconButton retains WhatsApp semantic color');
 await page.locator('#sf-product-section-reviews > summary').click();await page.locator('#reviews').waitFor({state:'visible',timeout:3000});assert(await page.locator('#reviews').isVisible(),'Native disclosure opens reviews '+width);
 await page.locator('#sf-product-section-reviews > summary').press('Enter');await page.locator('#reviews').waitFor({state:'hidden',timeout:3000});assert(!(await page.locator('#reviews').isVisible()),'Native disclosure keyboard closes reviews '+width);
 await page.addScriptTag({content:fs.readFileSync(root+'assets/scripts/product-information.js','utf8')});await page.evaluate(()=>{location.hash='review_form'});await page.waitForFunction(()=>document.querySelector('#sf-product-section-reviews').open);assert(await page.locator('#reviews').isVisible(),'Review hash opens containing disclosure');
