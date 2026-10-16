@@ -18,7 +18,7 @@ const {liveProduct}=require('./live-product.cjs');
   assert.equal(await toggle.getAttribute('aria-expanded'),'false');
   assert(await page.locator('.single_add_to_cart_button').isVisible());
   if(selected){
-   await page.mouse.move(width/2,350);await page.mouse.wheel(0,180);
+   await page.mouse.move(width/2,350);await page.mouse.wheel(0,450);
    await page.waitForFunction(()=>Math.abs(document.querySelectorAll('.woocommerce-product-gallery__image')[1].getBoundingClientRect().top)<1);
   }
  }else if(selected)await page.locator('.sf-product-gallery-thumb').nth(selected).click();
