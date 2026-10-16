@@ -2,7 +2,7 @@
 
 ## Recommendation boundary and previews —0.1.108
 
-Selected previews add no outline; shared keyboard focus-visible remains. While the existing gallery is discovering recommendations, root and body overscroll-y:none suppress bottom boundary rubber-band. Photographs retain auto for native top refresh. The policy changes no snap type, padding, frame coordinates or reserved panel space and adds no touch/wheel interception. Physical Safari gesture paint requires device acceptance.
+Selected previews add no outline; shared keyboard focus-visible remains. While the existing gallery is discovering recommendations, root and body overscroll-y:none suppress bottom boundary rubber-band. Photographs retain auto for native top refresh. Because the long recommendations snap to their heading under the root's mandatory photo snap, the root switches to `scroll-snap-type:none` only in `.woocommerce-product-gallery.is-discovering`, restoring `y mandatory` over photographs. The policy changes no photo frame coordinates, snap targets, padding or reserved panel space and adds no touch/wheel interception. Physical Safari gesture paint requires device acceptance.
 
 ## Inline product zoom and three previews —0.1.107 (live; functional acceptance tracked below)
 
