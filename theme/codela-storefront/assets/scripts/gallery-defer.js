@@ -1,5 +1,5 @@
-// WooCommerce still owns variation updates and PhotoSwipe.
-// This only promotes the requested slide from the already present thumbnail.
+// WooCommerce owns variation updates and its existing inline zoom plugin.
+// This adapter promotes native images and keeps a three-item preview window.
 (()=>{
   const gallery=document.querySelector('.woocommerce-product-gallery.sf-ui-gallery');
   if(!gallery)return;
@@ -28,6 +28,57 @@
     track.setAttribute('aria-label',document.getElementById('sf-product-sheet-template')?.dataset.galleryLabel||'Product images');
     const items=slides();
     if(!items.length)return;
+    const jq=window.jQuery;
+    const zoomStates=new Map();
+    const closeZoom=()=>{
+      if(jq&&gallery.querySelector('.is-zoomed'))jq(document).triggerHandler('click.zoom');
+    };
+    if(jq?.fn.zoom){
+      items.forEach(item=>{
+        const link=item.querySelector('a');
+        if(!link)return;
+        link.setAttribute('role','button');
+        link.setAttribute('aria-pressed','false');
+        link.removeAttribute('aria-haspopup');
+        zoomStates.set(item,{ready:false,pending:false,wanted:false});
+        link.addEventListener('keydown',event=>{
+          if(['Enter',' '].includes(event.key)){event.preventDefault();link.click();}
+        });
+      });
+      track.addEventListener('click',event=>{
+        const item=event.target.closest('.woocommerce-product-gallery__image');
+        const state=zoomStates.get(item);
+        if(!state)return;
+        event.preventDefault();
+        if(state.ready)return; // The same native plugin handles subsequent taps.
+        if(state.pending){state.wanted=!state.wanted;return;}
+        closeZoom();activate(item.querySelector('a > img:not(.zoomImg)'));
+        state.pending=true;state.wanted=true;
+        const link=item.querySelector('a'),image=link.querySelector('img');
+        const bounds=item.getBoundingClientRect();
+        const width=Number(image.dataset.large_image_width)||image.naturalWidth||bounds.width;
+        const height=Number(image.dataset.large_image_height)||image.naturalHeight||bounds.height;
+        const magnify=Math.max(1,2*Math.max(bounds.width,bounds.height*width/height)/width);
+        const pageX=event.clientX?event.pageX:scrollX+bounds.left+bounds.width/2;
+        const pageY=event.clientY?event.pageY:scrollY+bounds.top+bounds.height/2;
+        jq(item).zoom({on:'click',touch:false,magnify,
+          duration:matchMedia('(prefers-reduced-motion:reduce)').matches?0:120,
+          callback:function(){
+            this.alt='';this.setAttribute('aria-hidden','true');
+            state.ready=true;state.pending=false;
+            if(state.wanted&&!gallery.inert)jq(item).trigger(jq.Event('click',{pageX,pageY}));
+          },
+          onZoomIn:function(){item.classList.add('is-zoomed');link.setAttribute('aria-pressed','true');},
+          onZoomOut:function(){item.classList.remove('is-zoomed');link.setAttribute('aria-pressed','false');}
+        });
+      },true);
+      window.addEventListener('scroll',()=>{
+        zoomStates.forEach(state=>{state.wanted=false;});closeZoom();
+      },{passive:true});
+      track.addEventListener('keydown',event=>{
+        if(event.key==='Escape'){zoomStates.forEach(state=>{state.wanted=false;});closeZoom();}
+      });
+    }
     const nav=document.createElement('nav');
     nav.className='sf-ui-gallery-nav sf-product-gallery-nav';
     nav.setAttribute('aria-label',track.getAttribute('aria-label'));
@@ -70,7 +121,11 @@
     track.addEventListener('keydown',event=>{if(['ArrowDown','ArrowUp','ArrowLeft','ArrowRight'].includes(event.key))beginBrowsing();});
     function update(index){
       count.textContent=(index+1)+' / '+items.length;
-      [...nav.children].forEach((button,i)=>button.setAttribute('aria-current',String(i===index)));
+      const first=Math.max(0,Math.min(index-1,items.length-3));
+      [...nav.children].forEach((button,i)=>{
+        button.setAttribute('aria-current',String(i===index));
+        button.hidden=i<first||i>=first+3;
+      });
       activate(imageAt(index));
       if(browsing)prepareAdjacent(index);
     }
@@ -114,7 +169,14 @@
       select(event.key==='Home'?0:event.key==='End'?items.length-1:Math.max(0,Math.min(items.length-1,current+delta)));
     });
     // Woo replaces the featured image for a variation; reveal that same node.
-    if(window.jQuery)window.jQuery(document).on('found_variation reset_data','.variations_form',()=>select(0));
+    if(jq)jq(document).on('found_variation reset_data','.variations_form',()=>{
+      closeZoom();
+      zoomStates.forEach((state,item)=>{
+        jq(item).trigger('zoom.destroy');Object.assign(state,{ready:false,pending:false,wanted:false});
+        item.classList.remove('is-zoomed');item.querySelector('a').setAttribute('aria-pressed','false');
+      });
+      select(0);
+    });
     matchMedia('(max-width:700px)').addEventListener('change',()=>{track.scrollTo(0,0);window.scrollTo({top:0,behavior:'instant'});observe();update(0);});
     update(0);
     return;

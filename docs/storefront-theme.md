@@ -1,5 +1,14 @@
 # Codela Storefront — güncel teknik durum
 
+## Çalışma — 16 Ekim 2026 / 0.1.107 aynı görselde zoom ve üç önizleme
+
+Tema **0.1.106 → 0.1.107 hazırlanıyor**; eklenti **1.1.1 runtime değişmedi**. Kullanıcı önceki popup kaldırma/üç önizleme önerisini “Uygula” ile onayladı. Product PhotoSwipe desteği ve enabled filtresi kapalı; ayrı popup yerine mevcut Woo jQuery Zoom eklentisi ilk dokunma/tıklamada aynı native fotoğrafta başlatılır. Yeni zoom/galeri motoru, dialog veya resim gezinme kopyası yok. Native kaynak, form/variation ve fotoğraf snap geometrisi korunur. Zoom kaynakları yalnız istek üzerine indirilir; ikinci dokunma, Escape ve belge kaydırması zoom'u kapatır. Enter/Space ve aria-pressed; doğal touch scroll engellenmez. Woo9 zoom / Woo11 wc-zoom handle'ı runtime kayıt durumuna göre seçilir. Varyasyon değişiminde eski native zoom instance'ı temizlenir.
+
+Aynı anda en fazla3 özgün preview kontrolü görünür; seçili fotoğraf yakınındaki pencereyi kaydırır,1/5 sayacı ve bütün fotoğraflara doğal gezinme korunur. Gizlenen kontroller klavye/erişilebilirlik akışından da çıkar. Mobilde gerçek küçük resimler, seçili outline ve4px aralık; shared Button/IconButton boyama sistemi korunur. Ürün verisi/medya/settings ve önceki106 stable viewport/snap/keşif akışı değişmedi.
+
+Yerel JS sözdizimi ve24 paket testi başarılı. Native gallery fixture beş fotoğrafın ilk/son konumunda üç görünür preview ve soğuk secondary defer kontrolünü kapsar. Gerçek Woo ve canlı kabul popup olmamasını, inline zoom'un aynı fotoğrafta açılıp kapanmasını, klavye/URL/satın alma ve geometriyi doğrulayacak.107 CI/FTP, gerçek ZIP/hash/source pin'li yeni WP/Woo ve canlı sonuçlar bekleniyor. Önceki106 testleri107 kabulü değildir. Ağır PNG cold-LCP bütçesi ve fiziksel Safari/GPU/toolbar/pinch davranışı ayrıca açık; pinch motoru eklenmedi.
+
+
 ## Son doğrulanmış devam noktası — 16 Ekim 2026 / 0.1.106 galeri ve geçiş canlı
 
 Tema **0.1.104→0.1.105→0.1.106 canlı**, eklenti **1.1.1 runtime değişmedi**. İkinci ve sonraki fotoğrafların100×100 kare thumbnail kaynağına düşmesi native `woocommerce_gallery_image_size=woocommerce_single` ile giderildi; bütün fotoğraflar doğru intrinsic oran ve responsive kaynaklarını korur. Galeri mevcut native Woo düğümleri, PhotoSwipe, variation ve form sahibi olarak kalır. Doğru oranlı medium önizleme, gerçek galeri niyeti/görünürlükte özgün kaynağa mevcut adapter üzerinden geçer; komşu fotoğraf hazırlanır, tüm büyük PNG'ler başlangıçta indirilmez.

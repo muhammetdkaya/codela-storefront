@@ -37,6 +37,15 @@ const {chromium}=require('playwright');
   assert(!nativeRequests.some(name=>/^full[3-5]/.test(name)),'Real intent prepares the adjacent photo, not the whole gallery');
   assert.equal(await native.locator('.woocommerce-product-gallery__image img').nth(1).getAttribute('width'),'800');
   assert.equal(await native.locator('.woocommerce-product-gallery__image img').nth(1).getAttribute('height'),'1000');
+  assert.equal(await native.locator('.sf-product-gallery-thumb:not([hidden])').count(),3,'Only three previews are visible');
+  await native.locator('.woocommerce-product-gallery__wrapper').focus();
+  await native.keyboard.press('End');
+  await native.waitForFunction(()=>document.querySelector('.sf-product-gallery-count').textContent==='5 / 5');
+  assert.equal(await native.locator('.sf-product-gallery-thumb:not([hidden])').count(),3);
+  assert.equal(await native.locator('.sf-product-gallery-thumb[aria-current="true"]').getAttribute('hidden'),null,'Current image stays in the three-item window');
+  await native.locator('.woocommerce-product-gallery__wrapper').focus();await native.keyboard.press('Home');
+  await native.waitForFunction(()=>document.querySelector('.sf-product-gallery-count').textContent==='1 / 5');
+  assert.equal(await native.locator('.sf-product-gallery-thumb:not([hidden])').count(),3);
   await native.close();
   console.log('Gallery defer: cold secondary requests omitted; thumbnail, native class and fullscreen links passed.');
  }finally{await browser.close();}

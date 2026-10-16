@@ -15,8 +15,10 @@ require __DIR__ . '/../theme/codela-storefront/inc/media.php';
 function check( $result, $message ) { if ( ! $result ) { throw new RuntimeException( $message ); } }
 foreach ($actions['after_setup_theme'][10] as $callback) { $callback(); }
 check($filters['woocommerce_gallery_image_size']('woocommerce_gallery_thumbnail')==='woocommerce_single', 'Secondary full-frame photos use uncropped single size even without FlexSlider');
-check($filters['woocommerce_single_product_zoom_enabled'](true)===false, 'Product uses native lightbox without conflicting inline click zoom');
+check($filters['woocommerce_single_product_zoom_enabled'](true)===false, 'Native auto-zoom stays off; the adapter initializes Woo zoom on user request');
+check($filters['woocommerce_single_product_photoswipe_enabled'](true)===false, 'Product never opens a separate PhotoSwipe popup');
 $product_page=false;
+check($filters['woocommerce_single_product_photoswipe_enabled'](true)===true, 'Other contexts retain their lightbox setting');
 check($filters['woocommerce_gallery_image_size']('custom')==='custom', 'Other image contexts retain their size');
 check($filters['woocommerce_single_product_zoom_enabled'](true)===true, 'Other gallery contexts keep their zoom setting');
 $product_page=true;

@@ -31,13 +31,16 @@ add_action( 'after_setup_theme', function() {
         return function_exists( 'is_product' ) && is_product() ? 'woocommerce_single' : $size;
     } );
     // Native scrolling replaces the slider track for this product composition.
-    // Woo's image nodes, variation updates and PhotoSwipe remain the owners.
+    // Woo's image nodes and variation updates remain the owners.
     add_filter( 'woocommerce_single_product_flexslider_enabled', function( $enabled ) {
         return function_exists( 'is_product' ) && is_product() ? false : $enabled;
     }, 100 );
     // ClassicTemplate installs __return_true at priority 10 during render.
-    // Inline click-zoom consumes touch clicks before the native lightbox link.
-    // The lightbox remains the product image's single enlargement action.
+    // The existing Woo zoom plugin is initialized on demand by the adapter.
+    // Do not auto-download zoom images or open a second fullscreen gallery.
+    add_filter( 'woocommerce_single_product_photoswipe_enabled', function( $enabled ) {
+        return function_exists( 'is_product' ) && is_product() ? false : $enabled;
+    }, 100 );
     add_filter( 'woocommerce_single_product_zoom_enabled', function( $enabled ) {
         return function_exists( 'is_product' ) && is_product() ? false : $enabled;
     }, 100 );
@@ -60,7 +63,11 @@ add_action( 'after_setup_theme', function() {
         $tags = new WP_HTML_Tag_Processor( $html );
         if ( $tags->next_tag( 'a' ) ) {
             $tags->set_attribute( 'aria-label', __( 'Enlarge product image', 'codela-storefront' ) );
-            $tags->set_attribute( 'aria-haspopup', 'dialog' );
+            if ( function_exists( 'is_product' ) && is_product() ) {
+                $tags->remove_attribute( 'aria-haspopup' );
+            } else {
+                $tags->set_attribute( 'aria-haspopup', 'dialog' );
+            }
         }
         if ( $tags->next_tag( 'img' ) ) {
             if ( $is_hero ) {

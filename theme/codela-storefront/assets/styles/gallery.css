@@ -32,7 +32,7 @@
   display:block;width:100%;height:100%;max-height:none;object-fit:var(--sf-gallery-fit,contain);
 }
 /* Compact navigation rail; native Woo still owns selection and image changes.
-   The image link opens the native lightbox; no separate zoom control. */
+   The original image control requests inline zoom; no separate popup. */
 .sf-ui-gallery-nav,
 .woocommerce div.product div.sf-ui-gallery .flex-control-thumbs{
   --sf-gallery-thumb-size:54px;
@@ -105,6 +105,10 @@
 .sf-product-gallery-thumb.sf-ui-icon-button{flex:none;padding:0;width:48px;height:48px;overflow:hidden}
 .sf-product-gallery-thumb img{display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit}
 .sf-product-gallery-thumb[aria-current="true"]{outline:1px solid var(--sf-ui-ink);outline-offset:2px}
+.sf-product-gallery-thumb[hidden]{display:none!important}
+.sf-ui-gallery--scroll .woocommerce-product-gallery__image > a{cursor:zoom-in}
+.sf-ui-gallery--scroll .woocommerce-product-gallery__image.is-zoomed > a{cursor:zoom-out}
+.sf-ui-gallery--scroll .zoomImg{pointer-events:none}
 .sf-product-gallery-count{
   position:absolute;z-index:4;bottom:20px;left:20px;font-size:12px;line-height:1.5;
   color:var(--sf-ui-ink);pointer-events:none;
