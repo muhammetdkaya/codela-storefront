@@ -1,0 +1,17 @@
+# Product discovery0.1.101 acceptance
+
+## Son doğrulanmış durum — 16 Ekim 2026 / 0.1.101 ürün keşfi canlı ve kabul tamam
+
+Tema **0.1.99 → 0.1.101 canlı**; Codela eklentisi **1.1.1 runtime değişmedi**. Mobil related/upsell bölümleri özgün Woo kart/link/AJAX düğümleriyle son fotoğrafın ardından aynı dikey kaydırma alanındadır. Detay paneli yalnız mevcut ürün bilgilerini taşır. Kapalı panelde başlık/fiyat ve sağda44px açma kontrolü, altta aynı native quantity/submit vardır.320px'te yan yana kalırlar. İlgili ürünlerde panel daha da kısalır; fotoğraflara dönünce normal kapalı yüksekliğine döner. Ortak soft Button materyali kullanılır; satın alma footer'ı şeffaftır. Form/kart/sepet/galeri motoru kopyalanmadı; masaüstünde özgün DOM konumları geri gelir. Mevcut ürün sale etiketi keşifte gizlenir.
+
+**Yayın:** [PR33](https://github.com/muhammetdkaya/codela-storefront/pull/33) ve101 düzeltme kaynağı **a449a0229b2608e950ae01747f05b327570e0dd0**. [CI+gerçek FTP38861617638](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38861617638) başarılı; gerçek deploy06:37:24Z. CI ZIP ve public manifest SHA256 **23a0da00b07d1b6760dd8a1b96681263cd2418af5ef4ec34fc629ce31958aaab** aynı; public101/source/hash doğrulandı. WordPress.org veya dondurulmuş0.1.1 paket yayını yok.
+
+**Kabul:** PHP/JS/24 paket ve bütün mevcut browser regresyonları;320/390/700 panel, kısa başlık/modülsüz padding-only değişim, keyboard End ile keşif, native doğrulama, desktop restorasyon geçti. [Gerçek WP/Woo38861942257](https://github.com/muhammetdkaya/codela/actions/runs/38861942257) başarılı: WP6.5.5/Woo9.0.2 ve WP7.1.3/Woo11.2.1 × Chromium/WebKit; her ortam16 mevcut+5 modül+6 panel = **4/4 ortam,108 başarılı kayıt**.101 gerçek CI ZIP/source/hash'e pin'li; native varyasyon POST/cart, grouped ve bütün önceki akışlar geçti. Test kaynağı 0d78ded6a58787e70e759d8de61785fa3435be68.
+
+**Canlı:** sıkı galeri/keşif yüksekliği38862269759, WebKit38862269755, document38862269865, shell38862269737 başarılı. Gerçek Luna ürününün390px WebKit normal paneli yaklaşık115px; keşifte yeni hedef yüksekliğine varış ayrıca assert edildi. Panel ve menü soft Button zemini aynı rgba(247,247,249,0.96). Gerçek kapalı panel/ilgili kartlar ekranları incelendi. Canlı katalogda birer fotoğraf var; çoklu fotoğraf izolasyondaki gerçek3 görselli Woo ürününde doğrulandı. Ayarlar, ürünler, para birimi ve medya değiştirilmedi.
+
+**100 ara sürüm bulgusu:** iki gerçek Woo koşusu38860958607/38861293775 ve sıkı canlı38861323763 başarısızdır. İlk ölçüm eski CSS değişkenini animasyon bitmiş sanabiliyordu; yeni hedef beklenince kısa başlıklarda gerçek hata ortaya çıktı: varsayılan ResizeObserver content-box, yalnız header padding değişince tetiklenmiyor ve dış yükseklik eski kalıyordu.101 keşfe giriş/çıkış sınırında açık ölçüm yapar. Assertion kaldırılmadı; kısa başlık/modülsüz fixture ve gerçek/live yeni hedef-height kabulü geçti.
+
+**Açık performans:** [38862269849](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38862269849) lab bütçesi başarısız: cold mobil median LCP home14572ms/ürün14468ms; CLS0/0.02062. Önceden de açık olan büyük PNG medya konusu ayrı kalır; bütün gate'ler geçti denmez. Bu lab ölçümüdür, saha CWV değildir.
+
+**Sıradaki:** kullanıcı görsel kabulü; fiziksel Safari/toolbar/safe-area, gerçek harici ödeme sağlayıcısı ve yetkili/yedekli medya optimizasyonu ayrıca açık. Bu tasarımın kod/yayın/fonksiyonel kabulü tamamdır; kendiliğinden yeniden uygulama veya modül açma.
