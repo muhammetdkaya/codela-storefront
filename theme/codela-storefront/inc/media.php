@@ -67,9 +67,23 @@ add_action( 'after_setup_theme', function() {
                 $tags->set_attribute( 'loading', 'eager' );
                 $tags->set_attribute( 'fetchpriority', 'high' );
             } elseif ( function_exists( 'is_product' ) && is_product() && $attachment_id ) {
-                // Keep the uncropped native src/srcset and intrinsic ratio.
-                // Browser lazy loading prepares nearby photos without stretching
-                // a square thumbnail over the full product frame.
+                // A low-cost UNCROPPED preview keeps the same product framing.
+                // Do not let native lazy heuristics fetch every multi-MB PNG
+                // before the user starts browsing. Original responsive sources
+                // are promoted by the existing gallery adapter on real intent.
+                $preview = wp_get_attachment_image_src( (int) $attachment_id, 'medium' );
+                $source = $tags->get_attribute( 'src' );
+                if ( is_array( $preview ) && ! empty( $preview[0] ) && is_string( $source ) && $source !== $preview[0] ) {
+                    $tags->set_attribute( 'data-sf-gallery-src', $source );
+                    foreach ( [ 'srcset', 'sizes' ] as $attribute ) {
+                        $value = $tags->get_attribute( $attribute );
+                        if ( is_string( $value ) && $value ) {
+                            $tags->set_attribute( 'data-sf-gallery-' . $attribute, $value );
+                            $tags->remove_attribute( $attribute );
+                        }
+                    }
+                    $tags->set_attribute( 'src', $preview[0] );
+                }
                 $tags->set_attribute( 'loading', 'lazy' );
                 $tags->set_attribute( 'fetchpriority', 'low' );
             }

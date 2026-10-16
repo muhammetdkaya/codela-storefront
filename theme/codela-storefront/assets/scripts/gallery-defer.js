@@ -59,10 +59,20 @@
       nav.appendChild(button);
     });
     if(items.length>1&&!gallery.classList.contains('sf-ui-gallery--no-thumbs'))gallery.appendChild(nav);
+    let browsing=false;
+    function prepareAdjacent(index){activate(imageAt(index-1));activate(imageAt(index+1));}
+    function beginBrowsing(){
+      browsing=true;
+      const index=[...nav.children].findIndex(button=>button.getAttribute('aria-current')==='true');
+      prepareAdjacent(Math.max(0,index));
+    }
+    ['touchstart','pointerdown','wheel'].forEach(type=>track.addEventListener(type,beginBrowsing,{passive:true}));
+    track.addEventListener('keydown',event=>{if(['ArrowDown','ArrowUp','ArrowLeft','ArrowRight'].includes(event.key))beginBrowsing();});
     function update(index){
       count.textContent=(index+1)+' / '+items.length;
       [...nav.children].forEach((button,i)=>button.setAttribute('aria-current',String(i===index)));
       activate(imageAt(index));
+      if(browsing)prepareAdjacent(index);
     }
     let visible;
     function observe(){
@@ -79,7 +89,13 @@
       items.forEach(item=>visible.observe(item));
     }
     observe();
-    window.addEventListener('resize',observe);
+    let observedWidth=innerWidth;
+    window.addEventListener('resize',()=>{
+      // IO already follows viewport height. Reconnecting on every toolbar
+      // animation needlessly resets visibility/count while the page moves.
+      if(observedWidth===innerWidth)return;
+      observedWidth=innerWidth;observe();
+    });
     track.addEventListener('keydown',event=>{
       if(event.target!==track||!['ArrowDown','ArrowUp','ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
       const current=[...nav.children].findIndex(button=>button.getAttribute('aria-current')==='true');

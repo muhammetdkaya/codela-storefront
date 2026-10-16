@@ -31,6 +31,8 @@
     var downY = null;
     var downX = null;
     var dragged = false;
+    var photoWidth = 0;
+    var discoveryFrame = 0;
     function move(node, target) {
       if (!node) return;
       var marker = document.createComment('sf-product-position');
@@ -46,11 +48,14 @@
       var dockHeight = !purchase ? (document.querySelector('.sf-mobile-dock')?.getBoundingClientRect().height || 0) : 0;
       var height = sheet.querySelector('.sf-product-sheet-header').getBoundingClientRect().height + footerHeight + dockHeight + 16;
       // Preserve the visible product framing with a corner-sized overlap.
-      // Discovery compaction must not resize all preceding photographs.
-      if (!expanded && !sheet.classList.contains('is-discovering')) {
+      // Cache normal geometry per width: panel state and browser toolbar
+      // resizing must never move preceding photographs or snap positions.
+      if (!expanded && !sheet.classList.contains('is-discovering') && photoWidth !== media.clientWidth) {
         var inset = Math.max(0, height - 32) + 'px';
         media.style.setProperty('--sf-product-photo-inset', inset);
         document.documentElement.style.setProperty('--sf-product-photo-inset', inset);
+        media.style.setProperty('--sf-product-normal-height', height + 'px');
+        photoWidth = media.clientWidth;
       }
       media.style.setProperty('--sf-product-collapsed-height', height + 'px');
       document.body.style.setProperty('--sf-product-collapsed-height', height + 'px');
@@ -77,7 +82,7 @@
     }
     function isDiscovering() {
       return mounted && discovery.children.length > 0 && track &&
-        discovery.getBoundingClientRect().top < window.innerHeight * .6;
+        discovery.getBoundingClientRect().top < window.innerHeight * (media.classList.contains('is-discovering') ? .65 : .55);
     }
     function updateDiscovery() {
       if (!mounted) return;
@@ -90,7 +95,10 @@
       // Measure this state boundary explicitly, including short product names.
       if (changed) measure();
     }
-    window.addEventListener('scroll', updateDiscovery, {passive:true});
+    window.addEventListener('scroll', function () {
+      if (!mounted || discoveryFrame) return;
+      discoveryFrame = requestAnimationFrame(function () { discoveryFrame = 0; updateDiscovery(); });
+    }, {passive:true});
     function mount() {
       if (mounted) return;
       mounted = true;
@@ -130,6 +138,10 @@
       document.body.classList.remove('sf-product-sheet-ready', 'sf-product-sheet-open');
       media.style.removeProperty('--sf-product-collapsed-height');
       media.style.removeProperty('--sf-product-photo-inset');
+      media.style.removeProperty('--sf-product-normal-height');
+      photoWidth = 0;
+      cancelAnimationFrame(discoveryFrame);
+      discoveryFrame = 0;
       document.documentElement.style.removeProperty('--sf-product-photo-inset');
       document.body.style.removeProperty('--sf-product-collapsed-height');
       mounted = false;

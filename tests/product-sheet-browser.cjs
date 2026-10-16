@@ -77,6 +77,25 @@ for(const width of [320,390,700]){
  await page.setViewportSize({width:1280,height:900});await page.waitForFunction(()=>!document.querySelector('.sf-product-sheet'));assert.equal(await page.locator('.sf-product-sheet').count(),0,'Desktop restores original document');assert.equal(await page.locator('div.product > .summary .product_title').count(),1);assert.equal(await page.locator('div.product > .related').count(),1,'Desktop recommendation position restored');assert.equal(await page.locator('.sf-product-discovery').count(),0);assert.equal(await page.locator('body > .sf-footer').count(),1);assert.equal(await page.locator('form.cart .single_add_to_cart_button').count(),1);
  await page.setViewportSize({width,height:844});await page.waitForFunction(()=>!!document.querySelector('.sf-product-sheet'));assert.equal(await page.locator('.sf-product-sheet').count(),1,'Return to mobile mounts once');
 }
+// Keep document photo edges and snap targets stable across repeated discovery
+// entry/exit and height-only browser-toolbar changes. CSS tokens emulate the
+// stable small/large viewports while Playwright changes the visible viewport.
+await page.setViewportSize({width:390,height:844});await load(page);
+await page.evaluate(()=>{document.documentElement.style.setProperty('--sf-product-viewport-small','760px');document.documentElement.style.setProperty('--sf-product-viewport-large','844px')});
+const stableEdges=await page.locator('.woocommerce-product-gallery__image').evaluateAll(nodes=>nodes.map(e=>scrollY+e.getBoundingClientRect().top));
+for(let cycle=0;cycle<3;cycle++){
+ await page.evaluate(()=>{const e=document.querySelector('.sf-product-discovery');window.scrollTo({top:scrollY+e.getBoundingClientRect().top,behavior:'instant'})});
+ await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-discovering'));
+ const reserved=await page.locator('.sf-product-discovery').evaluate(e=>getComputedStyle(e).paddingBottom);
+ await page.setViewportSize({width:390,height:760});
+ await page.evaluate(()=>{const e=document.querySelectorAll('.woocommerce-product-gallery__image')[2];window.scrollTo({top:scrollY+e.getBoundingClientRect().top,behavior:'instant'})});
+ await page.waitForFunction(()=>!document.querySelector('.sf-product-sheet').classList.contains('is-discovering'));
+ await page.waitForFunction(()=>Math.abs(document.querySelectorAll('.woocommerce-product-gallery__image')[2].getBoundingClientRect().top)<1);
+ const edges=await page.locator('.woocommerce-product-gallery__image').evaluateAll(nodes=>nodes.map(e=>scrollY+e.getBoundingClientRect().top));
+ edges.forEach((edge,i)=>assert(Math.abs(edge-stableEdges[i])<1,'Toolbar/panel does not move photo edge '+i));
+ assert.equal(await page.locator('.sf-product-discovery').evaluate(e=>getComputedStyle(e).paddingBottom),reserved,'Discovery compaction does not resize its snap area');
+ await page.setViewportSize({width:390,height:844});
+}
 await page.setViewportSize({width:390,height:844});await load(page,{variable:true});await page.locator('.single_add_to_cart_button').click();assert.equal(await page.locator('.sf-product-sheet-toggle').getAttribute('aria-expanded'),'true');await page.waitForFunction(()=>document.activeElement?.id==='color');assert.equal(await page.locator('#color').evaluate(e=>e===document.activeElement),true,'Missing native variation focused');await page.locator('#color').selectOption('cream');
 await load(page,{stock:false});assert.equal(await page.locator('.single_add_to_cart_button').count(),0);await page.locator('.sf-product-sheet-toggle').click();assert(await page.locator('.out-of-stock').isVisible(),'Stockless product details accessible');
 await load(page,{short:true});

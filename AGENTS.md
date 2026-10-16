@@ -1,5 +1,14 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Çalışma — 16 Ekim 2026 / 0.1.106 sabit galeri ve keşif geçişi
+
+Tema **0.1.105 → 0.1.106 hazırlanıyor**, eklenti **1.1.1 değişmedi**. Kullanıcı ilgili ürünlere girip çıkarken ve bazen fotoğraflarda titreme bildirdi. Fotoğraf blokları dinamik100dvh yerine stabil büyük viewport'a dayanır; negatif scroll-margin sadece snap alanını küçük viewport'a indirir, root padding dinamik toolbar farkını karşılar. Böylece native fotoğraf adımları korunurken Safari toolbar'ı bütün önceki fotoğraf konumlarını değiştirmez. Panelin normal fotoğraf payı genişlik başına ölçülür; keşif compaction ve height-only resize galeri/snap geometrisini yeniden yazmaz. Keşif alt rezervi normal panel yüksekliğinde sabit; scroll anchoring kapalı. Keşif sınırında55/65% hysteresis, passive scroll başına tek rAF; IO yalnız genişlik değiştiğinde yeniden kurulur.
+
+105 kalite düzeltmesi canlı ve dört canlı fonksiyonel gate başarılı; kaynak458a1140638f28d780cf09a2f2f436b17b528c5a, gerçek ZIP d71669ab1bb096dc3ca0691e1ea0ee6b98ece03e9037877b5ad2dc996eae6d6f.105 gerçek Woo38896666300 dört ortam ürün panel/kalite kabulünü geçti, matrisin yeni WebKit ortamı mevcut block-checkout badge timeout'unda kaldı; tüm matris başarılı denmez.105 performans38896392681 başarısız: ürün cold median53428ms, secondary8184988bytes (home14604ms). Native lazy heuristics dört orijinal PNG'yi başlangıçta indiriyordu.106 doğru oranlı medium önizlemeyi kullanıp özgün responsive kaynağı gerçek galeri niyetinde/görünürlükte mevcut adapter ile yükseltir; komşu fotoğraf önceden hazırlanır, hepsi başlangıçta indirilmez. Orijinal medya/data/ayarlar değiştirilmez.
+
+Yerel JS/24 paket başarılı. Yeni üç tekrar keşif gidiş/dönüş ve toolbar yüksekliği simülasyonu bütün fotoğraf mutlak koordinatlarını ve keşif rezervini kontrol eder.106 CI/FTP, yeni ZIP/hash/source pin'li gerçek Woo ve canlı/performance kabulü bekleniyor. Fiziksel Safari/GPU/toolbar hareketi ayrıca açık; önceki performans bütçesi geçti diye sunulmaz.
+
+
 ## Çalışma — 16 Ekim 2026 / 0.1.105 galeri kalitesi ve fotoğraf adımları
 
 Tema **0.1.104 → 0.1.105 hazırlanıyor**, eklenti **1.1.1 değişmedi**. Canlı HTML incelemesi ikinci ve sonraki img kaynaklarının100×100 kare Woo thumbnail olduğunu kanıtladı: FlexSlider kapalıyken Woo secondary image size seçimi thumbnail'a düşüyordu. Ürün belgesindeki native `woocommerce_gallery_image_size` artık `woocommerce_single`; bütün fotoğrafların doğru oranlı responsive src/srcset/width/height bilgisi korunur. Kare thumbnail ile değiştirme kaldırılır; ilk fotoğraf eager/high, diğerleri native lazy/low. Orijinal medya, thumbnail rail ve PhotoSwipe büyük görseli değişmez.

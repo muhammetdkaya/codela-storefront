@@ -25,6 +25,20 @@ const {chromium}=require('playwright');
   await page.waitForFunction(()=>document.querySelectorAll('.woocommerce-product-gallery__image img')[2].getAttribute('src').endsWith('full3.jpg'));
   assert(requested.includes('full3.jpg'),'Native active class mutation promotes slide');
   assert.equal(await page.locator('.woocommerce-product-gallery__image').nth(2).locator('a').getAttribute('href'),'https://media.example/full3.jpg','PhotoSwipe href untouched');
+  const native=await browser.newPage({viewport:{width:390,height:844}});
+  const nativeRequests=[];
+  await native.route('https://native.example/**',route=>{nativeRequests.push(route.request().url().split('/').pop());return route.fulfill({status:200,contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000"></svg>'});});
+  await native.setContent('<style>body{margin:0}.woocommerce-product-gallery__image{height:900px}img{width:100%;height:100%;object-fit:cover}</style><div class="woocommerce-product-gallery sf-ui-gallery sf-ui-gallery--scroll"><div class="woocommerce-product-gallery__wrapper">'+[1,2,3,4,5].map(n=>'<div class="woocommerce-product-gallery__image" data-thumb="https://native.example/thumb'+n+'.svg"><a href="https://native.example/full'+n+'.svg"><img width="800" height="1000" '+(n>1?'data-sf-gallery-src="https://native.example/full'+n+'.svg" ':'')+'src="https://native.example/'+(n===1?'full':'medium')+n+'.svg"></a></div>').join('')+'</div></div>');
+  await native.addScriptTag({content:fs.readFileSync('theme/codela-storefront/assets/scripts/gallery-defer.js','utf8')});
+  await native.waitForTimeout(200);
+  assert(!nativeRequests.some(name=>/^full[2-5]/.test(name)),'Native cold gallery does not fetch all secondary originals');
+  await native.locator('.woocommerce-product-gallery__wrapper').dispatchEvent('pointerdown',{pointerType:'touch'});
+  await native.waitForFunction(()=>document.querySelectorAll('.woocommerce-product-gallery__image img')[1].src.includes('full2'));
+  assert(!nativeRequests.some(name=>/^full[3-5]/.test(name)),'Real intent prepares the adjacent photo, not the whole gallery');
+  assert.equal(await native.locator('.woocommerce-product-gallery__image img').nth(1).getAttribute('width'),'800');
+  assert.equal(await native.locator('.woocommerce-product-gallery__image img').nth(1).getAttribute('height'),'1000');
+  await native.close();
   console.log('Gallery defer: cold secondary requests omitted; thumbnail, native class and fullscreen links passed.');
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exit(1)});
+
