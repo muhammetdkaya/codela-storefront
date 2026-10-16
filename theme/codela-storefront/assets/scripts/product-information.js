@@ -135,6 +135,7 @@
     function mount() {
       if (mounted) return;
       mounted = true;
+      sheet.classList.add('is-mounting');
       move(title, heading);
       move(price, heading);
       var notices = document.querySelector('.woocommerce-notices-wrapper');
@@ -184,6 +185,8 @@
       document.documentElement.classList.remove('sf-product-sheet-pending');
       // Validation and server messages must never be stranded behind a sheet.
       if (location.hash || document.querySelector('.woocommerce-error,.woocommerce-message')) setOpen(true);
+      sheet.getBoundingClientRect();
+      sheet.classList.remove('is-mounting');
     }
     function unmount() {
       if (!mounted) return;
