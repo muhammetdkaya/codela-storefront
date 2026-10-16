@@ -113,6 +113,7 @@ const {liveProduct}=require('./live-product.cjs');
  const bottom=await page.evaluate(()=>({y:scrollY,height:document.documentElement.scrollHeight}));
  assert.equal(await page.locator('html').evaluate(e=>getComputedStyle(e).overscrollBehaviorY),'none','No bottom boundary rubber-band in recommendations');
  assert.equal(await page.locator('body').evaluate(e=>getComputedStyle(e).overscrollBehaviorY),'none');
+ assert.equal(await page.locator('html').evaluate(e=>getComputedStyle(e).scrollSnapType),'none','Recommendations must scroll without photo snapping');
  await page.mouse.move(190,400);
  for(let gesture=0;gesture<3;gesture++)await page.mouse.wheel(0,500);
  const settled=await page.evaluate(async()=>{const samples=[];for(let i=0;i<60;i++){await new Promise(requestAnimationFrame);samples.push({y:scrollY,height:document.documentElement.scrollHeight})}return samples});
