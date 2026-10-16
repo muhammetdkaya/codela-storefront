@@ -68,15 +68,18 @@
     function observe(){
       if(!('IntersectionObserver' in window)){items.forEach((_,i)=>activate(imageAt(i)));return;}
       visible?.disconnect();
+      const vertical=matchMedia('(max-width:700px)').matches;
+      const bottom=vertical?(parseFloat(document.body.style.getPropertyValue('--sf-product-collapsed-height'))||120):0;
       visible=new IntersectionObserver(entries=>{
         entries.forEach(entry=>{
           if(entry.isIntersecting){activate(entry.target.querySelector('a > img:not(.zoomImg)'));
             if(entry.intersectionRatio>=.55)update(items.indexOf(entry.target));}
         });
-      },{root:matchMedia('(max-width:700px)').matches?null:track,threshold:[0.05,.55]});
+      },{root:vertical?null:track,rootMargin:'0px 0px -'+bottom+'px 0px',threshold:[0.05,.55]});
       items.forEach(item=>visible.observe(item));
     }
     observe();
+    window.addEventListener('resize',observe);
     track.addEventListener('keydown',event=>{
       if(event.target!==track||!['ArrowDown','ArrowUp','ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
       const current=[...nav.children].findIndex(button=>button.getAttribute('aria-current')==='true');
