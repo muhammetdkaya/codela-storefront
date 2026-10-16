@@ -1,5 +1,10 @@
 # Codela Storefront — güncel teknik durum
 
+## Güncel çalışma — 0.1.104 ürün kadrajı ve panel örtüşmesi
+
+103 aralıksız root fotoğrafları canlı.104 hazırlanıyor: canlı Kavis ekranında tam viewport yüksekliğinin fazladan cover kırpması görüldü. Fotoğraf bloğu normal kapalı panelin üstünde kalan yüksekliğe göre boyutlanır ve yuvarlak köşeleri kapatacak yaklaşık24px panel altına uzanır; padding/boş satır yok. Normal panel ölçüsünden türeyen photo-inset keşif compaction sırasında değiştirilmez; aksi halde bütün önceki görseller kayıp scroll sıçrayabilirdi. Safe-area CSS'te düşülür; sayaç aynı inset'i izler. Native root overscroll ve açık panel kilidi korunur. Fixture ve gerçek Woo geometry kabulü görünür ürün alanının ayrıldığını da doğrular. Eklenti1.1.1 değişmedi. Yerel JS/24 paket başarılı;104 CI/FTP/native Woo/canlı kabulü bekleniyor. Fiziksel Safari refresh hareketi otomatik test edilmedi, root yolu native bırakıldı. PNG performans konusu ayrıca açık.
+
+
 ## Güncel çalışma — 0.1.103 native Woo ikinci görsel satır boşluğu
 
 102 native belge scroll ve padding kaldırma canlıya geçti;103 hazırlanıyor. Gerçek Woo CSS ikinci ve sonraki .woocommerce-product-gallery__image için display:inline-block verir.103 mobil akışta özgün görsel düğümlerini açık display:block/float:none yapar; satırın baseline boşluğu oluşmaz. Fixture artık gerçek Woo images sınıfını/inline-block kuralını içerir ve yalnız ilk çifti değil TÜM ardışık fotoğraf kenarlarını ölçer. Plugin1.1.1 değişmedi. Yerel JS/24 paket başarılı;103 CI/FTP ve103 ZIP/source/hash ile gerçek Woo/canlı kabulü bekleniyor. Native Safari pull-to-refresh fiziksel toolbar otomasyonu değildir; root scroll ve overscroll-auto yolu otomatik doğrulanır. Ağır PNG medya konusu ayrıca açık.
