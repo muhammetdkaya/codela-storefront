@@ -22,6 +22,9 @@
     var price = summary.querySelector('.sf-product-price-row, :scope > .price');
     var purchase = summary.querySelector('.sf-product-purchase');
     var mobile = matchMedia('(max-width:700px)');
+    var track = media.querySelector('.woocommerce-product-gallery__wrapper');
+    var discovery = document.createElement('div');
+    discovery.className = 'sf-product-discovery';
     var originals = [];
     var mounted = false;
     var expanded = false;
@@ -48,13 +51,13 @@
     function setOpen(open, focusTarget) {
       if (!mounted) return;
       expanded = open;
-      if (open) {
-        var track = media.querySelector('.woocommerce-product-gallery__wrapper');
+      if (open && !sheet.classList.contains('is-discovering')) {
         if (track) track.scrollTo({left:track.scrollLeft, top:Math.round(track.scrollTop / track.clientHeight) * track.clientHeight, behavior:'instant'});
       }
       sheet.classList.toggle('is-expanded', open);
       toggle.setAttribute('aria-expanded', String(open));
       media.inert = open;
+      sheet.classList.toggle('is-discovering', !open && isDiscovering());
       if (!open && content.contains(document.activeElement) && !purchase?.contains(document.activeElement)) toggle.focus({preventScroll:true});
       if (open && focusTarget) requestAnimationFrame(function () {
         focusTarget.scrollIntoView({block:'nearest'});
@@ -62,6 +65,17 @@
       });
       measure();
     }
+    function isDiscovering() {
+      return mounted && discovery.children.length > 0 && track &&
+        discovery.getBoundingClientRect().top < track.getBoundingClientRect().top + track.clientHeight * .6;
+    }
+    function updateDiscovery() {
+      if (!mounted) return;
+      var active = isDiscovering();
+      media.classList.toggle('is-discovering', active);
+      sheet.classList.toggle('is-discovering', active && !expanded);
+    }
+    if (track) track.addEventListener('scroll', updateDiscovery, {passive:true});
     function mount() {
       if (mounted) return;
       mounted = true;
@@ -72,10 +86,13 @@
       // Keep the original summary/form hierarchy, extension inputs, native
       // quantity and submit button. The fixed purchase escapes body clipping.
       Array.from(product.children).forEach(function (node) {
+        // Reuse native recommendation cards after the last photograph.
+        if (track && node.matches('.related,.upsells')) { move(node, discovery); return; }
         if (node !== media && node !== template && !node.classList.contains('onsale')) move(node, content);
       });
       var footer = document.querySelector('.sf-footer');
       if (footer) move(footer, content);
+      if (track && discovery.children.length) track.appendChild(discovery);
       product.appendChild(sheet);
       document.body.classList.add('sf-product-sheet-ready');
       if (purchase) sheet.classList.add('has-purchase');
@@ -90,6 +107,9 @@
       // Restore containers before their children using the exact anchor nodes.
       originals.slice().reverse().forEach(function (entry) { entry[1].replaceWith(entry[0]); });
       originals = [];
+      discovery.remove();
+      media.classList.remove('is-discovering');
+      sheet.classList.remove('is-discovering');
       sheet.remove();
       sheet.classList.remove('is-expanded');
       document.body.classList.remove('sf-product-sheet-ready');

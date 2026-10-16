@@ -1,5 +1,15 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Güncel çalışma — 16 Ekim 2026 / 0.1.100 ürün keşif akışı
+
+Tema **0.1.99 → 0.1.100 hazırlanıyor**, eklenti **1.1.1 değişmedi**. Kullanıcı onayıyla native related/upsell düğümleri panelden çıkıp dikey fotoğrafların ardından aynı scroll alanına taşındı. Kart/URL/AJAX kopyalanmaz; masaüstünde özgün konumlarına döner. İlgili ürünler görünürken kapalı panel bir satır başlığa küçülür, fotoğraflarda normal kapalı düzene döner. Kapalı panelde başlık/fiyat yan yana, açma kontrolü sağda44px; gereksiz ayrı kontrol satırı kaldırıldı. Aynı shared soft Button zemin/materiali kullanılır; native satın alma footer'ı şeffaftır.320px'te quantity ve submit yan yana kalır.
+
+**Doğrulama:** yerel JS sözdizimi ve24 paket testi başarılı. Yeni browser kabulü related erişimi, panel küçülmesi/geri dönüş, desktop restorasyonu ve native formu kontrol eder; CI/canlı sonucu henüz bekleniyor. Önceki99 testleri100 kabulü olarak sunulmaz. Önceki ağır PNG cold-LCP bulgusu ayrı açık; medya/ayarlar değiştirilmedi.
+
+**Sıradaki:** CI browser kabulü, gerçek FTP, canlı sürüm ve görsel kontrolü. Fiziksel Safari ve gerçek gateway kabulü ayrıca açık.
+
+
+
 ## Son doğrulanmış durum — 16 Ekim 2026 / 0.1.99 ürün paneli canlı
 
 Tema **0.1.98 → 0.1.99 canlı**; Codela eklentisi **1.1.1 runtime değişmedi**. Mobil fotoğraflar dikey native scroll-snap ile gezilir. Alt panel kapalıyken özgün başlık/fiyat/urgency ve aynı native satın alma kontrolleri görünür. Ortak Button veya başlığı sürükleyerek açılır; seçenekler, etkin modüller, Woo bilgi/yorum callback'leri, trust, öneriler ve footer bağlantıları bağımsız kayar. Açık panelde galeri inert/sabit; satın alma hep altta. Eksik varyasyon, grouped seçim ve native invalid input orijinal alanı açar. Escape/hash, global dialog/PhotoSwipe gizleme, reduced motion ve masaüstünde özgün DOM'a dönüş doğrulandı. Form/quantity/submit/variation_id kopyası veya ikinci cart/store/router yok. JS yoksa orijinal belge/yatay galeri kullanılabilir.
