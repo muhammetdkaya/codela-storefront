@@ -1,6 +1,7 @@
 // Read-only lab audit of public storefront pages. No order, login or cart writes.
 const {chromium}=require('playwright');
 const fs=require('node:fs');
+const {liveProduct}=require('./live-product.cjs');
 const {evaluateBudget}=require('./performance-budget.cjs');
 const OUT='qa/performance';fs.mkdirSync(OUT,{recursive:true});
 const pages={home:'https://codela.dev/',product:'https://codela.dev/urun/demo-20-v-yaka-tisort-secki/'};
@@ -27,7 +28,7 @@ async function snapshot(page){return page.evaluate(()=>{
   hero:(()=>{const img=document.querySelector('.woocommerce-product-gallery__image img.wp-post-image');
     return img?{loading:img.loading,priority:img.fetchPriority,width:img.clientWidth}:null;})()};
 });}
-(async()=>{const browser=await chromium.launch({headless:true});report.browser=browser.version();
+(async()=>{pages.product=(await liveProduct()).url;const browser=await chromium.launch({headless:true});report.browser=browser.version();
  try{for(const profile of profiles){for(const [name,url] of Object.entries(pages)){for(let repeat=1;repeat<=3;repeat++){
   const {cpu,latency,download,upload,name:profileName,...options}=profile;
   const context=await browser.newContext(options);await instrument(context);const page=await context.newPage();const cdp=await context.newCDPSession(page);
@@ -68,3 +69,4 @@ async function snapshot(page){return page.evaluate(()=>{
  if(!budget.pass){console.error('PERF_BUDGET_FAILED '+budget.failures.join('; '));process.exitCode=1;}
  console.log('PERF_RESULT '+JSON.stringify(report));
 })().catch(e=>{console.error(e);save();process.exitCode=1;});
+

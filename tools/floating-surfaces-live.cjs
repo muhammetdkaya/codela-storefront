@@ -3,6 +3,7 @@
 const {webkit}=require('playwright');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
+const {liveProduct}=require('./live-product.cjs');
 const pages=[
  {name:'home',url:'https://codela.dev/',selectors:['.sf-brand','.sf-header-menu .sf-menu-trigger','.sf-mobile-dock .sf-dock-surface']},
  {name:'product-search',url:'https://codela.dev/?s=Demo&post_type=product',selectors:['.sf-brand','.sf-header-menu .sf-menu-trigger','.sf-mobile-dock .sf-dock-surface']},
@@ -15,6 +16,7 @@ const alpha=color=>{
  return values.length>=4?Number(values[3]):1;
 };
 (async()=>{
+ const product=await liveProduct();pages.find(p=>p.name==='product').url=product.url;pages.find(p=>p.name==='product-search').url='https://codela.dev/?s='+encodeURIComponent(product.search)+'&post_type=product';
  const browser=await webkit.launch();
  const results=[];
  try{

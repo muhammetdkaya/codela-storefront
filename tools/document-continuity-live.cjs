@@ -3,9 +3,11 @@
 const assert=require('node:assert/strict');
 const {chromium}=require('playwright');
 const fs=require('node:fs');
+const {liveProduct}=require('./live-product.cjs');
 const HOME='https://codela.dev/';
-const PRODUCT='https://codela.dev/urun/demo-20-v-yaka-tisort-secki/';
+let PRODUCT;
 (async()=>{
+ const product=await liveProduct();PRODUCT=product.url;
  const browser=await chromium.launch();
  const samples=[];
  try{
@@ -40,7 +42,7 @@ const PRODUCT='https://codela.dev/urun/demo-20-v-yaka-tisort-secki/';
    await page.locator('#sf-qa-native-product').click();
    await page.waitForURL(url=>url.href.startsWith(PRODUCT),{timeout:20000});
    await page.locator('.woocommerce-product-gallery').waitFor({timeout:20000});
-   await page.waitForFunction(()=>window.jQuery?.('.woocommerce-product-gallery').data('flexslider')?.count===3,{timeout:20000});
+   await page.locator('.sf-product-gallery-count').waitFor({timeout:20000});
    const evidence=await page.evaluate(()=>({
      version:document.querySelector('link[href*="styles/tokens.css"]')?.href,
      headerName:getComputedStyle(document.querySelector('.sf-header')).viewTransitionName,
@@ -62,8 +64,11 @@ const PRODUCT='https://codela.dev/urun/demo-20-v-yaka-tisort-secki/';
      assert(!evidence.dockVisible,'Product does not display two mobile bars');
    }
    assert(!errors.length,'No JS page errors: '+errors.join('; '));
-   await page.locator('.flex-control-thumbs img').nth(1).click();
-   await page.waitForFunction(()=>window.jQuery('.woocommerce-product-gallery').data('flexslider').currentSlide===1);
+   if(product.images>1){
+    if(width===390){await page.locator('.woocommerce-product-gallery__wrapper').focus();await page.keyboard.press('ArrowDown');}
+    else await page.locator('.sf-product-gallery-thumb').nth(1).click();
+    await page.waitForFunction(()=>document.querySelector('.sf-product-gallery-count').textContent.startsWith('2 /'));
+   }
    samples.push({width, ...evidence,pageErrors:errors});
    console.log('CONTINUITY_ACCEPT '+JSON.stringify(samples.at(-1)));
    await context.close();
@@ -74,3 +79,4 @@ const PRODUCT='https://codela.dev/urun/demo-20-v-yaka-tisort-secki/';
   await browser.close();
  }
 })().catch(err=>{console.error(err);process.exitCode=1});
+
