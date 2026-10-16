@@ -1,5 +1,13 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Çalışma — 16 Ekim 2026 / 0.1.110 → 0.1.111 sade satın alma ve açık panel modülleri
+
+Kullanıcı son görselin siteye uygulanmasını, kapalıyken ücretsiz kargo bilgisinin hiç görünmemesini istedi. Kapalı mobil panel yalnız ürün başlığı/fiyat ve native adet/Sepete Ekle içerir. Mevcut etkin ETA ve ücretsiz kargo DOM düğümleri açık panelde native **Teslimat ve kargo** disclosure'ına taşınır; WhatsApp aynı özgün linkle bilgi bölümlerinden sonra ayrı satırdır. Native taksit/ürün/yorum callback'leri, canlı shipping scripti ve sunucu hesapları korunur; örnek tarih/stok/iade metni veya kapalı modül üretilmez. Mobil bilgi bölümleri başlangıçta kapalıdır, masaüstüne dönüşte özgün düğüm konumları/açık durumları geri gelir.
+
+Native Woo miktar girişinin iki yanında ortak quiet Button ile44px −/+; input.stepUp/stepDown, input/change olayları ve güncel min/max/disabled/readonly sınırları korunur. Tek form, tek qty ve tek submit vardır. Satın alma düğmesi220px üst hedefle esner;320px'de aynı satırda kalır. Plugin1.1.1 runtime, ayarlar ve WordPress.org değişmedi.
+
+Yerel JS sözdizimi ve24 paket kontrolü başarılı. Bu ortamda PHP ve tarayıcı binary'si bulunmadığından gerçek template/browser kontrolü CI'ye bırakıldı; browser indirme ağı kullanılamadı. Güncel PHP template'ini kullanan320/390/700 testleri kapalı kargo yokluğu, native disclosure, qty sınırları ve masaüstü geri taşımayı kapsar. CI/gerçek FTP ve111 kaynaklı canlı kabul **bekleniyor**; tamamlandı/canlı denmez. Önceki110 alt boşluk/geometri kabulü korunmalı. Ağır PNG cold-LCP, fiziksel Safari ve gerçek gateway ayrı açık.
+
 ## Son doğrulanmış devam noktası — 16 Ekim 2026 / 0.1.110 ilgili ürünler son boşluk canlı
 
 Tema **0.1.108→0.1.109→0.1.110 canlı**, eklenti **1.1.1 runtime değişmedi**. Kullanıcının ekran görüntüsündeki son ilgili ürün kartı–sabit satın alma paneli arasındaki büyük boşluk giderildi. 0.1.109 canlı testinde kalan 138.3125px fazlalık tespit edildi; 0.1.110'da yalnız discovery altındaki eski fazla panel rezervi ve native katalog gridinin32px alt marjı kaldırıldı. Gerçek safe-area korundu; fotoğraflar, panel, tek Woo formu, sepet, native snap/overscroll, inline zoom ve üç preview aynı.

@@ -1,5 +1,9 @@
 # Codela Storefront UI Kit — source of truth
 
+## Product sheet modules — 0.1.111
+
+Collapsed mobile purchase contains no shipping message, progress or contact. Existing live ETA/shipping nodes move into one native Delivery and shipping disclosure inside the expanded information region; existing WhatsApp link is a separate row after information. No copied plugin data, extra form or new module instance. Mobile native information starts closed, desktop restores its original state/position. Native quantity receives shared quiet44px step buttons; min/max/step and Woo input/change stay authoritative. Purchase CTA is capped at220px where space permits, with natural shrinking at320px. Original gallery/snap/discovery geometry rules stay in place.
+
 ## Native recommendation tail — 0.1.110 correction
 
 Live 0.1.109 measured 138px between the final product card and fixed purchase sheet. The 99px leftover section padding plus the native shared grid's 32px bottom margin were redundant. The mobile discovery section now reserves only the device's safe area and scopes a 0px bottom margin for existing `ul.products` inside `.related`/`.upsells`; the shared catalog margin is unchanged everywhere else. Preserve photo coordinates, scroll snap/overscroll rules, and the native purchase UI; live acceptance enforces a small positive final card-to-sheet gap.

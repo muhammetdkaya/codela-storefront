@@ -530,6 +530,19 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
     flex:1 1 0;min-width:0;font-size:14px;
   }
   body.sf-product-sheet-ready div.product form.cart .sf-product-purchase .quantity{flex:0 0 auto}
+  body.sf-product-sheet-ready .sf-product-sheet-body > .cdl-wa{
+    margin:0 20px;padding:8px 0;border-top:1px solid var(--sf-ui-border);
+  }
+  body.sf-product-sheet-ready .sf-product-sheet-body > .cdl-wa .cdl-wa-button{display:flex;width:100%}
+  body.sf-product-sheet-ready .sf-product-sheet-body > .cdl-wa .cdl-wa-ico{
+    --sf-ui-control-ink:var(--sf-ui-ink);--sf-ui-glass-ink:var(--sf-ui-ink);color:var(--sf-ui-ink);
+  }
+  body.sf-product-sheet-ready .sf-product-sheet-body > .cdl-wa .cdl-wa-button::after{
+    content:'↗';margin-inline-start:auto;font-size:20px;
+  }
+  body.sf-product-sheet-ready .sf-product-delivery:not(:has(.cdl-de,.cdl-fsb--product)){display:none}
+  body.sf-product-sheet-ready .sf-product-delivery .cdl-de{margin:0 0 12px}
+  body.sf-product-sheet-ready .sf-product-delivery .cdl-fsb--product{margin:0}
   body.sf-product-sheet-ready:has(#sf-panel[open],.pswp--open) .sf-product-sheet,
   body.sf-product-sheet-ready:has(#sf-panel[open],.pswp--open) .sf-product-sheet .sf-product-purchase{visibility:hidden}
   body.sf-product-sheet-ready .sf-product-plugin-footer .cdl-wa-float{
@@ -537,6 +550,27 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   }
   body.sf-product-sheet-ready:has(.sf-product-sheet.is-expanded) .sf-product-plugin-footer{visibility:hidden}
   body.sf-product-sheet-ready .sf-product-sheet-body .sf-footer{padding:20px;margin-top:24px}
+}
+
+/* Quantity is still Woo's one input, composed with the existing quiet Button. */
+body.single-product div.product .sf-product-quantity{align-items:center;gap:0}
+body.single-product div.product .sf-product-quantity .sf-product-quantity-step.sf-ui-button{
+  display:none;--sf-ui-button-height:44px;--sf-ui-button-padding-x:0px;
+  min-width:44px;width:44px;min-height:44px;padding:0;font-size:20px;flex:none;
+}
+body.single-product div.product .sf-product-quantity .sf-product-quantity-step[disabled]{cursor:default}
+@media(max-width:700px){
+  body.single-product.sf-product-sheet-ready div.product .sf-product-quantity:not(.is-fixed) .sf-product-quantity-step.sf-ui-button{display:inline-flex}
+  body.single-product.sf-product-sheet-ready div.product .sf-product-quantity:not(.is-fixed){background:var(--sf-ui-surface);border-radius:var(--sf-ui-pill)}
+  body.single-product.sf-product-sheet-ready div.product form.cart .sf-product-purchase .sf-product-quantity input.qty{
+    width:36px;min-width:0;padding:0;appearance:textfield;-moz-appearance:textfield;text-align:center;
+  }
+  body.single-product.sf-product-sheet-ready div.product .sf-product-quantity input.qty::-webkit-inner-spin-button,
+  body.single-product.sf-product-sheet-ready div.product .sf-product-quantity input.qty::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+  body.single-product.sf-product-sheet-ready div.product form.cart .sf-product-purchase{gap:12px}
+  body.single-product.sf-product-sheet-ready div.product form.cart .sf-product-purchase .single_add_to_cart_button{
+    flex:0 1 220px;margin-inline-start:auto;
+  }
 }
 
 
@@ -562,6 +596,5 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   body.sf-product-sheet-ready .sf-product-sheet.is-discovering .cdl-ub{display:none}
   body.sf-product-sheet-ready .sf-product-sheet.is-discovering .sf-product-sheet-header{padding-top:14px;padding-bottom:4px}
   body.sf-product-sheet-ready .sf-product-sheet.is-discovering .sf-product-sheet-toggle.sf-ui-button{top:6px}
-  /* Keep native quantity and purchase side by side even at 320px. */
-  body.single-product.sf-product-sheet-ready div.product form.cart .sf-product-purchase .single_add_to_cart_button{flex-basis:0}
+  /* Native quantity and the compact CTA remain side by side at 320px. */
 }
