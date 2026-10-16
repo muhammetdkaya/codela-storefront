@@ -30,6 +30,7 @@ for(const width of [320,390,700]){
   const same=props.every(key=>expected[key]===actual[key]);probe.remove();return same;
  });
  assert(material,'Panel and site dock use identical shared material');
+ assert.equal(await page.locator('.sf-product-quantity').evaluate(e=>getComputedStyle(e).backgroundColor),await page.locator('.sf-product-sheet').evaluate(e=>getComputedStyle(e).backgroundColor),'Quantity uses the same soft surface instead of an independent white fill');
  const panelBox=await page.locator('.sf-product-sheet').boundingBox();
  assert(Math.abs(panelBox.width-Math.min(width-32,430))<1,'Panel uses the same inset and max width as the site dock');
  assert(Math.abs(panelBox.x-(width-panelBox.width)/2)<1,'Panel is centered like the dock');

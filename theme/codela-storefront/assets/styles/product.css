@@ -571,7 +571,6 @@ body.single-product div.product .sf-product-quantity-step.sf-ui-button{
 body.single-product div.product .sf-product-quantity .sf-product-quantity-step[disabled]{cursor:default}
 @media(max-width:700px){
   body.single-product.sf-product-sheet-ready div.product .sf-product-quantity:not(.is-fixed) .sf-product-quantity-step.sf-ui-button{display:inline-flex}
-  body.single-product.sf-product-sheet-ready div.product .sf-product-quantity:not(.is-fixed){background:var(--sf-ui-surface);border-radius:var(--sf-ui-pill)}
   body.single-product.sf-product-sheet-ready div.product form.cart .sf-product-purchase .sf-product-quantity input.qty{
     width:36px;min-width:0;padding:0;appearance:textfield;-moz-appearance:textfield;text-align:center;
   }

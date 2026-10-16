@@ -1,5 +1,9 @@
 # Codela Storefront UI Kit — source of truth
 
+## Quantity soft surface —0.1.117
+
+The native mobile quantity capsule carries existing sf-ui-surface and participates in the same components glass selector group as dock/header/sheet, including accessibility fallbacks. Remove its independent product.css white fill; do not copy paint rules. Keep desktop unchanged. Matching CSS values alone does not prove identical perceived color over different photo backdrops; actual native quantity must be included in checks.
+
 ## Product sheet dock geometry —0.1.115
 
 Use the existing dock inset/max-width/bottom-gap tokens for the same floating width in closed and open states. Retain the one shared components surface; the purchase inside remains transparent. Device safe-area is outside this floating sheet, counted once. The native site Footer remains at document end and never moves into expanded product content; reserve overlay space at its final links. Footer content after recommendations is real content, not empty tail padding.

@@ -12,7 +12,7 @@
       var input = quantity.querySelector('input.qty');
       var buttons = quantity.querySelectorAll('[data-quantity-step]');
       if (!input || !buttons.length) return;
-      quantity.classList.add('sf-product-quantity');
+      quantity.classList.add('sf-product-quantity', 'sf-ui-surface');
       function update() {
         quantity.classList.toggle('is-fixed', input.type !== 'number' || input.hidden);
         buttons.forEach(function (button) {

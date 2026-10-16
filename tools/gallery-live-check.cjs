@@ -23,7 +23,7 @@ const {liveProduct}=require('./live-product.cjs');
   assert(await page.locator('.single_add_to_cart_button').isVisible());
   const release=await page.locator('link[href*="styles/product.css"]').getAttribute('href');
   const parts=new URL(release).searchParams.get('ver').split('.').map(Number);
-  assert(parts[0]>0||parts[1]>1||parts[2]>=116,'Updated purchase sheet must be live: '+release);
+  assert(parts[0]>0||parts[1]>1||parts[2]>=117,'Updated purchase sheet must be live: '+release);
   for(const node of await page.locator('.cdl-fsb-text,.cdl-fsb-track,.sf-product-sheet-body .cdl-wa').all()){
    assert(!(await node.isVisible()),'Closed panel contains no shipping or contact information');
   }
@@ -111,6 +111,9 @@ const {liveProduct}=require('./live-product.cjs');
   const closedHeight=(await page.locator('.sf-product-sheet').boundingBox()).height;assert(closedHeight<180,'Compact live purchase panel');
   assert.equal(await page.locator('.sf-product-sheet .related').count(),0);
   assert(await page.locator('.sf-product-discovery .related li.product').count()>0,'Live native recommendations follow photographs');
+  const quantityMaterial=await page.locator('.sf-product-quantity').evaluate(e=>({bg:getComputedStyle(e).backgroundColor,blur:getComputedStyle(e).backdropFilter}));
+  const sheetMaterial=await page.locator('.sf-product-sheet').evaluate(e=>({bg:getComputedStyle(e).backgroundColor,blur:getComputedStyle(e).backdropFilter}));
+  assert.deepEqual(quantityMaterial,sheetMaterial,'Live quantity and panel share the same surface material');
   const material=await page.evaluate(()=>{const color=s=>getComputedStyle(document.querySelector(s)).backgroundColor;return{sheet:color('.sf-product-sheet'),button:color('.sf-menu-trigger')}});assert.equal(material.sheet,material.button);
   // Sample every animation frame through both directions of the real boundary.
   async function transition(selector){
