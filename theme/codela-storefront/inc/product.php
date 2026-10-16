@@ -153,6 +153,15 @@ function codela_sf_product_quantity_step( string $direction ): void {
 add_action( 'woocommerce_before_quantity_input_field', static function() { codela_sf_product_quantity_step( 'decrease' ); } );
 add_action( 'woocommerce_after_quantity_input_field', static function() { codela_sf_product_quantity_step( 'increase' ); } );
 
+/** Hide the transient native summary only while its early adapter is loading.
+ * No-JS keeps the native document; a failed/blocked adapter fails open.
+ */
+function codela_sf_product_sheet_bootstrap(): void {
+    if ( ! function_exists( 'is_product' ) || ! is_product() ) { return; }
+    wp_print_inline_script_tag( "if(window.matchMedia('(max-width:700px)').matches){document.documentElement.classList.add('sf-product-sheet-pending');setTimeout(function(){document.documentElement.classList.remove('sf-product-sheet-pending');},4000);}", [ 'id' => 'sf-product-sheet-bootstrap' ] );
+}
+add_action( 'wp_head', 'codela_sf_product_sheet_bootstrap', 1 );
+
 /** Progressive mobile sheet: the script moves existing nodes, never copies a form. */
 function codela_sf_product_sheet_template(): void {
     ?>
@@ -169,6 +178,9 @@ function codela_sf_product_sheet_template(): void {
         </section>
     </template>
     <?php
+    // Product DOM is complete here. Print the dependency-free adapter before
+    // unrelated footer scripts, once through WordPress's existing script queue.
+    wp_print_scripts( [ 'codela-storefront-product-information' ] );
 }
 add_action( 'woocommerce_after_single_product_summary', 'codela_sf_product_sheet_template', 99 );
 

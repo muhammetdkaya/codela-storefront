@@ -11,6 +11,7 @@ const {liveProduct}=require('./live-product.cjs');
  await page.goto(product.url,{waitUntil:'networkidle'});
  await page.locator('.sf-ui-gallery--scroll').waitFor();
  assert.equal(await page.locator('.zoomImg').count(),0,'Inline zoom does not fetch/create a zoom image before user intent');
+ const titleFont=width===390?await page.locator('.sf-product-sheet-heading .product_title').evaluate(e=>getComputedStyle(e).fontSize):null;
  const images=page.locator('.woocommerce-product-gallery__image');
  assert.equal(await images.count(),product.images,'Published gallery image count');const selected=product.images>1?1:0;
  if(width===390){
@@ -19,7 +20,7 @@ const {liveProduct}=require('./live-product.cjs');
   assert(await page.locator('.single_add_to_cart_button').isVisible());
   const release=await page.locator('link[href*="styles/product.css"]').getAttribute('href');
   const parts=new URL(release).searchParams.get('ver').split('.').map(Number);
-  assert(parts[0]>0||parts[1]>1||parts[2]>=111,'Updated purchase sheet must be live: '+release);
+  assert(parts[0]>0||parts[1]>1||parts[2]>=112,'Updated purchase sheet must be live: '+release);
   for(const node of await page.locator('.cdl-fsb-text,.cdl-fsb-track,.sf-product-sheet-body .cdl-wa').all()){
    assert(!(await node.isVisible()),'Closed panel contains no shipping or contact information');
   }
@@ -32,7 +33,17 @@ const {liveProduct}=require('./live-product.cjs');
     await input.fill(prior);await input.dispatchEvent('change');
    }
   }
-  console.log('PRODUCT_SHEET_111 '+JSON.stringify({width,release,collapsedShipping:false,forms:await page.locator('form.cart').count(),quantityInputs:await input.count()}));
+  console.log('PRODUCT_SHEET_112 '+JSON.stringify({width,release,collapsedShipping:false,forms:await page.locator('form.cart').count(),quantityInputs:await input.count()}));
+  assert.equal(await page.locator('script#codela-storefront-product-information-js').count(),1,'One early WordPress script instance');
+  const handle=await page.locator('.sf-product-sheet-header').boundingBox();
+  const initialHeight=(await page.locator('.sf-product-sheet').boundingBox()).height;
+  await page.mouse.move(handle.x+handle.width/2,handle.y+20);await page.mouse.down();
+  await page.mouse.move(handle.x+handle.width/2,handle.y-40,{steps:5});
+  assert(Math.abs((await page.locator('.sf-product-sheet').boundingBox()).height-initialHeight-60)<2,'Live panel follows pointer before release');
+  await page.mouse.move(handle.x+handle.width/2,handle.y+20,{steps:5});await page.mouse.up();
+  await page.waitForFunction(()=>!document.querySelector('.sf-product-sheet').classList.contains('is-dragging'));
+  assert.equal(await toggle.getAttribute('aria-expanded'),'false','Return gesture settles closed');
+
   if(selected){
    await page.mouse.move(width/2,350);const distance=await images.first().evaluate(e=>e.getBoundingClientRect().height*.8);await page.mouse.wheel(0,distance);
    try{await page.waitForFunction(()=>Math.abs(document.querySelectorAll('.woocommerce-product-gallery__image')[1].getBoundingClientRect().top)<1,null,{timeout:5000});}
@@ -143,6 +154,7 @@ const {liveProduct}=require('./live-product.cjs');
   const lists=[...section.querySelectorAll(':is(.related,.upsells) ul.products')];
   return {gap:sheet.top-last,sheetTop:sheet.top,lastBottom:last,reserve:getComputedStyle(section).paddingBottom,minHeight:getComputedStyle(section).minHeight,gridMargin:lists.map(e=>getComputedStyle(e).marginBottom)};
  });
+  assert.equal(await page.locator('.sf-product-sheet-heading .product_title').evaluate(e=>getComputedStyle(e).fontSize),titleFont,'Live title font remains stable over recommendations');
  console.log('GALLERY_LAST_CARD '+JSON.stringify(tail));
  assert.equal(tail.minHeight,'0px','The final recommendation does not reserve a whole viewport');
  assert(tail.gridMargin.every(v=>v==='0px'),'Catalog grid does not add trailing margin under product discovery');

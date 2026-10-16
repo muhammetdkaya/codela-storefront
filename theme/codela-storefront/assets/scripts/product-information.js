@@ -59,8 +59,8 @@
     var originals = [];
     var mounted = false;
     var expanded = false;
-    var downY = null;
-    var downX = null;
+    var drag = null;
+    var settleFrame = 0;
     var dragged = false;
     var photoWidth = 0;
     var discoveryFrame = 0;
@@ -74,7 +74,7 @@
       target.appendChild(node);
     }
     function measure() {
-      if (!mounted) return;
+      if (!mounted || drag?.active) return;
       var footerHeight = purchase ? purchase.getBoundingClientRect().height : 0;
       sheet.style.setProperty('--sf-product-footer-height', footerHeight + 'px');
       sheet.style.setProperty('--sf-product-closed-height', (sheet.querySelector('.sf-product-sheet-header').getBoundingClientRect().height + footerHeight + 8) + 'px');
@@ -93,10 +93,10 @@
       media.style.setProperty('--sf-product-collapsed-height', height + 'px');
       document.body.style.setProperty('--sf-product-collapsed-height', height + 'px');
     }
-    function setOpen(open, focusTarget) {
+    function setOpen(open, focusTarget, preservePhoto) {
       if (!mounted) return;
       expanded = open;
-      if (open && !sheet.classList.contains('is-discovering')) {
+      if (open && !preservePhoto && !sheet.classList.contains('is-discovering')) {
         var photos = Array.from(media.querySelectorAll('.woocommerce-product-gallery__image,.woocommerce-product-gallery__image--placeholder'));
         var nearest = photos.reduce(function (best, node) { return !best || Math.abs(node.getBoundingClientRect().top) < Math.abs(best.getBoundingClientRect().top) ? node : best; }, null);
         if (nearest) window.scrollTo({top:window.scrollY + nearest.getBoundingClientRect().top, behavior:'instant'});
@@ -118,7 +118,7 @@
         discovery.getBoundingClientRect().top < window.innerHeight * (media.classList.contains('is-discovering') ? .65 : .55);
     }
     function updateDiscovery() {
-      if (!mounted) return;
+      if (!mounted || drag?.active) return;
       var active = isDiscovering();
       media.classList.toggle('is-discovering', active);
       var compact = active && !expanded;
@@ -174,19 +174,22 @@
         var trust = content.querySelector(':scope > .cdl-tb');
         if (trust) trust.before(contact);
       }
-      var footer = document.querySelector('.sf-footer');
-      if (footer) move(footer, content);
+      placeFooter();
       if (track && discovery.children.length) track.appendChild(discovery);
       product.appendChild(sheet);
       document.body.classList.add('sf-product-sheet-ready');
       if (purchase) sheet.classList.add('has-purchase');
       measure();
       setOpen(false);
+      document.documentElement.classList.remove('sf-product-sheet-pending');
       // Validation and server messages must never be stranded behind a sheet.
       if (location.hash || document.querySelector('.woocommerce-error,.woocommerce-message')) setOpen(true);
     }
     function unmount() {
       if (!mounted) return;
+      finishDrag(true);
+      cancelAnimationFrame(settleFrame);
+      sheet.style.removeProperty('height');
       media.inert = false;
       // Restore containers before their children using the exact anchor nodes.
       originals.slice().reverse().forEach(function (entry) { entry[1].replaceWith(entry[0]); });
@@ -211,28 +214,68 @@
       mounted = false;
     }
     function adapt() { if (mobile.matches) mount(); else unmount(); }
+    function placeFooter() {
+      var footer = document.querySelector('.sf-footer');
+      if (mounted && footer && !content.contains(footer)) move(footer, content);
+    }
+    // The adapter can run before the parser reaches the document footer.
+    document.addEventListener('DOMContentLoaded', placeFooter, {once:true});
     toggle.addEventListener('click', function (event) {
       if (dragged) { event.preventDefault(); dragged = false; return; }
       setOpen(!expanded);
     });
     var header = sheet.querySelector('.sf-product-sheet-header');
     header.addEventListener('pointerdown', function (event) {
-      if (event.button !== 0 || event.target.closest('a,input,select,textarea')) return;
-      downY = event.clientY;
-      downX = event.clientX;
+      if (!mounted || drag || event.button !== 0 || event.isPrimary === false || event.target.closest('a,input,select,textarea')) return;
+      cancelAnimationFrame(settleFrame);
+      var style = getComputedStyle(sheet);
+      var height = sheet.getBoundingClientRect().height;
+      drag = {id:event.pointerId, x:event.clientX, y:event.clientY, lastY:event.clientY,
+        start:height, height:height, min:header.getBoundingClientRect().height + parseFloat(style.paddingBottom),
+        max:parseFloat(style.maxHeight), open:expanded, time:performance.now(), active:false};
     });
-    window.addEventListener('pointerup', function (event) {
-      if (downY === null) return;
-      var dy = event.clientY - downY;
-      var dx = event.clientX - downX;
-      downY = null;
-      if (Math.abs(dy) > 35 && Math.abs(dy) > Math.abs(dx)) {
-        dragged = true;
-        setOpen(dy < 0);
-        setTimeout(function () { dragged = false; }, 0);
+    window.addEventListener('pointermove', function (event) {
+      if (!drag || event.pointerId !== drag.id) return;
+      var dy = event.clientY - drag.y, dx = event.clientX - drag.x;
+      if (!drag.active) {
+        if (Math.max(Math.abs(dy), Math.abs(dx)) < 4) return;
+        if (Math.abs(dx) > Math.abs(dy)) { drag = null; return; }
+        drag.active = true;
+        sheet.classList.add('is-dragging');
+        document.body.classList.add('sf-product-sheet-open');
+        media.inert = true;
+        header.setPointerCapture(event.pointerId);
       }
+      event.preventDefault();
+      drag.lastY = event.clientY;
+      drag.height = Math.max(drag.min, Math.min(drag.max, drag.start - dy));
+      sheet.style.height = drag.height + 'px';
+    }, {passive:false});
+    function finishDrag(cancelled) {
+      if (!drag) return;
+      var gesture = drag;
+      drag = null;
+      if (header.hasPointerCapture(gesture.id)) header.releasePointerCapture(gesture.id);
+      if (!gesture.active) return;
+      dragged = true;
+      var dy = gesture.lastY - gesture.y;
+      var speed = Math.abs(dy) / Math.max(1, performance.now() - gesture.time);
+      var progress = (gesture.height - gesture.min) / Math.max(1, gesture.max - gesture.min);
+      var open = cancelled ? gesture.open : (Math.abs(dy) > 35 && speed > .35 ? dy < 0 : progress > (gesture.open ? .65 : .18));
+      sheet.classList.remove('is-dragging');
+      // Establish the released height before transitioning to its snap state.
+      // No per-frame gallery measurement or document scroll correction.
+      sheet.getBoundingClientRect();
+      setOpen(open, null, true);
+      settleFrame = requestAnimationFrame(function () { sheet.style.removeProperty('height'); });
+      setTimeout(function () { dragged = false; }, 0);
+    }
+    window.addEventListener('pointerup', function (event) {
+      if (drag && event.pointerId === drag.id) finishDrag(false);
     });
-    window.addEventListener('pointercancel', function () { downY = null; });
+    window.addEventListener('pointercancel', function (event) { if (drag && event.pointerId === drag.id) finishDrag(true); });
+    header.addEventListener('lostpointercapture', function (event) { if (drag && event.pointerId === drag.id) finishDrag(true); });
+    window.addEventListener('blur', function () { finishDrag(true); });
     sheet.addEventListener('keydown', function (event) {
       if (event.key === 'Escape' && expanded) { event.preventDefault(); setOpen(false); }
     });
@@ -260,7 +303,7 @@
       resize.observe(header);
       if (purchase) resize.observe(purchase);
     }
-    window.addEventListener('resize', measure);
+    window.addEventListener('resize', function () { finishDrag(true); measure(); });
     mobile.addEventListener('change', adapt);
     sheetState = {open: function () { setOpen(true); }};
     adapt();
@@ -286,7 +329,9 @@
   });
   window.addEventListener('hashchange', revealHash);
   function start() { setupQuantities(); setupSheet(); revealHash(); }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
-  else start();
+  // The production template is printed before footer scripts. Its entire
+  // product subtree is already available, even while the parser is loading.
+  if (document.getElementById('sf-product-sheet-template') || document.readyState !== 'loading') start();
+  else document.addEventListener('DOMContentLoaded', start);
 })();
 

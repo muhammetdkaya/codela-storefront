@@ -1,5 +1,9 @@
 # Codela Storefront UI Kit — source of truth
 
+## Direct product sheet manipulation —0.1.112
+
+Print the dependency-free adapter once through the WordPress queue beside the completed product template; do not wait for unrelated footer scripts or DOMContentLoaded. A small mobile prepaint guard prevents the transient native summary, fails open if enhancement fails, and never blocks no-JS purchase. Native gallery opacity is visible from first paint. Keep one title font across discovery and photos. Header pointer movement directly updates this same sheet height with no transition while held, original photo geometry untouched; release/cancel restores native expanded/closed states and clears capture/inline styles. No new controller, form, scroll or cart engine.
+
 ## Product sheet modules — 0.1.111
 
 Collapsed mobile purchase contains no shipping message, progress or contact. Existing live ETA/shipping nodes move into one native Delivery and shipping disclosure inside the expanded information region; existing WhatsApp link is a separate row after information. No copied plugin data, extra form or new module instance. Mobile native information starts closed, desktop restores its original state/position. Native quantity receives shared quiet44px step buttons; min/max/step and Woo input/change stay authoritative. Purchase CTA is capped at220px where space permits, with natural shrinking at320px. Original gallery/snap/discovery geometry rules stay in place.

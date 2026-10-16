@@ -1,5 +1,13 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Çalışma —16 Ekim2026 /0.1.111→0.1.112 ilk görünüm ve doğrudan panel sürükleme
+
+Kullanıcı yenilemede eski büyük başlık/açıklama/ayrı satın alma düzeninin geçici görünmesini, galeri→ilgili ürünler başlık boyutunun değişmesini ve panelin parmağı izlemeyip bırakınca açılmasını bildirdi. Ürün template'i dependency-free mevcut adapter'ı WordPress kuyruğundan footer bağımlılıklarından önce bir kez basar; template varsa DOMContentLoaded beklenmeden mount olur. Geç parse edilen footer aynı native node olarak DOMContentLoaded'da taşınır. Head'deki mobil pending flag geçici native summary/purchase flash'ını önler; native ilk galeri fotoğrafı Woo opacity başlangıcını beklemez. No-JS native belgeyi kullanır; başarısız adapter sonrası queue inline cleanup ve4s fail-open vardır.
+
+İlgili ürünlerdeki15px font override kaldırıldı; mevcut hafif header/line-clamp compaction ve sabit fotoğraf koordinatları korunur. Header pointermove mevcut sheet yüksekliğini cached sınırlar içinde doğrudan değiştirir, drag boyunca transition kapalıdır. Capture, ters yön, release snap, cancel/lostcapture/blur/resize cleanup; arka belge yalnız açık/drag durumunda kilitlenir. Yeni scroll/galeri veya sepet motoru, form kopyası, bağımlılık yok. Plugin1.1.1 runtime/ayarları/WordPress.org değişmedi.
+
+Yerel JS syntax ve24 paket kontrolü başarılı; PHP ve browser binary bu ortamda yok. Üretim PHP bootstrap/template'li streaming testi adapter/footerscript isteklerini ayrı tutarak eski büyük başlığın gizliliğini, gallery opacity1, DOMContentLoaded öncesi mount ve geç footer sahipliğini sınar; no-JS ve fail-open da kapsanır.320/390/700 pointer-hold100px/geri50px, başlık font paritesi ve mevcut gallery/form/validation/regresyonlar korunur.112 için CI/gerçek FTP ve canlı kabul **bekleniyor**. Önceki111 Woo112 kayıtları112 kabulü diye sunulmaz. Fiziksel Safari gesture/toolbar ve ağır PNG cold-LCP işi ayrı açık.
+
 ## Son doğrulanmış devam noktası — 16 Ekim2026 /0.1.111 satın alma paneli canlı
 
 Tema **0.1.110→0.1.111 canlı**, eklenti **1.1.1 runtime/WordPress.org değişmedi**. Kullanıcının son görseli uygulandı: kapalı mobil panelde ücretsiz kargo metni/çubuğu ve inline WhatsApp yok. Tek native Woo qty + ortak quiet44px −/+ ve kompakt CTA; stok/min/max/readonly ve input/change olayları native input üzerinde. Açık panelde özgün ETA ve live shipping düğümleri native Teslimat ve kargo disclosure'ına, özgün WhatsApp linki ayrı bilgi satırına taşınır. Etkin taksit/native bilgi/yorum callback'leri aynı, kapalı modül üretilmez. Mobil bilgi bölümleri başlangıçta kapalı; desktop'a dönüşte özgün node/form/konumlar geri gelir. Örnek tarih/stok/iade metni veya yeni modül hesabı eklenmedi.

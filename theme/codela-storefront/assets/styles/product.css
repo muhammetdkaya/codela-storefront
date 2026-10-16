@@ -250,6 +250,10 @@ body.single-product .woocommerce-product-gallery a:focus-visible{
   }
 }
 @media(max-width:700px){
+  /* The native photo is usable before Woo's footer initialization. */
+  body.single-product div.product > .sf-ui-gallery--scroll{opacity:1!important}
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > :is(.summary,.sf-product-information,.cdl-tb,.related,.upsells),
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) .sf-product-purchase{visibility:hidden}
   body.single-product .sf-content{padding:0 0 46px}
   body.single-product .woocommerce-breadcrumb{margin-bottom:18px}
   body.single-product div.product{
@@ -511,9 +515,10 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   body.sf-product-sheet-ready .sf-product-sheet-heading .price del{display:block;font-size:12px}
   body.sf-product-sheet-ready .sf-product-sheet-body{height:0;flex:0 1 auto;visibility:hidden}
   body.single-product.sf-product-sheet-ready div.product > .sf-product-sheet.is-expanded{height:calc(100dvh - 84px - var(--sf-header-offset,0px))}
-  body.sf-product-sheet-ready .sf-product-sheet.is-expanded .sf-product-sheet-body{
+  body.sf-product-sheet-ready .sf-product-sheet:is(.is-expanded,.is-dragging) .sf-product-sheet-body{
     height:auto;flex:1 1 auto;visibility:visible;padding-bottom:20px;
   }
+  body.sf-product-sheet-ready div.product > .sf-product-sheet.is-dragging{transition:none}
   body.sf-product-sheet-ready .sf-product-sheet-body > .summary{
     width:100%!important;margin:0!important;padding:0 20px;max-width:none;float:none;
   }
@@ -592,7 +597,7 @@ body.single-product div.product .sf-product-quantity .sf-product-quantity-step[d
   body.single-product.sf-product-sheet-ready .sf-product-discovery :is(.related,.upsells) ul.products{margin-bottom:0}
   body.sf-product-sheet-ready:has(.woocommerce-product-gallery.is-discovering) div.product > .onsale{visibility:hidden}
   body.sf-product-sheet-ready .woocommerce-product-gallery.is-discovering > :is(.sf-product-gallery-nav,.sf-product-gallery-count,.sf-product-visitor,.woocommerce-product-gallery__trigger){visibility:hidden}
-  body.single-product.sf-product-sheet-ready div.product .sf-product-sheet.is-discovering .sf-product-sheet-heading .product_title{-webkit-line-clamp:1;font-size:15px}
+  body.single-product.sf-product-sheet-ready div.product .sf-product-sheet.is-discovering .sf-product-sheet-heading .product_title{-webkit-line-clamp:1}
   body.sf-product-sheet-ready .sf-product-sheet.is-discovering .cdl-ub{display:none}
   body.sf-product-sheet-ready .sf-product-sheet.is-discovering .sf-product-sheet-header{padding-top:14px;padding-bottom:4px}
   body.sf-product-sheet-ready .sf-product-sheet.is-discovering .sf-product-sheet-toggle.sf-ui-button{top:6px}
