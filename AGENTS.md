@@ -1,5 +1,9 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Çalışma — 16 Ekim 2026 / 0.1.109 → 0.1.110 son kart ve satın alma alanı
+
+0.1.109 gerçek FTP ile canlıya dağıtıldı ve kod testleri geçti; ancak canlı galeri testi **başarısız**: son native ilgili ürün kartının altı ile sabit satın alma paneli üstü arasında **138.3px** ölçüldü (390px); CSS `padding-bottom=98.9px`, ortak `catalog.css` grid alt marjı32px ekliyor. Bu nedenle 0.1.109 boşluk işi tamamlandı sayılmaz. 0.1.110'da yalnız mobil discovery'nin ekstra panel rezervi sıfırlanır (gerçek cihaz `safe-area-inset-bottom` korunur), mevcut native katalog grid'inin sadece discovery içindeki alt marjı sıfırlanır. Galeri fotoğraf snap/overscroll/pozisyonları, satın alma ve tema bileşenleri değişmez. 0.1.110 canlı yayın sonrası son kart–panel gap ve 60-frame alt sınır/geri kaydırma testleri geçene kadar tamamlandı denmez; eski 0.1.109 kabulü kullanılmaz. Plugin1.1.1 değişmedi. Ağır PNG cold-LCP ve fiziksel Safari ayrı açık.
+
 ## Çalışma — 16 Ekim 2026 / 0.1.109 ilgili ürünlerin alt boşluğu
 
 Kullanıcı son satırdaki ürün kartları ile sabit satın alma paneli arasındaki görünür büyük boşluğun kaldırılmasını istedi. Mobil `.sf-product-discovery` için zorunlu `100svh` minimumu kaldırıldı; son native `.related/.upsells` grubunun fazladan alt marjı kaldırıldı, alt güvenlik payı sabit *normal* panel ölçüsünden 24px eksiltilerek fotoğraf geometrisi ve discovery geçişinde rezervin sabitliği korundu. Son ürünün sabit panel altında kalmadığını ve büyük boşluk oluşmadığını gerçek 390px galeri testi ölçer. 0.1.109 CI, FTP, canlı testleri sonucu doğrulanmadan tamamlandı yazılmaz; eklenti 1.1.1 değişmedi. Fiziksel Safari ve PNG/LCP performans konusu ayrı kalır.
