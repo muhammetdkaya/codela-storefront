@@ -1,6 +1,12 @@
-/** Native details need only hash-link enhancement, not a tabs controller. */
+/** Small native product enhancements; no gallery/cart/tabs controller. */
 (function () {
   'use strict';
+  // Woo's thumbnails hook is INSIDE its moving track. Move the existing
+  // hidden counter once, before gallery/counter DOM-ready initialization,
+  // so it stays pinned to the gallery frame when native slides change.
+  var counter = document.getElementById('codela-live-visitor-container');
+  var gallery = counter && counter.closest('.woocommerce-product-gallery');
+  if (gallery && counter.parentElement !== gallery) gallery.appendChild(counter);
   function revealHash() {
     if (!location.hash) return;
     var target;
