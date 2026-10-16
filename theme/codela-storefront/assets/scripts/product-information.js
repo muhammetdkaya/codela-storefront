@@ -48,6 +48,10 @@
     function setOpen(open, focusTarget) {
       if (!mounted) return;
       expanded = open;
+      if (open) {
+        var track = media.querySelector('.woocommerce-product-gallery__wrapper');
+        if (track) track.scrollTo({left:track.scrollLeft, top:Math.round(track.scrollTop / track.clientHeight) * track.clientHeight, behavior:'instant'});
+      }
       sheet.classList.toggle('is-expanded', open);
       toggle.setAttribute('aria-expanded', String(open));
       media.inert = open;

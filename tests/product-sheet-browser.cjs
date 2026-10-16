@@ -26,6 +26,7 @@ for(const width of [320,390,700]){
  assert(!(await page.locator('.variations,.sf-product-information').last().isVisible()),'Details hidden while collapsed');
  await page.locator('.woocommerce-product-gallery__wrapper').focus();await page.keyboard.press('ArrowDown');
  await page.waitForFunction(()=>document.querySelector('.sf-product-gallery-count').textContent==='2 / 3');
+ await page.waitForFunction(()=>{const e=document.querySelector('.woocommerce-product-gallery__wrapper');return Math.abs(e.scrollTop-e.clientHeight)<1});
  assert.equal(await toggle.getAttribute('aria-expanded'),'false','Gallery scrolling does not open details');
  const photoOffset=await page.locator('.woocommerce-product-gallery__wrapper').evaluate(e=>e.scrollTop);
  await toggle.click();assert.equal(await toggle.getAttribute('aria-expanded'),'true');
