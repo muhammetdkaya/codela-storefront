@@ -28,6 +28,7 @@ function codela_sf_product_stock_placement( string $html, $product ): string {
  * even when a merchant chose a different summary priority in the plugin.
  */
 function codela_sf_product_modules(): void {
+    if ( ! function_exists( 'is_product' ) || ! is_product() ) { return; }
     global $wp_filter;
     $hook = $wp_filter['woocommerce_single_product_summary'] ?? null;
     if ( ! $hook instanceof WP_Hook ) { return; }
@@ -108,7 +109,6 @@ add_filter( 'woocommerce_product_additional_information_heading', 'codela_sf_pro
 
 add_action( 'wp', function() {
     if ( ! function_exists( 'is_product' ) || ! is_product() ) { return; }
-    codela_sf_product_modules();
     add_action( 'woocommerce_single_product_summary', function() { echo '<div class="sf-product-price-row">'; }, 9 );
     add_action( 'woocommerce_single_product_summary', function() { echo '</div>'; }, 12 );
     remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40 );
@@ -127,5 +127,6 @@ add_action( 'wp', function() {
     add_action( 'woocommerce_after_add_to_cart_button', function() {
         echo '</div>';
     }, PHP_INT_MAX );
-}, 100 );
+} );
+add_action( 'wp', 'codela_sf_product_modules', 100 );
 
