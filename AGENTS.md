@@ -1,5 +1,12 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Güncel çalışma — 16 Ekim 2026 / 0.1.101 panel yüksekliği
+
+Tema0.1.100 canlı; **0.1.100 → 0.1.101 hazırlanıyor**. Eklenti1.1.1 değişmedi.100'ün related/upsell alanı ve kompakt normal paneli canlı fonksiyonel kontrolleri geçti. Gerçek Woo kısa başlıklı fixture ve daha sıkı canlı ölçüm, keşif sırasında yalnız padding değiştiğinde ResizeObserver'ın varsayılan content-box ölçümünün tetiklenmediğini gösterdi: iç başlık kısalıyor, dış panel yüksekliği eski kalıyordu.101 her keşfe giriş/çıkış sınırında yüksekliği açıkça ölçer. Kısa başlık/modülsüz regresyon fixture'ı ve yeni hedef yüksekliğine varış assertion'ı eklendi. Kontrol glifi gap=0 ile ortalanır; mevcut ürün onsale etiketi keşifte gizlenir. Native form/kart/ayarlar korunur.
+
+Doğrulama: yerel JS ve24 paket başarılı; CI/FTP ve yeni101 gerçek Woo paketi kabulü bekliyor.100 gerçek matrisi başarısızdır, başarılı ilan edilmez. Live WebKit/shell/document ve ilk gallery100 başarılı; sıkı gallery100 dış yükseklik hatasını yakaladı. Ağır PNG cold-LCP bütçesi100'de de başarısız (home14704ms/product14392ms); medya değişmedi. Sıradaki:101 CI+FTP,101 ZIP/source/hash'e pin'li gerçek Chromium/WebKit ve canlı keşif yüksekliği kabulü.
+
+
 ## Güncel çalışma — 16 Ekim 2026 / 0.1.100 ürün keşif akışı
 
 Tema **0.1.99 → 0.1.100 hazırlanıyor**, eklenti **1.1.1 değişmedi**. Kullanıcı onayıyla native related/upsell düğümleri panelden çıkıp dikey fotoğrafların ardından aynı scroll alanına taşındı. Kart/URL/AJAX kopyalanmaz; masaüstünde özgün konumlarına döner. İlgili ürünler görünürken kapalı panel bir satır başlığa küçülür, fotoğraflarda normal kapalı düzene döner. Kapalı panelde başlık/fiyat yan yana, açma kontrolü sağda44px; gereksiz ayrı kontrol satırı kaldırıldı. Aynı shared soft Button zemin/materiali kullanılır; native satın alma footer'ı şeffaftır.320px'te quantity ve submit yan yana kalır.

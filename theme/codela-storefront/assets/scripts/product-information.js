@@ -73,7 +73,12 @@
       if (!mounted) return;
       var active = isDiscovering();
       media.classList.toggle('is-discovering', active);
-      sheet.classList.toggle('is-discovering', active && !expanded);
+      var compact = active && !expanded;
+      var changed = sheet.classList.contains('is-discovering') !== compact;
+      sheet.classList.toggle('is-discovering', compact);
+      // Padding-only changes do not resize the observer's content box.
+      // Measure this state boundary explicitly, including short product names.
+      if (changed) measure();
     }
     if (track) track.addEventListener('scroll', updateDiscovery, {passive:true});
     function mount() {
