@@ -16,7 +16,7 @@ const alpha=color=>{
  return values.length>=4?Number(values[3]):1;
 };
 (async()=>{
- const product=await liveProduct();pages.find(p=>p.name==='product').url=product.url;pages.find(p=>p.name==='product-search').url='https://codela.dev/?s='+encodeURIComponent(product.search)+'&post_type=product';
+ const product=await liveProduct();pages.find(p=>p.name==='product').url=product.url;pages.find(p=>p.name==='product-search').url='https://codela.dev/?s=&post_type=product';
  const browser=await webkit.launch();
  const results=[];
  try{

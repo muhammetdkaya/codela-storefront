@@ -1,5 +1,8 @@
 name: Storefront live gallery acceptance
 on:
+  push:
+    branches: [main]
+    paths: ['tools/live-product.cjs', 'tools/gallery-live-check.cjs', '.github/workflows/gallery-live-check.yml']
   workflow_dispatch:
   workflow_run:
     workflows: ['Deploy Codela Storefront']
