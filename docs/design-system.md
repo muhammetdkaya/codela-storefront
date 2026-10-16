@@ -1,5 +1,9 @@
 # Codela Storefront UI Kit — source of truth
 
+## Native recommendation tail — 0.1.109
+
+Use content-driven height for mobile recommendation groups, no forced `100svh` minimum and no last-child external margin. Keep only an inset derived from the cached normal purchase bar (minus 24px) to prevent the final card hiding behind the fixed compact sheet without producing a bottom whitespace strip. Retain existing native photo scroll snapping, discovery overscroll policy, photo geometry and Woo card markup. Live acceptance checks the last card against the fixed purchase panel.
+
 ## Recommendation boundary and previews —0.1.108
 
 Selected previews add no outline; shared keyboard focus-visible remains. While the existing gallery is discovering recommendations, root and body overscroll-y:none suppress bottom boundary rubber-band. Photographs retain auto for native top refresh. Because the long recommendations snap to their heading under the root's mandatory photo snap, the root switches to `scroll-snap-type:none` only in `.woocommerce-product-gallery.is-discovering`, restoring `y mandatory` over photographs. The policy changes no photo frame coordinates, snap targets, padding or reserved panel space and adds no touch/wheel interception. Physical Safari gesture paint requires device acceptance.
