@@ -19,7 +19,11 @@ const {liveProduct}=require('./live-product.cjs');
   assert(await page.locator('.single_add_to_cart_button').isVisible());
   if(selected){
    await page.mouse.move(width/2,350);await page.mouse.wheel(0,180);
-   await page.waitForFunction(()=>Math.abs(document.querySelectorAll('.woocommerce-product-gallery__image')[1].getBoundingClientRect().top)<1);
+   try{await page.waitForFunction(()=>Math.abs(document.querySelectorAll('.woocommerce-product-gallery__image')[1].getBoundingClientRect().top)<1,null,{timeout:5000});}
+   catch(error){
+    console.log('GALLERY_GEOMETRY '+JSON.stringify(await page.evaluate(()=>({height:innerHeight,width:innerWidth,y:scrollY,rootHeight:document.documentElement.clientHeight,rootSnap:getComputedStyle(document.documentElement).scrollSnapType,rootPadding:getComputedStyle(document.documentElement).scrollPaddingBottom,inset:document.documentElement.style.getPropertyValue('--sf-product-photo-inset'),body:document.body.className,photos:[...document.querySelectorAll('.woocommerce-product-gallery__image')].map(e=>({rect:e.getBoundingClientRect().toJSON(),snap:getComputedStyle(e).scrollSnapAlign,stop:getComputedStyle(e).scrollSnapStop,margin:getComputedStyle(e).scrollMarginBottom,source:e.querySelector('img').currentSrc})),count:document.querySelector('.sf-product-gallery-count').textContent}))));
+    fs.mkdirSync('qa/performance',{recursive:true});await page.screenshot({path:'qa/performance/gallery-live-geometry-failure.png'});throw error;
+   }
   }
  }else if(selected)await page.locator('.sf-product-gallery-thumb').nth(selected).click();
  await page.waitForFunction(n=>document.querySelector('.sf-product-gallery-count').textContent.startsWith((n+1)+' /'),selected);
