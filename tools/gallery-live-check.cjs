@@ -45,11 +45,37 @@ const {liveProduct}=require('./live-product.cjs');
   assert.equal(await page.locator('.sf-product-sheet .related').count(),0);
   assert(await page.locator('.sf-product-discovery .related li.product').count()>0,'Live native recommendations follow photographs');
   const material=await page.evaluate(()=>{const color=s=>getComputedStyle(document.querySelector(s)).backgroundColor;return{sheet:color('.sf-product-sheet'),button:color('.sf-menu-trigger')}});assert.equal(material.sheet,material.button);
-  await page.evaluate(()=>{const e=document.querySelector('.sf-product-discovery');window.scrollTo({top:scrollY+e.getBoundingClientRect().top,behavior:'instant'})});
+  // Sample every animation frame through both directions of the real boundary.
+  async function transition(selector){
+   const metrics=await page.evaluate(async selector=>{
+    const photos=[...document.querySelectorAll('.woocommerce-product-gallery__image')];
+    const edges=photos.map(e=>scrollY+e.getBoundingClientRect().top);
+    const target=document.querySelector(selector),destination=scrollY+target.getBoundingClientRect().top;
+    const direction=Math.sign(destination-scrollY);let previous=scrollY,reverse=0,drift=0,flips=0,compact=document.querySelector('.sf-product-sheet').classList.contains('is-discovering');
+    window.scrollTo({top:destination,behavior:'smooth'});
+    for(let frame=0;frame<90;frame++){
+     await new Promise(requestAnimationFrame);
+     const current=document.querySelector('.sf-product-sheet').classList.contains('is-discovering');
+     if(current!==compact){flips++;compact=current;}
+     drift=Math.max(drift,...photos.map((e,i)=>Math.abs(scrollY+e.getBoundingClientRect().top-edges[i])));
+     reverse=Math.max(reverse,-direction*(scrollY-previous));previous=scrollY;
+    }
+    return{drift,reverse,flips,top:target.getBoundingClientRect().top};
+   },selector);
+   assert(metrics.drift<1,'Photo coordinates never change during panel transition '+JSON.stringify(metrics));
+   assert(metrics.reverse<2,'No backward scroll correction during the transition '+JSON.stringify(metrics));
+   assert(metrics.flips<=1,'Discovery state does not oscillate '+JSON.stringify(metrics));
+   assert(Math.abs(metrics.top)<1,'Transition finishes on its native target '+JSON.stringify(metrics));
+   console.log('GALLERY_TRANSITION '+JSON.stringify({selector,...metrics}));
+  }
+  await page.evaluate(()=>{const a=document.querySelectorAll('.woocommerce-product-gallery__image'),e=a[a.length-1];window.scrollTo({top:scrollY+e.getBoundingClientRect().top,behavior:'instant'})});
+  await page.waitForFunction(()=>{const a=document.querySelectorAll('.woocommerce-product-gallery__image');return Math.abs(a[a.length-1].getBoundingClientRect().top)<1});
+  await transition('.sf-product-discovery');
   await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-discovering'));
   await page.waitForFunction(previous=>{const e=document.querySelector('.sf-product-sheet'),target=parseFloat(getComputedStyle(e).getPropertyValue('--sf-product-closed-height'));return target<previous-1&&Math.abs(e.getBoundingClientRect().height-target)<2},closedHeight);
   assert(await page.locator('.single_add_to_cart_button').isVisible());
   fs.mkdirSync('qa/performance',{recursive:true});await page.screenshot({path:'qa/performance/gallery-live-discovery.png'});
+  await transition('.woocommerce-product-gallery__image:nth-child('+product.images+')');
   await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));await page.waitForFunction(()=>!document.querySelector('.sf-product-sheet').classList.contains('is-discovering'));
 
  }
