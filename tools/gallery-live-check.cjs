@@ -57,6 +57,8 @@ const {liveProduct}=require('./live-product.cjs');
   await page.waitForFunction(index=>document.querySelectorAll('.woocommerce-product-gallery__image')[index].querySelector('a').getAttribute('aria-pressed')==='false',selected);
   await page.waitForFunction(index=>Math.abs(document.querySelectorAll('.woocommerce-product-gallery__image')[index+1].getBoundingClientRect().top)<1,selected);
  }
+ await page.locator('.sf-product-gallery-thumb[aria-current="true"]').evaluate(e=>e.blur());
+ assert.equal(await page.locator('.sf-product-gallery-thumb[aria-current="true"]').evaluate(e=>getComputedStyle(e).outlineStyle),'none','Selection adds no black outline');
  console.log('GALLERY_INLINE_ZOOM '+JSON.stringify({width,popup:false,previewCount:await page.locator('.sf-product-gallery-thumb:visible').count(),nativeZoom:true}));
  if(width===390){
   const track=page.locator('.woocommerce-product-gallery__wrapper');const before=await page.evaluate(()=>scrollY);
@@ -102,6 +104,29 @@ const {liveProduct}=require('./live-product.cjs');
   await page.waitForFunction(previous=>{const e=document.querySelector('.sf-product-sheet'),target=parseFloat(getComputedStyle(e).getPropertyValue('--sf-product-closed-height'));return target<previous-1&&Math.abs(e.getBoundingClientRect().height-target)<2},closedHeight);
   assert(await page.locator('.single_add_to_cart_button').isVisible());
   fs.mkdirSync('qa/performance',{recursive:true});await page.screenshot({path:'qa/performance/gallery-live-discovery.png'});
+
+ // Repeated gestures beyond the last card must not grow the document or
+ // correct its resting position on release. Native OS rubber-band is covered
+ // by the scoped overscroll policy; a desktop wheel cannot emulate that paint.
+ await page.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
+ await page.waitForFunction(()=>Math.abs(scrollY-(document.documentElement.scrollHeight-innerHeight))<1);
+ const bottom=await page.evaluate(()=>({y:scrollY,height:document.documentElement.scrollHeight}));
+ assert.equal(await page.locator('html').evaluate(e=>getComputedStyle(e).overscrollBehaviorY),'none','No bottom boundary rubber-band in recommendations');
+ assert.equal(await page.locator('body').evaluate(e=>getComputedStyle(e).overscrollBehaviorY),'none');
+ await page.mouse.move(190,400);
+ for(let gesture=0;gesture<3;gesture++)await page.mouse.wheel(0,500);
+ const settled=await page.evaluate(async()=>{const samples=[];for(let i=0;i<60;i++){await new Promise(requestAnimationFrame);samples.push({y:scrollY,height:document.documentElement.scrollHeight})}return samples});
+ settled.forEach(s=>{assert(Math.abs(s.y-bottom.y)<1,'No bottom scroll correction on release');assert.equal(s.height,bottom.height,'No growing bottom whitespace')});
+ await page.mouse.wheel(0,-200);
+ await page.waitForFunction(y=>scrollY<y-50,bottom.y);
+ assert(await page.locator('.sf-product-sheet').evaluate(e=>e.classList.contains('is-discovering')),'Long recommendations scroll freely inside their snap area');
+ await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+ await page.waitForFunction(()=>!document.querySelector('.woocommerce-product-gallery').classList.contains('is-discovering'));
+ assert.equal(await page.locator('html').evaluate(e=>getComputedStyle(e).overscrollBehaviorY),'auto','Top native refresh policy restored');
+
+  await page.evaluate(()=>{const e=document.querySelector('.sf-product-discovery');window.scrollTo({top:scrollY+e.getBoundingClientRect().top,behavior:'instant'})});
+  await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-discovering'));
+  console.log('GALLERY_BOTTOM '+JSON.stringify({stableHeight:bottom.height,stableY:bottom.y,samples:settled.length,overscroll:'none',topRefresh:'auto'}));
   await transition('.woocommerce-product-gallery__image:nth-child('+product.images+')');
   await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));await page.waitForFunction(()=>!document.querySelector('.sf-product-sheet').classList.contains('is-discovering'));
 

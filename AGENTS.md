@@ -1,5 +1,12 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Çalışma —16 Ekim2026 /0.1.107→0.1.108 küçük resim ve alt sınır
+
+Tema0.1.108 hazırlanıyor; Codela1.1.1 runtime değişmedi. Seçili native thumbnail'ın siyah outline'ı kaldırılır; shared klavye focus-visible korunur. İlgili ürünler görünürken root/body overscroll-y:none, galeride auto: alt uç esneme/boşluk ve bırakma geri sekmesi engellenir, tepedeki native yenileme yolu korunur. Snap türü/alanı, stabil fotoğraf koordinatları ve normal panel rezervi değiştirilmez; yeni touch/wheel engelleyici veya scroll motoru yok.
+
+Fixture ve canlı QA artık üç alt sınır wheel hareketinin ardından60 frame boyunca scrollHeight/scrollY sabitliğini, öneriler içinde geri kaydırmayı ve galeriye dönünce auto politikasını sınar. Fiziksel Safari rubber-band/toolbar hareketi wheel otomasyonunda birebir üretilemez; cihaz kabulü açık. CI/gerçek FTP,108 paket/hash pin'li WP/Woo matrisi ve canlı sonuçlar bekleniyor. Önceki ağır PNG cold-LCP sorunu ayrı açık.
+
+
 ## Son doğrulanmış devam noktası — 16 Ekim2026 / 0.1.107 inline zoom ve üç önizleme canlı
 
 Tema **0.1.106→0.1.107 canlı**, eklenti **1.1.1 runtime ve frozen0.1.1 değişmedi**. Kullanıcı “Uygula” ile popup kaldırma/üç önizleme önerisini onayladı ve uygulandı. Product PhotoSwipe theme support/flag kapalı; ayrı popup yerine Woo'nun mevcut jQuery Zoom plugin'i ilk dokunma/tıklamada özgün fotoğrafın içinde başlar. Yeni zoom/pan/galeri motoru, dialog veya satın alma kopyası yok. Native responsive fotoğraf, form/variation ve106 sabit fotoğraf/snap/keşif geometrisi korunur. İlk istekten önce zoom orijinali/zoomImg yok; ikinci tıklama, Escape ve belge scroll zoom'u kapatır. Enter/Space, aria-pressed, dekoratif zoomImg aria-hidden, yerel Türkçe kontrol adı; touch scroll prevent edilmez. Modern wc-zoom veya legacy zoom handle kayıt durumuna göre seçilir, varyasyonda eski native zoom instance temizlenir.

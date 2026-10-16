@@ -48,6 +48,28 @@ for(const width of [320,390,700]){
  assert(await page.locator('.sf-product-discovery .related').isVisible(),'Related products reachable without opening details');
  assert((await page.locator('.sf-product-sheet').boundingBox()).height<closedHeight,'Panel compacts further during discovery');
  assert(await buy.isVisible(),'Same purchase remains visible while discovering');
+ // Repeated gestures beyond the last card must not grow the document or
+ // correct its resting position on release. Native OS rubber-band is covered
+ // by the scoped overscroll policy; a desktop wheel cannot emulate that paint.
+ await page.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
+ await page.waitForFunction(()=>Math.abs(scrollY-(document.documentElement.scrollHeight-innerHeight))<1);
+ const bottom=await page.evaluate(()=>({y:scrollY,height:document.documentElement.scrollHeight}));
+ assert.equal(await page.locator('html').evaluate(e=>getComputedStyle(e).overscrollBehaviorY),'none','No bottom boundary rubber-band in recommendations');
+ assert.equal(await page.locator('body').evaluate(e=>getComputedStyle(e).overscrollBehaviorY),'none');
+ await page.mouse.move(190,400);
+ for(let gesture=0;gesture<3;gesture++)await page.mouse.wheel(0,500);
+ const settled=await page.evaluate(async()=>{const samples=[];for(let i=0;i<60;i++){await new Promise(requestAnimationFrame);samples.push({y:scrollY,height:document.documentElement.scrollHeight})}return samples});
+ settled.forEach(s=>{assert(Math.abs(s.y-bottom.y)<1,'No bottom scroll correction on release');assert.equal(s.height,bottom.height,'No growing bottom whitespace')});
+ await page.mouse.wheel(0,-200);
+ await page.waitForFunction(y=>scrollY<y-50,bottom.y);
+ assert(await page.locator('.sf-product-sheet').evaluate(e=>e.classList.contains('is-discovering')),'Long recommendations scroll freely inside their snap area');
+ await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+ await page.waitForFunction(()=>!document.querySelector('.woocommerce-product-gallery').classList.contains('is-discovering'));
+ assert.equal(await page.locator('html').evaluate(e=>getComputedStyle(e).overscrollBehaviorY),'auto','Top native refresh policy restored');
+
+ await page.locator('.woocommerce-product-gallery__wrapper').focus();await page.keyboard.press('End');
+ await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-discovering'));
+
  await page.locator('.sf-product-sheet-toggle').click();
  assert.equal(await page.locator('.sf-product-sheet-toggle').getAttribute('aria-expanded'),'true','Details open from recommendations');
  await page.locator('.sf-product-sheet-toggle').click();

@@ -104,7 +104,6 @@
 }
 .sf-product-gallery-thumb.sf-ui-icon-button{flex:none;padding:0;width:48px;height:48px;overflow:hidden}
 .sf-product-gallery-thumb img{display:block;width:100%;height:100%;object-fit:cover;border-radius:inherit}
-.sf-product-gallery-thumb[aria-current="true"]{outline:1px solid var(--sf-ui-ink);outline-offset:2px}
 .sf-product-gallery-thumb[hidden]{display:none!important}
 .sf-ui-gallery--scroll .woocommerce-product-gallery__image > a{cursor:zoom-in}
 .sf-ui-gallery--scroll .woocommerce-product-gallery__image.is-zoomed > a{cursor:zoom-out}

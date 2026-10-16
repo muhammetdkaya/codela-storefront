@@ -1,5 +1,9 @@
 # Codela Storefront UI Kit — source of truth
 
+## Recommendation boundary and previews —0.1.108
+
+Selected previews add no outline; shared keyboard focus-visible remains. While the existing gallery is discovering recommendations, root and body overscroll-y:none suppress bottom boundary rubber-band. Photographs retain auto for native top refresh. The policy changes no snap type, padding, frame coordinates or reserved panel space and adds no touch/wheel interception. Physical Safari gesture paint requires device acceptance.
+
 ## Inline product zoom and three previews —0.1.107 (live; functional acceptance tracked below)
 
 The user approved removing the separate PhotoSwipe popup. Product PhotoSwipe support and enabled flag are off. The existing Woo jQuery Zoom plugin initializes only on the first user request inside the original photo node; the adapter adds no zoom/pan engine or modal. Tap/click, Enter/Space, Escape, natural document scroll, variation cleanup and aria-pressed belong to this small adapter. Touch scroll is never prevented. The dependency chooses registered wc-zoom or legacy zoom. Only up to three original preview controls are shown around the current index; hidden controls are absent from focus/AX. The total image counter and original gallery navigation remain intact. Cold original-image defer and0.1.106 stable photo/snap/discovery geometry remain the baseline. Deployment/acceptance is tracked in storefront-theme.md; older PhotoSwipe notes below describe prior versions.
