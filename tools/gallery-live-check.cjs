@@ -17,6 +17,22 @@ const {liveProduct}=require('./live-product.cjs');
   const toggle=page.locator('.sf-product-sheet-toggle');
   assert.equal(await toggle.getAttribute('aria-expanded'),'false');
   assert(await page.locator('.single_add_to_cart_button').isVisible());
+  const release=await page.locator('link[href*="styles/product.css"]').getAttribute('href');
+  const parts=new URL(release).searchParams.get('ver').split('.').map(Number);
+  assert(parts[0]>0||parts[1]>1||parts[2]>=111,'Updated purchase sheet must be live: '+release);
+  for(const node of await page.locator('.cdl-fsb-text,.cdl-fsb-track,.sf-product-sheet-body .cdl-wa').all()){
+   assert(!(await node.isVisible()),'Closed panel contains no shipping or contact information');
+  }
+  const input=page.locator('.sf-product-purchase input.qty[type="number"]');
+  if(await input.count()){
+   assert.equal(await page.locator('.sf-product-purchase [data-quantity-step]').count(),2);
+   const prior=await input.inputValue(),plus=page.locator('.sf-product-purchase [data-quantity-step="1"]');
+   if(!(await plus.isDisabled())){
+    await plus.click();assert(Number(await input.inputValue())>Number(prior),'Native quantity increases without submitting');
+    await input.fill(prior);await input.dispatchEvent('change');
+   }
+  }
+  console.log('PRODUCT_SHEET_111 '+JSON.stringify({width,release,collapsedShipping:false,forms:await page.locator('form.cart').count(),quantityInputs:await input.count()}));
   if(selected){
    await page.mouse.move(width/2,350);const distance=await images.first().evaluate(e=>e.getBoundingClientRect().height*.8);await page.mouse.wheel(0,distance);
    try{await page.waitForFunction(()=>Math.abs(document.querySelectorAll('.woocommerce-product-gallery__image')[1].getBoundingClientRect().top)<1,null,{timeout:5000});}
@@ -65,6 +81,14 @@ const {liveProduct}=require('./live-product.cjs');
   await page.locator('.sf-product-sheet-toggle').click();
   await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-expanded'));
   assert(await page.locator('.sf-product-information').isVisible());
+  const contact=page.locator('.sf-product-sheet-body > .cdl-wa');
+  if(await contact.count())assert(await contact.isVisible(),'Original contact link is an expanded information row');
+  const shippingSection=page.locator('.sf-product-delivery:visible');
+  if(await shippingSection.count()){
+   await shippingSection.locator('summary').click();
+   assert.equal(await shippingSection.getAttribute('open'),'','Shipping is a native disclosure');
+  }
+  await page.screenshot({path:'qa/performance/product-sheet-modules-open-390.png'});
   await page.locator('.sf-product-sheet-body').evaluate(e=>e.scrollTop=200);
   assert.equal(await page.evaluate(()=>scrollY),before,'Panel scroll leaves photos fixed');
   assert.equal(await page.locator('form.cart .single_add_to_cart_button').count(),1);

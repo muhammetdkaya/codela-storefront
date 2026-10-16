@@ -7,6 +7,37 @@
   var counter = document.getElementById('codela-live-visitor-container');
   var gallery = counter && counter.closest('.woocommerce-product-gallery');
   if (gallery && counter.parentElement !== gallery) gallery.appendChild(counter);
+  function setupQuantities() {
+    document.querySelectorAll('div.product .sf-product-purchase .quantity').forEach(function (quantity) {
+      var input = quantity.querySelector('input.qty');
+      var buttons = quantity.querySelectorAll('[data-quantity-step]');
+      if (!input || !buttons.length) return;
+      quantity.classList.add('sf-product-quantity');
+      function update() {
+        quantity.classList.toggle('is-fixed', input.type !== 'number' || input.hidden);
+        buttons.forEach(function (button) {
+          var down = Number(button.dataset.quantityStep) < 0;
+          var limit = input.getAttribute(down ? 'min' : 'max');
+          button.disabled = input.disabled || input.readOnly || (limit !== null && limit !== '' &&
+            (down ? input.valueAsNumber <= Number(limit) : input.valueAsNumber >= Number(limit)));
+        });
+      }
+      buttons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          try {
+            if (Number(button.dataset.quantityStep) < 0) input.stepDown(); else input.stepUp();
+          } catch (_) { return; }
+          input.dispatchEvent(new Event('input', {bubbles:true}));
+          input.dispatchEvent(new Event('change', {bubbles:true}));
+          update();
+        });
+      });
+      input.addEventListener('input', update);
+      input.addEventListener('change', update);
+      new MutationObserver(update).observe(input, {attributes:true, attributeFilter:['min','max','step','disabled','readonly','type','value']});
+      update();
+    });
+  }
   var sheetState = null;
   function setupSheet() {
     var template = document.getElementById('sf-product-sheet-template');
@@ -33,6 +64,8 @@
     var dragged = false;
     var photoWidth = 0;
     var discoveryFrame = 0;
+    var delivery = null;
+    var openSections = [];
     function move(node, target) {
       if (!node) return;
       var marker = document.createComment('sf-product-position');
@@ -113,6 +146,34 @@
         if (track && node.matches('.related,.upsells')) { move(node, discovery); return; }
         if (node !== media && node !== template && !node.classList.contains('onsale')) move(node, content);
       });
+      // Compose the existing, live plugin nodes inside a native disclosure.
+      // The collapsed sheet has no shipping text/track or contact action.
+      var information = content.querySelector('.sf-product-information');
+      if (information) {
+        openSections = Array.from(information.querySelectorAll('details[open]'));
+        openSections.forEach(function (section) { section.open = false; });
+      }
+      var shipping = summary.querySelectorAll('.cdl-de,.cdl-fsb-live--product,.cdl-fsb--product:not(.cdl-fsb-live--product .cdl-fsb--product)');
+      if (shipping.length) {
+        delivery = document.createElement('details');
+        delivery.className = 'sf-product-information-section sf-product-delivery';
+        var label = document.createElement('summary');
+        label.textContent = template.dataset.deliveryLabel;
+        var body = document.createElement('div');
+        body.className = 'sf-product-information-content';
+        delivery.append(label, body);
+        if (information) {
+          var next = information.querySelector('#sf-product-section-codela_taksit,#sf-product-section-reviews');
+          information.insertBefore(delivery, next);
+        } else content.appendChild(delivery);
+        shipping.forEach(function (node) { move(node, body); });
+      }
+      var contact = summary.querySelector('.cdl-wa');
+      if (contact) {
+        move(contact, content);
+        var trust = content.querySelector(':scope > .cdl-tb');
+        if (trust) trust.before(contact);
+      }
       var footer = document.querySelector('.sf-footer');
       if (footer) move(footer, content);
       if (track && discovery.children.length) track.appendChild(discovery);
@@ -130,6 +191,9 @@
       // Restore containers before their children using the exact anchor nodes.
       originals.slice().reverse().forEach(function (entry) { entry[1].replaceWith(entry[0]); });
       originals = [];
+      openSections.forEach(function (section) { section.open = true; });
+      openSections = [];
+      if (delivery) { delivery.remove(); delivery = null; }
       discovery.remove();
       media.classList.remove('is-discovering');
       sheet.classList.remove('is-discovering');
@@ -221,7 +285,7 @@
     if (section) section.open = true;
   });
   window.addEventListener('hashchange', revealHash);
-  function start() { setupSheet(); revealHash(); }
+  function start() { setupQuantities(); setupSheet(); revealHash(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
   else start();
 })();

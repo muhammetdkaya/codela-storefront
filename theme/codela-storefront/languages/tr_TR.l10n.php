@@ -1,6 +1,9 @@
 <?php
 return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR', 'plural-forms' => 'nplurals=2; plural=(n > 1);', 'messages' => [
 'Enlarge product image' => 'Ürün görselini yakınlaştır',
+'Delivery and shipping' => 'Teslimat ve kargo',
+'Decrease quantity' => 'Adedi azalt',
+'Increase quantity' => 'Adedi artır',
 'Filters' => 'Filtreler',
 'Price range' => 'Fiyat aralığı',
 'Minimum price' => 'En düşük fiyat',
