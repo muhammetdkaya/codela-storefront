@@ -28,6 +28,11 @@ const alpha=color=>{
    const parts=new URL(version).searchParams.get('ver')?.split('.').map(Number);
    assert(parts?.length===3 && parts.every(Number.isInteger) && (parts[0]>0 || parts[1]>1 || parts[2]>=81),'Expected 0.1.81 or newer CSS, got '+version);
    if(check.name==='product'){
+     await page.locator('.woocommerce-product-gallery__image a > img:not(.zoomImg)').first().evaluate(img=>img.decode());
+     await page.waitForFunction(()=>parseFloat(getComputedStyle(document.querySelector('.woocommerce-product-gallery')).opacity)>.99);
+     await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+     const edges=await page.evaluate(()=>{const images=[...document.querySelectorAll('.woocommerce-product-gallery__image')],first=images[0].querySelector('img').getBoundingClientRect(),sheet=document.querySelector('.sf-product-sheet').getBoundingClientRect();return{gap:Math.max(0,...images.slice(1).map((node,i)=>Math.abs(node.getBoundingClientRect().top-images[i].getBoundingClientRect().bottom))),covered:first.bottom>=sheet.top,owner:getComputedStyle(images[0].parentElement).overflowY,refresh:getComputedStyle(document.documentElement).overscrollBehaviorY};});
+     assert(edges.gap<1&&edges.covered,'Live WebKit gapless photographs reach sheet: '+JSON.stringify(edges));assert.equal(edges.owner,'visible');assert.equal(edges.refresh,'auto');
      await page.evaluate(()=>{
        const tab=document.querySelector('.woocommerce-tabs');
        if(tab)window.scrollTo({top:Math.max(0,tab.getBoundingClientRect().top+scrollY-170),behavior:'instant'});
