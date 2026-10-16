@@ -1,5 +1,9 @@
 # Codela Storefront — güncel teknik durum
 
+## Çalışma —16 Ekim2026 /0.1.112→0.1.113 son ilk-görünüm paketi
+
+İlk112 aktarımı sürerken tespit edilen hızlı yeniden dokunma/Escape cleanup ve ilk ölçümde is-mounting transition engeli son pakete alındı.112'nin CSS'sini gören tarayıcıların aynı URL'de eski kuralı tutmaması için final paket **113** olarak yayımlanacak. Panel/parmak ve native ilk görünüm kodu aynı çalışmadır; yeni bağımlılık yok.112 ilk CI bütün browser testleri geçti. Final113 için CI/FTP/canlı ve gerçek WP/Woo kabulü bekleniyor;112 kanıtları113'ün yerine geçmez. Kaynak/hash pin'i final pakete bağlanacak.
+
 ## Çalışma —16 Ekim2026 /0.1.111→0.1.112 ilk görünüm ve doğrudan panel sürükleme
 
 Kullanıcı yenilemede eski büyük başlık/açıklama/ayrı satın alma düzeninin geçici görünmesini, galeri→ilgili ürünler başlık boyutunun değişmesini ve panelin parmağı izlemeyip bırakınca açılmasını bildirdi. Ürün template'i dependency-free mevcut adapter'ı WordPress kuyruğundan footer bağımlılıklarından önce bir kez basar; template varsa DOMContentLoaded beklenmeden mount olur. Geç parse edilen footer aynı native node olarak DOMContentLoaded'da taşınır. Head'deki mobil pending flag geçici native summary/purchase flash'ını önler; native ilk galeri fotoğrafı Woo opacity başlangıcını beklemez. No-JS native belgeyi kullanır; başarısız adapter sonrası queue inline cleanup ve4s fail-open vardır.

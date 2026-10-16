@@ -20,7 +20,7 @@ const {liveProduct}=require('./live-product.cjs');
   assert(await page.locator('.single_add_to_cart_button').isVisible());
   const release=await page.locator('link[href*="styles/product.css"]').getAttribute('href');
   const parts=new URL(release).searchParams.get('ver').split('.').map(Number);
-  assert(parts[0]>0||parts[1]>1||parts[2]>=112,'Updated purchase sheet must be live: '+release);
+  assert(parts[0]>0||parts[1]>1||parts[2]>=113,'Updated purchase sheet must be live: '+release);
   for(const node of await page.locator('.cdl-fsb-text,.cdl-fsb-track,.sf-product-sheet-body .cdl-wa').all()){
    assert(!(await node.isVisible()),'Closed panel contains no shipping or contact information');
   }
@@ -33,7 +33,7 @@ const {liveProduct}=require('./live-product.cjs');
     await input.fill(prior);await input.dispatchEvent('change');
    }
   }
-  console.log('PRODUCT_SHEET_112 '+JSON.stringify({width,release,collapsedShipping:false,forms:await page.locator('form.cart').count(),quantityInputs:await input.count()}));
+  console.log('PRODUCT_SHEET_113 '+JSON.stringify({width,release,collapsedShipping:false,forms:await page.locator('form.cart').count(),quantityInputs:await input.count()}));
   assert.equal(await page.locator('script#codela-storefront-product-information-js').count(),1,'One early WordPress script instance');
   const handle=await page.locator('.sf-product-sheet-header').boundingBox();
   const initialHeight=(await page.locator('.sf-product-sheet').boundingBox()).height;
