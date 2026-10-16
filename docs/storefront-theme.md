@@ -1,5 +1,9 @@
 # Codela Storefront — güncel teknik durum
 
+## Final paket — 17 Ekim 2026 / 0.1.115 → 0.1.116
+
+115 CI ve gerçek FTP başarılı; canlı yeni dock genişliği ve Footer'ın panel dışında olması doğrulandı. Galeri final tail testi son link–panel arasında114.234px ölçtü: document'te kalan hidden .sf-mobile-dock, navigation.css body:has(.sf-mobile-dock) kuralıyla ikinci90px reserve ekliyordu. Enhanced mobil üründe body padding-bottom:0 ile kaldırıldı; Footer'ın kendi overlay koruması tek kalır. Paket116 olarak sürümlendi;115 CSS önbelleği final kabul sayılmaz. Ürün browser fixture'ına gerçek navigation.css+hidden dock ve footer-inner eklendi; body padding0 ve son link–panel0–28px assertion'ı bu regresyonu yakalar. Yeni116 CI/FTP/canlı kabulü bekleniyor. Önceki114/115 kaynak/hash kabulü116 yerine geçmez.
+
 ## Çalışma — 17 Ekim 2026 / 0.1.114 → 0.1.115 alt panel ve ortak alt menü ölçüleri
 
 Kullanıcı yenileme/tutma işini bitmiş saydı; bu çalışma yalnız ortak alt menü arka planı/genişliği ve Footer'ın açılan ürün panelinden çıkarılması içindir. Var olan components.css tek cam materyali korunur; panel artık navigation dock ile aynı --sf-ui-bottom-bar-inset/max-width/gap token'larını kullanır (16px yan boşluk,430px tavan,4px alt mesafe + cihaz safe-area). Tek panel yüzeyi içinde native purchase şeffaf kalır, safe-area dışarıda bir kez hesaplanır; dört köşe ortak control radius. Açık panelde de aynı genişlik. Yeni buton/yüzey boyası/scroll motoru yok.

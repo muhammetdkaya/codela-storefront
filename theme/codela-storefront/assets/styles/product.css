@@ -453,7 +453,7 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
 @media(max-width:700px){
   /* Root scrolling preserves native browser pull-to-refresh at the top. */
   html:has(body.sf-product-sheet-ready){overscroll-behavior-y:auto;scroll-snap-type:y mandatory;scroll-padding-bottom:calc(var(--sf-product-viewport-current,100dvh) - var(--sf-product-viewport-small,100svh) + var(--sf-product-photo-inset,90px) + env(safe-area-inset-bottom,0px))}
-  body.sf-product-sheet-ready{overflow:visible;overscroll-behavior-y:auto}
+  body.sf-product-sheet-ready{overflow:visible;overscroll-behavior-y:auto;padding-bottom:0}
   /* Suppress bottom rubber-band only in recommendations. Keep native
      pull-to-refresh on the photographs, without changing snap geometry. */
   /* The recommendation list is taller than one viewport. Disable mandatory
