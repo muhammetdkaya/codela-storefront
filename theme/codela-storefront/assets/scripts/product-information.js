@@ -39,6 +39,7 @@
       if (!mounted) return;
       var footerHeight = purchase ? purchase.getBoundingClientRect().height : 0;
       sheet.style.setProperty('--sf-product-footer-height', footerHeight + 'px');
+      sheet.style.setProperty('--sf-product-closed-height', (sheet.querySelector('.sf-product-sheet-header').getBoundingClientRect().height + footerHeight + 8) + 'px');
       var dockHeight = !purchase ? (document.querySelector('.sf-mobile-dock')?.getBoundingClientRect().height || 0) : 0;
       var height = sheet.querySelector('.sf-product-sheet-header').getBoundingClientRect().height + footerHeight + dockHeight + 16;
       media.style.setProperty('--sf-product-collapsed-height', height + 'px');
@@ -122,6 +123,12 @@
     // Open the original selector instead of proxying or submitting the form.
     sheet.addEventListener('click', function (event) {
       var button = event.target.closest('.single_add_to_cart_button');
+      var grouped = button && button.closest('form.grouped_form');
+      if (grouped && !expanded) {
+        event.preventDefault(); event.stopImmediatePropagation();
+        setOpen(true, grouped.querySelector('.group_table input.qty'));
+        return;
+      }
       var form = button && button.closest('form.variations_form');
       if (!form) return;
       var missing = Array.from(form.querySelectorAll('.variations select')).find(function (select) { return !select.value; });

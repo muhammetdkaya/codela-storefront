@@ -452,10 +452,10 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   body.sf-product-sheet-ready div.product > .woocommerce-product-gallery{
     --sf-gallery-height:100svh;height:100dvh;margin:0!important;
   }
-  body.sf-product-sheet-ready .sf-ui-gallery--scroll .woocommerce-product-gallery__wrapper{
+  body.single-product.sf-product-sheet-ready div.product .sf-ui-gallery--scroll .woocommerce-product-gallery__wrapper{
     display:block;overflow-x:hidden;overflow-y:auto;scroll-snap-type:y mandatory;
   }
-  body.sf-product-sheet-ready .sf-ui-gallery--scroll .woocommerce-product-gallery__wrapper > :is(.woocommerce-product-gallery__image,.woocommerce-product-gallery__image--placeholder){
+  body.single-product.sf-product-sheet-ready div.product .sf-ui-gallery--scroll .woocommerce-product-gallery__wrapper > :is(.woocommerce-product-gallery__image,.woocommerce-product-gallery__image--placeholder){
     width:100%;height:100%;padding-bottom:var(--sf-product-collapsed-height,210px);
   }
   body.sf-product-sheet-ready .sf-product-gallery-nav{
@@ -477,6 +477,8 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   body.sf-product-sheet-ready div.product > .sf-product-sheet{
     position:fixed;z-index:1000;inset-inline:0;bottom:0;display:flex;flex-direction:column;
     width:100%;max-height:calc(100svh - 84px - var(--sf-header-offset,0px));
+    height:calc(var(--sf-product-closed-height,190px) + env(safe-area-inset-bottom,0px));
+    transition:height var(--sf-ui-motion-panel) var(--sf-ui-ease-press);
     margin:0;padding:0 0 calc(var(--sf-product-footer-height,0px) + 8px + env(safe-area-inset-bottom,0px));
     border-radius:var(--sf-ui-control-radius) var(--sf-ui-control-radius) 0 0;
     /* One stable containing block also when reduced transparency removes blur. */
@@ -491,6 +493,7 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
   }
   body.sf-product-sheet-ready .sf-product-sheet-heading .price{font-size:clamp(17px,4.6vw,22px)}
+  body.sf-product-sheet-ready .sf-product-sheet.is-expanded .product_title{-webkit-line-clamp:3}
   body.sf-product-sheet-ready .sf-product-sheet-heading .price del{display:block;font-size:12px}
   body.sf-product-sheet-ready .sf-product-sheet-body{height:0;flex:0 1 auto;visibility:hidden}
   body.sf-product-sheet-ready .sf-product-sheet.is-expanded{height:calc(100dvh - 84px - var(--sf-header-offset,0px))}

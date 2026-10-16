@@ -6,7 +6,7 @@ const fs=require('node:fs');
 const pages=[
  {name:'home',url:'https://codela.dev/',selectors:['.sf-brand','.sf-header-menu .sf-menu-trigger','.sf-mobile-dock .sf-dock-surface']},
  {name:'product-search',url:'https://codela.dev/?s=Demo&post_type=product',selectors:['.sf-brand','.sf-header-menu .sf-menu-trigger','.sf-mobile-dock .sf-dock-surface']},
- {name:'product',url:'https://codela.dev/urun/demo-20-v-yaka-tisort-secki/',selectors:['.sf-brand','.sf-header-menu .sf-menu-trigger','.sf-header .sf-cart-trigger','.sf-product-purchase']},
+ {name:'product',url:'https://codela.dev/urun/demo-20-v-yaka-tisort-secki/',selectors:['.sf-brand','.sf-header-menu .sf-menu-trigger','.sf-header .sf-cart-trigger','.sf-product-sheet']},
 ];
 const alpha=color=>{
  const parsed=color.match(/rgba?\(([^)]+)\)/);
@@ -82,3 +82,4 @@ const alpha=color=>{
   await browser.close();
  }
 })().catch(e=>{console.error(e);process.exitCode=1});
+
