@@ -1,5 +1,13 @@
 # Codela Storefront — güncel teknik durum
 
+## Son doğrulanmış durum — 16 Ekim 2026 / 0.1.110 mobil ilgili ürünler alt sınır
+
+**Biten:** Kullanıcının mobil ekran görüntüsündeki ilgili ürün listesinin altında boşluk kaldırıldı. İlk 0.1.109 canlı QA **başarısızdı**: son kart ile kapalı ürün satın alma paneli arasında138.3125px vardı (98.9219px discovery padding, native32px ul.products margin ve doğal mesafe). 0.1.110, yalnız mobil discovery için fazla rezervi kaldırdı, native Woo grid alt marjını bu alan özelinde sıfırladı; cihaz safe-area korundu. Katalog kart boya sistemi, native formlar, galeri, fotoğraf snap ve galeri/panel geçişleri değiştirilmedi. Eklenti1.1.1 aynı.
+
+**Yayın/doğrulama:** Kaynak [c7330ebc](https://github.com/muhammetdkaya/codela-storefront/commit/c7330ebcc54e1817abc46b7c1df6a5c79ef07b57), [CI, paket ve gerçek FTP 38917382329](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38917382329) başarılı. [Yayın sonrası canlı galeri 38918273286](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38918273286) başarılı: 390px son native ürün kartından sabit panele **7.3125px**, 0px alt padding/grid marjı, 60 kare alt sınır sabit, related içinden yukarı dönüşte kayma0px/ters hareket0px, birer state geçişi, root photo snap ve tepedeki overscroll auto geri gelir. 390/1280 görüntü kalitesi/üç önizleme ve inline zoom kabul edildi. [WebKit](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38918273299), [shell](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38918273322), [document](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38918273292) canlı testleri başarılı.
+
+**Kalan:** 0.1.110 performans audit bekliyor; ağır PNG cold-LCP önceki sürümlerde bütçeyi karşılamadı. Fiziksel iPhone Safari elastik kaydırma/toolbar ve gerçek ödeme/üçüncü taraf medya ayrı kabul gerektirir. Bu alt boşluk işi otomatik işlevsel kabul ve canlı dağıtım yönünden tamam; bundan sonra yeni talepler için HEAD'den devam et.
+
 ## Çalışma — 16 Ekim 2026 / 0.1.109 → 0.1.110 son boşluğun kaldırılması
 
 0.1.109 test/gerçek FTP [38915360148](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38915360148) başarılı; fakat [canlı galeri 38916374019](https://github.com/muhammetdkaya/codela-storefront/actions/runs/38916374019) **başarısız**: 390px mobilde son kart ile kapalı satın alma paneli **138.3125px** ayrı (kalan `padding-bottom:98.9219px` ve native `ul.products margin-bottom:32px`). Önceki 0.1.109 'tamam' sayılmaz.
