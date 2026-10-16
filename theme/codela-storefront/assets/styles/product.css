@@ -543,18 +543,19 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
 /* Native recommendations continue the same vertical scroll after photographs. */
 @media(max-width:700px){
   body.single-product.sf-product-sheet-ready div.product .sf-ui-gallery--scroll .sf-product-discovery{
-    /* The cards determine the section height. Reserve only the fixed compact
-       purchase surface, not a whole extra screen below the final row. The
-       normal-width measurement keeps the earlier photo geometry stable. */
+    /* The existing Woo list and compact sheet determine the final stop;
+       do not stack a second fixed-panel reserve below the final card. */
     display:flow-root;min-height:0;width:100%;scroll-snap-align:start;
-    padding:calc(88px + var(--sf-header-offset,0px)) 16px
-      calc(max(0px, var(--sf-product-normal-height,160px) - 24px) + env(safe-area-inset-bottom,0px));
+    padding:calc(88px + var(--sf-header-offset,0px)) 16px env(safe-area-inset-bottom,0px);
     background:var(--sf-ui-page);color:var(--sf-ui-ink);
   }
   body.single-product.sf-product-sheet-ready .sf-product-discovery > :is(.related,.upsells){
     width:100%;max-width:none;padding:0;margin:0 0 16px;float:none;clear:both;
   }
   body.single-product.sf-product-sheet-ready .sf-product-discovery > :is(.related,.upsells):last-child{margin-bottom:0}
+  /* catalog.css gives all native grids 32px bottom margin. Inside the
+     vertically scrolling product discovery it is redundant after the last card. */
+  body.single-product.sf-product-sheet-ready .sf-product-discovery :is(.related,.upsells) ul.products{margin-bottom:0}
   body.sf-product-sheet-ready:has(.woocommerce-product-gallery.is-discovering) div.product > .onsale{visibility:hidden}
   body.sf-product-sheet-ready .woocommerce-product-gallery.is-discovering > :is(.sf-product-gallery-nav,.sf-product-gallery-count,.sf-product-visitor,.woocommerce-product-gallery__trigger){visibility:hidden}
   body.single-product.sf-product-sheet-ready div.product .sf-product-sheet.is-discovering .sf-product-sheet-heading .product_title{-webkit-line-clamp:1;font-size:15px}
