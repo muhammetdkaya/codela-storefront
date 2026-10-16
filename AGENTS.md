@@ -2,7 +2,7 @@
 
 ## Çalışma —16 Ekim2026 /0.1.107→0.1.108 küçük resim ve alt sınır
 
-Tema0.1.108 hazırlanıyor; Codela1.1.1 runtime değişmedi. Seçili native thumbnail'ın siyah outline'ı kaldırılır; shared klavye focus-visible korunur. İlgili ürünler görünürken root/body overscroll-y:none, galeride auto: alt uç esneme/boşluk ve bırakma geri sekmesi engellenir, tepedeki native yenileme yolu korunur. Snap türü/alanı, stabil fotoğraf koordinatları ve normal panel rezervi değiştirilmez; yeni touch/wheel engelleyici veya scroll motoru yok.
+Tema0.1.108 hazırlanıyor; Codela1.1.1 runtime değişmedi. Seçili native thumbnail'ın siyah outline'ı kaldırılır; shared klavye focus-visible korunur. İlgili ürünler görünürken root/body overscroll-y:none, galeride auto: alt uç esneme/boşluk ve bırakma geri sekmesi engellenir, tepedeki native yenileme yolu korunur. 0.1.108 CI'de uzun öneri alanının zorunlu fotoğraf snap'ine takılıp alt uca ulaşamadığı görüldü: yalnız `.woocommerce-product-gallery.is-discovering` durumunda root snap `none`, galeriye dönünce `y mandatory` olur. Fotoğraf/snap hedef geometrisi ve normal panel rezervi değişmez; yeni touch/wheel engelleyici veya scroll motoru yok.
 
 Fixture ve canlı QA artık üç alt sınır wheel hareketinin ardından60 frame boyunca scrollHeight/scrollY sabitliğini, öneriler içinde geri kaydırmayı ve galeriye dönünce auto politikasını sınar. Fiziksel Safari rubber-band/toolbar hareketi wheel otomasyonunda birebir üretilemez; cihaz kabulü açık. CI/gerçek FTP,108 paket/hash pin'li WP/Woo matrisi ve canlı sonuçlar bekleniyor. Önceki ağır PNG cold-LCP sorunu ayrı açık.
 
