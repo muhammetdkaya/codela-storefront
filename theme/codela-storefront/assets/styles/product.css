@@ -516,7 +516,8 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
     height:var(--sf-product-closed-height,190px);
     transition:height var(--sf-ui-motion-panel) var(--sf-ui-ease-press);
     margin:0 auto;padding:0 0 calc(var(--sf-product-footer-height,0px) + 8px);
-    border-radius:calc(var(--sf-ui-control-radius) + 8px);
+    /* The shared product-panel surface owns its corner radius and material.
+       Only layout positioning belongs to the product page stylesheet. */
     /* Same composited surface path as the dock. Layout containment can leave
        WebKit's backdrop unfiltered; an identity transform also preserves the
        native fixed purchase containing block when transparency is reduced. */
