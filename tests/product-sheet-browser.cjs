@@ -158,8 +158,9 @@ for(const width of [320,390,700]){
  await page.setViewportSize({width:1280,height:900});await page.waitForFunction(()=>!document.querySelector('.sf-product-sheet'));assert.equal(await page.locator('.sf-product-sheet').count(),0,'Desktop restores original document');assert.equal(await page.locator('div.product > .summary .product_title').count(),1);assert.equal(await page.locator('div.product > .related').count(),1,'Desktop recommendation position restored');assert.equal(await page.locator('.sf-product-discovery').count(),0);assert.equal(await page.locator('.summary > .cdl-fsb--product').count(),1,'Desktop restores original live shipping node');assert.equal(await page.locator('.sf-product-delivery').count(),0,'No generated mobile sections on desktop');assert.equal(await page.locator('body > .sf-footer').count(),1);assert.equal(await page.locator('form.cart .single_add_to_cart_button').count(),1);
  await page.setViewportSize({width,height:844});await page.waitForFunction(()=>!!document.querySelector('.sf-product-sheet'));assert.equal(await page.locator('.sf-product-sheet').count(),1,'Return to mobile mounts once');
 }
-// Native summary must never flash while the dependency-free adapter loads.
-// It mounts before DOMContentLoaded, even with a blocked footer script.
+// Native Woo title, price and purchase are the REAL initial dock before the
+// same nodes are moved into the enhanced sheet. It must not be blank while
+// loading, including DOMContentLoaded and a slow or blocked adapter.
 await page.setViewportSize({width:390,height:844});
 let releaseAdapter,releaseFooter;
 const adapterGate=new Promise(r=>releaseAdapter=r),footerGate=new Promise(r=>releaseFooter=r);
@@ -174,12 +175,23 @@ await page.route('https://sheet.test/**',async route=>{
  await route.fulfill({status:404,body:''});
 });
 const streaming=page.goto('https://sheet.test/',{waitUntil:'load'});
+streaming.catch(()=>{}); // The delayed script remains pending if an earlier assertion fails.
 await page.locator('#sf-product-sheet-template').waitFor({state:'attached'});
-assert(!(await page.locator('.summary .product_title').isVisible()),'Old large title never paints while adapter is pending');
-assert(!(await page.locator('.sf-product-purchase').isVisible()),'Old detached purchase never paints while adapter is pending');
+assert(await page.locator('.summary .product_title').isVisible(),'Original title paints inside the first-frame glass sheet');
+assert(await page.locator('.sf-product-purchase').isVisible(),'The real native purchase form paints while the adapter is blocked');
+const pendingBox=await page.locator('div.product > .summary').boundingBox();
+const firstPurchase=await page.locator('.sf-product-purchase').boundingBox();
+const firstTitle=await page.locator('div.product > .summary > .product_title').boundingBox();
+console.log('NATIVE_FIRST_PANEL '+JSON.stringify({pendingBox,firstPurchase,firstTitle}));
+assert(Math.abs(pendingBox.width-358)<2,'First-frame panel shares dock horizontal inset');
+assert(pendingBox.y>0&&pendingBox.y+pendingBox.height<=844,'First-frame sheet is fixed within viewport');
+assert(firstPurchase.y>=pendingBox.y && firstPurchase.y+firstPurchase.height<=pendingBox.y+pendingBox.height+4,'First-frame purchase belongs inside panel');
+assert(firstTitle.y>=pendingBox.y && firstTitle.y+firstTitle.height<=firstPurchase.y,'Real heading precedes native controls');
+assert.equal(await page.locator('.single_add_to_cart_button').count(),1,'Only original Woo submit appears before enhancement');
 assert.equal(await page.locator('.woocommerce-product-gallery').evaluate(e=>getComputedStyle(e).opacity),'1','Native first photo does not wait for Woo footer opacity');
 await page.waitForTimeout(4300);
-assert(!(await page.locator('.summary .product_title').isVisible()),'A network slower than four seconds never expires the prepaint guard');
+assert(await page.locator('.summary .product_title').isVisible(),'Slow connection leaves real purchase panel visible for four seconds');
+assert(await page.locator('.sf-product-purchase').isVisible(),'Native purchase remains usable before enhancement');
 releaseAdapter();await page.locator('.sf-product-sheet').waitFor({state:'visible'});
 assert.equal(await page.evaluate(()=>document.readyState),'loading','Panel mounts before delayed footer/DOMContentLoaded');
 assert(await page.locator('.single_add_to_cart_button').isVisible());
@@ -206,8 +218,17 @@ await page.goto('https://sheet-async.test/',{waitUntil:'domcontentloaded'});
 await page.evaluate(()=>new Promise(done=>requestAnimationFrame(()=>requestAnimationFrame(done))));
 assert(await page.locator('html').evaluate(e=>e.classList.contains('sf-product-sheet-pending')),'DOM ready cannot release product first-paint guard before adapter');
 assert.equal(await page.locator('body').evaluate(e=>e.classList.contains('sf-product-sheet-ready')),false);
-assert(!(await page.locator('.summary .product_title').isVisible()),'Native title does not flash after DOM ready');
-assert(!(await page.locator('.sf-product-purchase').isVisible()),'Detached native purchase does not flash after DOM ready');
+assert(await page.locator('div.product > .summary .product_title').isVisible(),'Same compact heading is painted before async mount');
+assert(await page.locator('div.product > .summary .single_add_to_cart_button').isVisible(),'Original Woo submit is visible before async mount');
+const prePanel=await page.locator('div.product > .summary').boundingBox();
+const preTitle=await page.locator('div.product > .summary .product_title').boundingBox();
+const preQty=await page.locator('div.product > .summary .quantity').boundingBox();
+const preSubmit=await page.locator('div.product > .summary .single_add_to_cart_button').boundingBox();
+assert.equal(await page.locator('div.product > .summary .sf-product-quantity-step:visible').count(),2,'Native pending quantity shows original two controls');
+assert(preQty.width>100 && preQty.width<155,'Pending quantity already uses compact controls');
+assert(preSubmit.width<=202,'Native pending add-to-cart matches final compact CTA');
+assert(prePanel.y>0 && prePanel.height>100,'First document paint includes real lower panel, not a blank gallery bottom');
+assert(preTitle.height<50,'Initial title already uses final compact typography');
 assert(await page.locator('.woocommerce-product-gallery').isVisible(),'Real photograph paints before adapter');
 const beforePhoto=await page.locator('.woocommerce-product-gallery__image').first().boundingBox();
 const beforeFrame=await page.locator('.woocommerce-product-gallery__wrapper').evaluate(e=>getComputedStyle(e).overflowY);
@@ -216,6 +237,14 @@ releaseAsync();
 await page.locator('.sf-product-sheet').waitFor({state:'visible'});
 await page.waitForFunction(()=>!document.documentElement.classList.contains('sf-product-sheet-pending'));
 const afterPhoto=await page.locator('.woocommerce-product-gallery__image').first().boundingBox();
+const postPanel=await page.locator('.sf-product-sheet').boundingBox();
+const postQty=await page.locator('.sf-product-sheet .quantity').boundingBox();
+const postSubmit=await page.locator('.sf-product-sheet .single_add_to_cart_button').boundingBox();
+console.log('PRODUCT_INITIAL_CONTROLS '+JSON.stringify({quantityBefore:preQty,quantityAfter:postQty,buttonBefore:preSubmit,buttonAfter:postSubmit}));
+assert(Math.abs(preQty.width-postQty.width)<6,'Quantity does not resize after mount');
+assert(Math.abs(preSubmit.width-postSubmit.width)<6,'Purchase button does not resize after mount');
+console.log('PRODUCT_FIRST_PANEL '+JSON.stringify({first:prePanel,enhanced:postPanel}));
+assert(Math.abs(prePanel.y-postPanel.y)<10,'Hydration may not visually jump the lower panel');
 const frameDrift=Math.abs(beforePhoto.height-afterPhoto.height);
 console.log('PRODUCT_PREPAINT_FRAME '+JSON.stringify({before:beforePhoto.height,after:afterPhoto.height,drift:frameDrift}));
 assert(Math.abs(beforePhoto.y-afterPhoto.y)<1,'Hydration must not move the first photo top');

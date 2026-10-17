@@ -1,5 +1,10 @@
 # Codela Storefront — güncel teknik durum
 
+## 17 Ekim 2026 — 0.1.123 gerçek ürün panelinin ilk çizimi
+
+Önceki 0.1.122 tasarımı yenilemede hâlâ boş alt alan gösteriyordu. Nedeni template içeriğinin JS olmadan görünür olmaması ve orijinal Woo summary ve formun gizlenmesiydi. 0.1.123 gerçek server Woo başlık/fiyat/cart formunu pending ilk kareden itibaren aynı sabit panelde gösterir, JS gelince zaten var olan tek düğüm kümesini mevcut galeri/panel sistemine taşır. Dummy CTA/form/başlık veya ayrı overlay eklenmez. Mevcut cam malzeme merkezi shared surface CSS üzerinden kullanılır; desktop/no-JS doğal davranış değişmez. Gecikmeli async ve klasik script senaryolarında ilk panel görünürlüğü ve koordinat kıyası testle doğrulanmalıdır.
+
+
 ## 17 Ekim 2026 — Canlı performans son kabul eksik
 Canlı mobile product medyan LCP 3.528s (önceki PNG15.668s), cold CLS 0.1763 (warm0); home cold LCP14.096s. [39017705647](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39017705647) bütçesi başarısız. **İlk karede raw Woo flash'ı önleyen 0.1.122 tek başına bütün CLS kaymasını düzeltmiş sayılmaz.** Belirsiz CLS kaynağını source-node/önce-sonra geometrisiyle açıklamadan yama uygulama; [Issue #40](https://github.com/muhammetdkaya/codela-storefront/issues/40) kabul gereksinimi. Mevcut tasarım, tek native form, WebP media ve galeri geçişleri korunsun.
 

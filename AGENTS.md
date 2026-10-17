@@ -1,5 +1,10 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 17 Ekim 2026 — 0.1.123 gerçek ilk kare alt panel
+
+Kullanıcının 11:39 yenileme ekran görüntüsünde 0.1.122 fotoğrafın altında boş alan gösteriyor, çünkü gerçek Woo başlığı ve satın alma formu CSS ile gizlenirken yeni sheet şablonu JS gelmeden DOM'a eklenmiyordu. 0.1.123 ilk mobil karede tek özgün Woo summary içindeki başlık/fiyat/orijinal formu aynı cam yüzey, alt alan ve ortak kontrol tasarımıyla çiziyor. Diğer native eklenti içerikleri hazır durumdan önce kapalı kalıyor. Ardından mevcut tek JS adaptörü özgün düğümleri bir kez sheet'e taşır: yeni form, başlık, dummy placeholder, skeleton, ikinci galeri yok. No-JS doğal Woo akışını korur. Playwright dört saniye geciken ürün scriptinde alt panelin ve gerçek satın alma düğmesinin hep görünür kaldığını, async DOMContentLoaded sonrası ilk panelin son panele yakın kaldığını doğrulamalı. Fiziksel Safari kabulü CI yerine geçmez.
+
+
 ## 17 Ekim 2026 — Canlı performans son kabul eksik
 Canlı mobile product medyan LCP 3.528s (önceki PNG15.668s), cold CLS 0.1763 (warm0); home cold LCP14.096s. [39017705647](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39017705647) bütçesi başarısız. **İlk karede raw Woo flash'ı önleyen 0.1.122 tek başına bütün CLS kaymasını düzeltmiş sayılmaz.** Belirsiz CLS kaynağını source-node/önce-sonra geometrisiyle açıklamadan yama uygulama; [Issue #40](https://github.com/muhammetdkaya/codela-storefront/issues/40) kabul gereksinimi. Mevcut tasarım, tek native form, WebP media ve galeri geçişleri korunsun.
 
