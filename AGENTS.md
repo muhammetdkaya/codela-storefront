@@ -1,9 +1,12 @@
 # Codela Storefront — güncel çalışma kuralları
 
-## 17 Ekim 2026 — 0.1.128 dönüşüm araçlarının kapalı panel hiyerarşisi (test ve yayın bekliyor)
+## 17 Ekim 2026 — 0.1.128 dönüşüm araçlarının kapalı panel hiyerarşisi (canlı doğrulandı)
 
-Fiziksel Safari görüntüsünde ürün adı fiyatın altında kalıyor; Woo fiyat satırının içine eklenen UrgencyBadge stok ve sayaç mesajları fiyat kolonunu uzatıp sheet'i büyütüyor. Kullanıcı onayıyla orijinal tek Woo title/fiyat/`.cdl-ub` düğümleri korunarak mobil **ilk ve son karede aynı CSS grid** kuruluyor: başlık ve fiyat ilk satır, stok + canlı sayaç ikinci kompakt satır; sayaçtaki uzun prefix yalnız görselde gizlenir, gerçek `<span data-*>` ve ekran okuyucu metni durur. Ziyaretçi sayaç galeride kalır. Yalnız ürün CSS + prepaint/grid sözleşmesi; ayrı ticari mantık, yeni JS, kopya düğüm, Codela eklenti sürümü ve Woo satın alma eylemi yok. Test: 320/390/700, indirimli satış, yalnız stok/yolda sayaç/ikisi, ilk kareden mount'a 3px altı panel yüksekliği/pozisyonu, gerçek tek ticker ve timer değişimi. Doğrulama sonrasında PR+FTPS ve kaynak/AGENTS durumunu kaydet; öncesinde canlı demeyin.
+Fiziksel Safari görüntüsünde ürün adı fiyatın altında kalıyor; Woo fiyat satırının içine eklenen UrgencyBadge stok ve sayaç mesajları fiyat kolonunu uzatıp sheet'i büyütüyor. Kullanıcı onayıyla orijinal tek Woo title/fiyat/`.cdl-ub` düğümleri korunarak mobil **ilk ve son karede aynı CSS grid** kuruluyor: başlık ve fiyat ilk satır, stok + canlı sayaç ikinci kompakt satır; sayaçtaki uzun prefix yalnız görselde gizlenir, gerçek `<span data-*>` ve ekran okuyucu metni durur. Ziyaretçi sayaç galeride kalır. Yalnız ürün CSS + prepaint/grid sözleşmesi; ayrı ticari mantık, yeni JS, kopya düğüm, Codela eklenti sürümü ve Woo satın alma eylemi yok. Test: 320/390/700, indirimli satış, yalnız stok/yolda sayaç/ikisi, ilk kareden mount'a 3px altı panel yüksekliği/pozisyonu, gerçek tek ticker ve timer değişimi. PR #46, ana dal CI ve FTP tamamlandı. Fiziksel Safari görsel onayı ayrıca beklenecek.
 
+
+
+**Doğrulanmış kapanış:** [PR #46](https://github.com/muhammetdkaya/codela-storefront/pull/46) [475cf0c9](https://github.com/muhammetdkaya/codela-storefront/commit/475cf0c9243c943347aee841bc83634c1e15eb97) ana dala birleştirildi. [PR tarayıcı + paket CI #39046339730](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39046339730) başarılı; `PRODUCT_FIRST_PANEL` ilk/son aynı `166px`, `PRODUCT_PREPAINT_FRAME` kayma `0px`; stok+sayaç, yalnız stok, yalnız sayaç 320/390/700 kabulü başarılı. [Main CI + gerçek FTPS #39046507763](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39046507763) başarılı; canlı log 2026-10-17 15:49:59Z `Storefront deployed; checks passed.` dedi. Codela eklentisi 1.1.1 değişmedi. **Sıradaki iş:** kullanıcı gerçek Safari görsel onayı; başka bir alanda yeni iş gelmedikçe bu modülleri yeniden tasarlama.
 
 ## 17 Ekim 2026 — 0.1.127 ürün detayında iletişim ve güvenceler (canlı doğrulandı)
 
