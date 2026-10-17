@@ -45,7 +45,8 @@ const alpha=color=>{
       return {background:s.backgroundColor,image:s.backgroundImage,filter:s.webkitBackdropFilter||s.backdropFilter,shadow:s.boxShadow,bounds:{width:b.width,height:b.height},display:s.display};
     });
     const a=alpha(item.background);
-    assert(Number.isFinite(a)&&a>=0.93,'Transparent '+selector+' on '+check.name+': '+JSON.stringify(item));
+    if(selector==='.sf-product-sheet')assert.equal(a,.78,'Whole product panel must use visible glass translucency');
+    else assert(Number.isFinite(a)&&a>=0.93,'Compact control tint changed at '+selector+' on '+check.name+': '+JSON.stringify(item));
     assert.equal(item.image,'none','Stacked white material at '+selector);
     assert.notEqual(item.shadow,'none','No light-background separation at '+selector);
     assert(item.bounds.width>0&&item.bounds.height>0,'Missing visible surface at '+selector);
@@ -62,6 +63,15 @@ const alpha=color=>{
     assert.equal(parity.group.width,44);assert.equal(parity.group.background,'rgba(0, 0, 0, 0)');assert.equal(parity.group.shadow,'none');
     const dock=await page.locator('.sf-shell > .sf-mobile-dock').evaluate(el=>getComputedStyle(el).display);
     assert.equal(dock,'none','No duplicate dock behind purchase bar');
+    await page.locator('.sf-product-sheet-toggle').click();
+    await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').getBoundingClientRect().height>700);
+    const openTint=await page.locator('.sf-product-sheet').evaluate(e=>getComputedStyle(e).backgroundColor);
+    assert.equal(alpha(openTint),.78,'Open and closed whole panel share the translucent glass tint');
+    fs.mkdirSync('qa/surfaces',{recursive:true});
+    const panelPreview=await page.screenshot({path:'qa/surfaces/product-details-open-webkit-390.png'});
+    console.log('PANEL_PREVIEW_BASE64 '+panelPreview.toString('base64'));
+    console.log('PANEL_GLASS_WEBKIT '+JSON.stringify({closedAlpha:.78,openAlpha:alpha(openTint),compactAlpha:.96}));
+    await page.locator('.sf-product-sheet-toggle').click();
    }
    if(check.name==='product-search'){
     assert(parts[0]>0||parts[1]>1||parts[2]>=86,'Product search requires the86 native template');

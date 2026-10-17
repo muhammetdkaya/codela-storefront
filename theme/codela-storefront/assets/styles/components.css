@@ -98,6 +98,9 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product a.sf-ui
   -webkit-backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation)) contrast(var(--sf-ui-glass-contrast)) brightness(var(--sf-ui-glass-brightness));
   backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation)) contrast(var(--sf-ui-glass-contrast)) brightness(var(--sf-ui-glass-brightness));
 }
+/* A large panel uses the same material with less white tint. The variant is
+   local to its own paint; compact controls inside keep their original tint. */
+.sf-ui-surface--glass-panel{background:var(--sf-ui-glass-panel-surface)!important}
 .woocommerce div.product .sf-ui-gallery .woocommerce-product-gallery__trigger .sf-icon,
 :is(.sf-shell,.sf-product-plugin-footer) .sf-ui-icon-button--soft .sf-icon,
 #sf-panel button.sf-ui-icon-button--soft .sf-icon,

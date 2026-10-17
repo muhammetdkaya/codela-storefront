@@ -1,5 +1,9 @@
 # Codela Storefront UI Kit — source of truth
 
+## Whole large glass panel —0.1.118
+
+User correction targets the entire expandable panel background, not quantity controls. Reuse the common glass paint with sf-ui-surface--glass-panel and the shared panel-tint token (.78 alpha), preserving compact dock/header (.96), filter/shadow and opaque accessibility fallbacks. This intentional density adjustment makes the photo backdrop visible across the large area in both states. Do not claim alpha equality with compact controls or use computed CSS equality alone as physical visual acceptance.
+
 ## Quantity soft surface —0.1.117
 
 The native mobile quantity capsule carries existing sf-ui-surface and participates in the same components glass selector group as dock/header/sheet, including accessibility fallbacks. Remove its independent product.css white fill; do not copy paint rules. Keep desktop unchanged. Matching CSS values alone does not prove identical perceived color over different photo backdrops; actual native quantity must be included in checks.

@@ -23,7 +23,7 @@ const {liveProduct}=require('./live-product.cjs');
   assert(await page.locator('.single_add_to_cart_button').isVisible());
   const release=await page.locator('link[href*="styles/product.css"]').getAttribute('href');
   const parts=new URL(release).searchParams.get('ver').split('.').map(Number);
-  assert(parts[0]>0||parts[1]>1||parts[2]>=117,'Updated purchase sheet must be live: '+release);
+  assert(parts[0]>0||parts[1]>1||parts[2]>=118,'Updated purchase sheet must be live: '+release);
   for(const node of await page.locator('.cdl-fsb-text,.cdl-fsb-track,.sf-product-sheet-body .cdl-wa').all()){
    assert(!(await node.isVisible()),'Closed panel contains no shipping or contact information');
   }
@@ -113,8 +113,9 @@ const {liveProduct}=require('./live-product.cjs');
   assert(await page.locator('.sf-product-discovery .related li.product').count()>0,'Live native recommendations follow photographs');
   const quantityMaterial=await page.locator('.sf-product-quantity').evaluate(e=>({bg:getComputedStyle(e).backgroundColor,blur:getComputedStyle(e).backdropFilter}));
   const sheetMaterial=await page.locator('.sf-product-sheet').evaluate(e=>({bg:getComputedStyle(e).backgroundColor,blur:getComputedStyle(e).backdropFilter}));
-  assert.deepEqual(quantityMaterial,sheetMaterial,'Live quantity and panel share the same surface material');
-  const material=await page.evaluate(()=>{const color=s=>getComputedStyle(document.querySelector(s)).backgroundColor;return{sheet:color('.sf-product-sheet'),button:color('.sf-menu-trigger')}});assert.equal(material.sheet,material.button);
+  assert.equal(quantityMaterial.blur,sheetMaterial.blur,'Live large and compact surfaces share the filter');
+  assert.equal(sheetMaterial.bg,'rgba(247, 247, 249, 0.78)','Whole live panel uses the large glass tint');
+  const material=await page.evaluate(()=>{const color=s=>getComputedStyle(document.querySelector(s)).backgroundColor;return{sheet:color('.sf-product-sheet'),button:color('.sf-menu-trigger')}});assert.equal(material.button,quantityMaterial.bg,'Compact header and quantity retain the original tint');
   // Sample every animation frame through both directions of the real boundary.
   async function transition(selector){
    const metrics=await page.evaluate(async selector=>{

@@ -179,7 +179,7 @@ add_action( 'wp_head', 'codela_sf_product_sheet_bootstrap', 1 );
 function codela_sf_product_sheet_template(): void {
     ?>
     <template id="sf-product-sheet-template" data-gallery-label="<?php esc_attr_e( 'Product images', 'codela-storefront' ); ?>" data-delivery-label="<?php esc_attr_e( 'Delivery and shipping', 'codela-storefront' ); ?>">
-        <section class="sf-product-sheet sf-ui-surface" aria-label="<?php esc_attr_e( 'Product details', 'codela-storefront' ); ?>">
+        <section class="sf-product-sheet sf-ui-surface sf-ui-surface--glass-panel" aria-label="<?php esc_attr_e( 'Product details', 'codela-storefront' ); ?>">
             <header class="sf-product-sheet-header">
                 <div class="sf-product-sheet-heading"></div>
                 <?php echo codela_sf_ui_button( __( 'Options and details', 'codela-storefront' ), [

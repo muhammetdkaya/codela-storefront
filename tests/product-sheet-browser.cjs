@@ -25,12 +25,14 @@ for(const width of [320,390,700]){
  assert.equal(await page.locator('form.cart .single_add_to_cart_button').count(),1,'No copied submit');
  const material=await page.evaluate(()=>{
   const probe=document.createElement('div');probe.className='sf-dock-surface';probe.style.display='none';document.querySelector('.sf-shell').append(probe);
-  const props=['backgroundColor','backdropFilter','borderTopColor','boxShadow'];
+  const props=['backdropFilter','borderTopColor','boxShadow'];
   const expected=getComputedStyle(probe),actual=getComputedStyle(document.querySelector('.sf-product-sheet'));
   const same=props.every(key=>expected[key]===actual[key]);probe.remove();return same;
  });
- assert(material,'Panel and site dock use identical shared material');
- assert.equal(await page.locator('.sf-product-quantity').evaluate(e=>getComputedStyle(e).backgroundColor),await page.locator('.sf-product-sheet').evaluate(e=>getComputedStyle(e).backgroundColor),'Quantity uses the same soft surface instead of an independent white fill');
+ assert(material,'Large panel keeps shared dock filter, border and shadow');
+ const panelTint=await page.locator('.sf-product-sheet').evaluate(e=>getComputedStyle(e).backgroundColor);
+ assert.equal(panelTint,'rgba(247, 247, 249, 0.78)','Whole panel has a visibly translucent tint instead of almost opaque white');
+ assert.equal(await page.locator('.sf-product-quantity').evaluate(e=>getComputedStyle(e).backgroundColor),'rgba(247, 247, 249, 0.96)','Compact quantity keeps header tint independent of the large panel');
  const panelBox=await page.locator('.sf-product-sheet').boundingBox();
  assert(Math.abs(panelBox.width-Math.min(width-32,430))<1,'Panel uses the same inset and max width as the site dock');
  assert(Math.abs(panelBox.x-(width-panelBox.width)/2)<1,'Panel is centered like the dock');
@@ -113,7 +115,7 @@ for(const width of [320,390,700]){
  await page.waitForFunction(()=>!document.querySelector('.sf-product-sheet').classList.contains('is-discovering'));
  await page.waitForFunction(()=>{const e=document.querySelector('.sf-product-sheet');return Math.abs(e.getBoundingClientRect().height-parseFloat(getComputedStyle(e).getPropertyValue('--sf-product-closed-height')))<2});
  const photoOffset=await page.evaluate(()=>scrollY);
- await toggle.click();assert.equal(await toggle.getAttribute('aria-expanded'),'true');
+ await toggle.click();assert.equal(await toggle.getAttribute('aria-expanded'),'true');assert.equal(await page.locator('.sf-product-sheet').evaluate(e=>getComputedStyle(e).backgroundColor),panelTint,'Expanded panel keeps the same translucent material as collapsed');
  await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').getBoundingClientRect().height>700);assert(await page.locator('.woocommerce-product-gallery').evaluate(e=>e.inert),'Open details stops gallery gestures/focus');
  await page.locator('.sf-product-delivery > summary').click();assert(await page.locator('.cdl-fsb-text').isVisible(),'Shipping visible inside open delivery section');
  const bar=await page.locator('.cdl-fsb-track').boundingBox(),text=await page.locator('.cdl-fsb-text').boundingBox();assert(Math.abs(bar.width-text.width)<1,'Full width shipping track');

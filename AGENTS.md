@@ -1,5 +1,11 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Çalışma — 17 Ekim 2026 / 0.1.117 → 0.1.118 BÜYÜK panelin cam zemini
+
+Kullanıcı117 sonrasında açık ürün detay panelinin TÜM zeminini tekrar gösterdi. Önceki çalışmanın quantity odaklı düzeltmesi bu isteği karşılamadı; aynı .96 RGBA'nın CSS'te eşitliğini ileri sürmek fiziksel görsel isteğin kabulü değildi.118 değişikliği doğrudan sheet'in tamamındadır: mevcut ortak materyale sf-ui-surface--glass-panel varyantı ve --sf-ui-glass-panel-surface token'ı eklendi. Büyük panelin beyaz tint alpha'sı .96→.78; ortak247/247/249 renk ailesi,blur10,saturation1.15,gölge ve fallback'ler aynı. Bu bilinçli görünür saydamlık farkıdır, compact dock/header ile alpha'lar aynı denmez. Açık/kapalı tek aynı zemin; ayrı katman, ikinci form/scroll motoru yok. Ana sayfa dock/header rengi veya küçük kontroller değiştirilmez. Opak accessibility/forced-colors fallback'leri korunur.
+
+Yerel JS syntax/24 paket geçti.320/390/700 panel tamamında açık/kapalı .78; compact quantity/header .96 ve ortak filter/border/shadow kontrolü güncellendi. Canlı WebKit açık/kapalı panel .78 ve gerçek açık ürün ekran görüntüsü ekler. Footer dışarıda ve116 ölçüleri korunur. Yeni118 CI/FTP/canlı doğrulaması bekleniyor. Önceki117'nin code-property eşitliği kullanıcı görsel kabulü yerine sayılmaz. Eklenti1.1.1 değişmez; eski ağır PNG/izole Woo runner işi bu istekle yeniden başlatılmaz.
+
 ## Son doğrulanmış devam noktası — 17 Ekim 2026 / Storefront 0.1.114 → 0.1.117
 
 **İstenen düzenleme canlı:** ürün paneli açık/kapalı aynı ortak dock16px yan boşluk,430px azami genişlik ve4px alt mesafe+safe-area token'larını kullanır. Tek ortak components cam materyali korunur. Footer artık ürün paneline taşınmaz; özgün sayfa sonunda kalır, linkleri panelin arkasına düşmez. Hidden dock'un ikinci90px body reserve'i kaldırıldı. Yeni motor/form/bağımlılık yok. Eklenti **1.1.1 runtime/WordPress.org değişmedi**.

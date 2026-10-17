@@ -12,6 +12,7 @@
   --sf-ui-surface-muted:#f3f3f3;
   /* One legible floating material for header, dock, purchase bar and soft controls. */
   --sf-ui-glass-surface:rgba(247,247,249,.96);
+  --sf-ui-glass-panel-surface:rgba(247,247,249,.78);
   --sf-ui-glass-opaque:#f7f7f9;
   --sf-ui-glass-border:transparent;
   /* One diffuse outer shadow separates the single surface on light backdrops. */
