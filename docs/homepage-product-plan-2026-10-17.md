@@ -1,8 +1,8 @@
 # Ürün alt alanı, menü kaydırması ve yönetilebilir ana sayfa
 Tarih: 17 Ekim 2026  
-Durum: **Yalnız analiz ve uygulama planı. Henüz kodlanmadı, test edilmedi veya yayımlanmadı.**
+Durum: **Uygulandı. Tema0.1.134 canlı; eklenti ayar köprüsü kaynakta tamam fakat Actions başlangıç engeli nedeniyle canlıya dağıtılamadı. Güncel kanıt ve devam adımı AGENTS.md / storefront-theme.md içindedir.**
 İncelenen Storefront HEAD: `05ccc0e7cad52cec5c2582a1a51f49a1b457520a`; mevcut sürüm 0.1.133.
-Kullanıcı sonraki çalışmada uygulama isteyecek. Bu kayıt uygulamaya başlama veya yayın talebi değildir.
+İlk kayıt planlama içindi; kullanıcı 17 Ekim 2026 tarihinde “Şimdi yap” diyerek uygulamayı istedi. Aşağıdaki içerik özgün kapsam ve kabul sözleşmesidir.
 
 ## Kullanıcının dört talebi
 1. Ürün sayfasındaki alt menü/satın alma alanının altında biraz daha boşluk olsun; tarayıcıya yapışmasın.
