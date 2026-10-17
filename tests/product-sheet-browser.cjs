@@ -182,6 +182,23 @@ assert(await page.locator('.sf-product-purchase').isVisible(),'The real native p
 const pendingBox=await page.locator('div.product > .summary').boundingBox();
 const firstPurchase=await page.locator('.sf-product-purchase').boundingBox();
 const firstTitle=await page.locator('div.product > .summary > .product_title').boundingBox();
+const surfaceStyle=selector=>page.locator(selector).evaluate(e=>{
+ const v=getComputedStyle(e),inner=getComputedStyle(e.querySelector('.sf-product-purchase'));
+ return {
+   borderRadius:v.borderRadius,background:v.backgroundColor,shadow:v.boxShadow,
+   backdrop:v.backdropFilter,webkitBackdrop:v.webkitBackdropFilter,
+   footerBackground:inner.backgroundColor,footerShadow:inner.boxShadow,
+   footerBorder:inner.borderTopWidth,footerBackdrop:inner.backdropFilter
+ };
+});
+const nativeSurface=await surfaceStyle('div.product > .summary');
+assert.equal(nativeSurface.borderRadius,'20px','Native first paint is the same rounded rectangle, not a 999px pill');
+assert.equal(nativeSurface.background,'rgba(247, 247, 249, 0.78)','Native panel uses shared translucent glass token');
+assert.equal(nativeSurface.footerBackground,'rgba(0, 0, 0, 0)','Native purchase footer has no extra white pill');
+assert.equal(nativeSurface.footerShadow,'none','Native purchase footer has no independent shadow');
+assert.equal(nativeSurface.footerBorder,'0px','Native purchase footer has no second surface border');
+assert.equal(nativeSurface.footerBackdrop,'none','Native purchase footer does not double blur');
+
 console.log('NATIVE_FIRST_PANEL '+JSON.stringify({pendingBox,firstPurchase,firstTitle}));
 assert(Math.abs(pendingBox.width-358)<2,'First-frame panel shares dock horizontal inset');
 assert(pendingBox.y>0&&pendingBox.y+pendingBox.height<=844,'First-frame sheet is fixed within viewport');
@@ -238,6 +255,10 @@ await page.locator('.sf-product-sheet').waitFor({state:'visible'});
 await page.waitForFunction(()=>!document.documentElement.classList.contains('sf-product-sheet-pending'));
 const afterPhoto=await page.locator('.woocommerce-product-gallery__image').first().boundingBox();
 const postPanel=await page.locator('.sf-product-sheet').boundingBox();
+const mountedSurface=await surfaceStyle('.sf-product-sheet');
+console.log('PRODUCT_PANEL_MATERIAL '+JSON.stringify({first:nativeSurface,mounted:mountedSurface}));
+assert.deepEqual(nativeSurface,mountedSurface,'First-paint panel and enhanced panel must have identical material, radius and no stacked footer');
+
 const postQty=await page.locator('.sf-product-sheet .quantity').boundingBox();
 const postSubmit=await page.locator('.sf-product-sheet .single_add_to_cart_button').boundingBox();
 console.log('PRODUCT_INITIAL_CONTROLS '+JSON.stringify({quantityBefore:preQty,quantityAfter:postQty,buttonBefore:preSubmit,buttonAfter:postSubmit}));
