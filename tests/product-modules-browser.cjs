@@ -12,7 +12,7 @@ ${enabled?`<div class="cdl-de"><span class="cdl-de-mark">${svg}</span><div class
 <div class="sf-product-information"><details class="sf-product-information-section" open><summary>Ürün açıklaması</summary><div class="sf-product-information-content">Uzun açıklama metni, içerik doğal olarak kayar.</div></details><details class="sf-product-information-section" id="sf-product-section-additional_information"><summary>Ek bilgi</summary><div class="sf-product-information-content">Ölçüler ve bakım</div></details><details class="sf-product-information-section" id="sf-product-section-reviews"><summary>Değerlendirmeler (0)</summary><div class="sf-product-information-content"><div id="reviews">Değerlendirme alanı</div><a id="review_form"></a></div></details></div>
 ${enabled?'<div class="cdl-tb">'+['Güvenli ödeme','Kapıda ödeme','Kolay iade','Hızlı kargo'].map(label=>`<div class="cdl-tb-item"><span class="cdl-tb-ico">${svg}</span><span class="cdl-tb-label">${label}</span></div>`).join('')+'</div>':''}<section class="related"><h2>İlgili ürünler</h2></section></div></main></body></html>`;}
 (async()=>{const browser=await chromium.launch({headless:true});try{const page=await browser.newPage();
-for(const width of [320,390,700,900,1280]){await page.goto('about:blank');await page.setViewportSize({width,height:844});await page.setContent(fixture(true));await page.addScriptTag({content:fs.readFileSync(root+'assets/scripts/product-information.js','utf8')});assert.equal(await page.locator('.woocommerce-product-gallery > .sf-product-visitor').count(),1,'Counter is outside native moving track');
+for(const width of [320,390,700,900,1280]){await page.goto('about:blank');await page.setViewportSize({width,height:844});await page.setContent(fixture(true));await page.addScriptTag({content:fs.readFileSync(root+'assets/scripts/product-information.js','utf8')});assert.equal(await page.locator('.woocommerce-product-gallery__image:first-child > .sf-product-visitor').count(),1,'Original counter belongs to first photo, not gallery viewport');
 const result=await page.evaluate(()=>{const rect=x=>document.querySelector(x).getBoundingClientRect().toJSON();return {overflow:document.documentElement.scrollWidth>innerWidth+1,summary:rect('.summary'),bar:rect('.cdl-fsb-track'),text:rect('.cdl-fsb-text'),counter:rect('.sf-product-visitor'),rail:rect('.flex-control-thumbs'),info:rect('.sf-product-information'),trust:rect('.cdl-tb'),related:rect('.related'),contact:rect('.cdl-wa-button')};});
 assert(!result.overflow,'No horizontal overflow '+width);
 assert(Math.abs(result.bar.left-result.text.left)<1&&Math.abs(result.bar.width-result.text.width)<1,'Shipping track covers full text/content width without icon indent '+width);
@@ -22,20 +22,21 @@ assert(result.counter.bottom<result.rail.top,'Visitor does not overlap gallery r
 const visitor=await page.locator('.sf-product-visitor .cdl-lv').evaluate(el=>{
  const style=getComputedStyle(el),dot=getComputedStyle(el.querySelector('.cdl-lv-dot'));
  return {width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height,
-   background:style.backgroundColor,color:style.color,border:style.borderTopWidth,
+   background:style.backgroundColor,color:style.color,border:style.borderTopWidth,position:getComputedStyle(el.parentElement).position,
    shadow:style.boxShadow,blur:style.backdropFilter,dotWidth:dot.width,dotHeight:dot.height,
    dotShadow:dot.boxShadow,dotAnimation:dot.animationName};
 });
+assert.equal(visitor.position,'absolute','Visitor host is photo-relative and not fixed '+width);
 assert(visitor.height<=30,'Visitor label is smaller than a button '+width+' '+JSON.stringify(visitor));
 assert(visitor.width<=Math.min(width*.68,240)+1,'Visitor label cannot cover the photograph '+width);
-assert.equal(visitor.background,'rgba(247, 247, 249, 0.44)','Quiet translucent information surface '+width);
+assert.equal(visitor.background,'rgba(0, 0, 0, 0)','Photo metadata has absolutely no background '+width);
 assert.equal(visitor.border,'0px','No button border '+width);
 assert.equal(visitor.shadow,'none','No floating shadow '+width);
 assert.equal(visitor.blur,'none','No interactive glass effect '+width);
-assert.equal(visitor.dotWidth,'13px','Small editorial eye icon '+width);
-assert.equal(visitor.dotHeight,'13px','Small editorial eye icon height '+width);
+assert.equal(await page.locator('.sf-product-visitor .cdl-lv-dot').count(),1,'Original plugin icon node is preserved '+width);
 assert.equal(visitor.dotAnimation,'none','Visitor icon does not pulse '+width);
 assert.equal(visitor.dotShadow,'none','No animated glowing dot '+width);
+assert.equal(await page.locator('.sf-product-visitor .cdl-lv-dot').evaluate(el=>getComputedStyle(el).display),'none','Visitor matches the text-only gallery counter '+width);
 await page.evaluate(()=>document.body.classList.add('sf-product-sheet-open'));
 assert.equal(await page.locator('.sf-product-visitor').evaluate(e=>getComputedStyle(e).visibility),'hidden','Visitor disappears behind expanded details '+width);
 await page.evaluate(()=>document.body.classList.remove('sf-product-sheet-open'));

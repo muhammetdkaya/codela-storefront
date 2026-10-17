@@ -292,41 +292,39 @@ body.single-product .woocommerce-product-gallery a:focus-visible{
   margin-bottom:18px;min-width:0;
 }
 .sf-product-price-row > .price{flex:0 1 auto}
-/* The visitor count is editorial metadata over the photograph, not a
-   clickable floating control. Keep the original plugin node/counter intact,
-   without a competing glass-button shadow, border or animated status dot. */
-body.single-product .sf-product-visitor{
-  position:absolute;z-index:4;inset-inline-start:16px;bottom:16px;
-  max-width:calc(100% - 32px);pointer-events:none;
+/* A single native Codela visitor lives ON the first photo. It shares the
+   gallery count's plain text style, never a pill, surface, or fixed viewport
+   coordinate. Native gallery scrolling removes it along with photo one. */
+body.single-product .sf-ui-gallery--scroll .woocommerce-product-gallery__image:first-child{
+  position:relative;
 }
-body.single-product .sf-ui-gallery:has(:is(.flex-control-thumbs,.sf-product-gallery-nav) > :not(:only-child)) .sf-product-visitor{
+body.single-product .sf-product-visitor{
+  position:absolute;z-index:4;inset-inline-start:72px;bottom:20px;
+  max-width:calc(100% - 92px);margin:0!important;pointer-events:none;
+}
+/* Keep the unenhanced desktop / no-script thumbnail controls clear. */
+body.single-product:not(.sf-product-sheet-ready) .sf-ui-gallery:has(:is(.flex-control-thumbs,.sf-product-gallery-nav) > :not(:only-child)) .sf-product-visitor{
   bottom:96px;
 }
-body.single-product .sf-product-visitor[hidden]{display:none}
+body.single-product .sf-product-visitor[hidden]{display:none!important}
 body.single-product .sf-product-visitor .cdl-lv{
   display:inline-flex;align-items:center;gap:5px;
-  width:max-content;max-width:min(68vw,240px);min-height:24px;
-  padding:4px 7px;border:0;border-radius:8px;
-  background:rgba(247,247,249,.44);color:rgba(28,28,30,.74);
-  font-size:11px;font-weight:400;line-height:1.3;letter-spacing:0;
-  box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;
+  width:max-content;max-width:100%;
+  min-height:0;padding:0;border:0;border-radius:0;
+  background:none!important;color:var(--sf-ui-ink);
+  font-size:12px;font-weight:400;line-height:1.5;letter-spacing:0;
+  box-shadow:none!important;-webkit-backdrop-filter:none;backdrop-filter:none;
 }
 body.single-product .sf-product-visitor .cdl-lv-text{
   min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
-body.single-product .sf-product-visitor .cdl-lv-dot{
-  flex:none;width:13px;height:13px;background:currentColor;
-  border-radius:0;box-shadow:none;animation:none!important;
-  -webkit-mask:url('../icons/eye.svg') center/contain no-repeat;
-  mask:url('../icons/eye.svg') center/contain no-repeat;
-}
-body.single-product .sf-product-visitor strong{font-weight:500}
+/* The gallery index has no icon: match it for the quiet visitor line. */
+body.single-product .sf-product-visitor .cdl-lv-dot{display:none}
+body.single-product .sf-product-visitor strong{font-weight:400}
 body.single-product.sf-product-sheet-open .sf-product-visitor{visibility:hidden}
 @media(max-width:768px){.sf-product-visitor.cdl-lv-hide-mobile{display:none}}
 @media(forced-colors:active){
-  body.single-product .sf-product-visitor .cdl-lv{
-    color:CanvasText;background:Canvas;border:1px solid CanvasText;
-  }
+  body.single-product .sf-product-visitor .cdl-lv{color:CanvasText}
 }
 body.single-product .cdl-ub{
   display:flex;flex-wrap:wrap;gap:6px 12px;min-width:0;
@@ -567,8 +565,12 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   body.sf-product-sheet-ready .sf-product-gallery-thumb.sf-ui-icon-button{width:44px;height:44px}
   body.sf-product-sheet-ready .sf-product-gallery-thumb img{display:block}
   body.sf-product-sheet-ready .sf-product-gallery-count{position:fixed;bottom:calc(var(--sf-product-collapsed-height,210px) + 14px + env(safe-area-inset-bottom,0px))}
+  /* The 1 / 5 counter remains the gallery's own live index. Put the
+     FIRST photo's visitor alongside it, but anchor this message to that
+     PHOTO (not the viewport) so a vertical swipe carries it away. */
   body.sf-product-sheet-ready .sf-product-visitor{
-    position:fixed;top:calc(88px + var(--sf-header-offset,0px));bottom:auto!important;
+    position:absolute;top:auto;inset-inline-start:72px;
+    bottom:calc(46px + var(--sf-product-viewport-large,100lvh) - var(--sf-product-viewport-current,100dvh));
   }
   :is(body.sf-product-sheet-ready,:where(html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready))) div.product > :is(.sf-product-sheet,.summary){
     position:fixed;z-index:1000;inset-inline:var(--sf-ui-bottom-bar-inset);

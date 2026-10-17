@@ -1,5 +1,10 @@
 # Codela Storefront — güncel teknik durum
 
+## 17 Ekim 2026 — 0.1.130 ürün galerisi ziyaretçi metni ilk fotoğrafla birlikte kayar (CI bekliyor)
+
+0.1.129 hâlâ `position:fixed` olduğundan ziyaretçi satırı sabit kalıyordu. Orijinal canlı Codela plugin elemanı, önceki `product-information.js` hareketi yerine native `.woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image:first-child` içine taşınıyor. Görseliyle scroll olur; `sf-product-gallery-count` `1 / 5` ise zaten canlı mevcut nesnedir, tekrar yaratılmaz, kendi güncellenmesi korunur. İlk fotoğraftaki ziyaretçi sayısı x=72px, görselin alt hizasında indeksle tek satır ve 12px/18px aynı stil; **background:none**, gölgesiz/çizgisiz/butonsuz, ayrıca ikon gizli. Mobil CSS viewport-fixed tamamen kaldırıldı; desktop/no-js rail çakışması engellendi. Detay açıkken gizli ve ilgili ürün geçişinde fotoğrafa bağlı zaten görünmez. 320/390/700 gerçek 3-foto browser düzeni ve scroll-test eklendi; Codela API ya da ek kod yok. PR CI ve canlı FTPS henüz doğrulanmadı.
+
+
 ## 17 Ekim 2026 — 0.1.129 küçük ziyaretçi bilgi etiketi (canlı doğrulandı)
 
 Safari ekranındaki ziyaretçi sayısı, `components.css` ortak buton GlassSurface yüzeyi yüzünden ürün görseline hakim beyaz/gölgeli kapsül halinde görünüyordu. Bu **etkileşimsiz bilgi öğesi** ortak buton yüzeyinden çıkarılıp `product.css` altında 24px civarında, düşük opaklıklı saydam yüzey, gölge/border/blur olmadan, 11px yazı ve 13px gözle tanımlandı. `cdl-lv` gerçek plugin HTML'i ve AJAX canlı sayaç korunur, header/gallery/panel geometrisi ve görsel kaydırma kodu değişmez, açık sheet'te görünmez. 320/390/700/900/1280px Playwright CSS kontrolü eklendi. PR CI, main CI ve gerçek FTPS başarılı. Fiziksel Safari son görsel kabulü ayrıca gerekli.
