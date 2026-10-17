@@ -521,6 +521,11 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready){
     --sf-product-photo-inset:133px;
   }
+  /* Prepaint gallery reservation for enabled, compact urgency. Runtime still
+     replaces this estimate with the measured native header/footer geometry. */
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready):has(.summary .sf-product-price-row .cdl-ub){
+    --sf-product-photo-inset:142px;
+  }
   /* Photo presentation is identical before and after the adapter moves the
      existing Woo nodes. Pending is strictly a visibility state, not a second
      desktop/mobile gallery layout. No-JS has neither class and stays native. */
