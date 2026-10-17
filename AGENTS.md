@@ -1,5 +1,10 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 17 Ekim 2026 — 0.1.126 sağ dikey üç önizleme
+
+Kullanıcı sağdaki dikey galeri önizlemesinin üçünün de **tam çember** olmasını istiyor. `gallery.css` içindeki mevcut `sf-product-gallery-thumb sf-ui-icon-button` gerçek Woo görsel seçim butonlarını kullanmaya devam eder; mobil hazır ürün sayfasında (<=700px) ortak `sf-ui-icon-button` yarıçapını yalnız bu alt tip için `border-radius:50%` yap, kare 44×44 gerçek dokunma alanı ve `overflow:hidden` korunsun. Mevcut image `object-fit:cover` ve 3-item active window kullanılmaya devam etsin. Header/sheet/dock materyaline dokunma, JS veya template'te kopya thumbnail yazma. Tarayıcı testi 320/390/700 mobilde üç görünür butonun çap eşitliğini, çember köşelerini ve kırpmayı denetler. 0.1.126 ancak PR CI + FTP + canlı ürün galeri/WebKit kabulü başarıyla bitince tamam kabul edilsin.
+
+
 ## 17 Ekim 2026 / 0.1.125 — İlk panel yüksekliği farklı ürünlerde sabit kalmalı
 
 0.1.124 ilk render/son render cam malzemelerini eşitledi; kullanıcının sonraki fiziksel Safari gözleminde ilk panelin yüksekliği büyüyüp sonra küçülüyor. **Kök problem:** `product.css` başlangıç native `.summary` panelinin yüksekliğini badge'li test ürünü için **157px sabit** tanımlarken `product-information.js` final paneli gerçek heading yüksekliği + native purchase/footer + 8px ölçüyor. Badge olmayan gerçek ürünler daha kısa olduğunda bu iki yükseklik eşleşmiyor. Yüzey/radius düzeltmesini geri alma veya JS ölçümü kapatma; ilk karede doğal başlık, fiyat, adet ve form boyutlarından intrinsic height belirlenmeli. Aynı tek Woo formu korunmalı. CI testlerinde gecikmiş async mount, 320/390/700 genişlik, badgesiz (Kavis benzeri)/badgeli ve kısa başlık varyantları için ilk/final panel yükseklik ve Y farkı 3px altı kabul kriteri. Fotoğraf snap, panel dokunma, native form, UI Kit yüzey kabulü etkilenmemeli. Yeni sürüm yalnız başarılı PR CI ve live dağıtım sonrası tamam sayılır; fiziksel Safari kabulü ve CLS#40 hâlâ ayrı.

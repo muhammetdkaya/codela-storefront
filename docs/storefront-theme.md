@@ -1,5 +1,10 @@
 # Codela Storefront — güncel teknik durum
 
+## 17 Ekim 2026 — 0.1.126 mobil ürün galerisi üç çember önizleme
+
+Mevcut JS 5 görsel içinden aynı anda üç adet sağ dikey native IconButton gösteriyor. İstenen görünüm yalnız küçük önizlemelerde tam çemberdir; galerinin resim kaydırma/geçiş motoru değiştirilmez. `gallery.css` tek mobil product gallery selector'ında `border-radius:50%`, `aspect-ratio:1` uygular. Var olan 44px kontrol ölçüleri, `overflow:hidden`, `object-fit:cover`, alt bar, header ve materyaller korunur. `product-sheet-browser.cjs` üç kontrolün eş çapta kare geometri/50% yarıçap/kırpmaya sahip olduğunu 320/390/700'de doğrular. CI ve canlı galeri/WebKit geçmeden canlı tamamlandı denmez.
+
+
 ## 17 Ekim 2026 — 0.1.125 dinamik ürün paneli ilk kare yüksekliği
 
 Önceki aşamada panel tasarım eşitliği sağlandı, ancak native prepaint CSS'te 157px sabit yükseklik var; JS finalinde gerçek heading (urgency badge bulunan/bulunmayan), Woo footer ve 8px üzerinden dinamik height hesaplanıyor. Gerçek Kavis gibi badge olmayan ürünlerde başlangıç yüksek ve mount sonrası kısa görünmesi olası. Çözüm ilk panelin yüksekliğini gerçek DOM içerik ölçülerinden intrinsic CSS grid ile hesaplamak (magic height yok); son JS ölçümü varlığını korur. CI: 320/390/700 genişlik, iki farklı price badge durumu ve kısa başlıkta 3px altı yükseklik/Y farkı, gecikmiş async, görsel ve kontrol tasarım eşitliği. GitHub canlı doğrulama ve kullanıcı Safari gözlemi olmadan bitmiş kabul etme.
