@@ -1,5 +1,10 @@
 # Codela Storefront — güncel teknik durum
 
+## 17 Ekim 2026 — 0.1.121 tasarımı koruyan medya teslimi (doğrulama bekliyor)
+
+Önceki ürün sayfası mimari incelemesinde ayrı ürün sheet (satın alma) ve genel dock arasında farklı etkileşim sistemleri, galeri discovery kök scroll-snap sınırı ve canlı PNG kaynaklı yükleme dar boğazı görüldü. 121 kapsamı **görünümü değiştirmeyen** minimal düzeltmeyle sınırlı: ürün grip'i paylaşılan basma motion token'ını kullanır, mevcut 44px native kontroller/hiyerarşi/galeri aynı kalır. PNG ürün fotoğrafları için güvenli WebP bakım yolu eklendi. JPEG mevcut rutinleri korunur; PNG'de orijinal ve Woo zoom-linki korunur, yalnız yöneticinin bakım işlemi sonrası WebP srcset uygulanır. WebP yüklenemezse mevcut PNG üzerinden çalışır. Var olan geçmiş medya otomatik dönüştürülmez; WordPress Media > Image Optimization çalıştırılmalı. Bu işlem henüz canlıda çalıştırıldığı doğrulanmamıştır. 120 canlı LCP soğuk mobil medyan15668ms, orijinal PNG ~2.13MB; 121 üzerine ölçülmüş iyileşme sayılmaz. Büyük kod temizliği/değişiklikleri ayrıca fonksiyonel test ve cihaz kabulü gerektirir.
+
+
 ## Son doğrulanmış devam noktası — 17 Ekim 2026 / Storefront 0.1.117 → 0.1.120
 
 **120 canlı:** ürün sheet köşeleri ortak control radius+8px; üst tutma çizgisi ve alt satın alma kontrolü kenar payları12px. Chevron kaldırıldı; erişilebilir gerçek70×44px tutma çizgisi toggle'ı ve doğrudan sürükleme korunur. Native Sepete Ekle44px yüksekliğe/200px azami hedefe, qty input44px/32px ölçüye küçüldü; −/+44px dokunma hedefleri aynı. Galeri/ilgili ürün geçişinde başlık, stok ve header sıkıştırması kaldırıldı; başlık–satın alma mesafesi ve kapalı panel yüksekliği sabit. Tek native form, özgün qty/submit, Footer dışarıda, ortak yüzey ve galeri akışı korunur. Eklenti **1.1.1 runtime/WordPress.org değişmedi**.
