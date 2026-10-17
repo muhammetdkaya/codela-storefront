@@ -1,5 +1,14 @@
 <?php
 return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR', 'plural-forms' => 'nplurals=2; plural=(n > 1);', 'messages' => [
+'Featured collections' => 'Öne çıkan koleksiyonlar',
+'Swipe to explore' => 'Keşfetmek için kaydırın',
+'Gallery navigation' => 'Galeri gezinmesi',
+'Previous image' => 'Önceki görsel',
+'Next image' => 'Sonraki görsel',
+'Explore categories' => 'Kategorileri keşfet',
+'Best sellers' => 'Çok satanlar',
+'New arrivals' => 'Yeni ürünler',
+'Update Codela to enable the new homepage settings. Existing homepage content is preserved.' => 'Yeni ana sayfa ayarları için Codela eklentisini güncelleyin. Mevcut ana sayfa içeriğiniz korunur.',
 'Enlarge product image' => 'Ürün görselini yakınlaştır',
 'Delivery and shipping' => 'Teslimat ve kargo',
 'Decrease quantity' => 'Adedi azalt',

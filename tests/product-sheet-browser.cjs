@@ -56,7 +56,7 @@ for(const width of [320,390,700]){
  const panelBox=await page.locator('.sf-product-sheet').boundingBox();
  assert(Math.abs(panelBox.width-Math.min(width-32,430))<1,'Panel uses the same inset and max width as the site dock');
  assert(Math.abs(panelBox.x-(width-panelBox.width)/2)<1,'Panel is centered like the dock');
- assert(Math.abs(panelBox.y+panelBox.height-840)<1,'Panel uses the same bottom gap as the dock');
+ assert(Math.abs(panelBox.y+panelBox.height-832)<1,'Product panel leaves 12px below it, eight more than the normal dock');
  assert.equal(await page.locator('.sf-product-sheet .sf-footer').count(),0,'Footer is outside both panel states');
  assert.equal(await page.locator('body > .sf-footer').count(),1,'Native footer remains at the end of the document');
  assert.equal(await page.locator('.sf-product-sheet .sf-product-purchase').evaluate(e=>getComputedStyle(e).backgroundColor),'rgba(0, 0, 0, 0)','One sheet material');

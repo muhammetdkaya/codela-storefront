@@ -10,7 +10,7 @@ export function createOverlayController({
 }) {
     let dialog = null, current = null, opener = null, savedY = 0;
     let savedBodyStyle = null, savedAdminStyle = null, panelMotion = null;
-    let surfaceMotion = null, closing = false;
+    let surfaceMotion = null, closing = false, restoreScrollFrame = 0;
     let menuTrigger = null, menuHome = null, menuLabel = '';
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -89,6 +89,8 @@ export function createOverlayController({
         surfaceMotion?.cancel(); surfaceMotion = null;
         const previous = current;
         if (opening) {
+            cancelAnimationFrame(restoreScrollFrame);
+            document.documentElement.classList.add('sf-overlay-scroll-locked');
             opener = event?.target?.closest?.('[data-panel]') || event?.currentTarget || document.activeElement; savedY = window.scrollY;
             const bodyRect = document.body.getBoundingClientRect();
             savedBodyStyle = rememberStyle(document.body, ['position', 'top', 'width', 'padding-right']);
@@ -209,6 +211,15 @@ export function createOverlayController({
             dockScrollPositions.set(window, {position:savedY, distance:0});
             if (opener?.isConnected) opener.focus({preventScroll:true});
         }
+        cancelAnimationFrame(restoreScrollFrame);
+        // Restore layout/position while native root snapping is still suspended.
+        // Re-enable it only after the original product anchor is back in layout.
+        document.documentElement.getBoundingClientRect();
+        if (navigating) document.documentElement.classList.remove('sf-overlay-scroll-locked');
+        else restoreScrollFrame = requestAnimationFrame(() => {
+            restoreScrollFrame = 0;
+            if (!dialog.open) document.documentElement.classList.remove('sf-overlay-scroll-locked');
+        });
         opener = null;
     }
     

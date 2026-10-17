@@ -151,6 +151,9 @@ function codela_sf_header(): string {
 }
 function codela_sf_home(): string {
     if ( ! codela_sf_ready() ) { return ''; }
+    $mode = function_exists( 'codela_sf_home_mode' ) ? codela_sf_home_mode() : 'legacy';
+    if ( 'sections' === $mode ) { return codela_sf_home_sections(); }
+    if ( 'page_content' === $mode ) { return do_blocks( '<!-- wp:post-content {"layout":{"type":"constrained"}} /-->' ); }
     if ( 'page' === get_option( 'show_on_front' ) && get_option( 'page_on_front' ) && trim( (string) get_post_field( 'post_content', get_option( 'page_on_front' ) ) ) ) {
         return do_blocks( '<!-- wp:post-content {"layout":{"type":"constrained"}} /-->' );
     }

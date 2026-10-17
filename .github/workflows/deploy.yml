@@ -28,6 +28,7 @@ jobs:
           php tests/catalog.php
           php tests/product-composition.php
           node --check theme/codela-storefront/assets/scripts/product-information.js
+          php tests/homepage.php
           php tests/media.php
           php tests/media-optimization.php
           php tests/navigation.php
@@ -51,8 +52,10 @@ jobs:
       - name: Browser navigation regression checks
         run: |
           npm install --no-save --package-lock=false playwright@1.62.1
-          npx playwright install --with-deps chromium
+          npx playwright install --with-deps chromium webkit
+          node tests/homepage-browser.cjs
           node tests/product-menu-scroll-browser.cjs
+          TEST_WEBKIT=1 node tests/product-menu-scroll-browser.cjs
           node tests/product-sheet-browser.cjs
           node tests/navigation-browser.cjs
           node tests/checkout-browser.cjs

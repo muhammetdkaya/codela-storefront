@@ -122,7 +122,7 @@
         discovery.getBoundingClientRect().top < window.innerHeight * (media.classList.contains('is-discovering') ? .65 : .55);
     }
     function updateDiscovery() {
-      if (!mounted || drag) return;
+      if (!mounted || drag || document.documentElement.classList.contains('sf-overlay-scroll-locked')) return;
       var active = isDiscovering();
       media.classList.toggle('is-discovering', active);
       var compact = active && !expanded;
