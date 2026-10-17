@@ -14,6 +14,7 @@ function codela_sf_document_continuity_allowed(): bool {
         || ( function_exists( 'is_account_page' ) && is_account_page() ) ) {
         return false;
     }
+    if ( function_exists( 'is_front_page' ) && is_front_page() && function_exists( 'codela_sf_home_mode' ) && 'sections' === codela_sf_home_mode() ) { return true; }
     if ( function_exists( 'is_product' ) && is_product() ) { return true; }
     if ( function_exists( 'is_shop' ) && is_shop() ) { return true; }
     if ( function_exists( 'is_product_category' ) && is_product_category() ) { return true; }

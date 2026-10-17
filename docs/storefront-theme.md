@@ -1,5 +1,10 @@
 # Codela Storefront — güncel teknik durum
 
+## 0.1.134 yayın öncesi gezinme kapanışı
+
+Yönetilen ana sayfa native Woo sepet eylemleri ve klasik galeri adaptörü içerdiği için mevcut core/router kısmî bölge değişiminden dışlanır. Hedef sayfa `clientNavigationDisabled` ile normal belge yüklemesini seçer; mevcut native View Transition/snapshot köprüsü ana sayfada da açık kalır. Böylece içerik sayfasından/geri-ileri dönüşte gerçek slider ve Woo başlangıcı garanti edilir. Yeni router/hydration/galeri motoru yok; legacy ve sıradan içerik sayfaları önceki davranışta. PHP route sınırı testi eklendi. Önceki PR CI39067994378 tüm testleri geçti; bu küçük yayın öncesi kapanışın main CI/FTP sonucu ayrıca beklenir.
+
+
 ## 17 Ekim 2026 — 0.1.133 → 0.1.134 uygulaması (CI / dağıtım bekliyor)
 
 Kullanıcı kaydedilmiş planın uygulanmasını istedi. Ürün bağlamında alt dış boşluk 4→12px; pending/mounted panel ve overlay dock aynı tokenı tüketir. Sayaçlar ek boşluğu izler. Menü body kilidi sırasında root snap, discovery ve galeri gözlemleri askıya alınır; özgün scroll/odak geri yüklenince snap sonraki frame açılır. Tek mevcut overlay controller ve Woo form korunur. **Eski Chromium fixture'ında fiziksel Safari hatası yeniden üretilemedi** (PR #52 ilk CI 39067099963 başarılı); yeni kilit sözleşmesi hedeflenmiş regresyonlarla ve WebKit'te ayrıca sınanır, gerçek cihaz sonucu varsayılmaz.
