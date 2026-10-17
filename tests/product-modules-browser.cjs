@@ -24,6 +24,45 @@ await page.locator('#sf-product-section-reviews > summary').click();await page.l
 await page.locator('#sf-product-section-reviews > summary').press('Enter');await page.locator('#reviews').waitFor({state:'hidden',timeout:3000});assert(!(await page.locator('#reviews').isVisible()),'Native disclosure keyboard closes reviews '+width);
 await page.evaluate(()=>{location.hash='review_form'});await page.waitForFunction(()=>document.querySelector('#sf-product-section-reviews').open);assert(await page.locator('#reviews').isVisible(),'Review hash opens containing disclosure');
 if(width===390){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:'qa/storefront-ui-kit-product-modules.png',fullPage:true});}
+// Real expanded-sheet composition: reuse the live plugin nodes, not facsimiles
+// of the contact link or the four reassurance entries.
+if(width<=700){
+const presentation=await page.evaluate(()=>{
+  document.body.classList.add('sf-product-sheet-ready');
+  const sheet=document.createElement('section');sheet.className='sf-product-sheet is-expanded';
+  const content=document.createElement('div');content.className='sf-product-sheet-body';
+  ['.sf-product-information','.cdl-wa','.cdl-tb'].forEach(selector=>content.append(document.querySelector(selector)));
+  sheet.append(content);document.querySelector('div.product').append(sheet);
+  const contact=content.querySelector('.cdl-wa-button'),trust=content.querySelector('.cdl-tb'),items=[...trust.children];
+  const a=contact.getBoundingClientRect(),b=trust.getBoundingClientRect(),first=items[0].getBoundingClientRect(),second=items[1].getBoundingClientRect(),third=items[2].getBoundingClientRect();
+  const arrow=getComputedStyle(contact,'::after');
+  return {
+    contactWidth:a.width,trustWidth:b.width,contactLeft:a.left,trustLeft:b.left,
+    contactHeight:a.height,contactHref:contact.getAttribute('href'),contactTarget:contact.getAttribute('target'),
+    linkCount:content.querySelectorAll('a.cdl-wa-button').length,
+    iconColor:getComputedStyle(contact.querySelector('.cdl-wa-ico')).color,
+    arrowContent:arrow.content,arrowMask:arrow.maskImage||arrow.webkitMaskImage,
+    columns:getComputedStyle(trust).gridTemplateColumns.split(' ').length,
+    gap:getComputedStyle(trust).gap,radius:getComputedStyle(trust).borderTopLeftRadius,
+    firstHeight:first.height,secondLeft:second.left,firstRight:first.right,
+    thirdTop:third.top,firstBottom:first.bottom,
+    labels:items.map(item=>item.querySelector('.cdl-tb-label').textContent),
+    overflow:document.documentElement.scrollWidth>innerWidth+1
+  };
+});
+assert.equal(presentation.linkCount,1,'Original WhatsApp link remains unique '+width);
+assert.equal(presentation.contactHref,'https://wa.me/905000000000','WhatsApp href unchanged '+width);
+assert(presentation.contactHeight>=64,'Entire contact row has generous touch area '+width);
+assert(Math.abs(presentation.contactLeft-presentation.trustLeft)<1&&Math.abs(presentation.contactWidth-presentation.trustWidth)<1,'Contact and guarantees share panel inset '+width);
+assert.equal(presentation.iconColor,'rgb(31, 168, 85)','WhatsApp icon retains brand green '+width);
+assert(presentation.arrowMask.includes('arrow-right.svg')&&presentation.arrowContent==='""','Local SVG arrow replaces emoji '+width);
+assert.equal(presentation.columns,2,'Exactly two reassurance columns '+width);
+assert.equal(presentation.gap,'0px','Single grouped reassurance layout without floating gaps '+width);
+assert(presentation.radius!=='0px'&&presentation.firstHeight>=60,'Trust container and minimum row height '+width);
+assert(Math.abs(presentation.firstRight-presentation.secondLeft)<2&&presentation.thirdTop>=presentation.firstBottom-1,'Two by two grouped grid '+width);
+assert.deepEqual(presentation.labels,['Güvenli ödeme','Kapıda ödeme','Kolay iade','Hızlı kargo'],'Merchant-supplied labels retained');
+assert(!presentation.overflow,'No horizontal overflow in expanded sheet '+width);
+}
 await page.setContent(fixture(false));assert.equal(await page.locator('.cdl-tb,.cdl-fsb-live,.sf-product-visitor,.cdl-wa,.cdl-ub').count(),0,'Disabled modules reserve no hosts');
 }
 console.log('Product module layout: five widths, full-width track, gallery overlap, trust order, native details and disabled states passed.');
