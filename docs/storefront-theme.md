@@ -1,9 +1,12 @@
 # Codela Storefront — güncel teknik durum
 
-## 17 Ekim 2026 — 0.1.132 galeri ziyaretçi göstergesi ve panel radius (test bekliyor)
+## 17 Ekim 2026 — 0.1.132 galeri ziyaretçi göstergesi ve panel radius (canlı doğrulandı)
 
-Gerçek Woo `#codela-live-visitor-container` galerinin sibling'i; mevcut `product-information.js` aynı host'u galeri içine alıyor, bu revizyon ilk ürün fotoğrafına değil **gallery root** içine alıp `1/N` ile aynı sabit viewport alt satırda tutuyor. CSS metin 12px, göz yok, `background:none`, `position:fixed` ve galeri sayacının alt hizası birebir aynı; fotoğraf değişimlerinde `hidden`/count etkilenmez. Panel ortak `components.css` yüzey radius +8 yerine +16px (default 20→28px), prepaint/mounted bir. Codela `min_display=2` ve `disable_mobile` sebebiyle canlı sayı1 olduğunda/hide-on-mobile seçiliyken host görünmez; plugin gizlemesini zorla açmak ya da sahte veri üretmek doğru değil. Test: 320/390/700 mobil aynı baseline, panel radius, foto2/3 ve görünürlük sürekliliği; ayar eşiği ayrıca açıkça raporlanacak. CI+FTP bekleniyor.
+Gerçek Woo `#codela-live-visitor-container` galerinin sibling'i; mevcut `product-information.js` aynı host'u galeri içine alıyor, bu revizyon ilk ürün fotoğrafına değil **gallery root** içine alıp `1/N` ile aynı sabit viewport alt satırda tutuyor. CSS metin 12px, göz yok, `background:none`, `position:fixed` ve galeri sayacının alt hizası birebir aynı; fotoğraf değişimlerinde `hidden`/count etkilenmez. Panel ortak `components.css` yüzey radius +8 yerine +16px (default 20→28px), prepaint/mounted bir. Codela `min_display=2` ve `disable_mobile` sebebiyle canlı sayı1 olduğunda/hide-on-mobile seçiliyken host görünmez; plugin gizlemesini zorla açmak ya da sahte veri üretmek doğru değil. Test: 320/390/700 mobil aynı baseline, panel radius, foto2/3 ve görünürlük sürekliliği; ayar eşiği ayrıca açıkça raporlanacak. PR/main CI ve FTPS başarılı; gerçek Safari görüntüsü ve canlı REST count/site min_display ayarı henüz doğrulanmadı.
 
+
+
+**Doğrulanmış dağıtım:** [PR #50](https://github.com/muhammetdkaya/codela-storefront/pull/50) [a1d28229](https://github.com/muhammetdkaya/codela-storefront/commit/a1d28229520720dfbe0b2e6f30b9a50bc32a5ef2) ana dala birleştirildi. [PR CI #39056384635](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39056384635) ve [main CI+FTP #39056556171](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39056556171) başarılı. 2026-10-17 18:08:48Z: `Storefront deployed; checks passed.` Yalnız gerçek sayımın eşik altında olmaması halinde frontend etiketinin görünmesi beklenir; `min_display`/`disable_mobile` canlı değerine erişilmedi, sahte sayım yok. Fiziksel Safari son görsel kontrolü gerekir.
 
 ## 17 Ekim 2026 — 0.1.131 ziyaretçi sayacı kaybolması (canlı doğrulandı)
 
