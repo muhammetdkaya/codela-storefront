@@ -1,5 +1,10 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 17 Ekim 2026 — 0.1.130 canlı ziyaretçi galeride fotoğrafla birlikte kayar (CI/yayın bekliyor)
+
+Kullanıcı `0.1.129` ziyaretçi sayacının hâlâ `position:fixed` olduğunu ve `1 / 5` gibi fotoğraf indeks metniyle aynı satırda, **hiç arka plansız** görünmesini istedi. Birinci **WooCommerce fotoğraf düğümüne** orijinal `#codela-live-visitor-container` taşınır; sabit viewport kuralı kesin kaldırılır. CSS 12px/18px `sf-product-gallery-count` metin metrikleri, x=72px, opak arka plan/gölge/border/blur/ikon yok. İlk fotoğrafta `1 / 5` yanındaki metin, sonraki fotoğrafa kaydırınca **fotoğrafla birlikte ekrandan çıkar**; indeks sayacı ayrı kendi sisteminden `2 / 5` olarak güncellenir. Aynı düğüm, canlı API/90s ping, Codela ayarları, no-script/desktop fallback korunur. Hazır mevcut galerinin scroll, zoom, snap, sheet ve diğer UI kit kodları değişmez. `tests/product-sheet-browser.cjs` ilk foto / ikinci foto / tekrar ilk foto, 320/390/700, aynı satır, tek DOM, full PR/main CI/FTPS kontrollerini yapmalı. Başarılı dağıtım olmadan canlı diye raporlama.
+
+
 ## 17 Ekim 2026 — 0.1.129 ziyaretçi sayısını görselin önüne geçirmeyen sunum (canlı doğrulandı)
 
 Fiziksel Safari ekranında header altındaki `#codela-live-visitor-container` büyük, beyaz ve gölgeli buton gibi görünüyordu. Plugin etiketi gerçek ticari meta veridir, IconButton/GlassSurface değil. Codela modülünün `cdl-lv` düğümü ve canlı sayaç işlevi korunur; shared interactive surface listesinden `.sf-product-visitor .cdl-lv` çıkarıldı, tek stil sahibi product.css: hafif gri saydam yüzey `rgba(247,247,249,.44)`, gölgesiz/kenarlıksız/blur'suz, 11px sakin tipografi, 13px göz, az boşluk, max %68 / 240px, tıklama tepkisi/animasyon yok. Açık detay panelinde gizlenir, ilgili ürünler bölümündeki mevcut gizlenme korunur. Konumda/sabit header ve galeri akışında hareket, JS çoğaltması ve plugin değişimi yok. `tests/product-modules-browser.cjs` 320/390/700/900/1280px CSS sunumunu ve açık paneli kontrol eder. PR CI ve main CI + gerçek FTP dağıtımı doğrulandı. Fiziksel Safari son görsel kabulü kullanıcıda.
