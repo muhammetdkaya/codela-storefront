@@ -1,5 +1,11 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Çalışma — 17 Ekim 2026 / 0.1.119 → 0.1.120 panel ölçüleri
+
+Kullanıcının yeni talebi: sheet köşeleri mevcut radius+8px; üst tutma çizgisi ve alt kontrol kenar boşluğu12px. Native CTA44px/200px azami hedef, qty input44px/32px; mevcut44px adım düğmeleri korunur. Chevron kaldırıldı; gerçek erişilebilir toggle üst tutma çizgisinin70×44px hedefinde kalır. Galeri/ilgili ürün geçişinde başlık clamp, stok bilgisi ve header ölçülerini sıkıştıran kurallar kaldırılır; aynı başlık–satın alma boşluğu korunur. Native form, drag, ortak materyal ve Footer dışarıda kalır. Yeni motor yok, plugin1.1.1 değişmez.
+
+Yerel JS syntax ve24 paket başarılı.320/390/700 fixture ve canlı geometri assertion'ları daralma yerine eşit yükseklik/boşluğu sınar.120 CI/FTP/canlı kabul bekleniyor.119 CI+gerçek FTP38985771362 ve dört final canlı fonksiyon38986242775/38986242766/38986242816/38986242790 başarılı;119 açık WebKit ekranı incelendi. Fiziksel Safari algısal kabulü ayrı, computed tint eşitliği iddiası yok. Eski ağır PNG/izole Woo runner işi yeniden başlatılmaz.
+
 ## Son cam katman düzeltmesi — 17 Ekim 2026 / 0.1.118 → 0.1.119
 
 118 CI+FTP ve dört canlı fonksiyon kontrolü geçti; büyük panel açık/kapalı alpha.78 doğrulandı. Ancak canlı WebKit açık-panel görüntüsünde arkadaki fotoğraf fazla keskin görünüyordu. Sheet'in contain:layout katmanı, dock'taki transform+isolation yolu ile aynı değildi.119 aynı identity translate3d(0,0,0)+isolation:isolate bileşimini kullanır; fixed native purchase için containing block fallback'i korunur. Saydamlık/tint .78 ve compact kontrol .96 değişmez. Bu renderer düzeltmesi119 CI/FTP ve YENİ WebKit görüntüsüyle doğrulanmadan bitti sayılmaz.118 kaynak/hash119 yerine geçmez. Önceki117 quantity işi büyük panel talebinin karşılığı değildi.

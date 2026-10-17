@@ -23,7 +23,7 @@ const {liveProduct}=require('./live-product.cjs');
   assert(await page.locator('.single_add_to_cart_button').isVisible());
   const release=await page.locator('link[href*="styles/product.css"]').getAttribute('href');
   const parts=new URL(release).searchParams.get('ver').split('.').map(Number);
-  assert(parts[0]>0||parts[1]>1||parts[2]>=119,'Updated purchase sheet must be live: '+release);
+  assert(parts[0]>0||parts[1]>1||parts[2]>=120,'Updated purchase sheet must be live: '+release);
   for(const node of await page.locator('.cdl-fsb-text,.cdl-fsb-track,.sf-product-sheet-body .cdl-wa').all()){
    assert(!(await node.isVisible()),'Closed panel contains no shipping or contact information');
   }
@@ -108,6 +108,8 @@ const {liveProduct}=require('./live-product.cjs');
   assert.equal(await page.locator('form.cart .single_add_to_cart_button').count(),1);
   await page.locator('.sf-product-sheet-toggle').focus();await page.keyboard.press('Escape');
   await page.waitForFunction(()=>{const e=document.querySelector('.sf-product-sheet');return Math.abs(e.getBoundingClientRect().height-parseFloat(getComputedStyle(e).getPropertyValue('--sf-product-closed-height')))<2});
+  const purchaseGap=()=>page.evaluate(()=>document.querySelector('.single_add_to_cart_button').getBoundingClientRect().top-document.querySelector('.sf-product-sheet-heading').getBoundingClientRect().bottom);
+  const closedGap=await purchaseGap();
   const closedHeight=(await page.locator('.sf-product-sheet').boundingBox()).height;assert(closedHeight<180,'Compact live purchase panel');
   assert.equal(await page.locator('.sf-product-sheet .related').count(),0);
   assert(await page.locator('.sf-product-discovery .related li.product').count()>0,'Live native recommendations follow photographs');
@@ -143,7 +145,10 @@ const {liveProduct}=require('./live-product.cjs');
   await page.waitForFunction(()=>{const a=document.querySelectorAll('.woocommerce-product-gallery__image');return Math.abs(a[a.length-1].getBoundingClientRect().top)<1});
   await transition('.sf-product-discovery');
   await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-discovering'));
-  await page.waitForFunction(previous=>{const e=document.querySelector('.sf-product-sheet'),target=parseFloat(getComputedStyle(e).getPropertyValue('--sf-product-closed-height'));return target<previous-1&&Math.abs(e.getBoundingClientRect().height-target)<2},closedHeight);
+  await page.waitForFunction(previous=>{const e=document.querySelector('.sf-product-sheet'),target=parseFloat(getComputedStyle(e).getPropertyValue('--sf-product-closed-height'));return Math.abs(target-previous)<1&&Math.abs(e.getBoundingClientRect().height-target)<2},closedHeight);
+  assert(Math.abs(await purchaseGap()-closedGap)<1,'Live title to purchase spacing remains stable over recommendations');
+  assert.equal(Math.round((await page.locator('.single_add_to_cart_button').boundingBox()).height),44,'Live CTA uses smaller44px target');
+  assert.equal(await page.locator('.sf-product-sheet-toggle').evaluate(e=>getComputedStyle(e,'::after').content),'none','Live chevron removed');
   assert(await page.locator('.single_add_to_cart_button').isVisible());
   fs.mkdirSync('qa/performance',{recursive:true});await page.screenshot({path:'qa/performance/gallery-live-discovery.png'});
 

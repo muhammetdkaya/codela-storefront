@@ -40,6 +40,9 @@ for(const width of [320,390,700]){
  assert.equal(await page.locator('.sf-product-sheet .sf-footer').count(),0,'Footer is outside both panel states');
  assert.equal(await page.locator('body > .sf-footer').count(),1,'Native footer remains at the end of the document');
  assert.equal(await page.locator('.sf-product-sheet .sf-product-purchase').evaluate(e=>getComputedStyle(e).backgroundColor),'rgba(0, 0, 0, 0)','One sheet material');
+ assert.equal(await toggle.evaluate(e=>getComputedStyle(e,'::after').content),'none','Arrow is removed; accessible grip button remains');
+ const spacing=await page.locator('.sf-product-purchase').evaluate(e=>{const s=getComputedStyle(e);return [s.paddingTop,s.paddingBottom]});assert.deepEqual(spacing,['12px','12px'],'Balanced purchase edge spacing');
+ assert.equal(Math.round((await buy.boundingBox()).height),44,'Smaller CTA retains a 44px touch target');
  const bounds=await buy.boundingBox();assert(bounds.y+bounds.height<=844&&bounds.y>700,'Purchase stays at bottom '+width);
  assert(!(await page.locator('.variations,.sf-product-information').last().isVisible()),'Details hidden while collapsed');
  assert(!(await page.locator('.cdl-fsb-text').isVisible()),'No free-shipping message while collapsed');
@@ -68,14 +71,17 @@ for(const width of [320,390,700]){
  await page.waitForFunction(()=>{const e=document.querySelector('.sf-product-sheet');return Math.abs(e.getBoundingClientRect().height-parseFloat(getComputedStyle(e).getPropertyValue('--sf-product-closed-height')))<2});
  const titleFont=await page.locator('.sf-product-sheet-heading .product_title').evaluate(e=>getComputedStyle(e).fontSize);
  const closedHeight=await page.locator('.sf-product-sheet').evaluate(e=>e.getBoundingClientRect().height);
+ const purchaseGap=()=>page.evaluate(()=>document.querySelector('.single_add_to_cart_button').getBoundingClientRect().top-document.querySelector('.sf-product-sheet-heading').getBoundingClientRect().bottom);
+ const closedGap=await purchaseGap();
  assert(closedHeight<180,'Compact collapsed panel '+width+' '+closedHeight);
  assert.equal(await page.locator('.sf-product-sheet .related').count(),0,'Recommendations are outside product details');
  assert.equal(await page.locator('.sf-product-discovery > .related a').getAttribute('href'),'/related','Native related anchor preserved');
  await page.locator('.woocommerce-product-gallery__wrapper').focus();await page.keyboard.press('End');
  await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-discovering'));
- await page.waitForFunction(previous=>{const e=document.querySelector('.sf-product-sheet'),target=parseFloat(getComputedStyle(e).getPropertyValue('--sf-product-closed-height'));return target<previous-1&&Math.abs(e.getBoundingClientRect().height-target)<2},closedHeight);
+ await page.waitForFunction(previous=>{const e=document.querySelector('.sf-product-sheet'),target=parseFloat(getComputedStyle(e).getPropertyValue('--sf-product-closed-height'));return Math.abs(target-previous)<1&&Math.abs(e.getBoundingClientRect().height-target)<2},closedHeight);
  assert(await page.locator('.sf-product-discovery .related').isVisible(),'Related products reachable without opening details');
- assert((await page.locator('.sf-product-sheet').boundingBox()).height<closedHeight,'Panel compacts further during discovery');
+ assert(Math.abs((await page.locator('.sf-product-sheet').boundingBox()).height-closedHeight)<1,'Panel keeps the same height during discovery');
+ assert(Math.abs(await purchaseGap()-closedGap)<1,'Title to purchase gap stays unchanged during discovery');
  assert.equal(await page.locator('.sf-product-sheet-heading .product_title').evaluate(e=>getComputedStyle(e).fontSize),titleFont,'Title size is identical over photos and recommendations');
  assert(await buy.isVisible(),'Same purchase remains visible while discovering');
  // Repeated gestures beyond the last card must not grow the document or
@@ -252,7 +258,7 @@ await load(page,{short:true});
 await page.waitForFunction(()=>{const e=document.querySelector('.sf-product-sheet');return Math.abs(e.getBoundingClientRect().height-parseFloat(getComputedStyle(e).getPropertyValue('--sf-product-closed-height')))<2});
 const plainHeight=(await page.locator('.sf-product-sheet').boundingBox()).height;
 await page.locator('.woocommerce-product-gallery__wrapper').focus();await page.keyboard.press('End');
-await page.waitForFunction(previous=>{const e=document.querySelector('.sf-product-sheet'),target=parseFloat(getComputedStyle(e).getPropertyValue('--sf-product-closed-height'));return target<previous-1&&Math.abs(e.getBoundingClientRect().height-target)<2},plainHeight);
+await page.waitForFunction(previous=>{const e=document.querySelector('.sf-product-sheet'),target=parseFloat(getComputedStyle(e).getPropertyValue('--sf-product-closed-height'));return Math.abs(target-previous)<1&&Math.abs(e.getBoundingClientRect().height-target)<2},plainHeight);
 await page.emulateMedia({reducedMotion:'reduce'});await load(page);await page.locator('.sf-product-sheet-toggle').click();assert(await page.locator('.sf-product-information').isVisible());
 assert.deepEqual(errors,[]);console.log('Product sheet: 3 mobile widths, vertical photos, independent detail scroll, native form/validation/variation, drag, hash, modal, stockless, responsive restoration and reduced motion passed.');
 }catch(error){console.error('SHEET_DEBUG',JSON.stringify(await lastPage?.evaluate(()=>({active:document.activeElement?.tagName+' '+document.activeElement?.className,parts:['.woocommerce-product-gallery__wrapper','.woocommerce-product-gallery__image','.sf-product-sheet','.sf-product-sheet-body','.sf-product-purchase'].map(selector=>{const e=document.querySelector(selector);if(!e)return{selector};const s=getComputedStyle(e);return{selector,rect:e.getBoundingClientRect().toJSON(),scrollHeight:e.scrollHeight,clientHeight:e.clientHeight,scrollTop:e.scrollTop,display:s.display,overflow:s.overflow,visibility:s.visibility}})}))));fs.mkdirSync('qa',{recursive:true});await lastPage?.screenshot({path:'qa/storefront-ui-kit-product-sheet-failure.png'});throw error;}finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

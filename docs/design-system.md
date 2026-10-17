@@ -1,5 +1,9 @@
 # Codela Storefront UI Kit — source of truth
 
+## Stable product sheet spacing —0.1.120
+
+Keep identical collapsed heading metrics over photographs and recommendations; discovery still controls native scrolling but never compacts the header. Round only this sheet by shared control radius+8px. Grip top and purchase bottom insets are12px; CTA44px (max200px), qty44px input with existing44px step targets. Remove the chevron, preserving the real accessible70×44px grip toggle and direct dragging.
+
 ## Whole large glass panel —0.1.118
 
 User correction targets the entire expandable panel background, not quantity controls. Reuse the common glass paint with sf-ui-surface--glass-panel and the shared panel-tint token (.78 alpha), preserving compact dock/header (.96), filter/shadow and opaque accessibility fallbacks. This intentional density adjustment makes the photo backdrop visible across the large area in both states. Do not claim alpha equality with compact controls or use computed CSS equality alone as physical visual acceptance.
