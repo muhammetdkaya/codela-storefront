@@ -17,6 +17,28 @@ const result=await page.evaluate(()=>{const rect=x=>document.querySelector(x).ge
 assert(!result.overflow,'No horizontal overflow '+width);
 assert(Math.abs(result.bar.left-result.text.left)<1&&Math.abs(result.bar.width-result.text.width)<1,'Shipping track covers full text/content width without icon indent '+width);
 assert(result.counter.bottom<result.rail.top,'Visitor does not overlap gallery rail '+width);
+// The counter is information, not a third floating Header button. Use the
+// original plugin node, but none of the shared soft-button glass treatment.
+const visitor=await page.locator('.sf-product-visitor .cdl-lv').evaluate(el=>{
+ const style=getComputedStyle(el),dot=getComputedStyle(el.querySelector('.cdl-lv-dot'));
+ return {width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height,
+   background:style.backgroundColor,color:style.color,border:style.borderTopWidth,
+   shadow:style.boxShadow,blur:style.backdropFilter,dotWidth:dot.width,dotHeight:dot.height,
+   dotShadow:dot.boxShadow,dotAnimation:dot.animationName};
+});
+assert(visitor.height<=30,'Visitor label is smaller than a button '+width+' '+JSON.stringify(visitor));
+assert(visitor.width<=Math.min(width*.68,240)+1,'Visitor label cannot cover the photograph '+width);
+assert.equal(visitor.background,'rgba(247, 247, 249, 0.44)','Quiet translucent information surface '+width);
+assert.equal(visitor.border,'0px','No button border '+width);
+assert.equal(visitor.shadow,'none','No floating shadow '+width);
+assert.equal(visitor.blur,'none','No interactive glass effect '+width);
+assert.equal(visitor.dotWidth,'13px','Small editorial eye icon '+width);
+assert.equal(visitor.dotHeight,'13px','Small editorial eye icon height '+width);
+assert.equal(visitor.dotAnimation,'none','Visitor icon does not pulse '+width);
+assert.equal(visitor.dotShadow,'none','No animated glowing dot '+width);
+await page.evaluate(()=>document.body.classList.add('sf-product-sheet-open'));
+assert.equal(await page.locator('.sf-product-visitor').evaluate(e=>getComputedStyle(e).visibility),'hidden','Visitor disappears behind expanded details '+width);
+await page.evaluate(()=>document.body.classList.remove('sf-product-sheet-open'));
 assert(result.trust.top>=result.info.bottom-1&&result.related.top>=result.trust.bottom-1,'Trust follows information before related '+width);
 assert(result.contact.height>=44,'Contact touch target '+width);
 assert.equal(await page.locator('.cdl-wa-ico').evaluate(el=>getComputedStyle(el).color),'rgb(31, 168, 85)','Shared IconButton retains WhatsApp semantic color');
