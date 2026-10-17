@@ -1,5 +1,8 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 17 Ekim 2026 — Canlı performans son kabul eksik
+Canlı mobile product medyan LCP 3.528s (önceki PNG15.668s), cold CLS 0.1763 (warm0); home cold LCP14.096s. [39017705647](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39017705647) bütçesi başarısız. **İlk karede raw Woo flash'ı önleyen 0.1.122 tek başına bütün CLS kaymasını düzeltmiş sayılmaz.** Belirsiz CLS kaynağını source-node/önce-sonra geometrisiyle açıklamadan yama uygulama; [Issue #40](https://github.com/muhammetdkaya/codela-storefront/issues/40) kabul gereksinimi. Mevcut tasarım, tek native form, WebP media ve galeri geçişleri korunsun.
+
 ## 17 Ekim 2026 — 0.1.122 mobil yenilemede native ürün flash'ı
 
 İki fiziksel mobil Safari ekran görüntüsü, sayfa yenilenirken önce büyük WooCommerce başlık/fiyat/özet/sepet alanının normal akışta görünmesi ardından gerçek galerili kompakt sheet'in gelmesini gösterdi. Başlangıç korumasının DOMContentLoaded'da **her koşulda** kalkması ve mount öncesi native/final galeri geometrilerinin farklı olması temel mimari kusurlardı.
