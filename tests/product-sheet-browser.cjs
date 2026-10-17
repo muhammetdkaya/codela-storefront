@@ -9,9 +9,9 @@ const bootstrap=execFileSync(process.env.PHP_BIN||'php',['tests/render-product-s
 const quantity=execFileSync(process.env.PHP_BIN||'php',['tests/render-product-sheet.php','quantity'],{encoding:'utf8'});
 const css='.woocommerce div.product div.images .woocommerce-product-gallery__image:nth-child(n+2){width:25%;display:inline-block}'+['assets/styles/tokens.css','assets/storefront.css','assets/styles/components.css','assets/styles/navigation.css','assets/styles/gallery.css','assets/styles/product.css'].map(p=>fs.readFileSync(root+p,'utf8')).join('\n');
 const picture=n=>'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000"><rect width="800" height="1000" fill="${['#dbd1c3','#bab4a1','#ad998a'][n]}"/><text x="200" y="300" font-size="80">${n+1}</text></svg>`);
-function fixture({variable=false,stock=true,short=false,noUrgency=false,longTitle=false,pending=false}={}){return `<!doctype html><html><head>${pending?bootstrap:''}<meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:Arial,Helvetica,sans-serif}${css}</style></head><body class="single-product woocommerce"><div class="sf-shell"><header class="sf-header"><span>Codela</span></header><nav class="sf-mobile-dock" hidden></nav><dialog id="sf-panel"></dialog></div><main class="sf-content"><div class="woocommerce-notices-wrapper"></div><div class="product">
+function fixture({variable=false,stock=true,short=false,noUrgency=false,longTitle=false,pending=false,promotion='none'}={}){return `<!doctype html><html><head>${pending?bootstrap:''}<meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:Arial,Helvetica,sans-serif}${css}</style></head><body class="single-product woocommerce"><div class="sf-shell"><header class="sf-header"><span>Codela</span></header><nav class="sf-mobile-dock" hidden></nav><dialog id="sf-panel"></dialog></div><main class="sf-content"><div class="woocommerce-notices-wrapper"></div><div class="product">
 <div class="woocommerce-product-gallery images sf-ui-gallery sf-ui-gallery--hero sf-ui-gallery--scroll"><div class="woocommerce-product-gallery__wrapper">${[0,1,2].map(n=>`<div class="woocommerce-product-gallery__image" data-thumb="${picture(n)}"><a href="${picture(n)}"><img alt="Product ${n+1}" src="${picture(n)}"></a></div>`).join('')}</div></div>
-<div class="summary"><h1 class="product_title">${short?'Luna':longTitle?'Kavis Dekoratif Obje Doğal Traverten Taş Heykel Seti':'Luna Traverten Lamba'}</h1><div class="sf-product-price-row"><p class="price">3.490 ₺</p>${short||noUrgency?'':'<div class="cdl-ub">Son 3 adet</div>'}</div><p class="woocommerce-product-details__short-description">Doğal taşın dokusu.</p>
+<div class="summary"><h1 class="product_title">${promotion!=='none'?'Kavis Dekoratif Obje':short?'Luna':longTitle?'Kavis Dekoratif Obje Doğal Traverten Taş Heykel Seti':'Luna Traverten Lamba'}</h1><div class="sf-product-price-row">${promotion!=='none'?'<p class="price"><del>$80,00</del><ins>$40,00</ins></p>':'<p class="price">3.490 ₺</p>'}${promotion!=='none'?`<div class="cdl-ub">${promotion!=='timer'?'<div class="cdl-ub-item cdl-ub-scarcity"><svg class="cdl-ub-ico" viewBox="0 0 24 24"></svg><span class="cdl-ub-text">Son <strong>2</strong> ürün kaldı!</span></div>':''}${promotion!=='scarcity'?'<div class="cdl-ub-item cdl-ub-timer"><svg class="cdl-ub-ico" viewBox="0 0 24 24"></svg><span class="cdl-ub-text">Kampanya bitişine: <span class="cdl-ub-countdown" data-evergreen-hours="24">23:59:49</span></span></div>':''}</div>`:short||noUrgency?'':'<div class="cdl-ub">Son 3 adet</div>'}</div><p class="woocommerce-product-details__short-description">Doğal taşın dokusu.</p>
 ${stock?`<form id="native-cart" class="cart ${variable?'variations_form':''}" method="post">${variable?'<table class="variations"><tbody><tr><th><label for="color">Renk</label></th><td><select id="color" name="attribute_color"><option value="">Seçiniz</option><option value="cream">Kum</option></select></td></tr></tbody></table><input name="variation_id" value="123" type="hidden">':''}<div class="sf-product-purchase"><div class="quantity">${quantity}</div><button class="single_add_to_cart_button button alt ${variable?'disabled wc-variation-selection-needed':''}" type="submit" name="add-to-cart" value="42">Sepete ekle</button></div></form>`:'<p class="stock out-of-stock">Stokta yok</p>'}
 <div class="cdl-fsb--product"><div class="cdl-fsb-text">Ücretsiz kargoya 510 ₺ kaldı</div><div class="cdl-fsb-track"><span class="cdl-fsb-fill" style="width:87%"></span></div></div></div>
 <div class="sf-product-information"><details open class="sf-product-information-section"><summary>Ürün hakkında</summary><div style="min-height:450px">Ürün bilgisi</div></details><details id="sf-product-section-reviews" class="sf-product-information-section"><summary>Değerlendirmeler</summary><div id="reviews"><a id="review_form">Yorum yaz</a><textarea aria-label="Yorum"></textarea></div></details></div><div class="cdl-tb">Güvenli ödeme</div><section class="related" style="min-height:1200px"><h2>İlgili ürünler</h2><a href="/related">Diğer ürün</a></section>${template}</div></main><footer class="sf-footer"><div class="sf-footer-inner"><a href="/privacy">Gizlilik</a></div></footer></body></html>`;}
@@ -327,6 +327,63 @@ for(const width of [320,390,700]){
    assert(Math.abs(pending.y-mounted.y)<3,'First paint product sheet remains fixed at '+width+' / '+JSON.stringify(scenario));
    await page.unroute('https://sheet-height.test/**');
  }
+}
+// Genuine enabled conversion tools must not turn the price into a tall
+// sidebar. Validate native FIRST PAINT as well as the reparented live nodes:
+// title/price share one row, stock/timer share the next, height never jumps.
+for(const [width,promotion] of [[320,'both'],[390,'both'],[700,'both'],[390,'scarcity'],[390,'timer']]){
+ await page.setViewportSize({width,height:844});
+ let release;
+ const gate=new Promise(resolve=>{release=resolve;});
+ await page.route('https://sheet-urgency.test/**',async route=>{
+   const uri=new URL(route.request().url());
+   if(uri.pathname==='/product.js'){
+     await gate;
+     await route.fulfill({contentType:'text/javascript',body:fs.readFileSync(root+'assets/scripts/product-information.js','utf8')});
+   }else if(uri.pathname==='/'){
+     await route.fulfill({contentType:'text/html',body:fixture({pending:true,promotion}).replace(template,template+'<script async src="/product.js"></script>')});
+   }else await route.fulfill({status:404,body:''});
+ });
+ await page.goto('https://sheet-urgency.test/',{waitUntil:'domcontentloaded'});
+ await page.evaluate(()=>new Promise(done=>requestAnimationFrame(()=>requestAnimationFrame(done))));
+ const probe=(hydrated)=>page.evaluate(hydrated=>{
+   const root=document.querySelector(hydrated?'.sf-product-sheet':'div.product > .summary');
+   const title=root.querySelector('.product_title'),price=root.querySelector('.sf-product-price-row > .price');
+   const urgency=root.querySelector('.sf-product-price-row > .cdl-ub'),cart=root.querySelector('.sf-product-purchase');
+   const a=title.getBoundingClientRect(),b=price.getBoundingClientRect(),c=urgency.getBoundingClientRect(),d=cart.getBoundingClientRect(),panel=root.getBoundingClientRect();
+   const ticker=urgency.querySelector('.cdl-ub-countdown');
+   return {panelY:panel.y,panelHeight:panel.height,centerOffset:Math.abs((a.top+a.bottom)/2-(b.top+b.bottom)/2),urgencyTop:c.top,titleBottom:a.bottom,priceBottom:b.bottom,urgencyHeight:c.height,urgencyX:c.x,urgencyWidth:c.width,headingX:a.x,cartY:d.y,overflow:document.documentElement.scrollWidth>innerWidth+1,urgencyDisplay:getComputedStyle(urgency).display,prefixSize:ticker?getComputedStyle(ticker.parentElement).fontSize:null,tickerSize:ticker?getComputedStyle(ticker).fontSize:null,items:urgency.querySelectorAll('.cdl-ub-item').length,priceText:price.innerText};
+ },hydrated);
+ const before=await probe(false);
+ release();
+ await page.locator('.sf-product-sheet').waitFor({state:'visible'});
+ await page.waitForFunction(()=>!document.documentElement.classList.contains('sf-product-sheet-pending'));
+ const after=await probe(true);
+ for(const state of [before,after]){
+   assert(state.centerOffset<7,'Title and discounted price share aligned first row '+width+' '+promotion+' '+JSON.stringify(state));
+   assert(state.urgencyTop>=Math.max(state.titleBottom,state.priceBottom)+5,'Scarcity and timer appear below title and price '+width+' '+promotion);
+   assert(state.urgencyHeight<=28,'Conversion messages occupy one compact row '+width+' '+promotion);
+   assert.equal(state.urgencyDisplay,'grid','Native plugin urgency is a single compact grid '+width+' '+promotion);
+   assert(!state.overflow,'Urgency must not cause horizontal overflow '+width+' '+promotion);
+   assert(state.priceText.includes('$40,00'),'Native sale price retained '+width+' '+promotion);
+   assert.equal(state.items,promotion==='both'?2:1,'Enabled modules not duplicated '+width+' '+promotion);
+   if(promotion!=='scarcity'){
+     assert.equal(state.prefixSize,'0px','Long timer prefix is visually suppressed '+width);
+     assert.equal(state.tickerSize,'11px','Native live countdown remains readable '+width);
+   }
+ }
+ assert(Math.abs(before.panelHeight-after.panelHeight)<3,'No conversion-module first-paint panel jump '+width+' '+promotion+' '+JSON.stringify({before,after}));
+ assert(Math.abs(before.panelY-after.panelY)<3,'No conversion-module vertical panel movement '+width+' '+promotion);
+ assert(Math.abs(before.cartY-after.cartY)<3,'Original purchase controls retain position '+width+' '+promotion);
+ assert.equal(await page.locator('.sf-product-sheet .cdl-ub').count(),1,'Single original urgency host');
+ if(promotion!=='scarcity'){
+   const height=after.panelHeight;
+   await page.locator('.cdl-ub-countdown').evaluate(el=>{el.textContent='01:02:03';});
+   await page.evaluate(()=>new Promise(done=>requestAnimationFrame(()=>requestAnimationFrame(done))));
+   const changed=await page.locator('.sf-product-sheet').boundingBox();
+   assert(Math.abs(changed.height-height)<2,'Live timer changes cannot grow the panel '+width);
+ }
+ await page.unroute('https://sheet-urgency.test/**');
 }
 await page.setViewportSize({width:390,height:844});
 // Once parsing completes without enhancement, native Woo fails open.
