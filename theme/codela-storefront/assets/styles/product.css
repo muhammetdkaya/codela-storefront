@@ -348,25 +348,65 @@ body.single-product .cdl-fsb--product{
 }
 /* The live module's empty-cart state has only the real threshold message.
    Do not fabricate progress when no current amount/threshold is available. */
+/* Theme skin for the original escaped Codela WhatsApp anchor. One entire
+   hit target and the existing shared soft IconButton; no copied action. */
 body.single-product .cdl-wa{margin:12px 0 0}
 body.single-product .cdl-wa-button{
-  display:inline-flex;align-items:center;gap:10px;min-height:var(--sf-ui-hit);
-  max-width:100%;color:var(--sf-ui-control-ink);font-size:13px;font-weight:500;
-  line-height:1.5;text-decoration:none;
+  display:flex;align-items:center;gap:12px;min-height:64px;width:100%;
+  max-width:100%;padding:10px 12px;
+  border:1px solid var(--sf-ui-border);
+  border-radius:var(--sf-ui-control-radius);
+  background:color-mix(in srgb,var(--sf-ui-surface) 46%,transparent);
+  color:var(--sf-ui-control-ink);font-size:14px;font-weight:500;
+  line-height:1.45;text-decoration:none;touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
 }
-body.single-product .cdl-wa-ico{--sf-ui-control-ink:#1fa855;--sf-ui-glass-ink:#1fa855;color:#1fa855}
+body.single-product .cdl-wa-button:focus-visible{
+  outline:2px solid var(--sf-ui-accent);outline-offset:3px;
+}
+/* The arrow is the existing local UI glyph, not a colored emoji or font. */
+body.single-product .cdl-wa-button::after{
+  content:'';display:block;flex:none;width:17px;height:17px;
+  margin-inline-start:auto;background:currentColor;opacity:.66;
+  -webkit-mask:url('../icons/arrow-right.svg') center/contain no-repeat;
+  mask:url('../icons/arrow-right.svg') center/contain no-repeat;
+  transform:rotate(-45deg);
+}
+body.single-product .cdl-wa-ico{
+  --sf-ui-control-ink:#1fa855;--sf-ui-glass-ink:#1fa855;color:#1fa855;
+}
 .cdl-wa-ico svg{display:block;width:21px;height:21px;flex:none}
+/* A quiet, unified reassurance strip; plugin icons, labels, order and
+   configuration stay authoritative (including fewer than four items). */
 body.single-product div.product .cdl-tb{
   grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:18px 24px;width:100%;max-width:760px;min-width:0;justify-self:center;
-  margin:0 auto;padding:0 max(20px,5vw);color:var(--sf-muted);
+  gap:0;width:100%;max-width:760px;min-width:0;justify-self:center;
+  margin:0 auto;padding:0;overflow:hidden;
+  border:1px solid var(--sf-ui-border);
+  border-radius:var(--sf-ui-control-radius);
+  background:color-mix(in srgb,var(--sf-ui-surface) 32%,transparent);
+  color:var(--sf-ui-ink);
 }
-.cdl-tb-item{display:flex;align-items:center;gap:10px;min-width:0;font-size:12px;line-height:1.5}
-.cdl-tb-ico{display:flex;flex:none}
-.cdl-tb-ico svg{display:block;width:20px;height:20px}
-.cdl-tb-img{width:24px;height:24px;object-fit:contain;flex:none}
-.cdl-tb-label{overflow-wrap:anywhere}
-@media(min-width:901px){body.single-product div.product .cdl-tb{grid-template-columns:repeat(4,minmax(0,1fr));max-width:1200px}}
+body.single-product .cdl-tb-item{
+  display:flex;align-items:center;gap:10px;min-width:0;min-height:60px;
+  padding:12px 14px;font-size:13px;font-weight:500;line-height:1.35;
+}
+body.single-product .cdl-tb-item + .cdl-tb-item{
+  border-inline-start:1px solid var(--sf-ui-border);
+}
+body.single-product .cdl-tb-ico{display:flex;flex:none;color:var(--sf-muted)}
+body.single-product .cdl-tb-ico svg{display:block;width:21px;height:21px}
+body.single-product .cdl-tb-img{width:24px;height:24px;object-fit:contain;flex:none}
+body.single-product .cdl-tb-label{min-width:0;overflow-wrap:anywhere}
+body.single-product .cdl-tb:has(.cdl-tb-item:only-child){grid-template-columns:1fr}
+@media(max-width:900px){
+  body.single-product .cdl-tb-item:nth-child(odd){border-inline-start:0}
+  body.single-product .cdl-tb-item:nth-child(n+3){border-top:1px solid var(--sf-ui-border)}
+  body.single-product .cdl-tb-item:nth-child(3):last-child{grid-column:1/-1}
+}
+@media(min-width:901px){
+  body.single-product div.product .cdl-tb{grid-template-columns:repeat(4,minmax(0,1fr));max-width:1200px}
+}
 @media(max-width:380px){
   body.single-product div.product form.cart .single_add_to_cart_button{
     flex-basis:100%;
@@ -601,10 +641,12 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   body.sf-product-sheet-ready .sf-product-sheet-body > .summary{
     width:100%!important;margin:0!important;padding:0 20px;max-width:none;float:none;
   }
-  body.sf-product-sheet-ready .sf-product-sheet-body > :is(.sf-product-information,.cdl-tb){
+  body.sf-product-sheet-ready .sf-product-sheet-body > .sf-product-information{
     width:100%;max-width:none;margin:24px 0 0;padding-inline:20px;
   }
-  body.sf-product-sheet-ready .sf-product-sheet-body .cdl-tb{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+  body.sf-product-sheet-ready .sf-product-sheet-body > .cdl-tb{
+    width:calc(100% - 40px);max-width:none;margin:12px 20px 0;padding:0;
+  }
   body.sf-product-sheet-ready div.product form.cart .sf-product-purchase{
     visibility:visible;position:fixed;inset-inline:0;bottom:0;
     max-width:none;width:100%;min-height:var(--sf-ui-bottom-bar-height);margin:0;
@@ -615,14 +657,10 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   }
   body.sf-product-sheet-ready div.product form.cart .sf-product-purchase .quantity{flex:0 0 auto}
   body.sf-product-sheet-ready .sf-product-sheet-body > .cdl-wa{
-    margin:0 20px;padding:8px 0;border-top:1px solid var(--sf-ui-border);
+    margin:16px 20px 0;padding:0;
   }
-  body.sf-product-sheet-ready .sf-product-sheet-body > .cdl-wa .cdl-wa-button{display:flex;width:100%}
-  body.sf-product-sheet-ready .sf-product-sheet-body > .cdl-wa .cdl-wa-ico{
-    --sf-ui-control-ink:var(--sf-ui-ink);--sf-ui-glass-ink:var(--sf-ui-ink);color:var(--sf-ui-ink);
-  }
-  body.sf-product-sheet-ready .sf-product-sheet-body > .cdl-wa .cdl-wa-button::after{
-    content:'↗';margin-inline-start:auto;font-size:20px;
+  body.sf-product-sheet-ready .sf-product-sheet-body > .cdl-wa .cdl-wa-button{
+    display:flex;width:100%;
   }
   body.sf-product-sheet-ready .sf-product-delivery:not(:has(.cdl-de,.cdl-fsb--product)){display:none}
   body.sf-product-sheet-ready .sf-product-delivery .cdl-de{margin:0 0 12px}
