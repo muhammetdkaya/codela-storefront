@@ -189,6 +189,40 @@ await page.locator('body > .sf-footer').waitFor({state:'attached'});
 assert.equal(await page.locator('.sf-product-sheet .sf-footer').count(),0,'Late footer never enters the product panel');
 assert.equal(await page.locator('.sf-footer').count(),1,'Late native footer is preserved once');
 await page.unroute('https://sheet.test/**');
+// A late async/deferred adapter may start AFTER DOMContentLoaded. This is the
+// production first-paint race that a slow mobile refresh can expose.
+let releaseAsync;
+const asyncGate=new Promise(resolve=>{releaseAsync=resolve;});
+await page.route('https://sheet-async.test/**',async route=>{
+ const path=new URL(route.request().url()).pathname;
+ if(path==='/product.js'){
+   await asyncGate;
+   await route.fulfill({contentType:'text/javascript',body:fs.readFileSync(root+'assets/scripts/product-information.js','utf8')});
+ }else if(path==='/'){
+   await route.fulfill({contentType:'text/html',body:fixture({pending:true}).replace(template,template+'<script async src="/product.js"></script>')});
+ }else await route.fulfill({status:404,body:''});
+});
+await page.goto('https://sheet-async.test/',{waitUntil:'domcontentloaded'});
+await page.evaluate(()=>new Promise(done=>requestAnimationFrame(()=>requestAnimationFrame(done))));
+assert(await page.locator('html').evaluate(e=>e.classList.contains('sf-product-sheet-pending')),'DOM ready cannot release product first-paint guard before adapter');
+assert.equal(await page.locator('body').evaluate(e=>e.classList.contains('sf-product-sheet-ready')),false);
+assert(!(await page.locator('.summary .product_title').isVisible()),'Native title does not flash after DOM ready');
+assert(!(await page.locator('.sf-product-purchase').isVisible()),'Detached native purchase does not flash after DOM ready');
+assert(await page.locator('.woocommerce-product-gallery').isVisible(),'Real photograph paints before adapter');
+const beforePhoto=await page.locator('.woocommerce-product-gallery__image').first().boundingBox();
+const beforeFrame=await page.locator('.woocommerce-product-gallery__wrapper').evaluate(e=>getComputedStyle(e).overflowY);
+assert.equal(beforeFrame,'visible','Prepaint photo already uses final mobile gallery flow');
+releaseAsync();
+await page.locator('.sf-product-sheet').waitFor({state:'visible'});
+await page.waitForFunction(()=>!document.documentElement.classList.contains('sf-product-sheet-pending'));
+const afterPhoto=await page.locator('.woocommerce-product-gallery__image').first().boundingBox();
+const frameDrift=Math.abs(beforePhoto.height-afterPhoto.height);
+console.log('PRODUCT_PREPAINT_FRAME '+JSON.stringify({before:beforePhoto.height,after:afterPhoto.height,drift:frameDrift}));
+assert(Math.abs(beforePhoto.y-afterPhoto.y)<1,'Hydration must not move the first photo top');
+assert(frameDrift<48,'Initial mobile photo uses same frame geometry as mounted gallery');
+assert.equal(await page.locator('.sf-product-sheet .product_title').count(),1,'Same native title moves exactly once into product panel');
+assert.equal(await page.locator('form.cart .single_add_to_cart_button').count(),1,'No duplicated purchase control during async hydration');
+await page.unroute('https://sheet-async.test/**');
 // Once parsing completes without enhancement, native Woo fails open.
 await page.setContent(fixture({pending:true}));
 await page.waitForFunction(()=>!document.documentElement.classList.contains('sf-product-sheet-pending'));
