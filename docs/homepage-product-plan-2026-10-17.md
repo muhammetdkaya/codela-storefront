@@ -1,6 +1,6 @@
 # Ürün alt alanı, menü kaydırması ve yönetilebilir ana sayfa
 Tarih: 17 Ekim 2026  
-Durum: **Uygulandı. Tema0.1.134 canlı; eklenti ayar köprüsü kaynakta tamam fakat Actions başlangıç engeli nedeniyle canlıya dağıtılamadı. Güncel kanıt ve devam adımı AGENTS.md / storefront-theme.md içindedir.**
+Durum: **Uygulandı ve dağıtıldı. Tema0.1.134 ile eklenti settings API1.1.0 köprüsü canlı; son eklenti validate+deploy39072208350 başarılı. İçerik seçimi ve Tema bölümleri modu kullanıcı ayarına bırakıldı. Güncel kanıt ve sınırlar AGENTS.md / storefront-theme.md içindedir.**
 İncelenen Storefront HEAD: `05ccc0e7cad52cec5c2582a1a51f49a1b457520a`; mevcut sürüm 0.1.133.
 İlk kayıt planlama içindi; kullanıcı 17 Ekim 2026 tarihinde “Şimdi yap” diyerek uygulamayı istedi. Aşağıdaki içerik özgün kapsam ve kabul sözleşmesidir.
 
