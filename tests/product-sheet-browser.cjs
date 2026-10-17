@@ -264,9 +264,11 @@ const postSubmit=await page.locator('.sf-product-sheet .single_add_to_cart_butto
 console.log('PRODUCT_INITIAL_CONTROLS '+JSON.stringify({quantityBefore:preQty,quantityAfter:postQty,buttonBefore:preSubmit,buttonAfter:postSubmit}));
 assert(Math.abs(preQty.width-postQty.width)<6,'Quantity does not resize after mount');
 assert(Math.abs(preSubmit.width-postSubmit.width)<6,'Purchase button does not resize after mount');
+assert(Math.abs(preQty.y-postQty.y)<3,'First paint quantity has no vertical jump after mount');
+assert(Math.abs(preSubmit.y-postSubmit.y)<3,'First paint purchase button has no vertical jump after mount');
 console.log('PRODUCT_FIRST_PANEL '+JSON.stringify({first:prePanel,enhanced:postPanel}));
 assert(Math.abs(prePanel.y-postPanel.y)<3,'Hydration may not visually jump the lower panel');
-assert(Math.abs(prePanel.height-postPanel.height)<3,'Real first-paint height must match measured mounted header/footer without a resize');
+assert(Math.abs(prePanel.height-postPanel.height)<2,'Real first-paint height must match mounted header/footer without a resize');
 const frameDrift=Math.abs(beforePhoto.height-afterPhoto.height);
 console.log('PRODUCT_PREPAINT_FRAME '+JSON.stringify({before:beforePhoto.height,after:afterPhoto.height,drift:frameDrift}));
 assert(Math.abs(beforePhoto.y-afterPhoto.y)<1,'Hydration must not move the first photo top');
