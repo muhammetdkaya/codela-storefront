@@ -141,6 +141,10 @@ for(const width of [320,390,700]){
  const handle=await page.locator('.sf-product-sheet-header').boundingBox();
  const beforeDrag=(await page.locator('.sf-product-sheet').boundingBox()).height;
  await page.mouse.move(handle.x+handle.width/2,handle.y+20);await page.mouse.down();
+ await page.waitForFunction(()=>{
+   const grip=document.querySelector('.sf-product-sheet-header');
+   return new DOMMatrix(getComputedStyle(grip,'::before').transform).a>1.02;
+ });
  await page.mouse.move(handle.x+handle.width/2,handle.y-80,{steps:8});
  const during=(await page.locator('.sf-product-sheet').boundingBox()).height;
  assert(Math.abs(during-beforeDrag-100)<2,'Sheet follows 100px movement before release '+width+' '+during);
