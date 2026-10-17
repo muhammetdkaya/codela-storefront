@@ -145,11 +145,11 @@ function codela_sf_optimize_png( int $id ): array {
     $full_bytes = 0;
     foreach ( $widths as $width ) {
         $height = max( 1, (int) round( $original_height * $width / $original_width ) );
-        $name = pathinfo( $file, PATHINFO_FILENAME ) . '-sf-' . $width . '.webp';
+        $name = 'codela-sf-' . $id . '-' . $width . '.webp';
         $output = dirname( $file ) . '/' . $name;
         $editor = wp_get_image_editor( $file );
         if ( is_wp_error( $editor ) ) { continue; }
-        if ( method_exists( $editor, 'set_quality' ) ) { $editor->set_quality( 86 ); }
+        if ( method_exists( $editor, 'set_quality' ) ) { $editor->set_quality( 90 ); }
         if ( $width !== $original_width ) {
             $resized = $editor->resize( $width, $height, false );
             if ( is_wp_error( $resized ) ) { continue; }
