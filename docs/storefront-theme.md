@@ -1,5 +1,10 @@
 # Codela Storefront — güncel teknik durum
 
+## 17 Ekim 2026 — 0.1.125 dinamik ürün paneli ilk kare yüksekliği
+
+Önceki aşamada panel tasarım eşitliği sağlandı, ancak native prepaint CSS'te 157px sabit yükseklik var; JS finalinde gerçek heading (urgency badge bulunan/bulunmayan), Woo footer ve 8px üzerinden dinamik height hesaplanıyor. Gerçek Kavis gibi badge olmayan ürünlerde başlangıç yüksek ve mount sonrası kısa görünmesi olası. Çözüm ilk panelin yüksekliğini gerçek DOM içerik ölçülerinden intrinsic CSS grid ile hesaplamak (magic height yok); son JS ölçümü varlığını korur. CI: 320/390/700 genişlik, iki farklı price badge durumu ve kısa başlıkta 3px altı yükseklik/Y farkı, gecikmiş async, görsel ve kontrol tasarım eşitliği. GitHub canlı doğrulama ve kullanıcı Safari gözlemi olmadan bitmiş kabul etme.
+
+
 ## 17 Ekim 2026 — 0.1.124 ilk-kare cam yüzey ayrışması
 
 0.1.123'te orijinal Woo satın alma formu ilk kareden itibaren gösterildi ancak fiziksel Safari 12:24 ekranında yeni sorun ortaya çıktı: ilk `.summary` paneli 999px pill biçiminde ve `.sf-product-purchase` ikinci beyaz cam katmanıyla; nihai `.sf-product-sheet` ise 20px normal köşeli, footer şeffaf. Tek kaynak `components.css` generic glass primitive selector grubuna native `.summary` ve footer'ın eklenmesiydi; 0.1.123'te tasarım gerçekte tek kaynak değildi. 0.1.124'ta generic pill yüzeyinden pending summary ve gerçek sheet ayrılıp ortak tek panel surface/material tanımında buluşturuldu; doğal `.sf-product-purchase` sadece panelin içinde, pending ve mounted hâlde tek kural ile şeffaf. Yineleyen `product.css` radius kaldırıldı. İlk/son malzemenin CSS computed style değerleri, panel geometrisi ve tek form Playwright testi ile kabul edilmelidir. Özellik/HTML/ürün galerisi değiştirilmez. Fiziksel Safari ve canlı performans ayrı doğrulanır.
