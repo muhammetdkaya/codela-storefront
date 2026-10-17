@@ -163,11 +163,23 @@ function codela_sf_product_sheet_bootstrap(): void {
     // A slow parser/network must not expire the guard while still loading.
     wp_print_inline_script_tag( <<<'JS'
 (function(){
-  document.documentElement.classList.add('sf-product-sheet-pending');
-  function reveal(){document.documentElement.classList.remove('sf-product-sheet-pending');}
-  document.addEventListener('DOMContentLoaded',reveal,{once:true});
+  // The real product sheet owns the first visible mobile layout. Do not
+  // expose native summary just because parsing ends before its adapter runs.
+  var root=document.documentElement;
+  root.classList.add('sf-product-sheet-pending');
+  function ready(){return document.body && document.body.classList.contains('sf-product-sheet-ready');}
+  function fallback(){if(!ready())root.classList.remove('sf-product-sheet-pending');}
+  document.addEventListener('DOMContentLoaded',function(){
+    // The theme adapter can only mount when Woo rendered a real product.
+    // If Woo did not render one, let the native fallback become visible.
+    if(!document.getElementById('sf-product-sheet-template') ||
+       !document.querySelector('.woocommerce-product-gallery'))fallback();
+  },{once:true});
+  // Load waits for normal, defer and async scripts; a missing/failed adapter
+  // must not leave a native WooCommerce product permanently concealed.
+  window.addEventListener('load',fallback,{once:true});
   window.addEventListener('error',function(event){
-    if(event.target && event.target.id==='codela-storefront-product-information-js') reveal();
+    if(event.target && event.target.id==='codela-storefront-product-information-js')fallback();
   },true);
 })();
 JS
