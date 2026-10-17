@@ -1,4 +1,4 @@
-// Media Library only: one JPEG attachment per request; cancellable and resumable.
+// Media Library only: one JPEG/PNG attachment per request; cancellable and resumable.
 (()=>{
   const start=document.getElementById('sf-optimize-run');
   const stop=document.getElementById('sf-optimize-stop');
