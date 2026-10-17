@@ -1,5 +1,10 @@
 # Codela Storefront — güncel teknik durum
 
+## 17 Ekim 2026 — 0.1.132 galeri ziyaretçi göstergesi ve panel radius (test bekliyor)
+
+Gerçek Woo `#codela-live-visitor-container` galerinin sibling'i; mevcut `product-information.js` aynı host'u galeri içine alıyor, bu revizyon ilk ürün fotoğrafına değil **gallery root** içine alıp `1/N` ile aynı sabit viewport alt satırda tutuyor. CSS metin 12px, göz yok, `background:none`, `position:fixed` ve galeri sayacının alt hizası birebir aynı; fotoğraf değişimlerinde `hidden`/count etkilenmez. Panel ortak `components.css` yüzey radius +8 yerine +16px (default 20→28px), prepaint/mounted bir. Codela `min_display=2` ve `disable_mobile` sebebiyle canlı sayı1 olduğunda/hide-on-mobile seçiliyken host görünmez; plugin gizlemesini zorla açmak ya da sahte veri üretmek doğru değil. Test: 320/390/700 mobil aynı baseline, panel radius, foto2/3 ve görünürlük sürekliliği; ayar eşiği ayrıca açıkça raporlanacak. CI+FTP bekleniyor.
+
+
 ## 17 Ekim 2026 — 0.1.131 ziyaretçi sayacı kaybolması (canlı doğrulandı)
 
 0.1.130 ile `#codela-live-visitor-container`'ı birinci görsele almak için kullanılan `counter.closest('.woocommerce-product-gallery')` gerçek WooCommerce şablonunda boş döner: `woocommerce_product_thumbnails` hook'u **galeri kapandıktan sonra** çalışır, gizli AJAX host'u `.product` içinde galeri sibling'i olarak render edilir. Test fixture daha önce galeri içine koyup bu gerçek düzeni gözden kaçırdı. Orijinal tek host artık ilgili `div.product` içindeki `.woocommerce-product-gallery.sf-ui-gallery` üzerinden aranır ve ilk slide'a alınır. Codela'nın REST sayısı, gizleme eşiği, `hidden`→async görünürlük mantığı, 1/N indeks stili, galeri akışı ve panel değişmedi. Yeni fixture gerçek sibling hook yerleşimini üretir, görünür API güncellemesini örnekleyip tek DOM / ilk foto ve sonraki foto kayması kontrolleriyle doğrular. PR ve main CI + gerçek FTPS başarılı; fiziksel Safari görsel kabulü ayrıca bekleniyor.
