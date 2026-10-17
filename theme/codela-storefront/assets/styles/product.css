@@ -302,6 +302,10 @@ body.single-product .sf-product-visitor{
   position:absolute;z-index:4;inset-inline-start:72px;bottom:20px;
   max-width:calc(100% - 92px);margin:0!important;pointer-events:none;
 }
+/* Keep the unenhanced desktop / no-script thumbnail controls clear. */
+body.single-product:not(.sf-product-sheet-ready) .sf-ui-gallery:has(:is(.flex-control-thumbs,.sf-product-gallery-nav) > :not(:only-child)) .sf-product-visitor{
+  bottom:96px;
+}
 body.single-product .sf-product-visitor[hidden]{display:none!important}
 body.single-product .sf-product-visitor .cdl-lv{
   display:inline-flex;align-items:center;gap:5px;
@@ -314,12 +318,8 @@ body.single-product .sf-product-visitor .cdl-lv{
 body.single-product .sf-product-visitor .cdl-lv-text{
   min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
-body.single-product .sf-product-visitor .cdl-lv-dot{
-  flex:none;width:13px;height:13px;background:currentColor;
-  border-radius:0;box-shadow:none;animation:none!important;
-  -webkit-mask:url('../icons/eye.svg') center/contain no-repeat;
-  mask:url('../icons/eye.svg') center/contain no-repeat;
-}
+/* The gallery index has no icon: match it for the quiet visitor line. */
+body.single-product .sf-product-visitor .cdl-lv-dot{display:none}
 body.single-product .sf-product-visitor strong{font-weight:400}
 body.single-product.sf-product-sheet-open .sf-product-visitor{visibility:hidden}
 @media(max-width:768px){.sf-product-visitor.cdl-lv-hide-mobile{display:none}}
