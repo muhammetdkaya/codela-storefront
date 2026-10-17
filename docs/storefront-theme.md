@@ -1,5 +1,10 @@
 # Codela Storefront — güncel teknik durum
 
+## 17 Ekim 2026 — 0.1.131 ziyaretçi sayacı kaybolması (doğrulama bekliyor)
+
+0.1.130 ile `#codela-live-visitor-container`'ı birinci görsele almak için kullanılan `counter.closest('.woocommerce-product-gallery')` gerçek WooCommerce şablonunda boş döner: `woocommerce_product_thumbnails` hook'u **galeri kapandıktan sonra** çalışır, gizli AJAX host'u `.product` içinde galeri sibling'i olarak render edilir. Test fixture daha önce galeri içine koyup bu gerçek düzeni gözden kaçırdı. Orijinal tek host artık ilgili `div.product` içindeki `.woocommerce-product-gallery.sf-ui-gallery` üzerinden aranır ve ilk slide'a alınır. Codela'nın REST sayısı, gizleme eşiği, `hidden`→async görünürlük mantığı, 1/N indeks stili, galeri akışı ve panel değişmedi. Yeni fixture gerçek sibling hook yerleşimini üretir, görünür API güncellemesini örnekleyip tek DOM / ilk foto ve sonraki foto kayması kontrolleriyle doğrular. CI ve canlı FTP bekliyor.
+
+
 ## 17 Ekim 2026 — 0.1.130 ürün galerisi ziyaretçi metni ilk fotoğrafla birlikte kayar (canlı doğrulandı)
 
 0.1.129 hâlâ `position:fixed` olduğundan ziyaretçi satırı sabit kalıyordu. Orijinal canlı Codela plugin elemanı, önceki `product-information.js` hareketi yerine native `.woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image:first-child` içine taşınıyor. Görseliyle scroll olur; `sf-product-gallery-count` `1 / 5` ise zaten canlı mevcut nesnedir, tekrar yaratılmaz, kendi güncellenmesi korunur. İlk fotoğraftaki ziyaretçi sayısı x=72px, görselin alt hizasında indeksle tek satır ve 12px/18px aynı stil; **background:none**, gölgesiz/çizgisiz/butonsuz, ayrıca ikon gizli. Mobil CSS viewport-fixed tamamen kaldırıldı; desktop/no-js rail çakışması engellendi. Detay açıkken gizli ve ilgili ürün geçişinde fotoğrafa bağlı zaten görünmez. 320/390/700 gerçek 3-foto browser düzeni ve scroll-test eklendi; Codela API ya da ek kod yok. PR/main CI ve canlı FTPS doğrulandı. Fiziksel Safari görünüm kontrolü ayrıca gerekli.
