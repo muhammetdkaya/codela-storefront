@@ -108,7 +108,7 @@
    vertical rail. Clip the original image inside its existing hit target;
    do not add a second thumbnail layer or change gallery navigation. */
 @media(max-width:700px){
-  body.single-product.sf-product-sheet-ready .woocommerce div.product .sf-product-gallery-thumb.sf-ui-icon-button{
+  body.single-product.sf-product-sheet-ready div.product .sf-ui-gallery .sf-product-gallery-thumb.sf-ui-icon-button{
     border-radius:50%;
     aspect-ratio:1;
   }
