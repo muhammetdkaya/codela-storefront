@@ -1,9 +1,12 @@
 # Codela Storefront — güncel teknik durum
 
-## 17 Ekim 2026 — 0.1.127 WhatsApp iletişim ve sipariş güvencesi düzeni (doğrulama bekliyor)
+## 17 Ekim 2026 — 0.1.127 WhatsApp iletişim ve sipariş güvencesi düzeni (canlı)
 
-Kullanıcının ürün detay paneli Safari görüntüsünde WhatsApp bağlantısı ayrı ikon/etiket ve mavi emoji ok, güvence öğeleri ise havada duran 2×2 sütunlar olarak görünüyor. Tek orijinal plugin WhatsApp `<a>` öğesi 64px tam genişlikli temas satırı, ortak soft IconButton ve mevcut `arrow-right.svg` maskeli çıkış oku ile düzenlendi. Güvence modülü özgün merchant label/SVG/resim ayarları, dinamik açılıp-kapanma ve sıra korunarak tek `cdl-tb` kapsayıcıda ince çerçeve ve iç çizgilerle toplandı (mobil iki, desktop dört sütun). Product sheet içindeki 20px kenar payı, ikinci yüzey yerine hafif token temelli tint, 44px özgün IconButton, galeri, Woo native form, kapalı ilk kare aynı. Yeni eklenti kodu/JS/üçüncü parti bağımlılık yok. Mobil 320/390/700px expanded-sheet regresyonu test dosyasına eklendi. **0.1.127 CI/FTPS ve fiziksel Safari henüz onaylanmadı**; önce PR browser/PHP/package kontrolü, sonra güvenli main birleştirmesi ve dağıtım kontrolü yapılmalı.
+Kullanıcının ürün detay paneli Safari görüntüsünde WhatsApp bağlantısı ayrı ikon/etiket ve mavi emoji ok, güvence öğeleri ise havada duran 2×2 sütunlar olarak görünüyor. Tek orijinal plugin WhatsApp `<a>` öğesi 64px tam genişlikli temas satırı, ortak soft IconButton ve mevcut `arrow-right.svg` maskeli çıkış oku ile düzenlendi. Güvence modülü özgün merchant label/SVG/resim ayarları, dinamik açılıp-kapanma ve sıra korunarak tek `cdl-tb` kapsayıcıda ince çerçeve ve iç çizgilerle toplandı (mobil iki, desktop dört sütun). Product sheet içindeki 20px kenar payı, ikinci yüzey yerine hafif token temelli tint, 44px özgün IconButton, galeri, Woo native form, kapalı ilk kare aynı. Yeni eklenti kodu/JS/üçüncü parti bağımlılık yok. Mobil 320/390/700px expanded-sheet regresyonu test dosyasına eklendi. **PR CI, main CI ve gerçek FTPS doğrulandı.** Fiziksel Safari görsel kabulü ayrıca kullanıcıdan beklenecek.
 
+
+
+**Yayın kapanışı (17 Ekim 2026):** [PR #45](https://github.com/muhammetdkaya/codela-storefront/pull/45) ana dala squash birleştirildi ([5ea321f3](https://github.com/muhammetdkaya/codela-storefront/commit/5ea321f3c45cc17f76553a0dbff470553d9eadc5)). [PR CI #39044005642](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39044005642) tüm paket/PHP/JS ve browser ürün görünümü testleri başarılı. [Main CI + gerçek FTP #39044160532](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39044160532) başarılı; deploy günlüğü 2026-10-17 15:19:26Z `Storefront deployed; checks passed.` dedi. Kullanıcının fiziksel mobil Safari görsel onayı ayrı kaldı. **Sıradaki iş:** Kullanıcı yeni görsel istek gönderirse canlı fiziksel Safari görüntüsü ile doğrula; bu uygulamayı yeniden çoğaltma.
 
 ## 17 Ekim 2026 — 0.1.126 mobil ürün galerisi üç çember önizleme
 
