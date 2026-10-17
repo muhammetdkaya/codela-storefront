@@ -81,7 +81,7 @@ try {
     test($png['status']==='optimized' && $png['converted']===1 && $png['saved']===4200,'Full PNG compressed with byte savings');
     $sources=codela_sf_png_webp_sources(2);
     test(count($sources)===3 && array_column($sources,'width')===[640,960,1024],'Responsive WebP variants retain original ratio and pixels');
-    test(str_ends_with($sources[2]['url'],'original-sf-1024.webp'),'Gallery URL points to generated WebP');
+    test(str_ends_with($sources[2]['url'],'codela-sf-2-1024.webp'),'Gallery URL points to generated WebP');
     test(file_exists($GLOBALS['file']) && file_exists($dir.'/original-sf-1024.webp'),'PNG full and WebP coexist');
     test($GLOBALS['attachment_meta'][2]['sizes']['woocommerce_single']['file']==='original-600x900.png','Original WordPress image metadata unmodified');
     test(codela_sf_optimize_png(2)['status']==='skipped','PNG batch conversion is idempotent');
