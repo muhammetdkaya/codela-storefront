@@ -565,8 +565,12 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   body.sf-product-sheet-ready .sf-product-gallery-thumb.sf-ui-icon-button{width:44px;height:44px}
   body.sf-product-sheet-ready .sf-product-gallery-thumb img{display:block}
   body.sf-product-sheet-ready .sf-product-gallery-count{position:fixed;bottom:calc(var(--sf-product-collapsed-height,210px) + 14px + env(safe-area-inset-bottom,0px))}
+  /* The 1 / 5 counter remains the gallery's own live index. Put the
+     FIRST photo's visitor alongside it, but anchor this message to that
+     PHOTO (not the viewport) so a vertical swipe carries it away. */
   body.sf-product-sheet-ready .sf-product-visitor{
-    position:fixed;top:calc(88px + var(--sf-header-offset,0px));bottom:auto!important;
+    position:absolute;top:auto;inset-inline-start:72px;
+    bottom:calc(46px + var(--sf-product-viewport-large,100lvh) - var(--sf-product-viewport-current,100dvh));
   }
   :is(body.sf-product-sheet-ready,:where(html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready))) div.product > :is(.sf-product-sheet,.summary){
     position:fixed;z-index:1000;inset-inline:var(--sf-ui-bottom-bar-inset);
