@@ -104,7 +104,7 @@ function codela_sf_png_webp_sources( int $id ): array {
     foreach ( $manifest['sources'] as $source ) {
         if ( ! is_array( $source ) || empty( $source['file'] ) || empty( $source['width'] )
             || ! is_string( $source['file'] ) || basename( $source['file'] ) !== $source['file']
-            || ! preg_match( '/^[a-zA-Z0-9._-]+\\.webp$/', $source['file'] ) ) { continue; }
+            || ! preg_match( '/^[a-zA-Z0-9._-]+\.webp$/', $source['file'] ) ) { continue; }
         $sources[] = [
             'url' => $prefix . rawurlencode( $source['file'] ),
             'width' => (int) $source['width'],
