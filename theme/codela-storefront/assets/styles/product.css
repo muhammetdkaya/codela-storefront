@@ -492,9 +492,9 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
     transform:scaleX(var(--sf-ui-scale-icon));
   }
 }
-.sf-product-sheet-heading{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px}
-.sf-product-sheet-heading .sf-product-price-row{display:grid;justify-items:end;gap:2px;margin:0;max-width:36vw}
-.sf-product-sheet-heading .cdl-ub{font-size:11px;justify-content:flex-end}
+.sf-product-sheet-heading{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,42%);align-items:center;column-gap:10px;row-gap:0}
+/* Price and urgency are laid out as peers to the native title, without
+   moving or cloning plugin nodes. The mobile rules below also apply prepaint. */
 .sf-product-sheet-toggle.sf-ui-button{position:absolute;left:calc(50% - 35px);top:0;width:70px;min-width:70px;min-height:44px;padding:0;--sf-ui-button-height:44px;--sf-ui-button-font-size:0px;--sf-ui-button-padding-y:0px;gap:0}
 .sf-product-sheet-toggle::after{content:none}
 .sf-product-sheet-body{min-height:0;overscroll-behavior:contain;overflow:auto;overflow-x:hidden;scrollbar-width:thin}
@@ -572,8 +572,8 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
     /* Intrinsic first-paint height: the exact same heading, native cart footer
        and spacing as the mounted sheet. Do not hard-code a height measured from
        a test product with extra price/urgency lines. */
-    grid-template-rows:minmax(28px,max-content) max-content;align-content:start;align-items:center;
-    column-gap:10px;row-gap:16px;overflow:hidden;box-sizing:border-box;
+    grid-template-rows:none;grid-auto-rows:max-content;align-content:start;align-items:center;
+    column-gap:10px;row-gap:0;overflow:hidden;box-sizing:border-box;
     padding:28px 16px 0;margin:0 auto!important;width:calc(100% - var(--sf-ui-bottom-bar-inset) - var(--sf-ui-bottom-bar-inset))!important;max-width:var(--sf-ui-bottom-bar-max-width);
     height:max-content;
     transition:none;
@@ -596,8 +596,8 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   }
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary > .sf-product-price-row .cdl-ub{font-size:11px;justify-content:flex-end}
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary > form.cart{
-    display:block;grid-column:1/-1;grid-row:2;align-self:end;
-    margin:0!important;padding:0!important;border:0!important;min-width:0;
+    display:block;grid-column:1/-1;grid-row:auto;align-self:end;
+    margin:16px 0 0!important;padding:0!important;border:0!important;min-width:0;
   }
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary > form.cart > :not(.sf-product-purchase):not(.woocommerce-variation-add-to-cart){display:none!important}
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary form.cart .sf-product-purchase{
@@ -619,6 +619,61 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
     flex:0 1 200px;margin-inline-start:auto;--sf-ui-button-height:44px;--sf-ui-button-padding-y:8px;
   }
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary > .stock{grid-column:1/-1;grid-row:2;margin:0}
+  /* The real native price and Codela urgency share one semantic grid in the
+     hydrated sheet AND the original Woo summary before JavaScript runs.
+     A badge can never increase the height of the price column or push the
+     product title down. No additional display-only labels are generated. */
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary,
+  body.single-product.sf-product-sheet-ready div.product .sf-product-sheet-heading{
+    grid-template-columns:minmax(0,1fr) minmax(0,42%);
+  }
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary > .sf-product-price-row,
+  body.single-product.sf-product-sheet-ready div.product .sf-product-sheet-heading > .sf-product-price-row{
+    display:contents;
+  }
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary > .sf-product-price-row > .price,
+  body.single-product.sf-product-sheet-ready div.product .sf-product-sheet-heading .sf-product-price-row > .price{
+    grid-column:2;grid-row:1;align-self:center;justify-self:end;
+    width:max-content;max-width:100%;margin:0;text-align:end;
+  }
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary > .sf-product-price-row > .price del,
+  body.single-product.sf-product-sheet-ready div.product .sf-product-sheet-heading .price del{
+    display:block;font-size:12px;line-height:1.25;
+  }
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary .sf-product-price-row > .cdl-ub,
+  body.single-product.sf-product-sheet-ready div.product .sf-product-sheet-heading .sf-product-price-row > .cdl-ub{
+    grid-column:1/-1;grid-row:2;display:grid;
+    grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;
+    width:100%;min-width:0;margin:8px 0 0;
+    font-size:11px;line-height:1.4;
+  }
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary .cdl-ub-item,
+  body.single-product.sf-product-sheet-ready div.product .sf-product-sheet-heading .cdl-ub-item{
+    min-width:0;max-width:100%;flex-wrap:nowrap;white-space:nowrap;
+  }
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary .cdl-ub-scarcity .cdl-ub-text,
+  body.single-product.sf-product-sheet-ready div.product .sf-product-sheet-heading .cdl-ub-scarcity .cdl-ub-text{
+    min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary .cdl-ub-timer,
+  body.single-product.sf-product-sheet-ready div.product .sf-product-sheet-heading .cdl-ub-timer{
+    justify-self:end;
+  }
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary .cdl-ub-item:only-child,
+  body.single-product.sf-product-sheet-ready div.product .sf-product-sheet-heading .cdl-ub-item:only-child{
+    grid-column:1/-1;
+  }
+  /* Collapse the merchant's optional timer-prefix visually in the compact
+     row, retaining its original DOM, accessible text, data attributes and
+     live countdown binding. Expanded details do not need a second ticker. */
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary .cdl-ub-timer .cdl-ub-text,
+  body.single-product.sf-product-sheet-ready div.product .sf-product-sheet-heading .cdl-ub-timer .cdl-ub-text{
+    font-size:0;
+  }
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary .cdl-ub-countdown,
+  body.single-product.sf-product-sheet-ready div.product .sf-product-sheet-heading .cdl-ub-countdown{
+    font-size:11px;font-variant-numeric:tabular-nums;
+  }
   body.sf-product-sheet-ready .sf-product-sheet-header{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:grab}
   body.sf-product-sheet-ready .sf-product-sheet.is-holding .sf-product-sheet-header{cursor:grabbing}
   body.sf-product-sheet-ready div.product > .sf-product-sheet:not(.has-purchase){
