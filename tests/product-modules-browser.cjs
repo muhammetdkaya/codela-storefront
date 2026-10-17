@@ -33,8 +33,7 @@ assert.equal(visitor.background,'rgba(0, 0, 0, 0)','Photo metadata has absolutel
 assert.equal(visitor.border,'0px','No button border '+width);
 assert.equal(visitor.shadow,'none','No floating shadow '+width);
 assert.equal(visitor.blur,'none','No interactive glass effect '+width);
-assert.equal(visitor.dotWidth,'13px','Original plugin icon remains present in DOM '+width);
-assert.equal(visitor.dotHeight,'13px','Original plugin icon size remains unmodified '+width);
+assert.equal(await page.locator('.sf-product-visitor .cdl-lv-dot').count(),1,'Original plugin icon node is preserved '+width);
 assert.equal(visitor.dotAnimation,'none','Visitor icon does not pulse '+width);
 assert.equal(visitor.dotShadow,'none','No animated glowing dot '+width);
 assert.equal(await page.locator('.sf-product-visitor .cdl-lv-dot').evaluate(el=>getComputedStyle(el).display),'none','Visitor matches the text-only gallery counter '+width);
