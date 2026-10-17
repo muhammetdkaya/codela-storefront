@@ -70,6 +70,22 @@ add_action( 'after_setup_theme', function() {
             }
         }
         if ( $tags->next_tag( 'img' ) ) {
+            // Only after an admin-verified PNG conversion: browser chooses
+            // responsive WebP, while Woo's original image link and zoom data
+            // continue pointing at the untouched full-resolution upload.
+            $webp = (int) $attachment_id > 0 && function_exists( 'codela_sf_png_webp_sources' )
+                && function_exists( 'is_product' ) && is_product()
+                ? codela_sf_png_webp_sources( (int) $attachment_id ) : [];
+            if ( $webp ) {
+                $candidates = [];
+                foreach ( $webp as $source ) {
+                    $candidates[] = $source['url'] . ' ' . $source['width'] . 'w';
+                }
+                $tags->set_attribute( 'src', $webp[ count( $webp ) - 1 ]['url'] );
+                $tags->set_attribute( 'srcset', implode( ', ', $candidates ) );
+                // The native gallery is full bleed, including on desktop.
+                $tags->set_attribute( 'sizes', '100vw' );
+            }
             if ( $is_hero ) {
                 $tags->set_attribute( 'loading', 'eager' );
                 $tags->set_attribute( 'fetchpriority', 'high' );
