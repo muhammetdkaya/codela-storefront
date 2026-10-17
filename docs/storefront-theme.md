@@ -1,5 +1,10 @@
 # Codela Storefront — güncel teknik durum
 
+## 17 Ekim 2026 — 0.1.129 küçük ziyaretçi bilgi etiketi (doğrulama bekliyor)
+
+Safari ekranındaki ziyaretçi sayısı, `components.css` ortak buton GlassSurface yüzeyi yüzünden ürün görseline hakim beyaz/gölgeli kapsül halinde görünüyordu. Bu **etkileşimsiz bilgi öğesi** ortak buton yüzeyinden çıkarılıp `product.css` altında 24px civarında, düşük opaklıklı saydam yüzey, gölge/border/blur olmadan, 11px yazı ve 13px gözle tanımlandı. `cdl-lv` gerçek plugin HTML'i ve AJAX canlı sayaç korunur, header/gallery/panel geometrisi ve görsel kaydırma kodu değişmez, açık sheet'te görünmez. 320/390/700/900/1280px Playwright CSS kontrolü eklendi. Testler ve canlı FTPS henüz tamamlanmadı.
+
+
 ## 17 Ekim 2026 — 0.1.128 dönüşüm modülleri ile kapalı panel kompaktlığı (canlı doğrulandı)
 
 Gerçek Safari fotoğrafında `sf-product-price-row` içinde bulunan native `.cdl-ub` stok ve sayaç mesajları fiyat sağ sütununu dikey uzatıyor, title aşağıya kayıyor ve satın alma butonları üzerinde fazla boşluk oluşuyor. Mobil panelde orijinal `.sf-product-price-row` yalnız görsel düzende `display:contents` yapılıyor: ürün adı + Woo satış fiyatı birinci CSS grid satırında, stok ve canlı countdown ikinci kompakt satırda; countdown metnindeki opsiyonel uzun prefix sadece görselde gizli, gerçek DOM/veri/ekran okuyucu içeriği korunuyor. Bu düzen prepaint native summary ve JS ile taşınan başlıkta aynı, forma ve galerinin baş/son geometri bağına dokunmadan. Demo testine iki araç birden, tek stok, tek timer, 320/390/700 px, gecikmiş async mount ile ilk/son yükseklik ve geri sayım değişimi eklendi. PR #46 ve ana dal testleri geçti; **0.1.128 gerçek FTPS canlı yayında**. Fiziksel Safari görsel doğrulaması ayrıca gerekli.
