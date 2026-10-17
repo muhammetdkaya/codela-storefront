@@ -353,7 +353,7 @@ body.single-product .cdl-fsb--product{
 body.single-product .cdl-wa{margin:12px 0 0}
 body.single-product .cdl-wa-button{
   display:flex;align-items:center;gap:12px;min-height:64px;width:100%;
-  max-width:100%;padding:10px 12px;
+  box-sizing:border-box;max-width:100%;padding:10px 12px;
   border:1px solid var(--sf-ui-border);
   border-radius:var(--sf-ui-control-radius);
   background:color-mix(in srgb,var(--sf-ui-surface) 46%,transparent);
@@ -380,7 +380,7 @@ body.single-product .cdl-wa-ico{
    configuration stay authoritative (including fewer than four items). */
 body.single-product div.product .cdl-tb{
   grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:0;width:100%;max-width:760px;min-width:0;justify-self:center;
+  gap:0;width:100%;max-width:760px;min-width:0;box-sizing:border-box;justify-self:center;
   margin:0 auto;padding:0;overflow:hidden;
   border:1px solid var(--sf-ui-border);
   border-radius:var(--sf-ui-control-radius);
@@ -644,7 +644,9 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   body.sf-product-sheet-ready .sf-product-sheet-body > .sf-product-information{
     width:100%;max-width:none;margin:24px 0 0;padding-inline:20px;
   }
-  body.sf-product-sheet-ready .sf-product-sheet-body > .cdl-tb{
+  /* Must outrank the root product module's width:100% / margin:auto
+     selector; otherwise the trust panel extends beyond the contact row. */
+  body.single-product.sf-product-sheet-ready div.product .sf-product-sheet-body > .cdl-tb{
     width:calc(100% - 40px);max-width:none;margin:12px 20px 0;padding:0;
   }
   body.sf-product-sheet-ready div.product form.cart .sf-product-purchase{
