@@ -533,8 +533,8 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
        and spacing as the mounted sheet. Do not hard-code a height measured from
        a test product with extra price/urgency lines. */
     grid-template-rows:minmax(28px,max-content) max-content;align-content:start;align-items:center;
-    column-gap:10px;row-gap:8px;overflow:hidden;box-sizing:border-box;
-    padding:28px 16px 8px;margin:0 auto!important;width:calc(100% - var(--sf-ui-bottom-bar-inset) - var(--sf-ui-bottom-bar-inset))!important;max-width:var(--sf-ui-bottom-bar-max-width);
+    column-gap:10px;row-gap:16px;overflow:hidden;box-sizing:border-box;
+    padding:28px 16px 0;margin:0 auto!important;width:calc(100% - var(--sf-ui-bottom-bar-inset) - var(--sf-ui-bottom-bar-inset))!important;max-width:var(--sf-ui-bottom-bar-max-width);
     height:max-content;
     transition:none;
   }
