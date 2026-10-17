@@ -252,8 +252,9 @@ body.single-product .woocommerce-product-gallery a:focus-visible{
 @media(max-width:700px){
   /* The native photo is usable before Woo's footer initialization. */
   body.single-product div.product > .sf-ui-gallery--scroll{opacity:1!important}
-  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > :is(.summary,.sf-product-information,.cdl-tb,.related,.upsells),
-  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) .sf-product-purchase{visibility:hidden}
+  /* The native title, price, and single Woo form are the usable first
+     frame of the mobile panel until the existing adapter enhances them. */
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > :is(.sf-product-information,.cdl-tb,.related,.upsells){visibility:hidden}
   body.single-product .sf-content{padding:0 0 46px}
   body.single-product .woocommerce-breadcrumb{margin-bottom:18px}
   body.single-product div.product{
@@ -507,7 +508,7 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   body.sf-product-sheet-ready .sf-product-visitor{
     position:fixed;top:calc(88px + var(--sf-header-offset,0px));bottom:auto!important;
   }
-  body.sf-product-sheet-ready div.product > .sf-product-sheet{
+  :is(body.sf-product-sheet-ready,html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready)) div.product > :is(.sf-product-sheet,.summary){
     position:fixed;z-index:1000;inset-inline:var(--sf-ui-bottom-bar-inset);
     bottom:calc(var(--sf-ui-bottom-bar-gap) + env(safe-area-inset-bottom,0px));
     display:flex;flex-direction:column;width:auto;max-width:var(--sf-ui-bottom-bar-max-width);
@@ -521,6 +522,50 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
        native fixed purchase containing block when transparency is reduced. */
     transform:translate3d(0,0,0);isolation:isolate;
   }
+  /* First paint: the ORIGINAL Woo title, price and form occupy the same
+     glass sheet, not an empty template or a duplicated loading placeholder.
+     The adapter only reparents these existing nodes; the visual panel is
+     already present before that happens. */
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary{
+    display:grid;grid-template-columns:minmax(0,1fr) auto;
+    grid-template-rows:36px minmax(0,1fr);align-content:start;align-items:center;
+    column-gap:10px;overflow:hidden;box-sizing:border-box;
+    padding:28px 16px 8px;margin:0 auto!important;max-width:var(--sf-ui-bottom-bar-max-width);
+    height:var(--sf-product-closed-height,140px);
+    transition:none;
+  }
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary::before{
+    content:'';position:absolute;top:12px;left:calc(50% - 22px);
+    width:44px;height:4px;border-radius:var(--sf-ui-pill);background:var(--sf-ui-border);
+  }
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary > :not(.product_title):not(.sf-product-price-row):not(.price):not(form.cart):not(.stock){display:none!important}
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary > .product_title{
+    grid-column:1;grid-row:1;margin:0;font-size:clamp(16px,4.5vw,20px);
+    line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  }
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary > :is(.sf-product-price-row,.price){
+    grid-column:2;grid-row:1;display:grid;justify-items:end;align-items:center;
+    margin:0;gap:2px;max-width:36vw;font-size:clamp(16px,4.2vw,20px);
+  }
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary > :is(.sf-product-price-row,.price) .price{
+    font-size:clamp(16px,4.2vw,20px);margin:0;
+  }
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary > .sf-product-price-row .cdl-ub{font-size:11px;justify-content:flex-end}
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary > form.cart{
+    display:block;grid-column:1/-1;grid-row:2;align-self:end;
+    margin:0!important;padding:0!important;border:0!important;min-width:0;
+  }
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary > form.cart > :not(.sf-product-purchase):not(.woocommerce-variation-add-to-cart){display:none!important}
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary form.cart .sf-product-purchase{
+    position:relative;inset:auto;bottom:auto;left:auto;right:auto;z-index:auto;
+    width:calc(100% + 8px);max-width:none;min-height:var(--sf-ui-bottom-bar-height);
+    margin:0 -4px -8px!important;padding:12px;gap:12px;
+  }
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary form.cart .sf-product-purchase .single_add_to_cart_button{
+    min-width:0;flex:1 1 0;font-size:14px;
+  }
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary form.cart .sf-product-purchase .quantity{flex:0 0 auto}
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary > .stock{grid-column:1/-1;grid-row:2;margin:0}
   body.sf-product-sheet-ready .sf-product-sheet-header{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:grab}
   body.sf-product-sheet-ready .sf-product-sheet.is-holding .sf-product-sheet-header{cursor:grabbing}
   body.sf-product-sheet-ready div.product > .sf-product-sheet:not(.has-purchase){
