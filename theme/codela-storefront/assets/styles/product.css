@@ -474,13 +474,16 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   html:has(body.sf-product-sheet-open),body.sf-product-sheet-open{overflow:hidden;overscroll-behavior-y:contain;scroll-snap-type:none}
   body.sf-product-sheet-ready .sf-content{padding-bottom:0!important}
   body.sf-product-sheet-ready div.product{margin:0}
-  body.sf-product-sheet-ready div.product > .woocommerce-product-gallery{
+  /* Photo presentation is identical before and after the adapter moves the
+     existing Woo nodes. Pending is strictly a visibility state, not a second
+     desktop/mobile gallery layout. No-JS has neither class and stays native. */
+  :is(body.single-product.sf-product-sheet-ready,html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready)) div.product > .woocommerce-product-gallery{
     --sf-gallery-height:100svh;height:auto;min-height:100svh;overflow:visible;margin:0!important;
   }
-  body.single-product.sf-product-sheet-ready div.product .sf-ui-gallery--scroll .woocommerce-product-gallery__wrapper{
+  :is(body.single-product.sf-product-sheet-ready,html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready)) div.product .sf-ui-gallery--scroll .woocommerce-product-gallery__wrapper{
     display:block;height:auto;overflow:visible;overscroll-behavior:auto;scroll-snap-type:none;overflow-anchor:none;
   }
-  body.single-product.sf-product-sheet-ready div.product .sf-ui-gallery--scroll .woocommerce-product-gallery__wrapper > :is(.woocommerce-product-gallery__image,.woocommerce-product-gallery__image--placeholder){
+  :is(body.single-product.sf-product-sheet-ready,html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready)) div.product .sf-ui-gallery--scroll .woocommerce-product-gallery__wrapper > :is(.woocommerce-product-gallery__image,.woocommerce-product-gallery__image--placeholder){
     display:block;float:none;width:100%;height:calc(var(--sf-product-viewport-large,100lvh) - var(--sf-product-photo-inset,90px) - env(safe-area-inset-bottom,0px));min-height:0;margin:0;padding:0;border:0;
     /* Stable photo edges; shrink only the snap area to the smallest viewport.
        Toolbar animation can then change the viewport without moving photos. */
