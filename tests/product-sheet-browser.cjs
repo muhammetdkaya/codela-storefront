@@ -9,8 +9,8 @@ const bootstrap=execFileSync(process.env.PHP_BIN||'php',['tests/render-product-s
 const quantity=execFileSync(process.env.PHP_BIN||'php',['tests/render-product-sheet.php','quantity'],{encoding:'utf8'});
 const css='.woocommerce div.product div.images .woocommerce-product-gallery__image:nth-child(n+2){width:25%;display:inline-block}'+['assets/styles/tokens.css','assets/storefront.css','assets/styles/components.css','assets/styles/navigation.css','assets/styles/gallery.css','assets/styles/product.css'].map(p=>fs.readFileSync(root+p,'utf8')).join('\n');
 const picture=n=>'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000"><rect width="800" height="1000" fill="${['#dbd1c3','#bab4a1','#ad998a'][n]}"/><text x="200" y="300" font-size="80">${n+1}</text></svg>`);
-function fixture({variable=false,stock=true,short=false,noUrgency=false,longTitle=false,pending=false,promotion='none'}={}){return `<!doctype html><html><head>${pending?bootstrap:''}<meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:Arial,Helvetica,sans-serif}${css}</style></head><body class="single-product woocommerce"><div class="sf-shell"><header class="sf-header"><span>Codela</span></header><nav class="sf-mobile-dock" hidden></nav><dialog id="sf-panel"></dialog></div><main class="sf-content"><div class="woocommerce-notices-wrapper"></div><div class="product">
-<div class="woocommerce-product-gallery images sf-ui-gallery sf-ui-gallery--hero sf-ui-gallery--scroll"><div class="woocommerce-product-gallery__wrapper">${[0,1,2].map(n=>`<div class="woocommerce-product-gallery__image" data-thumb="${picture(n)}"><a href="${picture(n)}"><img alt="Product ${n+1}" src="${picture(n)}"></a></div>`).join('')}</div></div>
+function fixture({variable=false,stock=true,short=false,noUrgency=false,longTitle=false,pending=false,promotion='none',visitor=false}={}){return `<!doctype html><html><head>${pending?bootstrap:''}<meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:Arial,Helvetica,sans-serif}${css}</style></head><body class="single-product woocommerce"><div class="sf-shell"><header class="sf-header"><span>Codela</span></header><nav class="sf-mobile-dock" hidden></nav><dialog id="sf-panel"></dialog></div><main class="sf-content"><div class="woocommerce-notices-wrapper"></div><div class="product">
+<div class="woocommerce-product-gallery images sf-ui-gallery sf-ui-gallery--hero sf-ui-gallery--scroll"><div class="woocommerce-product-gallery__wrapper">${[0,1,2].map(n=>`<div class="woocommerce-product-gallery__image" data-thumb="${picture(n)}"><a href="${picture(n)}"><img alt="Product ${n+1}" src="${picture(n)}"></a></div>`).join('')}${visitor?'<div id="codela-live-visitor-container" class="sf-product-visitor"><div class="cdl-lv"><span class="cdl-lv-dot" aria-hidden="true"></span><span class="cdl-lv-text">Şu an <strong>2</strong> kişi bakıyor</span></div></div>':''}</div></div>
 <div class="summary"><h1 class="product_title">${promotion!=='none'?'Kavis Dekoratif Obje':short?'Luna':longTitle?'Kavis Dekoratif Obje Doğal Traverten Taş Heykel Seti':'Luna Traverten Lamba'}</h1><div class="sf-product-price-row">${promotion!=='none'?'<p class="price"><del>$80,00</del><ins>$40,00</ins></p>':'<p class="price">3.490 ₺</p>'}${promotion!=='none'?`<div class="cdl-ub">${promotion!=='timer'?'<div class="cdl-ub-item cdl-ub-scarcity"><svg class="cdl-ub-ico" viewBox="0 0 24 24"></svg><span class="cdl-ub-text">Son <strong>2</strong> ürün kaldı!</span></div>':''}${promotion!=='scarcity'?'<div class="cdl-ub-item cdl-ub-timer"><svg class="cdl-ub-ico" viewBox="0 0 24 24"></svg><span class="cdl-ub-text">Kampanya bitişine: <span class="cdl-ub-countdown" data-evergreen-hours="24">23:59:49</span></span></div>':''}</div>`:short||noUrgency?'':'<div class="cdl-ub">Son 3 adet</div>'}</div><p class="woocommerce-product-details__short-description">Doğal taşın dokusu.</p>
 ${stock?`<form id="native-cart" class="cart ${variable?'variations_form':''}" method="post">${variable?'<table class="variations"><tbody><tr><th><label for="color">Renk</label></th><td><select id="color" name="attribute_color"><option value="">Seçiniz</option><option value="cream">Kum</option></select></td></tr></tbody></table><input name="variation_id" value="123" type="hidden">':''}<div class="sf-product-purchase"><div class="quantity">${quantity}</div><button class="single_add_to_cart_button button alt ${variable?'disabled wc-variation-selection-needed':''}" type="submit" name="add-to-cart" value="42">Sepete ekle</button></div></form>`:'<p class="stock out-of-stock">Stokta yok</p>'}
 <div class="cdl-fsb--product"><div class="cdl-fsb-text">Ücretsiz kargoya 510 ₺ kaldı</div><div class="cdl-fsb-track"><span class="cdl-fsb-fill" style="width:87%"></span></div></div></div>
@@ -384,6 +384,51 @@ for(const [width,promotion] of [[320,'both'],[390,'both'],[700,'both'],[390,'sca
    assert(Math.abs(changed.height-height)<2,'Live timer changes cannot grow the panel '+width);
  }
  await page.unroute('https://sheet-urgency.test/**');
+}
+// Real three-photo product. Codela's own original visitor DOM is nested in
+// the native track on first paint, then bound to photo 1 by the adapter.
+// The 1 / 3 count still updates natively, but the visitor scrolls OFFSCREEN
+// with the first photo rather than sticking to the viewport.
+for(const width of [320,390,700]){
+ await page.setViewportSize({width,height:844});
+ await load(page,{visitor:true});
+ const first=await page.evaluate(()=>{
+   const gallery=document.querySelector('.woocommerce-product-gallery');
+   const image=gallery.querySelector('.woocommerce-product-gallery__image');
+   const visitor=document.querySelector('#codela-live-visitor-container');
+   const caption=visitor.querySelector('.cdl-lv');
+   const index=gallery.querySelector('.sf-product-gallery-count');
+   const v=visitor.getBoundingClientRect(),n=index.getBoundingClientRect(),font=getComputedStyle(caption);
+   return {isInsideFirst:image.contains(visitor),count:document.querySelectorAll('#codela-live-visitor-container').length,
+     visitorPosition:getComputedStyle(visitor).position,y:v.y,indexY:n.y,
+     visitorX:v.x,indexRight:n.right,style:font.backgroundColor,
+     fontSize:font.fontSize,lineHeight:font.lineHeight,
+     galleryIndex:index.textContent,overlayWidth:v.width,
+     hiddenIcon:getComputedStyle(visitor.querySelector('.cdl-lv-dot')).display};
+ });
+ assert(first.isInsideFirst,'Codela visitor belongs to first photo only '+width);
+ assert.equal(first.count,1,'No duplicated plugin counter '+width);
+ assert.equal(first.visitorPosition,'absolute','Visitor position is image-bound, never fixed '+width);
+ assert.equal(first.style,'rgba(0, 0, 0, 0)','Visitor has no surface '+width);
+ assert.equal(first.fontSize,'12px','Same typography as native photo index '+width);
+ assert.equal(first.lineHeight,'18px','Same line-height as native photo index '+width);
+ assert.equal(first.hiddenIcon,'none','Photo metadata uses clean text only '+width);
+ assert.equal(first.galleryIndex,'1 / 3','Original live gallery index preserved '+width);
+ assert(first.visitorX>first.indexRight+8,'Original visitor starts to the right of index '+width);
+ assert(Math.abs(first.y-first.indexY)<4,'Visitor and 1 / 3 share one baseline '+width+' '+JSON.stringify(first));
+ await page.evaluate(()=>{const e=document.querySelectorAll('.woocommerce-product-gallery__image')[1];window.scrollTo({top:scrollY+e.getBoundingClientRect().top,behavior:'instant'})});
+ await page.waitForFunction(()=>document.querySelector('.sf-product-gallery-count').textContent==='2 / 3');
+ const later=await page.evaluate(()=>{
+   const v=document.querySelector('.sf-product-visitor').getBoundingClientRect();
+   const n=document.querySelector('.sf-product-gallery-count').getBoundingClientRect();
+   return {visitorBottom:v.bottom,indexY:n.y,secondTop:document.querySelectorAll('.woocommerce-product-gallery__image')[1].getBoundingClientRect().top};
+ });
+ assert(later.visitorBottom<0,'Visitor moves away with photo one, never stays in viewport '+width+' '+JSON.stringify(later));
+ assert(later.indexY>0,'Gallery count continues tracking photo 2 '+width);
+ await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+ await page.waitForFunction(()=>document.querySelector('.sf-product-gallery-count').textContent==='1 / 3');
+ await page.locator('.sf-product-sheet-toggle').click();
+ assert.equal(await page.locator('.sf-product-visitor').evaluate(e=>getComputedStyle(e).visibility),'hidden','Expanded details hide metadata '+width);
 }
 await page.setViewportSize({width:390,height:844});
 // Once parsing completes without enhancement, native Woo fails open.
