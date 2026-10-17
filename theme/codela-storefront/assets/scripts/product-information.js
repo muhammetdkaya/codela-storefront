@@ -1,12 +1,13 @@
 /** Native product composition. Existing Woo forms and gallery nodes stay intact. */
 (function () {
   'use strict';
-  // Woo's thumbnails hook is INSIDE its moving track. Move the existing
-  // hidden counter once, before gallery/counter DOM-ready initialization,
-  // so it stays pinned to the gallery frame when native slides change.
+  // The original Codela live counter belongs to the FIRST native product
+  // photograph, not to the viewport. It leaves naturally when the user swipes
+  // to image two; no parallel scroll listener, display clone or API proxy.
   var counter = document.getElementById('codela-live-visitor-container');
   var gallery = counter && counter.closest('.woocommerce-product-gallery');
-  if (gallery && counter.parentElement !== gallery) gallery.appendChild(counter);
+  var firstPhoto = gallery && gallery.querySelector('.woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image');
+  if (firstPhoto && counter.parentElement !== firstPhoto) firstPhoto.appendChild(counter);
   function setupQuantities() {
     document.querySelectorAll('div.product .sf-product-purchase .quantity').forEach(function (quantity) {
       var input = quantity.querySelector('input.qty');
