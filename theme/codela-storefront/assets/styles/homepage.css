@@ -1,0 +1,49 @@
+/* Composition only; gallery motion, buttons and catalog cards remain shared. */
+.home .sf-content:has(.sf-home-section,.sf-home-slider){padding:0;max-width:none!important}
+.sf-content>.sf-home-slider{max-width:none!important;margin:0!important}
+.sf-home-slider{--sf-gallery-height:clamp(440px,46vw,690px);--sf-gallery-surface:var(--sf-ui-surface-muted);height:var(--sf-gallery-height);min-height:0}
+.sf-home-slide{position:relative;height:var(--sf-gallery-height);overflow:hidden}
+.sf-home-slide-art{position:absolute;inset:0;display:block}
+.sf-home-slide-art img{display:block;width:100%;height:100%;object-fit:cover}
+.sf-home-slide-copy{position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:20px;width:43%;height:100%;padding:80px max(4vw,24px);color:var(--sf-ui-ink);background:var(--sf-ui-page)}
+.sf-home-slide:has(.sf-home-slide-copy) .sf-home-slide-art{left:43%}
+.sf-home-slide-copy :is(h1,h2){font:500 clamp(30px,4vw,58px)/1.08 var(--wp--preset--font-family--body,Arial,sans-serif);letter-spacing:-.045em;margin:0;overflow-wrap:anywhere}
+.sf-home-slide-copy p{font-size:clamp(15px,1.5vw,19px);line-height:1.55;white-space:pre-line;max-width:36ch;margin:0;overflow-wrap:anywhere}
+.sf-home-slide-copy .sf-ui-button{max-width:100%;white-space:normal}
+.sf-home-slider-controls{position:absolute;bottom:16px;right:24px;display:flex;align-items:center;gap:10px;color:var(--sf-ui-ink);background:var(--sf-ui-page);border-radius:var(--sf-ui-pill);padding:0 4px;font-size:12px}
+.sf-home-slider-controls[hidden]{display:none}
+.sf-home-slider-controls [data-gallery-count]{min-width:36px;text-align:center;font-variant-numeric:tabular-nums}
+.sf-home-section{max-width:1360px!important;margin:0 auto!important;padding:44px 24px 12px}
+.sf-home-section h2{font-size:clamp(23px,2.6vw,34px);font-weight:500;letter-spacing:-.035em;margin:0 0 22px;overflow-wrap:anywhere}
+.sf-home-section-heading{display:flex;align-items:baseline;justify-content:space-between;gap:16px}
+.sf-home-section-heading>a{flex:none;color:inherit;font-size:13px;min-height:44px;display:flex;align-items:center;text-underline-offset:4px}
+.sf-home-category-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}
+.sf-home-category{display:block;text-decoration:none;color:inherit;min-width:0}
+.sf-home-category-art{aspect-ratio:4/5;overflow:hidden;border-radius:calc(var(--sf-ui-control-radius) + 8px);background:var(--sf-ui-surface-muted)}
+.sf-home-category-art img{display:block;width:100%;height:100%;object-fit:cover}
+.sf-home-category h3{font-size:18px;font-weight:500;margin:14px 0 6px;overflow-wrap:anywhere}
+.sf-home-category p{font-size:14px;line-height:1.5;color:var(--sf-muted);margin:0;overflow-wrap:anywhere}
+.sf-home-products ul.products{margin-bottom:0!important}
+.sf-home-slide-copy :is(h1,h2),.sf-home-slide-copy p{display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}
+.sf-home-slide-copy :is(h1,h2){-webkit-line-clamp:3}
+.sf-home-slide-copy p{-webkit-line-clamp:4}
+@media(max-width:700px){
+ .sf-home-slider{--sf-gallery-height:clamp(520px,140vw,690px)}
+ .sf-home-slide-copy{position:absolute;bottom:0;width:100%;height:auto;max-height:56%;padding:24px 20px 68px;gap:12px}
+ .sf-home-slide:has(.sf-home-slide-copy) .sf-home-slide-art{left:0;bottom:42%}
+ .sf-home-slide-copy :is(h1,h2){font-size:clamp(26px,7vw,36px)}
+ .sf-home-slide-copy p{font-size:14px;line-height:1.4;max-width:none}
+ .sf-home-slider-controls{bottom:12px;right:16px}
+ .sf-home-section{padding:32px 12px 8px}
+ .sf-home-section h2{font-size:24px;margin-bottom:18px}
+ .sf-home-category-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 12px}
+ .sf-home-category h3{font-size:16px;margin-top:10px}
+ .sf-home-category p{font-size:13px}
+}
+
+@media(max-width:700px){
+ .sf-home-slide-copy{height:56%;max-height:none;justify-content:flex-end;padding-bottom:64px;gap:10px;--sf-ui-button-height:44px;--sf-ui-button-padding-y:10px}
+ .sf-home-slide-copy :is(h1,h2),.sf-home-slide-copy p{display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}
+ .sf-home-slide-copy :is(h1,h2){-webkit-line-clamp:2}
+ .sf-home-slide-copy p{-webkit-line-clamp:3}
+}

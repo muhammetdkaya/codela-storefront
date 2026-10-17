@@ -68,7 +68,7 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
    if(width<=700){
     assert.equal(purchase.position,'fixed','Purchase occupies bottom on mobile');
     assert(Math.abs(purchase.rect.height-58)<1,'Purchase matches the 58px navigation bar');
-    assert(purchase.rect.bottom<=900-3&&purchase.rect.bottom>=900-7,'Purchase clears bottom safe area');
+    assert(Math.abs(purchase.rect.bottom-(900-12))<1,'Product purchase adds 8px browser clearance and preserves safe-area handling');
     assert.equal(await page.locator('.sf-shell > .sf-mobile-dock').evaluate(el=>getComputedStyle(el).display),'none','Document dock is replaced by purchase');
     assert.equal(await page.locator('.sf-actions').evaluate(el=>getComputedStyle(el).display),'flex','Store tools remain available in header');
    }else assert.equal(purchase.position,'static','Desktop keeps native inline form');

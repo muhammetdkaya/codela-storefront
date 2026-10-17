@@ -1,5 +1,16 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 17 Ekim 2026 — 0.1.133 → 0.1.134 uygulaması (CI / dağıtım bekliyor)
+
+Kullanıcı kaydedilmiş planın uygulanmasını istedi. Ürün bağlamında alt dış boşluk 4→12px; pending/mounted panel ve overlay dock aynı tokenı tüketir. Sayaçlar ek boşluğu izler. Menü body kilidi sırasında root snap, discovery ve galeri gözlemleri askıya alınır; özgün scroll/odak geri yüklenince snap sonraki frame açılır. Tek mevcut overlay controller ve Woo form korunur. **Eski Chromium fixture'ında fiziksel Safari hatası yeniden üretilemedi** (PR #52 ilk CI 39067099963 başarılı); yeni kilit sözleşmesi hedeflenmiş regresyonlarla ve WebKit'te ayrıca sınanır, gerçek cihaz sonucu varsayılmaz.
+
+Ana sayfa yeni `inc/homepage.php`: mevcut native yatay gallery track/CSS ve `gallery-defer.js`, kategori tanıtımları, en fazla dört native Woo ürün grid'i. Slider 8, kategori 12, ürün bölümü 4 sınırı; medya/metin/CTA, sıra, başlık, kategori+alt kategori, yeni/gerçek total_sales sıralaması ve 4/8/12 ürün. Ortak UI Kit kartları/düğmeleri, tek scroll/store korunur. Ayarlar Codela → Ayarlar → Tema altında Genel/Slider/Kategoriler/Ürün Bölümleri. Eklentinin genel köprüsü settings API1.1.0'a genişletilir; eklenti ürün sürümü1.1.1 ve WordPress.org yayını değişmez.
+
+Mevcut statik sayfa içeriği silinmez: Genel → Tema bölümleri seçildiğinde yeni düzen açılır; ilk kurulum legacy görünümü korur. İçerik/görseller yönetimden seçilir, sahte içerik veya sessiz veri göçü yok. Eski köprüyle frontend legacy kalır ve admin güncelleme uyarısı gösterir.
+
+Yerel PHP şema/atomik kayıt, sorgu/görünürlük ve mevcut paket/UI testleri geçti; tarayıcıda slider/uzun metin/kategori grid'i ve yönetimde ekle/sil/sırala/medya kontrolleri geçti. CI, gerçek FTP ve fiziksel Safari sonucu bu kayıtta henüz bekleniyor. Menü konum testleri ilk/orta/son fotoğraf ve ilgili ürünlerde 320/390/700px yapılır. Sonraki iş: PR CI'larını ve iki deponun codela.dev dağıtımını doğrula; kanıtla kaydı kapat. Yeni içerik seçimi, fiziksel Safari ve gerçek soğuk LCP/CLS kabulü ayrıca açık.
+
+
 ## 17 Ekim 2026 — sıradaki plan: ürün alt alanı ve yönetilebilir ana sayfa
 
 **Yalnız planlama; henüz uygulanmadı veya yayımlanmadı.** Kullanıcının dört talebi ve kod incelemesine dayalı tasarım/uygulama/kabul planı [bu belgede](docs/homepage-product-plan-2026-10-17.md). Ürün altına ek dış boşluk, menü aç/kapa sonrası aşağı atlama hatası, mevcut galeriyle yatay ana sayfa sliderı, kategori tanıtımları ve sırası/başlığı/kategori filtresi seçilebilir en fazla dört ürün bölümü. Ayarlar Codela → Ayarlar → Tema içinde; şema tema, genel ayar köprüsü eklenti sorumluluğunda. Kullanıcı uygulamayı sonraki çalışmada isteyecek; şimdilik runtime kodu/sürümü/yayını değiştirme. Uygulama istendiğinde ilk iş menü konum kaybını yeniden üretmek. Güncel canlı devam noktası aşağıdaki 0.1.133 kaydıdır.

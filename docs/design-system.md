@@ -1,5 +1,10 @@
 # Codela Storefront UI Kit — source of truth
 
+## Managed homepage and overlay scroll contract — 0.1.134
+
+Homepage sections use the same native horizontal gallery track and existing gallery adapter, shared Button/IconButton and native Woo product grid. No autoplay, cloned carousel, Woo zoom dependency on home or second catalog card. Theme schema declares fields; the plugin only validates/renders bounded generic rows. Legacy/static content is preserved until the sections mode is explicitly selected. Product-only bottom gap is12px including the same token for its overlay dock, plus safe-area once. Pause root snap and product discovery/visibility reactions while the existing overlay fixes the body; restore position before releasing the pause. Physical Safari remains distinct from browser fixture acceptance.
+
+
 ## Stable product sheet spacing —0.1.120
 
 Keep identical collapsed heading metrics over photographs and recommendations; discovery still controls native scrolling but never compacts the header. Round only this sheet by shared control radius+8px. Grip top and purchase bottom insets are12px; CTA44px (max200px), qty44px input with existing44px step targets. Remove the chevron, preserving the real accessible70×44px grip toggle and direct dragging.

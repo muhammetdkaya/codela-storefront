@@ -15,6 +15,9 @@ add_action( 'after_setup_theme', function() {
     register_nav_menus( [ 'primary' => __( 'Main menu', 'codela-storefront' ) ] );
 } );
 add_action( 'admin_notices', function() {
+    if ( current_user_can( 'manage_options' ) && ! defined( 'CODELA_THEME_SETTINGS_API_VERSION' ) ) {
+        echo '<div class="notice notice-warning"><p>' . esc_html__( 'Update Codela to enable the new homepage settings. Existing homepage content is preserved.', 'codela-storefront' ) . '</p></div>';
+    }
     if ( codela_sf_ready() ) { return; }
     echo '<div class="notice notice-error"><p>' . esc_html__( 'Codela Storefront requires the current Codela Commerce Toolkit plugin with theme support and WooCommerce 9.0+. Activate or update these plugins, or switch to another theme.', 'codela-storefront' ) . '</p></div>';
 } );
@@ -41,6 +44,7 @@ require_once get_template_directory() . '/inc/document-continuity.php';
 require_once get_template_directory() . '/inc/media-optimization.php';
 require_once get_template_directory() . '/inc/product.php';
 require_once get_template_directory() . '/inc/catalog.php';
+require_once get_template_directory() . '/inc/homepage.php';
 require_once get_template_directory() . '/inc/account.php';
 require_once get_template_directory() . '/inc/google-auth.php';
 /**
@@ -100,6 +104,11 @@ add_action( 'wp_enqueue_scripts', function() {
     wp_enqueue_style( 'codela-storefront-navigation', $root_uri . 'styles/navigation.css', [ 'codela-storefront-overlay' ], $style_version );
     wp_enqueue_style( 'codela-storefront-components', $root_uri . 'styles/components.css', [ 'codela-storefront-navigation' ], $style_version );
     wp_enqueue_style( 'codela-storefront-catalog', $root_uri . 'styles/catalog.css', [ 'codela-storefront-components' ], $style_version );
+    if ( is_front_page() && 'sections' === codela_sf_home_mode() ) {
+        wp_enqueue_style( 'codela-storefront-gallery' );
+        wp_enqueue_style( 'codela-storefront-homepage', $root_uri . 'styles/homepage.css', [ 'codela-storefront-components', 'codela-storefront-gallery', 'codela-storefront-catalog' ], $style_version );
+        wp_enqueue_script( 'codela-storefront-gallery-defer', $root_uri . 'scripts/gallery-defer.js', [], $style_version, true );
+    }
     if ( is_front_page() || is_search() ) { wp_enqueue_script( 'wc-add-to-cart' ); }
     if ( codela_sf_document_continuity_allowed() ) {
         wp_enqueue_style( 'codela-storefront-document-continuity', $root_uri . 'styles/document-continuity.css', [ 'codela-storefront-components' ], $style_version );

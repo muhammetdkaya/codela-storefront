@@ -560,12 +560,12 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   }
   body.sf-product-sheet-ready .sf-product-gallery-thumb.sf-ui-icon-button{width:44px;height:44px}
   body.sf-product-sheet-ready .sf-product-gallery-thumb img{display:block}
-  body.sf-product-sheet-ready .sf-product-gallery-count{position:fixed;bottom:calc(var(--sf-product-collapsed-height,210px) + 14px + env(safe-area-inset-bottom,0px))}
+  body.sf-product-sheet-ready .sf-product-gallery-count{position:fixed;bottom:calc(var(--sf-product-collapsed-height,210px) + var(--sf-ui-bottom-bar-gap) + 10px + env(safe-area-inset-bottom,0px))}
   /* Match the native gallery counter's one stable viewport baseline.
      Both annotations remain together as the real photo index changes. */
   body.sf-product-sheet-ready .sf-product-visitor{
     position:fixed;top:auto;inset-inline-start:72px;
-    bottom:calc(var(--sf-product-collapsed-height,210px) + 14px + env(safe-area-inset-bottom,0px));
+    bottom:calc(var(--sf-product-collapsed-height,210px) + var(--sf-ui-bottom-bar-gap) + 10px + env(safe-area-inset-bottom,0px));
   }
   :is(body.sf-product-sheet-ready,:where(html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready))) div.product > :is(.sf-product-sheet,.summary){
     position:fixed;z-index:1000;inset-inline:var(--sf-ui-bottom-bar-inset);
@@ -798,3 +798,9 @@ body.single-product div.product .sf-product-quantity .sf-product-quantity-step[d
   body.single-product.sf-product-sheet-ready:has(.woocommerce-product-gallery.is-discovering) #codela-live-visitor-container{visibility:hidden}
   /* Native quantity and the compact CTA remain side by side at 320px. */
 }
+
+/* Product purchase and its overlay navigation share a little more browser clearance. */
+@media(max-width:700px){body.single-product{--sf-ui-bottom-bar-gap:12px}}
+
+/* Fixing the body must not let root snap choose a new product/discovery target. */
+html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:none}
