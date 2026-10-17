@@ -442,6 +442,14 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
 .sf-product-sheet-header::before{
   content:'';position:absolute;top:12px;left:calc(50% - 22px);width:44px;height:4px;
   border-radius:var(--sf-ui-pill);background:var(--sf-ui-border);
+  /* Same touch feedback token as the shared dock; rest geometry is unchanged. */
+  transform:scaleX(1);
+  transition:transform var(--sf-ui-motion-press) var(--sf-ui-ease-press);
+}
+@media(max-width:700px){
+  body.sf-product-sheet-ready .sf-product-sheet.is-holding .sf-product-sheet-header::before{
+    transform:scaleX(var(--sf-ui-scale-icon));
+  }
 }
 .sf-product-sheet-heading{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px}
 .sf-product-sheet-heading .sf-product-price-row{display:grid;justify-items:end;gap:2px;margin:0;max-width:36vw}

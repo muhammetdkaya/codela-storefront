@@ -1,5 +1,12 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Çalışma — 17 Ekim 2026 / 0.1.121 tasarımı değiştirmeden galeri görselleri ve dokunma
+
+**Kapsam:** canlı ürün galerisi soğuk mobil LCP medyan15.668s; birinci 1024×1536 PNG 2.126MB indiriliyor. Yeni PNG WebP bakım yolu, Media > Image Optimization'dan açıkça çalıştırılan, tek attachment/istek ve durdurulabilir; orijinal PNG, Woo linkleri, zoom, resim oranları ve metadata korunur. Her PNG için640/960/orijinal genişlikte90 kalite WebP oluşturulup yalnız tam çözünürlük başarılı ve daha küçükse galerinin özgün img/srcset öznitelikleri değiştirilir. Var olan medya admin aracı JPEG uyumluluğunu korur. Yeni yüklenen JPG/PNG'lerin WordPress ara boyutları da destek varsa WebP'dir. **Eski canlı PNG'ler admin bakım işlemi çalıştırılmadan optimizasyonlu sayılmaz.** Galeri/dock/rest UI ölçü/renk/geometri değişmez; panel grip basılı tutma tepkisi mevcut dock motion token'ına bağlıdır. Eklenti1.1.1 değişmez.
+
+**Sürüm kabulü:** 0.1.121 dal/CI/yayın doğrulaması bekleniyor; önceki0.1.120 canlı kabulü121 yerine geçmez. 0.1.120 performans audit38986844180 başarısızdı; canlı PNG optimize edilip tekrar cold test ölçülmeden performans düzeldi denmez. Geniş mimari refaktör, fiziksel iPhone/GPU ve WP/Woo izole matris ayrı; çalışan satın alma/galeri motorunu gereksiz yere yeniden yazma.
+
+
 ## Son doğrulanmış devam noktası — 17 Ekim 2026 / Storefront 0.1.117 → 0.1.120
 
 **120 canlı:** ürün sheet köşeleri ortak control radius+8px; üst tutma çizgisi ve alt satın alma kontrolü kenar payları12px. Chevron kaldırıldı; erişilebilir gerçek70×44px tutma çizgisi toggle'ı ve doğrudan sürükleme korunur. Native Sepete Ekle44px yüksekliğe/200px azami hedefe, qty input44px/32px ölçüye küçüldü; −/+44px dokunma hedefleri aynı. Galeri/ilgili ürün geçişinde başlık, stok ve header sıkıştırması kaldırıldı; başlık–satın alma mesafesi ve kapalı panel yüksekliği sabit. Tek native form, özgün qty/submit, Footer dışarıda, ortak yüzey ve galeri akışı korunur. Eklenti **1.1.1 runtime/WordPress.org değişmedi**.
