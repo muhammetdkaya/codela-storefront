@@ -1,5 +1,10 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 17 Ekim 2026 / 0.1.125 — İlk panel yüksekliği farklı ürünlerde sabit kalmalı
+
+0.1.124 ilk render/son render cam malzemelerini eşitledi; kullanıcının sonraki fiziksel Safari gözleminde ilk panelin yüksekliği büyüyüp sonra küçülüyor. **Kök problem:** `product.css` başlangıç native `.summary` panelinin yüksekliğini badge'li test ürünü için **157px sabit** tanımlarken `product-information.js` final paneli gerçek heading yüksekliği + native purchase/footer + 8px ölçüyor. Badge olmayan gerçek ürünler daha kısa olduğunda bu iki yükseklik eşleşmiyor. Yüzey/radius düzeltmesini geri alma veya JS ölçümü kapatma; ilk karede doğal başlık, fiyat, adet ve form boyutlarından intrinsic height belirlenmeli. Aynı tek Woo formu korunmalı. CI testlerinde gecikmiş async mount, 320/390/700 genişlik, badgesiz (Kavis benzeri)/badgeli ve kısa başlık varyantları için ilk/final panel yükseklik ve Y farkı 3px altı kabul kriteri. Fotoğraf snap, panel dokunma, native form, UI Kit yüzey kabulü etkilenmemeli. Yeni sürüm yalnız başarılı PR CI ve live dağıtım sonrası tamam sayılır; fiziksel Safari kabulü ve CLS#40 hâlâ ayrı.
+
+
 ## 17 Ekim 2026 / 0.1.124 — İlk kare tek cam yüzey
 
 Fiziksel iPhone Safari 12:24 yenileme görüntüsünde native `.summary` ilk karede 999px **pill** yarıçaplı oval gösteriliyor; `.sf-product-purchase` üzerinde ayrıca ikinci beyaz cam katmanı oluşuyor. Kökeni `components.css` içindeki ortak IconButton/dock/pill *yüzey* seçicilerine, önceki 0.1.123'te ilk native `.summary`/`.sf-product-purchase` öğelerinin ayrı ayrı eklenmesi. `product.css` içindeki ortak fotoğraf/panel **yerleşim** kuralı, bu daha spesifik yüzey seçicisini ezemiyor.
