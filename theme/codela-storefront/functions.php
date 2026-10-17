@@ -109,7 +109,7 @@ add_action( 'wp_enqueue_scripts', function() {
         // Product-only layout; WooCommerce gallery, variations and cart stay native.
         wp_enqueue_style( 'codela-storefront-product', $root_uri . 'styles/product.css', [ 'codela-storefront-components', 'codela-storefront-gallery' ], $style_version );
         wp_enqueue_script( 'codela-storefront-product-information', $root_uri . 'scripts/product-information.js', [], codela_sf_script_module_version( 'scripts/product-information.js' ), true );
-        wp_add_inline_script( 'codela-storefront-product-information', "document.documentElement.classList.remove('sf-product-sheet-pending');", 'after' );
+        // The adapter removes the prepaint state after mounting; the head bootstrap owns failure fallback.
         // Reuse Woo's zoom plugin on demand; keep native responsive photo loading.
         $zoom_handle = wp_script_is( 'wc-zoom', 'registered' ) ? 'wc-zoom' : 'zoom';
         wp_enqueue_script( 'codela-storefront-gallery-defer', $root_uri . 'scripts/gallery-defer.js', [ 'wc-single-product', $zoom_handle ], $style_version, true );

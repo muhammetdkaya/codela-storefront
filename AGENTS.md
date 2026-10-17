@@ -1,5 +1,12 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 17 Ekim 2026 — 0.1.122 mobil yenilemede native ürün flash'ı
+
+İki fiziksel mobil Safari ekran görüntüsü, sayfa yenilenirken önce büyük WooCommerce başlık/fiyat/özet/sepet alanının normal akışta görünmesi ardından gerçek galerili kompakt sheet'in gelmesini gösterdi. Başlangıç korumasının DOMContentLoaded'da **her koşulda** kalkması ve mount öncesi native/final galeri geometrilerinin farklı olması temel mimari kusurlardı.
+
+**Çözüm sözleşmesi:** head bootstrap mobile CSS guard'ı ilk kareden önce ekler; yalnız Woo template eksikse DOMContentLoaded'da native fallback'a döner; normal durumda yalnız gerçek sheet mount sonrasında veya adapter script hata/load fallback'ında native görünür. functions.php script-after unconditional guard temizliği kaldırıldı; tek yükleme durumu sahibi var. Galeri wrapper/fotoğraf CSS kuralı hem pending hem ready için tek sözleşmedir; no-JS doğal Woo sayfasında herhangi bir zorunlu overlay yok. Başlık, fiyat, adet, form ve varyasyonlar özgün Woo düğümleridir; PHP'de kopyalanmaz. FOUC, gecikmiş asenkron adapter DOMContentLoaded sonrası fiziksel ilk kare senaryosunda Playwright ile test edilmeli. Mevcut görsel tasarım ve ortak tokenlar değişmemeli. Fiziksel Safari onayı hâlâ ayrı bir gereksinimdir. **0.1.122 CI/dağıtım doğrulanmadan canlı kabul etme.**
+
+
 ## Çalışma — 17 Ekim 2026 / 0.1.121 tasarımı değiştirmeden galeri görselleri ve dokunma
 
 **Kapsam:** canlı ürün galerisi soğuk mobil LCP medyan15.668s; birinci 1024×1536 PNG 2.126MB indiriliyor. Yeni PNG WebP bakım yolu, Media > Image Optimization'dan açıkça çalıştırılan, tek attachment/istek ve durdurulabilir; orijinal PNG, Woo linkleri, zoom, resim oranları ve metadata korunur. Her PNG için640/960/orijinal genişlikte90 kalite WebP oluşturulup yalnız tam çözünürlük başarılı ve daha küçükse galerinin özgün img/srcset öznitelikleri değiştirilir. Var olan medya admin aracı JPEG uyumluluğunu korur. Yeni yüklenen JPG/PNG'lerin WordPress ara boyutları da destek varsa WebP'dir. **Eski canlı PNG'ler admin bakım işlemi çalıştırılmadan optimizasyonlu sayılmaz.** Galeri/dock/rest UI ölçü/renk/geometri değişmez; panel grip basılı tutma tepkisi mevcut dock motion token'ına bağlıdır. Eklenti1.1.1 değişmez.
