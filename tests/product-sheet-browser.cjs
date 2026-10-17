@@ -175,12 +175,14 @@ await page.route('https://sheet.test/**',async route=>{
  await route.fulfill({status:404,body:''});
 });
 const streaming=page.goto('https://sheet.test/',{waitUntil:'load'});
+streaming.catch(()=>{}); // The delayed script remains pending if an earlier assertion fails.
 await page.locator('#sf-product-sheet-template').waitFor({state:'attached'});
 assert(await page.locator('.summary .product_title').isVisible(),'Original title paints inside the first-frame glass sheet');
 assert(await page.locator('.sf-product-purchase').isVisible(),'The real native purchase form paints while the adapter is blocked');
 const pendingBox=await page.locator('div.product > .summary').boundingBox();
 const firstPurchase=await page.locator('.sf-product-purchase').boundingBox();
 const firstTitle=await page.locator('div.product > .summary > .product_title').boundingBox();
+console.log('NATIVE_FIRST_PANEL '+JSON.stringify({pendingBox,firstPurchase,firstTitle}));
 assert(Math.abs(pendingBox.width-358)<2,'First-frame panel shares dock horizontal inset');
 assert(pendingBox.y>0&&pendingBox.y+pendingBox.height<=844,'First-frame sheet is fixed within viewport');
 assert(firstPurchase.y>=pendingBox.y && firstPurchase.y+firstPurchase.height<=pendingBox.y+pendingBox.height+4,'First-frame purchase belongs inside panel');
