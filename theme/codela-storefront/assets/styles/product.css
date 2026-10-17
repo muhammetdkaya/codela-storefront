@@ -791,5 +791,10 @@ body.single-product div.product .sf-product-quantity .sf-product-quantity-step[d
   body.single-product.sf-product-sheet-ready .sf-product-discovery :is(.related,.upsells) ul.products{margin-bottom:0}
   body.sf-product-sheet-ready:has(.woocommerce-product-gallery.is-discovering) div.product > .onsale{visibility:hidden}
   body.sf-product-sheet-ready .woocommerce-product-gallery.is-discovering > :is(.sf-product-gallery-nav,.sf-product-gallery-count,.sf-product-visitor,.woocommerce-product-gallery__trigger){visibility:hidden}
+  /* Match the gallery index's discovery boundary even if the Codela plugin
+     has reparented its original live host outside the gallery frame.
+     Scoped to product discovery only: the plugin still controls [hidden]
+     when the actual visitor count is below its configured threshold. */
+  body.single-product.sf-product-sheet-ready:has(.woocommerce-product-gallery.is-discovering) #codela-live-visitor-container{visibility:hidden}
   /* Native quantity and the compact CTA remain side by side at 320px. */
 }
