@@ -1,5 +1,10 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 17 Ekim 2026 — 0.1.129 ziyaretçi sayısını görselin önüne geçirmeyen sunum (test/yayın bekliyor)
+
+Fiziksel Safari ekranında header altındaki `#codela-live-visitor-container` büyük, beyaz ve gölgeli buton gibi görünüyordu. Plugin etiketi gerçek ticari meta veridir, IconButton/GlassSurface değil. Codela modülünün `cdl-lv` düğümü ve canlı sayaç işlevi korunur; shared interactive surface listesinden `.sf-product-visitor .cdl-lv` çıkarıldı, tek stil sahibi product.css: hafif gri saydam yüzey `rgba(247,247,249,.44)`, gölgesiz/kenarlıksız/blur'suz, 11px sakin tipografi, 13px göz, az boşluk, max %68 / 240px, tıklama tepkisi/animasyon yok. Açık detay panelinde gizlenir, ilgili ürünler bölümündeki mevcut gizlenme korunur. Konumda/sabit header ve galeri akışında hareket, JS çoğaltması ve plugin değişimi yok. `tests/product-modules-browser.cjs` 320/390/700/900/1280px CSS sunumunu ve açık paneli kontrol eder. PR/CI/FTP doğrulanmadan canlı demeyin.
+
+
 ## 17 Ekim 2026 — 0.1.128 dönüşüm araçlarının kapalı panel hiyerarşisi (canlı doğrulandı)
 
 Fiziksel Safari görüntüsünde ürün adı fiyatın altında kalıyor; Woo fiyat satırının içine eklenen UrgencyBadge stok ve sayaç mesajları fiyat kolonunu uzatıp sheet'i büyütüyor. Kullanıcı onayıyla orijinal tek Woo title/fiyat/`.cdl-ub` düğümleri korunarak mobil **ilk ve son karede aynı CSS grid** kuruluyor: başlık ve fiyat ilk satır, stok + canlı sayaç ikinci kompakt satır; sayaçtaki uzun prefix yalnız görselde gizlenir, gerçek `<span data-*>` ve ekran okuyucu metni durur. Ziyaretçi sayaç galeride kalır. Yalnız ürün CSS + prepaint/grid sözleşmesi; ayrı ticari mantık, yeni JS, kopya düğüm, Codela eklenti sürümü ve Woo satın alma eylemi yok. Test: 320/390/700, indirimli satış, yalnız stok/yolda sayaç/ikisi, ilk kareden mount'a 3px altı panel yüksekliği/pozisyonu, gerçek tek ticker ve timer değişimi. PR #46, ana dal CI ve FTP tamamlandı. Fiziksel Safari görsel onayı ayrıca beklenecek.
