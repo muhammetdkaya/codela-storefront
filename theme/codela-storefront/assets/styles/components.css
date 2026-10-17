@@ -103,7 +103,9 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product a.sf-ui
    Unlike pills and icon controls, both are panels, not generic soft buttons. */
 .sf-product-sheet,
 html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary{
-  border:1px solid var(--sf-ui-glass-border);
+  /* No invisible 1px borders: they inflate intrinsic first-paint height
+     but were omitted by the final sheet's content-based measurement. */
+  border:0;
   border-radius:calc(var(--sf-ui-control-radius) + 8px);
   background:var(--sf-ui-glass-panel-surface)!important;
   color:var(--sf-ui-glass-ink);
