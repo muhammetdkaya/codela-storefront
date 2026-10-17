@@ -10,7 +10,7 @@ const quantity=execFileSync(process.env.PHP_BIN||'php',['tests/render-product-sh
 const css='.woocommerce div.product div.images .woocommerce-product-gallery__image:nth-child(n+2){width:25%;display:inline-block}'+['assets/styles/tokens.css','assets/storefront.css','assets/styles/components.css','assets/styles/navigation.css','assets/styles/gallery.css','assets/styles/product.css'].map(p=>fs.readFileSync(root+p,'utf8')).join('\n');
 const picture=n=>'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000"><rect width="800" height="1000" fill="${['#dbd1c3','#bab4a1','#ad998a'][n]}"/><text x="200" y="300" font-size="80">${n+1}</text></svg>`);
 function fixture({variable=false,stock=true,short=false,noUrgency=false,longTitle=false,pending=false,promotion='none',visitor=false}={}){return `<!doctype html><html><head>${pending?bootstrap:''}<meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:Arial,Helvetica,sans-serif}${css}</style></head><body class="single-product woocommerce"><div class="sf-shell"><header class="sf-header"><span>Codela</span></header><nav class="sf-mobile-dock" hidden></nav><dialog id="sf-panel"></dialog></div><main class="sf-content"><div class="woocommerce-notices-wrapper"></div><div class="product">
-<div class="woocommerce-product-gallery images sf-ui-gallery sf-ui-gallery--hero sf-ui-gallery--scroll"><div class="woocommerce-product-gallery__wrapper">${[0,1,2].map(n=>`<div class="woocommerce-product-gallery__image" data-thumb="${picture(n)}"><a href="${picture(n)}"><img alt="Product ${n+1}" src="${picture(n)}"></a></div>`).join('')}${visitor?'<div id="codela-live-visitor-container" class="sf-product-visitor"><div class="cdl-lv"><span class="cdl-lv-dot" aria-hidden="true"></span><span class="cdl-lv-text">Şu an <strong>2</strong> kişi bakıyor</span></div></div>':''}</div></div>
+<div class="woocommerce-product-gallery images sf-ui-gallery sf-ui-gallery--hero sf-ui-gallery--scroll"><div class="woocommerce-product-gallery__wrapper">${[0,1,2].map(n=>`<div class="woocommerce-product-gallery__image" data-thumb="${picture(n)}"><a href="${picture(n)}"><img alt="Product ${n+1}" src="${picture(n)}"></a></div>`).join('')}</div></div>${visitor?'<div id="codela-live-visitor-container" class="sf-product-visitor" hidden><div class="cdl-lv"><span class="cdl-lv-dot" aria-hidden="true"></span><span class="cdl-lv-text">Şu an <strong>2</strong> kişi bakıyor</span></div></div>':''}
 <div class="summary"><h1 class="product_title">${promotion!=='none'?'Kavis Dekoratif Obje':short?'Luna':longTitle?'Kavis Dekoratif Obje Doğal Traverten Taş Heykel Seti':'Luna Traverten Lamba'}</h1><div class="sf-product-price-row">${promotion!=='none'?'<p class="price"><del>$80,00</del><ins>$40,00</ins></p>':'<p class="price">3.490 ₺</p>'}${promotion!=='none'?`<div class="cdl-ub">${promotion!=='timer'?'<div class="cdl-ub-item cdl-ub-scarcity"><svg class="cdl-ub-ico" viewBox="0 0 24 24"></svg><span class="cdl-ub-text">Son <strong>2</strong> ürün kaldı!</span></div>':''}${promotion!=='scarcity'?'<div class="cdl-ub-item cdl-ub-timer"><svg class="cdl-ub-ico" viewBox="0 0 24 24"></svg><span class="cdl-ub-text">Kampanya bitişine: <span class="cdl-ub-countdown" data-evergreen-hours="24">23:59:49</span></span></div>':''}</div>`:short||noUrgency?'':'<div class="cdl-ub">Son 3 adet</div>'}</div><p class="woocommerce-product-details__short-description">Doğal taşın dokusu.</p>
 ${stock?`<form id="native-cart" class="cart ${variable?'variations_form':''}" method="post">${variable?'<table class="variations"><tbody><tr><th><label for="color">Renk</label></th><td><select id="color" name="attribute_color"><option value="">Seçiniz</option><option value="cream">Kum</option></select></td></tr></tbody></table><input name="variation_id" value="123" type="hidden">':''}<div class="sf-product-purchase"><div class="quantity">${quantity}</div><button class="single_add_to_cart_button button alt ${variable?'disabled wc-variation-selection-needed':''}" type="submit" name="add-to-cart" value="42">Sepete ekle</button></div></form>`:'<p class="stock out-of-stock">Stokta yok</p>'}
 <div class="cdl-fsb--product"><div class="cdl-fsb-text">Ücretsiz kargoya 510 ₺ kaldı</div><div class="cdl-fsb-track"><span class="cdl-fsb-fill" style="width:87%"></span></div></div></div>
@@ -385,13 +385,20 @@ for(const [width,promotion] of [[320,'both'],[390,'both'],[700,'both'],[390,'sca
  }
  await page.unroute('https://sheet-urgency.test/**');
 }
-// Real three-photo product. Codela's own original visitor DOM is nested in
-// the native track on first paint, then bound to photo 1 by the adapter.
+// Real Woo thumbnails-hook output: the ORIGINAL visitor lives AFTER the
+// gallery, starts hidden until Codela's asynchronous ping resolves, and is
+// then adopted into photo 1 without duplicating the plugin host.
 // The 1 / 3 count still updates natively, but the visitor scrolls OFFSCREEN
 // with the first photo rather than sticking to the viewport.
 for(const width of [320,390,700]){
  await page.setViewportSize({width,height:844});
  await load(page,{visitor:true});
+ assert.equal(await page.locator('.woocommerce-product-gallery__image:first-child > #codela-live-visitor-container').count(),1,'Native Woo sibling host adopted into the first photo '+width);
+ assert.equal(await page.locator('#codela-live-visitor-container').isVisible(),false,'Native plugin has not received its first live count '+width);
+ // A later Codela REST ping shows the original host; the theme must not
+ // override the plugin's own min-display threshold or hidden state.
+ await page.locator('#codela-live-visitor-container').evaluate(el=>{el.hidden=false;});
+ assert(await page.locator('#codela-live-visitor-container .cdl-lv-text').isVisible(),'Live visitor reappears when plugin returns a count '+width);
  const first=await page.evaluate(()=>{
    const gallery=document.querySelector('.woocommerce-product-gallery');
    const image=gallery.querySelector('.woocommerce-product-gallery__image');
