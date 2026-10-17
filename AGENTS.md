@@ -1,5 +1,10 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 17 Ekim 2026 — sıradaki plan: ürün alt alanı ve yönetilebilir ana sayfa
+
+**Yalnız planlama; henüz uygulanmadı veya yayımlanmadı.** Kullanıcının dört talebi ve kod incelemesine dayalı tasarım/uygulama/kabul planı [bu belgede](docs/homepage-product-plan-2026-10-17.md). Ürün altına ek dış boşluk, menü aç/kapa sonrası aşağı atlama hatası, mevcut galeriyle yatay ana sayfa sliderı, kategori tanıtımları ve sırası/başlığı/kategori filtresi seçilebilir en fazla dört ürün bölümü. Ayarlar Codela → Ayarlar → Tema içinde; şema tema, genel ayar köprüsü eklenti sorumluluğunda. Kullanıcı uygulamayı sonraki çalışmada isteyecek; şimdilik runtime kodu/sürümü/yayını değiştirme. Uygulama istendiğinde ilk iş menü konum kaybını yeniden üretmek. Güncel canlı devam noktası aşağıdaki 0.1.133 kaydıdır.
+
+
 ## 17 Ekim 2026 — 0.1.133 galeri bittiğinde ziyaretçi sayacı da gizlenir (canlı doğrulandı)
 
 Kullanıcı ilgili ürünlere geçince özgün 1/N sayacının zaten kaybolduğunu; yanında kalan Codela canlı ziyaretçi metninin de aynı anda kaybolmasını istedi. Galeri içinde 1/N ile beraber sabit kalma davranışı, arka plansız tasarım, 0.1.132 oval alt panel ve gerçek plugin `hidden` eşiği korunur. `product.css` var olan `is-discovering` gizleme kuralı galeri doğrudan altına bağlıydı; eklenti özgün host'u başka bir yere taşıyınca yakalayamıyordu. Mobilde `body.single-product.sf-product-sheet-ready:has(.woocommerce-product-gallery.is-discovering) #codela-live-visitor-container{visibility:hidden}` ile node konumundan bağımsız gizle; galeriye dönünce görünür (yalnız eklenti `hidden` değilse). JS scroll handler, timer, galerinin 1/N indeksi, Woo form, geometri değişmez. `tests/product-sheet-browser.cjs` 320/390/700px'de foto→ilgili ürün→geri, aynı görünürlük, `hidden` korunumu ve 390px galeri dışına plugin reparent senaryosunu test eder. PR/main CI ve FTP doğrulaması başarılı; fiziksel Safari'deki son görünüm onayı kullanıcıya açık.
