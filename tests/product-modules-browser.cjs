@@ -15,7 +15,7 @@ ${enabled?'<div class="cdl-tb">'+['Güvenli ödeme','Kapıda ödeme','Kolay iade
 for(const width of [320,390,700,900,1280]){await page.goto('about:blank');await page.setViewportSize({width,height:844});await page.setContent(fixture(true));
 assert.equal(await page.locator('div.product > #codela-live-visitor-container').count(),1,'Woo thumbnails hook emits original visitor AFTER gallery, not inside its track');
 await page.addScriptTag({content:fs.readFileSync(root+'assets/scripts/product-information.js','utf8')});
-assert.equal(await page.locator('.woocommerce-product-gallery__image:first-child > .sf-product-visitor').count(),1,'Original sibling counter is adopted by photo one');
+assert.equal(await page.locator('.woocommerce-product-gallery > .sf-product-visitor').count(),1,'Original Woo sibling counter is adopted by the gallery frame');
 const result=await page.evaluate(()=>{const rect=x=>document.querySelector(x).getBoundingClientRect().toJSON();return {overflow:document.documentElement.scrollWidth>innerWidth+1,summary:rect('.summary'),bar:rect('.cdl-fsb-track'),text:rect('.cdl-fsb-text'),counter:rect('.sf-product-visitor'),rail:rect('.flex-control-thumbs'),info:rect('.sf-product-information'),trust:rect('.cdl-tb'),related:rect('.related'),contact:rect('.cdl-wa-button')};});
 assert(!result.overflow,'No horizontal overflow '+width);
 assert(Math.abs(result.bar.left-result.text.left)<1&&Math.abs(result.bar.width-result.text.width)<1,'Shipping track covers full text/content width without icon indent '+width);
@@ -29,7 +29,7 @@ const visitor=await page.locator('.sf-product-visitor .cdl-lv').evaluate(el=>{
    shadow:style.boxShadow,blur:style.backdropFilter,dotWidth:dot.width,dotHeight:dot.height,
    dotShadow:dot.boxShadow,dotAnimation:dot.animationName};
 });
-assert.equal(visitor.position,'absolute','Visitor host is photo-relative and not fixed '+width);
+assert.equal(visitor.position,'absolute','Desktop visitor belongs to gallery frame '+width);
 assert(visitor.height<=30,'Visitor label is smaller than a button '+width+' '+JSON.stringify(visitor));
 assert(visitor.width<=Math.min(width*.68,240)+1,'Visitor label cannot cover the photograph '+width);
 assert.equal(visitor.background,'rgba(0, 0, 0, 0)','Photo metadata has absolutely no background '+width);
@@ -64,7 +64,7 @@ if(width===390){
     text.textContent='Şu an 2 kişi bakıyor';
     row.append(text);host.replaceChildren(row);host.hidden=false;resolve();
   })));
-  assert(await page.locator('.woocommerce-product-gallery__image:first-child .cdl-lv-text').isVisible(),'Live REST result reveals original host inside first image');
+  assert(await page.locator('.woocommerce-product-gallery > #codela-live-visitor-container .cdl-lv-text').isVisible(),'Live REST result reveals original gallery-framed host');
   assert.equal(await page.locator('#codela-live-visitor-container').count(),1,'No duplicated host after delayed plugin update');
   fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:'qa/storefront-ui-kit-product-modules.png',fullPage:true});
 }

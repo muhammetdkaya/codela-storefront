@@ -292,12 +292,8 @@ body.single-product .woocommerce-product-gallery a:focus-visible{
   margin-bottom:18px;min-width:0;
 }
 .sf-product-price-row > .price{flex:0 1 auto}
-/* A single native Codela visitor lives ON the first photo. It shares the
-   gallery count's plain text style, never a pill, surface, or fixed viewport
-   coordinate. Native gallery scrolling removes it along with photo one. */
-body.single-product .sf-ui-gallery--scroll .woocommerce-product-gallery__image:first-child{
-  position:relative;
-}
+/* The visitor counter is gallery-frame metadata, like the native 1/N
+   index, not a floating CTA or part of the scrolling first photo. */
 body.single-product .sf-product-visitor{
   position:absolute;z-index:4;inset-inline-start:72px;bottom:20px;
   max-width:calc(100% - 92px);margin:0!important;pointer-events:none;
@@ -565,12 +561,11 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   body.sf-product-sheet-ready .sf-product-gallery-thumb.sf-ui-icon-button{width:44px;height:44px}
   body.sf-product-sheet-ready .sf-product-gallery-thumb img{display:block}
   body.sf-product-sheet-ready .sf-product-gallery-count{position:fixed;bottom:calc(var(--sf-product-collapsed-height,210px) + 14px + env(safe-area-inset-bottom,0px))}
-  /* The 1 / 5 counter remains the gallery's own live index. Put the
-     FIRST photo's visitor alongside it, but anchor this message to that
-     PHOTO (not the viewport) so a vertical swipe carries it away. */
+  /* Match the native gallery counter's one stable viewport baseline.
+     Both annotations remain together as the real photo index changes. */
   body.sf-product-sheet-ready .sf-product-visitor{
-    position:absolute;top:auto;inset-inline-start:72px;
-    bottom:calc(46px + var(--sf-product-viewport-large,100lvh) - var(--sf-product-viewport-current,100dvh));
+    position:fixed;top:auto;inset-inline-start:72px;
+    bottom:calc(var(--sf-product-collapsed-height,210px) + 14px + env(safe-area-inset-bottom,0px));
   }
   :is(body.sf-product-sheet-ready,:where(html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready))) div.product > :is(.sf-product-sheet,.summary){
     position:fixed;z-index:1000;inset-inline:var(--sf-ui-bottom-bar-inset);

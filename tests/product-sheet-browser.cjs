@@ -212,7 +212,7 @@ const surfaceStyle=selector=>page.locator(selector).evaluate(e=>{
  };
 });
 const nativeSurface=await surfaceStyle('div.product > .summary');
-assert.equal(nativeSurface.borderRadius,'20px','Native first paint is the same rounded rectangle, not a 999px pill');
+assert.equal(nativeSurface.borderRadius,'28px','Native first paint keeps the more oval 28px product-panel corners');
 assert.equal(nativeSurface.background,'rgba(247, 247, 249, 0.78)','Native panel uses shared translucent glass token');
 assert.equal(nativeSurface.footerBackground,'rgba(0, 0, 0, 0)','Native purchase footer has no extra white pill');
 assert.equal(nativeSurface.footerShadow,'none','Native purchase footer has no independent shadow');
@@ -385,57 +385,54 @@ for(const [width,promotion] of [[320,'both'],[390,'both'],[700,'both'],[390,'sca
  }
  await page.unroute('https://sheet-urgency.test/**');
 }
-// Real Woo thumbnails-hook output: the ORIGINAL visitor lives AFTER the
-// gallery, starts hidden until Codela's asynchronous ping resolves, and is
-// then adopted into photo 1 without duplicating the plugin host.
-// The 1 / 3 count still updates natively, but the visitor scrolls OFFSCREEN
-// with the first photo rather than sticking to the viewport.
+// The actual Woo hook host starts as a sibling of the gallery, hidden until
+// a successful Codela ping reaches the merchant's real threshold. Adopt the
+// one node onto the gallery frame so visitor and 1/N remain fixed together
+// while the photographs scroll independently (never a cloned counter).
 for(const width of [320,390,700]){
  await page.setViewportSize({width,height:844});
  await load(page,{visitor:true});
- assert.equal(await page.locator('.woocommerce-product-gallery__image:first-child > #codela-live-visitor-container').count(),1,'Native Woo sibling host adopted into the first photo '+width);
- assert.equal(await page.locator('#codela-live-visitor-container').isVisible(),false,'Native plugin has not received its first live count '+width);
- // A later Codela REST ping shows the original host; the theme must not
- // override the plugin's own min-display threshold or hidden state.
- await page.locator('#codela-live-visitor-container').evaluate(el=>{el.hidden=false;});
- assert(await page.locator('#codela-live-visitor-container .cdl-lv-text').isVisible(),'Live visitor reappears when plugin returns a count '+width);
- const first=await page.evaluate(()=>{
-   const gallery=document.querySelector('.woocommerce-product-gallery');
-   const image=gallery.querySelector('.woocommerce-product-gallery__image');
-   const visitor=document.querySelector('#codela-live-visitor-container');
-   const caption=visitor.querySelector('.cdl-lv');
-   const index=gallery.querySelector('.sf-product-gallery-count');
-   const v=visitor.getBoundingClientRect(),n=index.getBoundingClientRect(),font=getComputedStyle(caption);
-   return {isInsideFirst:image.contains(visitor),count:document.querySelectorAll('#codela-live-visitor-container').length,
-     visitorPosition:getComputedStyle(visitor).position,y:v.y,indexY:n.y,
-     visitorX:v.x,indexRight:n.right,style:font.backgroundColor,
-     fontSize:font.fontSize,lineHeight:font.lineHeight,
-     galleryIndex:index.textContent,overlayWidth:v.width,
-     hiddenIcon:getComputedStyle(visitor.querySelector('.cdl-lv-dot')).display};
+ const original=page.locator('#codela-live-visitor-container');
+ assert.equal(await page.locator('.woocommerce-product-gallery > #codela-live-visitor-container').count(),1,'Original Woo sibling host moved directly to gallery frame '+width);
+ assert.equal(await original.isVisible(),false,'Genuine Codela host is hidden before ping '+width);
+ await original.evaluate(el=>{el.hidden=false;});
+ assert(await page.locator('.sf-product-visitor .cdl-lv-text').isVisible(),'Live visitor text revealed after a count reaching threshold '+width);
+ const snapshot=()=>page.evaluate(()=>{
+   const gallery=document.querySelector('.woocommerce-product-gallery'),host=gallery.querySelector('#codela-live-visitor-container');
+   const index=gallery.querySelector('.sf-product-gallery-count'),sheet=document.querySelector('.sf-product-sheet');
+   const v=host.getBoundingClientRect(),n=index.getBoundingClientRect(),label=host.querySelector('.cdl-lv');
+   const ls=getComputedStyle(label),cs=getComputedStyle(host),panel=getComputedStyle(sheet);
+   return {count:document.querySelectorAll('#codela-live-visitor-container').length,
+     index:index.textContent,visitorText:host.innerText,visitorY:v.y,indexY:n.y,
+     visitorX:v.x,indexRight:n.right,position:cs.position,
+     background:ls.backgroundColor,font:ls.fontSize,line:ls.lineHeight,
+     radius:panel.borderTopLeftRadius,hidden:host.hidden,
+     overflow:document.documentElement.scrollWidth>innerWidth+1};
  });
- assert(first.isInsideFirst,'Codela visitor belongs to first photo only '+width);
- assert.equal(first.count,1,'No duplicated plugin counter '+width);
- assert.equal(first.visitorPosition,'absolute','Visitor position is image-bound, never fixed '+width);
- assert.equal(first.style,'rgba(0, 0, 0, 0)','Visitor has no surface '+width);
- assert.equal(first.fontSize,'12px','Same typography as native photo index '+width);
- assert.equal(first.lineHeight,'18px','Same line-height as native photo index '+width);
- assert.equal(first.hiddenIcon,'none','Photo metadata uses clean text only '+width);
- assert.equal(first.galleryIndex,'1 / 3','Original live gallery index preserved '+width);
- assert(first.visitorX>first.indexRight+8,'Original visitor starts to the right of index '+width);
- assert(Math.abs(first.y-first.indexY)<4,'Visitor and 1 / 3 share one baseline '+width+' '+JSON.stringify(first));
+ const first=await snapshot();
+ assert.equal(first.count,1,'One native Codela counter only '+width);
+ assert.equal(first.index,'1 / 3','Live gallery image index remains native '+width);
+ assert.equal(first.position,'fixed','Visitor follows the gallery index on the viewport '+width);
+ assert.equal(first.background,'rgba(0, 0, 0, 0)','Visitor text has no background '+width);
+ assert.equal(first.font,'12px','Photo index and visitor share the font size '+width);
+ assert.equal(first.line,'18px','Photo index and visitor share line height '+width);
+ assert.equal(first.radius,'28px','Mounted panel shares the same more oval corner radius '+width);
+ assert(first.visitorX>first.indexRight+8,'Visitor stays to the right of 1/N '+width);
+ assert(Math.abs(first.visitorY-first.indexY)<2,'Visitor and 1/N share a baseline '+width+' '+JSON.stringify(first));
+ assert(!first.overflow,'No overflow with gallery annotations '+width);
  await page.evaluate(()=>{const e=document.querySelectorAll('.woocommerce-product-gallery__image')[1];window.scrollTo({top:scrollY+e.getBoundingClientRect().top,behavior:'instant'})});
  await page.waitForFunction(()=>document.querySelector('.sf-product-gallery-count').textContent==='2 / 3');
- const later=await page.evaluate(()=>{
-   const v=document.querySelector('.sf-product-visitor').getBoundingClientRect();
-   const n=document.querySelector('.sf-product-gallery-count').getBoundingClientRect();
-   return {visitorBottom:v.bottom,indexY:n.y,secondTop:document.querySelectorAll('.woocommerce-product-gallery__image')[1].getBoundingClientRect().top};
- });
- assert(later.visitorBottom<0,'Visitor moves away with photo one, never stays in viewport '+width+' '+JSON.stringify(later));
- assert(later.indexY>0,'Gallery count continues tracking photo 2 '+width);
+ const second=await snapshot();
+ assert.equal(second.index,'2 / 3','Native count changes on second photo '+width);
+ assert.equal(second.count,1,'Gallery swipe never clones Codela host '+width);
+ assert(!second.hidden,'Codela count remains visible across photos '+width);
+ assert.equal(second.visitorText,first.visitorText,'Gallery scroll does not alter real visitor count '+width);
+ assert(Math.abs(second.visitorY-first.visitorY)<2,'Visitor never disappears or moves while scrolling photos '+width+' '+JSON.stringify({first,second}));
+ assert(Math.abs(second.visitorY-second.indexY)<2,'Gallery 2/N and visitor stay in the same row '+width);
  await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
  await page.waitForFunction(()=>document.querySelector('.sf-product-gallery-count').textContent==='1 / 3');
  await page.locator('.sf-product-sheet-toggle').click();
- assert.equal(await page.locator('.sf-product-visitor').evaluate(e=>getComputedStyle(e).visibility),'hidden','Expanded details hide metadata '+width);
+ assert.equal(await original.evaluate(el=>getComputedStyle(el).visibility),'hidden','Expanded product detail keeps gallery metadata behind details '+width);
 }
 await page.setViewportSize({width:390,height:844});
 // Once parsing completes without enhancement, native Woo fails open.
