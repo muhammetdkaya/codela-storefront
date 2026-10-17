@@ -1,9 +1,12 @@
 # Codela Storefront — güncel çalışma kuralları
 
-## 17 Ekim 2026 — 0.1.129 ziyaretçi sayısını görselin önüne geçirmeyen sunum (test/yayın bekliyor)
+## 17 Ekim 2026 — 0.1.129 ziyaretçi sayısını görselin önüne geçirmeyen sunum (canlı doğrulandı)
 
-Fiziksel Safari ekranında header altındaki `#codela-live-visitor-container` büyük, beyaz ve gölgeli buton gibi görünüyordu. Plugin etiketi gerçek ticari meta veridir, IconButton/GlassSurface değil. Codela modülünün `cdl-lv` düğümü ve canlı sayaç işlevi korunur; shared interactive surface listesinden `.sf-product-visitor .cdl-lv` çıkarıldı, tek stil sahibi product.css: hafif gri saydam yüzey `rgba(247,247,249,.44)`, gölgesiz/kenarlıksız/blur'suz, 11px sakin tipografi, 13px göz, az boşluk, max %68 / 240px, tıklama tepkisi/animasyon yok. Açık detay panelinde gizlenir, ilgili ürünler bölümündeki mevcut gizlenme korunur. Konumda/sabit header ve galeri akışında hareket, JS çoğaltması ve plugin değişimi yok. `tests/product-modules-browser.cjs` 320/390/700/900/1280px CSS sunumunu ve açık paneli kontrol eder. PR/CI/FTP doğrulanmadan canlı demeyin.
+Fiziksel Safari ekranında header altındaki `#codela-live-visitor-container` büyük, beyaz ve gölgeli buton gibi görünüyordu. Plugin etiketi gerçek ticari meta veridir, IconButton/GlassSurface değil. Codela modülünün `cdl-lv` düğümü ve canlı sayaç işlevi korunur; shared interactive surface listesinden `.sf-product-visitor .cdl-lv` çıkarıldı, tek stil sahibi product.css: hafif gri saydam yüzey `rgba(247,247,249,.44)`, gölgesiz/kenarlıksız/blur'suz, 11px sakin tipografi, 13px göz, az boşluk, max %68 / 240px, tıklama tepkisi/animasyon yok. Açık detay panelinde gizlenir, ilgili ürünler bölümündeki mevcut gizlenme korunur. Konumda/sabit header ve galeri akışında hareket, JS çoğaltması ve plugin değişimi yok. `tests/product-modules-browser.cjs` 320/390/700/900/1280px CSS sunumunu ve açık paneli kontrol eder. PR CI ve main CI + gerçek FTP dağıtımı doğrulandı. Fiziksel Safari son görsel kabulü kullanıcıda.
 
+
+
+**Doğrulanmış yayın:** [PR #47](https://github.com/muhammetdkaya/codela-storefront/pull/47) ana dala [48dca650](https://github.com/muhammetdkaya/codela-storefront/commit/48dca650395ab25ad60fa56f86de89d8f165f88d) ile birleştirildi. [PR CI #39052714898](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39052714898) ve [main CI + FTP #39052882271](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39052882271) başarılı; dağıtım 2026-10-17 17:18:14Z `Storefront deployed; checks passed.` mesajını üretti. Plugin değişmedi. Son kontrol: gerçek iPhone Safari görüntüsü.
 
 ## 17 Ekim 2026 — 0.1.128 dönüşüm araçlarının kapalı panel hiyerarşisi (canlı doğrulandı)
 
