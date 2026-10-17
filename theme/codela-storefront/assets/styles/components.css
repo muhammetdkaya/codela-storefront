@@ -105,7 +105,7 @@ html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) d
   /* No invisible 1px borders: they inflate intrinsic first-paint height
      but were omitted by the final sheet's content-based measurement. */
   border:0 solid var(--sf-ui-glass-border);
-  border-radius:calc(var(--sf-ui-control-radius) + 8px);
+  border-radius:calc(var(--sf-ui-control-radius) + 16px);
   background:var(--sf-ui-glass-panel-surface)!important;
   color:var(--sf-ui-glass-ink);
   box-shadow:var(--sf-ui-glass-shadow)!important;
