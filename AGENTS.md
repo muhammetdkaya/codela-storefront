@@ -1,5 +1,10 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 17 Ekim 2026 — 0.1.128 dönüşüm araçlarının kapalı panel hiyerarşisi (test ve yayın bekliyor)
+
+Fiziksel Safari görüntüsünde ürün adı fiyatın altında kalıyor; Woo fiyat satırının içine eklenen UrgencyBadge stok ve sayaç mesajları fiyat kolonunu uzatıp sheet'i büyütüyor. Kullanıcı onayıyla orijinal tek Woo title/fiyat/`.cdl-ub` düğümleri korunarak mobil **ilk ve son karede aynı CSS grid** kuruluyor: başlık ve fiyat ilk satır, stok + canlı sayaç ikinci kompakt satır; sayaçtaki uzun prefix yalnız görselde gizlenir, gerçek `<span data-*>` ve ekran okuyucu metni durur. Ziyaretçi sayaç galeride kalır. Yalnız ürün CSS + prepaint/grid sözleşmesi; ayrı ticari mantık, yeni JS, kopya düğüm, Codela eklenti sürümü ve Woo satın alma eylemi yok. Test: 320/390/700, indirimli satış, yalnız stok/yolda sayaç/ikisi, ilk kareden mount'a 3px altı panel yüksekliği/pozisyonu, gerçek tek ticker ve timer değişimi. Doğrulama sonrasında PR+FTPS ve kaynak/AGENTS durumunu kaydet; öncesinde canlı demeyin.
+
+
 ## 17 Ekim 2026 — 0.1.127 ürün detayında iletişim ve güvenceler (canlı doğrulandı)
 
 Kullanıcının gerçek Safari ekranında ürün detay sheet içindeki WhatsApp satırı ayrı iri ikon + metin + sistemin dışında mavi emoji okla tamamlanmamış görünüyordu. Dört güvence de büyük boşluklarla serbest duran grid idi. Yalnız `product.css` tek görsel sahibi olacak: özgün `.cdl-wa-button` tam satır 64px dokunma hedefi, ortak `sf-ui-icon-button--soft` WhatsApp simgesi ve yerel `arrow-right.svg` maskesi; güvence HTML'i (`.cdl-tb`) özgün plugin verileriyle 2×2 tek ince çizgili grupta, desktop 4 sütun. Renkler mevcut tokenlara bağlı, WhatsApp simgesi yeşil, mavi emoji kaldırıldı. Yeni JavaScript, kopya plugin eylemi, sepet/galeri değişimi veya plugin sürümü yok. Ürün paneli ilk-kare/yükseklik ve galeri 0.1.126 korunacak. `tests/product-modules-browser.cjs` 320/390/700px gerçek genişlik, ok/glyph, erişilebilir link/URL, 2×2 düzen ve overflow testlerini çalıştırmalı. **PR CI, main CI ve gerçek FTPS başarıyla tamamlandı.** Fiziksel Safari görsel kabulü kullanıcıya aittir.
