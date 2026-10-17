@@ -2,7 +2,7 @@
 
 ## 17 Ekim 2026 — 0.1.123 gerçek ürün panelinin ilk çizimi
 
-Önceki 0.1.122 tasarımı yenilemede hâlâ boş alt alan gösteriyordu. Nedeni template içeriğinin JS olmadan görünür olmaması ve orijinal Woo summary ve formun gizlenmesiydi. 0.1.123 gerçek server Woo başlık/fiyat/cart formunu pending ilk kareden itibaren aynı sabit panelde gösterir, JS gelince zaten var olan tek düğüm kümesini mevcut galeri/panel sistemine taşır. Dummy CTA/form/başlık veya ayrı overlay eklenmez. Mevcut cam malzeme merkezi shared surface CSS üzerinden kullanılır; desktop/no-JS doğal davranış değişmez. Gecikmeli async ve klasik script senaryolarında ilk panel görünürlüğü ve koordinat kıyası testle doğrulanmalıdır.
+Önceki 0.1.122 tasarımı yenilemede hâlâ boş alt alan gösteriyordu. Nedeni template içeriğinin JS olmadan görünür olmaması ve orijinal Woo summary ve formun gizlenmesiydi. 0.1.123 gerçek server Woo başlık/fiyat/cart formunu pending ilk kareden itibaren aynı sabit panelde gösterir, JS gelince zaten var olan tek düğüm kümesini mevcut galeri/panel sistemine taşır. Dummy CTA/form/başlık veya ayrı overlay eklenmez. Mevcut cam malzeme merkezi shared surface CSS üzerinden kullanılır; desktop/no-JS doğal davranış değişmez. Gecikmiş klasik(4.3s) ve async adaptörde gerçek ilk panel title/form görünürlüğü CI ile doğrulandı; ilk/final panel y farkı0.078px, quantity genişliği aynı122px, CTA196→198px. PR#41 CI39019636478, ana dal+FTP39019817450 başarılı. Canlı WebKit39020037025, galeri39020037036, shell39020037013, continuity39020037024 başarılı; gerçek Kavis ürününde CSS0.1.123 ve tek native form tespit edildi. Canlı performans sonucu ve fiziksel Safari yenilemesi ayrı kabul kriteri olarak açık tutulmalı.
 
 
 ## 17 Ekim 2026 — Canlı performans son kabul eksik
