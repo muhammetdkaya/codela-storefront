@@ -1,9 +1,12 @@
 # Codela Storefront — güncel teknik durum
 
-## 17 Ekim 2026 — 0.1.131 ziyaretçi sayacı kaybolması (doğrulama bekliyor)
+## 17 Ekim 2026 — 0.1.131 ziyaretçi sayacı kaybolması (canlı doğrulandı)
 
-0.1.130 ile `#codela-live-visitor-container`'ı birinci görsele almak için kullanılan `counter.closest('.woocommerce-product-gallery')` gerçek WooCommerce şablonunda boş döner: `woocommerce_product_thumbnails` hook'u **galeri kapandıktan sonra** çalışır, gizli AJAX host'u `.product` içinde galeri sibling'i olarak render edilir. Test fixture daha önce galeri içine koyup bu gerçek düzeni gözden kaçırdı. Orijinal tek host artık ilgili `div.product` içindeki `.woocommerce-product-gallery.sf-ui-gallery` üzerinden aranır ve ilk slide'a alınır. Codela'nın REST sayısı, gizleme eşiği, `hidden`→async görünürlük mantığı, 1/N indeks stili, galeri akışı ve panel değişmedi. Yeni fixture gerçek sibling hook yerleşimini üretir, görünür API güncellemesini örnekleyip tek DOM / ilk foto ve sonraki foto kayması kontrolleriyle doğrular. CI ve canlı FTP bekliyor.
+0.1.130 ile `#codela-live-visitor-container`'ı birinci görsele almak için kullanılan `counter.closest('.woocommerce-product-gallery')` gerçek WooCommerce şablonunda boş döner: `woocommerce_product_thumbnails` hook'u **galeri kapandıktan sonra** çalışır, gizli AJAX host'u `.product` içinde galeri sibling'i olarak render edilir. Test fixture daha önce galeri içine koyup bu gerçek düzeni gözden kaçırdı. Orijinal tek host artık ilgili `div.product` içindeki `.woocommerce-product-gallery.sf-ui-gallery` üzerinden aranır ve ilk slide'a alınır. Codela'nın REST sayısı, gizleme eşiği, `hidden`→async görünürlük mantığı, 1/N indeks stili, galeri akışı ve panel değişmedi. Yeni fixture gerçek sibling hook yerleşimini üretir, görünür API güncellemesini örnekleyip tek DOM / ilk foto ve sonraki foto kayması kontrolleriyle doğrular. PR ve main CI + gerçek FTPS başarılı; fiziksel Safari görsel kabulü ayrıca bekleniyor.
 
+
+
+**Yayın onayı:** [PR #49](https://github.com/muhammetdkaya/codela-storefront/pull/49) [dfe718a7](https://github.com/muhammetdkaya/codela-storefront/commit/dfe718a75325940e9698c829e0fbbd98455252e9) ana dalda. [PR CI #39055205117](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39055205117) ve [main CI + FTP #39055367350](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39055367350) tüm kontrol adımları başarılı. 2026-10-17 17:53:20Z dağıtım günlüğü `Storefront deployed; checks passed.` kaydetti. Bu WP hook sibling HTML testi 0.1.130 regresyonunun yeniden oluşmasını önler. Gerçek cihaz Safari canlı sayaç görünümü son kullanıcı doğrulamasına açıktır.
 
 ## 17 Ekim 2026 — 0.1.130 ürün galerisi ziyaretçi metni ilk fotoğrafla birlikte kayar (canlı doğrulandı)
 
