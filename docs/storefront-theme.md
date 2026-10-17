@@ -1,5 +1,10 @@
 # Codela Storefront — güncel teknik durum
 
+## 17 Ekim 2026 — sıradaki plan: ürün alt alanı ve yönetilebilir ana sayfa
+
+**Yalnız planlama; henüz uygulanmadı veya yayımlanmadı.** Kullanıcının dört talebi ve kod incelemesine dayalı tasarım/uygulama/kabul planı [bu belgede](homepage-product-plan-2026-10-17.md). Ürün altına ek dış boşluk, menü aç/kapa sonrası aşağı atlama hatası, mevcut galeriyle yatay ana sayfa sliderı, kategori tanıtımları ve sırası/başlığı/kategori filtresi seçilebilir en fazla dört ürün bölümü. Ayarlar Codela → Ayarlar → Tema içinde; şema tema, genel ayar köprüsü eklenti sorumluluğunda. Kullanıcı uygulamayı sonraki çalışmada isteyecek; şimdilik runtime kodu/sürümü/yayını değiştirme. Uygulama istendiğinde ilk iş menü konum kaybını yeniden üretmek. Güncel canlı devam noktası aşağıdaki 0.1.133 kaydıdır.
+
+
 ## 17 Ekim 2026 — 0.1.133 galeri dışı ziyaretçi sayacını da gizle (canlı doğrulandı)
 
 0.1.132 ile galeri sırasında ziyaretçi metni 1/N yanında sabit ve arka plansızdır. Kullanıcı galerinin sonunda 1/N görünmezken ziyaretçinin görünmeye devam ettiğini raporladı. Mevcut `product.css` doğrudan `.woocommerce-product-gallery.is-discovering > .sf-product-visitor` selectorü plugin node başka kapsayıcıya taşınırsa çalışmaz. Sayfa kapsamlı `body.single-product.sf-product-sheet-ready:has(.woocommerce-product-gallery.is-discovering) #codela-live-visitor-container{visibility:hidden}` bunu aynı boundary'de gizler. Galeriye dönüşte eklentinin gerçek `hidden` ve min-display eşiği geçerliyse metin geri gelir. Sadece CSS ve regresyon testleri; JS, 1/N, panel, API değiştirilmedi. 320/390/700, plugin node galeri dışına taşınmışken de hide/restore test edilir. PR/main CI ve FTP doğrulaması başarılı; fiziksel Safari'deki son görünüm onayı kullanıcıya açık.
