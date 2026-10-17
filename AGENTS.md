@@ -1,5 +1,9 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Son cam katman düzeltmesi — 17 Ekim 2026 / 0.1.118 → 0.1.119
+
+118 CI+FTP ve dört canlı fonksiyon kontrolü geçti; büyük panel açık/kapalı alpha.78 doğrulandı. Ancak canlı WebKit açık-panel görüntüsünde arkadaki fotoğraf fazla keskin görünüyordu. Sheet'in contain:layout katmanı, dock'taki transform+isolation yolu ile aynı değildi.119 aynı identity translate3d(0,0,0)+isolation:isolate bileşimini kullanır; fixed native purchase için containing block fallback'i korunur. Saydamlık/tint .78 ve compact kontrol .96 değişmez. Bu renderer düzeltmesi119 CI/FTP ve YENİ WebKit görüntüsüyle doğrulanmadan bitti sayılmaz.118 kaynak/hash119 yerine geçmez. Önceki117 quantity işi büyük panel talebinin karşılığı değildi.
+
 ## Çalışma — 17 Ekim 2026 / 0.1.117 → 0.1.118 BÜYÜK panelin cam zemini
 
 Kullanıcı117 sonrasında açık ürün detay panelinin TÜM zeminini tekrar gösterdi. Önceki çalışmanın quantity odaklı düzeltmesi bu isteği karşılamadı; aynı .96 RGBA'nın CSS'te eşitliğini ileri sürmek fiziksel görsel isteğin kabulü değildi.118 değişikliği doğrudan sheet'in tamamındadır: mevcut ortak materyale sf-ui-surface--glass-panel varyantı ve --sf-ui-glass-panel-surface token'ı eklendi. Büyük panelin beyaz tint alpha'sı .96→.78; ortak247/247/249 renk ailesi,blur10,saturation1.15,gölge ve fallback'ler aynı. Bu bilinçli görünür saydamlık farkıdır, compact dock/header ile alpha'lar aynı denmez. Açık/kapalı tek aynı zemin; ayrı katman, ikinci form/scroll motoru yok. Ana sayfa dock/header rengi veya küçük kontroller değiştirilmez. Opak accessibility/forced-colors fallback'leri korunur.

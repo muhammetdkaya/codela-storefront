@@ -23,7 +23,7 @@ const {liveProduct}=require('./live-product.cjs');
   assert(await page.locator('.single_add_to_cart_button').isVisible());
   const release=await page.locator('link[href*="styles/product.css"]').getAttribute('href');
   const parts=new URL(release).searchParams.get('ver').split('.').map(Number);
-  assert(parts[0]>0||parts[1]>1||parts[2]>=118,'Updated purchase sheet must be live: '+release);
+  assert(parts[0]>0||parts[1]>1||parts[2]>=119,'Updated purchase sheet must be live: '+release);
   for(const node of await page.locator('.cdl-fsb-text,.cdl-fsb-track,.sf-product-sheet-body .cdl-wa').all()){
    assert(!(await node.isVisible()),'Closed panel contains no shipping or contact information');
   }

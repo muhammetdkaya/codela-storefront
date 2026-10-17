@@ -68,7 +68,7 @@ const alpha=color=>{
     const openTint=await page.locator('.sf-product-sheet').evaluate(e=>getComputedStyle(e).backgroundColor);
     assert.equal(alpha(openTint),.78,'Open and closed whole panel share the translucent glass tint');
     fs.mkdirSync('qa/surfaces',{recursive:true});
-    const panelPreview=await page.screenshot({path:'qa/surfaces/product-details-open-webkit-390.png'});
+    const panelPreview=await page.screenshot({path:'qa/surfaces/product-details-open-webkit-390.png',scale:'css'});
     console.log('PANEL_PREVIEW_BASE64 '+panelPreview.toString('base64'));
     console.log('PANEL_GLASS_WEBKIT '+JSON.stringify({closedAlpha:.78,openAlpha:alpha(openTint),compactAlpha:.96}));
     await page.locator('.sf-product-sheet-toggle').click();

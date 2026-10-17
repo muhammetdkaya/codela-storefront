@@ -500,8 +500,10 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
     transition:height var(--sf-ui-motion-panel) var(--sf-ui-ease-press);
     margin:0 auto;padding:0 0 calc(var(--sf-product-footer-height,0px) + 8px);
     border-radius:var(--sf-ui-control-radius);
-    /* One stable containing block also when reduced transparency removes blur. */
-    contain:layout;
+    /* Same composited surface path as the dock. Layout containment can leave
+       WebKit's backdrop unfiltered; an identity transform also preserves the
+       native fixed purchase containing block when transparency is reduced. */
+    transform:translate3d(0,0,0);isolation:isolate;
   }
   body.sf-product-sheet-ready .sf-product-sheet-header{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:grab}
   body.sf-product-sheet-ready .sf-product-sheet.is-holding .sf-product-sheet-header{cursor:grabbing}
