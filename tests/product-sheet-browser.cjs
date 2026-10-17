@@ -219,7 +219,7 @@ const afterPhoto=await page.locator('.woocommerce-product-gallery__image').first
 const frameDrift=Math.abs(beforePhoto.height-afterPhoto.height);
 console.log('PRODUCT_PREPAINT_FRAME '+JSON.stringify({before:beforePhoto.height,after:afterPhoto.height,drift:frameDrift}));
 assert(Math.abs(beforePhoto.y-afterPhoto.y)<1,'Hydration must not move the first photo top');
-assert(frameDrift<48,'Initial mobile photo uses same frame geometry as mounted gallery');
+assert(frameDrift<5,'Initial mobile photo preserves mounted frame geometry without a visible resize');
 assert.equal(await page.locator('.sf-product-sheet .product_title').count(),1,'Same native title moves exactly once into product panel');
 assert.equal(await page.locator('form.cart .single_add_to_cart_button').count(),1,'No duplicated purchase control during async hydration');
 await page.unroute('https://sheet-async.test/**');
