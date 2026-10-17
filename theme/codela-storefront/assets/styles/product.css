@@ -563,7 +563,7 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary form.cart .sf-product-purchase{
     position:relative;inset:auto;bottom:auto;left:auto;right:auto;z-index:auto;
     width:calc(100% + 32px);max-width:none;min-height:var(--sf-ui-bottom-bar-height);
-    margin:0 -16px -8px!important;padding:12px;gap:12px;
+    margin:0 -16px 0!important;padding:12px;gap:12px;
   }
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary form.cart .sf-product-purchase .single_add_to_cart_button{
     min-width:0;flex:1 1 0;font-size:14px;
