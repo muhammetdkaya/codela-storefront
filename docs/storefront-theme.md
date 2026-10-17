@@ -1,9 +1,12 @@
 # Codela Storefront — güncel teknik durum
 
-## 17 Ekim 2026 — 0.1.130 ürün galerisi ziyaretçi metni ilk fotoğrafla birlikte kayar (CI bekliyor)
+## 17 Ekim 2026 — 0.1.130 ürün galerisi ziyaretçi metni ilk fotoğrafla birlikte kayar (canlı doğrulandı)
 
-0.1.129 hâlâ `position:fixed` olduğundan ziyaretçi satırı sabit kalıyordu. Orijinal canlı Codela plugin elemanı, önceki `product-information.js` hareketi yerine native `.woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image:first-child` içine taşınıyor. Görseliyle scroll olur; `sf-product-gallery-count` `1 / 5` ise zaten canlı mevcut nesnedir, tekrar yaratılmaz, kendi güncellenmesi korunur. İlk fotoğraftaki ziyaretçi sayısı x=72px, görselin alt hizasında indeksle tek satır ve 12px/18px aynı stil; **background:none**, gölgesiz/çizgisiz/butonsuz, ayrıca ikon gizli. Mobil CSS viewport-fixed tamamen kaldırıldı; desktop/no-js rail çakışması engellendi. Detay açıkken gizli ve ilgili ürün geçişinde fotoğrafa bağlı zaten görünmez. 320/390/700 gerçek 3-foto browser düzeni ve scroll-test eklendi; Codela API ya da ek kod yok. PR CI ve canlı FTPS henüz doğrulanmadı.
+0.1.129 hâlâ `position:fixed` olduğundan ziyaretçi satırı sabit kalıyordu. Orijinal canlı Codela plugin elemanı, önceki `product-information.js` hareketi yerine native `.woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image:first-child` içine taşınıyor. Görseliyle scroll olur; `sf-product-gallery-count` `1 / 5` ise zaten canlı mevcut nesnedir, tekrar yaratılmaz, kendi güncellenmesi korunur. İlk fotoğraftaki ziyaretçi sayısı x=72px, görselin alt hizasında indeksle tek satır ve 12px/18px aynı stil; **background:none**, gölgesiz/çizgisiz/butonsuz, ayrıca ikon gizli. Mobil CSS viewport-fixed tamamen kaldırıldı; desktop/no-js rail çakışması engellendi. Detay açıkken gizli ve ilgili ürün geçişinde fotoğrafa bağlı zaten görünmez. 320/390/700 gerçek 3-foto browser düzeni ve scroll-test eklendi; Codela API ya da ek kod yok. PR/main CI ve canlı FTPS doğrulandı. Fiziksel Safari görünüm kontrolü ayrıca gerekli.
 
+
+
+**Yayın kapanışı:** [PR #48](https://github.com/muhammetdkaya/codela-storefront/pull/48) main'e [509055ca](https://github.com/muhammetdkaya/codela-storefront/commit/509055ca3b0274374b95623aa83e190ebdbc225d) ile birleştirildi. [PR testleri #39054152588](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39054152588) ve [main CI + FTP #39054341879](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39054341879) başarılı. Dağıtım 2026-10-17 17:38:04Z `Storefront deployed; checks passed.` döndü. Testler ilk fotoğraftaki 1/3 sayacıyla satır hizası, ikincide ziyaretçi metninin viewport'tan çıkması ve geri dönmesi senaryolarını 320/390/700px'de doğruladı. Codela plugin aynı; gerçek Safari son görsel kontrolü beklenecek.
 
 ## 17 Ekim 2026 — 0.1.129 küçük ziyaretçi bilgi etiketi (canlı doğrulandı)
 
