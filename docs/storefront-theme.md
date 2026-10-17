@@ -1,9 +1,12 @@
 # Codela Storefront — güncel teknik durum
 
-## 17 Ekim 2026 — 0.1.129 küçük ziyaretçi bilgi etiketi (doğrulama bekliyor)
+## 17 Ekim 2026 — 0.1.129 küçük ziyaretçi bilgi etiketi (canlı doğrulandı)
 
-Safari ekranındaki ziyaretçi sayısı, `components.css` ortak buton GlassSurface yüzeyi yüzünden ürün görseline hakim beyaz/gölgeli kapsül halinde görünüyordu. Bu **etkileşimsiz bilgi öğesi** ortak buton yüzeyinden çıkarılıp `product.css` altında 24px civarında, düşük opaklıklı saydam yüzey, gölge/border/blur olmadan, 11px yazı ve 13px gözle tanımlandı. `cdl-lv` gerçek plugin HTML'i ve AJAX canlı sayaç korunur, header/gallery/panel geometrisi ve görsel kaydırma kodu değişmez, açık sheet'te görünmez. 320/390/700/900/1280px Playwright CSS kontrolü eklendi. Testler ve canlı FTPS henüz tamamlanmadı.
+Safari ekranındaki ziyaretçi sayısı, `components.css` ortak buton GlassSurface yüzeyi yüzünden ürün görseline hakim beyaz/gölgeli kapsül halinde görünüyordu. Bu **etkileşimsiz bilgi öğesi** ortak buton yüzeyinden çıkarılıp `product.css` altında 24px civarında, düşük opaklıklı saydam yüzey, gölge/border/blur olmadan, 11px yazı ve 13px gözle tanımlandı. `cdl-lv` gerçek plugin HTML'i ve AJAX canlı sayaç korunur, header/gallery/panel geometrisi ve görsel kaydırma kodu değişmez, açık sheet'te görünmez. 320/390/700/900/1280px Playwright CSS kontrolü eklendi. PR CI, main CI ve gerçek FTPS başarılı. Fiziksel Safari son görsel kabulü ayrıca gerekli.
 
+
+
+**Doğrulanmış yayın:** [PR #47](https://github.com/muhammetdkaya/codela-storefront/pull/47) ana dala [48dca650](https://github.com/muhammetdkaya/codela-storefront/commit/48dca650395ab25ad60fa56f86de89d8f165f88d) ile birleştirildi. [PR CI #39052714898](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39052714898) ve [main CI + FTP #39052882271](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39052882271) başarılı; dağıtım 2026-10-17 17:18:14Z `Storefront deployed; checks passed.` mesajını üretti. Plugin değişmedi. Son kontrol: gerçek iPhone Safari görüntüsü.
 
 ## 17 Ekim 2026 — 0.1.128 dönüşüm modülleri ile kapalı panel kompaktlığı (canlı doğrulandı)
 
