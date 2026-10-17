@@ -474,6 +474,12 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   html:has(body.sf-product-sheet-open),body.sf-product-sheet-open{overflow:hidden;overscroll-behavior-y:contain;scroll-snap-type:none}
   body.sf-product-sheet-ready .sf-content{padding-bottom:0!important}
   body.sf-product-sheet-ready div.product{margin:0}
+  /* Reserve the normal compact header/purchase overlap while the original
+     Woo nodes are still waiting to be reparented. The adapter replaces this
+     estimate with actual measured geometry before revealing the sheet. */
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready){
+    --sf-product-photo-inset:133px;
+  }
   /* Photo presentation is identical before and after the adapter moves the
      existing Woo nodes. Pending is strictly a visibility state, not a second
      desktop/mobile gallery layout. No-JS has neither class and stays native. */
