@@ -1,5 +1,10 @@
 # Codela Storefront — güncel teknik durum
 
+## 17 Ekim 2026 — 0.1.124 ilk-kare cam yüzey ayrışması
+
+0.1.123'te orijinal Woo satın alma formu ilk kareden itibaren gösterildi ancak fiziksel Safari 12:24 ekranında yeni sorun ortaya çıktı: ilk `.summary` paneli 999px pill biçiminde ve `.sf-product-purchase` ikinci beyaz cam katmanıyla; nihai `.sf-product-sheet` ise 20px normal köşeli, footer şeffaf. Tek kaynak `components.css` generic glass primitive selector grubuna native `.summary` ve footer'ın eklenmesiydi; 0.1.123'te tasarım gerçekte tek kaynak değildi. 0.1.124'ta generic pill yüzeyinden pending summary ve gerçek sheet ayrılıp ortak tek panel surface/material tanımında buluşturuldu; doğal `.sf-product-purchase` sadece panelin içinde, pending ve mounted hâlde tek kural ile şeffaf. Yineleyen `product.css` radius kaldırıldı. İlk/son malzemenin CSS computed style değerleri, panel geometrisi ve tek form Playwright testi ile kabul edilmelidir. Özellik/HTML/ürün galerisi değiştirilmez. Fiziksel Safari ve canlı performans ayrı doğrulanır.
+
+
 ## 17 Ekim 2026 — 0.1.123 gerçek ürün panelinin ilk çizimi
 
 Önceki 0.1.122 tasarımı yenilemede hâlâ boş alt alan gösteriyordu. Nedeni template içeriğinin JS olmadan görünür olmaması ve orijinal Woo summary ve formun gizlenmesiydi. 0.1.123 gerçek server Woo başlık/fiyat/cart formunu pending ilk kareden itibaren aynı sabit panelde gösterir, JS gelince zaten var olan tek düğüm kümesini mevcut galeri/panel sistemine taşır. Dummy CTA/form/başlık veya ayrı overlay eklenmez. Mevcut cam malzeme merkezi shared surface CSS üzerinden kullanılır; desktop/no-JS doğal davranış değişmez. Gecikmiş klasik(4.3s) ve async adaptörde gerçek ilk panel title/form görünürlüğü CI ile doğrulandı; ilk/final panel y farkı0.078px, quantity genişliği aynı122px, CTA196→198px. PR#41 CI39019636478, ana dal+FTP39019817450 başarılı. Canlı WebKit39020037025, galeri39020037036, shell39020037013, continuity39020037024 başarılı; gerçek Kavis ürününde CSS0.1.123 ve tek native form tespit edildi. Canlı performans sonucu ve fiziksel Safari yenilemesi ayrı kabul kriteri olarak açık tutulmalı.
