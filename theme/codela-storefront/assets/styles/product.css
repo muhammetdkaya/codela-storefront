@@ -492,7 +492,7 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
     transform:scaleX(var(--sf-ui-scale-icon));
   }
 }
-.sf-product-sheet-heading{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,42%);align-items:center;column-gap:10px;row-gap:0}
+.sf-product-sheet-heading{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,42%);grid-template-rows:minmax(28px,max-content);grid-auto-rows:max-content;align-items:center;column-gap:10px;row-gap:0}
 /* Price and urgency are laid out as peers to the native title, without
    moving or cloning plugin nodes. The mobile rules below also apply prepaint. */
 .sf-product-sheet-toggle.sf-ui-button{position:absolute;left:calc(50% - 35px);top:0;width:70px;min-width:70px;min-height:44px;padding:0;--sf-ui-button-height:44px;--sf-ui-button-font-size:0px;--sf-ui-button-padding-y:0px;gap:0}
@@ -644,8 +644,8 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   body.single-product.sf-product-sheet-ready div.product .sf-product-sheet-heading .sf-product-price-row > .cdl-ub{
     grid-column:1/-1;grid-row:2;display:grid;
     grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;
-    width:100%;min-width:0;margin:8px 0 0;
-    font-size:11px;line-height:1.4;
+    width:100%;min-width:0;height:16px;margin:8px 0 0;
+    font-size:11px;line-height:16px;
   }
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary .cdl-ub-item,
   body.single-product.sf-product-sheet-ready div.product .sf-product-sheet-heading .cdl-ub-item{
