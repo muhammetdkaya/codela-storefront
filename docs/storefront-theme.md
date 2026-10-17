@@ -1,5 +1,10 @@
 # Codela Storefront — güncel teknik durum
 
+## 17 Ekim 2026 — 0.1.133 galeri dışı ziyaretçi sayacını da gizle (CI bekliyor)
+
+0.1.132 ile galeri sırasında ziyaretçi metni 1/N yanında sabit ve arka plansızdır. Kullanıcı galerinin sonunda 1/N görünmezken ziyaretçinin görünmeye devam ettiğini raporladı. Mevcut `product.css` doğrudan `.woocommerce-product-gallery.is-discovering > .sf-product-visitor` selectorü plugin node başka kapsayıcıya taşınırsa çalışmaz. Sayfa kapsamlı `body.single-product.sf-product-sheet-ready:has(.woocommerce-product-gallery.is-discovering) #codela-live-visitor-container{visibility:hidden}` bunu aynı boundary'de gizler. Galeriye dönüşte eklentinin gerçek `hidden` ve min-display eşiği geçerliyse metin geri gelir. Sadece CSS ve regresyon testleri; JS, 1/N, panel, API değiştirilmedi. 320/390/700, plugin node galeri dışına taşınmışken de hide/restore test edilir. CI/main/FTP bekleniyor.
+
+
 ## 17 Ekim 2026 — 0.1.132 galeri ziyaretçi göstergesi ve panel radius (canlı doğrulandı)
 
 Gerçek Woo `#codela-live-visitor-container` galerinin sibling'i; mevcut `product-information.js` aynı host'u galeri içine alıyor, bu revizyon ilk ürün fotoğrafına değil **gallery root** içine alıp `1/N` ile aynı sabit viewport alt satırda tutuyor. CSS metin 12px, göz yok, `background:none`, `position:fixed` ve galeri sayacının alt hizası birebir aynı; fotoğraf değişimlerinde `hidden`/count etkilenmez. Panel ortak `components.css` yüzey radius +8 yerine +16px (default 20→28px), prepaint/mounted bir. Codela `min_display=2` ve `disable_mobile` sebebiyle canlı sayı1 olduğunda/hide-on-mobile seçiliyken host görünmez; plugin gizlemesini zorla açmak ya da sahte veri üretmek doğru değil. Test: 320/390/700 mobil aynı baseline, panel radius, foto2/3 ve görünürlük sürekliliği; ayar eşiği ayrıca açıkça raporlanacak. PR/main CI ve FTPS başarılı; gerçek Safari görüntüsü ve canlı REST count/site min_display ayarı henüz doğrulanmadı.

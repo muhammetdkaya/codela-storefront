@@ -429,8 +429,33 @@ for(const width of [320,390,700]){
  assert.equal(second.visitorText,first.visitorText,'Gallery scroll does not alter real visitor count '+width);
  assert(Math.abs(second.visitorY-first.visitorY)<2,'Visitor never disappears or moves while scrolling photos '+width+' '+JSON.stringify({first,second}));
  assert(Math.abs(second.visitorY-second.indexY)<2,'Gallery 2/N and visitor stay in the same row '+width);
+ // The native 1/N label already disappears in discovery. The live visitor
+ // must follow that SAME boundary even if a plugin repositions its single
+ // host outside the gallery (which bypassed the former direct-child CSS).
+ if(width===390){
+   await original.evaluate(el=>document.body.appendChild(el));
+   assert(await original.isVisible(),'Plugin reparenting preserves valid live visitor visibility');
+ }
+ await page.evaluate(()=>{
+   const e=document.querySelector('.sf-product-discovery');
+   window.scrollTo({top:scrollY+e.getBoundingClientRect().top,behavior:'instant'});
+ });
+ await page.waitForFunction(()=>document.querySelector('.woocommerce-product-gallery').classList.contains('is-discovering'));
+ await page.waitForFunction(()=>{
+   const gallery=document.querySelector('.woocommerce-product-gallery');
+   const count=gallery.querySelector('.sf-product-gallery-count');
+   const visitor=document.getElementById('codela-live-visitor-container');
+   return getComputedStyle(count).visibility==='hidden'&&getComputedStyle(visitor).visibility==='hidden';
+ });
+ assert.equal(await original.isVisible(),false,'Visitor disappears alongside 1/N after final photo '+width);
+ assert.equal(await page.locator('.sf-product-gallery-count').isVisible(),false,'Gallery count also disappears in related products '+width);
+ assert.equal(await original.getAttribute('hidden'),null,'Theme only hides visual placement, not plugin live threshold '+width);
  await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+ await page.waitForFunction(()=>!document.querySelector('.woocommerce-product-gallery').classList.contains('is-discovering'));
  await page.waitForFunction(()=>document.querySelector('.sf-product-gallery-count').textContent==='1 / 3');
+ assert(await page.locator('.sf-product-gallery-count').isVisible(),'Gallery count returns when entering photos '+width);
+ assert(await original.isVisible(),'Still-live visitor returns with gallery index '+width);
+ if(width===390)await original.evaluate(el=>document.querySelector('.woocommerce-product-gallery').appendChild(el));
  await page.locator('.sf-product-sheet-toggle').click();
  assert.equal(await original.evaluate(el=>getComputedStyle(el).visibility),'hidden','Expanded product detail keeps gallery metadata behind details '+width);
 }
