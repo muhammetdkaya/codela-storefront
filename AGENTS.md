@@ -1,5 +1,10 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 17 Ekim 2026 — 0.1.127 ürün detayında iletişim ve güvenceler (PR doğrulaması bekliyor)
+
+Kullanıcının gerçek Safari ekranında ürün detay sheet içindeki WhatsApp satırı ayrı iri ikon + metin + sistemin dışında mavi emoji okla tamamlanmamış görünüyordu. Dört güvence de büyük boşluklarla serbest duran grid idi. Yalnız `product.css` tek görsel sahibi olacak: özgün `.cdl-wa-button` tam satır 64px dokunma hedefi, ortak `sf-ui-icon-button--soft` WhatsApp simgesi ve yerel `arrow-right.svg` maskesi; güvence HTML'i (`.cdl-tb`) özgün plugin verileriyle 2×2 tek ince çizgili grupta, desktop 4 sütun. Renkler mevcut tokenlara bağlı, WhatsApp simgesi yeşil, mavi emoji kaldırıldı. Yeni JavaScript, kopya plugin eylemi, sepet/galeri değişimi veya plugin sürümü yok. Ürün paneli ilk-kare/yükseklik ve galeri 0.1.126 korunacak. `tests/product-modules-browser.cjs` 320/390/700px gerçek genişlik, ok/glyph, erişilebilir link/URL, 2×2 düzen ve overflow testlerini çalıştırmalı. **Kod/PR/CI ve FTPS yayın birbirinden ayrıdır; CI başarılı olmadan canlı deyip kapatma.**
+
+
 ## 17 Ekim 2026 — 0.1.126 sağ dikey üç önizleme
 
 Kullanıcı sağdaki dikey galeri önizlemesinin üçünün de **tam çember** olmasını istiyor. `gallery.css` içindeki mevcut `sf-product-gallery-thumb sf-ui-icon-button` gerçek Woo görsel seçim butonlarını kullanmaya devam eder; mobil hazır ürün sayfasında (<=700px) ortak `sf-ui-icon-button` yarıçapını yalnız bu alt tip için `border-radius:50%` yap, kare 44×44 gerçek dokunma alanı ve `overflow:hidden` korunsun. Mevcut image `object-fit:cover` ve 3-item active window kullanılmaya devam etsin. Header/sheet/dock materyaline dokunma, JS veya template'te kopya thumbnail yazma. Tarayıcı testi 320/390/700 mobilde üç görünür butonun çap eşitliğini, çember köşelerini ve kırpmayı denetler. 0.1.126 ancak PR CI + FTP + canlı ürün galeri/WebKit kabulü başarıyla bitince tamam kabul edilsin.

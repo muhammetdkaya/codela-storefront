@@ -1,5 +1,10 @@
 # Codela Storefront — güncel teknik durum
 
+## 17 Ekim 2026 — 0.1.127 WhatsApp iletişim ve sipariş güvencesi düzeni (doğrulama bekliyor)
+
+Kullanıcının ürün detay paneli Safari görüntüsünde WhatsApp bağlantısı ayrı ikon/etiket ve mavi emoji ok, güvence öğeleri ise havada duran 2×2 sütunlar olarak görünüyor. Tek orijinal plugin WhatsApp `<a>` öğesi 64px tam genişlikli temas satırı, ortak soft IconButton ve mevcut `arrow-right.svg` maskeli çıkış oku ile düzenlendi. Güvence modülü özgün merchant label/SVG/resim ayarları, dinamik açılıp-kapanma ve sıra korunarak tek `cdl-tb` kapsayıcıda ince çerçeve ve iç çizgilerle toplandı (mobil iki, desktop dört sütun). Product sheet içindeki 20px kenar payı, ikinci yüzey yerine hafif token temelli tint, 44px özgün IconButton, galeri, Woo native form, kapalı ilk kare aynı. Yeni eklenti kodu/JS/üçüncü parti bağımlılık yok. Mobil 320/390/700px expanded-sheet regresyonu test dosyasına eklendi. **0.1.127 CI/FTPS ve fiziksel Safari henüz onaylanmadı**; önce PR browser/PHP/package kontrolü, sonra güvenli main birleştirmesi ve dağıtım kontrolü yapılmalı.
+
+
 ## 17 Ekim 2026 — 0.1.126 mobil ürün galerisi üç çember önizleme
 
 Mevcut JS 5 görsel içinden aynı anda üç adet sağ dikey native IconButton gösteriyor. İstenen görünüm yalnız küçük önizlemelerde tam çemberdir; galerinin resim kaydırma/geçiş motoru değiştirilmez. `gallery.css` tek mobil product gallery selector'ında `border-radius:50%`, `aspect-ratio:1` uygular. Var olan 44px kontrol ölçüleri, `overflow:hidden`, `object-fit:cover`, alt bar, header ve materyaller korunur. `product-sheet-browser.cjs` üç kontrolün eş çapta kare geometri/50% yarıçap/kırpmaya sahip olduğunu 320/390/700'de doğrular. CI ve canlı galeri/WebKit geçmeden canlı tamamlandı denmez.
