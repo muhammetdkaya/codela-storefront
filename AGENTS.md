@@ -1,5 +1,16 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 18 Ekim 2026 — düzeltme: mevcut sayfa editörünün altında Codela paneli (kabul/yayın bekliyor)
+
+Kullanıcı açıklaması önceki ayrı ekran kararını geçersiz kılar. WordPress Sayfa Düzenle ekranı, içerik alanı, başlık ve yayın kontrolleri korunur. Codela Sayfa Yerleşimi native normal-context metabox olarak içerik alanının altında bulunur; post.php başka ekrana yönlendirilmez. Yeni bölümler post_content içine eklenmez. Tek `_codela_page_layout` kayıtlı sayfa meta alanı native REST/kaydetme, autosave ve revizyonları kullanır. Aynı bölüm alanları, şema, renderer, Woo kartları ve galeri korunur; ayrı EditorProvider veya yönetim düzenleyicisi yoktur. Eski block-root içerikler kendiliğinden silinmez/taşınmaz; kullanıcı panelde taşı deyip normal Güncelle ile kaydeder. Normal metin ve karma sayfa içeriği korunur.
+
+Eklenti 1.1.5 → 1.1.6, panel varlıkları 1.1.0 → 1.2.0; tema 0.1.136 → 0.1.137 metadata bölüm verisinin asset/navigation taramasında okunması içindir. Mevcut ana sayfa ataması ve içerikler değişmez; WordPress.org yayını yoktur. Yerel JS/PHP ve tema preview-contract kontrolü yapıldı; gerçek WP/Woo Gutenberg+Classic, native kayıt/yeniden açma, metin izolasyonu, medya/sıra, preview, eski içerik aktarımı ve revizyon kabulü ile iki FTP yayını bekliyor. Ürün LCP 3616ms açık işi değişmez. Fiziksel Safari/üretim oturumuyla kayıt ayrıca yapılmış sayılmaz.
+
+Sıradaki somut iş: CI kabulünü tamamla; tema ve eklenti PR doğrulamaları sonrası canlı dağıtımları ve bu iki kaydı kanıtla kapat. Ayrı yönetim ekranı veya içerik içine blok eklemeye dönme.
+
+
+
+
 ## 18 Ekim 2026 — bağımsız Codela sayfa ekranı 1.1.5 canlı
 
 **Son doğrulanmış devam noktası:** Codela **1.1.4 → 1.1.5**, düzenleyici varlıkları **1.0.2 → 1.1.0**; bağımsız tema **0.1.136 değişmedi**. Kullanıcının onayladığı ayrı Codela yönetim ekranı tamamlandı. Önceki Gutenberg odak modu bu hedefi karşılamıyordu; alanların editör içinde kalması bu sürümde düzeltildi.
