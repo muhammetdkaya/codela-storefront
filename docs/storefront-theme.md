@@ -1,5 +1,11 @@
 # Codela Storefront — güncel teknik durum
 
+## 18 Ekim 2026 — sayfa bölümleri analizi; uygulama bekliyor
+
+Kullanıcı önce analiz ve yol haritası istedi; **runtime uygulama/yayın yetkisi bu aşamada kullanılmaz**. [Ayrıntılı analiz ve yol haritası](https://github.com/muhammetdkaya/codela-storefront/blob/main/docs/page-sections-analysis-roadmap-2026-10-18.md) kaynak incelemesiyle hazırlandı. Öneri: tek Codela sayfa düzenleyicisi, sayfaya ait native blok verisi, Codela Tema menüsünden aynı editöre giriş; global header/footer/tasarım ayarları ayrı. Yaklaşık 10 sıralanabilir bölüm; tek üst vitrin modeli, seçilebilir kategori görünümleri, aralara eklenebilen tanıtımlar ve ortak Woo ürün bölümleri. Mevcut repeater'a yama eklemek yerine sayfa düzeni modeli yeniden kurulacak; ortak galeri/ürün/UI korunacak. Önerilen veri modeli ve bütçeler henüz uygulanmış/onaylanmış ürün davranışı değildir.
+
+İş sırası: editör/sözleşme → gerçek WP uçtan uca temel → tüm görünümler → hız/gezinme → güvenli içerik geçişi ve eski formların kapanışı → doğrulama/yayın. Sayfa altına ikinci içerik deposu ve iki canlı yazıcı kurulmayacak. Rapor gerçek admin oturumu veya canlı performans ölçümü değildir. Bu çalışma yalnız dokümantasyondur; sürüm artırılmadı, runtime test/yayın yapılmadı. Önceki canlı durum aşağıdaki kayıtlarda geçerlidir.
+
 ## 18 Ekim 2026 — ana sayfa ayar köprüsü de canlı; yayın tamamlandı
 
 **Codela eklenti köprüsü canlı.** [39072208350](https://github.com/muhammetdkaya/codela/actions/runs/39072208350) sabit kaynak **d3ef4fc0eb72e64fa3756a3c6da1587f9cf50a5f** için validate117511971539 (PHP/JS, güvenlik testleri ve gerçek tema ayar renderer tarayıcı kabulü) ve deploy117512163855 **success**. Log: **2026-10-17T22:17:16.4621441Z Deployed d3ef4fc0eb72e64fa3756a3c6da1587f9cf50a5f; 986 files verified.** FTPS/public mapping, bütün dosyaların checksum readback'i, atomik bootstrap geçişi, public manifest ve WordPress REST sağlık kontrolü geçti.22:22:17Z bütçeli temizlik kalan eski release'leri sonraki yayına bıraktı; bu uyarı yayın başarısızlığı değildir. Özel rollback artifact adımı başarılı.
