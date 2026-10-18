@@ -83,7 +83,7 @@ add_action( 'woocommerce_before_shop_loop_item_title', 'codela_sf_catalog_stock_
 
 /** Preserve deferred home collection thumbnails without delaying the hero. */
 function codela_sf_catalog_image_attributes( array $attributes ): array {
-    if ( is_front_page() && doing_action( 'woocommerce_before_shop_loop_item_title' ) ) {
+    if ( ( is_front_page() || ( function_exists( 'wc_get_loop_prop' ) && wc_get_loop_prop( 'codela_defer_images', false ) ) ) && doing_action( 'woocommerce_before_shop_loop_item_title' ) ) {
         $attributes['loading'] = 'lazy';
         $attributes['decoding'] = 'async';
         unset( $attributes['fetchpriority'] );

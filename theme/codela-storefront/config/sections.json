@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "variants": {
+    "hero": {
+      "showcase": "Vitrin"
+    },
+    "categories": {
+      "compact": "Kompakt kartlar · A",
+      "editorial": "Editoryal satırlar · B",
+      "bands": "Görsel bantlar · C",
+      "mosaic": "Bir büyük + iki küçük",
+      "carousel": "Yatay galeri",
+      "grid": "Sade ızgara"
+    },
+    "products": {
+      "grid": "Ortak ürün kartları"
+    },
+    "promo": {
+      "inset": "Çerçeveli görsel",
+      "split": "Metin + görsel",
+      "editorial": "Editoryal",
+      "banner": "Geniş görsel bant"
+    }
+  }
+}

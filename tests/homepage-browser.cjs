@@ -1,30 +1,19 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),{execFileSync}=require('node:child_process');
-const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
-const root='theme/codela-storefront/';
-const html=execFileSync(process.env.PHP_BIN||'php',['tests/homepage.php'],{encoding:'utf8',env:{...process.env,RENDER_HOME:'1'}});
-const css=['assets/styles/tokens.css','assets/storefront.css','assets/styles/components.css','assets/styles/catalog.css','assets/styles/gallery.css','assets/styles/homepage.css'].map(p=>fs.readFileSync(root+p,'utf8')).join('\n');
-(async()=>{const browser=await chromium.launch(process.env.CHROMIUM_BIN?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-dev-shm-usage']}:{});try{
- for(const width of [320,390,700,1280]){
- const page=await browser.newPage({viewport:{width,height:844},hasTouch:true,reducedMotion:'reduce'});
- const errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.route('**/*',route=>new URL(route.request().url()).pathname==='/'?route.fulfill({contentType:'text/html',body:'<html></html>'}):route.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900"><rect width="1200" height="900" fill="#d8cdbd"/></svg>'}));
+const {chromium,webkit}=require(process.env.PLAYWRIGHT_MODULE||'playwright'),root='theme/codela-storefront/';
+const css=['styles/tokens.css','storefront.css','styles/components.css','styles/catalog.css','styles/gallery.css','styles/sections.css'].map(p=>fs.readFileSync(root+'assets/'+p,'utf8')).join('\n');
+(async()=>{const browser=await (process.env.TEST_WEBKIT?webkit:chromium).launch(process.env.CHROMIUM_BIN&&!process.env.TEST_WEBKIT?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-dev-shm-usage']}:{});try{
+for(const width of [320,390,700,1280])for(const promos of ['split,inset','editorial,banner']){
+ const html=execFileSync(process.env.PHP_BIN||'php',['tests/homepage.php'],{encoding:'utf8',env:{...process.env,RENDER_HOME:'1',PROMO_VARIANTS:promos}});assert(!html.includes('Fatal error'));
+ const page=await browser.newPage({viewport:{width,height:844},hasTouch:true,reducedMotion:'reduce'}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/*',route=>new URL(route.request().url()).pathname==='/'?route.fulfill({contentType:'text/html',body:'<html></html>'}):route.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900"><rect width="1200" height="900" fill="#cbbdad"/><circle cx="620" cy="440" r="230" fill="#e8dfcf"/></svg>'}));
  await page.goto('https://store.test/');
- await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body class="home"><main class="sf-content">'+html+'</main></body></html>');
- await page.addScriptTag({content:fs.readFileSync(root+'assets/scripts/gallery-defer.js','utf8')});
- assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal page overflow '+width);
- assert.equal(await page.locator('[data-gallery-count]').textContent(),'1 / 2');
- await page.locator('[data-gallery-next]').click();await page.waitForFunction(()=>document.querySelector('[data-gallery-count]').textContent==='2 / 2');
- assert(await page.locator('[data-gallery-next]').isDisabled());
- await page.locator('.sf-ui-gallery-track').focus();await page.keyboard.press('Home');await page.waitForFunction(()=>document.querySelector('[data-gallery-count]').textContent==='1 / 2');
- assert(await page.locator('[data-gallery-prev]').isDisabled());
- assert.equal(await page.locator('.sf-home-category-grid').evaluate(e=>getComputedStyle(e).gridTemplateColumns.split(' ').length),width<=700?2:4);
- // Long editor content still leaves the real CTA reachable above navigation.
- await page.locator('.sf-home-slide-copy h1').evaluate(e=>e.textContent='Doğal dokularla yaşam alanınıza sıcaklık katan özel koleksiyonlardan seçmeler ve yeni ürünler');
- await page.locator('.sf-home-slide-copy p').evaluate(e=>e.textContent='Doğal taş ve sade çizgilerle yaşam alanınızı keşfedin. '.repeat(6));
- const metrics=await page.locator('.sf-home-slide-copy .sf-ui-button').evaluate(e=>{const r=e.getBoundingClientRect(),s=document.querySelector('.sf-home-slider').getBoundingClientRect(),nav=document.querySelector('.sf-home-slider-controls').getBoundingClientRect();return{inside:r.top>=s.top&&r.bottom<=s.bottom,clear:r.right<nav.left||r.bottom<=nav.top}});
- assert(metrics.inside&&metrics.clear,'Long text keeps CTA inside slider and clear of navigation '+width);
- if(process.env.SAVE_SCREENSHOT){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:'qa/homepage-'+width+'.png',fullPage:true});}
- assert.deepEqual(errors,[]);await page.close();
- }
- console.log('Homepage horizontal gallery, keyboard, responsive categories, CTA and long-text layout passed.');
+ await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body class="home"><main class="sf-content">'+html+'</main></body></html>');await page.addScriptTag({content:fs.readFileSync(root+'assets/scripts/gallery-horizontal.js','utf8')});
+ assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No page overflow '+width+' '+promos);assert.equal(await page.locator('.sf-section').count(),10);assert.equal(await page.locator('h1').count(),1);assert.equal(await page.locator('img[fetchpriority=high]').count(),1);
+ const galleries=page.locator('[data-sf-gallery]');assert.equal(await galleries.count(),4);
+ for(let i=0;i<await galleries.count();i++){const gallery=galleries.nth(i),track=gallery.locator('.sf-ui-gallery-track'),count=gallery.locator('[data-gallery-count]');assert((await count.textContent()).startsWith('1 / '));await gallery.locator('[data-gallery-next]').click();await page.waitForFunction(el=>!el.textContent.startsWith('1 / '),await count.elementHandle());await track.focus();await page.keyboard.press('End');await page.waitForFunction(el=>el.disabled,await gallery.locator('[data-gallery-next]').elementHandle());await page.keyboard.press('Home');await page.waitForFunction(el=>el.disabled,await gallery.locator('[data-gallery-prev]').elementHandle());}
+ await page.addScriptTag({content:fs.readFileSync(root+'assets/scripts/gallery-horizontal.js','utf8')});
+ const hero=page.locator('.sf-section--hero');await hero.locator('h1').evaluate(e=>e.textContent='Doğal dokularla yaşam alanınıza sıcaklık katan özel koleksiyonlardan seçmeler ve yeni ürünler');await hero.locator('.sf-section-copy p').first().evaluate(e=>e.textContent='Doğal taş ve sade çizgilerle yaşam alanınızı keşfedin. '.repeat(6));const bounds=await hero.evaluate(el=>{const r=el.getBoundingClientRect(),c=el.querySelector('.sf-section-copy').getBoundingClientRect(),b=el.querySelector('.sf-ui-button').getBoundingClientRect();return{top:c.top-r.top,bottom:b.bottom-r.top,height:r.height};});assert(bounds.top>=0&&bounds.bottom<=bounds.height,'Long copy '+JSON.stringify(bounds));
+ assert.equal(await page.locator('.sf-categories--editorial .sf-category-story').first().evaluate(e=>getComputedStyle(e).display),'grid');assert(await page.locator('.sf-categories--carousel .sf-category-story').first().evaluate(e=>e.getBoundingClientRect().width<e.parentElement.getBoundingClientRect().width*.9),'Next card peeks');
+ if(process.env.SAVE_SCREENSHOT){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:'qa/sections-'+width+'-'+promos.split(',')[0]+'.png',fullPage:true});}assert.deepEqual(errors,[]);await page.close();
+}console.log('10 sections, all variants, independent galleries, keyboard, LCP/H1 and long-copy checks passed.');
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});
