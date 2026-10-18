@@ -1,5 +1,17 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 18 Ekim 2026 — responsive medya ve gerçek önizleme canlı; ürün hız bütçesi açık
+
+**Tema 0.1.135 → 0.1.136; Codela 1.1.3 → 1.1.4; editör varlıkları 1.0.1 → 1.0.2 canlı.** Mobil picture/source artık bölümün sizes değerini kullanır; dar kategoriler tam ekran görsel istemez. Önizleme yetenekleri queried autosave içeriğinden okunur. Kompakt Codela editörü korunarak native WordPress taslak/autosave belgesi mobil/masaüstü iframe'de açılır; yenileme, hata/kilit koruması ve iframe Escape vardır. İkinci renderer, içerik deposu veya kayıt API'si yok; kullanıcı içeriği/ana sayfa ataması değiştirilmedi.
+
+**Kanıt:** tema PR #54 / squash [4a8e1a61](https://github.com/muhammetdkaya/codela-storefront/commit/4a8e1a613b2d4df09693559ca209186210855bf3), [PR CI39119705579](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39119705579), [main validate+FTP39119945493](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39119945493) başarılı; log 10:42:32 UTC deployed/checks passed. Eklenti PR #5 / squash [2eebd29d](https://github.com/muhammetdkaya/codela/commit/2eebd29d58122a2420a3d270aef922e5e4b914fa); [gerçek WP/Woo39120406821](https://github.com/muhammetdkaya/codela/actions/runs/39120406821) WP6.5.5/Woo9.0.2 + güncel WP/Woo Chromium/WebKit başarılı. [Main validate+FTP39120685260](https://github.com/muhammetdkaya/codela/actions/runs/39120685260) başarılı: 10:49:35 UTC **991 dosya doğrulandı, 5 aktarıldı, 986 korundu**. Free-edition39120685203 başarılı; WordPress.org yayımlanmadı.
+
+Canlı galeri39120320672, WebKit39120320645, shell39120476562 ve document continuity39120476584 başarılı. Son iki QA aracı yönetilen ana sayfanın native belge sözleşmesine uyarlandı; test linkleri header altında kalmaz. Runtime için tekrar sürüm çıkarılmadı. Yerel PHP/JS, şema/geçiş ve 24 paket testi geçti. İlk test hataları ve düzeltmeleri [kabul kaydında](https://github.com/muhammetdkaya/codela-storefront/blob/main/docs/acceptance/2026-10-18-section-preview.md).
+
+**Hız tamamlandı deneme:** [canlı performans39120320650](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39120320650) ürün bütçesinde başarısız. Üç soğuk mobil laboratuvar örneğinde ürün medyan LCP **3616ms**, CLS **0.0187** (LCP hedefi2500ms). İlk WebP ~110KB ile ikincil medium PNG'ler ~232.5KB aynı soğuk yükleme sırasında isteniyor; nedensel kazanç henüz ölçülmedi. Mevcut ana sayfa LCP1372ms/CLS0 ama bölüm kökü boş olduğundan dolu yeni sayfa kabulü değildir. Ürün galeri yükleme kodu bu sürümde değiştirilmedi; eşikler gevşetilmedi.
+
+**Sıradaki somut iş:** ürün soğuk medya bütçesini kalite/no-JS/native davranışı koruyarak iyileştir ve aynı içerik/ağ/cihazda üç tekrar ölç. Dolu gerçek sayfa düzeni LCP/CLS/INP ve fiziksel mobil Safari/yönetici kayıt turu ayrı açık kalır. Bu iki kod düzeltmesinin kaynak/test/FTP kapanışı tamam; aynı işi yeniden kurma.
+
 ## 18 Ekim 2026 — 0.1.136 mobil responsive görsel düzeltmesi (CI/yayın bekliyor)
 
 Tema **0.1.135 → 0.1.136**: ayrı mobil görselin picture/source sizes değeri, masaüstü img ile aynı bölüm yerleşimi sözleşmesini kullanır. Küçük kategori resimlerine zorunlu 100vw bildirimi kaldırıldı; vitrin tam genişliği, lazy/eager ve tek high-priority davranışı korunur. Yeni galeri, kart, UI veya bağımlılık yok. PHP renderer ve responsive aday seçimi regresyonları genişletildi; 24 paket testi yerelde geçti. Tarayıcı/CI ve gerçek FTP henüz bekliyor.

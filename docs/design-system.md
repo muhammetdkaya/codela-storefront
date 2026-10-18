@@ -1,7 +1,11 @@
 # Codela Storefront UI Kit — source of truth
 
+## Native preview and responsive slots — 0.1.136
 
-## Page-owned sections — 0.1.135 (acceptance pending)
+Mobile picture sources share the section's sizes contract with the img fallback. Preview asset decisions read the queried autosave instead of the published original. The editor previews the real WordPress draft document in mobile/desktop view; it never copies theme rendering or shopper assets. Product cold-load performance remains an open measured budget (3616ms median LCP); do not equate functional CI with performance acceptance.
+
+
+## Page-owned sections — 0.1.135 (released; performance acceptance tracked separately)
 
 One native block layout; variants only change composition. Reuse shared Button/IconButton, native Woo product grid, responsive attachment images and horizontal native gallery. Page CSS owns layout only. Hero text stays small over the photo; category choices: compact, editorial rows, bands, mosaic, carousel and grid. Promo choices: inset, split, editorial and banner. Editor JavaScript never reaches shoppers; page capabilities load the horizontal adapter only when needed. Products keep their own native gallery adapter and zoom dependencies. Only the first hero image gets high priority. Existing body lock/product dock geometry is unchanged.
 
