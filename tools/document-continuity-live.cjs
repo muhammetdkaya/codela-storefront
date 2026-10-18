@@ -37,6 +37,7 @@ let PRODUCT;
    const start=await page.evaluate(()=>performance.timeOrigin);
    await page.evaluate(href=>{
      const link=document.createElement('a');link.id='sf-qa-native-product';link.href=href;link.textContent='QA product';
+     link.style.cssText='position:fixed;top:50%;left:12px;z-index:2147483000;padding:12px;background:white;color:black';
      document.querySelector('.sf-shell').appendChild(link);
    },PRODUCT);
    await page.locator('#sf-qa-native-product').click();

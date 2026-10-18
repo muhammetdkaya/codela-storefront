@@ -1,5 +1,5 @@
-// Read-only acceptance of WordPress's actual Interactivity Router on live store.
-// Uses a harmless query parameter to exercise the same safe home template.
+// Read-only acceptance of the live home's declared navigation path.
+// Plain home uses core Router; page-owned layouts intentionally use native documents.
 const {chromium}=require('playwright');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
@@ -18,6 +18,27 @@ const fs=require('node:fs');
   const region=page.locator('main#sf-content[data-wp-router-region="codela/storefront/main"]');
   report.checks.mainRegion=await region.count()===1;
   report.checks.routerScript=await page.locator('script[src*="navigation-controller.js"]').count()>0;
+  if(!report.checks.mainRegion&&!report.checks.routerScript&&await page.locator('.codela-page-layout').count()===1){
+    report.mode='native-managed-home';
+    assert.equal(await page.locator('link[href*="document-continuity.css"]').count(),1,'Managed home loads native continuity');
+    const origin=await page.evaluate(()=>performance.timeOrigin);
+    await page.evaluate(()=>{
+      addEventListener('pageswap',event=>sessionStorage.setItem('sf-layout-qa-swap',String(!!event.viewTransition)));
+      const a=document.createElement('a');a.href='/?codela_sf_navigation_qa=1';a.id='sf-layout-qa-link';a.textContent='QA navigation';
+      a.style.cssText='position:fixed;top:50%;left:12px;z-index:2147483000;padding:12px;background:white;color:black';
+      document.querySelector('.sf-shell').appendChild(a);
+    });
+    await page.locator('#sf-layout-qa-link').click();await page.waitForURL(/codela_sf_navigation_qa=1/);
+    await page.waitForLoadState('networkidle');
+    report.checks.nativeDocument=await page.evaluate(start=>performance.timeOrigin>start,origin);
+    report.checks.nativeSnapshot=await page.evaluate(()=>sessionStorage.getItem('sf-layout-qa-swap')==='true');
+    report.checks.headerContinuity=await page.locator('.sf-header').evaluate(el=>getComputedStyle(el).viewTransitionName==='sf-persistent-header');
+    assert(report.checks.nativeDocument&&report.checks.nativeSnapshot&&report.checks.headerContinuity,'Managed layout preserves native document/header continuity');
+    await page.goBack({waitUntil:'domcontentloaded'});await page.waitForURL(url=>!url.searchParams.has('codela_sf_navigation_qa'));
+    assert.equal(await page.locator('.codela-page-layout').count(),1,'Back traversal restores managed home');
+    report.checks.backNavigation=true;report.checks.pageErrors=errors;assert.deepEqual(errors,[]);
+    report.status='passed';await context.close();return;
+  }
   if(!report.checks.mainRegion||!report.checks.routerScript){
     report.status='unsupported';
     throw Error('Live home is not a supported router region; check WordPress version and core API compatibility.');
@@ -33,6 +54,7 @@ const fs=require('node:fs');
     a.dataset.sfRoute='home';
     a.textContent='QA navigation';
     a.id='sf-route-qa-link';
+    a.style.cssText='position:fixed;top:50%;left:12px;z-index:2147483000;padding:12px;background:white;color:black';
     document.querySelector('.sf-shell').appendChild(a);
   });
   await page.route('**/?codela_sf_navigation_qa=1',async route=>{
