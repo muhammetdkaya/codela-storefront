@@ -27,5 +27,5 @@ function codela_sf_section_products( array $data ): string {
     $url = $data['category_id'] ? get_term_link( $data['category_id'], 'product_cat' ) : wc_get_page_permalink( 'shop' );
     $out = '<section class="sf-section sf-section--products woocommerce"><div class="sf-section-heading">' . codela_sf_section_heading( $data );
     if ( $data['show_all'] && ! is_wp_error( $url ) ) { $out .= '<a class="sf-section-view-all" href="' . esc_url( add_query_arg( 'orderby', 'best_sellers' === $data['source'] ? 'popularity' : 'date', $url ) ) . '">' . esc_html__( 'View all', 'codela-storefront' ) . '</a>'; }
-    return $out . '</div>' . codela_sf_product_grid( $products ) . '</section>';
+    return $out . '</div>' . codela_sf_product_grid( $products, [ 'codela_defer_images' => true ] ) . '</section>';
 }
