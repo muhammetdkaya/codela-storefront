@@ -154,7 +154,7 @@ function codela_sf_home(): string {
     $mode = function_exists( 'codela_sf_home_mode' ) ? codela_sf_home_mode() : 'legacy';
     if ( 'sections' === $mode ) { return codela_sf_home_sections(); }
     if ( 'page_content' === $mode ) { return do_blocks( '<!-- wp:post-content {"layout":{"type":"constrained"}} /-->' ); }
-    if ( 'page' === get_option( 'show_on_front' ) && get_option( 'page_on_front' ) && trim( (string) get_post_field( 'post_content', get_option( 'page_on_front' ) ) ) ) {
+    if ( 'page' === get_option( 'show_on_front' ) && get_option( 'page_on_front' ) && trim( function_exists( 'codela_sections_page_content' ) ? codela_sections_page_content( get_option( 'page_on_front' ) ) : (string) get_post_field( 'post_content', get_option( 'page_on_front' ) ) ) ) {
         return do_blocks( '<!-- wp:post-content {"layout":{"type":"constrained"}} /-->' );
     }
     $settings = codela_theme_settings();
@@ -202,3 +202,4 @@ function codela_sf_footer(): string {
 
     return $html . '</div></footer>';
 }
+
