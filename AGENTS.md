@@ -1,5 +1,11 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 18 Ekim 2026 — 0.1.136 mobil responsive görsel düzeltmesi (CI/yayın bekliyor)
+
+Tema **0.1.135 → 0.1.136**: ayrı mobil görselin picture/source sizes değeri, masaüstü img ile aynı bölüm yerleşimi sözleşmesini kullanır. Küçük kategori resimlerine zorunlu 100vw bildirimi kaldırıldı; vitrin tam genişliği, lazy/eager ve tek high-priority davranışı korunur. Yeni galeri, kart, UI veya bağımlılık yok. PHP renderer ve responsive aday seçimi regresyonları genişletildi; 24 paket testi yerelde geçti. Tarayıcı/CI ve gerçek FTP henüz bekliyor.
+
+Eklentinin güncel **1.1.3** kompakt/odak editörü korunur; ayrı eklenti çalışması **1.1.4 / editor assets 1.0.2** WordPress'in native taslak/autosave/preview URL akışıyla gerçek mobil/masaüstü önizleme ekler. İkinci renderer/kayıt deposu veya otomatik ana sayfa ataması yok. Gerçek sitede kullanıcı içeriği ve fiziksel Safari kabulü yapılmış sayılmaz. Sıradaki iş: tema PR CI + FTP, eklenti gerçek WP/Woo Chromium/WebKit önizleme kabulü + delta FTP; kanıtlarla kayıtları kapat.
+
 ## 18 Ekim 2026 — Page Sections yayında; doğrulanmış kapanış
 
 **Güncel yayın:** Codela eklentisi **1.1.2** ve Page Sections API **1.0.0**, tema **0.1.135**. Eklenti PR #3 squash main **c70eb5a7fb0dbb1d502958e2027b8d4343758d54**; gerçek WordPress 6.5.5/WooCommerce 9.0.2 ile güncel WordPress/WooCommerce, Chromium/WebKit düzenleyici, görünüm değiştirme, limit, revizyon, yetki, taslak/etkinleştirme/geri alma kabulü [39107965550](https://github.com/muhammetdkaya/codela/actions/runs/39107965550) **success**. Eklenti doğrulama+FTPS [39108239618](https://github.com/muhammetdkaya/codela/actions/runs/39108239618) **success**: 18 Ekim 07:36:52 UTC sabit c70eb5a, **991 dosya doğrulandı, 10 aktarıldı, 981 sunucudan kullanıldı**.

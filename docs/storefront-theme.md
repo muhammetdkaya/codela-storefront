@@ -1,5 +1,11 @@
 # Codela Storefront — güncel teknik durum
 
+## 18 Ekim 2026 — 0.1.136 mobil responsive görsel düzeltmesi (CI/yayın bekliyor)
+
+Tema **0.1.135 → 0.1.136**: ayrı mobil görselin picture/source sizes değeri, masaüstü img ile aynı bölüm yerleşimi sözleşmesini kullanır. Küçük kategori resimlerine zorunlu 100vw bildirimi kaldırıldı; vitrin tam genişliği, lazy/eager ve tek high-priority davranışı korunur. Yeni galeri, kart, UI veya bağımlılık yok. PHP renderer ve responsive aday seçimi regresyonları genişletildi; 24 paket testi yerelde geçti. Tarayıcı/CI ve gerçek FTP henüz bekliyor.
+
+Eklentinin güncel **1.1.3** kompakt/odak editörü korunur; ayrı eklenti çalışması **1.1.4 / editor assets 1.0.2** WordPress'in native taslak/autosave/preview URL akışıyla gerçek mobil/masaüstü önizleme ekler. İkinci renderer/kayıt deposu veya otomatik ana sayfa ataması yok. Gerçek sitede kullanıcı içeriği ve fiziksel Safari kabulü yapılmış sayılmaz. Sıradaki iş: tema PR CI + FTP, eklenti gerçek WP/Woo Chromium/WebKit önizleme kabulü + delta FTP; kanıtlarla kayıtları kapat.
+
 ## 18 Ekim 2026 — sayfa bölümleri uygulaması; kabul/yayın bekliyor
 
 Kullanıcı raporun uygulanmasını istedi. Eklenti 1.1.1 → 1.1.2, ayrı Page Sections API 1.0.0; tema 0.1.134 → 0.1.135 hazırlanıyor. Tek sayfa-owned post_content/InnerBlocks düzeni; 10 bölüm, tek ilk vitrin, 48 ürün bütçesi; altı kategori ve dört tanıtım görünümü; ortak Woo ürün kartı ve mevcut galeriden ayrılmış bağımsız yatay adaptör. Ana sayfanın eski ayrı renderer/CSS'i kaldırıldı; geçiş öncesi yalnız eski option verisini yeni sözleşmeye çeviren giriş adaptörü var. İçerik sessizce taşınmaz/yayınlanmaz; Codela → Tema → Sayfalar taslak aktarımı, açık ana sayfa ataması ve geri dönüş sunar. Yeni içerik sayfaları aynı editörü kullanır; global header/footer ayarları ayrı kalır.

@@ -18,7 +18,9 @@ function codela_sf_sections_capabilities(): array {
     $caps = [ 'layout' => false, 'gallery' => false, 'products' => false ];
     if ( ! function_exists( 'codela_sections_validate_root' ) ) { return $caps; }
     if ( ! is_singular( 'page' ) && ! is_front_page() ) { return $caps; }
-    $post = get_post( get_queried_object_id() );
+    // The queried post contains native preview/autosave content; get_post(ID) can read the published original.
+    $post = get_queried_object();
+    if ( ! $post instanceof WP_Post || (int) $post->ID !== get_queried_object_id() ) { $post = get_post( get_queried_object_id() ); }
     if ( $post && has_block( 'codela/page-layout', $post ) ) {
         $blocks = parse_blocks( $post->post_content );
         foreach ( $blocks as $root ) {
