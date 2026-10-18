@@ -1,5 +1,15 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 18 Ekim 2026 — Page Sections yayında; doğrulanmış kapanış
+
+**Güncel yayın:** Codela eklentisi **1.1.2** ve Page Sections API **1.0.0**, tema **0.1.135**. Eklenti PR #3 squash main **c70eb5a7fb0dbb1d502958e2027b8d4343758d54**; gerçek WordPress 6.5.5/WooCommerce 9.0.2 ile güncel WordPress/WooCommerce, Chromium/WebKit düzenleyici, görünüm değiştirme, limit, revizyon, yetki, taslak/etkinleştirme/geri alma kabulü [39107965550](https://github.com/muhammetdkaya/codela/actions/runs/39107965550) **success**. Eklenti doğrulama+FTPS [39108239618](https://github.com/muhammetdkaya/codela/actions/runs/39108239618) **success**: 18 Ekim 07:36:52 UTC sabit c70eb5a, **991 dosya doğrulandı, 10 aktarıldı, 981 sunucudan kullanıldı**.
+
+Tema PR #53 squash main **28290af0eb6586e0c212518a651ee80c90bc58c1**; PR CI [39101147457](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39101147457) ve main validation+FTP [39108387407](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39108387407) **success**. FTP günlüğü **18 Ekim 07:44:44 UTC: Storefront deployed; checks passed.** Theme 0.1.135 kaynak/test/yayın zinciri kapandı. Daha eski aşağıdaki 'kabul/yayın bekliyor' bölümü tarihsel kayıttır.
+
+**Davranış:** Tek Codela sayfa düzenleyicisi post_content/InnerBlocks ve WordPress taslak/revizyon modeli kullanır. En fazla 10 bölüm, bir ilk vitrin, 6 kategori, 4 tanıtım varyantı, 48 ürün bütçesi; ortak Woo/galeri/UI korunur. Codela → Tema → Sayfalar, aynı sayfa düzenleyicisine yönlendirir. Eski ana sayfa içeriği **otomatik atanmadı, silinmedi, yeni düzene geçirilmedi**; manuel taslak/önizleme/etkinleştirme ve geri dönüş gerekir.
+
+**Hâlâ gerçek canlı kabul gerekenler:** Yönetici oturumunda gerçek içerikle sayfa hazırlama ve isteğe bağlı ana sayfa atama; fiziksel iPhone Safari görsel/dokunma kontrolü; gerçek görsellerle cold LCP/CLS/INP ölçümü. CI sentetik ve izolasyonlu WordPress ortamında başarılıdır, üretim admin kayıt turu veya saha performansı kanıtı değildir. WordPress.org ayrı yayını yapılmadı. Bağımsız açık sepet PR #14 bu işin parçası değildir. Yeni değişiklikte iki ayrı içerik kaynağı veya ikinci slider/kart motoru kurulmayacak.
+
 ## 18 Ekim 2026 — sayfa bölümleri uygulaması; kabul/yayın bekliyor
 
 Kullanıcı raporun uygulanmasını istedi. Eklenti 1.1.1 → 1.1.2, ayrı Page Sections API 1.0.0; tema 0.1.134 → 0.1.135 hazırlanıyor. Tek sayfa-owned post_content/InnerBlocks düzeni; 10 bölüm, tek ilk vitrin, 48 ürün bütçesi; altı kategori ve dört tanıtım görünümü; ortak Woo ürün kartı ve mevcut galeriden ayrılmış bağımsız yatay adaptör. Ana sayfanın eski ayrı renderer/CSS'i kaldırıldı; geçiş öncesi yalnız eski option verisini yeni sözleşmeye çeviren giriş adaptörü var. İçerik sessizce taşınmaz/yayınlanmaz; Codela → Tema → Sayfalar taslak aktarımı, açık ana sayfa ataması ve geri dönüş sunar. Yeni içerik sayfaları aynı editörü kullanır; global header/footer ayarları ayrı kalır.
