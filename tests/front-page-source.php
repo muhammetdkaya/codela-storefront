@@ -18,13 +18,24 @@ function parse_blocks( $value ) {
 }
 function codela_sf_ready() { return true; }
 function codela_theme_settings() { return [ 'homepage_mode' => 'sections' ]; }
-function do_blocks( $content ) { return 'native-page-content'; }
+function do_blocks( $content ) { return $GLOBALS['native_output'] ?? 'native-page-content'; }
+function wp_strip_all_tags( $text ) { return strip_tags( $text ); }
+function codela_sections_legacy_blocks( $settings ) { return [ [ 'blockName' => 'codela/section-products', 'attrs' => [ 'data' => [ 'enabled' => true ] ] ] ]; }
+function codela_sections_root_block( $children ) { return [ 'innerBlocks' => $children ]; }
+function codela_sections_validate_root( $root ) { return true; }
+function codela_sections_clean( $type, $data ) { return $data; }
+function codela_sf_render_section( $html, $type, $data ) { return '<section class="sf-section">previous homepage</section>'; }
+function esc_html( $text ) { return htmlspecialchars( $text, ENT_QUOTES ); }
+function get_bloginfo( $field ) { return 'Store'; }
 require __DIR__ . '/../theme/codela-storefront/inc/homepage.php';
 require __DIR__ . '/../theme/codela-storefront/inc/render.php';
 function check( $condition, $message ) { if ( ! $condition ) { throw new RuntimeException( $message ); } }
 
 check( codela_sf_front_page_has_saved_sections(), 'Published assigned homepage uses its saved panel' );
 check( 'native-page-content' === codela_sf_home(), 'Native panel wins over legacy homepage sections mode' );
+$GLOBALS['native_output'] = '<div class="entry-content"></div>';
+check( str_contains( codela_sf_home(), 'previous homepage' ), 'Empty post-content retains the visible legacy homepage instead of going blank' );
+unset( $GLOBALS['native_output'] );
 $GLOBALS['post_status'] = 'draft';
 check( ! codela_sf_front_page_has_saved_sections(), 'Draft does not replace existing homepage' );
 $GLOBALS['post_status'] = 'publish';

@@ -153,7 +153,10 @@ function codela_sf_home(): string {
     if ( ! codela_sf_ready() ) { return ''; }
     // Page-owned sections are the visible source when this exact published page is assigned as home.
     if ( function_exists( 'codela_sf_front_page_has_saved_sections' ) && codela_sf_front_page_has_saved_sections() ) {
-        return do_blocks( '<!-- wp:post-content {"layout":{"type":"constrained"}} /-->' );
+        $rendered = do_blocks( '<!-- wp:post-content {"layout":{"type":"constrained"}} /-->' );
+        // Never replace a working legacy homepage with a blank native document.
+        // The plugin's native post-content hook renders the single shared section tree.
+        if ( str_contains( $rendered, 'sf-section' ) || '' !== trim( wp_strip_all_tags( $rendered ) ) ) { return $rendered; }
     }
     $mode = function_exists( 'codela_sf_home_mode' ) ? codela_sf_home_mode() : 'legacy';
     if ( 'sections' === $mode ) { return codela_sf_home_sections(); }
