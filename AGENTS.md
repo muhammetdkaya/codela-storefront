@@ -1,5 +1,25 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Son doğrulanmış durum — 18 Ekim 2026: panel 1.1.7 / Storefront 0.1.140 canlı
+
+**Sürümler:** Codela **1.1.6 → 1.1.7**, sayfa düzenleyici varlıkları **1.2.0 → 1.3.0**; bağımsız Storefront **0.1.139 → 0.1.140**. Bu kayıt aşağıdaki bekleyen/önceki uygulama notlarından daha günceldir.
+
+**Tamamlananlar:** Native sayfa alt panelindeki özel gerçek önizleme düğmesi, iframe ve CSS kaldırıldı; WordPress'in kendi Önizle, metin alanı, kayıt, autosave ve revizyonları korunur. Yeni bölüm otomatik açılır, diğer bölüm alanları kapanır. Slider/tanıtımda native toplu görsel seçimi, içerik öncelikli alanlar, talep üzerine açılan ek ayarlar ve içerik adedi özeti vardır. Eksik görsel/kategori/erişilemeyen medya uyarıları, bölüm silme geri alması ve native undo ile tutarlılık, ürün adedi/çoğaltma/gösterme/geri alma bütçe korumaları eklendi. 10 bölüm, tek ilk vitrin, 48 ürün ve tek revisioned meta kaynağı değişmez. Panelde düzenleme kopyası için serialize→parse turu kaldırıldı; 128 kayıtla sınırlı oturumluk medya/pending istek önbelleği kullanılır. Yeni bağımlılık veya mağaza JS'i yok.
+
+**Ölçümde bulunan hız hatası da düzeltildi:** Sayfa slider/kategori/tanıtım resimleri ürün galerisinde zaten kullanılan doğrulanmış PNG→WebP manifestini atlayıp büyük PNG sunuyordu. Ortak section-image helper aynı mevcut manifesti hem ana img hem ayrı mobil picture source için kullanır. Tam çözünürlük, native srcset/sizes, lazy/eager/öncelik ve orijinal dosyalar korunur; manifest yoksa native görsel kalır. Public istekte kodlama/metadata yazma veya yeni medya motoru yok.
+
+**Kaynak ve doğrulama:** [Panel PR #10](https://github.com/muhammetdkaya/codela/pull/10), main `7fd5c3abd7b68c40a8dd28895383f725da6b9a71`; [gerçek WP/Woo kabul 39150373831](https://github.com/muhammetdkaya/codela/actions/runs/39150373831) iki sürüm ailesi × Chromium/WebKit başarılı: metin izolasyonu, medya/toplu seçim, metadata tekrar isteği, sıralama, bölüm geri alma, bütçe, kayıt/yeniden açma, legacy ve Classic. [Tema PR #58](https://github.com/muhammetdkaya/codela-storefront/pull/58), main `27e59f45d6828b7b7913209b630795aa96caba7f`; PHP/JS, 24 paket ve genel browser kapıları başarılı. Native PNG fixture yeni WP'nin original-format dönüşümünden izole edilerek eski PNG yüklemesini temsil eder; sıkıştırma faydası olmayan PNG için native fallback sözleşmesi kaldırılmadı. Paket sürüm assertion'ları 0.1.140'a güncellendi; hız eşikleri gevşetilmedi.
+
+**Canlı yayın:** [Tema validate+FTPS 39150147368](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39150147368) başarılı; **17:42:01 UTC** deployed/checks passed. [Eklenti validate+FTPS ve canlı ölçüm 39150845722](https://github.com/muhammetdkaya/codela/actions/runs/39150845722) başarılı; **17:44:01 UTC**, **992 dosya doğrulandı, 5 aktarıldı, 987 sunucudan kullanıldı**. Canlı release JS kaynakla byte-byte aynı; SHA256 `a90ed6ebe91484007ab863d760d431476257c313a909d34dc2fe8fc8bfeab0d6`; preview kaldırma, batch, undo ve cache doğrulandı. Public ana sayfa 0.1.140 ve dört dolu bölüm, 26 verified WebP URL referansı gösteriyor. WordPress.org yayını yapılmadı; kullanıcı metni/yerleşimi/ana sayfa ataması değiştirilmedi.
+
+**Hız sonucu: iyileşti, hedef kapanmadı.** Aynı dört bölümlü üretim sayfası, üç bağımsız soğuk Chromium mobil bağlamı (390×844, DPR3, 4× CPU, 150ms, 1.6Mbps/0.75Mbps; sunucu cache purge yok):
+- Önce (0.1.139): medyan LCP **56540ms**, CLS **0**, yaklaşık **11.109MB**.
+- Sonra (0.1.140): LCP **6368 / 6220 / 6252ms**, medyan **6252ms**, CLS **0**, yaklaşık **1.126MB**. İndirme yükü yaklaşık **%90** azaldı; slider lab etkileşim süreleri **24/24/32ms** (saha INP değildir).
+- **2800ms LCP hedefi hâlâ başarısızdır**; ölçüm işinin success olması hız bütçesinin geçtiği anlamına gelmez. Kabul 39150373831 yayın sırasında eski/yeni sürümü karışık ölçtü; bu turun production medyanı son durum diye kullanılmaz. Nihai üç örnek de 0.1.140'tır; sonuç/artifact [39150845722](https://github.com/muhammetdkaya/codela/actions/runs/39150845722) içinde `layout-live-performance-7fd5c3abd7b68c40a8dd28895383f725da6b9a71`.
+
+**Açık işler / sıradaki somut adım:** LCP görseli `codela-sf-1514-1024.webp` (~203KB), ikinci örnekte ~5752ms aktarılıyor; ilk görsel bitmeden 1.7–1.8s'de ikincil WebP ve dört PNG ürün kartı (~377KB) isteniyor. Kaynak önceliği ve ortak ürün kartı görsel teslimini crop/kalite/no-JS davranışını koruyarak incele; aynı içerik ve profilde üç tekrar ile 2800ms/CLS0.1 kapısını doğrula. Bu gözlem gecikmenin tamamının nedensel açıklaması değildir. Fiziksel iPad/Safari dokunma kabulü, gerçek saha INP ve ürün sayfasının önceki ayrı 3616ms LCP işi açık. Panel uygulaması/yayınını yeniden kurma; hız işi tamamlandı diye sunma.
+
+
 ## 18 Ekim 2026 — sayfa bölümleri optimize medyayı kullanır (0.1.140; kabul/yayın bekliyor)
 
 Tema **0.1.139 → 0.1.140**. Native alt panel iyileştirmeleri Codela **1.1.7**, varlıklar **1.3.0** olarak ayrı eklenti PR #10 kapsamındadır. Panelde özel gerçek önizleme kaldırılır; yeni bölüm açılır, toplu medya/içerik önceliği/geri alma ve bütçe korumaları eklenir; WordPress metin alanı ve native kayıt korunur.
