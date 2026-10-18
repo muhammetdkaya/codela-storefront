@@ -15,6 +15,13 @@ for(const width of [320,390,700,1280])for(const promos of ['split,inset','editor
  await page.addScriptTag({content:fs.readFileSync(root+'assets/scripts/gallery-horizontal.js','utf8')});
  const hero=page.locator('.sf-section--hero');await hero.locator('h1').evaluate(e=>e.textContent='Doğal dokularla yaşam alanınıza sıcaklık katan özel koleksiyonlardan seçmeler ve yeni ürünler');await hero.locator('.sf-section-copy p').first().evaluate(e=>e.textContent='Doğal taş ve sade çizgilerle yaşam alanınızı keşfedin. '.repeat(6));const bounds=await hero.evaluate(el=>{const r=el.getBoundingClientRect(),c=el.querySelector('.sf-section-copy').getBoundingClientRect(),b=el.querySelector('.sf-ui-button').getBoundingClientRect();return{top:c.top-r.top,bottom:b.bottom-r.top,height:r.height};});assert(bounds.top>=0&&bounds.bottom<=bounds.height,'Long copy '+JSON.stringify(bounds));
  assert.equal(await page.locator('.sf-categories--editorial .sf-category-story').first().evaluate(e=>getComputedStyle(e).display),'grid');assert(await page.locator('.sf-categories--carousel .sf-category-story').first().evaluate(e=>e.getBoundingClientRect().width<e.parentElement.getBoundingClientRect().width*.9),'Next card peeks');
+ const contentHtml=execFileSync(process.env.PHP_BIN||'php',['tests/homepage.php'],{encoding:'utf8',env:{...process.env,RENDER_CONTENT:'1'}});
+ await page.locator('main').evaluate((el,html)=>el.insertAdjacentHTML('beforeend',html),contentHtml);
+ assert.equal(await page.locator('.sf-section--story,.sf-section--info,.sf-section--contact').count(),3);
+ assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Content module overflow '+width);
+ const storyLayout=await page.locator('.sf-section--story .sf-content-card').evaluate(el=>{const image=el.querySelector('picture').getBoundingClientRect(),copy=el.querySelector('.sf-content-copy').getBoundingClientRect();return {imageLeft:image.left,copyLeft:copy.left,imageBottom:image.bottom,copyTop:copy.top};});
+ assert(width<=700?storyLayout.copyTop>=storyLayout.imageBottom-1:storyLayout.imageLeft>storyLayout.copyLeft,'Responsive image-right composition '+width);
+ assert.equal(await page.locator('.sf-section--contact a[href^="tel:"]').count(),1);
  if(process.env.SAVE_SCREENSHOT){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:'qa/sections-'+width+'-'+promos.split(',')[0]+'.png',fullPage:true});}assert.deepEqual(errors,[]);await page.close();
 }console.log('10 sections, all variants, independent galleries, keyboard, LCP/H1 and long-copy checks passed.');
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

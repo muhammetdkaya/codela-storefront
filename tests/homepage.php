@@ -7,6 +7,7 @@ function add_filter(...$args){}function is_front_page(){return true;}function co
 class WC_Product{function __construct(public $id){}function is_visible(){return $this->id!==99;}function is_in_stock(){return $this->id!==98;}function get_status(){return 'publish';}}
 function wc_get_product($id){return new WC_Product($id);}class WP_Query{public $posts;function __construct($args){$GLOBALS['queries'][]=$args;$this->posts=[1,98,99];}}
 
+function codela_sections_contact_rows($data){return empty($data['phone'])?[]:['<div class="codela-contact-row"><dt>Phone</dt><dd><a href="tel:+902125550000">+90 212 555 00 00</a></dd></div>'];}
 function codela_sf_png_webp_sources($id){return $GLOBALS['section_webp'][$id]??[];}
 require __DIR__.'/../theme/codela-storefront/inc/ui.php';
 require __DIR__.'/../theme/codela-storefront/inc/sections.php';
@@ -39,4 +40,16 @@ unset($GLOBALS['section_webp'][11]);
 expect(str_contains(codela_sf_section_image(item()),'/image-11-160.svg 160w'),'Unconverted mobile image retains native responsive fallback');
 unset($GLOBALS['section_webp']);
 expect(!str_contains(codela_sf_section_image(item()),'.webp'),'Missing manifests retain native images');
+$story=array_merge(data('story','image-right'),['items'=>[array_merge(item('Hikâyemiz'),['body'=>"Uzun bir hikâye.\nİkinci satır."])]]);
+$info=array_merge(data('info','grid'),['items'=>[['enabled'=>true,'title'=>'Kalite','body'=>'Özenli üretim'],['enabled'=>true,'title'=>'','body'=>'']]]);
+$contact=array_merge(data('contact','grid'),['phone'=>'+90 212 555 00 00','directions_url'=>'https://example.test/map']);
+$content_html=codela_sf_render_section(null,'story',$story).codela_sf_render_section(null,'info',$info).codela_sf_render_section(null,'contact',$contact);
+expect(str_contains($content_html,'sf-content--image-right'),'Story image position');
+expect(!str_contains($content_html,'data-sf-gallery')&&!str_contains($content_html,'<iframe'),'Static content has no gallery or map');
+expect(substr_count($content_html,'sf-content-card')===4,'Only populated story and info cards (including plural wrappers)');
+expect(str_contains($content_html,'tel:+902125550000'),'Contact rows use plugin shared helper');
+expect(str_contains($content_html,'sf-ui-button--primary'),'Directions reuse shared Button');
+$empty=array_merge(data('info','grid'),['items'=>[['enabled'=>true,'title'=>'','body'=>'']]]);
+expect(''===codela_sf_render_section(null,'info',$empty),'Empty cards omit whole section');
+if(getenv('RENDER_CONTENT')){echo '<div class="codela-page-layout">'.$content_html.'</div>';exit;}
 if(getenv('RENDER_HOME')){echo $html;}else{echo "Section catalogue, one LCP/H1, shared cards, Woo visibility and query memoization passed.\n";}

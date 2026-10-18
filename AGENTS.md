@@ -1,5 +1,11 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Çalışma — 18 Ekim 2026: Hakkımızda / İletişim modülleri (kabul ve yayın bekliyor)
+
+Codela **1.1.7 → 1.1.8**, panel varlıkları **1.3.0 → 1.4.0**, Storefront **0.1.140 → 0.1.141**. Kullanıcının onayıyla aynı native sayfa alt paneline **Görsel + metin**, **Bilgi kartları**, **İletişim bilgileri** eklenir. Tek `_codela_page_layout`, native kayıt/autosave/revizyon, 10 bölüm / 48 ürün sınırları ve mevcut post_content korunur. Hakkımızda (hikâye + 3 boş kart) / İletişim başlangıçları yalnız boş panelde, tek undo edilebilir meta işlemiyle eklenir; mevcut içerik değiştirilmez. Görsel + metin tek öğe ve 2000 karakter metin, görsel isteğe bağlı/sağ-sol; bilgi kartları en fazla 8 ve kart başına 500 karakter. İletişim telefon/e-posta/adres/saat/yol tarifi alanları; boşları ve boş modülleri göstermez. E-posta/telefon/URL tür ve uzunluk denetimi sunucuda atomiktir. Ortak doğrulanmış WebP/responsive medya, Button ve başlıklar kullanılır. Statik modüller gallery/map/editor JS istemez; harita iframe'i, yeni form gönderim/spam altyapısı veya bağımlılık eklenmez. Depoda bağımsız iletişim formu motoru yoktur; mevcut WP içerik alanı bir form eklentisinin native blok/kısa kodunu barındırabilir. Üç modül ilk aşama kapsamıdır.
+
+Yerel Node sözdizimi ve 24 paket testi geçti. PHP/gerçek WP6.5.5+Woo9.0.2 ve güncel WP/Woo Chromium/WebKit kabulü, tema CI ve her iki FTP yayını bekliyor; henüz canlı denmez. Yeni kabul uzun metin, güvenli iletişim bağlantıları, boş içerik gizleme, başlangıç düzeni atomik undo, çoğaltma ve native kayıt/yeniden açmayı kapsar. Önceki ana sayfa LCP6252ms/2800ms açık işi bu işte kapanmaz; fiziksel Safari/gerçek form teslimi ayrıca doğrulanmış değildir. Sıradaki adım: CI kabulü → tema ve plugin yayını → kanıtlı kapanış.
+
 ## Son doğrulanmış durum — 18 Ekim 2026: panel 1.1.7 / Storefront 0.1.140 canlı
 
 **Sürümler:** Codela **1.1.6 → 1.1.7**, sayfa düzenleyici varlıkları **1.2.0 → 1.3.0**; bağımsız Storefront **0.1.139 → 0.1.140**. Bu kayıt aşağıdaki bekleyen/önceki uygulama notlarından daha günceldir.

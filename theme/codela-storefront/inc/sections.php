@@ -11,6 +11,7 @@ add_filter( 'codela_page_section_variants', static function( $defaults ) {
 require_once __DIR__ . '/section-media.php';
 require_once __DIR__ . '/section-categories.php';
 require_once __DIR__ . '/section-products.php';
+require_once __DIR__ . '/section-content.php';
 
 function codela_sf_sections_capabilities(): array {
     static $caps = null;
@@ -46,7 +47,7 @@ function codela_sf_sections_capabilities(): array {
 
 function codela_sf_render_section( $html, string $type, array $data, int $post_id = 0 ): string {
     if ( ! $data['enabled'] ) { return ''; }
-    $renderers = [ 'hero' => 'codela_sf_section_media', 'promo' => 'codela_sf_section_media', 'categories' => 'codela_sf_section_categories', 'products' => 'codela_sf_section_products' ];
+    $renderers = [ 'hero' => 'codela_sf_section_media', 'promo' => 'codela_sf_section_media', 'categories' => 'codela_sf_section_categories', 'products' => 'codela_sf_section_products', 'story' => 'codela_sf_section_content', 'info' => 'codela_sf_section_content', 'contact' => 'codela_sf_section_content' ];
     return isset( $renderers[ $type ] ) ? $renderers[ $type ]( $data, $type ) : '';
 }
 add_filter( 'codela_render_page_section', 'codela_sf_render_section', 10, 4 );
