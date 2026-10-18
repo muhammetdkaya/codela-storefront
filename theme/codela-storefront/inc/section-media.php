@@ -7,7 +7,7 @@ function codela_sf_section_image( array $item, bool $priority = false, string $s
     $mobile = (int) ( $item['mobile_image_id'] ?? 0 ); $source = '';
     if ( $mobile && wp_attachment_is_image( $mobile ) ) {
         $srcset = wp_get_attachment_image_srcset( $mobile, 'large' ) ?: wp_get_attachment_image_url( $mobile, 'large' );
-        $source = '<source media="(max-width:700px)" srcset="' . esc_attr( $srcset ) . '" sizes="100vw">';
+        $source = '<source media="(max-width:700px)" srcset="' . esc_attr( $srcset ) . '" sizes="' . esc_attr( $sizes ) . '">';
     }
     return '<picture class="sf-section-art">' . $source . $image . '</picture>';
 }
