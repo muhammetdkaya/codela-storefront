@@ -30,6 +30,7 @@ jobs:
           node --check theme/codela-storefront/assets/scripts/product-information.js
           node --check theme/codela-storefront/assets/scripts/gallery-horizontal.js
           php tests/homepage.php
+          php tests/front-page-source.php
           php tests/sections-preview.php
           php tests/media.php
           php tests/media-optimization.php
