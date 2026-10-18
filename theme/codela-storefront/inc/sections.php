@@ -1,6 +1,13 @@
 <?php
 /** Theme presentation registry. Page data and editor stay in the Codela plugin. */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+/** Declarative theme-owned layouts; the plugin validates the public registry contract. */
+add_filter( 'codela_page_section_variants', static function( $defaults ) {
+    $path = __DIR__ . '/../config/sections.json';
+    if ( ! is_file( $path ) || is_link( $path ) || filesize( $path ) > 16384 ) { return $defaults; }
+    $schema = json_decode( file_get_contents( $path ), true );
+    return 1 === ( $schema['schema_version'] ?? null ) && is_array( $schema['variants'] ?? null ) ? $schema['variants'] : $defaults;
+} );
 require_once __DIR__ . '/section-media.php';
 require_once __DIR__ . '/section-categories.php';
 require_once __DIR__ . '/section-products.php';
