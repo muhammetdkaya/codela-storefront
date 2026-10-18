@@ -1,5 +1,13 @@
 # Codela Storefront — güncel teknik durum
 
+## 18 Ekim 2026 — sayfa bölümleri uygulaması; kabul/yayın bekliyor
+
+Kullanıcı raporun uygulanmasını istedi. Eklenti 1.1.1 → 1.1.2, ayrı Page Sections API 1.0.0; tema 0.1.134 → 0.1.135 hazırlanıyor. Tek sayfa-owned post_content/InnerBlocks düzeni; 10 bölüm, tek ilk vitrin, 48 ürün bütçesi; altı kategori ve dört tanıtım görünümü; ortak Woo ürün kartı ve mevcut galeriden ayrılmış bağımsız yatay adaptör. Ana sayfanın eski ayrı renderer/CSS'i kaldırıldı; geçiş öncesi yalnız eski option verisini yeni sözleşmeye çeviren giriş adaptörü var. İçerik sessizce taşınmaz/yayınlanmaz; Codela → Tema → Sayfalar taslak aktarımı, açık ana sayfa ataması ve geri dönüş sunar. Yeni içerik sayfaları aynı editörü kullanır; global header/footer ayarları ayrı kalır.
+
+Yerel kaynak doğrulaması: PHP/JS sözdizimi, şema/limit/URL/kimlik/geçiş, üretim renderer'larıyla Woo görünürlük/sorgu memoization, 24 paket testi ve Chromium 320/390/700/1280'de tüm varyantlar/10 bölüm/çoklu galeri/uzun metin geçti. Gerçek WordPress/Woo REST, revizyon, yetki ve Chromium/WebKit editör kabulü CI için eklendi; sonuç henüz bekleniyor. Canlı dağıtım veya gerçek cold LCP/CLS/INP ölçümü yapılmış sayılmaz. Dondurulmuş eklenti tema kopyası ve WordPress.org yayını değişmez. Mevcut delta/atomik dağıtım ve ürün/menü scroll sözleşmeleri korunur.
+
+Sıradaki somut iş: iki PR doğrulaması ve gerçek WP/Woo kabulünü tamamla, bulunan hataları düzelt; önce eklenti sonra tema için mevcut codela.dev yayın kapılarını doğrula. Kullanıcı içeriğine otomatik geçiş yapma. Tamamlandı, test edildi, canlıda durumlarını ayrı kaydet. [Tasarım ve mimari raporu](https://github.com/muhammetdkaya/codela-storefront/blob/main/docs/page-sections-analysis-roadmap-2026-10-18.md) tarihli analizdir; bu kayıt uygulama ilerlemesidir.
+
 ## 18 Ekim 2026 — sayfa bölümleri analizi; uygulama bekliyor
 
 Kullanıcı önce analiz ve yol haritası istedi; **runtime uygulama/yayın yetkisi bu aşamada kullanılmaz**. [Ayrıntılı analiz ve yol haritası](https://github.com/muhammetdkaya/codela-storefront/blob/main/docs/page-sections-analysis-roadmap-2026-10-18.md) kaynak incelemesiyle hazırlandı. Öneri: tek Codela sayfa düzenleyicisi, sayfaya ait native blok verisi, Codela Tema menüsünden aynı editöre giriş; global header/footer/tasarım ayarları ayrı. Yaklaşık 10 sıralanabilir bölüm; tek üst vitrin modeli, seçilebilir kategori görünümleri, aralara eklenebilen tanıtımlar ve ortak Woo ürün bölümleri. Mevcut repeater'a yama eklemek yerine sayfa düzeni modeli yeniden kurulacak; ortak galeri/ürün/UI korunacak. Önerilen veri modeli ve bütçeler henüz uygulanmış/onaylanmış ürün davranışı değildir.

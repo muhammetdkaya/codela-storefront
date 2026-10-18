@@ -23,6 +23,7 @@ function codela_sf_seamless_page_allowed( int $id ): bool {
     // Pages with shortcodes, embedded forms or direct script hooks require a
     // traditional document load. Non-core blocks are conservatively excluded.
     $content = (string) $post->post_content;
+    if ( function_exists( 'has_block' ) && has_block( 'codela/page-layout', $content ) ) { return false; }
     if ( preg_match( '/\\[[a-z][\\w-]*(?:\\s|\\]|\\/)/i', $content )
         || preg_match( '/<\\s*(?:script|form|iframe)\\b/i', $content ) ) { return false; }
     if ( function_exists( 'parse_blocks' ) ) {
@@ -46,6 +47,7 @@ function codela_sf_seamless_page_allowed( int $id ): bool {
 }
 function codela_sf_seamless_allowed(): bool {
     if ( ! codela_sf_seamless_core_supported() ) { return false; }
+    if ( function_exists( 'codela_sections_validate_root' ) && function_exists( 'codela_sf_sections_capabilities' ) && codela_sf_sections_capabilities()['layout'] ) { return false; }
     if ( function_exists( 'is_front_page' ) && is_front_page() ) {
         // Managed home contains native Woo actions and a classic gallery adapter.
         // Let the existing document transition run their real initialization.
