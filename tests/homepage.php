@@ -7,6 +7,7 @@ function add_filter(...$args){}function is_front_page(){return true;}function co
 class WC_Product{function __construct(public $id){}function is_visible(){return $this->id!==99;}function is_in_stock(){return $this->id!==98;}function get_status(){return 'publish';}}
 function wc_get_product($id){return new WC_Product($id);}class WP_Query{public $posts;function __construct($args){$GLOBALS['queries'][]=$args;$this->posts=[1,98,99];}}
 
+function codela_sf_png_webp_sources($id){return $GLOBALS['section_webp'][$id]??[];}
 require __DIR__.'/../theme/codela-storefront/inc/ui.php';
 require __DIR__.'/../theme/codela-storefront/inc/sections.php';
 function expect($ok,$msg){if(!$ok)throw new RuntimeException($msg);}
@@ -29,4 +30,13 @@ $before=count($GLOBALS['queries']);codela_sf_section_product_query($row);expect(
 $row['source']='best_sellers';codela_sf_section_product_query($row);expect($GLOBALS['queries'][1]['meta_key']==='total_sales','Real Woo sales ordering');
 expect(codela_sf_section_product_query(['category_id'=>99])===[],'Deleted category never broadens query');
 expect(codela_sf_render_section(null,'categories',data('categories','grid',[array_merge(item(),['term_id'=>99])]))==='','Missing category omitted');
+$GLOBALS['section_webp']=[10=>[['url'=>'/verified-main-640.webp','width'=>640],['url'=>'/verified-main-1200.webp','width'=>1200]],11=>[['url'=>'/verified-mobile-640.webp','width'=>640],['url'=>'/verified-mobile-1200.webp','width'=>1200]]];
+$optimized=codela_sf_section_image(item(),true,'50vw');
+expect(str_contains($optimized,'src="/verified-main-1200.webp"'),'Verified full-resolution WebP used in section img');
+expect(str_contains($optimized,'/verified-main-640.webp 640w'),'Native responsive WebP candidates retained');
+expect(str_contains($optimized,'srcset="/verified-mobile-640.webp 640w, /verified-mobile-1200.webp 1200w" sizes="50vw"'),'Mobile source uses its own verified WebP and layout slot');
+unset($GLOBALS['section_webp'][11]);
+expect(str_contains(codela_sf_section_image(item()),'/image-11-160.svg 160w'),'Unconverted mobile image retains native responsive fallback');
+unset($GLOBALS['section_webp']);
+expect(!str_contains(codela_sf_section_image(item()),'.webp'),'Missing manifests retain native images');
 if(getenv('RENDER_HOME')){echo $html;}else{echo "Section catalogue, one LCP/H1, shared cards, Woo visibility and query memoization passed.\n";}

@@ -3,10 +3,21 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 function codela_sf_section_image( array $item, bool $priority = false, string $sizes = '100vw' ): string {
     if ( ! wp_attachment_is_image( $item['image_id'] ?? 0 ) ) { return ''; }
     $position = (float) ( $item['focal_x'] ?? 50 ) . '% ' . (float) ( $item['focal_y'] ?? 50 ) . '%';
-    $image = wp_get_attachment_image( $item['image_id'], 'large', false, [ 'sizes' => $sizes, 'loading' => $priority ? 'eager' : 'lazy', 'fetchpriority' => $priority ? 'high' : 'low', 'decoding' => 'async', 'style' => 'object-position:' . $position ] );
+    $attributes = [ 'sizes' => $sizes, 'loading' => $priority ? 'eager' : 'lazy', 'fetchpriority' => $priority ? 'high' : 'low', 'decoding' => 'async', 'style' => 'object-position:' . $position ];
+    // Reuse the same verified, original-resolution WebP manifest as the product
+    // gallery. Never encode on a public request or replace attachment metadata.
+    $webp = function_exists( 'codela_sf_png_webp_sources' ) ? codela_sf_png_webp_sources( (int) $item['image_id'] ) : [];
+    if ( $webp ) {
+        $attributes['src'] = $webp[ count( $webp ) - 1 ]['url'];
+        $attributes['srcset'] = implode( ', ', array_map( static function( $source ) { return $source['url'] . ' ' . $source['width'] . 'w'; }, $webp ) );
+    }
+    $image = wp_get_attachment_image( $item['image_id'], 'large', false, $attributes );
     $mobile = (int) ( $item['mobile_image_id'] ?? 0 ); $source = '';
     if ( $mobile && wp_attachment_is_image( $mobile ) ) {
-        $srcset = wp_get_attachment_image_srcset( $mobile, 'large' ) ?: wp_get_attachment_image_url( $mobile, 'large' );
+        $mobile_webp = function_exists( 'codela_sf_png_webp_sources' ) ? codela_sf_png_webp_sources( $mobile ) : [];
+        $srcset = $mobile_webp
+            ? implode( ', ', array_map( static function( $source ) { return $source['url'] . ' ' . $source['width'] . 'w'; }, $mobile_webp ) )
+            : ( wp_get_attachment_image_srcset( $mobile, 'large' ) ?: wp_get_attachment_image_url( $mobile, 'large' ) );
         $source = '<source media="(max-width:700px)" srcset="' . esc_attr( $srcset ) . '" sizes="' . esc_attr( $sizes ) . '">';
     }
     return '<picture class="sf-section-art">' . $source . $image . '</picture>';

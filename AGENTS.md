@@ -1,5 +1,17 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 18 Ekim 2026 — sayfa bölümleri optimize medyayı kullanır (0.1.140; kabul/yayın bekliyor)
+
+Tema **0.1.139 → 0.1.140**. Native alt panel iyileştirmeleri Codela **1.1.7**, varlıklar **1.3.0** olarak ayrı eklenti PR #10 kapsamındadır. Panelde özel gerçek önizleme kaldırılır; yeni bölüm açılır, toplu medya/içerik önceliği/geri alma ve bütçe korumaları eklenir; WordPress metin alanı ve native kayıt korunur.
+
+Dolu üretim ana sayfasının üç soğuk mobil Chromium ölçümünde (4x CPU, 150ms, 1.6Mbps) medyan LCP **56540ms**, CLS **0**, yaklaşık **11.1MB** transfer gözlendi. [Eklenti kabul 39149011951](https://github.com/muhammetdkaya/codela/actions/runs/39149011951) panel için başarılı, hız bütçesi için başarısızdır. 10 bölümlü sentetik fixture LCP3156ms; bu üretim kabulü değildir.
+
+Kaynak sorunu: section-media renderer'ı mevcut doğrulanmış PNG→WebP manifestini kullanmıyordu; aynı medyanın ürün galerisi WebP sunabilirken slider/kategori/tanıtım PNG kullanıyordu. Tek mevcut `codela_sf_png_webp_sources()` yardımcı sözleşmesi img ve ayrı mobil picture source için kullanılır. Native srcset/sizes, tam çözünürlük/odak, lazy/eager/öncelik, CSS, slider davranışı ve orijinal dosyalar korunur. Manifest yoksa native görsel kalır. Public istekte dönüştürme, metadata yazma, yeni bağımlılık veya ikinci medya motoru yok.
+
+**Doğrulama/yayın:** kaynak regresyonları desktop/mobile manifest ve native fallback için eklendi; tema CI/FTP, yeni tema kaynağına pin'li WP/Woo Chromium/WebKit ve aynı dolu üretim sayfasının tekrar ölçümü bekliyor. Fiziksel Safari ve ürün sayfasının ayrı LCP açık işi bu kodla tamamlandı sayılmaz. Sonraki adım: tema kabul/yayın → yeni kaynakla gerçek kabul + 3 soğuk mobil tekrar → kaynak/FTP/ölçüm kanıtlarını kaydet. Eşikler gevşetilmeyecek.
+
+
+
 ## 18 Ekim 2026 — sayfa yerleşimlerinin görünmemesi: düzeltildi ve canlı
 
 **Sorun:** Yerleşim editöründeki bölümler sayfaya ait tek `_codela_page_layout` meta alanına kaydediliyor; ana sayfa olarak başka bir sayfa atanmışsa bu bölümler doğal olarak o ana sayfada görünmez. Ayrıca seçili statik ana sayfanın meta bölümleri olsa bile önceki `homepage_mode=sections` seçimi eski ana sayfa renderer'ını çalıştırıp yeni bölümleri görünmez bırakabiliyordu.
