@@ -20,6 +20,16 @@
       "split": "Metin + görsel",
       "editorial": "Editoryal",
       "banner": "Geniş görsel bant"
+    },
+    "story": {
+      "image-left": "Görsel solda",
+      "image-right": "Görsel sağda"
+    },
+    "info": {
+      "grid": "Kartlar"
+    },
+    "contact": {
+      "grid": "İletişim bilgileri"
     }
   }
 }
