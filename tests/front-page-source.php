@@ -23,6 +23,7 @@ function wp_strip_all_tags( $text ) { return strip_tags( $text ); }
 function codela_sections_legacy_blocks( $settings ) { return [ [ 'blockName' => 'codela/section-products', 'attrs' => [ 'data' => [ 'enabled' => true ] ] ] ]; }
 function codela_sections_root_block( $children ) { return [ 'innerBlocks' => $children ]; }
 function codela_sections_validate_root( $root ) { return true; }
+function codela_sections_clean( $type, $data ) { return $data; }
 function codela_sf_render_section( $html, $type, $data ) { return '<section class="sf-section">previous homepage</section>'; }
 function esc_html( $text ) { return htmlspecialchars( $text, ENT_QUOTES ); }
 function get_bloginfo( $field ) { return 'Store'; }
