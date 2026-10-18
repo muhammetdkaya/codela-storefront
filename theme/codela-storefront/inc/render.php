@@ -151,6 +151,10 @@ function codela_sf_header(): string {
 }
 function codela_sf_home(): string {
     if ( ! codela_sf_ready() ) { return ''; }
+    // Page-owned sections are the visible source when this exact published page is assigned as home.
+    if ( function_exists( 'codela_sf_front_page_has_saved_sections' ) && codela_sf_front_page_has_saved_sections() ) {
+        return do_blocks( '<!-- wp:post-content {"layout":{"type":"constrained"}} /-->' );
+    }
     $mode = function_exists( 'codela_sf_home_mode' ) ? codela_sf_home_mode() : 'legacy';
     if ( 'sections' === $mode ) { return codela_sf_home_sections(); }
     if ( 'page_content' === $mode ) { return do_blocks( '<!-- wp:post-content {"layout":{"type":"constrained"}} /-->' ); }
