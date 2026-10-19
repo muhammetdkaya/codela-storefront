@@ -1,5 +1,16 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Çalışma — 20 Ekim 2026: masaüstü araçları, Android kaydırması ve blog (0.1.150)
+
+Storefront **0.1.149 → 0.1.150** hazırlanıyor; Codela eklentisi değişmez. 901px+ arama aynı form/sonuç düğümlerini header alanına taşır; sayfayı kilitlemez. Escape/dış tıklama/gezinme/breakpoint değişimi orijinal mobile slot'u geri yükler. Tek overlay controller, tek Interactivity store, tek native dialog ve sepet motoru korunur. 901px+ sepet aynı dialog'un sağ drawer yerleşimidir; giriş/çıkış, tekrar açma ve reduced-motion işlenir. Mobil paneller tam ekran kalır. 1100px+ primary menüde native alt menü/parent bağlantıları korunur; ok bitişik kontrol, seçili madde dock ile aynı kapsül/tint token'ıdır, alt çizgi yoktur.
+
+Sadece sayfa bölüm galerilerinde dikey overscroll chaining serbest bırakıldı; ürün galerisi sözleşmesi değişmez. Native blog query/post blokları, posts-page başlığı, kategori/tarih, featured image, excerpt, read-more, pagination, arşiv ve tek yazı düzeni eklendi. Statik sayfa başlıkları geri eklenmedi. Blog içeriği/ayar/demo yazı oluşturulmadı; Site Editor'da kayıtlı şablon override'ları ayrıca incelenmelidir.
+
+**Doğrulama:** Yerel PHP sözdizimi, dokuz PHP senaryosu, 24 paket testi ve arama/dock birim kontrolleri başarılı. Yerel tarayıcı çalışma ortamı socket izni vermiyor; gerçek PHP header/controller browser senaryoları, dokunma ile hero kaydırma regresyonu ve blog yerleşim fixture'ları CI'da çalıştırılacak. Blog fixture'ı gerçek WordPress veritabanı entegrasyonu olarak sunulmaz. Fiziksel Android/Safari kabulü ayrıdır.
+
+**Yayın:** Kaynak hazırlanıyor; henüz main/FTPS/stable yayımlanmadı. **Sıradaki:** Chromium/WebKit CI ve ekran çıktıları, ardından başarılı kaynağın 0.1.150 stable yayını; hedef sitede uzaktan güncelleme ve altı maddenin görsel kabulü.
+
+
 ## Son doğrulanmış durum — 19 Ekim 2026: 0.1.149 sürüm çakışması düzeltmesi yayında
 
 Kullanıcı daha önce eski bir paketi aynı 0.1.148 numarasıyla yüklediğini bildirdi ve sürüm yükseltilmesini açıkça istedi. Native WordPress güncelleyicisinin yeni paketi sunabilmesi için tema **0.1.149** yapıldı. Kaynak `15ec184b8bdd2bc94418b3cb92c048fdc5605d91`; 0.1.148 ile ZIP dosya karşılaştırmasında yalnız `style.css` sürümü ve `config/release.json` notu değişir. Sayfa başlığı ve kategori bantları kodu korunur. Sekiz mevcut paket testi sürüm beklentisi güncellendi; eski immutable v0.1.148 etiketi/ZIP'i değiştirilmedi.
@@ -769,7 +780,7 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - Küçük değişikliklerde de mevcut codela.dev otomatik dağıtımı açık kalır. Bağlantılı değişiklikleri topluca yap, yalnız ilgili dosyaları incele ve dağıtım sonuçlarını gereksiz tekrarlarla sorgulama. WordPress.org yayını ayrı yetki gerektirir.
 - Tasarım sade ve ürün odaklıdır. Kullanıcının aradığı özgünlük, karmaşık veya bilim kurgu dekorları eklemek anlamına gelmez. Sayfaları kullanım amacı ve örneklerle değerlendirerek tek tek geliştir.
 - Header: mobilde logo solda, Menü en sağda sabit konumdadır. Alt menü varsayılan açık, Header ayarından kapatılabilir. Üründe satın alma alanı dock yerini aldığında sepet menünün hemen solunda görünür; arama ve hesap menüden erişilir. Satın alma formu olmayan üründe açık dock korunur. Alt menü kapalıysa mevcut araçlar üstte kalır; masaüstü menü/orta marka/sağ araçlar düzeni korunur.
-- Menü, arama ve sepet aynı görsel/etkileşim dilinde **tam ekran** açılır. Onaylanan yön Apple örneğindeki tam ekran menüdür; sayfayı yana iten menü önceki alternatifti.
+- Mobilde menü/arama/sepet tam ekran kalır. Kullanıcının 20 Ekim 2026 talebiyle 901px+ arama header içinde yatay formdur, sepet açılış/kapanış animasyonlu sağ paneldir. Menü mevcut native dialog/popovertarget akışını korur.
 - Menü/arama/sepet aynı native dialog içinde açılır. Güncel kaynakta dialog geometrisi sabit kalır; overlay controller içerik geçişlerini ve Menu/X açma-kapama zamanlamasını yönetir. 0.1.35 ile gelen aynı DOM düğmesinin animasyonlu Menu/X dönüşümü korunur; eski “kapatma bekletmez” notuna dönülmez. Dialog'a ikon kökenli büyüme uygulanmaz. Hareket azaltma tercihi, klavye, odak ve kaydırma konumu korunur.
 - Arama hızlı ve doğru olmalı; gecikmiş eski sonuç yeni sorguyu ezmemeli. Mevcut sürümün yazım hatası toleransı olmayan aramasını gelişmiş arama gibi tanıtma.
 - Tutarlı ikon dili: Lucide temelli 24×24 çizim alanı, 2 birim çizgi, yuvarlatılmış uç/köşe ve tek renk. Temada yalnız kullanılan yerel SVG dosyaları yüklenir; tüm paketi, ikon fontunu, CDN veya ikon JavaScript çalışma zamanını ekleme. Eklentinin mevcut SVG maskeleri korunur; yeni/değişen ikonlar bu standarda kademeli geçirilir. Yönetim ikon CSS dosyasını mağazaya yükleme.

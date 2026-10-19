@@ -10,6 +10,7 @@
   --sf-ui-ink:var(--sf-ink,#22231f);
   --sf-ui-surface:#ffffff;
   --sf-ui-surface-muted:#f3f3f3;
+  --sf-ui-nav-selection:rgba(118,118,128,.16);
   /* One legible floating material for header, dock, purchase bar and soft controls. */
   --sf-ui-glass-surface:rgba(247,247,249,.96);
   --sf-ui-glass-panel-surface:rgba(247,247,249,.78);

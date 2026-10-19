@@ -2,7 +2,11 @@
 // Render the real PHP header with deterministic WP/Woo boundary stubs.
 // This is a DOM contract fixture, not a substitute for full WordPress integration.
 define('ABSPATH', __DIR__);
-class Walker_Nav_Menu {}
+class Walker_Nav_Menu {
+    public function start_el(&$output,$item,$depth=0,$args=null,$current_object_id=0) {
+        $output .= '<li class="'.esc_attr(implode(' ',$item->classes)).'"><a class="sf-ui-pressable" href="'.esc_url($item->url).'"'.(in_array('current-menu-item',$item->classes,true)?' aria-current="page"':'').'>'.esc_html($item->title).'</a>';
+    }
+}
 function codela_sf_ready() { return true; }
 function codela_theme_settings() { return ['menu_id'=>0, 'brand'=>'CODELA'] + (getenv('FIXTURE_DOCK') === false ? [] : ['mobile_dock_enabled'=>getenv('FIXTURE_DOCK')]); }
 function __( $s, ...$args ) { return $s; }
@@ -54,11 +58,19 @@ echo codela_sf_header();
 
 function has_nav_menu($location){return getenv('FIXTURE_MENU') === '1';}
 function wp_nav_menu($args){
-    $items = '<li class="current-menu-item"><a aria-current="page" class="sf-ui-pressable" href="/shop/">Mağaza</a></li>';
-    foreach (['Yeni koleksiyon','Hakkımızda','İletişim','Uzun kategori başlığı örneği','Diğer ürünler'] as $label) {
-        $items .= '<li><a class="sf-ui-pressable" href="/category/7/">'.$label.'</a></li>';
+    $desktop = $args['menu_class'] === 'sf-desktop-menu';
+    $walker = $args['walker'] ?? new Walker_Nav_Menu();
+    $items = '';
+    $labels = ['Mağaza','Yeni koleksiyon','Hakkımızda','İletişim','Uzun kategori başlığı örneği','Diğer ürünler','Üst kategori'];
+    foreach ($labels as $i=>$label) {
+        $item = (object)['ID'=>$i+1,'title'=>$label,'url'=>$i===0?'/shop/':($i===6?'/parent/':'/category/7/'),'classes'=>$i===0?['current-menu-item']:($i===6?['menu-item-has-children']:[])];
+        $walker->start_el($items,$item,0,(object)$args);
+        if ($i===6) {
+            if($desktop)$walker->start_lvl($items,0,(object)$args);else $items.='<ul class="sub-menu">';
+            $walker->start_el($items,(object)['ID'=>8,'title'=>'Alt kategori','url'=>'/nested/','classes'=>[]],1,(object)$args);
+            $items.='</li></ul>';
+        }
+        $items.='</li>';
     }
-    if (true) { $items .= '<li><a href="/parent/">Üst kategori</a><ul class="sub-menu"><li><a href="/nested/">Alt kategori</a></li></ul></li>'; }
-    if ($args['menu_class'] === 'sf-desktop-menu') { $items = str_replace('<ul class="sub-menu">','<button class="sf-desktop-submenu-toggle sf-ui-icon-button" popovertarget="fixture-submenu" aria-label="Alt menüyü aç">+</button><ul class="sub-menu sf-desktop-submenu sf-ui-surface" id="fixture-submenu" popover="auto">',$items); }
     return '<ul id="'.$args['menu_id'].'" class="'.$args['menu_class'].'">'.$items.'</ul>';
 }

@@ -125,3 +125,6 @@
   color:var(--sf-ui-ink);pointer-events:none;
 }
 
+
+/* Page sliders allow vertical gestures to continue down the document. */
+[data-sf-gallery] .sf-ui-gallery-track{overscroll-behavior-y:auto}

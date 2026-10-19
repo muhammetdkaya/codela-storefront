@@ -6,9 +6,10 @@
     "codela": "1.2.0"
   },
   "changes": [
-    "Standart sayfalarda ve ödeme sayfasında temanın otomatik eklediği üst başlık kaldırıldı.",
-    "Sayfa içeriği, içerikteki başlıklar ve WooCommerce ödeme akışı korundu.",
-    "Kategori Görsel bantlar · C düzeni masaüstünde dört, tablette iki sütun gösterir; mobil tek sütun korunur.",
-    "Aynı sürüm numarasıyla eski paket kurulu olan mağazalar için güncelleme sürümü 0.1.149 olarak yükseltildi."
+    "Masaüstü arama, menü alanına yatay açılan tek form olarak düzenlendi.",
+    "Masaüstü sepeti açılış ve kapanış animasyonlu sağ panel olarak düzenlendi.",
+    "Üst menü alt menü okları başlıkla bütünleştirildi; aktif sayfa alt çizgisi yerine mobil alt menüyle ortak kapsül seçimi kullanıldı.",
+    "Mobil vitrin slider üzerinde başlayan dikey kaydırma serbest bırakıldı; yatay galeri davranışı korundu.",
+    "Native WordPress blog listesi, arşiv ve yazı iç sayfası tema tasarımına uyarlandı."
   ]
 }

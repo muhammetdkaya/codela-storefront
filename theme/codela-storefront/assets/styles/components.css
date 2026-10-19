@@ -531,3 +531,14 @@ html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) d
   background:transparent!important;box-shadow:none!important;border:0;
   -webkit-backdrop-filter:none;backdrop-filter:none;
 }
+
+/* Navigation selection is the same capsule tint/radius on header and dock.
+   Parent link and native disclosure share one continuous selected surface. */
+.sf-desktop-menu li{transition:background-color var(--sf-ui-motion-selection) var(--sf-ui-ease-press)}
+.sf-desktop-menu li:is(.current-menu-item,.current-menu-ancestor,:hover,:focus-within){background:var(--sf-ui-nav-selection)}
+.sf-desktop-menu li>a{text-decoration:none!important}
+
+/* Content card uses the existing page palette and control corner token. */
+.sf-content .sf-ui-card{background:var(--sf-ui-surface);border:1px solid var(--sf-ui-border);border-radius:calc(var(--sf-ui-control-radius) + 8px);color:var(--sf-ui-ink)}
+.sf-content .sf-journal-pagination .page-numbers.current{background:var(--sf-ui-nav-selection)}
+.sf-shell .sf-header-search:has(#sf-query:focus-visible){outline:2px solid var(--sf-accent,#656e52);outline-offset:4px}

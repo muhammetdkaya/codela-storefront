@@ -1,5 +1,5 @@
 /**
- * Single fullscreen overlay controller. Owns native dialog, active view,
+ * Single overlay controller. Owns the responsive search slot, native dialog, active view,
  * focus, scroll locking/restoration and content transitions.
  * The navigation element is passed by callback and is never duplicated.
  */
@@ -12,6 +12,8 @@ export function createOverlayController({
     let savedBodyStyle = null, savedAdminStyle = null, panelMotion = null;
     let surfaceMotion = null, closing = false, restoreScrollFrame = 0;
     let menuTrigger = null, menuHome = null, menuLabel = '';
+    const desktop = window.matchMedia('(min-width:901px)');
+    let inlineSearch = false, searchHome = null, searchSlot = null, hiddenHeaderControl = null;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     function adminOffset() {
@@ -30,6 +32,75 @@ export function createOverlayController({
             if (value) element.style.setProperty(name, value, priority);
             else element.style.removeProperty(name);
         }
+    }
+
+    function searchSemantics() {
+        document.querySelectorAll('[data-panel="search"]').forEach(trigger => {
+            trigger.setAttribute('aria-controls', desktop.matches ? 'sf-search' : 'sf-panel');
+            if (desktop.matches) trigger.removeAttribute('aria-haspopup');
+            else trigger.setAttribute('aria-haspopup', 'dialog');
+        });
+    }
+    function syncInlineHeaderControl() {
+        if (!inlineSearch) return;
+        const header = searchSlot.closest('.sf-header');
+        const navigation = header.querySelector('.sf-desktop-navigation');
+        const control = navigation && getComputedStyle(navigation).display !== 'none' ? navigation : header.querySelector('.sf-brand');
+        if (hiddenHeaderControl !== control) {
+            if (hiddenHeaderControl) hiddenHeaderControl.inert = false;
+            hiddenHeaderControl = control;
+            hiddenHeaderControl.inert = true;
+        }
+    }
+    function openInlineSearch(event) {
+        if (inlineSearch) { $('#sf-query').focus({preventScroll:true}); return; }
+        if (dialog.open) finishClose();
+        opener = event?.target?.closest?.('[data-panel]') || event?.currentTarget || document.activeElement;
+        current = 'search'; inlineSearch = true;
+        const header = searchSlot.closest('.sf-header');
+        syncInlineHeaderControl();
+        header.classList.add('is-search-expanded');
+        searchSlot.hidden = false;
+        searchSlot.appendChild($('#sf-search'));
+        $('#sf-search').hidden = false;
+        $('.sf-search-content').classList.add('sf-ui-surface');
+        document.querySelectorAll('[data-panel="search"]').forEach(el => el.setAttribute('aria-expanded','true'));
+        document.querySelectorAll('.sf-desktop-submenu:popover-open').forEach(menu => menu.hidePopover());
+        if (!reducedMotion.matches && searchSlot.animate) {
+            surfaceMotion = searchSlot.animate([{clipPath:'inset(0 0 0 100%)'},{clipPath:'inset(0 0 0 0)'}], {duration:240,easing:'cubic-bezier(.2,.8,.2,1)'});
+            surfaceMotion.onfinish = () => { surfaceMotion = null; };
+        }
+        searchFeature.start();
+        $('#sf-query').focus({preventScroll:true});
+    }
+    function closeInlineSearch(restoreFocus = true) {
+        surfaceMotion?.cancel(); surfaceMotion = null;
+        searchFeature.cancel();
+        const search = $('#sf-search');
+        search.hidden = true;
+        searchHome.after(search);
+        $('.sf-search-content').classList.remove('sf-ui-surface');
+        searchSlot.hidden = true;
+        searchSlot.closest('.sf-header').classList.remove('is-search-expanded');
+        if (hiddenHeaderControl) hiddenHeaderControl.inert = false;
+        hiddenHeaderControl = null;
+        document.querySelectorAll('[data-panel="search"]').forEach(el => el.setAttribute('aria-expanded','false'));
+        inlineSearch = false; current = null;
+        if (restoreFocus && opener?.isConnected) opener.focus({preventScroll:true});
+        opener = null;
+    }
+    function animateDrawer(out = false) {
+        if (reducedMotion.matches || !dialog.animate) return false;
+        surfaceMotion?.cancel();
+        surfaceMotion = dialog.animate([
+            {transform:out ? 'translateX(0)' : 'translateX(100%)'},
+            {transform:out ? 'translateX(100%)' : 'translateX(0)'},
+        ], {duration:out ? 220 : 280,easing:'cubic-bezier(.2,.8,.2,1)',fill:'forwards'});
+        surfaceMotion.onfinish = () => {
+            if (out) finishClose();
+            else { surfaceMotion.cancel(); surfaceMotion = null; }
+        };
+        return true;
     }
 
     // One focusable menu trigger is reparented above the native dialog backdrop.
@@ -78,11 +149,14 @@ export function createOverlayController({
         event?.preventDefault();
         dialog ||= $('#sf-panel');
         if (!dialog || typeof dialog.showModal !== 'function') { if (name !== 'menu') location.href = config()[name] || config().shop; return; }
+        if (name === 'search' && desktop.matches && searchSlot) { openInlineSearch(event); return; }
+        if (inlineSearch) closeInlineSearch(false);
         const wasClosing = closing;
         if (closing) {
             surfaceMotion?.cancel(); surfaceMotion = null;
             panelMotion?.cancel(); panelMotion = null;
             closing = false;
+            dialog.classList.remove('is-closing');
         }
         const opening = !dialog.open;
         if (!opening && current === name && !wasClosing) return;
@@ -161,9 +235,10 @@ export function createOverlayController({
                 form.action = config().account;
             });
         }
-        animatePanelContent(name === 'search' ? $('.sf-search-content') : $(`#sf-${name}`), previous === 'cart' && name === 'search' ? -1 : 1);
+        if (name === 'cart' && desktop.matches) animateDrawer();
+        else animatePanelContent(name === 'search' ? $('.sf-search-content') : $(`#sf-${name}`), previous === 'cart' && name === 'search' ? -1 : 1);
     }
-    // Animate content, never the full-screen dialog: transforming it changes the
+    // Mobile transitions animate content only: transforming the dialog changes the
     // containing block of the fixed dock in some browsers. Repeated actions cancel cleanly.
     function animatePanelContent(element, direction = 1) {
         panelMotion?.cancel();
@@ -177,12 +252,18 @@ export function createOverlayController({
         panelMotion.onfinish = () => { panelMotion = null; };
     }
     function close() {
+        if (inlineSearch) { closeInlineSearch(); return; }
         if (!dialog?.open || closing) return;
         panelMotion?.cancel(); panelMotion = null;
         surfaceMotion?.cancel(); surfaceMotion = null;
         if (current === 'menu') {
             findMenuTrigger()?.setAttribute('aria-expanded', 'false');
             menuTrigger?.setAttribute('aria-label', menuLabel);
+        }
+        if (current === 'cart' && desktop.matches && animateDrawer(true)) {
+            closing = true;
+            dialog.classList.add('is-closing');
+            return;
         }
         if (current === 'menu' && !reducedMotion.matches && $('#sf-menu')?.animate) {
             closing = true;
@@ -199,7 +280,7 @@ export function createOverlayController({
         surfaceMotion?.cancel(); surfaceMotion = null;
         panelMotion?.cancel(); panelMotion = null;
         closing = false;
-        dialog.classList.remove('is-open');
+        dialog.classList.remove('is-open', 'is-closing');
         document.querySelectorAll('[data-panel]').forEach(el => el.setAttribute('aria-expanded','false'));
         searchFeature.cancel();
         dialog.close(); restoreMenuTrigger(); current = null;
@@ -227,6 +308,7 @@ export function createOverlayController({
     function closeForNavigation() {
         // Closing the menu before a router click must not jump to the old
         // scroll position, restore focus to stale content, or wait 280ms.
+        if (inlineSearch) { closeInlineSearch(false); return; }
         if (!dialog?.open) return;
         panelMotion?.cancel(); panelMotion = null;
         surfaceMotion?.cancel(); surfaceMotion = null;
@@ -237,8 +319,42 @@ export function createOverlayController({
         if (dialog && dialog !== element) throw new Error('Overlay controller already bound');
         if (dialog) return;
         dialog = element;
+        searchSlot = $('.sf-header-search');
+        searchHome = document.createComment('Search mobile slot');
+        $('#sf-search').before(searchHome);
+        searchSemantics();
+        desktop.addEventListener('change', () => {
+            if (inlineSearch) closeInlineSearch();
+            else if (dialog.open && current === 'search') finishClose();
+            else if (dialog.open && current === 'cart') {
+                // Keep the same cart, focus and scroll area while CSS changes
+                // between drawer and fullscreen; the one dock is already inside.
+                if (closing) finishClose();
+                else {
+                    surfaceMotion?.cancel(); surfaceMotion = null;
+                    panelMotion?.cancel(); panelMotion = null;
+                }
+            }
+            searchSemantics();
+        });
+        document.addEventListener('keydown', event => {
+            if (inlineSearch && event.key === 'Escape') { event.preventDefault(); closeInlineSearch(); }
+        });
+        document.addEventListener('pointerdown', event => {
+            if (inlineSearch && !searchSlot.contains(event.target) && !event.target.closest('[data-panel="search"]')) closeInlineSearch(false);
+        });
+        let backdropDown = false;
+        const outsideDrawer = event => {
+            const rect = dialog.getBoundingClientRect();
+            return event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom;
+        };
+        dialog.addEventListener('pointerdown', event => { backdropDown = outsideDrawer(event); });
+        dialog.addEventListener('click', event => {
+            if (current === 'cart' && desktop.matches && backdropDown && outsideDrawer(event)) close();
+            backdropDown = false;
+        });
         adminOffset();
-        window.addEventListener('resize', () => { adminOffset(); positionMenuTrigger(); });
+        window.addEventListener('resize', () => { adminOffset(); positionMenuTrigger(); syncInlineHeaderControl(); });
         let offsetFrame = 0;
         window.addEventListener('scroll', () => {
             if (!offsetFrame) offsetFrame = requestAnimationFrame(() => {

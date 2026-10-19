@@ -25,11 +25,17 @@ styles.splice(1,0,fs.readFileSync('theme/codela-storefront/assets/storefront.css
       const nav=await page.locator('.sf-desktop-navigation').boundingBox(),brand=await page.locator('.sf-brand').boundingBox(),tools=await page.locator('.sf-actions').boundingBox();
       assert(nav.x>=brand.x+brand.width,'Menu cannot cover brand');assert(nav.x+nav.width<=tools.x,'Menu cannot cover tools');
       assert.equal(await page.locator('.sf-desktop-menu .sub-menu').count(),1,'Desktop contains nested destinations');
+      const active=await page.locator('.sf-desktop-menu>.current-menu-item').evaluate(el=>({background:getComputedStyle(el).backgroundColor,radius:getComputedStyle(el).borderRadius,decoration:getComputedStyle(el.querySelector('a')).textDecorationLine}));
+      assert.equal(active.radius,'999px');assert.equal(active.background,'rgba(118, 118, 128, 0.16)');assert.equal(active.decoration,'none');
+      const parent=page.locator('.sf-desktop-menu>.menu-item-has-children');
+      const link=await parent.locator(':scope>a').boundingBox(),toggle=await parent.locator(':scope>button').boundingBox();
+      assert(Math.abs(link.x+link.width-toggle.x)<1,'Label and arrow form one adjacent control group');assert(toggle.width>=44&&toggle.height>=44,'Disclosure keeps accessible hit target');
+
       assert(!(await page.locator('.sf-header-menu').isVisible()),'Hamburger hidden while full desktop menu is visible');
-      await page.locator('[popovertarget=fixture-submenu]').click();
-      assert(await page.locator('#fixture-submenu').isVisible(),'Native submenu opens with pointer');
+      await page.locator('[popovertarget=sf-desktop-submenu-7]').click();
+      assert(await page.locator('#sf-desktop-submenu-7').isVisible(),'Native submenu opens with pointer');
       await page.keyboard.press('Escape');
-      assert(!(await page.locator('#fixture-submenu').isVisible()),'Native Escape closes submenu');
+      assert(!(await page.locator('#sf-desktop-submenu-7').isVisible()),'Native Escape closes submenu');
       assert.equal(await page.locator('#sf-menu .sub-menu').count(),1,'Nested menu still available');
       // Exercise real sequential keyboard navigation. Re-focusing the already
       // active last link after a viewport resize is a no-op in the browser and

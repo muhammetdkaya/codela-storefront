@@ -1,5 +1,14 @@
 # Codela Storefront UI Kit — source of truth
 
+
+## Responsive tools and journal — 0.1.150
+
+At 901px+, move the one existing search section into the header slot; never duplicate its form, request controller or result IDs. It does not make the page inert or lock scrolling. Restore its original slot on close, navigation and breakpoint changes. Desktop cart is the one native dialog styled as a right drawer, with cancellable entrance/exit motion and reduced-motion handling. Modal focus and Woo API ownership stay intact; mobile remains fullscreen. Do not transform the mobile dialog because its real dock is fixed inside it.
+
+Native desktop parent links and disclosure buttons stay adjacent and independently keyboard accessible, within one continuous pill selection. Header and mobile dock consume the same selection tint/radius; no active-link underline. Native popovers still own dismissal and nesting. Page-section horizontal galleries allow vertical scroll chaining; product gallery policy stays separate.
+
+Journal is native inherited Query/Post Template/featured image/title/excerpt/read-more/pagination. Home/archives/single consume theme patterns and core blocks. No additional content store, fabricated posts, filters or JS router. Card paint is shared UI Kit; journal CSS owns layout/typography. Test long titles, missing images, narrow screens and bounded prose/code/table widths. Saved Site Editor templates and physical Android/Safari remain distinct acceptance checks.
+
 ## Page headings and category bands — 0.1.148 review
 
 The standard page and checkout templates start with native post content, without an automatically inserted post-title block. Merchant-authored content headings, document titles and product/post/archive headings stay unchanged. Saved Site Editor template overrides need separate verification before deployment.

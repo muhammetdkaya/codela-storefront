@@ -559,11 +559,12 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
   assert(layout.fits && !layout.overflow,'No-dock tools fit even 320px');assert.equal(layout.padding,0);
   for(const mode of ['search','cart']){
    await page.locator('.sf-header [data-panel="'+mode+'"]').click();
-   assert.equal(await page.locator('#sf-panel').getAttribute('open'),'');
+   assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),mode!=='search'||width<901);
    if(mode==='cart')await page.waitForTimeout(40);
    assert.equal(await page.locator('.sf-mobile-dock').count(),0);
    if(mode==='cart') assert(parseFloat(await page.locator('.sf-cart-bottom').evaluate(el=>getComputedStyle(el).paddingBottom))<80,'No phantom dock clearance');
    await page.locator(mode==='search'?'.sf-search-cancel':'.sf-panel-top .sf-close').click();
+   if(mode==='cart'&&width>=901)await page.locator('#sf-panel').waitFor({state:'hidden'});
   }
  }
  assert.deepEqual(errors,[]);
