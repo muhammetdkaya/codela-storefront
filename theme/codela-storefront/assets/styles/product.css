@@ -459,7 +459,7 @@ body.single-product .sf-content{margin-block-start:0!important}
 body.single-product div.product > :is(.related,.upsells){
   max-width:1200px;justify-self:center;padding-inline:max(20px,5vw);margin-inline:auto;
 }
-body.single-product div.product > .onsale{
+body.single-product div.product .sf-product-overview > .onsale{
   position:absolute;z-index:2;top:calc(88px + var(--sf-header-offset,0px));left:20px;
   display:inline-flex;align-items:center;min-width:0;min-height:0;
   margin:0;padding:7px 12px;font-size:12px;font-weight:500;line-height:1.4;
@@ -818,7 +818,7 @@ body.single-product div.product .sf-product-quantity .sf-product-quantity-step[d
   /* catalog.css gives all native grids 32px bottom margin. Inside the
      vertically scrolling product discovery it is redundant after the last card. */
   body.single-product.sf-product-sheet-ready .sf-product-discovery :is(.related,.upsells) ul.products{margin-bottom:0}
-  body.sf-product-sheet-ready:has(.woocommerce-product-gallery.is-discovering) div.product > .onsale{visibility:hidden}
+  body.sf-product-sheet-ready:has(.woocommerce-product-gallery.is-discovering) div.product .sf-product-overview > .onsale{visibility:hidden}
   body.sf-product-sheet-ready .woocommerce-product-gallery.is-discovering > :is(.sf-product-gallery-nav,.sf-product-gallery-count,.sf-product-visitor,.woocommerce-product-gallery__trigger){visibility:hidden}
   /* Match the gallery index's discovery boundary even if the Codela plugin
      has reparented its original live host outside the gallery frame.

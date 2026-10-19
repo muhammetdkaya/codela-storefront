@@ -18,6 +18,6 @@ class Codela_SF_Menu_Walker extends Walker_Nav_Menu {
     }
 
     public function start_lvl( &$output, $depth = 0, $args = null ) {
-        $output .= '<ul class="sub-menu sf-desktop-submenu" id="' . esc_attr( $this->parents[ $depth ] ) . '" popover="auto">';
+        $output .= '<ul class="sub-menu sf-desktop-submenu sf-ui-surface" id="' . esc_attr( $this->parents[ $depth ] ) . '" popover="auto">';
     }
 }

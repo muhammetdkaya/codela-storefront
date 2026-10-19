@@ -71,8 +71,8 @@ body:not(.codela-my-account-layout) .sf-content .sf-ui-icon-button--soft:is(:act
 .sf-shell .sf-ui-icon-badged .sf-badge:empty{display:none}
 /* The same surface primitive styles all floating header islands and the X.
    Placement belongs to navigation/overlay; touch and appearance live here. */
-body.single-product div.product > .onsale,
-html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary .quantity,
+body.single-product div.product .sf-product-overview > .onsale,
+html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary .quantity,
 body.single-product.sf-product-sheet-ready div.product .sf-product-quantity.sf-ui-surface,
 .sf-product-purchase,
 .sf-ui-gallery-nav,
@@ -101,7 +101,7 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product a.sf-ui
    progressively enhanced sheet use the exact same material and corner shape.
    Unlike pills and icon controls, both are panels, not generic soft buttons. */
 .sf-product-sheet,
-html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary{
+html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary{
   /* No invisible 1px borders: they inflate intrinsic first-paint height
      but were omitted by the final sheet's content-based measurement. */
   border:0 solid var(--sf-ui-glass-border);
@@ -124,9 +124,9 @@ body:not(.codela-my-account-layout) .sf-content .sf-ui-icon-button--soft .sf-ico
 }
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   .woocommerce div.product .sf-ui-gallery .woocommerce-product-gallery__trigger,
-  body.single-product div.product > .onsale,
+  body.single-product div.product .sf-product-overview > .onsale,
 .sf-product-sheet,
-html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary .quantity,
+html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary .quantity,
 body.single-product.sf-product-sheet-ready div.product .sf-product-quantity.sf-ui-surface,
 .sf-product-purchase,
 .sf-ui-gallery-nav,.woocommerce div.product div.sf-ui-gallery .flex-control-thumbs,
@@ -385,9 +385,9 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
 body:not(.codela-my-account-layout) .sf-content .sf-ui-button--secondary,
 .sf-shell .sf-ui-button--secondary,
 .woocommerce .sf-shell .sf-ui-button--secondary{background:var(--sf-ui-surface);-webkit-backdrop-filter:none;backdrop-filter:none;}
-body.single-product div.product > .onsale,
+body.single-product div.product .sf-product-overview > .onsale,
 .sf-product-sheet,
-html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary .quantity,
+html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary .quantity,
 body.single-product.sf-product-sheet-ready div.product .sf-product-quantity.sf-ui-surface,
 .sf-product-purchase,
 .sf-ui-gallery-nav,
@@ -412,9 +412,9 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
 body:not(.codela-my-account-layout) .sf-content .sf-ui-button--secondary,
 .sf-shell .sf-ui-button--secondary,
 .woocommerce .sf-shell .sf-ui-button--secondary,
-body.single-product div.product > .onsale,
+body.single-product div.product .sf-product-overview > .onsale,
 .sf-product-sheet,
-html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary .quantity,
+html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary .quantity,
 body.single-product.sf-product-sheet-ready div.product .sf-product-quantity.sf-ui-surface,
 .sf-product-purchase,
 .sf-ui-gallery-nav,
@@ -527,7 +527,7 @@ body:not(.codela-my-account-layout) .sf-content a.sf-ui-icon-button.loading{
 /* One native purchase footer, one panel material, before and after mount.
    Do not paint a second pill when the form still lives in Woo's summary. */
 .sf-product-sheet .sf-product-purchase,
-html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product > .summary .sf-product-purchase{
+html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary .sf-product-purchase{
   background:transparent!important;box-shadow:none!important;border:0;
   -webkit-backdrop-filter:none;backdrop-filter:none;
 }
