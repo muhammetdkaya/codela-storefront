@@ -8,9 +8,9 @@ Kullanıcının talebiyle `page.html` ve `page-checkout.html` içindeki otomatik
 
 Fatura türü ayrı `muhammetdkaya/codela` deposundaki checkout şemasına aittir. Aynı talebin eklenti değişikliği Türkiye şemasında `Corporate` çevirisini kullanır; `company` veri değeri ve vergi/kimlik işleyişi korunur. Mevcut PO ve MO kataloglarında Company ve Corporate zaten Kurumsal'dır; AZ Seramik'in kurulu dosyaları/harici dil paketi doğrulanmadığından canlıdaki Şirket metninin kesin kaynağı belirlenmiş sayılmaz.
 
-**Doğrulama:** Yerelde 24 paket testi başarılı. PHP yürütücüsü bulunmadığından PHP kullanan yerel testler çalıştırılamadı; GitHub PR PHP/JS/tarayıcı doğrulaması bekleniyor. **Yayın:** Bu bir inceleme çalışmasıdır; main birleştirmesi, FTPS ve kararlı yayın yapılmadı. AZ Seramik'te canlı kabul yapılmış sayılmaz.
+**Doğrulama:** Yerelde 24 paket testi ve search/cart/dock kontrolleri başarılı. [PR #68](https://github.com/muhammetdkaya/codela-storefront/pull/68), kod kaynağı `b85da66bb0eccbac34483346d2afe65666fe632d`; [GitHub CI 39316673548](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39316673548) PHP, JS, paket ve tarayıcı kontrolleri **success**. Yerel PHP yoktu; PHP/tarayıcı doğrulaması CI'da tamamlandı. [Fatura PR #17](https://github.com/muhammetdkaya/codela/pull/17) / `49b701b011ce95d164075fbcb14c55f9aa03984e` için eklenti PHP/JS/browser ve free-edition CI da başarılı. Bu kayıt yalnız dokümantasyon güncellemesidir; doğrulanan runtime kodu değişmedi. **Yayın:** Bu bir inceleme çalışmasıdır; main birleştirmesi, FTPS ve kararlı yayın yapılmadı. AZ Seramik'te canlı kabul yapılmış sayılmaz.
 
-**Sıradaki:** PR kontrollerini tamamla; kullanıcı kontrolünden sonra yayın hedefinde güncel tema/eklenti ve özel şablon durumunu doğrula. Önceki LCP, gerçek ödeme sağlayıcısı ve fiziksel Safari açık işleri bu küçük değişiklikle kapanmaz.
+**Sıradaki:** Kullanıcı incelemesinden sonra yayın hedefinde güncel tema/eklenti ve özel şablon durumunu doğrula. Önceki LCP, gerçek ödeme sağlayıcısı ve fiziksel Safari açık işleri bu küçük değişiklikle kapanmaz.
 
 
 ## Son doğrulanmış durum — 19 Ekim 2026: 0.1.145 canlıda ve kararlı kanalda, LCP açık
