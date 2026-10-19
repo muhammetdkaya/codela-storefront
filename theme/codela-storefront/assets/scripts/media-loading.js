@@ -1,10 +1,8 @@
 // Responsive source promotion only. Native image decoding, srcset selection and
 // scrolling remain browser-owned; product gallery promotion has its own owner.
 (()=>{
- const mount=()=>{
-  const images=[...document.querySelectorAll('img[data-sf-media-src]')];
-  if(!images.length)return;
-  const promote=image=>{
+ const promote=image=>{
+   if(!image.dataset.sfMediaSrc)return;
    image.closest('picture')?.querySelectorAll('source[data-sf-media-srcset]').forEach(source=>{
     source.srcset=source.dataset.sfMediaSrcset;delete source.dataset.sfMediaSrcset;
    });
@@ -12,7 +10,15 @@
    if(image.dataset.sfMediaSrcset)image.srcset=image.dataset.sfMediaSrcset;
    image.src=image.dataset.sfMediaSrc;
    delete image.dataset.sfMediaSrc;delete image.dataset.sfMediaSrcset;delete image.dataset.sfMediaSizes;
-  };
+ };
+ // The existing gallery adapter owns selection; it signals actual navigation
+ // intent so a hidden next picture starts before the native scroll animation.
+ document.addEventListener('codela:media-intent',event=>{
+  event.target.querySelectorAll('img[data-sf-media-src]').forEach(promote);
+ });
+ const mount=()=>{
+  const images=[...document.querySelectorAll('img[data-sf-media-src]')];
+  if(!images.length)return;
   if(!('IntersectionObserver' in window)){images.forEach(promote);return;}
   const observer=new IntersectionObserver(entries=>{
    for(const entry of entries)if(entry.isIntersecting){observer.unobserve(entry.target);promote(entry.target);}
