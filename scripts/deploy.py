@@ -20,10 +20,6 @@ def package_files():
             if ".." in relative.split("/") or "\n" in relative or "\r" in relative:raise RuntimeError("Invalid path")
             files[relative]=file.read_bytes()
     if not valid_theme(files.get("style.css",b"")) or "templates/index.html" not in files:raise RuntimeError("Invalid theme")
-    meta=json.loads(Path("dist/manifest.json").read_text())
-    archive=Path("dist")/("codela-storefront-"+meta["version"]+".zip")
-    files["support/packages/"+archive.name]=archive.read_bytes()
-    files["support/packages/manifest.json"]=Path("dist/manifest.json").read_bytes()
     return files
 def main():
     password=os.environ.get("FTP_PASSWORD","")
@@ -103,10 +99,10 @@ def main():
             temp=path+".stage-"+uuid.uuid4().hex
             temporary.append((temp,path));put(temp,data)
         stage="switch staged files"
-        temporary.sort(key=lambda item:(item[1]=="support/packages/manifest.json",item[1]=="style.css"))
+        temporary.sort(key=lambda item:item[1]=="style.css")
         for temp,path in temporary:ftp.rename(temp,path);changed.append(path)
         stage="verify public source and store"
-        for path in ("style.css","assets/storefront.js","assets/storefront.css","support/packages/manifest.json"):
+        for path in ("style.css","assets/storefront.js","assets/storefront.css"):
             if read_url(PUBLIC+path+"?nocache="+uuid.uuid4().hex)!=files[path]:raise RuntimeError("Public mismatch")
         read_url("https://codela.dev/?storefront_check="+uuid.uuid4().hex);read_url("https://codela.dev/wp-json/")
         print("Storefront deployed; checks passed.");return 0

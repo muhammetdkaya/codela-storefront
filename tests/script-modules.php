@@ -1,6 +1,7 @@
 <?php
 // Executes the real theme registration callback behind minimal WP stubs.
 define( 'ABSPATH', __DIR__ );
+define( 'CODELA_VERSION', '1.2.0' );
 define( 'CODELA_THEME_API_VERSION', '1.0.0' );
 define( 'WC_VERSION', '9.0.0' );
 $GLOBALS['sf_hooks'] = [];

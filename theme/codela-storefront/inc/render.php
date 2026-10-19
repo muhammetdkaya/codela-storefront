@@ -8,31 +8,10 @@ function codela_sf_icon( string $name ): string {
     return '<img class="sf-icon" width="22" height="22" alt="" src="' . esc_url( get_template_directory_uri() . '/assets/icons/' . $name . '.svg?ver=' . $versions[ $name ] ) . '">';
 }
 function codela_sf_menu(): string {
-    $settings = codela_theme_settings();
-    $menu = absint( $settings['menu_id'] );
-    if ( ! $menu ) { $locations = get_nav_menu_locations(); $menu = absint( $locations['primary'] ?? 0 ); }
-    if ( $menu && wp_get_nav_menu_object( $menu ) ) {
-        return wp_nav_menu( [ 'menu' => $menu, 'echo' => false, 'container' => false, 'menu_class' => 'sf-menu-list', 'fallback_cb' => false, 'depth' => 3 ] );
-    }
-    $html = '<ul class="sf-menu-list"><li><a href="' . esc_url( wc_get_page_permalink( 'shop' ) ) . '">' . esc_html__( 'All products', 'codela-storefront' ) . '</a></li>';
-    $terms = get_terms( [ 'taxonomy' => 'product_cat', 'hide_empty' => true, 'number' => 100 ] );
-    if ( ! is_wp_error( $terms ) ) {
-        $render = static function( $parent, $depth = 0 ) use ( &$render, $terms ) {
-            if ( $depth > 2 ) { return ''; }
-            $out = '';
-            foreach ( $terms as $term ) {
-                if ( (int) $term->parent !== (int) $parent ) { continue; }
-                $url = get_term_link( $term );
-                if ( is_wp_error( $url ) ) { continue; }
-                $children = $render( $term->term_id, $depth + 1 );
-                $out .= '<li><a href="' . esc_url( $url ) . '">' . esc_html( $term->name ) . '</a>' . ( $children ? '<ul class="sub-menu">' . $children . '</ul>' : '' ) . '</li>';
-            }
-            return $out;
-        };
-        $html .= $render( 0 );
-    }
-    return $html . '</ul>';
+    if ( ! has_nav_menu( 'primary' ) ) { return ''; }
+    return (string) wp_nav_menu( [ 'theme_location' => 'primary', 'echo' => false, 'container' => false, 'menu_class' => 'sf-menu-list', 'fallback_cb' => false, 'depth' => 3 ] );
 }
+
 function codela_sf_header(): string {
     if ( ! codela_sf_ready() ) { return ''; }
     // Guest authentication has its own quiet header. Do not show the store dock,
@@ -45,7 +24,7 @@ function codela_sf_header(): string {
             <header class="sf-auth-site-header" aria-label="<?php esc_attr_e( 'Your account', 'codela-storefront' ); ?>">
                 <div class="sf-auth-brand">
                     <?php if ( has_custom_logo() ) { the_custom_logo(); } else { ?>
-                    <a data-sf-route="home" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( $settings['brand'] ?: get_bloginfo( 'name' ) ); ?></a>
+                    <a data-sf-route="home" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></a>
                     <?php } ?>
                 </div>
                 <a class="sf-auth-store-link sf-ui-pressable" href="<?php echo esc_url( home_url( '/' ) ); ?>">
@@ -87,7 +66,7 @@ function codela_sf_header(): string {
             <nav class="sf-header-menu" aria-label="<?php esc_attr_e( 'Main menu', 'codela-storefront' ); ?>">
                 <?php echo codela_sf_ui_icon_button( 'menu', __( 'Menu', 'codela-storefront' ), [ 'variant' => 'soft', 'class' => 'sf-menu-trigger', 'href' => '#sf-menu-fallback', 'attributes' => [ 'data-wp-on--click' => 'actions.menu', 'data-panel' => 'menu', 'aria-haspopup' => 'dialog', 'aria-controls' => 'sf-panel', 'aria-expanded' => 'false' ] ] ); ?>
             </nav>
-            <div class="sf-brand sf-ui-surface"><?php if ( has_custom_logo() ) { the_custom_logo(); } else { ?><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( $settings['brand'] ?: get_bloginfo( 'name' ) ); ?></a><?php } ?></div>
+            <div class="sf-brand sf-ui-surface"><?php if ( has_custom_logo() ) { the_custom_logo(); } else { ?><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></a><?php } ?></div>
             <nav class="sf-actions sf-ui-surface<?php echo $product_page || ( $catalog_page && $show_mobile_dock ) ? ' sf-ui-icon-group--single-mobile' : ''; ?>" aria-label="<?php esc_attr_e( 'Store tools', 'codela-storefront' ); ?>">
                 <?php if ( $catalog_page ) { echo codela_sf_ui_icon_button( 'sliders-horizontal', __( 'Filters', 'codela-storefront' ), [ 'variant' => $show_mobile_dock ? 'soft' : 'bare', 'class' => 'sf-filter-trigger', 'href' => '#sf-filters', 'attributes' => [ 'data-wp-on--click' => 'actions.filters', 'data-panel' => 'filters', 'aria-haspopup' => 'dialog', 'aria-controls' => 'sf-panel', 'aria-expanded' => 'false' ] ] ); } ?>
                 <?php echo codela_sf_ui_icon_button( 'search', __( 'Search', 'codela-storefront' ), [ 'href' => add_query_arg( [ 's' => '', 'post_type' => 'product' ], home_url( '/' ) ), 'attributes' => [ 'data-wp-on--click' => 'actions.search', 'data-panel' => 'search', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] ] ); ?>
@@ -151,38 +130,20 @@ function codela_sf_header(): string {
 }
 function codela_sf_home(): string {
     if ( ! codela_sf_ready() ) { return ''; }
-    // Page-owned sections are the visible source when this exact published page is assigned as home.
-    if ( function_exists( 'codela_sf_front_page_has_saved_sections' ) && codela_sf_front_page_has_saved_sections() ) {
-        $rendered = do_blocks( '<!-- wp:post-content {"layout":{"type":"constrained"}} /-->' );
-        // Never replace a working legacy homepage with a blank native document.
-        // The plugin's native post-content hook renders the single shared section tree.
-        if ( str_contains( $rendered, 'sf-section' ) || '' !== trim( wp_strip_all_tags( $rendered ) ) ) { return $rendered; }
-    }
-    $mode = function_exists( 'codela_sf_home_mode' ) ? codela_sf_home_mode() : 'legacy';
-    if ( 'sections' === $mode ) { return codela_sf_home_sections(); }
-    if ( 'page_content' === $mode ) { return do_blocks( '<!-- wp:post-content {"layout":{"type":"constrained"}} /-->' ); }
-    if ( 'page' === get_option( 'show_on_front' ) && get_option( 'page_on_front' ) && trim( function_exists( 'codela_sections_page_content' ) ? codela_sections_page_content( get_option( 'page_on_front' ) ) : (string) get_post_field( 'post_content', get_option( 'page_on_front' ) ) ) ) {
+    // WordPress Reading settings are the only homepage selector.
+    if ( 'page' === get_option( 'show_on_front' ) ) {
         return do_blocks( '<!-- wp:post-content {"layout":{"type":"constrained"}} /-->' );
     }
-    $settings = codela_theme_settings();
-    $products = wc_get_products( [ 'status' => 'publish', 'visibility' => 'visible', 'limit' => 7, 'orderby' => 'date', 'order' => 'DESC' ] );
-    $products = array_values( array_filter( $products, static fn( $p ) => $p->is_visible() && ! get_post_field( 'post_password', $p->get_id() ) ) );
-    $hero = ! empty( $settings['hero_product_id'] ) ? wc_get_product( $settings['hero_product_id'] ) : null;
-    if ( ! $hero || ! $hero->is_visible() || 'publish' !== $hero->get_status() || get_post_field( 'post_password', $hero->get_id() ) ) { $hero = $products[0] ?? null; }
-    ob_start();
-    if ( $hero ) { ?>
-        <section class="sf-hero"><a class="sf-hero-art" href="<?php echo esc_url( $hero->get_permalink() ); ?>"><?php echo $hero->get_image( 'large', [ 'loading' => 'eager', 'fetchpriority' => 'high' ] ); ?></a><div class="sf-hero-info"><p class="sf-kicker"><?php esc_html_e( 'A considered selection', 'codela-storefront' ); ?></p><h1><?php echo esc_html( $hero->get_name() ); ?></h1><div class="sf-description"><?php echo wp_kses_post( wpautop( $hero->get_short_description() ) ); ?></div><div class="sf-price"><?php echo wp_kses_post( $hero->get_price_html() ); ?></div><?php echo codela_sf_ui_primary_link( $hero->get_permalink(), __( 'Discover', 'codela-storefront' ) ); ?></div></section>
-        <section class="sf-selection woocommerce"><h2><?php esc_html_e( 'Explore the collection', 'codela-storefront' ); ?></h2><?php echo codela_sf_product_grid( $products ); ?></section>
-    <?php } else { ?><section class="sf-selection"><h1><?php echo esc_html( get_bloginfo( 'name' ) ); ?></h1><p><?php esc_html_e( 'Our collection is coming soon.', 'codela-storefront' ); ?></p></section><?php }
-    return ob_get_clean();
+    return do_blocks( '<!-- wp:query {"query":{"inherit":true}} --><!-- wp:post-template --><!-- wp:post-title {"isLink":true} /--><!-- wp:post-excerpt /--><!-- /wp:post-template --><!-- wp:query-pagination --><!-- wp:query-pagination-previous /--><!-- wp:query-pagination-next /--><!-- /wp:query-pagination --><!-- /wp:query -->' );
 }
+
 
 
 /** Optional footer note is declared by the theme's own settings schema. */
 function codela_sf_footer(): string {
     if ( ! codela_sf_ready() ) { return ''; }
     $settings = codela_theme_settings();
-    $brand = (string) ( $settings['brand'] ?: get_bloginfo( 'name' ) );
+    $brand = (string) ( get_bloginfo( 'name' ) );
     $note = sanitize_text_field( (string) ( $settings['footer_text'] ?? '' ) );
     $privacy_url = get_privacy_policy_url();
     $terms_id = absint( get_option( 'woocommerce_terms_page_id', 0 ) );

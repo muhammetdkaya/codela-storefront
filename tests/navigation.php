@@ -32,10 +32,7 @@ $posts[9]->post_password='secret';
 $GLOBALS['posts']=$posts;
 require __DIR__.'/../theme/codela-storefront/inc/navigation.php';
 check(codela_sf_seamless_allowed(),'Built-in home is eligible');
-$GLOBALS['home_mode']='sections';
-check(!codela_sf_seamless_allowed(),'Managed home initializes its real gallery and Woo scripts through a full document');
-check(!codela_sf_seamless_page_allowed(1),'A configured managed homepage is not marked as a partial region target');
-$GLOBALS['home_mode']='legacy';
+
 foreach([3,4,5,6,7,8,9] as $id)check(!codela_sf_seamless_page_allowed($id),'Unsafe page '.$id.' excluded');
 check(codela_sf_seamless_page_allowed(2),'Public core-block page allowed');
 $GLOBALS['front']=false;$GLOBALS['page']=true;$GLOBALS['queried']=2;

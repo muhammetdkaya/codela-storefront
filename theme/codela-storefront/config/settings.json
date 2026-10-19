@@ -2,24 +2,46 @@
   "schema_version": 1,
   "sections": [
     {
-      "id": "header",
-      "label": "Header",
-      "description": "Branding and navigation in the top bar.",
+      "id": "appearance",
+      "label": "Shared appearance",
+      "description": "One accent for the theme and Codela components.",
       "fields": [
         {
-          "id": "brand",
-          "type": "text",
-          "label": "Brand name",
-          "description": "Used when there is no custom logo and in the footer.",
-          "maxlength": 100,
-          "placeholder": "Store name"
+          "id": "accent_color",
+          "type": "color",
+          "default": "#720eec",
+          "label": "Accent color",
+          "description": "Used by the theme and embedded Codela components."
         },
         {
-          "id": "menu_id",
-          "type": "menu",
-          "label": "Main menu",
-          "description": "Choose an existing WordPress menu, or use automatic product categories."
+          "id": "corner_style",
+          "type": "select",
+          "label": "Component corners",
+          "default": "round",
+          "options": {
+            "square": "Square",
+            "soft": "Slight",
+            "round": "Rounded",
+            "pill": "Pill"
+          }
         },
+        {
+          "id": "font_style",
+          "type": "select",
+          "label": "Component font",
+          "default": "theme",
+          "options": {
+            "theme": "Theme font",
+            "system": "System font"
+          }
+        }
+      ]
+    },
+    {
+      "id": "header",
+      "label": "Header",
+      "description": "Mobile navigation behavior. Site identity and menus are managed by WordPress.",
+      "fields": [
         {
           "id": "mobile_dock_enabled",
           "type": "checkbox",
@@ -39,7 +61,7 @@
           "type": "checkbox",
           "default": true,
           "label": "Show gallery thumbnails",
-          "description": "Show selectable thumbnails below the product gallery. Swipe remains available."
+          "description": "Show the three circular previews beside the product gallery. Swipe remains available."
         }
       ]
     },
@@ -59,5 +81,5 @@
       ]
     }
   ],
-  "settings_api": "1.1.0"
+  "settings_api": "1.2.0"
 }

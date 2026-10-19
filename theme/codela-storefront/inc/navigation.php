@@ -13,7 +13,6 @@ function codela_sf_seamless_core_supported(): bool {
 }
 function codela_sf_seamless_page_allowed( int $id ): bool {
     if ( $id <= 0 || ! function_exists( 'get_post' ) ) { return false; }
-    if ( function_exists( 'codela_sf_home_mode' ) && 'sections' === codela_sf_home_mode() && (int) get_option( 'page_on_front' ) === $id ) { return false; }
     $post = get_post( $id );
     if ( ! $post || 'page' !== $post->post_type || 'publish' !== $post->post_status
         || ! empty( $post->post_password ) ) { return false; }
@@ -51,7 +50,6 @@ function codela_sf_seamless_allowed(): bool {
     if ( function_exists( 'is_front_page' ) && is_front_page() ) {
         // Managed home contains native Woo actions and a classic gallery adapter.
         // Let the existing document transition run their real initialization.
-        if ( function_exists( 'codela_sf_home_mode' ) && 'sections' === codela_sf_home_mode() ) { return false; }
         // A configured front page may contain arbitrary shortcodes or forms.
         if ( function_exists( 'get_option' ) && 'page' === get_option( 'show_on_front' ) ) {
             return codela_sf_seamless_page_allowed( (int) get_option( 'page_on_front' ) );
