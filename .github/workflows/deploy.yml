@@ -33,6 +33,7 @@ jobs:
           php tests/front-page-source.php
           php tests/sections-preview.php
           php tests/media.php
+          node --check theme/codela-storefront/assets/scripts/media-loading.js
           php tests/media-optimization.php
           php tests/navigation.php
           php tests/document-continuity.php
@@ -59,6 +60,8 @@ jobs:
           node tests/desktop-header-browser.cjs
           TEST_WEBKIT=1 node tests/desktop-header-browser.cjs
           node tests/homepage-browser.cjs
+          node tests/media-loading-browser.cjs
+          TEST_WEBKIT=1 node tests/media-loading-browser.cjs
           node tests/product-menu-scroll-browser.cjs
           TEST_WEBKIT=1 node tests/product-menu-scroll-browser.cjs
           node tests/product-sheet-browser.cjs

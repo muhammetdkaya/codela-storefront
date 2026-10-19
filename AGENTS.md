@@ -1,5 +1,13 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Çalışma — 19 Ekim 2026: 0.1.146 ortak görsel teslimi ve sürüm notları
+
+Storefront **0.1.145 → 0.1.146** hazırlanıyor; Codela runtime **1.2.0** değişmez. Aynı kaynaklarla yapılan karşılaştırma preload/containment veya toplu script defer işlemlerinin tek başına LCP hedefini sağlamadığını gösterdi; defer varyantı jQuery/zoom hatası üretti, uygulanmadı. Ortak `inc/media.php` yalnız gerçekten render edilen kritik picture için native preload toplar. Tema bölüm ve native Woo kartlarının boyutlu lazy img/source kaynakları, tek küçük dependency-free inline source-promotion utility ile 200px yaklaşımda mevcut düğüme geri konur; tarayıcı srcset/decode/scroll sahibi kalır. Ürün galerisi kendi adapter'ında kalır. Native no-script picture, print ve IO olmayan tarayıcı fallback'i vardır. REST/admin/CLI çıktıları dönüştürülmez. Yeni UI controller/store/router/form veya public transcode yok. Woo classic block'un kullanmadığı slider/lightbox desteği ürün bağlamında kapalıdır; zoom ve native single-product JS kalır. Geometri ve yüksek çözünürlük değiştirilmez.
+
+`config/release.json` gerçek değişiklikleri ve 0.1.145 teslimini açıklar. Yayınlanmış 0.1.145 ZIP değiştirilmez. Yerel Chromium network/no-JS/responsive/geometry/print kabulü başarılı. PR CI, gerçek WP/Woo iki sürüm matrisi, üç cold mobil LCP bütçesi, canlı FTPS ve stable yayın henüz bekliyor; tamamlandı/canlı denmez. Fiziksel Safari, gerçek gateway ve field INP yapılmış sayılmaz.
+
+Sıradaki iş: kaynak pin'li tam WP/Woo + 10 dolu bölüm hız kabulü; bütçeler aynı kalacak. Ardından main/FTPS, canlı cold ölçüm ve doğrulanmış kaynaktan stable yayın; sonuçları iki durum belgesine işle.
+
 ## Son doğrulanmış durum — 19 Ekim 2026: 0.1.145 canlıda ve kararlı kanalda, LCP açık
 
 **Ürün/header/ödeme/hesap teslimi tamamlandı.** [Tema PR #64](https://github.com/muhammetdkaya/codela-storefront/pull/64) ana dala squash `84a66b26da3b3c6bcf7548e28f82bd94230c7d58` olarak alındı; Storefront **0.1.145**, Codela eklenti **1.2.0** değişmedi. Native Woo ürün galeri/summary, desktop 1100px+ tek WordPress primary menüsü/nested popover, responsive classic checkout ve tema-owned native Woo hesabı birlikte çalışır. Codela checkout-pro modül kart/modal stilleri, bağımsız Codela hesap servisleri, Woo endpointleri ve canlı müşteri/sipariş/site ayarları korunur. Eski katmanların üzerine yama/ikinci motor eklenmedi.

@@ -1,5 +1,13 @@
 # Codela Storefront — güncel teknik durum
 
+## Çalışma — 19 Ekim 2026: 0.1.146 ortak görsel teslimi ve sürüm notları
+
+Storefront **0.1.145 → 0.1.146** hazırlanıyor; Codela runtime **1.2.0** değişmez. Aynı kaynaklarla yapılan karşılaştırma preload/containment veya toplu script defer işlemlerinin tek başına LCP hedefini sağlamadığını gösterdi; defer varyantı jQuery/zoom hatası üretti, uygulanmadı. Ortak `inc/media.php` yalnız gerçekten render edilen kritik picture için native preload toplar. Tema bölüm ve native Woo kartlarının boyutlu lazy img/source kaynakları, tek küçük dependency-free inline source-promotion utility ile 200px yaklaşımda mevcut düğüme geri konur; tarayıcı srcset/decode/scroll sahibi kalır. Ürün galerisi kendi adapter'ında kalır. Native no-script picture, print ve IO olmayan tarayıcı fallback'i vardır. REST/admin/CLI çıktıları dönüştürülmez. Yeni UI controller/store/router/form veya public transcode yok. Woo classic block'un kullanmadığı slider/lightbox desteği ürün bağlamında kapalıdır; zoom ve native single-product JS kalır. Geometri ve yüksek çözünürlük değiştirilmez.
+
+`config/release.json` gerçek değişiklikleri ve 0.1.145 teslimini açıklar. Yayınlanmış 0.1.145 ZIP değiştirilmez. Yerel Chromium network/no-JS/responsive/geometry/print kabulü başarılı. PR CI, gerçek WP/Woo iki sürüm matrisi, üç cold mobil LCP bütçesi, canlı FTPS ve stable yayın henüz bekliyor; tamamlandı/canlı denmez. Fiziksel Safari, gerçek gateway ve field INP yapılmış sayılmaz.
+
+Sıradaki iş: kaynak pin'li tam WP/Woo + 10 dolu bölüm hız kabulü; bütçeler aynı kalacak. Ardından main/FTPS, canlı cold ölçüm ve doğrulanmış kaynaktan stable yayın; sonuçları iki durum belgesine işle.
+
 ## Çalışma — 19 Ekim 2026: ürün/header/ödeme/hesap yerleşimi, 0.1.145 kabul bekliyor
 
 Kullanıcının yeni onayıyla Storefront 0.1.144 → 0.1.145 hazırlanıyor; Codela runtime 1.2.0 değişmez. Native ürün overview ve media slot'u galerinin relative konumu ile sayfa sticky konumunu ayırır; sticky alt bilgi/tavsiye alanına taşamaz. Aynı Woo galeri/form kullanılır, mobil adapter yalnız original summary'yi taşır ve aynı marker'a geri koyar. Header aynı WP primary kaynağından tüm alt seviyeleri native popover ile sunar; 1100px+ atanmış menü varsa hamburger gizlidir, dar ekranda aynı popup korunur. Desktop/popup menü ve item ID'leri ayrıdır. Native popover toggle/Escape/outside-click tarayıcıya aittir; mevcut dock controller yalnız yüzeyi konumlandırır.

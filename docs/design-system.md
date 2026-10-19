@@ -1,5 +1,9 @@
 # Codela Storefront UI Kit — source of truth
 
+## Critical and below-fold media — 0.1.146
+
+`inc/media.php` collects the actual critical image/picture for core responsive preload. The same shared delivery helper wraps theme section art and native Woo card images only after a critical image has rendered. Width/height, alt, original source quality, picture media and sizes remain intact. A dependency-free inline utility promotes the existing sources within 200px; no scroll interception, UI controller, media codec or gallery engine is added. Native no-script originals and print/unsupported-IO fallbacks remain. REST/admin/CLI are unchanged. Product gallery secondary images retain their existing adapter ownership. Do not replace missing merchant media or change page data to pass a speed budget.
+
 ## Theme appearance and desktop layout — 0.1.145 (acceptance pending)
 
 Use the plugin's existing Theme appearance mode for account. Native Woo navigation/forms/endpoints stay authoritative; independent Codela modules retain their hooks. The optional plugin standalone account layout/assets/fullscreen are not loaded. Do not duplicate its dashboard/controller or mutate saved preferences. Classic checkout owns only its native page composition; Codela checkout module cards/modals keep their current presentation. Product sticky belongs to the media slot inside the overview; the gallery retains native relative positioning. Mobile reuses/restores its original summary. Desktop primary menu exposes every native depth through browser popovers and excludes the hamburger while visible; narrow screens retain the existing dialog. Shared UI Kit owns buttons, native popovers own dismissal, and the existing dock controller only anchors them.

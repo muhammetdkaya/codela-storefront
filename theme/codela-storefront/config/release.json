@@ -6,8 +6,8 @@
     "codela": "1.2.0"
   },
   "changes": [
-    "Masaüstü ürün galerisinde yakınlaştırma sırasında istenmeyen kapanma önlendi.",
-    "İlgili ürün ve sayfa bölümlerindeki resimlere düşük ağ önceliği verildi.",
-    "Doğrulanmış WebP sürümleri ürün kartlarında da yeniden kullanılıyor."
+    "İlk görselin responsive kaynakları erkenden yüklenir; alt bölüm ve ilgili ürün resimleri görünür alana yaklaşınca aynı native resimde açılır.",
+    "Ürün galerisinde kullanılmayan FlexSlider ve PhotoSwipe dosyaları yüklenmez; native kaydırma ve isteğe bağlı yakınlaştırma korunur.",
+    "Önceki 0.1.145 sürümünde ürünün masaüstü yerleşimi, WordPress alt menüleri, responsive ödeme ve temanın yönettiği Hesabım görünümü tamamlandı."
   ]
 }
