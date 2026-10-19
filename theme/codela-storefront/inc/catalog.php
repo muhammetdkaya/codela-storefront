@@ -107,7 +107,7 @@ function codela_sf_catalog_image_attributes( array $attributes, $attachment = nu
     }
     return $attributes;
 }
-add_filter( 'wp_get_attachment_image_attributes', 'codela_sf_catalog_image_attributes', 20 );
+add_filter( 'wp_get_attachment_image_attributes', 'codela_sf_catalog_image_attributes', 20, 2 );
 
 /** Compose the existing native loop hooks; never replace content-product.php. */
 function codela_sf_catalog_enabled(): bool {
