@@ -8,7 +8,7 @@
   }
   .sf-shell .sf-header.has-desktop-menu .sf-header-menu{display:none}
   .sf-shell .sf-header.has-desktop-menu .sf-brand{justify-self:start;max-width:100%}
-  .sf-shell .sf-header .sf-desktop-navigation{display:block;min-width:0;overflow-x:auto;scrollbar-width:thin;padding-inline:8px}
+  .sf-shell .sf-header .sf-desktop-navigation{display:block;min-width:0;overflow-x:auto;scrollbar-width:thin;padding:var(--sf-ui-bottom-bar-padding) 8px}
   .sf-desktop-menu{display:flex;align-items:center;gap:4px;list-style:none;margin:0;padding:0;width:max-content}
   .sf-desktop-menu li{display:flex;align-items:center;min-width:0}
   .sf-desktop-menu a{display:flex;align-items:center;min-height:var(--sf-ui-hit);padding:8px 12px;color:var(--sf-ui-glass-ink);font-size:14px;line-height:1.3;text-decoration:none;white-space:nowrap}
