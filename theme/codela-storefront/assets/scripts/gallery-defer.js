@@ -72,8 +72,20 @@
           onZoomOut:function(){item.classList.remove('is-zoomed');link.setAttribute('aria-pressed','false');}
         });
       },true);
-      window.addEventListener('scroll',()=>{
+      const dismissZoom=()=>{
         zoomStates.forEach(state=>{state.wanted=false;});closeZoom();
+      };
+      // On wide screens the original gallery is a sticky horizontal
+      // scrollport. Browser focus/scroll-into-view can move the *document*
+      // while a desktop link is being activated; that synthetic movement must
+      // not cancel a pending zoom load. Real wheel gestures and gallery
+      // scrolling still dismiss it. Mobile continues to follow page scrolling.
+      window.addEventListener('scroll',()=>{
+        if(matchMedia('(max-width:700px)').matches) dismissZoom();
+      },{passive:true});
+      track.addEventListener('scroll',dismissZoom,{passive:true});
+      window.addEventListener('wheel',()=>{
+        if(matchMedia('(min-width:701px)').matches) dismissZoom();
       },{passive:true});
       track.addEventListener('keydown',event=>{
         if(event.key==='Escape'){zoomStates.forEach(state=>{state.wanted=false;});closeZoom();}
