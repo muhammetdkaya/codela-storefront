@@ -1,5 +1,19 @@
 # Codela Storefront — güncel teknik durum
 
+## İnceleme — 19 Ekim 2026: Genel tema düzenlemeleri (0.1.148)
+
+Storefront **0.1.145 → 0.1.148** inceleme dalında hazırlanmıştır. Açık #66/#67 çalışmalarının 0.1.146/0.1.147 sürümleri ayrıdır; bu dal main f6b52f4 tabanlıdır ve o değişiklikleri içermez. Yayın öncesi güncel ana dala uyum ve sürüm sırası yeniden doğrulanmalıdır. Kullanıcı marka adının yanlışlıkla yazıldığını açıkladı; kapsam tüm tema kullanıcılarıdır.
+
+Kullanıcının talebiyle `page.html` ve `page-checkout.html` içindeki otomatik `core/post-title` bloğu kaldırıldı. Hakkımızda/İletişim gibi sayfalar doğrudan kendi içerikleriyle başlar. Kayıtlı sayfa adı, belge/SEO başlığı, içerik içindeki başlıklar, yazı/ürün/katalog başlıkları, header/footer ve native Woo içerik bloğu korunur. İçerikte ayrıca yazılmış başlıklar ve WordPress Site Editor'de veritabanına kaydedilmiş özel şablonlar bu dosya değişikliğiyle silinmez.
+
+Kategori bölümünün **Görsel bantlar · C** (`bands`) düzeni 1024px ve üstünde dört, 701–1023px arasında iki, 700px ve altında mevcut tek sütundur. Fazla kartlar sırayı koruyarak alt satıra geçer. Çok sütunlu kartların başlık/padding ölçüleri dar alana uyarlanır; uzun metin kartı büyütür, kesilmez. Responsive görsel `sizes` değeri sütun genişliğini izler. Mevcut renderer, ortak tokenlar, galeri ve mobil düzen korunur; yeni JavaScript yok.
+
+Fatura türü ayrı `muhammetdkaya/codela` deposundaki checkout şemasına aittir. Türkiye şemasında `Corporate` çevirisi kullanılır; `company` veri değeri ve vergi/kimlik işleyişi korunur. Mevcut PO ve MO kataloglarında Company ve Corporate zaten Kurumsal'dır; hedef kurulumun harici dil paketi doğrulanmadan canlıdaki Şirket metninin kesin kaynağı belirlenmiş sayılmaz.
+
+**Doğrulama:** Önceki sayfa başlığı değişikliği [CI 39316673548](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39316673548), fatura değişikliği [PR #17](https://github.com/muhammetdkaya/codela/pull/17) PHP/JS/browser ve free-edition kontrollerini geçti. Yeni kategori düzeninde yerel 24 paket testi ve JS sözdizimi başarılı. Mevcut homepage tarayıcı senaryosu 320/390/700/701/1023/1024/1280px'de beş kartla sütun, satır geçişi, çakışma ve uzun metin geometrisini denetler; yeni runtime için tam CI sonucu PR #68'de takip edilir. Yerel PHP bulunmadığından PHP ve üretim renderer'lı tarayıcı kontrolleri GitHub CI'da çalışır.
+
+**Yayın:** Kullanıcı incelemesi içindir; main birleştirmesi, FTPS ve kararlı yayın yapılmadı. **Sıradaki:** PR #68 CI sonucu ve kullanıcı görsel incelemesi; yayın öncesi güncel tema/eklenti ve özel şablon durumunu doğrula. Önceki LCP, gerçek ödeme sağlayıcısı ve fiziksel Safari açık işleri bu değişiklikle kapanmaz.
+
 ## Çalışma — 19 Ekim 2026: ürün/header/ödeme/hesap yerleşimi, 0.1.145 kabul bekliyor
 
 Kullanıcının yeni onayıyla Storefront 0.1.144 → 0.1.145 hazırlanıyor; Codela runtime 1.2.0 değişmez. Native ürün overview ve media slot'u galerinin relative konumu ile sayfa sticky konumunu ayırır; sticky alt bilgi/tavsiye alanına taşamaz. Aynı Woo galeri/form kullanılır, mobil adapter yalnız original summary'yi taşır ve aynı marker'a geri koyar. Header aynı WP primary kaynağından tüm alt seviyeleri native popover ile sunar; 1100px+ atanmış menü varsa hamburger gizlidir, dar ekranda aynı popup korunur. Desktop/popup menü ve item ID'leri ayrıdır. Native popover toggle/Escape/outside-click tarayıcıya aittir; mevcut dock controller yalnız yüzeyi konumlandırır.

@@ -2,7 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 function codela_sf_section_categories( array $data ): string {
     $cards = []; $variant = $data['variant'];
-    $sizes = [ 'compact' => '(max-width:700px) 44vw, 23vw', 'editorial' => '(max-width:700px) 35vw, 40vw', 'bands' => '100vw', 'mosaic' => '(max-width:700px) 90vw, 60vw', 'carousel' => '(max-width:700px) 82vw, 48vw', 'grid' => '(max-width:700px) 50vw, 25vw' ];
+    $sizes = [ 'compact' => '(max-width:700px) 44vw, 23vw', 'editorial' => '(max-width:700px) 35vw, 40vw', 'bands' => '(max-width:700px) 100vw, (max-width:1023px) 50vw, 25vw', 'mosaic' => '(max-width:700px) 90vw, 60vw', 'carousel' => '(max-width:700px) 82vw, 48vw', 'grid' => '(max-width:700px) 50vw, 25vw' ];
     foreach ( $data['items'] as $item ) {
         if ( ! $item['enabled'] ) { continue; }
         $term = get_term( $item['term_id'], 'product_cat' ); if ( ! $term || is_wp_error( $term ) ) { continue; }

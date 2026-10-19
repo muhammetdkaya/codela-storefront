@@ -1,5 +1,12 @@
 # Codela Storefront UI Kit — source of truth
 
+## Page headings and category bands — 0.1.148 review
+
+The standard page and checkout templates start with native post content, without an automatically inserted post-title block. Merchant-authored content headings, document titles and product/post/archive headings stay unchanged. Saved Site Editor template overrides need separate verification before deployment.
+
+Category visual bands (variant C) use four columns from 1024px, two at 701–1023px, and the existing single full-width band at 700px and below. Additional cards wrap in their saved order. Multi-column captions stay in flow so long merchant copy grows the card instead of clipping. The existing section renderer and shared tokens remain authoritative; image slot sizes follow the layout.
+
+
 ## Theme appearance and desktop layout — 0.1.145 (acceptance pending)
 
 Use the plugin's existing Theme appearance mode for account. Native Woo navigation/forms/endpoints stay authoritative; independent Codela modules retain their hooks. The optional plugin standalone account layout/assets/fullscreen are not loaded. Do not duplicate its dashboard/controller or mutate saved preferences. Classic checkout owns only its native page composition; Codela checkout module cards/modals keep their current presentation. Product sticky belongs to the media slot inside the overview; the gallery retains native relative positioning. Mobile reuses/restores its original summary. Desktop primary menu exposes every native depth through browser popovers and excludes the hamburger while visible; narrow screens retain the existing dialog. Shared UI Kit owns buttons, native popovers own dismissal, and the existing dock controller only anchors them.

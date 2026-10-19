@@ -46,7 +46,7 @@ function codela_sf_render_section( $html, string $type, array $data, int $post_i
 }
 add_filter( 'codela_render_page_section', 'codela_sf_render_section', 10, 4 );
 
-/** One page title: the regular template title remains H1 on inner pages. */
+/** Managed front pages supply their own accessible heading, including saved templates. */
 add_filter( 'render_block_core/post-title', static function( $html, $block ) {
     return is_front_page() && codela_sf_sections_capabilities()['layout'] ? '' : $html;
 }, 10, 2 );
