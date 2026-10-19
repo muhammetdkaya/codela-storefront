@@ -1,10 +1,14 @@
 # Codela Storefront — güncel çalışma kuralları
 
-## Yayın hazırlığı — 19 Ekim 2026: 0.1.149 sürüm çakışması düzeltmesi
+## Son doğrulanmış durum — 19 Ekim 2026: 0.1.149 sürüm çakışması düzeltmesi yayında
 
-Kullanıcı daha önce eski bir paketi aynı 0.1.148 numarasıyla yüklediğini bildirdi ve sürüm yükseltilmesini açıkça istedi. Native WordPress güncelleyicisi yalnız daha yüksek sürümü sunduğundan tema 0.1.149'a çıkarılır. 0.1.148'de doğrulanan sayfa başlığı ve kategori bantları kodu korunur; yalnız sürüm, paket testi beklentileri ve sürüm notu güncellenir. Mevcut v0.1.148 etiketi/ZIP'i değiştirilmez. 0.1.149 yayınından sonra Codela → Tema → Güncelleme → Şimdi kontrol et → Şimdi güncelle kullanılacak.
+Kullanıcı daha önce eski bir paketi aynı 0.1.148 numarasıyla yüklediğini bildirdi ve sürüm yükseltilmesini açıkça istedi. Native WordPress güncelleyicisinin yeni paketi sunabilmesi için tema **0.1.149** yapıldı. Kaynak `15ec184b8bdd2bc94418b3cb92c048fdc5605d91`; 0.1.148 ile ZIP dosya karşılaştırmasında yalnız `style.css` sürümü ve `config/release.json` notu değişir. Sayfa başlığı ve kategori bantları kodu korunur. Sekiz mevcut paket testi sürüm beklentisi güncellendi; eski immutable v0.1.148 etiketi/ZIP'i değiştirilmedi.
 
-**Durum:** Kaynak sürüm yükseltmesi hazırlanıyor; ana dal CI/FTPS ve yeni immutable release + stable manifest doğrulanmadan yayın tamamlandı denmez. Fatura Kurumsal değişikliği hâlâ ayrı Codela PR #17'dedir. Son doğrulanmış yayın aşağıda 0.1.148 olarak kayıtlıdır.
+**Doğrulama:** Yerel 24 paket testi, ZIP bütünlüğü ve önceki paketle dosya farkı başarılı. [Ana dal CI + FTPS 39321426076](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39321426076) PHP/JS/paket/tarayıcı kontrolleri ve dağıtımı geçti; deploy günlüğü 20:50:20Z'de `Storefront deployed; checks passed.` kaydetti.
+
+**Uzaktan yayın:** [Yayın talebi fb4b286f](https://github.com/muhammetdkaya/codela-storefront/commit/fb4b286f8795ed8eb3eb5f13fce35b1cef1edffc), [release CI 39322718677](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39322718677) başarılı. [v0.1.149](https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.149) public, draft/prerelease değil. ZIP **134542 bayt**, SHA256 `ad92813148f57f9d420d3c3f18b0e76f671449d8450f588987cff6c7d02b9e77`. Yerel deterministik paket, GitHub asset digest ve [public stable manifest](https://raw.githubusercontent.com/muhammetdkaya/codela-storefront/stable/manifest.json) aynı hash'i, 0.1.149 sürümünü ve doğru kaynak SHA/paket URL'sini gösterir.
+
+**Sıradaki:** Hedef sitede Codela → Tema → Güncelleme → **Şimdi kontrol et** → **Şimdi güncelle**; kurulu 0.1.148 için yeni sürüm 0.1.149 görünmeli. Hedef mağazadaki manuel kurulum/görsel kabul henüz doğrulanmadı. Fatura Kurumsal değişikliği ayrı Codela PR #17'dedir; eklenti bu işlemde yayımlanmadı. Diğer açık tema PR'ları birleşmeden güncel main'e uyarlanmalı ve sürümleri 0.1.149'un üstüne çıkarılmalı.
 
 ## Son doğrulanmış durum — 19 Ekim 2026: 0.1.148 canlıda ve uzaktan güncelleme kanalında
 
