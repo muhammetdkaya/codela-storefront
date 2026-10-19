@@ -9,25 +9,6 @@ for(const width of [320,390,700,701,1023,1024,1280])for(const promos of ['split,
  await page.goto('https://store.test/');
  await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body class="home"><main class="sf-content">'+html+'</main></body></html>');await page.addScriptTag({content:fs.readFileSync(root+'assets/scripts/gallery-horizontal.js','utf8')});
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No page overflow '+width+' '+promos);assert.equal(await page.locator('.sf-section').count(),10);assert.equal(await page.locator('h1').count(),1);assert.equal(await page.locator('img[fetchpriority=high]').count(),1);
- if(width===390&&promos==='split,inset'&&!process.env.TEST_WEBKIT){
-  const session=await page.context().newCDPSession(page);
-  const swipe=async(x,y,dx,dy)=>{
-   await session.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y}]});
-   for(let i=1;i<=15;i++){await session.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x+dx*i/15,y:y+dy*i/15}]});await page.waitForTimeout(20);}
-   await session.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await page.waitForTimeout(200);
-  };
-  await swipe(195,380,0,-260);
-  if(await page.evaluate(()=>scrollY)<100){
-   console.log('Hero gesture diagnostic',await page.evaluate(()=>{let e=document.elementFromPoint(195,300),chain=[];for(;e;e=e.parentElement){const s=getComputedStyle(e);chain.push({tag:e.tagName,cls:e.className,touch:s.touchAction,overscroll:s.overscrollBehaviorY,overflow:s.overflowY,height:e.clientHeight,scrollHeight:e.scrollHeight});}return{scrollY,scrolling:document.scrollingElement.tagName,chain};}));
-   fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:'qa/storefront-ui-kit-hero-touch.png'});
-  }
-  assert(await page.evaluate(()=>scrollY)>100,'Vertical touch starting on the hero scrolls the document');
-  await page.evaluate(()=>scrollTo(0,0));
-  await swipe(320,180,-260,0);
-  assert(await page.locator('.sf-section--hero .sf-ui-gallery-track').evaluate(el=>el.scrollLeft)>100,'Horizontal touch still moves the hero');
-  await page.locator('.sf-section--hero .sf-ui-gallery-track').evaluate(el=>el.scrollTo({left:0,behavior:'instant'}));
-  await page.waitForTimeout(50);await session.detach();
- }
  if(width===390){const image=page.locator('.sf-categories--editorial img').first();await image.scrollIntoViewIfNeeded();await image.evaluate(img=>img.decode());assert.match(await image.evaluate(img=>img.currentSrc),/image-13-(160|320)\.svg$/,'Small mobile category selects a small responsive candidate');}
  const bands=page.locator('.sf-categories--bands .sf-category-story'),columns=width>=1024?4:width>700?2:1;
  const cards=await bands.evaluateAll(els=>els.map(el=>{const r=el.getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,bottom:r.bottom};}));
@@ -51,6 +32,25 @@ for(const width of [320,390,700,701,1023,1024,1280])for(const promos of ['split,
  const storyLayout=await page.locator('.sf-section--story .sf-content-card').evaluate(el=>{const image=el.querySelector('picture').getBoundingClientRect(),copy=el.querySelector('.sf-content-copy').getBoundingClientRect();return {imageLeft:image.left,copyLeft:copy.left,imageBottom:image.bottom,copyTop:copy.top};});
  assert(width<=700?storyLayout.copyTop>=storyLayout.imageBottom-1:storyLayout.imageLeft>storyLayout.copyLeft,'Responsive image-right composition '+width);
  assert.equal(await page.locator('.sf-section--contact a[href^="tel:"]').count(),1);
+ if(width===390&&promos==='split,inset'&&!process.env.TEST_WEBKIT){
+  await page.evaluate(()=>scrollTo(0,0));
+  const session=await page.context().newCDPSession(page);
+  const swipe=async(x,y,dx,dy)=>{
+   await session.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y}]});
+   for(let i=1;i<=15;i++){await session.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x+dx*i/15,y:y+dy*i/15}]});await page.waitForTimeout(20);}
+   await session.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await page.waitForTimeout(200);
+  };
+  await swipe(195,380,0,-260);
+  if(await page.evaluate(()=>scrollY)<100){
+   console.log('Hero gesture diagnostic',await page.evaluate(()=>{let e=document.elementFromPoint(195,300),chain=[];for(;e;e=e.parentElement){const s=getComputedStyle(e);chain.push({tag:e.tagName,cls:e.className,touch:s.touchAction,overscroll:s.overscrollBehaviorY,overflow:s.overflowY,height:e.clientHeight,scrollHeight:e.scrollHeight});}return{scrollY,scrolling:document.scrollingElement.tagName,chain};}));
+   fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:'qa/storefront-ui-kit-hero-touch.png'});
+  }
+  assert(await page.evaluate(()=>scrollY)>100,'Vertical touch starting on the hero scrolls the document');
+  await page.evaluate(()=>scrollTo(0,0));
+  await swipe(320,180,-260,0);
+  assert(await page.locator('.sf-section--hero .sf-ui-gallery-track').evaluate(el=>el.scrollLeft)>100,'Horizontal touch still moves the hero');
+  await session.detach();
+ }
  if(process.env.SAVE_SCREENSHOT){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:'qa/sections-'+width+'-'+promos.split(',')[0]+'.png',fullPage:true});}assert.deepEqual(errors,[]);await page.close();
 }console.log('10 sections, all variants, independent galleries, keyboard, LCP/H1 and long-copy checks passed.');
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});

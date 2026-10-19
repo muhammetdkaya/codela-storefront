@@ -21,7 +21,7 @@ const cart={items_count:1,items:[{key:'one',name:'Deneme ürünü',permalink:'/p
   if(url.includes('/search-api'))return route.fulfill(failSearch?{status:500,body:'Error'}:{json:[{name:'Doğal dokular',url:'/product/',image:'',price:'10 ₺',sku:'CODELA'}]});
   if(url.includes('/api/cart'))return route.fulfill({json:cart,headers:{Nonce:'fixture'}});
   if(url.includes('/assets/icons/'))return route.fulfill({contentType:'image/svg+xml',body:fs.readFileSync(root+'assets/icons/'+new URL(url).pathname.split('/').at(-1),'utf8')});
-  return route.fulfill({contentType:'text/html',body:`<!doctype html><html lang="tr"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>.screen-reader-text{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}${css}</style></head><body>${header}<main id="sf-content" style="height:3200px;padding:32px">İçerik</main></body></html>`});
+  return route.fulfill({contentType:'text/html',body:`<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>.screen-reader-text{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}${css}</style></head><body>${header}<main id="sf-content" style="height:3200px;padding:32px">İçerik</main></body></html>`});
  });
  await page.goto('https://store.test/');
  await page.addScriptTag({content:`function store(name,options){window.sfActions=options.actions;return{state:{config:${JSON.stringify(config)}}};}\n${controllers}\n${js}`});
