@@ -1,5 +1,9 @@
 # Codela Storefront UI Kit — source of truth
 
+## Desktop composition — 0.1.143
+
+At901px+ the original Woo gallery and summary share one bounded two-column grid; desktop photos use contain, mobile sheet ownership stays unchanged. At1100px+ the native primary menu top level is projected into a bounded, natively scrollable header slot using shared pressable links; the existing Menu exposes all nested destinations. Empty locations stay empty. The same filter dialog/form becomes a right panel at901px+, mobile remains full screen; shared controller owns focus, Escape and locking. No second menu configuration, catalog query, purchase form or cart engine.
+
 ## Native preview and responsive slots — 0.1.136
 
 Mobile picture sources share the section's sizes contract with the img fallback. Preview asset decisions read the queried autosave instead of the published original. The editor previews the real WordPress draft document in mobile/desktop view; it never copies theme rendering or shopper assets. Product cold-load performance remains an open measured budget (3616ms median LCP); do not equate functional CI with performance acceptance.

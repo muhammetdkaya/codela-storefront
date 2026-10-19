@@ -304,6 +304,13 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
     function init(dialog) {
         if (initialized) return;
         initialized = true;
+        // The existing header is persistent across native document transitions.
+        // Keep keyboard-focused WordPress menu links inside the native horizontal
+        // scrollport, without moving the page or introducing a second menu engine.
+        $('.sf-desktop-navigation')?.addEventListener('focusin', event => {
+            const link = event.target.closest?.('.sf-desktop-menu a');
+            if (link) link.scrollIntoView({block:'nearest', inline:'nearest'});
+        });
         installDockGestures(mobileDock());
         markDockActive(null);
         dockScrollPositions.set(window, {position:window.scrollY, distance:0});

@@ -15,6 +15,13 @@ add_action( 'after_setup_theme', function() {
     add_theme_support( 'custom-logo', [ 'height' => 80, 'width' => 240, 'flex-width' => true, 'flex-height' => true ] );
     register_nav_menus( [ 'primary' => __( 'Main menu', 'codela-storefront' ) ] );
 } );
+// The desktop projection uses the same native menu and shared link feedback.
+add_filter( 'nav_menu_link_attributes', function( $attributes, $item, $args ) {
+    if ( 'sf-desktop-menu' === ( $args->menu_class ?? '' ) ) {
+        $attributes['class'] = trim( ( $attributes['class'] ?? '' ) . ' sf-ui-pressable' );
+    }
+    return $attributes;
+}, 10, 3 );
 add_action( 'admin_notices', function() {
     if ( current_user_can( 'manage_options' ) && ! defined( 'CODELA_PAGE_SECTIONS_VERSION' ) ) {
         echo '<div class="notice notice-warning"><p>' . esc_html__( 'Update Codela to 1.2.0+ to enable theme settings and page sections.', 'codela-storefront' ) . '</p></div>';

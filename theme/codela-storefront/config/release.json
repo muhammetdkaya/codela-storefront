@@ -6,8 +6,8 @@
     "codela": "1.2.0"
   },
   "changes": [
-    "Tema ayarları Görünüm, Demo kurulumu ve Güncelleme olarak sadeleştirildi.",
-    "Site adı ve ana menü WordPress kayıtlarına bağlandı.",
-    "WordPress üzerinden tema güncelleme ve devam edebilir demo kurulumu eklendi."
+    "Masaüstü ürün sayfasında galeri ve satın alma alanı yan yana düzenlendi.",
+    "Geniş ekranda WordPress ana menü bağlantıları doğrudan gösteriliyor.",
+    "Masaüstü filtreleri ürün listesini görünür bırakan aynı native paneli kullanıyor."
   ]
 }

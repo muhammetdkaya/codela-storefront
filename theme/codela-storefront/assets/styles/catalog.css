@@ -86,6 +86,12 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product:has(> a
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-stock{pointer-events:none}
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product:has(.sf-product-stock) .onsale{left:auto;right:10px}
 .sf-catalog{max-width:1200px!important;margin-inline:auto}
+/* Reuse the single modal/form on desktop while leaving the catalog visible.
+   Mobile keeps the existing full-screen filter composition. */
+@media(min-width:901px){
+  #sf-panel.is-filters-panel{left:auto;right:0;width:min(480px,45vw);border-left:1px solid var(--sf-ui-border)}
+  #sf-panel.is-filters-panel .sf-catalog-filters{padding-bottom:24px}
+}
 .sf-catalog > h1{font-size:clamp(25px,4vw,36px);line-height:1.2;font-weight:400;overflow-wrap:anywhere}
 @media(max-width:1024px){
   body:not(.codela-my-account-layout) .sf-content ul.products{--sf-catalog-columns:3}

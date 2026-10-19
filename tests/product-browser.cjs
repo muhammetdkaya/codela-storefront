@@ -31,7 +31,7 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
   // Match the live block-theme DOM: Woo class is on body, not a descendant wrapper.
   // Include the constrained WordPress block rule that previously masked this bug.
   await page.setContent(documentHtml.replace('</head>', '<style>.sf-content > .alignwide{max-width:1200px;margin-inline:auto}</style></head>'));
-  for(const width of [320,390,700,900,1280]){
+  for(const width of [320,390,700,900,901,1024,1280,1440,1920]){
    await page.setViewportSize({width,height:900});
    const result=await page.evaluate(()=>{
     const gallery=document.querySelector('.woocommerce-product-gallery').getBoundingClientRect();
@@ -41,7 +41,7 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
     const related=document.querySelector('.related ul.products');
     return {overflow:document.documentElement.scrollWidth>innerWidth+1,
      gallery:{left:gallery.left,right:gallery.right,top:gallery.top,bottom:gallery.bottom},
-     detail:{left:detail.left,top:detail.top},
+     detail:{left:detail.left,top:detail.top,right:document.querySelector('.summary').getBoundingClientRect().right},
      buttonHeight:button.getBoundingClientRect().height,
      buttonBackground:getComputedStyle(button).backgroundColor,
      buttonTransition:getComputedStyle(button).transitionProperty,
@@ -56,10 +56,17 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
    assert.equal(result.buttonTransition,'transform','Only shared transform animates');
    assert.equal(result.buttonType,'submit','Native cart submission preserved');
    assert.equal(result.buttonName,'add-to-cart','Native cart parameter preserved');
-   assert(result.detail.top>=result.gallery.bottom-1,'Details follow full-width gallery at '+width);
-   assert(Math.abs(result.gallery.left)<1&&Math.abs(result.gallery.right-width)<1,'Gallery spans viewport at '+width);
-   assert(Math.abs(result.gallery.top)<1,'Gallery begins at document top at '+width);
-   assert.equal(await page.locator('.woocommerce-product-gallery__image img').evaluate(el=>getComputedStyle(el).objectFit),'cover','Hero fills frame without contain letterboxing');
+   if(width>900){
+    assert(result.detail.left>=result.gallery.right+20,'Original summary beside original gallery at '+width);
+    assert(Math.abs(result.detail.top-result.gallery.top)<16,'Purchase starts beside the photo at '+width);
+    assert(result.detail.right<=width-23,'Desktop content keeps its inset');
+    assert.equal(await page.locator('.woocommerce-product-gallery__image img').evaluate(el=>getComputedStyle(el).objectFit),'contain','Desktop shows the whole product');
+   }else{
+    assert(result.detail.top>=result.gallery.bottom-1,'Details follow full-width gallery at '+width);
+    assert(Math.abs(result.gallery.left)<1&&Math.abs(result.gallery.right-width)<1,'Gallery spans viewport at '+width);
+    assert(Math.abs(result.gallery.top)<1,'Gallery begins at document top at '+width);
+    assert.equal(await page.locator('.woocommerce-product-gallery__image img').evaluate(el=>getComputedStyle(el).objectFit),'cover','Mobile hero fills frame');
+   }
    assert.equal(result.relatedColumns,width>1024?4:width>700?3:2,'Related product grid at '+width);
    const purchase=await page.locator('.sf-product-purchase').evaluate(el=>({position:getComputedStyle(el).position,rect:el.getBoundingClientRect().toJSON(),bg:getComputedStyle(el).backgroundColor,image:getComputedStyle(el).backgroundImage}));
    assert.equal(purchase.bg,'rgba(247, 247, 249, 0.96)','Product purchase uses the one opaque-tinted shared material');
@@ -84,7 +91,7 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
    });
    assert(rail.top>70&&rail.bottom<=result.gallery.bottom,'Rail overlays gallery below header');
    assert(rail.left>=19&&rail.right<=width-19,'Rail keeps equal viewport insets');
-   assert(Math.abs((rail.left+rail.right)/2-width/2)<1,'Rail is centered');
+   assert(Math.abs((rail.left+rail.right)/2-(result.gallery.left+result.gallery.right)/2)<1,'Rail is centered in its gallery');
    assert.equal(await page.locator('.flex-control-thumbs img').nth(1).evaluate(el=>getComputedStyle(el).opacity),'1','Native Woo opacity cannot fade other previews');
    assert(rail.thumbWidth>=44&&rail.thumbHeight>=44,'Native thumbnail click target remains at least 44px');
    assert.equal(rail.padding,'6px','Native Woo rule cannot erase rail spacing');
@@ -159,6 +166,6 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
   assert(await reusable.evaluate(el=>el.scrollLeft>0),'Reusable native gallery can be keyboard-scrolled');
   assert(await reusable.evaluate(el=>el.scrollWidth>el.clientWidth),'Core Gallery stays one horizontal track');
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Reusable gallery has no page overflow');
-  console.log('Product layout: 5 widths, native cart semantics, UI Kit button, full-bleed gallery, reusable core Gallery scroll and related cards passed.');
+  console.log('Product layout: 9 widths, native cart semantics, UI Kit button, responsive desktop/mobile gallery, reusable core Gallery scroll and related cards passed.');
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exit(1)});
