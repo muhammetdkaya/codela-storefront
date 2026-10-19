@@ -320,7 +320,7 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
                 if (!button) return;
                 const rect = button.getBoundingClientRect();
                 menu.style.setProperty('--sf-submenu-top', `${Math.min(rect.bottom + 8, innerHeight - 100)}px`);
-                menu.style.setProperty('--sf-submenu-left', `${Math.max(16, Math.min(rect.left, innerWidth - 280))}px`);
+                menu.style.setProperty('--sf-submenu-left', `${Math.max(16, Math.min(rect.left, innerWidth - 296))}px`);
             });
         });
         window.addEventListener('resize', () => {
