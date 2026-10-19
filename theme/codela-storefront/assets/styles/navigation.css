@@ -15,7 +15,9 @@
   .sf-desktop-menu li{border-radius:var(--sf-ui-pill)}
   .sf-desktop-menu li.menu-item-has-children>a{padding-right:0}
   .sf-desktop-menu a{border-radius:var(--sf-ui-pill)}
-  .sf-desktop-submenu-toggle .sf-icon{transform:rotate(90deg);width:16px;height:16px}
+  .sf-desktop-submenu-toggle .sf-icon{width:14px;height:14px;filter:brightness(0)}
+  .sf-desktop-submenu-toggle{margin-left:-4px}
+  .sf-desktop-submenu .sf-desktop-submenu-toggle .sf-icon{transform:rotate(-90deg)}
   .sf-desktop-submenu{position:fixed;inset:auto;top:var(--sf-submenu-top,88px);left:var(--sf-submenu-left,16px);width:280px;max-width:calc(100vw - 32px);max-height:calc(100dvh - var(--sf-submenu-top,88px) - 16px);overflow:auto;margin:0;padding:8px;list-style:none;}
   .sf-shell .sf-desktop-submenu.sf-ui-surface{border-radius:var(--sf-ui-control-radius)}
   .sf-desktop-submenu::backdrop{background:transparent}

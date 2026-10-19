@@ -50,7 +50,11 @@ async function verifyCardHitArea(page,mode,width,useTouch=false){
  await center(catalog.nth(2).locator('.sf-product-card-footer > .button'),'action','native variable Options');
  await center(catalog.nth(3).locator('.sf-product-card-footer'),'details','stockless footer');
  await first.locator('.sf-product-card-footer').evaluate(el=>el.insertAdjacentHTML('beforeend','<a class="added_to_cart" href="/cart/">View cart</a>'));
- await center(first.locator('.added_to_cart'),'view-cart','native View Cart');
+ assert.equal(await first.locator('.added_to_cart').isVisible(),false,'Duplicate cart link stays hidden');
+ await first.locator('a.sf-ui-icon-button').evaluate(el=>el.classList.add('added'));
+ assert.equal(await first.locator('a.sf-ui-icon-button .sf-icon').evaluate(el=>getComputedStyle(el).visibility),'visible','Cart icon survives Woo success');
+ assert.equal(await first.locator('a.sf-ui-icon-button').evaluate(el=>getComputedStyle(el,'::after').content),'none','No competing Woo font checkmark');
+ await center(first.locator('a.sf-ui-icon-button'),'action','added cart icon stays clickable');
  await first.locator('.added_to_cart').evaluate(el=>el.remove());
  assert.equal(await first.locator(':scope > a.woocommerce-loop-product__link').count(),1,'One native product detail link');
  assert.equal(await first.locator('.sf-product-card-footer > .button').count(),1,'One separate native purchase action');

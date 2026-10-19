@@ -18,12 +18,15 @@
       count.textContent=(current+1)+' / '+items.length;
       previous.disabled=current===0;next.disabled=current===items.length-1;
     };
+    const prepare=index=>items[index]?.dispatchEvent(new Event('codela:media-intent',{bubbles:true}));
     const select=index=>{
+      prepare(Math.max(0,Math.min(items.length-1,index)));
       const item=items[Math.max(0,Math.min(items.length-1,index))];
       track.scrollTo({left:track.scrollLeft+item.getBoundingClientRect().left-track.getBoundingClientRect().left,behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'});
     };
     previous.addEventListener('click',()=>select(current-1));next.addEventListener('click',()=>select(current+1));
     track.addEventListener('scroll',()=>{if(!frame)frame=requestAnimationFrame(update);},{passive:true});
+    track.addEventListener('pointerdown',()=>{prepare(current-1);prepare(current+1);},{passive:true});
     track.addEventListener('keydown',event=>{
       if(event.target!==track||!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
       event.preventDefault();select(event.key==='Home'?0:event.key==='End'?items.length-1:current+(event.key==='ArrowRight'?1:-1));

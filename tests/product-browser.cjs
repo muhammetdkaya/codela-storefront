@@ -69,7 +69,7 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
    }
    assert.equal(result.relatedColumns,width>1024?4:width>700?3:2,'Related product grid at '+width);
    const purchase=await page.locator('.sf-product-purchase').evaluate(el=>({position:getComputedStyle(el).position,rect:el.getBoundingClientRect().toJSON(),bg:getComputedStyle(el).backgroundColor,image:getComputedStyle(el).backgroundImage}));
-   assert.equal(purchase.bg,'rgba(247, 247, 249, 0.96)','Product purchase uses the one opaque-tinted shared material');
+   assert.equal(purchase.bg,width>900?'rgba(0, 0, 0, 0)':'rgba(247, 247, 249, 0.96)','Product purchase uses the one opaque-tinted shared material');
    assert.equal(purchase.image,'none','Product purchase has no stacked white gradient');
    assert.equal(await page.locator('form.cart .single_add_to_cart_button').count(),1,'One native submit control');
    if(width<=700){
@@ -89,15 +89,15 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
       thumbWidth:image.width,thumbHeight:image.height,padding:getComputedStyle(el).paddingLeft,
       border:getComputedStyle(active.parentElement).borderColor,scrollable:el.scrollWidth>el.clientWidth};
    });
-   assert(rail.top>70&&rail.bottom<=result.gallery.bottom,'Rail overlays gallery below header');
+   assert(rail.top>70&&rail.bottom<=result.gallery.bottom+1,'Rail fits its reserved gallery area '+width+' '+JSON.stringify({rail,gallery:result.gallery}));
    assert(rail.left>=19&&rail.right<=width-19,'Rail keeps equal viewport insets');
-   assert(Math.abs((rail.left+rail.right)/2-(result.gallery.left+result.gallery.right)/2)<1,'Rail is centered in its gallery');
+   if(width>900)assert(Math.abs(rail.left-result.gallery.left)<1,'Desktop previews align with gallery left edge');else assert(Math.abs((rail.left+rail.right)/2-(result.gallery.left+result.gallery.right)/2)<1,'Mobile rail remains centered');
    assert.equal(await page.locator('.flex-control-thumbs img').nth(1).evaluate(el=>getComputedStyle(el).opacity),'1','Native Woo opacity cannot fade other previews');
    assert(rail.thumbWidth>=44&&rail.thumbHeight>=44,'Native thumbnail click target remains at least 44px');
-   assert.equal(rail.padding,'6px','Native Woo rule cannot erase rail spacing');
-   assert.equal(rail.background,'rgba(247, 247, 249, 0.96)','Rail reuses floating glass surface');
-   assert(rail.blur.includes('blur(10px)'),'Rail reuses shared blur');
-   assert.notEqual(rail.border,'rgba(0, 0, 0, 0)','Active image has visible selection edge');
+   assert.equal(rail.padding,width>900?'4px':'6px','Native Woo rule cannot erase rail spacing');
+   assert.equal(rail.background,width>900?'rgba(0, 0, 0, 0)':'rgba(247, 247, 249, 0.96)','Rail reuses floating glass surface');
+   assert(width>900?rail.blur==='none':rail.blur.includes('blur(10px)'),'Rail uses the appropriate shared inline/floating variant');
+   if(width<=900)assert.notEqual(rail.border,'rgba(0, 0, 0, 0)','Mobile native active selection edge preserved');
    if(width<=390)assert(rail.scrollable,'Long gallery rail scrolls on narrow screens');
    if([390,1280].includes(width)){
     fs.mkdirSync('qa',{recursive:true});

@@ -29,7 +29,10 @@ const cart={items_count:1,items:[{key:'one',name:'Deneme ürünü',permalink:'/p
  const search=page.locator('.sf-header [data-panel=search]'),cartTrigger=page.locator('.sf-header [data-panel=cart]'),dialog=page.locator('#sf-panel');
  for(const width of [901,1024,1100,1280,1920]){
   await page.setViewportSize({width,height:900});await page.evaluate(()=>scrollTo(0,500));
-  await search.click();await page.waitForTimeout(270);
+  await search.click();
+  const motion=await page.locator('.sf-search-toolbar').evaluate(el=>el.getAnimations().map(a=>a.effect.getKeyframes()));
+  assert(motion.some(frames=>frames[0].clipPath!==frames.at(-1).clipPath),'Search form expands from its trigger');
+  await page.waitForTimeout(350);
   assert.equal(await dialog.evaluate(el=>el.open),false,'Desktop search has no modal');
   assert.equal(await page.locator('.sf-header #sf-query').count(),1,'Same form lives in header');
   assert.equal(await page.locator('#sf-query').count(),1,'No duplicate search');
@@ -66,6 +69,20 @@ const cart={items_count:1,items:[{key:'one',name:'Deneme ürünü',permalink:'/p
  assert.equal(await page.locator('.sf-header-search').isVisible(),false,'Resize restores form');
  await page.locator('.sf-dock-item[data-panel=search]').click();assert(await dialog.evaluate(el=>el.open),'Mobile retains full screen search');
  assert.equal(Math.round((await dialog.boundingBox()).width),390);await page.keyboard.press('Escape');await dialog.waitFor({state:'hidden'});
+ // On a product, the SAME cart becomes a compact header sheet with no dock.
+ await page.evaluate(()=>document.body.classList.add('single-product'));
+ for(const width of [320,390,768,900]){
+  await page.setViewportSize({width,height:844});
+  await page.evaluate(()=>window.sfActions.cart());await page.waitForTimeout(200);
+  const compact=await dialog.boundingBox();
+  assert(compact.width<=440 && compact.height<744 && compact.y>=76,'Product cart stays compact '+width);
+  assert.equal(await dialog.locator('.sf-mobile-dock').isVisible(),false,'Product cart has no navigation dock');
+  assert(await page.locator('#sf-cart').innerText().then(t=>t.includes('Deneme ürünü')),'Same live cart rows');
+  await page.screenshot({path:'qa/storefront-ui-kit-product-cart-'+width+'.png'});
+  await page.keyboard.press('Escape');await dialog.waitFor({state:'hidden'});
+  assert.notEqual(await page.evaluate(()=>document.body.style.position),'fixed','Close releases scroll');
+ }
+ await page.evaluate(()=>document.body.classList.remove('single-product'));
  await page.setViewportSize({width:1280,height:900});await page.emulateMedia({reducedMotion:'reduce'});
  await cartTrigger.click();await page.keyboard.press('Escape');assert.equal(await dialog.evaluate(el=>el.open),false,'Reduced motion closes immediately');
  await page.emulateMedia({reducedMotion:'no-preference'});await search.click();await page.locator('#sf-query').fill('doğal');await page.locator('.sf-result').waitFor();

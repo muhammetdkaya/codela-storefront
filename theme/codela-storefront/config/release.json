@@ -6,10 +6,11 @@
     "codela": "1.2.0"
   },
   "changes": [
-    "Masaüstü arama, menü alanına yatay açılan tek form olarak düzenlendi.",
-    "Masaüstü sepeti açılış ve kapanış animasyonlu sağ panel olarak düzenlendi.",
-    "Üst menü alt menü okları başlıkla bütünleştirildi; aktif sayfa alt çizgisi yerine mobil alt menüyle ortak kapsül seçimi kullanıldı.",
-    "Mobil vitrin slider üzerinde başlayan dikey kaydırma serbest bırakıldı; yatay galeri davranışı korundu.",
-    "Native WordPress blog listesi, arşiv ve yazı iç sayfası tema tasarımına uyarlandı."
+    "Manuel paketteki hesap ve masaüstü ürün tasarımları güncel sürümle birleştirildi.",
+    "Kritik görsel önceliği ve gecikmeli alt görseller korundu.",
+    "Masaüstü arama düğmeden sola genişler; alt menü chevron tasarımı sadeleştirildi.",
+    "Ürün kartı ekleme sonrası ikonunu korur; yinelenen Sepetim bağlantısı kaldırıldı.",
+    "Başarılı sepete ekleme için eski WooCommerce banner kaldırıldı; hata bildirimleri korundu.",
+    "Mobil ürün sayfasında aynı sepet kompakt panelde gösterilir."
   ]
 }

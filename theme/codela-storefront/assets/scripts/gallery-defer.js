@@ -122,6 +122,19 @@
       nav.appendChild(button);
     });
     if(items.length>1&&!gallery.classList.contains('sf-ui-gallery--no-thumbs'))gallery.appendChild(nav);
+    // Shared IconButtons use this adapter's existing select/IO state. No second
+    // gallery engine, slide clones or separate index is introduced.
+    const controlsTemplate=document.getElementById('sf-product-gallery-controls-template');
+    const arrows=items.length>1&&controlsTemplate?controlsTemplate.content.firstElementChild.cloneNode(true):null;
+    if(arrows){
+      gallery.appendChild(arrows);
+      arrows.querySelectorAll('[data-product-gallery-step]').forEach(button=>{
+        button.addEventListener('click',()=>{
+          const current=Math.max(0,[...nav.children].findIndex(item=>item.getAttribute('aria-current')==='true'));
+          select(Math.max(0,Math.min(items.length-1,current+Number(button.dataset.productGalleryStep))));
+        });
+      });
+    }
     let browsing=false;
     function prepareAdjacent(index){activate(imageAt(index-1));activate(imageAt(index+1));}
     function beginBrowsing(){
@@ -133,6 +146,7 @@
     track.addEventListener('keydown',event=>{if(['ArrowDown','ArrowUp','ArrowLeft','ArrowRight'].includes(event.key))beginBrowsing();});
     function update(index){
       count.textContent=(index+1)+' / '+items.length;
+      arrows?.querySelectorAll('[data-product-gallery-step]').forEach(button=>{button.disabled=Number(button.dataset.productGalleryStep)<0?index===0:index===items.length-1;});
       const first=Math.max(0,Math.min(index-1,items.length-3));
       [...nav.children].forEach((button,i)=>{
         button.setAttribute('aria-current',String(i===index));
@@ -156,6 +170,7 @@
       },{root:vertical?null:track,rootMargin:'0px 0px -'+bottom+'px 0px',threshold:[0.05,.55]});
       items.forEach(item=>visible.observe(item));
     }
+    update(0);
     observe();
     let observedWidth=innerWidth;
     window.addEventListener('resize',()=>{
