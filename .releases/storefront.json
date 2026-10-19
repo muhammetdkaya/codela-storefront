@@ -1,5 +1,5 @@
 {
-  "confirm": "PUBLISH_STABLE",
   "version": "0.1.143",
-  "source_sha": "98c6c2adac9150d2406ad4252967948a96e485aa"
+  "source_sha": "98c6c2adac9150d2406ad4252967948a96e485aa",
+  "confirm": "PUBLISH_STABLE"
 }

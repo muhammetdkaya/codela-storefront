@@ -60,14 +60,19 @@ jobs:
             gh release create "v$VERSION" "dist/codela-storefront-$VERSION.zip" --target "$SOURCE_SHA" --title "Codela Storefront $VERSION" --notes-file dist/manifest.json
           fi
           mkdir /tmp/stable-feed
-          cp dist/manifest.json /tmp/stable-feed/manifest.json
           cd /tmp/stable-feed
           git init
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git remote add origin "https://x-access-token:$GH_TOKEN@github.com/$GITHUB_REPOSITORY.git"
-          if git fetch origin stable --depth 1; then git reset --soft FETCH_HEAD; fi
-          git checkout -B stable
+          # Checkout first: copying manifest.json before checkout conflicts with the
+          # tracked file when the stable branch already exists (second release).
+          if git fetch origin stable --depth 1; then
+            git checkout -B stable FETCH_HEAD
+          else
+            git checkout -b stable
+          fi
+          cp "$GITHUB_WORKSPACE/dist/manifest.json" manifest.json
           git add manifest.json
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "Publish Storefront $VERSION stable manifest"
