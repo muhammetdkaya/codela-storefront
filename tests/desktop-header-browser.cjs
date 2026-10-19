@@ -30,9 +30,12 @@ styles.splice(1,0,fs.readFileSync('theme/codela-storefront/assets/storefront.css
       await links.first().focus();
       for(let i=1;i<await links.count();i++) await page.keyboard.press('Tab');
       assert(await last.evaluate(el=>document.activeElement===el),'Tab reaches the final desktop menu link');
+      // Keyboard-triggered native scrolling can settle on the next frame.
+      // Report scroll geometry if the focused item remains clipped.
+      await page.waitForTimeout(150);
       const visible=await last.evaluate(el=>{
-       const r=el.getBoundingClientRect(),n=el.closest('nav').getBoundingClientRect();
-       return {visible:r.left>=n.left-1&&r.right<=n.right+1,link:[r.left,r.right],nav:[n.left,n.right],scroll:el.closest('nav').scrollLeft};
+       const nav=el.closest('nav'),r=el.getBoundingClientRect(),n=nav.getBoundingClientRect(),style=getComputedStyle(nav),list=nav.querySelector('ul');
+       return {visible:r.left>=n.left-1&&r.right<=n.right+1,link:[r.left,r.right],nav:[n.left,n.right],scroll:nav.scrollLeft,scrollWidth:nav.scrollWidth,clientWidth:nav.clientWidth,overflowX:style.overflowX,scrollBehavior:style.scrollBehavior,listWidth:list.getBoundingClientRect().width,active:document.activeElement===el};
       });
       assert(visible.visible,`Keyboard focus reveals the last item at ${width}px: ${JSON.stringify(visible)}`);
      }
