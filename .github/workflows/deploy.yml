@@ -32,6 +32,7 @@ jobs:
           php tests/homepage.php
           php tests/front-page-source.php
           php tests/sections-preview.php
+          node --check theme/codela-storefront/assets/scripts/media-loading.js
           php tests/media.php
           php tests/media-optimization.php
           php tests/navigation.php
@@ -58,6 +59,8 @@ jobs:
           npx playwright install --with-deps chromium webkit
           node tests/desktop-header-browser.cjs
           TEST_WEBKIT=1 node tests/desktop-header-browser.cjs
+          node tests/media-loading-browser.cjs
+          TEST_WEBKIT=1 node tests/media-loading-browser.cjs
           node tests/homepage-browser.cjs
           node tests/product-menu-scroll-browser.cjs
           TEST_WEBKIT=1 node tests/product-menu-scroll-browser.cjs
@@ -66,6 +69,8 @@ jobs:
           node tests/checkout-browser.cjs
           node tests/catalog-browser.cjs
           node tests/catalog-filters-browser.cjs
+          node tests/product-desktop-browser.cjs
+          TEST_WEBKIT=1 node tests/product-desktop-browser.cjs
           node tests/product-browser.cjs
           node tests/product-modules-browser.cjs
           node tests/shell-navigation-browser.cjs
@@ -73,6 +78,8 @@ jobs:
           node tests/gallery-defer-browser.cjs
           node tests/ui-kit-browser.cjs
           node tests/native-woo-buttons.cjs
+          node tests/account-dashboard-browser.cjs
+          TEST_WEBKIT=1 node tests/account-dashboard-browser.cjs
           node tests/account-browser.cjs
           node tests/ui-kit-preview.cjs
       - uses: actions/upload-artifact@v4

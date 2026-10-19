@@ -531,3 +531,15 @@ html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) d
   background:transparent!important;box-shadow:none!important;border:0;
   -webkit-backdrop-filter:none;backdrop-filter:none;
 }
+
+/* The same product primitives become inline controls on desktop: one plain
+   composition around the shared CTA and circular gallery controls, no second
+   floating material. Mobile retains the original common glass surface. */
+@media(min-width:901px) and (forced-colors:none){
+  body.single-product div.product :is(.sf-product-purchase,.sf-ui-gallery-nav,.cdl-wa-button),
+  body.single-product.woocommerce div.product div.sf-ui-gallery .flex-control-thumbs,
+  body.single-product div.product .summary .cdl-wa-ico{
+    background:transparent!important;box-shadow:none!important;
+    -webkit-backdrop-filter:none;backdrop-filter:none;
+  }
+}

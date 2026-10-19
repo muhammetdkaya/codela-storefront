@@ -20,7 +20,9 @@ function codela_sf_section_image( array $item, bool $priority = false, string $s
             : ( wp_get_attachment_image_srcset( $mobile, 'large' ) ?: wp_get_attachment_image_url( $mobile, 'large' ) );
         $source = '<source media="(max-width:700px)" srcset="' . esc_attr( $srcset ) . '" sizes="' . esc_attr( $sizes ) . '">';
     }
-    return '<picture class="sf-section-art">' . $source . $image . '</picture>';
+    $html = '<picture class="sf-section-art">' . $source . $image . '</picture>';
+    if ( $priority && function_exists( 'codela_sf_image_preloads' ) ) { codela_sf_image_preloads( $html ); }
+    return ! $priority && function_exists( 'codela_sf_defer_media' ) ? codela_sf_defer_media( $html ) : $html;
 }
 function codela_sf_section_controls( int $count ): string {
     if ( $count < 2 ) { return ''; }

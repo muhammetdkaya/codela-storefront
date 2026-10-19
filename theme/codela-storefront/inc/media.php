@@ -2,6 +2,84 @@
 /** Shared gallery presentation; native Woo and WordPress retain their own media behavior. */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
+/**
+ * Collect the actual rendered critical picture, not a guessed attachment URL.
+ * Block templates render before wp_head, so core can preload its exact native
+ * responsive sources before styles and module preloads start competing.
+ */
+function codela_sf_image_preloads( string $html = '' ): array {
+    static $resources = [];
+    if ( '' === $html ) { return $resources; }
+    $picture = new WP_HTML_Tag_Processor( $html );
+    $mobile = null;
+    if ( $picture->next_tag( 'source' ) && '(max-width:700px)' === $picture->get_attribute( 'media' ) ) {
+        $srcset = $picture->get_attribute( 'srcset' );
+        if ( is_string( $srcset ) && $srcset ) {
+            $mobile = [ 'as' => 'image', 'imagesrcset' => $srcset, 'imagesizes' => $picture->get_attribute( 'sizes' ) ?: '100vw', 'media' => '(max-width:700px)', 'fetchpriority' => 'high' ];
+        }
+    }
+    $image = new WP_HTML_Tag_Processor( $html );
+    if ( ! $image->next_tag( 'img' ) ) { return $resources; }
+    $src = $image->get_attribute( 'src' );
+    if ( ! is_string( $src ) || ! $src ) { return $resources; }
+    $resource = [ 'as' => 'image', 'href' => $src, 'fetchpriority' => 'high' ];
+    $srcset = $image->get_attribute( 'srcset' );
+    if ( is_string( $srcset ) && $srcset ) {
+        $resource['imagesrcset'] = $srcset;
+        $resource['imagesizes'] = $image->get_attribute( 'sizes' ) ?: '100vw';
+    }
+    if ( $mobile ) {
+        $resource['media'] = '(min-width:701px)';
+        $resources[] = $mobile;
+    }
+    $resources[] = $resource;
+    return $resources;
+}
+add_filter( 'wp_preload_resources', static function( $resources ) {
+    return array_merge( $resources, codela_sf_image_preloads() );
+} );
+
+/** Theme-owned below-fold delivery; originals remain the no-script fallback. */
+function codela_sf_defer_media( string $html ): string {
+    if ( ! codela_sf_image_preloads()
+        || ( defined( 'REST_REQUEST' ) && REST_REQUEST )
+        || ( defined( 'WP_CLI' ) && WP_CLI )
+        || ( function_exists( 'is_admin' ) && is_admin() ) ) { return $html; }
+    $image = new WP_HTML_Tag_Processor( $html );
+    if ( ! $image->next_tag( 'img' ) || 'lazy' !== $image->get_attribute( 'loading' ) ) { return $html; }
+    $src = $image->get_attribute( 'src' );
+    if ( ! is_string( $src ) || ! $src || $image->get_attribute( 'data-sf-gallery-src' ) ) { return $html; }
+    $width = (int) $image->get_attribute( 'width' );
+    $height = (int) $image->get_attribute( 'height' );
+    if ( $width < 1 || $height < 1 ) { return $html; }
+    foreach ( [ 'src', 'srcset', 'sizes' ] as $attribute ) {
+        $value = $image->get_attribute( $attribute );
+        if ( is_string( $value ) && $value ) {
+            $image->set_attribute( 'data-sf-media-' . $attribute, $value );
+            $image->remove_attribute( $attribute );
+        }
+    }
+    // Explicit width/height and existing CSS keep the exact original geometry.
+    $image->set_attribute( 'src', 'data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%22' . $width . '%22%20height=%22' . $height . '%22/%3E' );
+    $deferred = new WP_HTML_Tag_Processor( $image->get_updated_html() );
+    while ( $deferred->next_tag( 'source' ) ) {
+        $srcset = $deferred->get_attribute( 'srcset' );
+        if ( is_string( $srcset ) && $srcset ) {
+            $deferred->set_attribute( 'data-sf-media-srcset', $srcset );
+            $deferred->remove_attribute( 'srcset' );
+        }
+    }
+    $GLOBALS['codela_sf_deferred_media'] = true;
+    return $deferred->get_updated_html() . '<noscript>' . $html . '</noscript>';
+}
+add_action( 'wp_head', static function() {
+    if ( empty( $GLOBALS['codela_sf_deferred_media'] ) ) { return; }
+    // Inline and dependency-free: lower images never depend on another network
+    // request, Woo startup or the theme's interactive shell becoming ready.
+    wp_print_inline_script_tag( file_get_contents( __DIR__ . '/../assets/scripts/media-loading.js' ), [ 'id' => 'sf-media-loading' ] );
+    echo '<noscript><style>img[data-sf-media-src]{display:none!important}picture:has(>img[data-sf-media-src]){display:none!important}</style></noscript>';
+}, 2 );
+
 function codela_sf_gallery_classes( array $classes ): array {
     $classes[] = 'sf-ui-gallery';
     $classes[] = 'sf-ui-gallery--hero';
@@ -23,6 +101,13 @@ function codela_sf_gallery_options( array $options ): array {
 }
 
 add_action( 'after_setup_theme', function() {
+    // Native scrolling and inline zoom are the active product presentation.
+    // Prevent Woo's classic block from enqueueing unused slider/lightbox assets.
+    foreach ( [ 'slider', 'lightbox' ] as $feature ) {
+        add_filter( 'current_theme_supports-wc-product-gallery-' . $feature, static function( $supported ) {
+            return function_exists( 'is_product' ) && is_product() ? false : $supported;
+        } );
+    }
     add_filter( 'woocommerce_single_product_image_gallery_classes', 'codela_sf_gallery_classes' );
     add_filter( 'woocommerce_single_product_carousel_options', 'codela_sf_gallery_options' );
     // With FlexSlider disabled Woo otherwise renders secondary photos at the
@@ -89,6 +174,8 @@ add_action( 'after_setup_theme', function() {
             if ( $is_hero ) {
                 $tags->set_attribute( 'loading', 'eager' );
                 $tags->set_attribute( 'fetchpriority', 'high' );
+                $sizes = $tags->get_attribute( 'sizes' );
+                if ( is_string( $sizes ) ) { $tags->set_attribute( 'sizes', preg_replace( '/^auto,\s*/', '', $sizes ) ); }
             } elseif ( function_exists( 'is_product' ) && is_product() && $attachment_id ) {
                 // A low-cost UNCROPPED preview keeps the same product framing.
                 // Do not let native lazy heuristics fetch every multi-MB PNG
@@ -111,7 +198,9 @@ add_action( 'after_setup_theme', function() {
                 $tags->set_attribute( 'fetchpriority', 'low' );
             }
         }
-        return $tags->get_updated_html();
+        $html = $tags->get_updated_html();
+        if ( $is_hero ) { codela_sf_image_preloads( $html ); }
+        return $html;
     }, 10, 2 );
     // Select a responsive logo size matching its real painted header width,
     // rather than choosing a near-full-resolution source for a tiny logo.

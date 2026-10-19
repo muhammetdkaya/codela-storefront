@@ -6,8 +6,10 @@
     "codela": "1.2.0"
   },
   "changes": [
-    "Masaüstü ürün galerisinde yakınlaştırma sırasında istenmeyen kapanma önlendi.",
-    "İlgili ürün ve sayfa bölümlerindeki resimlere düşük ağ önceliği verildi.",
-    "Doğrulanmış WebP sürümleri ürün kartlarında da yeniden kullanılıyor."
+    "Hesap görünümü başlık ve karşılama alanı olmadan menü, son sipariş, adres ve hesap kartlarıyla düzenlendi.",
+    "Masaüstü ürün görünümünde kontrollü galeri, sağ satın alma ve güvence sütunu, altta açıklamalar ve ilgili ürünler bir araya getirildi; mobilde aynı native form ve modüller korunur.",
+    "Kritik responsive görsel önceliği ve alt bölüm resimlerinin yaklaşınca yüklenmesi aynı kaynak kalitesi korunarak düzenlendi.",
+    "Ürün galerisinin kullanmadığı FlexSlider ve PhotoSwipe dosyaları kaldırıldı; mevcut native kaydırma ve yakınlaştırma devam eder.",
+    "WordPress tema yükleme ekranından mevcut Codela Storefront üzerine kurulabilir; Actions ile dağıtım gerektirmez."
   ]
 }

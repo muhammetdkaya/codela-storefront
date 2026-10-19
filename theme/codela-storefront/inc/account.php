@@ -47,3 +47,28 @@ function codela_sf_account_overlay_form(): string {
     }
     return (string) ob_get_clean();
 }
+
+/** The signed-in account starts at its navigation, without a duplicate page title. */
+add_filter( 'render_block_core/post-title', function ( string $html, array $block, $instance ): string {
+    if ( ! function_exists( 'is_account_page' ) || ! is_account_page() || ! is_user_logged_in() ) { return $html; }
+    $is_page_title = (int) ( $instance->context['postId'] ?? 0 ) === (int) wc_get_page_id( 'myaccount' );
+    return $is_page_title ? '' : $html;
+}, 10, 3 );
+
+/** Keep the native endpoint registry, including independent module destinations. */
+add_filter( 'woocommerce_account_menu_items', function ( array $items ): array {
+    if ( isset( $items['dashboard'] ) ) { $items['dashboard'] = __( 'Overview', 'codela-storefront' ); }
+    return $items;
+} );
+add_filter( 'body_class', function ( array $classes ): array {
+    if ( function_exists( 'is_account_page' ) && is_account_page() && is_user_logged_in() && ! is_wc_endpoint_url() ) {
+        $classes[] = 'sf-account-dashboard';
+    }
+    return $classes;
+} );
+
+/** Shared local icon vocabulary; unknown plugin destinations remain real links. */
+function codela_sf_account_icon( string $endpoint ): string {
+    $icons = [ 'dashboard' => 'house', 'orders' => 'shopping-bag', 'edit-address' => 'map-pin', 'edit-account' => 'user-round', 'customer-logout' => 'log-out' ];
+    return codela_sf_icon( $icons[ $endpoint ] ?? 'arrow-right' );
+}
