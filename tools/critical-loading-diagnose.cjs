@@ -6,15 +6,20 @@ const attribute=(tag,name)=>tag.match(new RegExp('\\b'+name+'="([^"]*)"'))?.[1];
 (async()=>{
  const browser=await chromium.launch();const results=[];
  const urls={home:'https://codela.dev/',product:(await liveProduct()).url};
- try{for(let repeat=1;repeat<=3;repeat++)for(const [pageName,url] of Object.entries(urls))for(const variant of ['baseline','preload','contained','defer']){
+ try{for(let repeat=1;repeat<=3;repeat++)for(const [pageName,url] of Object.entries(urls))for(const variant of ['baseline','priority','lean']){
   const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:3,isMobile:true,hasTouch:true});
   await context.route('**/*',async route=>{
    const req=route.request();if(req.resourceType()!=='document')return route.continue();
    const response=await route.fetch();let body=await response.text();
    const hero=body.match(pageName==='home'?/<picture class="sf-section-art">[\s\S]*?<img\b[^>]*>/ : /<img\b[^>]*class="[^"]*wp-post-image[^>]*>/)?.[0].match(/<img\b[^>]*>/)?.[0];
-   if(variant==='preload'&&hero){const src=attribute(hero,'src'),srcset=attribute(hero,'srcset'),sizes=attribute(hero,'sizes');body=body.replace('</title>','</title><link rel="preload" as="image" fetchpriority="high" href="'+src+'"'+(srcset?' imagesrcset="'+srcset+'"':'')+(sizes?' imagesizes="'+sizes+'"':'')+'>');}
-   if(variant==='contained')body=body.replace('</head>','<style>.sf-section:not(:first-child),.related,.upsells{content-visibility:auto;contain-intrinsic-size:auto 800px}</style></head>');
-   if(variant==='defer')body=body.replace(/<script\b([^>]*\bsrc="[^"]+"[^>]*)>/g,(tag,attrs)=>/jquery|woocommerce\/assets\/js\/(jquery-blockui|frontend|js-cookie|flexslider|photoswipe)/.test(attrs)&&!attrs.includes('defer')?'<script defer '+attrs+'>':tag);
+   if(variant!=='baseline'&&hero){const src=attribute(hero,'src'),srcset=attribute(hero,'srcset'),sizes=attribute(hero,'sizes');body=body.replace('</title>','</title><link rel="preload" as="image" fetchpriority="high" href="'+src+'"'+(srcset?' imagesrcset="'+srcset+'"':'')+(sizes?' imagesizes="'+sizes+'"':'')+'>');}
+   if(variant!=='baseline'){
+    body=body.replace(/<(script|link)\b[^>]*>/g,tag=>{
+     if(/rel="modulepreload"|type="module"/.test(tag)||/<script/.test(tag)&&/jquery|woocommerce\/assets\/js\//.test(tag))return tag.replace(/\sfetchpriority="[^"]*"/g,'').replace(/>$/,' fetchpriority="low">');
+     return tag;
+    });
+   }
+   if(variant==='lean')body=body.replace(/<script\b[^>]*src="[^"]*(?:flexslider|photoswipe)[^"]*"[^>]*><\/script>/g,'');
    await route.fulfill({response,body});
   });
   await context.addInitScript(()=>{window.__critical={lcp:[],cls:0};new PerformanceObserver(l=>l.getEntries().forEach(e=>__critical.lcp.push({time:e.startTime,url:e.url}))).observe({type:'largest-contentful-paint',buffered:true});new PerformanceObserver(l=>l.getEntries().forEach(e=>{if(!e.hadRecentInput)__critical.cls+=e.value})).observe({type:'layout-shift',buffered:true});});
