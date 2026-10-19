@@ -62,7 +62,9 @@ check( in_array('woocommerce_before_shop_loop',$called,true) && in_array('woocom
 $query_vars = ['post_type'=>'post'];
 check( codela_sf_search_results() === 'core-query-fallback', 'Editorial searches keep core Query' );
 $front_page = true; $in_card_image = true;
-check( codela_sf_catalog_image_attributes(['fetchpriority'=>'high']) === ['loading'=>'lazy','decoding'=>'async','fetchpriority'=>'low'], 'Home cards stay low-priority' );
+$home_attrs = codela_sf_catalog_image_attributes(['fetchpriority'=>'high']);
+check( ($home_attrs['loading'] ?? '') === 'lazy' && ($home_attrs['decoding'] ?? '') === 'async'
+    && ($home_attrs['fetchpriority'] ?? '') === 'low' && count($home_attrs) === 3, 'Home cards stay low-priority' );
 $front_page = false; $product_page = true;
 $verified_webp = [ 42 => [ ['url'=>'https://site.test/optimized-400.webp','width'=>400], ['url'=>'https://site.test/optimized-800.webp','width'=>800] ] ];
 $optimized = codela_sf_catalog_image_attributes( ['src'=>'https://site.test/original.png','srcset'=>'original.png 800w','sizes'=>'300px','fetchpriority'=>'high'], (object)['ID'=>42] );
