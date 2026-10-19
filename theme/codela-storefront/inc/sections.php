@@ -35,12 +35,6 @@ function codela_sf_sections_capabilities(): array {
                 if ( in_array( $type, [ 'hero', 'promo' ], true ) && count( $data['items'] ?? [] ) > 1 || 'categories' === $type && 'carousel' === ( $data['variant'] ?? '' ) ) { $caps['gallery'] = true; }
             }
         }
-    } elseif ( is_front_page() && 'sections' === codela_sf_home_mode() && function_exists( 'codela_sections_legacy_blocks' ) ) {
-        $caps['layout'] = true;
-        foreach ( codela_sections_legacy_blocks( codela_theme_settings() ) as $child ) {
-            if ( 'codela/section-products' === $child['blockName'] ) { $caps['products'] = true; }
-            if ( 'codela/section-hero' === $child['blockName'] && count( $child['attrs']['data']['items'] ) > 1 ) { $caps['gallery'] = true; }
-        }
     }
     return $caps;
 }
