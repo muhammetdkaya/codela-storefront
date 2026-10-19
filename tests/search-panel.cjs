@@ -35,7 +35,7 @@ assert.ok(css.includes('transition:none!important'), 'Panels open and close with
 assert.ok(css.includes('--sf-overlay-control-size:44px'), 'All overlay X controls share a 44px touch target');
 assert.ok(css.includes('--sf-overlay-toolbar-height:68px'), 'All panel headers share the same height');
 assert.ok(css.includes('#sf-panel .sf-panel-top{'), 'Menu and cart have a shared toolbar');
-assert.ok(css.includes('#sf-panel.is-search-panel .sf-search-toolbar{'), 'Search uses matching toolbar tokens');
+assert.ok(css.includes('#sf-search .sf-search-toolbar{'), 'Search uses matching toolbar tokens');
 assert.ok(css.includes('height:46px'), 'Search field is reduced from 52px to 46px');
 assert.ok(fs.readFileSync('theme/codela-storefront/assets/styles/tokens.css','utf8').includes('--sf-ui-icon-close:22px'), 'X glyph token matches shared icon sizing');
 assert.ok(css.includes('background:var(--sf-ui-page)'), 'Panels inherit the common page canvas');

@@ -1,5 +1,16 @@
 # Codela Storefront — güncel teknik durum
 
+## Çalışma — 20 Ekim 2026: masaüstü araçları, Android kaydırması ve blog (0.1.150)
+
+Storefront **0.1.149 → 0.1.150** hazırlanıyor; Codela eklentisi değişmez. 901px+ arama aynı form/sonuç düğümlerini header alanına taşır; sayfayı kilitlemez. Escape/dış tıklama/gezinme/breakpoint değişimi orijinal mobile slot'u geri yükler. Tek overlay controller, tek Interactivity store, tek native dialog ve sepet motoru korunur. 901px+ sepet aynı dialog'un sağ drawer yerleşimidir; giriş/çıkış, tekrar açma ve reduced-motion işlenir. Mobil paneller tam ekran kalır. 1100px+ primary menüde native alt menü/parent bağlantıları korunur; ok bitişik kontrol, seçili madde dock ile aynı kapsül/tint token'ıdır, alt çizgi yoktur.
+
+Sadece sayfa bölüm galerilerinde dikey overscroll chaining serbest bırakıldı; ürün galerisi sözleşmesi değişmez. Native blog query/post blokları, posts-page başlığı, kategori/tarih, featured image, excerpt, read-more, pagination, arşiv ve tek yazı düzeni eklendi. Statik sayfa başlıkları geri eklenmedi. Blog içeriği/ayar/demo yazı oluşturulmadı; Site Editor'da kayıtlı şablon override'ları ayrıca incelenmelidir.
+
+**Doğrulama:** Yerel PHP sözdizimi, dokuz PHP senaryosu, 24 paket testi ve arama/dock birim kontrolleri başarılı. Yerel tarayıcı çalışma ortamı socket izni vermiyor; gerçek PHP header/controller browser senaryoları, dokunma ile hero kaydırma regresyonu ve blog yerleşim fixture'ları CI'da çalıştırılacak. Blog fixture'ı gerçek WordPress veritabanı entegrasyonu olarak sunulmaz. Fiziksel Android/Safari kabulü ayrıdır.
+
+**Yayın:** Kaynak hazırlanıyor; henüz main/FTPS/stable yayımlanmadı. **Sıradaki:** Chromium/WebKit CI ve ekran çıktıları, ardından başarılı kaynağın 0.1.150 stable yayını; hedef sitede uzaktan güncelleme ve altı maddenin görsel kabulü.
+
+
 ## Son doğrulanmış durum — 19 Ekim 2026: 0.1.149 sürüm çakışması düzeltmesi yayında
 
 Kullanıcı daha önce eski bir paketi aynı 0.1.148 numarasıyla yüklediğini bildirdi ve sürüm yükseltilmesini açıkça istedi. Native WordPress güncelleyicisinin yeni paketi sunabilmesi için tema **0.1.149** yapıldı. Kaynak `15ec184b8bdd2bc94418b3cb92c048fdc5605d91`; 0.1.148 ile ZIP dosya karşılaştırmasında yalnız `style.css` sürümü ve `config/release.json` notu değişir. Sayfa başlığı ve kategori bantları kodu korunur. Sekiz mevcut paket testi sürüm beklentisi güncellendi; eski immutable v0.1.148 etiketi/ZIP'i değiştirilmedi.

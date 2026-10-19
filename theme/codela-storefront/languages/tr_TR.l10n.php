@@ -1,5 +1,7 @@
 <?php
 return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR', 'plural-forms' => 'nplurals=2; plural=(n > 1);', 'messages' => [
+'No posts yet.' => 'Henüz yazı yayımlanmadı.',
+'Blog' => 'Blog',
 'Open submenu: %s' => 'Alt menüyü aç: %s',
 'Shared appearance' => 'Ortak görünüm',
 'One accent for the theme and Codela components.' => 'Tema ve Codela bileşenleri için ortak görünüm.',

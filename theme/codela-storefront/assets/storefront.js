@@ -96,7 +96,7 @@ function init() {
         sub.before(button);
     });
     $('#sf-menu .sf-back').addEventListener('click', () => {const item = menuPath.pop();paintMenu();overlay.animateContent($('#sf-menu'),-1);item?.querySelector('.sf-submenu-toggle')?.focus({preventScroll:true});});
-    dialog.addEventListener('click',event => {
+    dialog.closest('.sf-shell').addEventListener('click',event => {
         const b = event.target.closest('button'); if (!b) return;
         if (b.matches('[data-qty],[data-remove]')) cartFeature.change(b);
         if (b.matches('.sf-retry-cart')) cartFeature.refresh();

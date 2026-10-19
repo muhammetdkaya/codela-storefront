@@ -58,6 +58,10 @@ jobs:
           npx playwright install --with-deps chromium webkit
           node tests/desktop-header-browser.cjs
           TEST_WEBKIT=1 node tests/desktop-header-browser.cjs
+          node tests/desktop-tools-browser.cjs
+          TEST_WEBKIT=1 node tests/desktop-tools-browser.cjs
+          node tests/journal-browser.cjs
+          TEST_WEBKIT=1 node tests/journal-browser.cjs
           node tests/homepage-browser.cjs
           node tests/product-menu-scroll-browser.cjs
           TEST_WEBKIT=1 node tests/product-menu-scroll-browser.cjs

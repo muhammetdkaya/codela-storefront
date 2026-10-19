@@ -114,6 +114,7 @@ add_action( 'wp_enqueue_scripts', function() {
     wp_enqueue_style( 'codela-storefront-overlay', $root_uri . 'styles/overlay.css', [ 'codela-storefront-theme' ], $style_version );
     wp_enqueue_style( 'codela-storefront-navigation', $root_uri . 'styles/navigation.css', [ 'codela-storefront-overlay' ], $style_version );
     wp_enqueue_style( 'codela-storefront-components', $root_uri . 'styles/components.css', [ 'codela-storefront-navigation' ], $style_version );
+    wp_enqueue_style( 'codela-storefront-journal', $root_uri . 'styles/journal.css', [ 'codela-storefront-components' ], $style_version );
     wp_enqueue_style( 'codela-storefront-catalog', $root_uri . 'styles/catalog.css', [ 'codela-storefront-components' ], $style_version );
     $sections = function_exists( 'codela_sections_validate_root' ) ? codela_sf_sections_capabilities() : [ 'layout' => false, 'gallery' => false, 'products' => false ];
     if ( $sections['layout'] ) {

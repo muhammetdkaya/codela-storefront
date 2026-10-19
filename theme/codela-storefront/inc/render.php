@@ -70,6 +70,7 @@ function codela_sf_header(): string {
             </nav>
             <div class="sf-brand sf-ui-surface"><?php if ( has_custom_logo() ) { the_custom_logo(); } else { ?><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></a><?php } ?></div>
             <?php if ( $desktop_menu ) : ?><nav class="sf-desktop-navigation sf-ui-surface" aria-label="<?php esc_attr_e( 'Main menu', 'codela-storefront' ); ?>"><?php echo $desktop_menu; ?></nav><?php endif; ?>
+            <div class="sf-header-search sf-ui-surface" hidden></div>
             <nav class="sf-actions sf-ui-surface<?php echo $product_page || ( $catalog_page && $show_mobile_dock ) ? ' sf-ui-icon-group--single-mobile' : ''; ?>" aria-label="<?php esc_attr_e( 'Store tools', 'codela-storefront' ); ?>">
                 <?php if ( $catalog_page ) { echo codela_sf_ui_icon_button( 'sliders-horizontal', __( 'Filters', 'codela-storefront' ), [ 'variant' => $show_mobile_dock ? 'soft' : 'bare', 'class' => 'sf-filter-trigger', 'href' => '#sf-filters', 'attributes' => [ 'data-wp-on--click' => 'actions.filters', 'data-panel' => 'filters', 'aria-haspopup' => 'dialog', 'aria-controls' => 'sf-panel', 'aria-expanded' => 'false' ] ] ); } ?>
                 <?php echo codela_sf_ui_icon_button( 'search', __( 'Search', 'codela-storefront' ), [ 'href' => add_query_arg( [ 's' => '', 'post_type' => 'product' ], home_url( '/' ) ), 'attributes' => [ 'data-wp-on--click' => 'actions.search', 'data-panel' => 'search', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] ] ); ?>
@@ -137,7 +138,7 @@ function codela_sf_home(): string {
     if ( 'page' === get_option( 'show_on_front' ) ) {
         return do_blocks( '<!-- wp:post-content {"layout":{"type":"constrained"}} /-->' );
     }
-    return do_blocks( '<!-- wp:query {"query":{"inherit":true}} --><!-- wp:post-template --><!-- wp:post-title {"isLink":true} /--><!-- wp:post-excerpt /--><!-- /wp:post-template --><!-- wp:query-pagination --><!-- wp:query-pagination-previous /--><!-- wp:query-pagination-next /--><!-- /wp:query-pagination --><!-- /wp:query -->' );
+    return do_blocks( '<!-- wp:group {"className":"sf-journal"} --><div class="wp-block-group sf-journal"><!-- wp:pattern {"slug":"codela-storefront/journal-heading"} /--><!-- wp:pattern {"slug":"codela-storefront/journal-loop"} /--></div><!-- /wp:group -->' );
 }
 
 

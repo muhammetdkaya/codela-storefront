@@ -9,6 +9,16 @@ for(const width of [320,390,700,701,1023,1024,1280])for(const promos of ['split,
  await page.goto('https://store.test/');
  await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body class="home"><main class="sf-content">'+html+'</main></body></html>');await page.addScriptTag({content:fs.readFileSync(root+'assets/scripts/gallery-horizontal.js','utf8')});
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No page overflow '+width+' '+promos);assert.equal(await page.locator('.sf-section').count(),10);assert.equal(await page.locator('h1').count(),1);assert.equal(await page.locator('img[fetchpriority=high]').count(),1);
+ if(width===390&&promos==='split,inset'&&!process.env.TEST_WEBKIT){
+  const session=await page.context().newCDPSession(page);
+  await session.send('Input.synthesizeScrollGesture',{x:195,y:300,yDistance:-260,speed:450,gestureSourceType:'touch'});
+  assert(await page.evaluate(()=>scrollY)>100,'Vertical touch starting on the hero scrolls the document');
+  await page.evaluate(()=>scrollTo(0,0));
+  await session.send('Input.synthesizeScrollGesture',{x:300,y:180,xDistance:-240,speed:450,gestureSourceType:'touch'});
+  assert(await page.locator('.sf-section--hero .sf-ui-gallery-track').evaluate(el=>el.scrollLeft)>100,'Horizontal touch still moves the hero');
+  await page.locator('.sf-section--hero .sf-ui-gallery-track').evaluate(el=>el.scrollTo({left:0,behavior:'instant'}));
+  await page.waitForTimeout(50);await session.detach();
+ }
  if(width===390){const image=page.locator('.sf-categories--editorial img').first();await image.scrollIntoViewIfNeeded();await image.evaluate(img=>img.decode());assert.match(await image.evaluate(img=>img.currentSrc),/image-13-(160|320)\.svg$/,'Small mobile category selects a small responsive candidate');}
  const bands=page.locator('.sf-categories--bands .sf-category-story'),columns=width>=1024?4:width>700?2:1;
  const cards=await bands.evaluateAll(els=>els.map(el=>{const r=el.getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,bottom:r.bottom};}));

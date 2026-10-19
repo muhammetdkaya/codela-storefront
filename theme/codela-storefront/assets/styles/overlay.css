@@ -2,18 +2,18 @@
 /* Remove native button appearance only. Shared UI Kit owns the complete
    X and search-clear surfaces; panel CSS must not override their variants. */
 #sf-panel button.sf-close,
-#sf-panel .sf-search-form button.sf-icon-button {
+#sf-search .sf-search-form button.sf-icon-button {
   -webkit-appearance:none;
   appearance:none;
 }
-#sf-panel #sf-query {
+#sf-search #sf-query {
   -webkit-appearance:none;
   appearance:none;
   border:0!important;
   box-shadow:none!important;
   outline:none!important;
 }
-#sf-panel .sf-search-form:focus-within {
+#sf-search .sf-search-form:focus-within {
   outline:none;
   box-shadow:none!important;
 }
@@ -49,15 +49,15 @@
 /* The same soft IconButton renders the menu/cart X and the search X.
    Only toolbar flex sizing belongs here. */
 #sf-panel button.sf-close,
-#sf-panel.is-search-panel .sf-search-cancel{
+#sf-search .sf-search-cancel{
   flex:0 0 var(--sf-overlay-control-size);
 }
 #sf-panel.is-search-panel .sf-panel-top{display:none!important}
-#sf-panel.is-search-panel #sf-search.sf-search-body{
+#sf-search.sf-search-body{
   padding:0;
   overflow-y:auto;
 }
-#sf-panel.is-search-panel .sf-search-toolbar{
+#sf-search .sf-search-toolbar{
   position:sticky;
   top:0;
   z-index:2;
@@ -72,7 +72,7 @@
   background:var(--sf-ui-page);
   box-sizing:border-box;
 }
-#sf-panel.is-search-panel .sf-search-form{
+#sf-search .sf-search-form{
   display:flex;
   align-items:center;
   flex:1;
@@ -89,21 +89,21 @@
   background:#f3f3f3;
   box-shadow:none;
 }
-#sf-panel.is-search-panel .sf-search-leading{
+#sf-search .sf-search-leading{
   display:grid;
   place-items:center;
   flex:none;
   width:20px;
   height:20px;
 }
-#sf-panel.is-search-panel .sf-search-leading .sf-icon{
+#sf-search .sf-search-leading .sf-icon{
   display:block;
   width:20px;
   height:20px;
   filter:brightness(0);
   opacity:.72;
 }
-#sf-panel.is-search-panel #sf-query{
+#sf-search #sf-query{
   flex:1;
   min-width:0;
   width:100%;
@@ -123,54 +123,54 @@
   -webkit-appearance:none;
   appearance:none;
 }
-#sf-panel.is-search-panel #sf-query::placeholder{color:#929292;opacity:1}
-#sf-panel.is-search-panel #sf-query::-webkit-search-cancel-button{
+#sf-search #sf-query::placeholder{color:#929292;opacity:1}
+#sf-search #sf-query::-webkit-search-cancel-button{
   -webkit-appearance:none;
   appearance:none;
   display:none;
 }
-#sf-panel.is-search-panel .sf-search-clear{margin-right:-10px}
-#sf-panel.is-search-panel .sf-search-cancel:focus-visible,
-#sf-panel.is-search-panel .sf-search-clear:focus-visible{
+#sf-search .sf-search-clear{margin-right:-10px}
+#sf-search .sf-search-cancel:focus-visible,
+#sf-search .sf-search-clear:focus-visible{
   outline:2px solid var(--sf-accent,#656e52)!important;
   outline-offset:3px;
 }
-#sf-panel.is-search-panel .sf-search-content{
+#sf-search .sf-search-content{
   width:100%;
   min-height:60vh;
   padding:14px var(--sf-overlay-gutter) 40px;
   border:0;
   background:var(--sf-ui-page);
 }
-#sf-panel.is-search-panel #sf-results{
+#sf-search #sf-results{
   max-width:950px;
   margin-left:auto;
   margin-right:auto;
 }
-#sf-panel.is-search-panel .sf-result{
+#sf-search .sf-result{
   gap:14px;
   padding:14px 0;
   color:#22231f;
   border-bottom:1px solid #ebebeb;
 }
-#sf-panel.is-search-panel .sf-result img{
+#sf-search .sf-result img{
   width:58px;
   height:72px;
   border-radius:10px;
   background:#f1f1f1;
 }
-#sf-panel.is-search-panel .sf-result h3{font-size:17px;margin-bottom:6px}
-#sf-panel.is-search-panel .sf-result p,
-#sf-panel.is-search-panel .sf-result small,
-#sf-panel.is-search-panel #sf-results>p{color:#808080}
-#sf-panel.is-search-panel .sf-search-skeleton{padding-top:6px}
-#sf-panel.is-search-panel .sf-skeleton-row{
+#sf-search .sf-result h3{font-size:17px;margin-bottom:6px}
+#sf-search .sf-result p,
+#sf-search .sf-result small,
+#sf-search #sf-results>p{color:#808080}
+#sf-search .sf-search-skeleton{padding-top:6px}
+#sf-search .sf-skeleton-row{
   display:flex;
   align-items:center;
   gap:14px;
   min-height:78px;
 }
-#sf-panel.is-search-panel .sf-skeleton-row>i{
+#sf-search .sf-skeleton-row>i{
   display:block;
   flex:none;
   width:48px;
@@ -178,20 +178,20 @@
   background:#eeeeee;
   border-radius:50%;
 }
-#sf-panel.is-search-panel .sf-skeleton-row>span{
+#sf-search .sf-skeleton-row>span{
   display:flex;
   flex-direction:column;
   flex:1;
   gap:10px;
 }
-#sf-panel.is-search-panel .sf-skeleton-row b{
+#sf-search .sf-skeleton-row b{
   display:block;
   width:min(60%,250px);
   height:12px;
   border-radius:6px;
   background:#eeeeee;
 }
-#sf-panel.is-search-panel .sf-skeleton-row b:last-child{
+#sf-search .sf-skeleton-row b:last-child{
   width:min(45%,175px);
   height:10px;
 }
@@ -201,18 +201,18 @@
     --sf-overlay-gutter:20px;
     --sf-overlay-toolbar-height:68px;
   }
-  #sf-panel.is-search-panel .sf-search-toolbar{
+  #sf-search .sf-search-toolbar{
     gap:10px;
     padding:10px var(--sf-overlay-gutter);
   }
-  #sf-panel.is-search-panel .sf-search-form{
+  #sf-search .sf-search-form{
     height:46px;
     min-height:46px;
     padding:0 12px;
     border-radius:15px;
   }
-  #sf-panel.is-search-panel #sf-query{height:44px;font-size:16px}
-  #sf-panel.is-search-panel .sf-search-content{padding:14px var(--sf-overlay-gutter) 36px}
+  #sf-search #sf-query{height:44px;font-size:16px}
+  #sf-search .sf-search-content{padding:14px var(--sf-overlay-gutter) 36px}
 }
 
 
@@ -238,3 +238,38 @@
 
 #sf-panel.is-cart-panel .sf-cart-row:not(:has(.sf-cart-photo)){grid-template-columns:minmax(0,1fr)}
 #sf-panel.is-cart-panel .sf-cart-row>a:empty{display:none}
+
+/* Desktop search occupies the existing header menu slot; results stay anchored
+   to that form and never lock the document. Mobile uses the same section. */
+.sf-header-search[hidden]{display:none!important}
+@media(min-width:901px){
+  .sf-shell .sf-header.is-search-expanded{grid-template-columns:minmax(0,180px) minmax(0,1fr) auto;column-gap:20px}
+  .sf-header.is-search-expanded>.sf-desktop-navigation,
+  .sf-header.is-search-expanded:not(.has-desktop-menu)>.sf-brand{visibility:hidden}
+  .sf-header.is-search-expanded>.sf-brand,
+  .sf-header.is-search-expanded>.sf-header-menu{grid-row:1;grid-column:1}
+  .sf-header.is-search-expanded>.sf-desktop-navigation,
+  .sf-header.is-search-expanded>.sf-header-search,
+  .sf-header.is-search-expanded:not(.has-desktop-menu)>.sf-brand{grid-row:1;grid-column:2}
+  .sf-header.is-search-expanded>.sf-actions{grid-row:1;grid-column:3}
+  .sf-header-search{position:relative;min-width:0;--sf-overlay-control-size:44px;--sf-overlay-toolbar-height:44px;--sf-overlay-gutter:20px}
+  .sf-header-search #sf-search{overflow:visible}
+  .sf-header-search #sf-search .sf-search-toolbar{position:relative;padding:0 4px;border:0;border-radius:var(--sf-ui-pill);background:transparent;gap:4px}
+  .sf-header-search #sf-search .sf-search-form{background:transparent;height:44px;min-height:44px;padding-inline:12px 0}
+  .sf-header-search #sf-search .sf-search-content{position:absolute;top:calc(100% + 12px);left:0;right:0;width:100%;min-height:0;max-height:calc(100dvh - 120px - var(--sf-header-offset,0px));overflow-y:auto;padding:8px 20px 16px;border-radius:var(--sf-ui-control-radius)}
+  .sf-header-search #sf-search .sf-search-content:has(#sf-results:empty){display:none}
+  .sf-header-search #sf-results{min-height:0}
+  .sf-header-search [hidden]{display:none!important}
+  #sf-panel.is-cart-panel{left:auto;right:0;width:min(460px,100%);box-shadow:-12px 0 48px rgb(0 0 0 / .12)}
+  #sf-panel.is-cart-panel::backdrop{background:rgb(0 0 0 / .22);animation:sf-cart-backdrop-in 280ms ease both}
+  #sf-panel.is-cart-panel.is-closing::backdrop{animation:sf-cart-backdrop-out 220ms ease both}
+  #sf-panel.is-cart-panel .sf-cart-row{grid-template-columns:80px minmax(0,1fr);gap:16px}
+}
+@keyframes sf-cart-backdrop-in{from{opacity:0}to{opacity:1}}
+@keyframes sf-cart-backdrop-out{from{opacity:1}to{opacity:0}}
+@media(prefers-reduced-motion:reduce){#sf-panel.is-cart-panel::backdrop{animation:none!important}}
+
+@media(min-width:901px) and (max-width:1099px){
+  .sf-shell .sf-header.is-search-expanded{grid-template-columns:44px minmax(0,1fr) auto}
+  .sf-header.is-search-expanded>.sf-brand{visibility:hidden}
+}

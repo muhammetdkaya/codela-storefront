@@ -1,0 +1,60 @@
+/* Native WordPress query and post blocks. Composition only; UI Kit owns controls. */
+.sf-content.sf-journal,.sf-content.sf-article,.sf-content>.sf-journal{
+  width:100%;max-width:1360px;margin-inline:auto;padding:clamp(32px,5vw,72px) max(5vw,20px) 72px;
+}
+.home .sf-content:has(>.sf-journal){padding-top:76px}
+.sf-journal-title,.sf-article-header h1{font-size:clamp(36px,5vw,64px);font-weight:400;letter-spacing:-.045em;line-height:1.12;overflow-wrap:anywhere;margin:0 0 40px}
+.sf-journal .sf-journal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px 22px;list-style:none;padding:0;margin:0}
+.sf-journal-grid>li{min-width:0;margin:0}
+.sf-journal-card{height:100%;overflow:hidden;display:flex;flex-direction:column}
+.sf-journal-card .wp-block-post-featured-image{margin:0;aspect-ratio:3/2;overflow:hidden}
+.sf-journal-card .wp-block-post-featured-image a{display:block;height:100%}
+.sf-journal-card .wp-block-post-featured-image img{display:block;width:100%;height:100%;object-fit:cover}
+.sf-journal-card-copy{padding:24px;display:flex;flex-direction:column;flex:1;gap:16px}
+.sf-journal-card-copy>*{margin:0}
+.sf-journal-category{font-size:12px;line-height:1.5;color:var(--sf-muted);letter-spacing:.06em}
+.sf-journal-category a{display:inline-flex;align-items:center;min-height:44px;text-decoration:none}
+.sf-journal-card h2{font-size:clamp(23px,2.2vw,30px);line-height:1.2;letter-spacing:-.035em;font-weight:400;overflow-wrap:anywhere}
+.sf-journal-card h2 a{color:inherit;text-decoration:none}
+.sf-journal-card .wp-block-post-excerpt{font-size:15px;line-height:1.7;color:var(--sf-muted)}
+.sf-journal-card .wp-block-post-excerpt p{margin:0}
+.sf-journal-card .wp-block-post-excerpt__more-text:empty{display:none}
+.sf-journal-card-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:auto;padding-top:12px}
+.sf-journal-card-footer time,.sf-article-meta{font-size:13px;color:var(--sf-muted)}
+.sf-journal-card-footer .sf-ui-button{min-height:44px;font-size:13px;padding:10px 16px;margin:0}
+.sf-journal .sf-journal-pagination{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:12px;margin:48px 0 0}
+.sf-journal-pagination .wp-block-query-pagination-numbers{display:flex;flex-wrap:wrap;gap:4px;margin:0}
+.sf-journal-pagination .page-numbers{display:inline-grid;place-items:center;min-width:44px;min-height:44px;border-radius:var(--sf-ui-pill)}
+.sf-journal-empty{padding:48px 0;color:var(--sf-muted)}
+.sf-journal :is(a,button):focus-visible,.sf-article a:focus-visible{outline:2px solid var(--sf-accent,#656e52);outline-offset:4px}
+.sf-article-inner>*{margin-block:0}
+.sf-article-header{max-width:900px;margin-inline:auto;margin-bottom:40px}
+.sf-article-header h1{margin:8px 0 24px}
+.sf-article-meta{display:flex;gap:12px 24px;flex-wrap:wrap}
+.sf-article-meta>*{margin:0}
+.sf-article-inner>.wp-block-post-featured-image{margin:0 0 48px;border-radius:calc(var(--sf-ui-control-radius) + 8px);overflow:hidden}
+.sf-article-inner>.wp-block-post-featured-image img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}
+.sf-article-content{max-width:760px;margin-inline:auto;font-size:18px;line-height:1.85;overflow-wrap:anywhere}
+.sf-article-content>:first-child{margin-top:0}
+.sf-article-content :is(h2,h3,h4){line-height:1.25;letter-spacing:-.025em;font-weight:500;margin-top:1.7em}
+.sf-article-content h2{font-size:clamp(26px,3vw,36px)}
+.sf-article-content a{text-decoration:underline;text-underline-offset:4px}
+.sf-article-content img{max-width:100%;height:auto;border-radius:var(--sf-ui-control-radius)}
+.sf-article-content :is(pre,.wp-block-table){max-width:100%;overflow-x:auto}
+.sf-article-content blockquote{border-left:2px solid var(--sf-ui-border);margin:32px 0;padding:0 24px;font-size:1.15em}
+.sf-article-content .alignwide{max-width:100%}
+.sf-article-tags,.sf-article-navigation{max-width:760px;margin:40px auto 0;padding-top:24px;border-top:1px solid var(--sf-ui-border)}
+.sf-article-tags a{display:inline-flex;align-items:center;min-height:44px}
+.sf-article-navigation{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.sf-article-navigation>div{margin:0;min-width:0}
+.sf-article-navigation a{display:flex;align-items:center;min-height:44px;gap:12px;overflow-wrap:anywhere;font-size:15px}
+.sf-article-navigation .post-navigation-link-next{text-align:right}
+@media(min-width:1100px){.sf-journal-grid>li:first-child{grid-column:span 2}.sf-journal-grid>li:first-child .wp-block-post-featured-image{aspect-ratio:2/1}.sf-journal-grid>li:first-child h2{font-size:36px}}
+@media(min-width:701px) and (max-width:1099px){.sf-journal .sf-journal-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){
+  .sf-journal .sf-journal-grid{grid-template-columns:minmax(0,1fr);gap:20px}
+  .sf-journal-title{margin-bottom:28px}.sf-journal-card-copy{padding:20px}
+  .sf-article-header{margin-bottom:28px}.sf-article-inner>.wp-block-post-featured-image{margin-bottom:32px}
+  .sf-article-content{font-size:17px}.sf-article-navigation{gap:16px}
+  .home .sf-content:has(>.sf-journal){padding-top:68px}
+}
