@@ -1,5 +1,18 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## İnceleme — 19 Ekim 2026: AZ Seramik sayfa başlıkları (0.1.148)
+
+Storefront **0.1.145 → 0.1.148** inceleme dalında hazırlanmıştır. Açık #66/#67 çalışmalarının 0.1.146/0.1.147 sürümleri ayrıdır; bu dal main f6b52f4 tabanlıdır ve o değişiklikleri içermez. Yayın öncesi güncel ana dala uyum ve sürüm sırası yeniden doğrulanmalıdır.
+
+Kullanıcının talebiyle `page.html` ve `page-checkout.html` içindeki otomatik `core/post-title` bloğu kaldırıldı. Hakkımızda/İletişim gibi sayfalar doğrudan kendi içerikleriyle başlar. Kayıtlı sayfa adı, belge/SEO başlığı, içerik içindeki başlıklar, yazı/ürün/katalog başlıkları, header/footer ve native Woo içerik bloğu korunur. İçerikte ayrıca yazılmış başlıklar ve WordPress Site Editor'de veritabanına kaydedilmiş özel şablonlar bu dosya değişikliğiyle silinmez.
+
+Fatura türü ayrı `muhammetdkaya/codela` deposundaki checkout şemasına aittir. Aynı talebin eklenti değişikliği Türkiye şemasında `Corporate` çevirisini kullanır; `company` veri değeri ve vergi/kimlik işleyişi korunur. Mevcut PO ve MO kataloglarında Company ve Corporate zaten Kurumsal'dır; AZ Seramik'in kurulu dosyaları/harici dil paketi doğrulanmadığından canlıdaki Şirket metninin kesin kaynağı belirlenmiş sayılmaz.
+
+**Doğrulama:** Yerelde 24 paket testi başarılı. PHP yürütücüsü bulunmadığından PHP kullanan yerel testler çalıştırılamadı; GitHub PR PHP/JS/tarayıcı doğrulaması bekleniyor. **Yayın:** Bu bir inceleme çalışmasıdır; main birleştirmesi, FTPS ve kararlı yayın yapılmadı. AZ Seramik'te canlı kabul yapılmış sayılmaz.
+
+**Sıradaki:** PR kontrollerini tamamla; kullanıcı kontrolünden sonra yayın hedefinde güncel tema/eklenti ve özel şablon durumunu doğrula. Önceki LCP, gerçek ödeme sağlayıcısı ve fiziksel Safari açık işleri bu küçük değişiklikle kapanmaz.
+
+
 ## Son doğrulanmış durum — 19 Ekim 2026: 0.1.145 canlıda ve kararlı kanalda, LCP açık
 
 **Ürün/header/ödeme/hesap teslimi tamamlandı.** [Tema PR #64](https://github.com/muhammetdkaya/codela-storefront/pull/64) ana dala squash `84a66b26da3b3c6bcf7548e28f82bd94230c7d58` olarak alındı; Storefront **0.1.145**, Codela eklenti **1.2.0** değişmedi. Native Woo ürün galeri/summary, desktop 1100px+ tek WordPress primary menüsü/nested popover, responsive classic checkout ve tema-owned native Woo hesabı birlikte çalışır. Codela checkout-pro modül kart/modal stilleri, bağımsız Codela hesap servisleri, Woo endpointleri ve canlı müşteri/sipariş/site ayarları korunur. Eski katmanların üzerine yama/ikinci motor eklenmedi.

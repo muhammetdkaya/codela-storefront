@@ -6,8 +6,7 @@
     "codela": "1.2.0"
   },
   "changes": [
-    "Masaüstü ürün galerisinde yakınlaştırma sırasında istenmeyen kapanma önlendi.",
-    "İlgili ürün ve sayfa bölümlerindeki resimlere düşük ağ önceliği verildi.",
-    "Doğrulanmış WebP sürümleri ürün kartlarında da yeniden kullanılıyor."
+    "Standart sayfalarda ve ödeme sayfasında temanın otomatik eklediği üst başlık kaldırıldı.",
+    "Sayfa içeriği, içerikteki başlıklar ve WooCommerce ödeme akışı korundu."
   ]
 }

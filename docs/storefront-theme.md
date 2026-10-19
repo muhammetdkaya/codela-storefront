@@ -1,5 +1,18 @@
 # Codela Storefront — güncel teknik durum
 
+## İnceleme — 19 Ekim 2026: AZ Seramik sayfa başlıkları (0.1.148)
+
+Storefront **0.1.145 → 0.1.148** inceleme dalında hazırlanmıştır. Açık #66/#67 çalışmalarının 0.1.146/0.1.147 sürümleri ayrıdır; bu dal main f6b52f4 tabanlıdır ve o değişiklikleri içermez. Yayın öncesi güncel ana dala uyum ve sürüm sırası yeniden doğrulanmalıdır.
+
+Kullanıcının talebiyle `page.html` ve `page-checkout.html` içindeki otomatik `core/post-title` bloğu kaldırıldı. Hakkımızda/İletişim gibi sayfalar doğrudan kendi içerikleriyle başlar. Kayıtlı sayfa adı, belge/SEO başlığı, içerik içindeki başlıklar, yazı/ürün/katalog başlıkları, header/footer ve native Woo içerik bloğu korunur. İçerikte ayrıca yazılmış başlıklar ve WordPress Site Editor'de veritabanına kaydedilmiş özel şablonlar bu dosya değişikliğiyle silinmez.
+
+Fatura türü ayrı `muhammetdkaya/codela` deposundaki checkout şemasına aittir. Aynı talebin eklenti değişikliği Türkiye şemasında `Corporate` çevirisini kullanır; `company` veri değeri ve vergi/kimlik işleyişi korunur. Mevcut PO ve MO kataloglarında Company ve Corporate zaten Kurumsal'dır; AZ Seramik'in kurulu dosyaları/harici dil paketi doğrulanmadığından canlıdaki Şirket metninin kesin kaynağı belirlenmiş sayılmaz.
+
+**Doğrulama:** Yerelde 24 paket testi başarılı. PHP yürütücüsü bulunmadığından PHP kullanan yerel testler çalıştırılamadı; GitHub PR PHP/JS/tarayıcı doğrulaması bekleniyor. **Yayın:** Bu bir inceleme çalışmasıdır; main birleştirmesi, FTPS ve kararlı yayın yapılmadı. AZ Seramik'te canlı kabul yapılmış sayılmaz.
+
+**Sıradaki:** PR kontrollerini tamamla; kullanıcı kontrolünden sonra yayın hedefinde güncel tema/eklenti ve özel şablon durumunu doğrula. Önceki LCP, gerçek ödeme sağlayıcısı ve fiziksel Safari açık işleri bu küçük değişiklikle kapanmaz.
+
+
 ## Çalışma — 19 Ekim 2026: ürün/header/ödeme/hesap yerleşimi, 0.1.145 kabul bekliyor
 
 Kullanıcının yeni onayıyla Storefront 0.1.144 → 0.1.145 hazırlanıyor; Codela runtime 1.2.0 değişmez. Native ürün overview ve media slot'u galerinin relative konumu ile sayfa sticky konumunu ayırır; sticky alt bilgi/tavsiye alanına taşamaz. Aynı Woo galeri/form kullanılır, mobil adapter yalnız original summary'yi taşır ve aynı marker'a geri koyar. Header aynı WP primary kaynağından tüm alt seviyeleri native popover ile sunar; 1100px+ atanmış menü varsa hamburger gizlidir, dar ekranda aynı popup korunur. Desktop/popup menü ve item ID'leri ayrıdır. Native popover toggle/Escape/outside-click tarayıcıya aittir; mevcut dock controller yalnız yüzeyi konumlandırır.
