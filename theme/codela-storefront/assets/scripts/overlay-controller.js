@@ -41,15 +41,24 @@ export function createOverlayController({
             else trigger.setAttribute('aria-haspopup', 'dialog');
         });
     }
+    function syncInlineHeaderControl() {
+        if (!inlineSearch) return;
+        const header = searchSlot.closest('.sf-header');
+        const navigation = header.querySelector('.sf-desktop-navigation');
+        const control = navigation && getComputedStyle(navigation).display !== 'none' ? navigation : header.querySelector('.sf-brand');
+        if (hiddenHeaderControl !== control) {
+            if (hiddenHeaderControl) hiddenHeaderControl.inert = false;
+            hiddenHeaderControl = control;
+            hiddenHeaderControl.inert = true;
+        }
+    }
     function openInlineSearch(event) {
         if (inlineSearch) { $('#sf-query').focus({preventScroll:true}); return; }
         if (dialog.open) finishClose();
         opener = event?.target?.closest?.('[data-panel]') || event?.currentTarget || document.activeElement;
         current = 'search'; inlineSearch = true;
         const header = searchSlot.closest('.sf-header');
-        const navigation = header.querySelector('.sf-desktop-navigation');
-        hiddenHeaderControl = navigation && getComputedStyle(navigation).display !== 'none' ? navigation : header.querySelector('.sf-brand');
-        hiddenHeaderControl.inert = true;
+        syncInlineHeaderControl();
         header.classList.add('is-search-expanded');
         searchSlot.hidden = false;
         searchSlot.appendChild($('#sf-search'));
@@ -229,7 +238,7 @@ export function createOverlayController({
         if (name === 'cart' && desktop.matches) animateDrawer();
         else animatePanelContent(name === 'search' ? $('.sf-search-content') : $(`#sf-${name}`), previous === 'cart' && name === 'search' ? -1 : 1);
     }
-    // Animate content, never the full-screen dialog: transforming it changes the
+    // Mobile transitions animate content only: transforming the dialog changes the
     // containing block of the fixed dock in some browsers. Repeated actions cancel cleanly.
     function animatePanelContent(element, direction = 1) {
         panelMotion?.cancel();
@@ -336,7 +345,7 @@ export function createOverlayController({
             backdropDown = false;
         });
         adminOffset();
-        window.addEventListener('resize', () => { adminOffset(); positionMenuTrigger(); });
+        window.addEventListener('resize', () => { adminOffset(); positionMenuTrigger(); syncInlineHeaderControl(); });
         let offsetFrame = 0;
         window.addEventListener('scroll', () => {
             if (!offsetFrame) offsetFrame = requestAnimationFrame(() => {

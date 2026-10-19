@@ -58,11 +58,13 @@ jobs:
           npx playwright install --with-deps chromium webkit
           node tests/desktop-header-browser.cjs
           TEST_WEBKIT=1 node tests/desktop-header-browser.cjs
-          node tests/desktop-tools-browser.cjs
-          TEST_WEBKIT=1 node tests/desktop-tools-browser.cjs
-          node tests/journal-browser.cjs
-          TEST_WEBKIT=1 node tests/journal-browser.cjs
-          node tests/homepage-browser.cjs
+          responsive_failed=0
+          node tests/desktop-tools-browser.cjs || responsive_failed=1
+          TEST_WEBKIT=1 node tests/desktop-tools-browser.cjs || responsive_failed=1
+          node tests/journal-browser.cjs || responsive_failed=1
+          TEST_WEBKIT=1 node tests/journal-browser.cjs || responsive_failed=1
+          node tests/homepage-browser.cjs || responsive_failed=1
+          test "$responsive_failed" -eq 0
           node tests/product-menu-scroll-browser.cjs
           TEST_WEBKIT=1 node tests/product-menu-scroll-browser.cjs
           node tests/product-sheet-browser.cjs

@@ -9,9 +9,11 @@ const config={api:'https://store.test/api/',search:'https://store.test/search-ap
 const cart={items_count:1,items:[{key:'one',name:'Deneme ürünü',permalink:'/product/',images:[],quantity:1,totals:{line_subtotal:'1000',line_subtotal_tax:'0',currency_code:'TRY',currency_minor_unit:2}}],totals:{total_items:'1000',total_items_tax:'0',currency_code:'TRY',currency_minor_unit:2}};
 (async()=>{
  const browser=await(process.env.TEST_WEBKIT?webkit:chromium).launch({headless:true,...(!process.env.TEST_WEBKIT&&process.env.CHROMIUM_BIN?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-dev-shm-usage']}:{})});
+ let lastPage;
  try{for(const assigned of ['0','1']){
  const header=execFileSync(process.env.PHP_BIN||'php',['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_MENU:assigned}});
  const page=await browser.newPage({viewport:{width:1280,height:900}}),errors=[];
+ lastPage=page;
  page.on('pageerror',e=>errors.push(e.message));
  let failSearch=false;
  await page.route('**/*',async route=>{
@@ -48,6 +50,10 @@ const cart={items_count:1,items:[{key:'one',name:'Deneme ürünü',permalink:'/p
   assert(await dialog.evaluate(el=>el.open),'Drawer waits for exit animation');
   await dialog.waitFor({state:'hidden'});assert.equal(await page.evaluate(()=>scrollY),500,'Cart restores scroll');
  }
+ await page.setViewportSize({width:1024,height:900});await search.click();
+ await page.setViewportSize({width:1280,height:900});await page.waitForTimeout(50);
+ assert.equal(await page.locator('.sf-brand').evaluate(el=>el.inert),assigned==='0','Inline search re-evaluates header slots across desktop menu breakpoint');
+ await page.keyboard.press('Escape');
  await search.click();await page.locator('#sf-query').fill('error');failSearch=true;
  await page.locator('.sf-retry-search').waitFor();failSearch=false;await page.locator('.sf-retry-search').click();await page.locator('.sf-result').waitFor();
  await page.mouse.click(20,180);assert.equal(await page.locator('.sf-header-search').isVisible(),false,'Outside closes inline search');
@@ -55,7 +61,9 @@ const cart={items_count:1,items:[{key:'one',name:'Deneme ürünü',permalink:'/p
  await cartTrigger.click();await page.waitForTimeout(320);await page.keyboard.press('Escape');
  await page.evaluate(()=>window.sfActions.cart());await page.waitForTimeout(350);assert(await dialog.evaluate(el=>el.open),'Reopen cancels drawer exit');
  await page.evaluate(()=>window.sfActions.search());assert.equal(await dialog.evaluate(el=>el.open),false);assert.equal(await page.evaluate(()=>scrollY),500,'Cart to inline search preserves scroll');
- await page.setViewportSize({width:390,height:844});assert.equal(await page.locator('.sf-header-search').isVisible(),false,'Resize restores form');
+ await page.setViewportSize({width:390,height:844});
+ await page.waitForFunction(()=>document.querySelector('#sf-panel #sf-query')!==null,{},{timeout:2000});
+ assert.equal(await page.locator('.sf-header-search').isVisible(),false,'Resize restores form');
  await page.locator('.sf-dock-item[data-panel=search]').click();assert(await dialog.evaluate(el=>el.open),'Mobile retains full screen search');
  assert.equal(Math.round((await dialog.boundingBox()).width),390);await page.keyboard.press('Escape');await dialog.waitFor({state:'hidden'});
  await page.setViewportSize({width:1280,height:900});await page.emulateMedia({reducedMotion:'reduce'});
@@ -64,5 +72,5 @@ const cart={items_count:1,items:[{key:'one',name:'Deneme ürünü',permalink:'/p
  if(assigned==='1'){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:'qa/storefront-ui-kit-desktop-search.png'});await page.keyboard.press('Escape');await cartTrigger.click();await page.waitForTimeout(350);await page.screenshot({path:'qa/storefront-ui-kit-desktop-cart.png'});}
  assert.deepEqual(errors,[]);await page.close();
  }console.log('Desktop search/drawer: five widths, empty/assigned menu, retry, Escape/outside, resize, switching, animation/reopen, scroll and reduced motion passed.');
- }finally{await browser.close();}
+ }catch(error){if(lastPage&&!lastPage.isClosed()){fs.mkdirSync('qa',{recursive:true});await lastPage.screenshot({path:'qa/storefront-ui-kit-desktop-failure.png'});console.log(await lastPage.evaluate(()=>({width:innerWidth,queryParent:document.querySelector('#sf-search')?.parentElement?.className,header:document.querySelector('.sf-header')?.className,dialogOpen:document.querySelector('#sf-panel')?.open})));}throw error;}finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1});
