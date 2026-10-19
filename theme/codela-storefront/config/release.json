@@ -6,8 +6,8 @@
     "codela": "1.2.0"
   },
   "changes": [
-    "Masaüstü ürün sayfasında galeri ve satın alma alanı yan yana düzenlendi.",
-    "Geniş ekranda WordPress ana menü bağlantıları doğrudan gösteriliyor.",
-    "Masaüstü filtreleri ürün listesini görünür bırakan aynı native paneli kullanıyor."
+    "Masaüstü ürün galerisinde yakınlaştırma sırasında istenmeyen kapanma önlendi.",
+    "İlgili ürün ve sayfa bölümlerindeki resimlere düşük ağ önceliği verildi.",
+    "Doğrulanmış WebP sürümleri ürün kartlarında da yeniden kullanılıyor."
   ]
 }
