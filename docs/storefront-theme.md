@@ -1,5 +1,11 @@
 # Codela Storefront — güncel teknik durum
 
+## Güncelleme denemesi hazırlığı — 19 Ekim2026 /0.1.149
+
+Kullanıcı148 ZIP'ini yüklediğini bildirdi ve tema içinden sürüm güncellemesini denemek için yeni bir test sürümü istedi. **0.1.148 →0.1.149**, Codela1.2.0 değişmez. Yalnız style.css sürümü ve test sürüm notları değişir; tasarım/işlev kodu148 ile aynıdır.24 paket testi geçti. Branch hazırlanır; Actions tetiklemek için PR açılmaz, commit[skip ci] içerir.
+
+**Yayın henüz yapılmadı:** Güncelleme kanalının149'u sunabilmesi için public GitHub release v0.1.149 ve exact ZIP asset'i yüklenip, ancak bundan sonra stable/manifest.json doğruSHA256/URL ile ilerletilmeli. Mevcut GitHub connector'ünde release oluşturma/binary asset upload aracı yok; yerelde authenticated gh CLI bulunmadı. Tarayıcıyla connector fallback'i için kullanıcı onayı gerekir. Staged kaynak/ZIP/manifest hazırlandığında somut yayın adımı için onay sorulacak. Stable145'i asset bulunmadan149'a çevirmeyin; başarısız indirme/sahte güncelleme üretmeyin. GitHub Actions gate'leri kaldırılmadı. Kullanıcı henüz149'u güncellemiş veya public feed çalışmış sayılmaz.
+
 ## Manuel kurulum paketi — 19 Ekim 2026 / Storefront0.1.148
 
 Kullanıcı Actions limiti nedeniyle yeni Actions çalıştırmadan güncel tema ZIP'i istedi. **0.1.145 →0.1.148**, Codela eklenti **1.2.0 değişmez**. Bu birleşik kaynak, #66 /0.1.146 kritik medya teslimini ve #67 /0.1.147 onaylanan hesap + masaüstü ürün tasarımını birlikte içerir. Artık daha düşük146/147 dalını bunun üstüne yayımlamayın; gelecekte main bütünleştirmesi bu148 kaynağını korumalıdır. Bu dal manuel paket içindir; main/FTPS/stable manifest veya public release otomatik değiştirilmez. Commit'te [skip ci] vardır; yeni PR/matris tetiklenmedi. Actions kontrolleri kapatılmadı/gevşetilmedi.
