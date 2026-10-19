@@ -8,7 +8,8 @@ update_option('woocommerce_cod_settings',['enabled'=>'yes','title'=>'Cash on del
 update_option('woocommerce_coming_soon','no');
 update_option('woocommerce_store_pages_only','no');
 update_option('woocommerce_enable_myaccount_registration','yes');
-update_option('codela_active_modules',['store-appearance','checkout-pro']);
+update_option('codela_active_modules',['store-appearance','checkout','checkout-pro']);
+sf_layout_check(codela_is_module_active('checkout-pro'),'Parent and child checkout switches must both be active');
 \Codela\Includes\StoreAppearance::save_settings(['account_mode'=>'codela','product_gallery_mode'=>'theme']);
 // The theme chooses the EXISTING theme mode without rewriting merchant options.
 sf_layout_check('theme' === \Codela\Includes\StoreAppearance::get_surface_mode('account'),'Storefront must own account presentation');
