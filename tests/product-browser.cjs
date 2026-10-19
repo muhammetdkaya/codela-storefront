@@ -10,17 +10,17 @@ const css=['assets/styles/tokens.css','assets/storefront.css','assets/styles/ove
  .map(p=>fs.readFileSync('theme/codela-storefront/'+p,'utf8')).join('\n');
 const thumb='<li><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22200%22 height=%22240%22/%3E" alt="Ürün görünümü"></li>';
 const related='<li class="product"><a href="/product"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22400%22/%3E"><h2 class="woocommerce-loop-product__title">Ürün</h2></a><span class="price">₺500</span></li>';
-const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>.woocommerce div.product div.images .flex-control-thumbs{padding:0}.woocommerce div.product div.images .flex-control-thumbs li img{opacity:.5}${css}</style></head>
+const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>.woocommerce div.product div.images{position:relative}.woocommerce div.product div.images .flex-control-thumbs{padding:0}.woocommerce div.product div.images .flex-control-thumbs li img{opacity:.5}${css}</style></head>
 <body class="single-product woocommerce woocommerce-page">${header}<main class="sf-content"><div data-block-name="woocommerce/legacy-template" class="content-area alignwide"><main class="site-main">
-<div class="product type-product"><div class="woocommerce-product-gallery images sf-ui-gallery sf-ui-gallery--hero"><a href="#" class="woocommerce-product-gallery__trigger">+</a><div class="woocommerce-product-gallery__wrapper">
+<div class="product type-product"><div class="sf-product-overview"><div class="sf-product-media"><div class="woocommerce-product-gallery images sf-ui-gallery sf-ui-gallery--hero"><a href="#" class="woocommerce-product-gallery__trigger">+</a><div class="woocommerce-product-gallery__wrapper">
 <div class="woocommerce-product-gallery__image"><a href="/full-image" aria-label="Görseli büyüt" aria-haspopup="dialog"><img src="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%221000%22/%3E" alt="Ürün"></a></div></div>
 <ol class="flex-control-thumbs">${thumb.replace('<img ' ,'<img class="flex-active" ')+thumb.repeat(6)}</ol></div>
-<div class="summary entry-summary"><h1 class="product_title entry-title">Minimal Ürün Başlığı</h1><p class="price">₺1.250</p>
+</div><div class="summary entry-summary"><h1 class="product_title entry-title">Minimal Ürün Başlığı</h1><p class="price">₺1.250</p>
 <div class="woocommerce-product-details__short-description"><p>Ürün açıklaması. Kumaş ve bakım bilgileri.</p></div>
 <form class="cart" method="post"><div class="sf-product-purchase"><div class="quantity"><input class="qty" type="number" value="1" min="1"></div>
 <button type="submit" name="add-to-cart" value="123" class="single_add_to_cart_button button alt">Sepete Ekle</button></div></form>
 <div class="product_meta"><span class="sku_wrapper">SKU: 123</span></div></div>
-<div class="woocommerce-tabs"><ul class="tabs"><li class="active"><a href="#details">Açıklama</a></li><li><a href="#info">Bilgiler</a></li></ul><div class="panel" id="details"><h2>Ürün Bilgisi</h2><p>Detaylı açıklama</p></div></div>
+</div><div class="woocommerce-tabs"><ul class="tabs"><li class="active"><a href="#details">Açıklama</a></li><li><a href="#info">Bilgiler</a></li></ul><div class="panel" id="details"><h2>Ürün Bilgisi</h2><p>Detaylı açıklama</p></div></div>
 <section class="related products"><h2>Benzer Ürünler</h2><ul class="products columns-4">${related.repeat(4)}</ul></section>
 </div></main></div></main></body></html>`;
 (async()=>{

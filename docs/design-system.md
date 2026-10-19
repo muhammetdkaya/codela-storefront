@@ -1,5 +1,10 @@
 # Codela Storefront UI Kit — source of truth
 
+## Theme appearance and desktop layout — 0.1.145 (acceptance pending)
+
+Use the plugin's existing Theme appearance mode for account. Native Woo navigation/forms/endpoints stay authoritative; independent Codela modules retain their hooks. The optional plugin standalone account layout/assets/fullscreen are not loaded. Do not duplicate its dashboard/controller or mutate saved preferences. Classic checkout owns only its native page composition; Codela checkout module cards/modals keep their current presentation. Product sticky belongs to the media slot inside the overview; the gallery retains native relative positioning. Mobile reuses/restores its original summary. Desktop primary menu exposes every native depth through browser popovers and excludes the hamburger while visible; narrow screens retain the existing dialog. Shared UI Kit owns buttons, native popovers own dismissal, and the existing dock controller only anchors them.
+
+
 ## Desktop composition — 0.1.143
 
 At901px+ the original Woo gallery and summary share one bounded two-column grid; desktop photos use contain, mobile sheet ownership stays unchanged. At1100px+ the native primary menu top level is projected into a bounded, natively scrollable header slot using shared pressable links; the existing Menu exposes all nested destinations. Empty locations stay empty. The same filter dialog/form becomes a right panel at901px+, mobile remains full screen; shared controller owns focus, Escape and locking. No second menu configuration, catalog query, purchase form or cart engine.

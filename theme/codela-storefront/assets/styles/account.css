@@ -323,3 +323,22 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-goog
   border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);
   color:var(--sf-ui-control-ink);background:#f7f7f8;font-size:13px;
 }
+
+/* Signed-in native forms use the same theme tokens as guest/checkout inputs.
+   Module address selectors/modals retain their own stylesheet and behavior. */
+body.woocommerce-account.logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content :is(.woocommerce-EditAccountForm,.woocommerce-address-fields__field-wrapper) .form-row :is(input.input-text,select,textarea){
+ width:100%;min-height:var(--sf-ui-action-height);padding:12px 14px;
+ border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);
+ background:var(--sf-ui-surface);color:var(--sf-ui-ink);font:inherit;
+}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-EditAccountForm fieldset{margin:24px 0;padding:20px;border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius)}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-EditAccountForm legend{padding-inline:8px;font-weight:500}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-navigation a{min-height:44px}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content a.button{text-decoration:none}
+@media(max-width:700px){
+ body.woocommerce-account.logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content{padding:20px 16px;overflow-wrap:anywhere}
+ body.woocommerce-account.logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content table{font-size:12px}
+}
+
+body.woocommerce-account.logged-in:not(.codela-my-account-layout) .sf-content > .wp-block-post-title{font-size:clamp(26px,3vw,36px);font-weight:500;line-height:1.25;letter-spacing:-.035em;margin-bottom:28px}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout) .sf-content > .wp-block-post-content{max-width:1080px;width:100%;margin-inline:auto}

@@ -1,8 +1,7 @@
 <?php
 /**
- * Storefront owns presentation of the GUEST WooCommerce login screen only.
- * Authenticated account/dashboard/navigation are owned by WooCommerce and by
- * the Codela MyAccountLayout integration when enabled.
+ * Storefront owns account presentation through the existing Theme appearance mode.
+ * WooCommerce owns native forms/endpoints; Codela modules retain their hooks.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
@@ -28,8 +27,7 @@ function codela_sf_account_intro(): void {
 }
 
 add_action( 'woocommerce_before_customer_login_form', 'codela_sf_account_intro', 5 );
-// Deliberately NO woocommerce_before_account_navigation hook:
-// Codela owns the signed-in profile, orders, tracking and account menu.
+// Keep WooCommerce endpoint navigation and all registered plugin destinations.
 
 /**
  * Render genuine WooCommerce login and optional registration forms inside the

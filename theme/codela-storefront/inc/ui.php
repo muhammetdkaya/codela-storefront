@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 function codela_sf_ui_attributes( array $attributes ): string {
     $output = '';
     foreach ( $attributes as $name => $value ) {
-        if ( ! is_string( $name ) || ! preg_match( '/^(?:aria-[a-z-]+|data-[a-z0-9_-]+|title|id|name|value|role|tabindex|hidden|disabled)$/D', $name ) || null === $value || false === $value ) {
+        if ( ! is_string( $name ) || ! preg_match( '/^(?:aria-[a-z-]+|data-[a-z0-9_-]+|title|id|name|value|role|tabindex|hidden|disabled|popovertarget)$/D', $name ) || null === $value || false === $value ) {
             continue;
         }
         if ( in_array( $name, [ 'hidden', 'disabled' ], true ) ) {

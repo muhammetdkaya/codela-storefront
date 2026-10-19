@@ -1,5 +1,18 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Çalışma — 19 Ekim 2026: ürün/header/ödeme/hesap yerleşimi, 0.1.145 kabul bekliyor
+
+Kullanıcının yeni onayıyla Storefront 0.1.144 → 0.1.145 hazırlanıyor; Codela runtime 1.2.0 değişmez. Native ürün overview ve media slot'u galerinin relative konumu ile sayfa sticky konumunu ayırır; sticky alt bilgi/tavsiye alanına taşamaz. Aynı Woo galeri/form kullanılır, mobil adapter yalnız original summary'yi taşır ve aynı marker'a geri koyar. Header aynı WP primary kaynağından tüm alt seviyeleri native popover ile sunar; 1100px+ atanmış menü varsa hamburger gizlidir, dar ekranda aynı popup korunur. Desktop/popup menü ve item ID'leri ayrıdır. Native popover toggle/Escape/outside-click tarayıcıya aittir; mevcut dock controller yalnız yüzeyi konumlandırır.
+
+Hesabım için yeni ayar/sözleşme yok: mevcut `codela_store_appearance_surface_mode` filtresi `account` için `theme` döndürür. Eklentinin kaydedilmiş seçimi değiştirilmez; başka temaya geçince bağımsız görünümü kalır. Opsiyonel Codela MyAccountLayout dashboard'u/nav/özel orders template/CSS/fullscreen/AJAX script'i bu temada çalışmaz; Woo native dashboard/endpoint/formları ve bağımsız Codela modüllerinin endpoint/hook'ları kullanılır. Tema native hesap görünümünü ortak bileşenlerle sunar. Eklentinin özel dashboard tasarımı taşınmadı veya kopyalanmadı.
+
+Ödeme masaüstünde müşteri alanları solda, native sipariş/ödeme sağda; mobilde tek akıştır. Codela checkout-pro modül kart/modal tasarımları kapsam dışıdır; input/label stilleri native Woo field-wrapper form-row alanlarına daraltılır. Yeni gateway/checkout/account motoru yok. Müşteri/sipariş/demo/canlı ayar verisi değiştirilmez.
+
+Yerel ürün 9 viewport, header 8 viewport/native alt menü, checkout block 5 viewport, account guest/native ve ürün modül browser kabulü ile PHP/paket kontrolleri geçti. Mobil sheet fixture yerel font ortamında önceki kaynakta da görülen 48px/44px CTA uyuşmazlığı nedeniyle henüz tam geçmedi; eşikler gevşetilmeyecek. Gerçek tam Codela/WP/Woo Chromium+WebKit kabulü, dağıtım, kararlı yayın ve performans karşılaştırması bekliyor. Fiziksel Safari/gateway/field INP ve önceki LCP bütçeleri ayrı açık. Tamamlandı/canlı denmez.
+
+Sıradaki iş: kaynak pin'li gerçek WP/Woo matrisi ve yeni checkout/account/nested-menu kabulünü tamamla; gerekli düzeltmelerden sonra main/FTPS, eş içerikli hız ölçümü ve doğrulanmış kaynak için kararlı kanal kapanışını kaydet.
+
+
 ## Son doğrulanmış durum — 19 Ekim 2026: Storefront 0.1.144 kararlı yayın, hız bütçeleri açık
 
 **İşlevsel düzeltmeler bitti ve yayımlandı, performans hedefleri henüz kapanmadı.** [Tema PR #62](https://github.com/muhammetdkaya/codela-storefront/pull/62) ana dala squash `8ed81163fad89ef1041ddbe21e7d79e7b4bfe49a` ile alındı. Masaüstü native Woo inline zoom'unun sentetik document scroll yüzünden kapanması önlendi; mobil normal scroll ve masaüstü gerçek wheel/galeri scroll kapanışı korundu. Aynı native Woo ürün kartlarında lazy/low ve **varsa** doğrulanmış PNG→WebP manifesti kullanılır; müşteri medya verisi otomatik dönüştürülmedi ve native Woo/no-JS fallback korundu. PHP, paket ve Chromium/WebKit PR CI [39215371684](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39215371684) başarılı. Canlı validate+FTPS [39215716407](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39215716407) başarılı: 2026-10-19 **07:30:49 UTC** `Storefront deployed; checks passed.`
