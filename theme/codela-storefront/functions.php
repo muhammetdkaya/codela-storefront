@@ -1,7 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 function codela_sf_ready(): bool {
-    return defined( 'CODELA_THEME_API_VERSION' ) && version_compare( CODELA_THEME_API_VERSION, '1.0.0', '>=' ) && defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '9.0', '>=' ) && function_exists( 'wp_interactivity_state' );
+    return defined( 'CODELA_VERSION' ) && version_compare( CODELA_VERSION, '1.2.0', '>=' ) && defined( 'CODELA_THEME_API_VERSION' ) && version_compare( CODELA_THEME_API_VERSION, '1.0.0', '>=' ) && defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '9.0', '>=' ) && function_exists( 'wp_interactivity_state' );
 }
 add_action( 'after_setup_theme', function() {
     load_theme_textdomain( 'codela-storefront', get_template_directory() . '/languages' );
@@ -17,7 +17,7 @@ add_action( 'after_setup_theme', function() {
 } );
 add_action( 'admin_notices', function() {
     if ( current_user_can( 'manage_options' ) && ! defined( 'CODELA_PAGE_SECTIONS_VERSION' ) ) {
-        echo '<div class="notice notice-warning"><p>' . esc_html__( 'Update Codela to 1.1.2+ to enable page sections. Existing page content is preserved.', 'codela-storefront' ) . '</p></div>';
+        echo '<div class="notice notice-warning"><p>' . esc_html__( 'Update Codela to 1.2.0+ to enable theme settings and page sections.', 'codela-storefront' ) . '</p></div>';
     }
     if ( codela_sf_ready() ) { return; }
     echo '<div class="notice notice-error"><p>' . esc_html__( 'Codela Storefront requires the current Codela Commerce Toolkit plugin with theme support and WooCommerce 9.0+. Activate or update these plugins, or switch to another theme.', 'codela-storefront' ) . '</p></div>';
@@ -45,7 +45,6 @@ require_once get_template_directory() . '/inc/document-continuity.php';
 require_once get_template_directory() . '/inc/media-optimization.php';
 require_once get_template_directory() . '/inc/product.php';
 require_once get_template_directory() . '/inc/catalog.php';
-require_once get_template_directory() . '/inc/homepage.php';
 require_once get_template_directory() . '/inc/sections.php';
 require_once get_template_directory() . '/inc/account.php';
 require_once get_template_directory() . '/inc/google-auth.php';
@@ -149,10 +148,8 @@ add_action( 'wp_enqueue_scripts', function() {
         wp_enqueue_script_module( 'codela-storefront/navigation' );
     }
     if ( function_exists( 'codela_storefront_design_enqueue' ) ) { codela_storefront_design_enqueue( 'codela-storefront-theme' ); }
-    if ( class_exists( '\Codela\Includes\StoreAppearance' ) ) {
-        $accent = \Codela\Includes\StoreAppearance::get_accent_color();
-        wp_add_inline_style( 'codela-storefront-theme', ':root{--sf-accent:' . sanitize_hex_color( $accent ) . ';}' );
-    }
+    $accent = sanitize_hex_color( codela_theme_settings()['accent_color'] ?? '#720eec' ) ?: '#720eec';
+    wp_add_inline_style( 'codela-storefront-theme', ':root{--sf-accent:' . $accent . ';}' );
 } );
 
 
@@ -171,3 +168,11 @@ add_action( 'wp_print_styles', function() {
     wp_dequeue_style( 'codela-checkout-pro' );
 }, 100 );
 
+
+// Expose the core menu manager even though this block theme uses a fixed shell.
+add_action( 'admin_menu', static function() {
+    add_submenu_page( 'themes.php', __( 'Menus', 'default' ), __( 'Menus', 'default' ), 'edit_theme_options', 'nav-menus.php' );
+} );
+add_filter( 'codela_store_appearance_accent_color', static function( $accent ) {
+    return sanitize_hex_color( codela_theme_settings()['accent_color'] ?? '#720eec' ) ?: '#720eec';
+} );

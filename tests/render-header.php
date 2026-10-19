@@ -50,3 +50,5 @@ require __DIR__.'/../theme/codela-storefront/inc/account.php';
 if (getenv('FIXTURE_CATALOG')) { require __DIR__.'/catalog-filter-fixture.php'; }
 require __DIR__.'/../theme/codela-storefront/inc/render.php';
 echo codela_sf_header();
+
+function has_nav_menu($location){return false;}

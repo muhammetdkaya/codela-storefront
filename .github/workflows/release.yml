@@ -1,0 +1,74 @@
+name: Publish stable Storefront release
+on:
+  push:
+    branches: [main]
+    paths: ['.releases/storefront.json']
+permissions:
+  contents: write
+  actions: read
+concurrency:
+  group: codela-storefront-stable-release
+  cancel-in-progress: false
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read explicit stable release request
+        id: request
+        run: |
+          python3 - <<'PY'
+          import json, os, re
+          data=json.load(open('.releases/storefront.json'))
+          assert data.get('confirm')=='PUBLISH_STABLE'
+          assert re.fullmatch(r'[0-9a-f]{40}',data.get('source_sha',''))
+          assert re.fullmatch(r'\d+\.\d+\.\d+',data.get('version',''))
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:
+              out.write('source='+data['source_sha']+'\nversion='+data['version']+'\n')
+          PY
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.request.outputs.source }}
+      - name: Require tested production revision
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ steps.request.outputs.source }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/deploy.yml/runs?head_sha=$SOURCE_SHA&status=success" --jq '.workflow_runs | map(select(.event == "push")) | length > 0' | grep -qx true
+      - name: Validate and package exact revision
+        env:
+          CODELA_SOURCE_SHA: ${{ steps.request.outputs.source }}
+          RELEASE_VERSION: ${{ steps.request.outputs.version }}
+        run: |
+          find theme -name '*.php' -print0 | xargs -0 -n1 php -l
+          python3 tests/package.py
+          python3 scripts/build-package.py
+          python3 -c 'import json,os;assert json.load(open("dist/manifest.json"))["version"]==os.environ["RELEASE_VERSION"]'
+      - name: Publish immutable release before advancing stable feed
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ steps.request.outputs.source }}
+          VERSION: ${{ steps.request.outputs.version }}
+        run: |
+          if gh release view "v$VERSION" >/dev/null 2>&1; then
+            TAG_SHA=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/v$VERSION" --jq .object.sha)
+            test "$TAG_SHA" = "$SOURCE_SHA"
+            gh release download "v$VERSION" --pattern "codela-storefront-$VERSION.zip" --dir /tmp/stable-verify
+            cmp "dist/codela-storefront-$VERSION.zip" "/tmp/stable-verify/codela-storefront-$VERSION.zip"
+          else
+            gh release create "v$VERSION" "dist/codela-storefront-$VERSION.zip" --target "$SOURCE_SHA" --title "Codela Storefront $VERSION" --notes-file dist/manifest.json
+          fi
+          mkdir /tmp/stable-feed
+          cp dist/manifest.json /tmp/stable-feed/manifest.json
+          cd /tmp/stable-feed
+          git init
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git remote add origin "https://x-access-token:$GH_TOKEN@github.com/$GITHUB_REPOSITORY.git"
+          if git fetch origin stable --depth 1; then git reset --soft FETCH_HEAD; fi
+          git checkout -B stable
+          git add manifest.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Publish Storefront $VERSION stable manifest"
+          git push origin HEAD:stable

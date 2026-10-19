@@ -1,5 +1,20 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 19 Ekim 2026 — Tema yönetimi, native güncelleme ve demo (doğrulama sürüyor)
+
+Kullanıcı onayıyla tema paneli **Görünüm / Demo kurulumu / Güncelleme** olarak sadeleştirildi. Site adı, logo, simge, menü konumu ve ana sayfa ataması WordPress kaynaklarına aittir. Codela Sayfalar ara ekranı ve eski option→sayfa geçiş yolları kaldırılır; native sayfa alt paneli korunur. Tema şablon editörünü geliştirmek kapsam dışıdır. Eski ayar/sürüm uyumluluk katmanı istenmedi. Bu kararlar aşağıdaki tarihli ayrı Header/Footer alt menüleri kuralının yerini alır.
+
+**Sürümler:** Codela 1.1.8 → **1.2.0**, theme settings API 1.1.0 → **1.2.0**, Storefront 0.1.141 → **0.1.142**. Ortak vurgu/köşe tek tema ayarından gelir; yazı tipi temadan miras alınır; başka temaların bağımsız eklenti görünümü korunur. Yeni yönetim/demo varlıkları mağaza ziyaretçilerine yüklenmez.
+
+**Güncelleme:** Native Update URI hook + WordPress Theme_Upgrader; GitHub `stable/manifest.json` ve immutable GitHub release ZIP, SHA256, gereksinim kontrolü, 12 saat başarı / 15 dakika hata önbelleği. Codela paneli native mekanizmayı kullanır. Eski 0.1.1 paket artık offline kurulum fallback'i değildir; snapshot değiştirilmedi. Test sitesi FTPS ile kararlı müşteri yayını ayrılır; `.releases/storefront.json` yalnız test edilmiş kaynak için açık yayın talebidir.
+
+**Demo:** Ayrı, toplam ~890KB olan 10 özgün optimize WebP; 10 ürün (bir değişken ürün / iki varyasyon), 8 kategori, 3 içerik sayfası, eksik native Woo sayfaları ve WordPress menüsü. Tek `_codela_page_layout`; marker ve journal ile tekrar/ara verme, DB lease ile eşzamanlılık koruması. Ana sayfa/menü ataması açık tercihtir. Mevcut içerik, sipariş/müşteri/ödeme/para birimi/vergi ayarları üzerine yazılmaz. Gerçek iletişim/form motoru veya demo silme işlevi yoktur. Görseller kaynak demo paketinden gelir; yeni görsel motoru yok.
+
+**Yerel doğrulama:** PHP schema/nonce/capability/cache/hook testleri, 24 tema paket testi, native sayfa şema testleri ve Chromium tek form/mobile testleri başarılı. İzole gerçek WordPress 7.2-alpha-64492 + Woo11.2.1 / SQLite üzerinde demo failure→retry, 38 adım, native responsive medya, varyasyonlar, duplicate koruması, merchant içeriği/ayarları korunumu, bozuk ZIP reddi ve gerçek Theme_Upgrader 0.1.141→0.1.142 başarılı. Bu bridge-only yerel kurulum tam eklenti kabulü yerine geçmez. Gerçek tam eklenti MySQL WP6.5.5/Woo9.0.2 + güncel WP/Woo CI, admin/frontend browser, PR/FTPS ve kararlı release doğrulaması bekliyor. Fiziksel Safari/hız açık işleri bu yönetim çalışmasıyla kapanmaz.
+
+**Sıradaki somut iş:** PR'ları ve kaynak pinli tam eklenti kabulünü tamamla; önce eklenti, sonra tema main dağıtımını doğrula; doğrulanmış kaynak için ilk stable release'i yayınla. Canlı demo otomatik yüklenmeyecek. Kaynak, yayın ve kalanları takip eden belge kaydıyla kapat.
+
+
 ## Son doğrulanmış durum — 18 Ekim 2026: Hakkımızda / İletişim modülleri canlı
 
 **Sürümler:** Codela **1.1.7 → 1.1.8**, panel varlıkları **1.3.0 → 1.4.0**, bağımsız Storefront **0.1.140 → 0.1.141**. Aşağıdaki bekleyen uygulama kaydı bu sonuçla kapanmıştır.
@@ -658,7 +673,7 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - Modern WordPress blok tema, theme.json ve Interactivity API kullanılır. Sepet işlemlerinde WooCommerce Store API esas alınır; para, stok ve miktar hesabının kaynağı sunucudur.
 - **Tema Codela eklentisine bağımlıdır; eklenti temadan bağımsız çalışır.**
 - Tema ayarları mevcut Codela ayar sayfasında yönetilir. Ortak görünüm ayarları yeniden oluşturulmaz.
-- Tema ayarlarının altında Header (Üst alan), Footer (Alt alan) ve geliştirilen diğer bölümler için ayrı alt menüler bulunmalı; tüm ayarları tek uzun forma yığma. Bir tema bölümü geliştirilirken gerekli ayarları aynı çalışmada ilgili alt menüye ekle; temanın tamamlanmasını bekleme.
+- Tema paneli Görünüm / Demo kurulumu / Güncelleme sekmeleridir. WordPress site kimliği, menü ve sayfa atamaları tekrarlanmaz; görünüm aynı formda kısa gruplardır. Sayfa içerikleri native sayfa alt panelindedir.
 - Küçük değişikliklerde de mevcut codela.dev otomatik dağıtımı açık kalır. Bağlantılı değişiklikleri topluca yap, yalnız ilgili dosyaları incele ve dağıtım sonuçlarını gereksiz tekrarlarla sorgulama. WordPress.org yayını ayrı yetki gerektirir.
 - Tasarım sade ve ürün odaklıdır. Kullanıcının aradığı özgünlük, karmaşık veya bilim kurgu dekorları eklemek anlamına gelmez. Sayfaları kullanım amacı ve örneklerle değerlendirerek tek tek geliştir.
 - Header: mobilde logo solda, Menü en sağda sabit konumdadır. Alt menü varsayılan açık, Header ayarından kapatılabilir. Üründe satın alma alanı dock yerini aldığında sepet menünün hemen solunda görünür; arama ve hesap menüden erişilir. Satın alma formu olmayan üründe açık dock korunur. Alt menü kapalıysa mevcut araçlar üstte kalır; masaüstü menü/orta marka/sağ araçlar düzeni korunur.
