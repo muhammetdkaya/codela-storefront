@@ -325,7 +325,16 @@ export function createOverlayController({
         searchSemantics();
         desktop.addEventListener('change', () => {
             if (inlineSearch) closeInlineSearch();
-            else if (dialog.open && (current === 'search' || current === 'cart')) finishClose();
+            else if (dialog.open && current === 'search') finishClose();
+            else if (dialog.open && current === 'cart') {
+                // Keep the same cart, focus and scroll area while CSS changes
+                // between drawer and fullscreen; the one dock is already inside.
+                if (closing) finishClose();
+                else {
+                    surfaceMotion?.cancel(); surfaceMotion = null;
+                    panelMotion?.cancel(); panelMotion = null;
+                }
+            }
             searchSemantics();
         });
         document.addEventListener('keydown', event => {
