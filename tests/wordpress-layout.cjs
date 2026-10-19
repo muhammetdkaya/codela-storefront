@@ -31,6 +31,16 @@ await page.goto('http://127.0.0.1:8888/wp-login.php');await page.locator('#user_
 for(const width of [390,1440]){
  await page.setViewportSize({width,height:900});await page.goto(seed.account,{waitUntil:'networkidle'});assert(await page.locator('.woocommerce-MyAccount-navigation').isVisible());assert(await page.locator('.sf-header').isVisible());assert.equal(await page.locator('body.codela-my-account-layout,body.cdl-account-shell-fs,html.cdl-account-fs-pending').count(),0);assert.equal(await page.locator('link[href*="codela-my-account.css"],script[src*="codela-my-account.js"],#codela-account-fs-bootstrap').count(),0);assert(!(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1)));await page.screenshot({path:`${dir}/${report.engine}-account-${width}.png`,fullPage:true});
  for(const endpoint of ['orders','edit-address','edit-account']){await page.locator(`.woocommerce-MyAccount-navigation-link--${endpoint} a`).click();await page.waitForLoadState('networkidle');assert(await page.locator('.woocommerce-MyAccount-content').isVisible());assert(await page.locator('.sf-header').isVisible())}
-}report.checks.push('Signed-in Theme appearance, native endpoints, no duplicate CSS/fullscreen shell');assert.deepEqual(errors,[]);
+}report.checks.push('Signed-in Theme appearance, native endpoints, no duplicate CSS/fullscreen shell');
+// Preserve the actual checkout module with a signed-in customer and a physical cart.
+await page.goto(seed.checkout,{waitUntil:'networkidle'});
+assert.equal(await page.locator('link#codela-checkout-pro-css').count(),1,'Codela checkout module keeps its own stylesheet');
+for(const width of [390,1440]){
+ await page.setViewportSize({width,height:900});
+ assert(!(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1)));
+ await page.screenshot({path:`${dir}/${report.engine}-checkout-codela-${width}.png`,fullPage:true});
+}
+report.checks.push('Checkout module remains enabled with its own stylesheet and signed-in physical cart');
+assert.deepEqual(errors,[]);
 fs.writeFileSync(dir+'/'+report.engine+'-layout.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report));
 }catch(error){fs.writeFileSync(dir+'/'+report.engine+'-failure.txt',String(error.stack));throw error}finally{await browser.close()}})().catch(e=>{console.error(e);process.exitCode=1});

@@ -47,6 +47,14 @@ body.woocommerce-checkout .wc-block-components-totals-footer-item .wc-block-comp
 body.woocommerce-checkout .woocommerce form.checkout :is(.woocommerce-billing-fields__field-wrapper,.woocommerce-shipping-fields__field-wrapper,.woocommerce-additional-fields__field-wrapper) > .form-row label{color:var(--sf-ui-control-ink);font-size:13px}
 body.woocommerce-checkout .woocommerce #payment{border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface-muted)}
 body.woocommerce-checkout .woocommerce #payment .payment_box{background:var(--sf-ui-surface)}
+/* Select2 is Woo's native enhancement of the same country/state fields. */
+body.woocommerce-checkout .sf-checkout-page :is(.woocommerce-billing-fields__field-wrapper,.woocommerce-shipping-fields__field-wrapper) > .form-row .select2-selection--single{
+ min-height:var(--sf-ui-action-height);border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface);color:var(--sf-ui-ink);
+}
+body.woocommerce-checkout .sf-checkout-page :is(.woocommerce-billing-fields__field-wrapper,.woocommerce-shipping-fields__field-wrapper) > .form-row .select2-selection__rendered{line-height:var(--sf-ui-action-height);padding-inline:14px 32px;color:inherit}
+body.woocommerce-checkout .sf-checkout-page :is(.woocommerce-billing-fields__field-wrapper,.woocommerce-shipping-fields__field-wrapper) > .form-row .select2-selection__arrow{height:100%;right:8px}
+body.woocommerce-checkout .sf-checkout-page .woocommerce-form-coupon-toggle > .woocommerce-info{border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface-muted);color:var(--sf-muted);font-size:13px}
+body.woocommerce-checkout .sf-checkout-page .woocommerce-form-coupon-toggle > .woocommerce-info::before{color:var(--sf-muted)}
 /* Compose the original classic checkout around module-owned cards/modals.
    No descendant selectors target Codela's address/invoice/payment controls. */
 body.woocommerce-checkout .sf-checkout-page form.checkout{

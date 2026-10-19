@@ -339,3 +339,6 @@ body.woocommerce-account.logged-in:not(.codela-my-account-layout) .woocommerce-M
  body.woocommerce-account.logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content{padding:20px 16px;overflow-wrap:anywhere}
  body.woocommerce-account.logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content table{font-size:12px}
 }
+
+body.woocommerce-account.logged-in:not(.codela-my-account-layout) .sf-content > .wp-block-post-title{font-size:clamp(26px,3vw,36px);font-weight:500;line-height:1.25;letter-spacing:-.035em;margin-bottom:28px}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout) .sf-content > .wp-block-post-content{max-width:1080px;width:100%;margin-inline:auto}
