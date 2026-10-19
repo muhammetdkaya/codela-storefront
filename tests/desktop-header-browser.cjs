@@ -24,12 +24,17 @@ styles.splice(1,0,fs.readFileSync('theme/codela-storefront/assets/storefront.css
      if(width>=1100){
       const nav=await page.locator('.sf-desktop-navigation').boundingBox(),brand=await page.locator('.sf-brand').boundingBox(),tools=await page.locator('.sf-actions').boundingBox();
       assert(nav.x>=brand.x+brand.width,'Menu cannot cover brand');assert(nav.x+nav.width<=tools.x,'Menu cannot cover tools');
-      assert.equal(await page.locator('.sf-desktop-menu .sub-menu').count(),0,'Submenus stay in the existing complete Menu');
+      assert.equal(await page.locator('.sf-desktop-menu .sub-menu').count(),1,'Desktop contains nested destinations');
+      assert(!(await page.locator('.sf-header-menu').isVisible()),'Hamburger hidden while full desktop menu is visible');
+      await page.locator('[popovertarget=fixture-submenu]').click();
+      assert(await page.locator('#fixture-submenu').isVisible(),'Native submenu opens with pointer');
+      await page.keyboard.press('Escape');
+      assert(!(await page.locator('#fixture-submenu').isVisible()),'Native Escape closes submenu');
       assert.equal(await page.locator('#sf-menu .sub-menu').count(),1,'Nested menu still available');
       // Exercise real sequential keyboard navigation. Re-focusing the already
       // active last link after a viewport resize is a no-op in the browser and
       // does not trigger native scroll-to-focus.
-      const links=page.locator('.sf-desktop-menu a'),last=links.last();
+      const links=page.locator('.sf-desktop-menu > li > a'),last=links.last();
       await links.first().focus();
       for(let i=1;i<await links.count();i++) await page.keyboard.press('Tab');
       assert(await last.evaluate(el=>document.activeElement===el),'Tab reaches the final desktop menu link');

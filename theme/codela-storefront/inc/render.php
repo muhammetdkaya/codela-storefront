@@ -9,7 +9,8 @@ function codela_sf_icon( string $name ): string {
 }
 function codela_sf_menu( bool $desktop = false ): string {
     if ( ! has_nav_menu( 'primary' ) ) { return ''; }
-    return (string) wp_nav_menu( [ 'theme_location' => 'primary', 'echo' => false, 'container' => false, 'menu_class' => $desktop ? 'sf-desktop-menu' : 'sf-menu-list', 'fallback_cb' => false, 'depth' => $desktop ? 1 : 3 ] );
+    if ( $desktop ) { require_once __DIR__ . '/menu-walker.php'; }
+    return (string) wp_nav_menu( [ 'menu_id' => $desktop ? 'sf-desktop-menu' : 'sf-panel-menu', 'walker' => $desktop ? new Codela_SF_Menu_Walker() : null, 'theme_location' => 'primary', 'echo' => false, 'container' => false, 'menu_class' => $desktop ? 'sf-desktop-menu' : 'sf-menu-list', 'fallback_cb' => false, 'depth' => 0 ] );
 }
 
 function codela_sf_header(): string {

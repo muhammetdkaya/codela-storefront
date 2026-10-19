@@ -47,7 +47,7 @@
     var template = document.getElementById('sf-product-sheet-template');
     var product = template && template.closest('div.product');
     var media = product && product.querySelector('.woocommerce-product-gallery');
-    var summary = product && product.querySelector(':scope > .summary');
+    var summary = product && product.querySelector('.sf-product-overview > .summary, :scope > .summary');
     if (!template || !media || !summary) return;
     var sheet = template.content.firstElementChild.cloneNode(true);
     var heading = sheet.querySelector('.sf-product-sheet-heading');
@@ -147,6 +147,7 @@
       // Keep the original summary/form hierarchy, extension inputs, native
       // quantity and submit button. The fixed purchase escapes body clipping.
       Array.from(product.children).forEach(function (node) {
+        if (node.classList.contains('sf-product-overview')) { move(summary, content); return; }
         // Reuse native recommendation cards after the last photograph.
         if (track && node.matches('.related,.upsells')) { move(node, discovery); return; }
         if (node !== media && node !== template && !node.classList.contains('onsale')) move(node, content);

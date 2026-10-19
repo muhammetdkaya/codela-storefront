@@ -308,8 +308,23 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
         // Keep keyboard-focused WordPress menu links inside the native horizontal
         // scrollport, without moving the page or introducing a second menu engine.
         $('.sf-desktop-navigation')?.addEventListener('focusin', event => {
-            const link = event.target.closest?.('.sf-desktop-menu a');
+            const link = event.target.closest?.('.sf-desktop-menu > li > a, .sf-desktop-menu > li > button');
             if (link) link.scrollIntoView({block:'nearest', inline:'nearest'});
+        });
+        // Popover owns toggle, outside-click and Escape; this only anchors its
+        // native top-layer surface to the existing WordPress menu control.
+        document.querySelectorAll('.sf-desktop-submenu').forEach(menu => {
+            menu.addEventListener('beforetoggle', event => {
+                if (event.newState !== 'open') return;
+                const button = document.querySelector(`[popovertarget="${menu.id}"]`);
+                if (!button) return;
+                const rect = button.getBoundingClientRect();
+                menu.style.setProperty('--sf-submenu-top', `${Math.min(rect.bottom + 8, innerHeight - 100)}px`);
+                menu.style.setProperty('--sf-submenu-left', `${Math.max(16, Math.min(rect.left, innerWidth - 280))}px`);
+            });
+        });
+        window.addEventListener('resize', () => {
+            document.querySelectorAll('.sf-desktop-submenu:popover-open').forEach(menu => menu.hidePopover());
         });
         installDockGestures(mobileDock());
         markDockActive(null);

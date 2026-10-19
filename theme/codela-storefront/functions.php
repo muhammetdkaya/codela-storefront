@@ -22,6 +22,9 @@ add_filter( 'nav_menu_link_attributes', function( $attributes, $item, $args ) {
     }
     return $attributes;
 }, 10, 3 );
+add_filter( 'nav_menu_item_id', static function( $id, $item, $args ) {
+    return 'sf-desktop-menu' === ( $args->menu_class ?? '' ) ? 'sf-desktop-item-' . absint( $item->ID ) : $id;
+}, 10, 3 );
 add_action( 'admin_notices', function() {
     if ( current_user_can( 'manage_options' ) && ! defined( 'CODELA_PAGE_SECTIONS_VERSION' ) ) {
         echo '<div class="notice notice-warning"><p>' . esc_html__( 'Update Codela to 1.2.0+ to enable theme settings and page sections.', 'codela-storefront' ) . '</p></div>';
@@ -183,3 +186,10 @@ add_action( 'admin_menu', static function() {
 add_filter( 'codela_store_appearance_accent_color', static function( $accent ) {
     return sanitize_hex_color( codela_theme_settings()['accent_color'] ?? '#720eec' ) ?: '#720eec';
 } );
+
+// Use the plugin's existing Theme appearance mode. WooCommerce and Codela
+// endpoint modules keep their data/hooks; the optional standalone account
+// layout, CSS and fullscreen/navigation script never start on this theme.
+add_filter( 'codela_store_appearance_surface_mode', static function( $mode, $surface ) {
+    return 'account' === $surface ? 'theme' : $mode;
+}, 10, 2 );

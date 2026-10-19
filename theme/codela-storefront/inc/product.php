@@ -118,6 +118,12 @@ add_filter( 'woocommerce_product_additional_information_heading', 'codela_sf_pro
 
 add_action( 'wp', function() {
     if ( ! function_exists( 'is_product' ) || ! is_product() ) { return; }
+    // Bound desktop sticky media to the overview, before information/recommendations.
+    // display:contents keeps the original mobile document and sheet ownership.
+    add_action( 'woocommerce_before_single_product_summary', function() { echo '<div class="sf-product-overview">'; }, 0 );
+    add_action( 'woocommerce_before_single_product_summary', function() { echo '<div class="sf-product-media">'; }, 19 );
+    add_action( 'woocommerce_before_single_product_summary', function() { echo '</div>'; }, 21 );
+    add_action( 'woocommerce_after_single_product_summary', function() { echo '</div>'; }, 0 );
     add_action( 'woocommerce_single_product_summary', function() { echo '<div class="sf-product-price-row">'; }, 9 );
     add_action( 'woocommerce_single_product_summary', function() { echo '</div>'; }, 12 );
     remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40 );

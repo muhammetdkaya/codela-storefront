@@ -25,12 +25,12 @@ body.woocommerce-checkout .woocommerce :is(#customer_details h3,#order_review_he
 body.woocommerce-checkout :is(.wc-block-components-checkout-step__description,.wc-block-components-order-summary-item__description,.woocommerce form.checkout .form-row .optional){color:var(--sf-muted)}
 /* Keep Woo's native floating labels, validation, address and payment behavior. */
 body.woocommerce-checkout .wc-block-components-form :is(.wc-block-components-text-input input,.wc-block-components-combobox-control input,select),
-body.woocommerce-checkout .woocommerce form.checkout :is(input.input-text,select,textarea){
+body.woocommerce-checkout .woocommerce form.checkout :is(.woocommerce-billing-fields__field-wrapper,.woocommerce-shipping-fields__field-wrapper,.woocommerce-additional-fields__field-wrapper) > .form-row :is(input.input-text,select,textarea){
  min-height:var(--sf-ui-action-height);border:1px solid var(--sf-ui-border);
  border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface);color:var(--sf-ui-ink);
 }
 body.woocommerce-checkout .wc-block-components-form :is(.wc-block-components-text-input input,.wc-block-components-combobox-control input,select):focus,
-body.woocommerce-checkout .woocommerce form.checkout :is(input.input-text,select,textarea):focus{
+body.woocommerce-checkout .woocommerce form.checkout :is(.woocommerce-billing-fields__field-wrapper,.woocommerce-shipping-fields__field-wrapper,.woocommerce-additional-fields__field-wrapper) > .form-row :is(input.input-text,select,textarea):focus{
  border-color:var(--sf-ui-accent);outline:2px solid color-mix(in srgb,var(--sf-ui-accent) 24%,transparent);outline-offset:1px;
 }
 body.woocommerce-checkout .wc-block-components-form :is(.wc-block-components-text-input input,.wc-block-components-combobox-control input,select)[aria-invalid="true"]{border-color:var(--wc-red,#cc1818)}
@@ -44,15 +44,40 @@ body.woocommerce-checkout .wc-block-components-order-summary-item__total-price,
 body.woocommerce-checkout .wc-block-components-totals-footer-item .wc-block-components-totals-item__value{
  color:var(--sf-ui-ink);font-weight:600;font-variant-numeric:tabular-nums;
 }
-body.woocommerce-checkout .woocommerce form.checkout .form-row label{color:var(--sf-ui-control-ink);font-size:13px}
+body.woocommerce-checkout .woocommerce form.checkout :is(.woocommerce-billing-fields__field-wrapper,.woocommerce-shipping-fields__field-wrapper,.woocommerce-additional-fields__field-wrapper) > .form-row label{color:var(--sf-ui-control-ink);font-size:13px}
 body.woocommerce-checkout .woocommerce #payment{border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface-muted)}
 body.woocommerce-checkout .woocommerce #payment .payment_box{background:var(--sf-ui-surface)}
+/* Compose the original classic checkout around module-owned cards/modals.
+   No descendant selectors target Codela's address/invoice/payment controls. */
+body.woocommerce-checkout .sf-checkout-page form.checkout{
+ display:grid;grid-template-columns:minmax(0,1fr);gap:24px;align-items:start;
+}
+body.woocommerce-checkout .sf-checkout-page form.checkout::before,
+body.woocommerce-checkout .sf-checkout-page form.checkout::after,
+body.woocommerce-checkout .sf-checkout-page #customer_details::before,
+body.woocommerce-checkout .sf-checkout-page #customer_details::after{content:none}
+body.woocommerce-checkout .sf-checkout-page form.checkout > *{min-width:0}
+body.woocommerce-checkout .sf-checkout-page #customer_details{display:grid;gap:28px;width:100%}
+body.woocommerce-checkout .sf-checkout-page #customer_details > :is(.col-1,.col-2){float:none;width:100%;min-width:0}
+body.woocommerce-checkout .sf-checkout-page #customer_details h3{margin:0 0 18px}
+body.woocommerce-checkout .sf-checkout-page #order_review_heading{margin:0}
+body.woocommerce-checkout .sf-checkout-page #order_review{width:100%;min-width:0}
+body.woocommerce-checkout .sf-checkout-page table.woocommerce-checkout-review-order-table{width:100%;margin:0 0 20px;border:0;border-collapse:collapse;font-size:14px;line-height:1.6}
+body.woocommerce-checkout .sf-checkout-page table.woocommerce-checkout-review-order-table :is(th,td){padding:14px 8px;border-bottom:1px solid var(--sf-ui-border);vertical-align:top;overflow-wrap:anywhere}
+body.woocommerce-checkout .sf-checkout-page table.woocommerce-checkout-review-order-table :is(th,td):last-child{text-align:end;font-variant-numeric:tabular-nums}
+body.woocommerce-checkout .sf-checkout-page #place_order{width:100%;float:none;margin-top:16px}
+body.woocommerce-checkout .sf-checkout-page .woocommerce-additional-fields textarea{width:100%;resize:vertical}
+@media(min-width:901px){
+ body.woocommerce-checkout .sf-checkout-page form.checkout{grid-template-columns:minmax(0,1.25fr) minmax(320px,1fr);column-gap:clamp(28px,4vw,56px);row-gap:18px}
+ body.woocommerce-checkout .sf-checkout-page form.checkout > *{grid-column:1/-1}
+ body.woocommerce-checkout .sf-checkout-page form.checkout > #customer_details{grid-column:1;grid-row:1/span 3}
+ body.woocommerce-checkout .sf-checkout-page form.checkout > #order_review_heading{grid-column:2;grid-row:1}
+ body.woocommerce-checkout .sf-checkout-page form.checkout > #order_review{grid-column:2;grid-row:2}
+}
 @media(max-width:700px){
- .sf-checkout-page{padding:20px 20px 44px}
+ .sf-checkout-page{padding:20px 16px 44px}
  .sf-checkout-page > .wp-block-post-title{margin-bottom:20px;padding-bottom:14px}
  body.woocommerce-checkout .wc-block-checkout__sidebar .wc-block-components-order-summary,
  body.woocommerce-checkout .woocommerce #order_review{padding:16px}
- body.woocommerce-checkout .woocommerce form.checkout :is(#customer_details .col-1,#customer_details .col-2){float:none;width:100%;max-width:100%}
- body.woocommerce-checkout .wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button,
- body.woocommerce-checkout .woocommerce #place_order{width:100%}
+ body.woocommerce-checkout .wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button{width:100%}
 }

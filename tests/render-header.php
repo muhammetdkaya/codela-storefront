@@ -2,6 +2,7 @@
 // Render the real PHP header with deterministic WP/Woo boundary stubs.
 // This is a DOM contract fixture, not a substitute for full WordPress integration.
 define('ABSPATH', __DIR__);
+class Walker_Nav_Menu {}
 function codela_sf_ready() { return true; }
 function codela_theme_settings() { return ['menu_id'=>0, 'brand'=>'CODELA'] + (getenv('FIXTURE_DOCK') === false ? [] : ['mobile_dock_enabled'=>getenv('FIXTURE_DOCK')]); }
 function __( $s, ...$args ) { return $s; }
@@ -57,6 +58,7 @@ function wp_nav_menu($args){
     foreach (['Yeni koleksiyon','Hakkımızda','İletişim','Uzun kategori başlığı örneği','Diğer ürünler'] as $label) {
         $items .= '<li><a class="sf-ui-pressable" href="/category/7/">'.$label.'</a></li>';
     }
-    if ($args['depth'] > 1) { $items .= '<li><a href="/parent/">Üst kategori</a><ul class="sub-menu"><li><a href="/nested/">Alt kategori</a></li></ul></li>'; }
-    return '<ul class="'.$args['menu_class'].'">'.$items.'</ul>';
+    if (true) { $items .= '<li><a href="/parent/">Üst kategori</a><ul class="sub-menu"><li><a href="/nested/">Alt kategori</a></li></ul></li>'; }
+    if ($args['menu_class'] === 'sf-desktop-menu') { $items = str_replace('<ul class="sub-menu">','<button class="sf-desktop-submenu-toggle sf-ui-icon-button" popovertarget="fixture-submenu" aria-label="Alt menüyü aç">+</button><ul class="sub-menu sf-desktop-submenu" id="fixture-submenu" popover="auto">',$items); }
+    return '<ul id="'.$args['menu_id'].'" class="'.$args['menu_class'].'">'.$items.'</ul>';
 }
