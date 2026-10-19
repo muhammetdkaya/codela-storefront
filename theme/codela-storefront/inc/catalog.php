@@ -81,12 +81,29 @@ function codela_sf_catalog_stock_label(): void {
 }
 add_action( 'woocommerce_before_shop_loop_item_title', 'codela_sf_catalog_stock_label', 11 );
 
-/** Preserve deferred home collection thumbnails without delaying the hero. */
-function codela_sf_catalog_image_attributes( array $attributes ): array {
-    if ( ( is_front_page() || ( function_exists( 'wc_get_loop_prop' ) && wc_get_loop_prop( 'codela_defer_images', false ) ) ) && doing_action( 'woocommerce_before_shop_loop_item_title' ) ) {
-        $attributes['loading'] = 'lazy';
-        $attributes['decoding'] = 'async';
-        unset( $attributes['fetchpriority'] );
+/** Deprioritize non-critical native product cards across sections and related products.
+ * The single-product hero is handled separately by the existing media helper.
+ */
+function codela_sf_catalog_image_attributes( array $attributes, $attachment = null ): array {
+    $card_image = doing_action( 'woocommerce_before_shop_loop_item_title' )
+        && ( is_front_page()
+            || ( function_exists( 'is_product' ) && is_product() )
+            || ( function_exists( 'wc_get_loop_prop' ) && wc_get_loop_prop( 'codela_defer_images', false ) ) );
+    if ( ! $card_image ) { return $attributes; }
+    $attributes['loading'] = 'lazy';
+    $attributes['decoding'] = 'async';
+    $attributes['fetchpriority'] = 'low';
+    // One existing opt-in manifest is shared with the product hero and page
+    // sections. Never transcode during a shopper request; missing manifests
+    // fall through to WooCommerce's untouched responsive native image.
+    $id = is_object( $attachment ) ? (int) ( $attachment->ID ?? 0 ) : 0;
+    $webp = $id && function_exists( 'codela_sf_png_webp_sources' )
+        ? codela_sf_png_webp_sources( $id ) : [];
+    if ( $webp ) {
+        $attributes['src'] = $webp[ count( $webp ) - 1 ]['url'];
+        $attributes['srcset'] = implode( ', ', array_map(
+            static fn( $source ) => $source['url'] . ' ' . $source['width'] . 'w', $webp
+        ) );
     }
     return $attributes;
 }
