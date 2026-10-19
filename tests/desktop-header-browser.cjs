@@ -23,8 +23,18 @@ styles.splice(1,0,fs.readFileSync('theme/codela-storefront/assets/storefront.css
       assert(nav.x>=brand.x+brand.width,'Menu cannot cover brand');assert(nav.x+nav.width<=tools.x,'Menu cannot cover tools');
       assert.equal(await page.locator('.sf-desktop-menu .sub-menu').count(),0,'Submenus stay in the existing complete Menu');
       assert.equal(await page.locator('#sf-menu .sub-menu').count(),1,'Nested menu still available');
-      const last=page.locator('.sf-desktop-menu a').last();await last.focus();
-      assert(await last.evaluate(el=>{const r=el.getBoundingClientRect(),n=el.closest('nav').getBoundingClientRect();return r.left>=n.left-1&&r.right<=n.right+1}),'Keyboard focus scrolls long menu into view');
+      // Exercise real sequential keyboard navigation. Re-focusing the already
+      // active last link after a viewport resize is a no-op in the browser and
+      // does not trigger native scroll-to-focus.
+      const links=page.locator('.sf-desktop-menu a'),last=links.last();
+      await links.first().focus();
+      for(let i=1;i<await links.count();i++) await page.keyboard.press('Tab');
+      assert(await last.evaluate(el=>document.activeElement===el),'Tab reaches the final desktop menu link');
+      const visible=await last.evaluate(el=>{
+       const r=el.getBoundingClientRect(),n=el.closest('nav').getBoundingClientRect();
+       return {visible:r.left>=n.left-1&&r.right<=n.right+1,link:[r.left,r.right],nav:[n.left,n.right],scroll:el.closest('nav').scrollLeft};
+      });
+      assert(visible.visible,`Keyboard focus reveals the last item at ${width}px: ${JSON.stringify(visible)}`);
      }
     }
    }
