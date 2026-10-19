@@ -11,7 +11,7 @@ for(const url of [seed.simple,seed.variable]){
   await page.setViewportSize({width,height:900});await page.evaluate(()=>scrollTo(0,0));
   await page.waitForTimeout(150);
   const geometry=()=>page.evaluate(()=>{const r=s=>document.querySelector(s).getBoundingClientRect().toJSON();return{gallery:r('.woocommerce-product-gallery'),summary:r('.summary'),media:r('.sf-product-media'),overview:r('.sf-product-overview'),information:r('.sf-product-information'),position:getComputedStyle(document.querySelector('.sf-product-media')).position,overflow:document.documentElement.scrollWidth>innerWidth+1}});
-  let g=await geometry();assert(!g.overflow,JSON.stringify(g));assert(Math.abs(g.gallery.top-g.summary.top)<16,JSON.stringify(g));assert(g.information.top>=g.overview.bottom,JSON.stringify(g));assert.equal(g.position,'sticky');
+  let g=await geometry();assert(!g.overflow,JSON.stringify(g));assert(Math.abs(g.gallery.top-g.summary.top)<16,JSON.stringify(g));assert(g.information.top>=g.overview.bottom,JSON.stringify(g));assert.equal(g.position,'sticky');assert(g.summary.left-g.gallery.right>=43,'Desktop center gutter retained');assert(g.information.width>=g.overview.width-1,'Information spans both columns');const trust=page.locator('.cdl-tb');if(await trust.count())assert.equal(await page.locator('.summary > .cdl-tb').count(),1,'Original reassurance belongs to summary');
   await page.evaluate(()=>scrollTo(0,500));g=await geometry();assert(g.gallery.bottom<=g.information.top,JSON.stringify(g));
   assert.equal(await page.locator('form.cart').count(),1,'One original purchase form');
  }

@@ -251,33 +251,6 @@ body.single-product .woocommerce-product-gallery a:focus-visible{
     column-gap:26px;
   }
 }
-/* Desktop arranges the original Woo gallery and original purchase form.
-   The mobile sheet and native tablet/no-script content keep their ownership. */
-@media(min-width:901px){
-  body.single-product .sf-content{padding:28px max(24px,4vw) 64px}
-  body.single-product div.product{
-    max-width:1360px;margin-inline:auto;
-    grid-template-columns:minmax(0,1fr);row-gap:48px;
-  }
-  body.single-product .sf-product-overview{
-    display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
-    align-items:start;gap:clamp(28px,4vw,64px);min-width:0;
-  }
-  body.single-product .sf-product-media{
-    display:block;min-width:0;position:sticky;
-    top:calc(var(--sf-header-offset,0px) + 96px);
-  }
-  body.single-product div.product .sf-product-media > .woocommerce-product-gallery{
-    --sf-gallery-height:clamp(360px,calc(100svh - 132px),760px);
-    --sf-gallery-fit:contain;
-  }
-  body.single-product div.product .sf-product-overview > .summary{
-    grid-column:2;grid-row:1;max-width:none;justify-self:stretch;padding:8px 0 0;
-  }
-  body.single-product div.product > .sf-product-information{
-    max-width:960px;padding-inline:0;
-  }
-}
 @media(max-width:700px){
   /* The native photo is usable before Woo's footer initialization. */
   body.single-product div.product .sf-product-media > .sf-ui-gallery--scroll{opacity:1!important}
@@ -445,7 +418,9 @@ body.single-product .cdl-tb:has(.cdl-tb-item:only-child){grid-template-columns:1
   body.single-product .cdl-tb-item:nth-child(3):last-child{grid-column:1/-1}
 }
 @media(min-width:901px){
-  body.single-product div.product .cdl-tb{grid-template-columns:repeat(4,minmax(0,1fr));max-width:1200px}
+  body.single-product div.product .summary > .cdl-tb{grid-template-columns:repeat(2,minmax(0,1fr));width:100%;max-width:none;margin:14px 0 0;border:0;border-radius:0;background:transparent}
+  body.single-product .summary > .cdl-tb .cdl-tb-item{min-height:50px;padding:10px 0;font-size:12px;font-weight:400;border:0}
+  body.single-product .summary > .cdl-tb .cdl-tb-item:nth-child(even){padding-inline-start:16px}
 }
 @media(max-width:380px){
   body.single-product div.product form.cart .single_add_to_cart_button{
@@ -833,3 +808,53 @@ body.single-product div.product .sf-product-quantity .sf-product-quantity-step[d
 
 /* Fixing the body must not let root snap choose a new product/discovery target. */
 html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:none}
+
+/* Desktop composes the same Woo gallery/form. Its bounded sticky media
+   cannot cover the native information or recommendation sections below. */
+@media(min-width:901px){
+  body.single-product .sf-content{padding:28px max(24px,4vw) 64px}
+  body.single-product div.product{max-width:1360px;margin-inline:auto;grid-template-columns:minmax(0,1fr);row-gap:36px}
+  body.single-product .sf-product-overview{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);align-items:start;gap:clamp(44px,5vw,80px);min-width:0;position:relative}
+  body.single-product .sf-product-media{display:block;min-width:0;position:sticky;top:calc(var(--sf-header-offset,0px) + 96px);container-type:inline-size}
+  body.single-product div.product .sf-product-media > .woocommerce-product-gallery{
+    --sf-gallery-height:min(640px,94cqw);--sf-gallery-fit:contain;--sf-gallery-surface:var(--sf-ui-page);--sf-gallery-radius:var(--sf-ui-control-radius);
+    height:auto;min-height:var(--sf-gallery-height);overflow:visible;background:transparent;
+  }
+  body.single-product div.product .sf-product-media > .sf-ui-gallery--scroll{opacity:1!important}
+  body.single-product div.product .sf-product-media > .woocommerce-product-gallery:not(.sf-ui-gallery--no-thumbs):has(.woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image:nth-child(2),> .sf-ui-gallery-nav,> .flex-control-thumbs > li:nth-child(2)){min-height:calc(var(--sf-gallery-height) + 72px)}
+  body.single-product div.product .sf-product-media .woocommerce-product-gallery__wrapper{height:var(--sf-gallery-height);border-radius:var(--sf-gallery-radius);overflow:hidden}
+  body.single-product div.product .sf-product-media .sf-ui-gallery--scroll .woocommerce-product-gallery__wrapper{overflow-x:auto;overflow-y:hidden}
+  body.single-product div.product .sf-product-overview > .summary{grid-column:2;grid-row:1;max-width:none;justify-self:stretch;padding:0}
+  body.single-product div.product .product_title{font-size:clamp(26px,2.3vw,34px);margin-bottom:10px}
+  body.single-product .sf-product-price-row{margin-bottom:14px}
+  body.single-product div.product .woocommerce-product-details__short-description{margin-bottom:20px;line-height:1.65}
+  body.single-product div.product form.cart{padding:0 0 20px;margin-bottom:18px;border-top:0}
+  body.single-product div.product form.cart .sf-product-purchase{padding:0;gap:12px}
+  body.single-product div.product form.cart .sf-product-purchase .quantity{border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-pill);overflow:hidden;align-items:center}
+  body.single-product div.product .sf-product-quantity:not(.is-fixed) .sf-product-quantity-step.sf-ui-button{display:inline-flex;min-width:36px;width:36px;min-height:var(--sf-ui-action-height)}
+  body.single-product div.product form.cart .sf-product-quantity input.qty{width:40px;min-width:0;padding:0;appearance:textfield;-moz-appearance:textfield;text-align:center}
+  body.single-product div.product .sf-product-quantity input.qty::-webkit-inner-spin-button,
+  body.single-product div.product .sf-product-quantity input.qty::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+  body.single-product .cdl-de{margin-top:0}
+  body.single-product .cdl-wa{margin-top:8px;border-block:1px solid var(--sf-ui-border)}
+  body.single-product .cdl-wa-button{min-height:54px;padding:5px 0;border:0;border-radius:0;font-weight:400}
+  body.single-product .cdl-wa-button::after{transform:none}
+  body.single-product div.product > .sf-product-information{max-width:none;padding-inline:0}
+  body.single-product.woocommerce div.product > :is(.related,.upsells){max-width:none;padding-inline:0;padding-top:0;border:0;margin:0}
+  body.single-product .sf-product-information-content{max-width:90ch}
+  body.single-product div.product .sf-ui-gallery-nav,
+  body.single-product.woocommerce div.product div.sf-ui-gallery .flex-control-thumbs{
+    position:absolute;top:calc(var(--sf-gallery-height) + 12px);bottom:auto;left:0;transform:none;
+    padding:4px;border:0;gap:10px;max-width:100%;min-height:48px;
+  }
+  body.single-product div.product .sf-product-gallery-thumb.sf-ui-icon-button{border-radius:50%;width:48px;height:48px}
+  body.single-product.woocommerce div.product div.sf-ui-gallery .flex-control-thumbs li{padding:0;border:0;width:48px;min-width:48px;height:48px;flex-basis:48px}
+  body.single-product .sf-product-gallery-count{bottom:auto;top:calc(var(--sf-gallery-height) - 36px)}
+  body.single-product:not(.sf-product-sheet-ready) .sf-ui-gallery .sf-product-visitor{bottom:auto;top:calc(var(--sf-gallery-height) - 36px)}
+  body.single-product div.product .sf-product-overview > .onsale{top:16px;left:16px}
+}
+.sf-product-gallery-arrows{display:none}
+@media(min-width:901px){
+  .sf-product-gallery-arrows{display:flex;justify-content:space-between;position:absolute;inset:calc(var(--sf-gallery-height) / 2 - 22px) 12px auto;pointer-events:none}
+  .sf-product-gallery-arrows > button{pointer-events:auto}
+}

@@ -6,6 +6,7 @@
     "codela": "1.2.0"
   },
   "changes": [
+    "Masaüstü ürün görünümü dengeli galeri ve sağ satın alma/güvence sütunuyla düzenlendi; açıklamalar ilgili ürünlerin üstünde ve mobil alt panel korunur.",
     "Hesap görünümü doğrudan menü ve son sipariş kartıyla başlar; tekrar eden başlık, karşılama ve destek yazıları kaldırıldı.",
     "Masaüstünde yan menü, mobilde native açılır hesap menüsü ve tek sütunlu kartlar kullanılır.",
     "Sipariş, adres, hesap formları ve bağımsız Codela modülleri native WooCommerce uçlarını kullanmaya devam eder."

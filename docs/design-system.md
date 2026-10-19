@@ -1,5 +1,9 @@
 # Codela Storefront UI Kit — source of truth
 
+## Approved desktop product / 0.1.147 candidate
+
+Keep one bounded native gallery + summary with a44–80px gutter; source images retain contain/no crop. Media height follows its own column, not the full viewport. Reserve the below-frame three circular controls before enhancement. Shared PHP IconButtons feed the existing gallery adapter's select/IO state. Product information spans both columns above native recommendations. Original enabled trust output lives in summary after contact on desktop; the existing mobile adapter moves/restores that exact node. Central components own the plain desktop purchase/rail/contact variant; mobile glass, native form/data/zoom and Woo card ownership remain. Do not fabricate trust items or change merchant media/settings to match a mockup.
+
 ## Compact signed-in account — 0.1.147 candidate
 
 The approved account starts directly with native navigation and content. No visible page title, greeting or support lead-in. One Woo endpoint list becomes a no-script native disclosure on narrow screens and a sidebar on desktop; preserve all module destinations and nonce-bearing logout URLs. Overview uses one customer-bound latest-order query, real status/price/date, a native order-detail link and registered address/account shortcuts. Empty/deleted-product/multiple-item states must remain truthful. UI Kit owns CTA paint/foreground/focus/press; account CSS owns layout. No new browser script, independent form engine or duplicated plugin dashboard. Native navigation/dashboard hooks remain. Guest authentication and checkout are separate unchanged surfaces.
