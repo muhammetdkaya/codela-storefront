@@ -2,6 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),{execFileSync}=require('node:child_process');
 const {chromium,webkit}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const styles=['tokens','overlay','navigation','components'].map(name=>fs.readFileSync(`theme/codela-storefront/assets/styles/${name}.css`,'utf8'));
+const dockSource=fs.readFileSync('theme/codela-storefront/assets/scripts/dock-controller.js','utf8').replace('export function createDockController','function createDockController');
 styles.splice(1,0,fs.readFileSync('theme/codela-storefront/assets/storefront.css','utf8'));
 (async()=>{
  const browser=await (process.env.TEST_WEBKIT?webkit:chromium).launch({headless:true,...(!process.env.TEST_WEBKIT&&process.env.CHROMIUM_BIN?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-dev-shm-usage']}:{})});
@@ -12,6 +13,8 @@ styles.splice(1,0,fs.readFileSync('theme/codela-storefront/assets/storefront.css
    await page.route('https://store.test/**',route=>route.fulfill({body:'Menu destination',contentType:'text/html'}));
    await page.goto('https://store.test/');
    await page.setContent(`<!doctype html><html lang="tr"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>${styles.join('\n')}</style></head><body>${header}<main id="sf-content">Content</main></body></html>`);
+   // Run the actual shared navigation controller, not a test-only focus shim.
+   await page.addScriptTag({content:dockSource+'\ncreateDockController({getDialog:()=>document.querySelector("#sf-panel"),getCurrent:()=>null,open:()=>{},close:()=>{}}).init(document.querySelector("#sf-panel"));'});
    for(const width of [320,700,900,1099,1100,1280,1440,1920]){
     await page.setViewportSize({width,height:900});
     assert(!(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1)),`No overflow, menu ${assigned}, width ${width}`);
