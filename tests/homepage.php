@@ -16,7 +16,11 @@ function item($title='Sade yaşam',$image=10){return ['id'=>'item-'.$image,'enab
 function data($type,$variant,$items=[]){return ['id'=>'section-'.$type.'-'.$variant,'enabled'=>true,'variant'=>$variant,'title'=>$type==='hero'?'':'Kategorileri keşfet','description'=>'','items'=>$items,'source'=>'new','category_id'=>7,'limit'=>4,'show_all'=>true];}
 $html='<div class="codela-page-layout">';
 $html.=codela_sf_render_section(null,'hero',data('hero','showcase',[item(),item('Işığı keşfet',12)]));
-foreach(['compact','editorial','bands','mosaic','carousel','grid'] as $variant){$html.=codela_sf_render_section(null,'categories',data('categories',$variant,array_map(fn($item)=>$variant==='editorial'?array_merge($item,['mobile_image_id'=>13]):$item,[item('Aydınlatma'),item('Objeler',12),item('Ev tekstili')])));}
+foreach(['compact','editorial','bands','mosaic','carousel','grid'] as $variant){
+    $items=[item('Aydınlatma'),item('Objeler',12),item('Ev tekstili')];
+    if($variant==='bands'){$items[]=item('Dekorasyon');$items[]=item('Yeni koleksiyonlar');}
+    $html.=codela_sf_render_section(null,'categories',data('categories',$variant,array_map(fn($item)=>$variant==='editorial'?array_merge($item,['mobile_image_id'=>13]):$item,$items)));
+}
 foreach(explode(',',getenv('PROMO_VARIANTS')?:'split,inset') as $variant){$html.=codela_sf_render_section(null,'promo',data('promo',$variant,[item('Yeni koleksiyon'),item('Doğadan ilham',12)]));}
 $row=data('products','grid');$html.=codela_sf_render_section(null,'products',$row);$html.='</div>';
 expect(substr_count($html,'fetchpriority="high"')===1,'Only the first hero receives high priority');

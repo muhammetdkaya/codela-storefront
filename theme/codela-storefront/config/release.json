@@ -7,6 +7,7 @@
   },
   "changes": [
     "Standart sayfalarda ve ödeme sayfasında temanın otomatik eklediği üst başlık kaldırıldı.",
-    "Sayfa içeriği, içerikteki başlıklar ve WooCommerce ödeme akışı korundu."
+    "Sayfa içeriği, içerikteki başlıklar ve WooCommerce ödeme akışı korundu.",
+    "Kategori Görsel bantlar · C düzeni masaüstünde dört, tablette iki sütun gösterir; mobil tek sütun korunur."
   ]
 }

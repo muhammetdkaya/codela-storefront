@@ -1,8 +1,10 @@
 # Codela Storefront UI Kit — source of truth
 
-## Page headings — 0.1.148 review
+## Page headings and category bands — 0.1.148 review
 
 The standard page and checkout templates start with native post content, without an automatically inserted post-title block. Merchant-authored content headings, document titles and product/post/archive headings stay unchanged. Saved Site Editor template overrides need separate verification before deployment.
+
+Category visual bands (variant C) use four columns from 1024px, two at 701–1023px, and the existing single full-width band at 700px and below. Additional cards wrap in their saved order. Multi-column captions stay in flow so long merchant copy grows the card instead of clipping. The existing section renderer and shared tokens remain authoritative; image slot sizes follow the layout.
 
 
 ## Theme appearance and desktop layout — 0.1.145 (acceptance pending)

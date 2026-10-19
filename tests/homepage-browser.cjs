@@ -2,7 +2,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),{execFileSync}=
 const {chromium,webkit}=require(process.env.PLAYWRIGHT_MODULE||'playwright'),root='theme/codela-storefront/';
 const css=['styles/tokens.css','storefront.css','styles/components.css','styles/catalog.css','styles/gallery.css','styles/sections.css'].map(p=>fs.readFileSync(root+'assets/'+p,'utf8')).join('\n');
 (async()=>{const browser=await (process.env.TEST_WEBKIT?webkit:chromium).launch(process.env.CHROMIUM_BIN&&!process.env.TEST_WEBKIT?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-dev-shm-usage']}:{});try{
-for(const width of [320,390,700,1280])for(const promos of ['split,inset','editorial,banner']){
+for(const width of [320,390,700,701,1023,1024,1280])for(const promos of ['split,inset','editorial,banner']){
  const html=execFileSync(process.env.PHP_BIN||'php',['tests/homepage.php'],{encoding:'utf8',env:{...process.env,RENDER_HOME:'1',PROMO_VARIANTS:promos}});assert(!html.includes('Fatal error'));
  const page=await browser.newPage({viewport:{width,height:844},hasTouch:true,reducedMotion:'reduce'}),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',route=>new URL(route.request().url()).pathname==='/'?route.fulfill({contentType:'text/html',body:'<html></html>'}):route.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900"><rect width="1200" height="900" fill="#cbbdad"/><circle cx="620" cy="440" r="230" fill="#e8dfcf"/></svg>'}));
@@ -10,6 +10,16 @@ for(const width of [320,390,700,1280])for(const promos of ['split,inset','editor
  await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body class="home"><main class="sf-content">'+html+'</main></body></html>');await page.addScriptTag({content:fs.readFileSync(root+'assets/scripts/gallery-horizontal.js','utf8')});
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No page overflow '+width+' '+promos);assert.equal(await page.locator('.sf-section').count(),10);assert.equal(await page.locator('h1').count(),1);assert.equal(await page.locator('img[fetchpriority=high]').count(),1);
  if(width===390){const image=page.locator('.sf-categories--editorial img').first();await image.scrollIntoViewIfNeeded();await image.evaluate(img=>img.decode());assert.match(await image.evaluate(img=>img.currentSrc),/image-13-(160|320)\.svg$/,'Small mobile category selects a small responsive candidate');}
+ const bands=page.locator('.sf-categories--bands .sf-category-story'),columns=width>=1024?4:width>700?2:1;
+ const cards=await bands.evaluateAll(els=>els.map(el=>{const r=el.getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,bottom:r.bottom};}));
+ assert.equal(cards.length,5);assert.equal(cards.filter(r=>Math.abs(r.y-cards[0].y)<1).length,columns,'Visual bands per row '+width);
+ for(let i=1;i<columns;i++)assert(cards[i].x>=cards[i-1].x+cards[i-1].width,'Visual bands do not overlap '+width);
+ assert(cards[columns].y>=cards[0].bottom,'Extra visual bands wrap to the next row '+width);
+ if(width>700){
+  await bands.first().locator('h3').evaluate(el=>el.textContent='Yaşam alanlarınıza özel aydınlatma ve dekorasyon koleksiyonları');
+  await bands.first().locator('p').evaluate(el=>el.textContent='Doğal dokular ve zamansız tasarımlarla evinizin her köşesine ilham veren seçkiler. '.repeat(3));
+  assert(await bands.first().evaluate(el=>{const card=el.getBoundingClientRect();return [...el.querySelectorAll('h3,p,.sf-category-explore')].every(child=>{const r=child.getBoundingClientRect();return r.top>=card.top&&r.bottom<=card.bottom+1&&r.left>=card.left&&r.right<=card.right+1;});}),'Long visual-band copy fits '+width);
+ }
  const galleries=page.locator('[data-sf-gallery]');assert.equal(await galleries.count(),4);
  for(let i=0;i<await galleries.count();i++){const gallery=galleries.nth(i),track=gallery.locator('.sf-ui-gallery-track'),count=gallery.locator('[data-gallery-count]');assert((await count.textContent()).startsWith('1 / '));await gallery.locator('[data-gallery-next]').click();await page.waitForFunction(el=>!el.textContent.startsWith('1 / '),await count.elementHandle());await track.focus();await page.keyboard.press('End');await page.waitForFunction(el=>el.disabled,await gallery.locator('[data-gallery-next]').elementHandle());await page.keyboard.press('Home');await page.waitForFunction(el=>el.disabled,await gallery.locator('[data-gallery-prev]').elementHandle());}
  await page.addScriptTag({content:fs.readFileSync(root+'assets/scripts/gallery-horizontal.js','utf8')});
