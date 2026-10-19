@@ -1,5 +1,15 @@
 # Codela Storefront — güncel teknik durum
 
+## Son doğrulanmış durum — 19 Ekim 2026: 0.1.148 canlıda ve uzaktan güncelleme kanalında
+
+Kullanıcı GitHub sürümünün yayımlanmasını ve temanın mevcut uzaktan güncelleme yoluyla sitede denenmesini açıkça istedi. Aşağıdaki inceleme notunun yayın durumu bu kayıtla güncellenir. [PR #68](https://github.com/muhammetdkaya/codela-storefront/pull/68) ana dala `13e8e00eb8c5945c4417b4babbc3fcebbf999b22` ile birleştirildi. Otomatik page/checkout üst başlıkları kaldırıldı; kategori **Görsel bantlar · C** 1024px+ dört, 701–1023px iki ve mobilde tek sütundur. Uzun çok sütunlu kart metinleri kesilmeden büyür; görsel sizes değeri yerleşimi izler.
+
+**Doğrulama ve dağıtım:** [Ana dal CI + FTPS 39319489329](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39319489329) başarılı. PHP/JS, 24 paket ve tüm tarayıcı kontrolleri geçti; homepage senaryosu 320/390/700/701/1023/1024/1280px'de beş kart, sütun sayısı, alt satıra geçiş, çakışma ve uzun metni denetler. Dağıtım günlüğü 20:36:16Z'de `Storefront deployed; checks passed.` kaydetti.
+
+**Kararlı sürüm:** [Yayın talebi cc997552](https://github.com/muhammetdkaya/codela-storefront/commit/cc997552ace3c1d36eba498039cf1894b99da0a3), [release CI 39320721643](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39320721643) başarılı. [v0.1.148](https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.148) public, draft/prerelease değil. ZIP **134468 bayt**, SHA256 `fdb1109bbe0b0344d48c393ac40d9f9549b3d3bfa758147bcc98728533f82b07`; yerel deterministik paket, GitHub asset digest ve [stable manifest](https://raw.githubusercontent.com/muhammetdkaya/codela-storefront/stable/manifest.json) aynı değeri ve kaynak SHA'yı gösterir. Manifest 0.1.148 ve doğru release ZIP URL'sini sunar.
+
+**Sitede kabul:** Codela → Tema → Güncelleme → **Şimdi kontrol et**, ardından **Şimdi güncelle**. Kontrol eylemi mevcut 12 saatlik sürüm önbelleğini temizleyip native WordPress güncellemesini yeniler. Kullanıcının hedef sitesindeki kurulum ve görsel kabul yapılmış sayılmaz; özel Site Editor şablonları ayrıca kontrol edilmeli. Fatura `Kurumsal` değişikliği ayrı [Codela PR #17](https://github.com/muhammetdkaya/codela/pull/17) içindedir ve bu tema ZIP'ine dahil değildir; eklenti yayımlanmadı. Açık #66/#67 bu sürüme dahil edilmedi; birleştirilmeden önce güncel main'e uyarlanmalı ve sürümleri 0.1.148'in üzerine taşınmalı. Fiziksel Safari, gerçek ödeme sağlayıcısı ve önceki LCP işleri ayrıca açıktır.
+
 ## İnceleme — 19 Ekim 2026: Genel tema düzenlemeleri (0.1.148)
 
 Storefront **0.1.145 → 0.1.148** inceleme dalında hazırlanmıştır. Açık #66/#67 çalışmalarının 0.1.146/0.1.147 sürümleri ayrıdır; bu dal main f6b52f4 tabanlıdır ve o değişiklikleri içermez. Yayın öncesi güncel ana dala uyum ve sürüm sırası yeniden doğrulanmalıdır. Kullanıcı marka adının yanlışlıkla yazıldığını açıkladı; kapsam tüm tema kullanıcılarıdır.
