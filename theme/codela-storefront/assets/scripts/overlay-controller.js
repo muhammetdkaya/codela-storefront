@@ -118,6 +118,7 @@ export function createOverlayController({
         dialog.classList.toggle('is-search-panel', name === 'search');
         dialog.classList.toggle('is-cart-panel', name === 'cart');
         dialog.classList.toggle('is-account-panel', name === 'account');
+        dialog.classList.toggle('is-filters-panel', name === 'filters');
         const dock = mobileDock();
         if (dock && dock.parentElement === dialog) dock.hidden = name === 'menu';
         markDockActive(name);

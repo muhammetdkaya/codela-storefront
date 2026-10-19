@@ -249,6 +249,27 @@ body.single-product .woocommerce-product-gallery a:focus-visible{
     column-gap:26px;
   }
 }
+/* Desktop arranges the original Woo gallery and original purchase form.
+   The mobile sheet and native tablet/no-script content keep their ownership. */
+@media(min-width:901px){
+  body.single-product .sf-content{padding:28px max(24px,4vw) 64px}
+  body.single-product div.product{
+    max-width:1360px;margin-inline:auto;
+    grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);
+    column-gap:clamp(28px,4vw,64px);row-gap:48px;
+  }
+  body.single-product div.product > .woocommerce-product-gallery{
+    --sf-gallery-height:clamp(360px,calc(100svh - 132px),760px);
+    --sf-gallery-fit:contain;
+    position:sticky;top:calc(var(--sf-header-offset,0px) + 96px);
+  }
+  body.single-product div.product > .summary{
+    grid-column:2;grid-row:1;max-width:none;justify-self:stretch;padding:8px 0 0;
+  }
+  body.single-product div.product > .sf-product-information{
+    max-width:960px;padding-inline:0;
+  }
+}
 @media(max-width:700px){
   /* The native photo is usable before Woo's footer initialization. */
   body.single-product div.product > .sf-ui-gallery--scroll{opacity:1!important}
@@ -424,8 +445,8 @@ body.single-product .cdl-tb:has(.cdl-tb-item:only-child){grid-template-columns:1
   }
 }
 
-/* Product composition only: gallery owns the full-bleed media presentation. */
-body.single-product .sf-shell{padding-top:0}
+/* Full-bleed photos sit behind the header only on the single-column layout. */
+@media(max-width:900px){body.single-product .sf-shell{padding-top:0}}
 body.single-product .sf-content{margin-block-start:0!important}
 body.single-product div.product > :is(.related,.upsells){
   max-width:1200px;justify-self:center;padding-inline:max(20px,5vw);margin-inline:auto;

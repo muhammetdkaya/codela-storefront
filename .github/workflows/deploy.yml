@@ -61,6 +61,8 @@ jobs:
           TEST_WEBKIT=1 node tests/product-menu-scroll-browser.cjs
           node tests/product-sheet-browser.cjs
           node tests/navigation-browser.cjs
+          node tests/desktop-header-browser.cjs
+          TEST_WEBKIT=1 node tests/desktop-header-browser.cjs
           node tests/checkout-browser.cjs
           node tests/catalog-browser.cjs
           node tests/catalog-filters-browser.cjs

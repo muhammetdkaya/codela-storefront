@@ -1,5 +1,13 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Çalışma — 19 Ekim 2026: Masaüstü düzeni / 0.1.143 (kabul ve yayın bekliyor)
+
+Kullanıcının onayıyla 0.1.142 → **0.1.143**: 901px ve üstünde orijinal Woo galerisi ile orijinal summary/form yan yana, 1360px üst sınır ve uncropped görsel; mobil sheet aynı kaynaklardan çalışır. 1100px ve üstünde WordPress primary menüsünün üst düzeyi doğrudan görünür; uzun menü native yatay kayar, tüm alt menüler mevcut tam Menu içindedir. Aynı menü kaynağı, aynı paylaşılan pressable, yeni gezinme motoru yok. Primary atanmamışsa menü üretilmez. 901px üstünde tek mevcut filtre dialog/formu sağda en fazla480px açılır; mobilde tam ekran ve native GET/category kapsamı korunur. Başka sepet/form/kart/controller oluşturulmadı; eklenti1.2.0 değişmez.
+
+Yerel PHP sözleşmeleri ve24 paket testi; ürün9 genişlik, menu8 genişlik, shop/category×dock×7 genişlik native GET/focus testleri geçti. Genel CI, gerçek Woo ve FTPS henüz bekliyor. Yerel ürün-sheet fixture'ı aynı48px/44px farkıyla değiştirilmemiş0.1.142 bazında da başarısız; bu masaüstü regresyonu diye veya geçti diye sunulmaz, CI üzerinde yeniden doğrulanacak. Mobil fiziksel Safari, gerçek ödeme ve önceki ürün/10bölüm hız bütçeleri kapanmadı. Kararlı feed henüz0.1.142; kaynak doğrulanmadan yeni release yayınlanmaz.
+
+Sıradaki iş: kaynak pinli CI → ana dal/FTPS → yayın kanıtı ve durum kaydını güncelle.
+
 ## Son doğrulanmış durum — 19 Ekim 2026: Tema yönetimi, demo ve native güncelleme CANLIDA
 
 Bu kayıt aşağıdaki bekleyen uygulama notlarını kapatır. **Codela 1.1.8 → 1.2.0**, tema settings API **1.1.0 → 1.2.0**, Storefront **0.1.141 → 0.1.142**.

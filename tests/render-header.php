@@ -51,4 +51,12 @@ if (getenv('FIXTURE_CATALOG')) { require __DIR__.'/catalog-filter-fixture.php'; 
 require __DIR__.'/../theme/codela-storefront/inc/render.php';
 echo codela_sf_header();
 
-function has_nav_menu($location){return false;}
+function has_nav_menu($location){return getenv('FIXTURE_MENU') === '1';}
+function wp_nav_menu($args){
+    $items = '<li class="current-menu-item"><a aria-current="page" class="sf-ui-pressable" href="/shop/">Mağaza</a></li>';
+    foreach (['Yeni koleksiyon','Hakkımızda','İletişim','Uzun kategori başlığı örneği','Diğer ürünler'] as $label) {
+        $items .= '<li><a class="sf-ui-pressable" href="/category/7/">'.$label.'</a></li>';
+    }
+    if ($args['depth'] > 1) { $items .= '<li><a href="/parent/">Üst kategori</a><ul class="sub-menu"><li><a href="/nested/">Alt kategori</a></li></ul></li>'; }
+    return '<ul class="'.$args['menu_class'].'">'.$items.'</ul>';
+}
