@@ -6,20 +6,18 @@ const attribute=(tag,name)=>tag.match(new RegExp('\\b'+name+'="([^"]*)"'))?.[1];
 (async()=>{
  const browser=await chromium.launch();const results=[];
  const urls={home:'https://codela.dev/',product:(await liveProduct()).url};
- try{for(let repeat=1;repeat<=3;repeat++)for(const [pageName,url] of Object.entries(urls))for(const variant of ['baseline','priority','lean']){
+ try{for(let repeat=1;repeat<=3;repeat++)for(const [pageName,url] of Object.entries(urls))for(const variant of ['baseline','gated']){
   const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:3,isMobile:true,hasTouch:true});
   await context.route('**/*',async route=>{
    const req=route.request();if(req.resourceType()!=='document')return route.continue();
    const response=await route.fetch();let body=await response.text();
    const hero=body.match(pageName==='home'?/<picture class="sf-section-art">[\s\S]*?<img\b[^>]*>/ : /<img\b[^>]*class="[^"]*wp-post-image[^>]*>/)?.[0].match(/<img\b[^>]*>/)?.[0];
-   if(variant!=='baseline'&&hero){const src=attribute(hero,'src'),srcset=attribute(hero,'srcset'),sizes=attribute(hero,'sizes');body=body.replace('</title>','</title><link rel="preload" as="image" fetchpriority="high" href="'+src+'"'+(srcset?' imagesrcset="'+srcset+'"':'')+(sizes?' imagesizes="'+sizes+'"':'')+'>');}
-   if(variant!=='baseline'){
-    body=body.replace(/<(script|link)\b[^>]*>/g,tag=>{
-     if(/rel="modulepreload"|type="module"/.test(tag)||/<script/.test(tag)&&/jquery|woocommerce\/assets\/js\//.test(tag))return tag.replace(/\sfetchpriority="[^"]*"/g,'').replace(/>$/,' fetchpriority="low">');
-     return tag;
-    });
+   if(variant==='gated'){
+    const defer=html=>html.replace(/<source\b[^>]*>/g,tag=>tag.replace(/\bsrcset=/g,'data-sf-media-srcset=')).replace(/<img\b[^>]*>/g,tag=>tag.replace(/\b(src|srcset|sizes)=/g,'data-sf-media-$1=').replace(/>$/,' src="data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%221200%22%20height=%22900%22/%3E">'));
+    body=body.replace(/<picture\b[^>]*>[\s\S]*?<\/picture>/g,picture=>/loading="lazy"/.test(picture)?defer(picture):picture);
+    body=body.replace(/<img\b[^>]*class="[^"]*attachment-woocommerce_thumbnail[^>]*>/g,tag=>/loading="lazy"/.test(tag)?defer(tag):tag);
+    body=body.replace('</head>','<script>'+fs.readFileSync('theme/codela-storefront/assets/scripts/media-loading.js','utf8')+'</script></head>');
    }
-   if(variant==='lean')body=body.replace(/<script\b[^>]*src="[^"]*(?:flexslider|photoswipe)[^"]*"[^>]*><\/script>/g,'');
    await route.fulfill({response,body});
   });
   await context.addInitScript(()=>{window.__critical={lcp:[],cls:0};new PerformanceObserver(l=>l.getEntries().forEach(e=>__critical.lcp.push({time:e.startTime,url:e.url}))).observe({type:'largest-contentful-paint',buffered:true});new PerformanceObserver(l=>l.getEntries().forEach(e=>{if(!e.hadRecentInput)__critical.cls+=e.value})).observe({type:'layout-shift',buffered:true});});
