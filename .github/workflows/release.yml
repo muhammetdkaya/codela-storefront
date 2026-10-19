@@ -38,7 +38,7 @@ jobs:
           gh api "repos/$GITHUB_REPOSITORY/actions/workflows/deploy.yml/runs?head_sha=$SOURCE_SHA&status=success" --jq '.workflow_runs | map(select(.event == "push")) | length > 0' | grep -qx true
       - name: Validate and package exact revision
         env:
-          GITHUB_SHA: ${{ steps.request.outputs.source }}
+          CODELA_SOURCE_SHA: ${{ steps.request.outputs.source }}
           RELEASE_VERSION: ${{ steps.request.outputs.version }}
         run: |
           find theme -name '*.php' -print0 | xargs -0 -n1 php -l

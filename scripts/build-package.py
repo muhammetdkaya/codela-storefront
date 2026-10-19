@@ -5,7 +5,7 @@ ROOT=Path("theme/codela-storefront")
 PUBLIC="https://github.com/muhammetdkaya/codela-storefront/releases/download/"
 def build():
     version=re.search(r"^Version:\s*(\S+)",(ROOT/"style.css").read_text(),re.M).group(1)
-    commit=os.environ.get("GITHUB_SHA","")
+    commit=os.environ.get("CODELA_SOURCE_SHA",os.environ.get("GITHUB_SHA",""))
     if not re.fullmatch(r"\d+\.\d+\.\d+",version) or not re.fullmatch(r"[0-9a-f]{40}",commit):
         raise ValueError("Invalid version or source commit")
     out=Path("dist");out.mkdir(exist_ok=True)
