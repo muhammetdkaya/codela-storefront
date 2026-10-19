@@ -10,7 +10,9 @@ Kullanıcı Actions limiti nedeniyle yeni Actions çalıştırmadan güncel tema
 
 **Kurulum yolu:** ZIP içinde yalnız `codela-storefront/` tema kökü. WordPress Görünüm →Temalar →Yeni tema ekle →Tema yükle →ZIP'i seç →Yüklü olanı yüklenenle değiştir. WordPress'in native overwrite Theme_Upgrader akışı kullanılır; yeni aktivasyon/eklenti veya güvenlik doğrulamasını atlama yok. Tema içindeki otomatik güncelleme kanalı hâlâ145 yayımlanmış paketini gösterir; yeni sürümü bu kanala düşürmek ayrıca GitHub release asset + doğruSHA256 manifest yayını gerektirir. Manuel ZIP vermek bu yayını yapmış olmak değildir.
 
-**Devam:** Tam native WordPress145→148 overwrite ve ayar/içerik korunması ile ZIP hash/kaynak kaydı hazırlanıyor. Sonuçlar takip checkpoint'ine işlenecek; bu anda canlıda/kararlı kanalda148 denmez.
+**Manuel paket kabulü tamamlandı:** uygulama kaynağı `b5c91a2ae13e5e790da8d838d55556ce019b4842`, [manuel148 dalı](https://github.com/muhammetdkaya/codela-storefront/tree/release/manual-storefront-0.1.148). ZIP **142539 bayt /83 dosya**, SHA256 `492a3094d6be3c8c2e6f02b552b7beeef2e1ada713525ffb256d1ecc3e8b6e6f`. Tek `codela-storefront/` kökü, ZIP bütünlüğü ve theme header148 doğrulandı. Yerel native WordPress Theme_Upgrader overwrite ile önce gerçek145 kaynak ZIP'i sonra148 kuruldu: etkin stylesheet/template, tema modları/menü, ana sayfa/Woo sayfa atamaları, Codela option değerleri, ürün sayıları ve sipariş kimlikleri aynen kaldı; kurulu83 dosyanın her biri ZIP ile byte-byte aynı. Sonraki yeni WP isteğinde native hesap ve ürün PHP çıktısı da render edildi. ZIP kullanıcıya indirilebilir dosya olarak hazırlandı. **Kullanıcının canlı kurulumu, FTP dağıtımı veya stable feed yayını yapılmadı.** Stable145 değiştirilmedi; yeni Actions işi tetiklemek için PR açılmadı. Sonraki iş kullanıcının manuel yüklemesinden sonra gerçek görünüm kontrolü ve uygun ortamda tam WebKit/WP/Woo+Codela + mobil44/48/LCP kabulü; daha düşük146/147 dalını bu148 kaynağını kaybettirecek biçimde yayımlamayın.
+
+
 
 ## Çalışma — 19 Ekim 2026: onaylanan masaüstü ürün düzeni / 0.1.147 adayı
 
