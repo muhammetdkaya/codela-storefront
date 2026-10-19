@@ -17,7 +17,7 @@ class Tests(unittest.TestCase):
         self.assertEqual(set(sections),{"appearance","header","product","footer"})
         fields=[field["id"] for section in schema["sections"] for field in section["fields"]]
         self.assertEqual(len(fields),len(set(fields)))
-        self.assertTrue({"accent_color","corner_style","font_style","footer_text","mobile_dock_enabled","product_gallery_thumbnails"}.issubset(set(fields)))
+        self.assertTrue({"accent_color","corner_style","footer_text","mobile_dock_enabled","product_gallery_thumbnails"}.issubset(set(fields)))
         self.assertTrue(all(field["type"] in {"text","menu","product","checkbox","color","select","repeater"} for section in schema["sections"] for field in section["fields"]))
         self.assertIn("wp:codela/storefront-footer", (build.ROOT/"parts/footer.html").read_text())
         self.assertIn("codela_sf_footer", (build.ROOT/"inc/render.php").read_text())

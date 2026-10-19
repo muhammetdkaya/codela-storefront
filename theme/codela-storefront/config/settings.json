@@ -24,16 +24,6 @@
             "round": "Rounded",
             "pill": "Pill"
           }
-        },
-        {
-          "id": "font_style",
-          "type": "select",
-          "label": "Component font",
-          "default": "theme",
-          "options": {
-            "theme": "Theme font",
-            "system": "System font"
-          }
         }
       ]
     },

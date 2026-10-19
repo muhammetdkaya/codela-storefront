@@ -4,7 +4,7 @@
 
 Kullanıcı onayıyla tema paneli **Görünüm / Demo kurulumu / Güncelleme** olarak sadeleştirildi. Site adı, logo, simge, menü konumu ve ana sayfa ataması WordPress kaynaklarına aittir. Codela Sayfalar ara ekranı ve eski option→sayfa geçiş yolları kaldırılır; native sayfa alt paneli korunur. Tema şablon editörünü geliştirmek kapsam dışıdır. Eski ayar/sürüm uyumluluk katmanı istenmedi. Bu kararlar aşağıdaki tarihli ayrı Header/Footer alt menüleri kuralının yerini alır.
 
-**Sürümler:** Codela 1.1.8 → **1.2.0**, theme settings API 1.1.0 → **1.2.0**, Storefront 0.1.141 → **0.1.142**. Ortak vurgu/köşe/font tek tema ayarından gelir; başka temaların bağımsız eklenti görünümü korunur. Yeni yönetim/demo varlıkları mağaza ziyaretçilerine yüklenmez.
+**Sürümler:** Codela 1.1.8 → **1.2.0**, theme settings API 1.1.0 → **1.2.0**, Storefront 0.1.141 → **0.1.142**. Ortak vurgu/köşe tek tema ayarından gelir; yazı tipi temadan miras alınır; başka temaların bağımsız eklenti görünümü korunur. Yeni yönetim/demo varlıkları mağaza ziyaretçilerine yüklenmez.
 
 **Güncelleme:** Native Update URI hook + WordPress Theme_Upgrader; GitHub `stable/manifest.json` ve immutable GitHub release ZIP, SHA256, gereksinim kontrolü, 12 saat başarı / 15 dakika hata önbelleği. Codela paneli native mekanizmayı kullanır. Eski 0.1.1 paket artık offline kurulum fallback'i değildir; snapshot değiştirilmedi. Test sitesi FTPS ile kararlı müşteri yayını ayrılır; `.releases/storefront.json` yalnız test edilmiş kaynak için açık yayın talebidir.
 
