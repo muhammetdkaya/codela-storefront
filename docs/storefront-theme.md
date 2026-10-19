@@ -1,5 +1,16 @@
 # Codela Storefront — güncel teknik durum
 
+## Çalışma — 19 Ekim 2026: onaylanan sade hesap tasarımı / 0.1.147
+
+Kullanıcı görsel taslağı onayladı ve “Hesabım”, “Merhaba, Muhammet” ile destek satırlarını gereksiz bulup kaldırılmasını ve kodlanmasını istedi. Storefront **0.1.145 → 0.1.147** hesap adayı ayrı dalda hazırlanır; Codela runtime **1.2.0 değişmez**. **PR #66 içindeki 0.1.146 medya/hız çalışması ayrı ve henüz yayımlanmamıştır; bu hesap dalı main tabanlıdır, o değişiklikleri içermez veya kapatmaz. Birleştirme öncesinde iki PR güncel main üzerinde bütünleştirilip sürüm sırası korunmalıdır; daha düşük sürümü sonradan main'e taşımayın.**
+
+Tema-native iki Woo sunum şablonu: tek gerçek endpoint menüsü ve son sipariş kartı/adres/hesap kısa yolları. Başlık yalnız ilgili hesap sayfasının post-title bloğunda kaldırılır; selamlama/destek alanı render edilmez. Mobil menü tek native details/summary; masaüstünde aynı link listesi görünür, ek JS/controller yok. Butonlar mevcut UI Kit; ikonlar yerel aynı Lucide çizgi sözleşmesidir. Son sipariş tek current-customer/limit1 Woo sorgusuyla alınır; para, tarih, durum, order URL, logout nonce ve bütün endpoint/form yetkisi Woo'dadır. Boş sipariş, silinmiş ürün, çoklu satır, iptal durumu ele alınır. Bağımsız Codela endpointleri ve dashboard/navigation hook'ları korunur; checkout modülleri değişmez.
+
+**Yerel doğrulama:** PHP lint, 24 paket testi ve UI Kit kontrolü başarılı. 320/390/800/1280/1440px native menü/klavye, JS kapalı liste, taşma, boş/iptal sipariş, kullanıcıya sınırlandırılmış sorgu, kaçış ve ortak primary foreground testleri başarılı. Önceki guest auth/isolation tarayıcı testleri 390/1280'de ayrı Chromium süreçleriyle geçti (bu ortamın single-process Chromium'u ikinci context açılınca kapanıyor; test eşikleri değiştirilmedi). İzole gerçek WP7.2-alpha/Woo11.2.1 + Codela köprüsünde native hesap/sipariş/adres/hesap form çıktısı beş genişlikte sınandı; tam Codela matrisi yerine geçmez. Woo9.0.2 kaynak kontrolünde current-item için yalnız mevcut `wc_get_account_menu_item_classes` kullanılır; daha yeni yardımcıya bağımlılık yok.
+
+**Bekleyen:** GitHub Chromium/WebKit ve tam WP/Woo+Codela kabulü, main/FTPS ve canlı görsel kontrol. GitHub runner kuyruğu önceki işlerde de atanmış runner olmadan bekliyordu. Bu kayıt canlıya alındı anlamına gelmez. 0.1.145 mevcut canlı/kararlı sürümdür; önceki LCP, fiziksel Safari, gerçek gateway ve field INP açık. Sıradaki somut adım: yeni kaynak PR kabulünü ve gerçek entegrasyon testini çalıştır; #66 ile sürüm sırasını çöz, başarılı kontroller sonrası dağıtımı doğrula.
+
+
 ## Çalışma — 19 Ekim 2026: ürün/header/ödeme/hesap yerleşimi, 0.1.145 kabul bekliyor
 
 Kullanıcının yeni onayıyla Storefront 0.1.144 → 0.1.145 hazırlanıyor; Codela runtime 1.2.0 değişmez. Native ürün overview ve media slot'u galerinin relative konumu ile sayfa sticky konumunu ayırır; sticky alt bilgi/tavsiye alanına taşamaz. Aynı Woo galeri/form kullanılır, mobil adapter yalnız original summary'yi taşır ve aynı marker'a geri koyar. Header aynı WP primary kaynağından tüm alt seviyeleri native popover ile sunar; 1100px+ atanmış menü varsa hamburger gizlidir, dar ekranda aynı popup korunur. Desktop/popup menü ve item ID'leri ayrıdır. Native popover toggle/Escape/outside-click tarayıcıya aittir; mevcut dock controller yalnız yüzeyi konumlandırır.

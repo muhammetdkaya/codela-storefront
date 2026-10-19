@@ -1,5 +1,16 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Çalışma — 19 Ekim 2026: onaylanan sade hesap tasarımı / 0.1.147
+
+Kullanıcı görsel taslağı onayladı ve “Hesabım”, “Merhaba, Muhammet” ile destek satırlarını gereksiz bulup kaldırılmasını ve kodlanmasını istedi. Storefront **0.1.145 → 0.1.147** hesap adayı ayrı dalda hazırlanır; Codela runtime **1.2.0 değişmez**. **PR #66 içindeki 0.1.146 medya/hız çalışması ayrı ve henüz yayımlanmamıştır; bu hesap dalı main tabanlıdır, o değişiklikleri içermez veya kapatmaz. Birleştirme öncesinde iki PR güncel main üzerinde bütünleştirilip sürüm sırası korunmalıdır; daha düşük sürümü sonradan main'e taşımayın.**
+
+Tema-native iki Woo sunum şablonu: tek gerçek endpoint menüsü ve son sipariş kartı/adres/hesap kısa yolları. Başlık yalnız ilgili hesap sayfasının post-title bloğunda kaldırılır; selamlama/destek alanı render edilmez. Mobil menü tek native details/summary; masaüstünde aynı link listesi görünür, ek JS/controller yok. Butonlar mevcut UI Kit; ikonlar yerel aynı Lucide çizgi sözleşmesidir. Son sipariş tek current-customer/limit1 Woo sorgusuyla alınır; para, tarih, durum, order URL, logout nonce ve bütün endpoint/form yetkisi Woo'dadır. Boş sipariş, silinmiş ürün, çoklu satır, iptal durumu ele alınır. Bağımsız Codela endpointleri ve dashboard/navigation hook'ları korunur; checkout modülleri değişmez.
+
+**Yerel doğrulama:** PHP lint, 24 paket testi ve UI Kit kontrolü başarılı. 320/390/800/1280/1440px native menü/klavye, JS kapalı liste, taşma, boş/iptal sipariş, kullanıcıya sınırlandırılmış sorgu, kaçış ve ortak primary foreground testleri başarılı. Önceki guest auth/isolation tarayıcı testleri 390/1280'de ayrı Chromium süreçleriyle geçti (bu ortamın single-process Chromium'u ikinci context açılınca kapanıyor; test eşikleri değiştirilmedi). İzole gerçek WP7.2-alpha/Woo11.2.1 + Codela köprüsünde native hesap/sipariş/adres/hesap form çıktısı beş genişlikte sınandı; tam Codela matrisi yerine geçmez. Woo9.0.2 kaynak kontrolünde current-item için yalnız mevcut `wc_get_account_menu_item_classes` kullanılır; daha yeni yardımcıya bağımlılık yok.
+
+**Bekleyen:** GitHub Chromium/WebKit ve tam WP/Woo+Codela kabulü, main/FTPS ve canlı görsel kontrol. GitHub runner kuyruğu önceki işlerde de atanmış runner olmadan bekliyordu. Bu kayıt canlıya alındı anlamına gelmez. 0.1.145 mevcut canlı/kararlı sürümdür; önceki LCP, fiziksel Safari, gerçek gateway ve field INP açık. Sıradaki somut adım: yeni kaynak PR kabulünü ve gerçek entegrasyon testini çalıştır; #66 ile sürüm sırasını çöz, başarılı kontroller sonrası dağıtımı doğrula.
+
+
 ## Son doğrulanmış durum — 19 Ekim 2026: 0.1.145 canlıda ve kararlı kanalda, LCP açık
 
 **Ürün/header/ödeme/hesap teslimi tamamlandı.** [Tema PR #64](https://github.com/muhammetdkaya/codela-storefront/pull/64) ana dala squash `84a66b26da3b3c6bcf7548e28f82bd94230c7d58` olarak alındı; Storefront **0.1.145**, Codela eklenti **1.2.0** değişmedi. Native Woo ürün galeri/summary, desktop 1100px+ tek WordPress primary menüsü/nested popover, responsive classic checkout ve tema-owned native Woo hesabı birlikte çalışır. Codela checkout-pro modül kart/modal stilleri, bağımsız Codela hesap servisleri, Woo endpointleri ve canlı müşteri/sipariş/site ayarları korunur. Eski katmanların üzerine yama/ikinci motor eklenmedi.
@@ -697,7 +708,7 @@ Kalan: kullanıcının yeni fiziksel cihaz görsel kabulü, gerçek ödeme sağl
 
 - Tek Interactivity store, tek native dialog, tek dock. `assets/storefront.js` bileşim noktası; search/cart/overlay/dock ayrı controller'lardır. Yeni controller/SPA/router veya ikinci sepet motoru kurmayın.
 - Tüm tema düğmeleri `inc/ui.php`, `assets/styles/tokens.css`, `assets/styles/components.css` içindeki Button/IconButton/pressable sözleşmesini kullanır. Sayfa CSS'i yerleşim ve mevcut token override'larını sağlar; yeni kopya paint/pressed/focus kuralları eklemeyin.
-- Tema guest hesabı ve mağaza görünümünü yönetir. Oturum açmış Codela hesap/sipariş/adres/kargo paneli eklentiye aittir; `.codela-my-account-layout` kapsamına ortak tema form/card/nav stilleri taşımayın.
+- Tema mevcut appearance `account=theme` sözleşmesiyle native Woo girişli hesap sunumunu da yönetir. Bağımsız Codela modülleri endpoint/hook sahibi kalır; başka temaların `.codela-my-account-layout` kapsamına ortak tema form/card/nav stilleri taşımayın.
 - Kaynak isimleri platform/cihaz adlarından bağımsızdır. Standart semantik HTML, reduced-motion, 44px hedefler ve erişilebilir isimler korunur.
 - **Ortak UI kapsamı:** 0.1.52 Button/IconButton büyüme, esnek bırakma ve saydam yüzey kuralları tokens/components içinde uygulanmıştır. Güncel HEAD kontrolü yapın; F5 için bu stilleri geri almayın veya sayfa CSS’ine kopyalamayın. Yayın kanıtı üstteki devam noktasında tutulur.
 

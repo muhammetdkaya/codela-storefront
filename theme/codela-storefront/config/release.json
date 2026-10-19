@@ -6,8 +6,8 @@
     "codela": "1.2.0"
   },
   "changes": [
-    "Masaüstü ürün galerisinde yakınlaştırma sırasında istenmeyen kapanma önlendi.",
-    "İlgili ürün ve sayfa bölümlerindeki resimlere düşük ağ önceliği verildi.",
-    "Doğrulanmış WebP sürümleri ürün kartlarında da yeniden kullanılıyor."
+    "Hesap görünümü doğrudan menü ve son sipariş kartıyla başlar; tekrar eden başlık, karşılama ve destek yazıları kaldırıldı.",
+    "Masaüstünde yan menü, mobilde native açılır hesap menüsü ve tek sütunlu kartlar kullanılır.",
+    "Sipariş, adres, hesap formları ve bağımsız Codela modülleri native WooCommerce uçlarını kullanmaya devam eder."
   ]
 }

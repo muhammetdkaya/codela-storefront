@@ -1,5 +1,10 @@
 # Codela Storefront UI Kit — source of truth
 
+## Compact signed-in account — 0.1.147 candidate
+
+The approved account starts directly with native navigation and content. No visible page title, greeting or support lead-in. One Woo endpoint list becomes a no-script native disclosure on narrow screens and a sidebar on desktop; preserve all module destinations and nonce-bearing logout URLs. Overview uses one customer-bound latest-order query, real status/price/date, a native order-detail link and registered address/account shortcuts. Empty/deleted-product/multiple-item states must remain truthful. UI Kit owns CTA paint/foreground/focus/press; account CSS owns layout. No new browser script, independent form engine or duplicated plugin dashboard. Native navigation/dashboard hooks remain. Guest authentication and checkout are separate unchanged surfaces.
+
+
 ## Theme appearance and desktop layout — 0.1.145 (acceptance pending)
 
 Use the plugin's existing Theme appearance mode for account. Native Woo navigation/forms/endpoints stay authoritative; independent Codela modules retain their hooks. The optional plugin standalone account layout/assets/fullscreen are not loaded. Do not duplicate its dashboard/controller or mutate saved preferences. Classic checkout owns only its native page composition; Codela checkout module cards/modals keep their current presentation. Product sticky belongs to the media slot inside the overview; the gallery retains native relative positioning. Mobile reuses/restores its original summary. Desktop primary menu exposes every native depth through browser popovers and excludes the hamburger while visible; narrow screens retain the existing dialog. Shared UI Kit owns buttons, native popovers own dismissal, and the existing dock controller only anchors them.
