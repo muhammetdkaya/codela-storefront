@@ -19,6 +19,8 @@ function is_user_logged_in() { return $GLOBALS['signed_in'] ?? false; }
 function __( $s, ...$args ) { return $s; }
 function add_filter( ...$args ) {}
 function is_front_page() { return $GLOBALS['front_page'] ?? false; }
+function is_product() { return $GLOBALS['product_page'] ?? false; }
+function codela_sf_png_webp_sources( $id ) { return $GLOBALS['verified_webp'][$id] ?? []; }
 function doing_action( $name ) { return $GLOBALS['in_card_image'] ?? false; }
 function do_action( $name ) { $GLOBALS['called'][] = $name; }
 function woocommerce_product_loop_start() { echo '<ul class="products">'; }
@@ -60,7 +62,15 @@ check( in_array('woocommerce_before_shop_loop',$called,true) && in_array('woocom
 $query_vars = ['post_type'=>'post'];
 check( codela_sf_search_results() === 'core-query-fallback', 'Editorial searches keep core Query' );
 $front_page = true; $in_card_image = true;
-check( codela_sf_catalog_image_attributes(['fetchpriority'=>'high']) === ['loading'=>'lazy','decoding'=>'async'], 'Home cards stay deferred' );
+check( codela_sf_catalog_image_attributes(['fetchpriority'=>'high']) === ['loading'=>'lazy','decoding'=>'async','fetchpriority'=>'low'], 'Home cards stay low-priority' );
+$front_page = false; $product_page = true;
+$verified_webp = [ 42 => [ ['url'=>'https://site.test/optimized-400.webp','width'=>400], ['url'=>'https://site.test/optimized-800.webp','width'=>800] ] ];
+$optimized = codela_sf_catalog_image_attributes( ['src'=>'https://site.test/original.png','srcset'=>'original.png 800w','sizes'=>'300px','fetchpriority'=>'high'], (object)['ID'=>42] );
+check( $optimized['loading']==='lazy' && $optimized['fetchpriority']==='low' && $optimized['src']==='https://site.test/optimized-800.webp'
+    && $optimized['srcset']==='https://site.test/optimized-400.webp 400w, https://site.test/optimized-800.webp 800w'
+    && $optimized['sizes']==='300px', 'Related products reuse verified WebP and native responsive sizes' );
+$fallback = codela_sf_catalog_image_attributes(['src'=>'native.png','srcset'=>'native.png 400w'], (object)['ID'=>43]);
+check( $fallback['src']==='native.png' && $fallback['srcset']==='native.png 400w' && $fallback['fetchpriority']==='low', 'Unoptimized related card retains native image' );
 $in_card_image = false;
 check( codela_sf_catalog_image_attributes(['fetchpriority'=>'high']) === ['fetchpriority'=>'high'], 'Hero priority remains unchanged' );
 echo "Shared native catalog context, error recovery and search boundaries passed.\n";
