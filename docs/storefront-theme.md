@@ -1,5 +1,11 @@
 # Codela Storefront — güncel teknik durum
 
+## Yayın hazırlığı — 19 Ekim 2026: 0.1.149 sürüm çakışması düzeltmesi
+
+Kullanıcı daha önce eski bir paketi aynı 0.1.148 numarasıyla yüklediğini bildirdi ve sürüm yükseltilmesini açıkça istedi. Native WordPress güncelleyicisi yalnız daha yüksek sürümü sunduğundan tema 0.1.149'a çıkarılır. 0.1.148'de doğrulanan sayfa başlığı ve kategori bantları kodu korunur; yalnız sürüm, paket testi beklentileri ve sürüm notu güncellenir. Mevcut v0.1.148 etiketi/ZIP'i değiştirilmez. 0.1.149 yayınından sonra Codela → Tema → Güncelleme → Şimdi kontrol et → Şimdi güncelle kullanılacak.
+
+**Durum:** Kaynak sürüm yükseltmesi hazırlanıyor; ana dal CI/FTPS ve yeni immutable release + stable manifest doğrulanmadan yayın tamamlandı denmez. Fatura Kurumsal değişikliği hâlâ ayrı Codela PR #17'dedir. Son doğrulanmış yayın aşağıda 0.1.148 olarak kayıtlıdır.
+
 ## Son doğrulanmış durum — 19 Ekim 2026: 0.1.148 canlıda ve uzaktan güncelleme kanalında
 
 Kullanıcı GitHub sürümünün yayımlanmasını ve temanın mevcut uzaktan güncelleme yoluyla sitede denenmesini açıkça istedi. Aşağıdaki inceleme notunun yayın durumu bu kayıtla güncellenir. [PR #68](https://github.com/muhammetdkaya/codela-storefront/pull/68) ana dala `13e8e00eb8c5945c4417b4babbc3fcebbf999b22` ile birleştirildi. Otomatik page/checkout üst başlıkları kaldırıldı; kategori **Görsel bantlar · C** 1024px+ dört, 701–1023px iki ve mobilde tek sütundur. Uzun çok sütunlu kart metinleri kesilmeden büyür; görsel sizes değeri yerleşimi izler.

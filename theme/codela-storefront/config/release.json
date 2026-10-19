@@ -8,6 +8,7 @@
   "changes": [
     "Standart sayfalarda ve ödeme sayfasında temanın otomatik eklediği üst başlık kaldırıldı.",
     "Sayfa içeriği, içerikteki başlıklar ve WooCommerce ödeme akışı korundu.",
-    "Kategori Görsel bantlar · C düzeni masaüstünde dört, tablette iki sütun gösterir; mobil tek sütun korunur."
+    "Kategori Görsel bantlar · C düzeni masaüstünde dört, tablette iki sütun gösterir; mobil tek sütun korunur.",
+    "Aynı sürüm numarasıyla eski paket kurulu olan mağazalar için güncelleme sürümü 0.1.149 olarak yükseltildi."
   ]
 }
