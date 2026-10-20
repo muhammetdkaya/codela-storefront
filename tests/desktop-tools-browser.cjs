@@ -73,7 +73,9 @@ const cart={items_count:1,items:[{key:'one',name:'Deneme ürünü',permalink:'/p
  await page.evaluate(()=>window.sfActions.menu());
  assert.equal(await page.locator('.sf-menu-secondary [data-panel]').count(),0,'No duplicate search/account below menu');
  if(assigned==='1'){
-  const centered=await page.locator('#sf-menu .sf-menu-list > li > a').first().evaluate(el=>{const a=el.getBoundingClientRect(),p=document.querySelector('#sf-menu').getBoundingClientRect();return Math.abs(a.x+a.width/2-p.x-p.width/2)});
+  await page.locator('#sf-menu .sf-menu-list > li > a').first().waitFor({state:'visible'});
+  await page.locator('#sf-menu').evaluate(async el=>{await Promise.all(el.getAnimations().map(a=>a.finished.catch(()=>{})))});
+  const centered=await page.locator('#sf-menu .sf-menu-list > li > a').first().evaluate(el=>{const a=el.getBoundingClientRect(),p=document.querySelector('#sf-menu').getBoundingClientRect();return a.width>0&&a.height>0?Math.abs(a.x+a.width/2-p.x-p.width/2):Infinity});
   assert(centered<1,'Mobile menu labels are centered');
   await page.screenshot({path:'qa/storefront-ui-kit-mobile-menu.png'});
  }

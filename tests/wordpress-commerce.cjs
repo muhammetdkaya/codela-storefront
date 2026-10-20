@@ -16,29 +16,32 @@ try{
  report.checks.push('Guest native forms work without storefront graph; unavailable Google is hidden');
  await page.goto('http://127.0.0.1:8888/?add-to-cart='+seed.pid,{waitUntil:'networkidle'});
  await page.goto(seed.checkout,{waitUntil:'networkidle'});
+ const settleCheckout=()=>page.waitForFunction(()=>!window.jQuery||(jQuery.active===0&&!jQuery('form.checkout_coupon').is(':animated')));
+ const showCoupon=async()=>{await settleCheckout();if(!await page.locator('form.checkout_coupon').isVisible())await page.locator('a.showcoupon').click();await settleCheckout();};
+ const applyCoupon=async code=>{await showCoupon();await page.locator('#coupon_code').fill(code);await Promise.all([page.waitForResponse(r=>r.url().includes('wc-ajax=apply_coupon')),page.locator('button[name=apply_coupon]').click()]);await settleCheckout();};
  for(const width of [320,390,700,1024,1440]){
   await page.setViewportSize({width,height:900});
   assert(!await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1));
   const notice=page.locator('.woocommerce-form-coupon-toggle :is(.woocommerce-info,.wc-block-components-notice-banner)');
   assert.equal(await notice.evaluate(e=>getComputedStyle(e,'::before').content),'none','Old Woo notification icon removed');
   assert.equal(await notice.evaluate(e=>getComputedStyle(e).borderTopWidth),'1px');
-  if(!await page.locator('form.checkout_coupon').isVisible())await page.locator('a.showcoupon').click();
-  await page.locator('#coupon_code').fill('layout-invalid');
-  await page.locator('button[name=apply_coupon]').click();
-  await page.locator('.woocommerce-error,.wc-block-components-notice-banner.is-error').first().waitFor();
-  assert(await page.locator('.woocommerce-error,.wc-block-components-notice-banner.is-error').first().innerText(),'Real native coupon error stays visible');
-  assert.equal(await page.locator('.woocommerce-error,.wc-block-components-notice-banner.is-error').first().evaluate(e=>getComputedStyle(e,'::before').content),'none');
+  await showCoupon();
   const buttons=await page.locator('#place_order,button[name=apply_coupon]').evaluateAll(nodes=>nodes.map(e=>{const c=getComputedStyle(e);return{height:e.getBoundingClientRect().height,radius:c.borderRadius,paint:c.backgroundColor,color:c.color,type:e.type}}));
   assert(buttons.every(b=>b.height>=44&&b.type==='submit'));
   assert.equal(buttons[0].paint,buttons[1].paint,'Coupon and order use the same Button');assert.equal(buttons[0].radius,buttons[1].radius);
   const order=await page.locator('#order_review').evaluate(e=>({background:getComputedStyle(e).backgroundColor,payment:getComputedStyle(e.querySelector('#payment')).backgroundColor}));
   assert.equal(order.background,'rgb(255, 255, 255)');assert.equal(order.payment,'rgba(0, 0, 0, 0)','One review surface');
+  const invalid='layout-invalid-'+width;await applyCoupon(invalid);
+  const error=page.locator('.woocommerce-error,.wc-block-components-notice-banner.is-error').first();await error.waitFor();
+  assert((await error.innerText()).includes(invalid),'Real native coupon error corresponds to this submission');
+  assert.equal(await error.evaluate(e=>getComputedStyle(e,'::before').content),'none');
+  await showCoupon();
   await page.screenshot({path:`${dir}/${engine}-commerce-checkout-${width}.png`,fullPage:true});
  }
- await page.locator('#coupon_code').fill('layout-ten');await page.locator('button[name=apply_coupon]').click();
+ await applyCoupon('layout-ten');
  await page.locator('.cart-discount').waitFor();assert(await page.locator('.cart-discount').innerText().then(t=>t.includes('layout-ten')));
  await page.locator('#billing_first_name').fill('Preserved');
- await page.locator('.woocommerce-remove-coupon').click();await page.locator('.cart-discount').waitFor({state:'detached'});
+ await page.locator('.woocommerce-remove-coupon').click();await page.locator('.cart-discount').waitFor({state:'detached'});await settleCheckout();
  assert.equal(await page.locator('#billing_first_name').inputValue(),'Preserved','Coupon recalculation preserves form values');
  report.checks.push('Native invalid/valid/remove coupon, fragment repaint, preserved billing and shared Button at five widths');
  // Mobile single photo must keep its first frame while the adapter is delayed.
