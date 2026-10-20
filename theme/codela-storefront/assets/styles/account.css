@@ -185,8 +185,6 @@ body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerc
 body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-navigation li.is-active a{background:var(--sf-ui-surface-muted);font-weight:600}
 body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-navigation li.woocommerce-MyAccount-navigation-link--customer-logout{margin-top:16px;padding-top:8px;border-top:1px solid var(--sf-ui-border)}
 .sf-account-menu summary{display:none}
-.sf-account-menu::details-content{content-visibility:visible;display:block}
-.sf-account-menu:not([open]) > ul{display:block}
 .sf-account-menu .sf-icon,.sf-account-overview .sf-icon{width:22px;height:22px;flex:none;display:block}
 body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-content{grid-column:2;float:none;width:100%;min-width:0;padding:26px;border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface);color:var(--sf-ui-ink);font-size:14px;line-height:1.65;overflow-wrap:anywhere}
 body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-content a:not(.sf-ui-button,.button){color:var(--sf-ui-control-ink);text-underline-offset:3px}
@@ -231,8 +229,6 @@ body.woocommerce-account .woocommerce .sf-account-shortcut h2{font-size:17px}
  .sf-account-menu summary::-webkit-details-marker{display:none}
  .sf-account-menu summary .sf-icon{width:18px;height:18px}
  .sf-account-menu[open] summary .sf-icon{transform:rotate(45deg)}
- .sf-account-menu::details-content{content-visibility:hidden}
- .sf-account-menu[open]::details-content{content-visibility:visible}
  .sf-account-menu:not([open]) > ul{display:none}
  body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .sf-account-menu ul{margin-top:8px}
  .sf-account-card{padding:20px}

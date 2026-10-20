@@ -19,7 +19,9 @@ const render=env=>execFileSync(process.env.PHP_BIN||'php',['tests/render-account
     const n=await nav.boundingBox(), c=await content.boundingBox();
     if(width<=800){
      assert(c.y>=n.y+n.height,'Mobile card follows navigation');
-     assert(!await nav.locator('a').first().isVisible(),'Mobile list starts closed without JS');
+     assert(await nav.locator('a').first().isVisible(),'No-JS keeps native destinations available');
+     await nav.locator('summary').click();
+     assert(!await nav.locator('a').first().isVisible(),'Native mobile disclosure closes without JS');
      await nav.locator('summary').click();
      assert(await nav.locator('a[href="/account/privacy/"]').isVisible(),'Independent plugin destination appears in disclosure');
      assert(await nav.locator('a[aria-current="page"]').isVisible(),'Native current destination preserved');

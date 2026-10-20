@@ -35,6 +35,16 @@ const overlay = createOverlayController({
     mobileDock: dock.mobileDock, dockScrollPositions: dock.dockScrollPositions,
     onMenuOpen: () => { menuPath = []; paintMenu(); },
 });
+function initAccountMenu() {
+    const menu = document.querySelector('.sf-account-menu');
+    if (!menu) return;
+    const narrow = window.matchMedia('(max-width:800px)');
+    // Native open state works in WebKit too. Without JS all destinations stay
+    // available; mobile enhancement only collapses the original disclosure.
+    const sync = () => { menu.open = !narrow.matches; };
+    sync();
+    narrow.addEventListener('change', sync);
+}
 function preventInitialAccountAutoFocus() {
     const account = document.body.classList.contains('woocommerce-account')
         || !!document.querySelector('.woocommerce-MyAccount-navigation, .woocommerce-form-login, .woocommerce-form-register');
@@ -78,6 +88,7 @@ function paintMenu() {
     $('#sf-menu .sf-menu-secondary').hidden = !!menuPath.length;
 }
 function init() {
+    initAccountMenu();
     preventInitialAccountAutoFocus();
     const dialog = $('#sf-panel'); if (!dialog) return;
     overlay.bind(dialog);

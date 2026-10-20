@@ -11,7 +11,7 @@ foreach ( $items as $endpoint => $label ) {
 }
 ?>
 <nav class="woocommerce-MyAccount-navigation" aria-label="<?php esc_attr_e( 'Account pages', 'woocommerce' ); ?>">
-    <details class="sf-account-menu">
+    <details class="sf-account-menu" open>
         <summary class="sf-ui-pressable"><?php echo esc_html( $current_label ); ?><?php echo codela_sf_icon( 'plus' ); ?></summary>
         <ul>
             <?php foreach ( $items as $endpoint => $label ) : ?>
