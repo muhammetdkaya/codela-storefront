@@ -124,6 +124,7 @@ const {liveProduct}=require('./live-product.cjs');
     const photos=[...document.querySelectorAll('.woocommerce-product-gallery__image')];
     const edges=photos.map(e=>scrollY+e.getBoundingClientRect().top);
     const target=document.querySelector(selector),destination=scrollY+target.getBoundingClientRect().top;
+    const startY=scrollY,samples=[];
     const direction=Math.sign(destination-scrollY);let previous=scrollY,reverse=0,drift=0,flips=0,compact=document.querySelector('.sf-product-sheet').classList.contains('is-discovering');
     window.scrollTo({top:destination,behavior:'smooth'});
     for(let frame=0;frame<90;frame++){
@@ -132,9 +133,11 @@ const {liveProduct}=require('./live-product.cjs');
      if(current!==compact){flips++;compact=current;}
      drift=Math.max(drift,...photos.map((e,i)=>Math.abs(scrollY+e.getBoundingClientRect().top-edges[i])));
      reverse=Math.max(reverse,-direction*(scrollY-previous));previous=scrollY;
+     if(frame%10===0)samples.push({frame,y:scrollY,discovering:current,snap:getComputedStyle(document.documentElement).scrollSnapType});
     }
-    return{drift,reverse,flips,top:target.getBoundingClientRect().top};
+    return{drift,reverse,flips,top:target.getBoundingClientRect().top,startY,destination,endY:scrollY,maxY:document.documentElement.scrollHeight-innerHeight,samples};
    },selector);
+   console.log('GALLERY_TRANSITION_METRICS '+JSON.stringify({selector,...metrics}));
    assert(metrics.drift<1,'Photo coordinates never change during panel transition '+JSON.stringify(metrics));
    assert(metrics.reverse<2,'No backward scroll correction during the transition '+JSON.stringify(metrics));
    assert(metrics.flips<=1,'Discovery state does not oscillate '+JSON.stringify(metrics));
