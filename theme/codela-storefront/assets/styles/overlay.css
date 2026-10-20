@@ -232,6 +232,12 @@
 #sf-panel.is-cart-panel .sf-cart-bottom .sf-ui-button{display:flex}
 #sf-panel.is-cart-panel .sf-status{padding-inline:var(--sf-overlay-gutter)}
 #sf-panel.is-cart-panel #sf-cart-items{max-width:780px;margin-inline:auto}
+/* Empty cart is a composed state, not a second cart or button component. */
+#sf-panel.is-cart-panel .sf-cart-empty{min-height:min(50vh,360px);display:flex;flex-direction:column;align-items:center;justify-content:center;box-sizing:border-box;padding:32px 20px;text-align:center}
+#sf-panel.is-cart-panel .sf-cart-empty-mark{display:block;width:64px;height:64px;flex:none;margin-bottom:20px;border-radius:var(--sf-ui-pill);background:var(--sf-ui-surface-muted) url('../icons/shopping-bag.svg') center/27px 27px no-repeat}
+#sf-panel.is-cart-panel .sf-cart-empty h3{margin:0;color:var(--sf-ui-ink);font:inherit;font-size:clamp(19px,3vw,23px);font-weight:600;letter-spacing:-.025em;line-height:1.25}
+#sf-panel.is-cart-panel .sf-cart-empty p{max-width:320px;margin:10px 0 22px;color:var(--sf-muted,#73746d);font-size:13px;line-height:1.6}
+#sf-panel.is-cart-panel .sf-cart-empty .sf-ui-button{--sf-ui-button-height:44px;--sf-ui-button-padding-y:11px;--sf-ui-button-padding-x:22px;--sf-ui-button-font-size:13px;font-weight:600}
 @media(max-width:360px){
   #sf-panel.is-cart-panel .sf-cart-row{grid-template-columns:64px minmax(0,1fr);gap:12px}
 }
