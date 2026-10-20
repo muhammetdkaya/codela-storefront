@@ -18,7 +18,7 @@ function setup(extend = () => {}, getCurrent = () => 'cart') {
  window:{addEventListener:()=>{}},escape:x=>x,decode:x=>x,safeURL:x=>x,money:x=>String(x)};
  extend(context, nodes);
  vm.createContext(context);vm.runInContext(source+'\nthis.createCartController=createCartController;',context);
- const controller=context.createCartController({$:id=>nodes[id],config:()=>({api:'/api/',cart:'/cart'}),t:x=>x,getCurrent,getDialog:()=>({open:false})});
+ const controller=context.createCartController({$:id=>nodes[id],config:()=>({api:'/api/',cart:'/cart',shop:'/shop',home:'/'}),t:x=>x,getCurrent,getDialog:()=>({open:false})});
  const answer=(index,data,nonce='nonce-'+index,ok=true,code)=>requests[index].resolve({ok,headers:{get:key=>key==='Nonce'?nonce:null},json:async()=>ok?data:{code,message:'failure'}});
  return {controller,requests,nodes,listeners,answer};
 }
@@ -52,6 +52,12 @@ if (require.main === module) (async()=>{
  assert.equal(x.listeners['wc-blocks_added_to_cart']?.length,1);
  assert.equal(x.listeners['wc-blocks_removed_from_cart']?.length,1);
  x.answer(0,snapshot(0));await tick();
+ const empty=x.nodes['#sf-cart-items'].innerHTML;
+ assert.match(empty,/class="sf-empty sf-cart-empty"/,'Empty state uses the cart presentation');
+ assert.match(empty,/href="\/shop"/,'Empty cart uses the configured native shop URL');
+ assert.match(empty,/sf-ui-button--secondary/,'Continue shopping reuses the shared Button');
+ assert.equal((empty.match(/Continue shopping/g)||[]).length,1,'One accessible navigation CTA');
+ assert.equal(x.nodes['.sf-cart-bottom'].hidden,true,'Empty cart never shows checkout totals');
  }
  // Closed cart: 20 items keep live state/badge without creating hidden images.
  {

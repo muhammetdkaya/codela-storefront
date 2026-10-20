@@ -17,6 +17,18 @@ styles.splice(1,0,fs.readFileSync('theme/codela-storefront/assets/storefront.css
    await page.addScriptTag({content:dockSource+'\ncreateDockController({getDialog:()=>document.querySelector("#sf-panel"),getCurrent:()=>null,open:()=>{},close:()=>{}}).init(document.querySelector("#sf-panel"));'});
    for(const width of [320,700,900,1099,1100,1280,1440,1920]){
     await page.setViewportSize({width,height:900});
+    // All visible header islands share the 44px footprint and vertical center.
+    const islands=await page.evaluate(()=>{
+     const header=document.querySelector('.sf-header'),h=header.getBoundingClientRect();
+     return ['.sf-brand','.sf-header-menu .sf-ui-icon-button','.sf-actions','.sf-desktop-navigation']
+      .map(selector=>({selector,el:header.querySelector(selector)}))
+      .filter(({el})=>el&&el.getClientRects().length&&getComputedStyle(el).visibility!=='hidden')
+      .map(({selector,el})=>{const r=el.getBoundingClientRect();return {selector,height:r.height,offset:(r.top+r.height/2)-(h.top+h.height/2)};});
+    });
+    for(const island of islands){
+     assert(Math.abs(island.height-44)<=2,`Header island height at ${width}px: ${JSON.stringify(island)}`);
+     assert(Math.abs(island.offset)<=2,`Header island vertical alignment at ${width}px: ${JSON.stringify(island)}`);
+    }
     assert(!(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1)),`No overflow, menu ${assigned}, width ${width}`);
     assert.equal(await page.locator('.sf-desktop-navigation').count(),Number(assigned),'No fabricated menu when location is empty');
     if(assigned==='1'){
