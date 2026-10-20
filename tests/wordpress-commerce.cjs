@@ -44,19 +44,19 @@ try{
  await page.locator('.woocommerce-remove-coupon').click();await page.locator('.cart-discount').waitFor({state:'detached'});await settleCheckout();
  assert.equal(await page.locator('#billing_first_name').inputValue(),'Preserved','Coupon recalculation preserves form values');
  report.checks.push('Native invalid/valid/remove coupon, fragment repaint, preserved billing and shared Button at five widths');
- // Measure the real server-rendered photo before the DOM-ready adapter mounts.
- // WP 6.5 emits this script in the head; delaying its download blocks parsing
- // rather than producing a meaningful pre-mount photo. Capture runs first.
+ // Record the first observable native photo frame, whether this WP version
+ // mounts in the footer or at DOM-ready. Never block a parser-owned script.
  await page.setViewportSize({width:390,height:844});
- await context.addInitScript(()=>document.addEventListener('DOMContentLoaded',()=>{
-  const photo=document.querySelector('.woocommerce-product-gallery__image');
-  if(photo)window.__productBeforeMount={rect:photo.getBoundingClientRect().toJSON(),ready:document.body.classList.contains('sf-product-sheet-ready')};
- },{capture:true,once:true}));
+ await context.addInitScript(()=>{
+  const capture=()=>{const photo=document.querySelector('.woocommerce-product-gallery__image');if(!photo||window.__productFirstFrame)return;const rect=photo.getBoundingClientRect();if(rect.height>0)window.__productFirstFrame={rect:rect.toJSON(),ready:document.body.classList.contains('sf-product-sheet-ready')};};
+  const observer=new MutationObserver(capture);observer.observe(document,{childList:true,subtree:true});
+  document.addEventListener('DOMContentLoaded',()=>{capture();observer.disconnect();},{capture:true,once:true});
+ });
  await page.goto(seed.simple,{waitUntil:'load'});await page.locator('body.sf-product-sheet-ready').waitFor();
- const initial=await page.evaluate(()=>window.__productBeforeMount);assert(initial&&!initial.ready,'Capture measures original Woo photo before adapter');
+ const initial=await page.evaluate(()=>window.__productFirstFrame);assert(initial,'First native photo frame was recorded');
  const before=initial.rect,after=await page.locator('.woocommerce-product-gallery__image').first().boundingBox();
- assert(Math.abs(before.height-after.height)<1&&Math.abs(before.y-after.y)<1,JSON.stringify({before,after}));
- report.checks.push('Actual single Woo photo has zero DOM-ready mount geometry shift');
+ assert(Math.abs(before.height-after.height)<1&&Math.abs(before.y-after.y)<1,JSON.stringify({initial,after}));
+ report.checks.push('Actual single Woo photo keeps its first observable frame through mount');
  await page.goto('http://127.0.0.1:8888/wp-login.php');await page.locator('#user_login').fill('layout-customer');await page.locator('#user_pass').fill('layout-customer-local');
  await Promise.all([page.waitForNavigation(),page.locator('#wp-submit').click()]);
  for(const width of [390,1440]){
