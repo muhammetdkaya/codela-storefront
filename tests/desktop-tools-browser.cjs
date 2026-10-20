@@ -77,6 +77,7 @@ const cart={items_count:1,items:[{key:'one',name:'Deneme ürünü',permalink:'/p
   const compact=await dialog.boundingBox();
   assert(compact.width<=440 && compact.height<744 && compact.y>=76,'Product cart stays compact '+width);
   assert.equal(await dialog.locator('.sf-mobile-dock').isVisible(),false,'Product cart has no navigation dock');
+  assert.equal(await dialog.locator('.sf-cart-bottom').evaluate(el=>parseFloat(getComputedStyle(el).paddingBottom)),16,'Hidden dock reserves no footer space');
   assert(await page.locator('#sf-cart').innerText().then(t=>t.includes('Deneme ürünü')),'Same live cart rows');
   await page.screenshot({path:'qa/storefront-ui-kit-product-cart-'+width+'.png'});
   await page.keyboard.press('Escape');await dialog.waitFor({state:'hidden'});

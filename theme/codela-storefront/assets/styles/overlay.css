@@ -291,7 +291,7 @@
   #sf-panel.is-product-cart .sf-cart-row>a,#sf-panel.is-product-cart .sf-cart-detail{min-height:60px}
   #sf-panel.is-product-cart .sf-cart-row h3{font-size:14px}
   #sf-panel.is-product-cart .sf-cart-row img{width:60px;height:60px}
-  #sf-panel.is-product-cart:has(.sf-mobile-dock) .sf-cart-bottom:not([hidden]),
+  #sf-panel.is-cart-panel.is-product-cart:has(.sf-mobile-dock) .sf-cart-bottom:not([hidden]),
   #sf-panel.is-product-cart .sf-cart-bottom{padding:12px 16px 16px}
   #sf-panel.is-product-cart .sf-mobile-dock{display:none!important}
 }
