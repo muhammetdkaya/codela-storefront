@@ -141,7 +141,11 @@ const {liveProduct}=require('./live-product.cjs');
    assert(metrics.drift<1,'Photo coordinates never change during panel transition '+JSON.stringify(metrics));
    assert(metrics.reverse<2,'No backward scroll correction during the transition '+JSON.stringify(metrics));
    assert(metrics.flips<=1,'Discovery state does not oscillate '+JSON.stringify(metrics));
-   assert(Math.abs(metrics.top)<1,'Transition finishes on its native target '+JSON.stringify(metrics));
+   // A short recommendation list can end before its top reaches the viewport.
+   // Native scrolling clamps to the document boundary; adding blank space to
+   // satisfy an unreachable target would reintroduce the trailing-gap bug.
+   const reachable=Math.min(Math.max(0,metrics.destination),metrics.maxY);
+   assert(Math.abs(metrics.endY-reachable)<1,'Transition finishes on its reachable native target '+JSON.stringify(metrics));
    console.log('GALLERY_TRANSITION '+JSON.stringify({selector,...metrics}));
   }
   await page.evaluate(()=>{const a=document.querySelectorAll('.woocommerce-product-gallery__image'),e=a[a.length-1];window.scrollTo({top:scrollY+e.getBoundingClientRect().top,behavior:'instant'})});
