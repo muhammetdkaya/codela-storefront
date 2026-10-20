@@ -26,7 +26,7 @@ assert.equal(clear.hidden,true,'Clearing hides button again');
 assert.ok(!markup.includes('sf-search-suggestion'),'No duplicate typed-query suggestion below input');
 assert.ok(!js.includes('sf-search-suggestion'),'Removed suggestion listener');
 assert.ok(!css.includes('sf-search-suggestion'),'Removed suggestion styles');
-assert.ok(!cart.includes("t('Continue shopping')"),'Empty cart does not show redundant continue shopping CTA');
+assert.ok(cart.includes("t('Continue shopping')"),'Empty cart has a single shop CTA in its dedicated empty state');
 assert.ok(cart.includes("t('Your cart is empty.')"),'Empty cart message remains');
 assert.ok(search.includes('row.repeat(6)'), 'Six static skeleton rows while a real query is in flight');
 assert.ok(search.includes("if (requestId !== sequence || getCurrent() !== 'search') return;"),'Stale results must not overwrite new searches');
@@ -43,4 +43,4 @@ assert.ok(css.includes('color-scheme:light'), 'Search uses light input/color con
 assert.ok(!css.includes('background:#0b0d12'), 'Dark search background must be removed');
 assert.ok(css.includes('#sf-panel.is-search-panel .sf-panel-top{display:none!important}'),'Only the inline X appears in search');
 assert.ok(markup.includes("placeholder=\"<?php esc_attr_e( 'Search', 'codela-storefront' ); ?>\""),'Search placeholder is Ara in Turkish');
-console.log('Search clear control, no duplicate query and no empty-cart CTA: passed.');
+console.log('Search controls, no duplicate query and native empty-cart CTA: passed.');
