@@ -32,7 +32,7 @@ try{
   const order=await page.locator('#order_review').evaluate(e=>({background:getComputedStyle(e).backgroundColor,payment:getComputedStyle(e.querySelector('#payment')).backgroundColor}));
   assert.equal(order.background,'rgb(255, 255, 255)');assert.equal(order.payment,'rgba(0, 0, 0, 0)','One review surface');
   const invalid='layout-invalid-'+width;await applyCoupon(invalid);
-  const error=page.locator('.woocommerce-error,.wc-block-components-notice-banner.is-error').first();await error.waitFor();
+  const error=page.locator('.woocommerce-error,.wc-block-components-notice-banner.is-error,.coupon-error-notice').first();await error.waitFor();
   assert((await error.innerText()).includes(invalid),'Real native coupon error corresponds to this submission');
   assert.equal(await error.evaluate(e=>getComputedStyle(e,'::before').content),'none');
   await showCoupon();
@@ -44,16 +44,19 @@ try{
  await page.locator('.woocommerce-remove-coupon').click();await page.locator('.cart-discount').waitFor({state:'detached'});await settleCheckout();
  assert.equal(await page.locator('#billing_first_name').inputValue(),'Preserved','Coupon recalculation preserves form values');
  report.checks.push('Native invalid/valid/remove coupon, fragment repaint, preserved billing and shared Button at five widths');
- // Mobile single photo must keep its first frame while the adapter is delayed.
- await page.setViewportSize({width:390,height:844});let release;const gate=new Promise(resolve=>release=resolve);
- await page.route('**/scripts/product-information.js*',async route=>{await gate;await route.continue()});
- const loading=page.goto(seed.simple,{waitUntil:'load'});loading.catch(()=>{});
- await page.locator('.woocommerce-product-gallery__image').first().waitFor();
- const before=await page.locator('.woocommerce-product-gallery__image').first().boundingBox();
- release();await loading;await page.locator('body.sf-product-sheet-ready').waitFor();
- const after=await page.locator('.woocommerce-product-gallery__image').first().boundingBox();
+ // Measure the real server-rendered photo before the DOM-ready adapter mounts.
+ // WP 6.5 emits this script in the head; delaying its download blocks parsing
+ // rather than producing a meaningful pre-mount photo. Capture runs first.
+ await page.setViewportSize({width:390,height:844});
+ await context.addInitScript(()=>document.addEventListener('DOMContentLoaded',()=>{
+  const photo=document.querySelector('.woocommerce-product-gallery__image');
+  if(photo)window.__productBeforeMount={rect:photo.getBoundingClientRect().toJSON(),ready:document.body.classList.contains('sf-product-sheet-ready')};
+ },{capture:true,once:true}));
+ await page.goto(seed.simple,{waitUntil:'load'});await page.locator('body.sf-product-sheet-ready').waitFor();
+ const initial=await page.evaluate(()=>window.__productBeforeMount);assert(initial&&!initial.ready,'Capture measures original Woo photo before adapter');
+ const before=initial.rect,after=await page.locator('.woocommerce-product-gallery__image').first().boundingBox();
  assert(Math.abs(before.height-after.height)<1&&Math.abs(before.y-after.y)<1,JSON.stringify({before,after}));
- await page.unroute('**/scripts/product-information.js*');report.checks.push('Actual single Woo photo has zero delayed-mount geometry shift');
+ report.checks.push('Actual single Woo photo has zero DOM-ready mount geometry shift');
  await page.goto('http://127.0.0.1:8888/wp-login.php');await page.locator('#user_login').fill('layout-customer');await page.locator('#user_pass').fill('layout-customer-local');
  await Promise.all([page.waitForNavigation(),page.locator('#wp-submit').click()]);
  for(const width of [390,1440]){

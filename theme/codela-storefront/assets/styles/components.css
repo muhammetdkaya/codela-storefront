@@ -571,4 +571,8 @@ body:not(.codela-my-account-layout) .sf-content :is(form.checkout_coupon,.woocom
 }
 body:not(.codela-my-account-layout) .sf-content :is(form.checkout_coupon,.woocommerce-EditAccountForm,.woocommerce-address-fields__field-wrapper) :is(input.input-text,select,textarea):focus-visible{outline:2px solid var(--sf-ui-accent);outline-offset:2px}
 
+/* Newer Woo releases attach coupon validation to the original input. */
+body:not(.codela-my-account-layout) .sf-content form.checkout_coupon input[aria-invalid="true"]{border-color:var(--sf-ui-danger)}
+body:not(.codela-my-account-layout) .sf-content form.checkout_coupon .coupon-error-notice{display:block;margin-top:8px;color:var(--sf-ui-danger);font-size:13px;line-height:1.6}
+
 body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-content .codela-maa-btn--danger{color:var(--sf-ui-danger)}
