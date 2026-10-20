@@ -49,7 +49,7 @@ function codela_sf_header(): string {
     // Keep the single real dock available when it moves into the dialog.
     $header_mode = $product_page ? 'has-product-header' . ( $show_mobile_dock ? ' has-mobile-dock' : '' ) : ( $show_mobile_dock ? 'has-mobile-dock' : ( $checkout_page ? 'has-checkout-header' : 'has-header-tools' ) );
     $labels = [];
-    foreach ( [ 'Loading…', 'Search products', 'No matching products.', 'Something went wrong. Please try again.', 'Your cart is empty.', 'Remove', 'Quantity', 'Decrease quantity', 'Increase quantity', 'Back', 'View all', 'Cart updated.', 'Retry', 'Your cart', 'Item added to cart.', 'Subtotal', 'Shipping and discounts are calculated at checkout.', 'My account', 'Filters' ] as $label ) {
+    foreach ( [ 'Loading…', 'Search products', 'No matching products.', 'Something went wrong. Please try again.', 'Your cart is empty.', 'Discover products and add your favorites here.', 'Continue shopping', 'Remove', 'Quantity', 'Decrease quantity', 'Increase quantity', 'Back', 'View all', 'Cart updated.', 'Retry', 'Your cart', 'Item added to cart.', 'Subtotal', 'Shipping and discounts are calculated at checkout.', 'My account', 'Filters' ] as $label ) {
         $labels[ $label ] = __( $label, 'codela-storefront' ); // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText
     }
     wp_interactivity_state( 'codela/storefront', [ 'config' => [
