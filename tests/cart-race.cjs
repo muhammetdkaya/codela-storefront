@@ -9,7 +9,7 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
 function snapshot(quantity) {
  return {items_count:quantity,items:quantity?[{key:'k',name:'Product',quantity,permalink:'/p',images:[],variation:[],totals:{line_subtotal:'100',line_subtotal_tax:'0',currency_code:'TRY',currency_minor_unit:2}}]:[],totals:{total_items:String(quantity*100),total_items_tax:'0',currency_code:'TRY',currency_minor_unit:2}};
 }
-function setup(extend = () => {}) {
+function setup(extend = () => {}, getCurrent = () => 'cart') {
  const requests=[], listeners={}, nodes={};
  const element=()=>({innerHTML:'',textContent:'',hidden:false,inert:false,dataset:{},disabled:false,setAttribute(){},querySelectorAll(){return []},focus(){}});
  for(const id of ['#sf-cart-items','.sf-cart-bottom','#sf-subtotal','#sf-status','#sf-cart','.sf-close'])nodes[id]=element();
@@ -18,7 +18,7 @@ function setup(extend = () => {}) {
  window:{addEventListener:()=>{}},escape:x=>x,decode:x=>x,safeURL:x=>x,money:x=>String(x)};
  extend(context, nodes);
  vm.createContext(context);vm.runInContext(source+'\nthis.createCartController=createCartController;',context);
- const controller=context.createCartController({$:id=>nodes[id],config:()=>({api:'/api/',cart:'/cart'}),t:x=>x,getCurrent:()=> 'cart',getDialog:()=>({open:false})});
+ const controller=context.createCartController({$:id=>nodes[id],config:()=>({api:'/api/',cart:'/cart'}),t:x=>x,getCurrent,getDialog:()=>({open:false})});
  const answer=(index,data,nonce='nonce-'+index,ok=true,code)=>requests[index].resolve({ok,headers:{get:key=>key==='Nonce'?nonce:null},json:async()=>ok?data:{code,message:'failure'}});
  return {controller,requests,nodes,listeners,answer};
 }
@@ -52,6 +52,18 @@ if (require.main === module) (async()=>{
  assert.equal(x.listeners['wc-blocks_added_to_cart']?.length,1);
  assert.equal(x.listeners['wc-blocks_removed_from_cart']?.length,1);
  x.answer(0,snapshot(0));await tick();
+ }
+ // Closed cart: 20 items keep live state/badge without creating hidden images.
+ {
+ let current=null;
+ const x=setup(()=>{},()=>current);const data=snapshot(20);
+ data.items=Array.from({length:20},(_,i)=>({...data.items[0],key:String(i),quantity:1,images:[{thumbnail:'/photo-'+i+'.jpg'}]}));
+ const read=x.controller.refresh();await tick();x.answer(0,data);await read;
+ assert.equal(x.controller.getData().items_count,20);
+ assert.equal(x.nodes['#sf-cart-items'].innerHTML,'','Closed cart must not create twenty hidden image requests');
+ current='cart';const opening=x.controller.refresh();
+ assert.equal((x.nodes['#sf-cart-items'].innerHTML.match(/<article/g)||[]).length,20,'Cached rows render synchronously when opened');
+ await tick();x.answer(1,data);await opening;
  }
  console.log('Cart race regression tests passed');
 })().catch(e=>{console.error(e);process.exitCode=1;});

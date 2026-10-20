@@ -20,10 +20,7 @@ assert.equal(result.allow_hosted_authority,'customer','Google-hosted domain is a
 assert.equal(result.link_existing_gmail,'customer','Verified Gmail can reuse a nonprivileged customer account');
 assert.equal(result.reject_admin,'privileged_account','Never allow Google to log in as store admin');
 assert.equal(result.disabled,true,'No secret disables feature');
-assert(result.disabled_button.includes('sf-ui-button--secondary') &&
-    result.disabled_button.includes('popovertarget="sf-google-setup-notice"') &&
-    result.disabled_button.includes('Google sign-in is not configured yet.'),
-    'Unconfigured Google remains visible as a real shared Button with native notice');
+assert.equal(result.disabled_button,'','No nonfunctional sign-in button is offered to shoppers');
 assert(!result.disabled_button.includes('codela_sf_google_start'), 'Disabled Google Button never initiates OAuth');
 assert(php.includes("random_bytes( 32 )")&&php.includes("code_challenge_method' => 'S256'"),'Cryptographic state and PKCE S256');
 assert(php.includes("'httponly' => true")&&php.includes("'samesite' => 'Lax'")&&php.includes("'secure' => true"),'Cookie scoped to HTTPS+HttpOnly+SameSite');
@@ -36,4 +33,15 @@ assert(php.includes("get_user_meta( $user->ID, '_sf_google_sub'"),'Identity mapp
 assert(!php.includes("'access_type' => 'offline'"),'No long-lived refresh tokens for sign-in');
 assert(php.includes("current_user_can( 'manage_options' )")&&php.includes("check_admin_referer( 'codela_sf_google_save' )"),'Credential editor is capability and nonce restricted');
 
-console.log('Native Google OAuth: PKCE/state/cookie, verified customer identity, admin isolation, unconfigured notice: passed.');
+console.log('Native Google OAuth: PKCE/state/cookie, verified customer identity, admin isolation, unconfigured method hidden: passed.');
+
+assert.equal(result.start_host,'accounts.google.com');
+assert.equal(result.start_redirect,result.callback,'Exact configured redirect accompanies authorization');
+assert.equal(result.pkce_matches,true,'Authorization challenge matches the stored verifier');
+assert(result.wrong_browser.endsWith('?google_login=error'));
+assert.equal(result.wrong_browser_no_request,true,'Wrong browser is rejected before provider request');
+assert.equal(result.callback_success,'https://store.test/my-account/');
+assert.equal(result.callback_secure_customer,true,'Valid callback sets the native secure customer session');
+assert.equal(result.callback_exchange_proof,true,'Token exchange uses the same verifier');
+assert(result.callback_replay.endsWith('?google_login=error'));
+assert.equal(result.callback_request_count,2,'Replay cannot repeat token exchange');

@@ -1,79 +1,83 @@
-/**
- * Checkout-only composition for WooCommerce Block and classic checkout.
- * No cloned forms, payment handlers, or visual Button implementations.
- */
+/** Native Woo checkout composition. Woo owns coupons, totals, shipping,
+ * payment selection, validation and fragment replacement. Shared components
+ * own Button, field and notice paint; no cloned checkout or payment scripts. */
 body.woocommerce-checkout{background:var(--sf-ui-page);color:var(--sf-ui-ink)}
-.sf-checkout-page{
- --sf-checkout-width:1120px;
- width:100%;max-width:none!important;min-height:55vh;margin:0 auto!important;
- padding:clamp(24px,4vw,48px) max(20px,5vw) 72px;
-}
-.sf-checkout-page > .wp-block-post-title{
- width:100%;max-width:var(--sf-checkout-width);margin:0 auto 24px;padding:0 0 18px;
- border-bottom:1px solid var(--sf-ui-border);
- font-size:clamp(26px,3vw,36px);font-weight:400;line-height:1.25;letter-spacing:-.035em;
-}
+.sf-checkout-page{--sf-checkout-width:1120px;width:100%;max-width:none!important;min-height:55vh;margin:0 auto!important;padding:clamp(24px,4vw,48px) max(20px,5vw) 72px}
 .sf-checkout-page > .wp-block-post-content,
-.sf-checkout-page > .wp-block-post-content > .wp-block-woocommerce-checkout{
- width:100%;max-width:var(--sf-checkout-width)!important;margin-inline:auto;
-}
+.sf-checkout-page > .wp-block-post-content > .wp-block-woocommerce-checkout{width:100%;max-width:var(--sf-checkout-width)!important;margin-inline:auto}
 .sf-checkout-page :is(.wc-block-checkout,.woocommerce){width:100%;max-width:none;margin-inline:auto}
 body.woocommerce-checkout :is(.wc-block-components-title,.wc-block-components-checkout-step__heading-title),
-body.woocommerce-checkout .woocommerce :is(#customer_details h3,#order_review_heading){
- color:var(--sf-ui-ink);font-size:clamp(17px,2vw,21px);font-weight:500;line-height:1.35;letter-spacing:-.02em;
-}
+body.woocommerce-checkout .woocommerce :is(#customer_details h3,#order_review_heading){color:var(--sf-ui-ink);font-size:clamp(18px,2vw,22px);font-weight:500;line-height:1.35;letter-spacing:-.02em}
 body.woocommerce-checkout :is(.wc-block-components-checkout-step__description,.wc-block-components-order-summary-item__description,.woocommerce form.checkout .form-row .optional){color:var(--sf-muted)}
-/* Keep Woo's native floating labels, validation, address and payment behavior. */
+/* Keep the native floating labels and invalid states in block checkout. */
 body.woocommerce-checkout .wc-block-components-form :is(.wc-block-components-text-input input,.wc-block-components-combobox-control input,select),
-body.woocommerce-checkout .woocommerce form.checkout :is(.woocommerce-billing-fields__field-wrapper,.woocommerce-shipping-fields__field-wrapper,.woocommerce-additional-fields__field-wrapper) > .form-row :is(input.input-text,select,textarea){
- min-height:var(--sf-ui-action-height);border:1px solid var(--sf-ui-border);
- border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface);color:var(--sf-ui-ink);
-}
-body.woocommerce-checkout .wc-block-components-form :is(.wc-block-components-text-input input,.wc-block-components-combobox-control input,select):focus,
-body.woocommerce-checkout .woocommerce form.checkout :is(.woocommerce-billing-fields__field-wrapper,.woocommerce-shipping-fields__field-wrapper,.woocommerce-additional-fields__field-wrapper) > .form-row :is(input.input-text,select,textarea):focus{
- border-color:var(--sf-ui-accent);outline:2px solid color-mix(in srgb,var(--sf-ui-accent) 24%,transparent);outline-offset:1px;
-}
-body.woocommerce-checkout .wc-block-components-form :is(.wc-block-components-text-input input,.wc-block-components-combobox-control input,select)[aria-invalid="true"]{border-color:var(--wc-red,#cc1818)}
-body.woocommerce-checkout .wc-block-checkout__sidebar .wc-block-components-order-summary,
-body.woocommerce-checkout .woocommerce #order_review{
- border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);
- background:var(--sf-ui-surface-muted);padding:clamp(16px,2vw,24px);
-}
-body.woocommerce-checkout .wc-block-checkout__sidebar .wc-block-components-order-summary-item__image img{border-radius:var(--sf-ui-control-radius)}
-body.woocommerce-checkout .wc-block-components-order-summary-item__total-price,
-body.woocommerce-checkout .wc-block-components-totals-footer-item .wc-block-components-totals-item__value{
- color:var(--sf-ui-ink);font-weight:600;font-variant-numeric:tabular-nums;
-}
-body.woocommerce-checkout .woocommerce form.checkout :is(.woocommerce-billing-fields__field-wrapper,.woocommerce-shipping-fields__field-wrapper,.woocommerce-additional-fields__field-wrapper) > .form-row label{color:var(--sf-ui-control-ink);font-size:13px}
-body.woocommerce-checkout .woocommerce #payment{border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface-muted)}
-body.woocommerce-checkout .woocommerce #payment .payment_box{background:var(--sf-ui-surface)}
-/* Select2 is Woo's native enhancement of the same country/state fields. */
-body.woocommerce-checkout .sf-checkout-page :is(.woocommerce-billing-fields__field-wrapper,.woocommerce-shipping-fields__field-wrapper) > .form-row .select2-selection--single{
- min-height:var(--sf-ui-action-height);border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface);color:var(--sf-ui-ink);
-}
+body.woocommerce-checkout .woocommerce form.checkout :is(.woocommerce-billing-fields__field-wrapper,.woocommerce-shipping-fields__field-wrapper,.woocommerce-additional-fields__field-wrapper) > .form-row :is(input.input-text,select,textarea){min-height:var(--sf-ui-action-height);border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface);color:var(--sf-ui-ink)}
+body.woocommerce-checkout .wc-block-components-form :is(.wc-block-components-text-input input,.wc-block-components-combobox-control input,select):focus-visible,
+body.woocommerce-checkout .woocommerce form.checkout :is(.woocommerce-billing-fields__field-wrapper,.woocommerce-shipping-fields__field-wrapper,.woocommerce-additional-fields__field-wrapper) > .form-row :is(input.input-text,select,textarea):focus-visible{outline:2px solid var(--sf-ui-accent);outline-offset:2px}
+body.woocommerce-checkout .wc-block-components-form :is(.wc-block-components-text-input input,.wc-block-components-combobox-control input,select)[aria-invalid="true"]{border-color:var(--sf-ui-danger)}
+body.woocommerce-checkout .woocommerce form.checkout :is(.woocommerce-billing-fields__field-wrapper,.woocommerce-shipping-fields__field-wrapper,.woocommerce-additional-fields__field-wrapper) > .form-row label{color:var(--sf-ui-control-ink);font-size:13px;margin-bottom:8px}
+body.woocommerce-checkout .sf-checkout-page :is(.woocommerce-billing-fields__field-wrapper,.woocommerce-shipping-fields__field-wrapper) > .form-row .select2-selection--single{min-height:var(--sf-ui-action-height);border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface);color:var(--sf-ui-ink)}
 body.woocommerce-checkout .sf-checkout-page :is(.woocommerce-billing-fields__field-wrapper,.woocommerce-shipping-fields__field-wrapper) > .form-row .select2-selection__rendered{line-height:var(--sf-ui-action-height);padding-inline:14px 32px;color:inherit}
 body.woocommerce-checkout .sf-checkout-page :is(.woocommerce-billing-fields__field-wrapper,.woocommerce-shipping-fields__field-wrapper) > .form-row .select2-selection__arrow{height:100%;right:8px}
-body.woocommerce-checkout .sf-checkout-page .woocommerce-form-coupon-toggle > .woocommerce-info{border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface-muted);color:var(--sf-muted);font-size:13px}
-body.woocommerce-checkout .sf-checkout-page .woocommerce-form-coupon-toggle > .woocommerce-info::before{color:var(--sf-muted)}
-/* Compose the original classic checkout around module-owned cards/modals.
-   No descendant selectors target Codela's address/invoice/payment controls. */
-body.woocommerce-checkout .sf-checkout-page form.checkout{
- display:grid;grid-template-columns:minmax(0,1fr);gap:24px;align-items:start;
-}
-body.woocommerce-checkout .sf-checkout-page form.checkout::before,
-body.woocommerce-checkout .sf-checkout-page form.checkout::after,
-body.woocommerce-checkout .sf-checkout-page #customer_details::before,
-body.woocommerce-checkout .sf-checkout-page #customer_details::after{content:none}
+/* Coupon stays in the real Woo form, outside form.checkout. Its native
+   show/hide and AJAX handlers continue to own visibility and feedback. */
+body.woocommerce-checkout .sf-checkout-page .woocommerce-form-coupon-toggle{margin:0 0 12px}
+body.woocommerce-checkout .sf-checkout-page .woocommerce-form-coupon-toggle .woocommerce-info{margin:0;padding:18px 22px;font-size:14px}
+body.woocommerce-checkout .sf-checkout-page .showcoupon{display:inline-flex;align-items:center;min-height:44px;margin-inline-start:8px;color:var(--sf-ui-ink);font-weight:500;text-underline-offset:4px}
+body.woocommerce-checkout .sf-checkout-page form.checkout_coupon{width:100%;margin:0 0 28px;padding:22px;border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface)}
+body.woocommerce-checkout .sf-checkout-page form.checkout_coupon > p:first-child{margin:0 0 16px;color:var(--sf-muted);font-size:14px}
+body.woocommerce-checkout .sf-checkout-page form.checkout_coupon .form-row{margin:0;padding:0;min-width:0}
+body.woocommerce-checkout .sf-checkout-page form.checkout_coupon .form-row-first{width:calc(100% - 190px)}
+body.woocommerce-checkout .sf-checkout-page form.checkout_coupon .form-row-last{width:174px}
+body.woocommerce-checkout .sf-checkout-page form.checkout_coupon .button{width:100%;--sf-ui-button-font-size:14px}
+/* Order summary is one surface. Native fragments can replace its contents
+   without dropping the design or creating nested card backgrounds. */
+body.woocommerce-checkout .woocommerce #order_review,
+body.woocommerce-checkout .wc-block-checkout__sidebar{border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface);padding:clamp(20px,2.2vw,28px);min-width:0}
+body.woocommerce-checkout .wc-block-checkout__sidebar .wc-block-components-order-summary{border:0;border-radius:0;background:transparent;padding:0}
+body.woocommerce-checkout .wc-block-checkout__sidebar .wc-block-components-order-summary-item__image img{border-radius:var(--sf-ui-control-radius);object-fit:contain}
+body.woocommerce-checkout .wc-block-components-order-summary-item__total-price,
+body.woocommerce-checkout .wc-block-components-totals-footer-item .wc-block-components-totals-item__value{color:var(--sf-ui-ink);font-weight:600;font-variant-numeric:tabular-nums}
+body.woocommerce-checkout .wc-block-components-totals-coupon__form{gap:12px}
+body.woocommerce-checkout .wc-block-components-totals-coupon__button{--sf-ui-button-font-size:14px;--sf-ui-button-padding-y:12px;--sf-ui-button-padding-x:20px}
+body.woocommerce-checkout .wc-block-components-totals-item{padding-block:14px}
+body.woocommerce-checkout .wc-block-components-radio-control__option{border-radius:var(--sf-ui-control-radius)}
+body.woocommerce-checkout .sf-checkout-page table.woocommerce-checkout-review-order-table{width:100%;margin:0 0 24px;border:0;border-collapse:collapse;font-size:14px;line-height:1.6}
+body.woocommerce-checkout .sf-checkout-page table.woocommerce-checkout-review-order-table :is(th,td){padding:16px 0;border:0;border-bottom:1px solid var(--sf-ui-border);vertical-align:top;overflow-wrap:anywhere;text-align:start}
+body.woocommerce-checkout .sf-checkout-page table.woocommerce-checkout-review-order-table :is(th,td):last-child{text-align:end;padding-inline-start:16px;font-variant-numeric:tabular-nums}
+body.woocommerce-checkout .sf-checkout-page table.woocommerce-checkout-review-order-table th{font-weight:500}
+body.woocommerce-checkout .sf-checkout-page table.woocommerce-checkout-review-order-table thead{color:var(--sf-muted);font-size:12px}
+body.woocommerce-checkout .sf-checkout-page table.woocommerce-checkout-review-order-table .product-name{width:64%}
+body.woocommerce-checkout .sf-checkout-page table.woocommerce-checkout-review-order-table .product-total{white-space:nowrap}
+body.woocommerce-checkout .sf-checkout-page table.woocommerce-checkout-review-order-table .product-quantity{font-weight:400;color:var(--sf-muted);white-space:nowrap}
+body.woocommerce-checkout .sf-checkout-page table.woocommerce-checkout-review-order-table .variation{font-size:12px;margin:8px 0 0;color:var(--sf-muted)}
+body.woocommerce-checkout .sf-checkout-page table.woocommerce-checkout-review-order-table .order-total :is(th,td){border:0;padding-top:22px;font-size:19px;color:var(--sf-ui-ink)}
+body.woocommerce-checkout .sf-checkout-page table.woocommerce-checkout-review-order-table .order-total strong{font-weight:600}
+body.woocommerce-checkout .sf-checkout-page .woocommerce-remove-coupon{font-size:12px;color:var(--sf-muted);text-underline-offset:3px}
+body.woocommerce-checkout .sf-checkout-page #shipping_method{margin:0;padding:0;text-align:end}
+body.woocommerce-checkout .sf-checkout-page #shipping_method li{margin:0 0 10px;font-size:13px;line-height:1.5}
+body.woocommerce-checkout .sf-checkout-page input:is(.shipping_method,.input-radio){accent-color:var(--sf-ui-ink)}
+body.woocommerce-checkout .woocommerce #payment{border:0;border-radius:0;background:transparent}
+body.woocommerce-checkout .woocommerce #payment ul.payment_methods{border:0;padding:0;margin:0 0 20px;list-style:none}
+body.woocommerce-checkout .woocommerce #payment ul.payment_methods > li{padding:16px;margin:0 0 10px;border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-page);line-height:1.5}
+body.woocommerce-checkout .woocommerce #payment ul.payment_methods > li:has(>input:checked){border-color:var(--sf-ui-ink)}
+body.woocommerce-checkout .woocommerce #payment ul.payment_methods > li > label{font-size:14px;font-weight:500;cursor:pointer}
+body.woocommerce-checkout .woocommerce #payment .payment_box{margin:12px 0 0;padding:0;color:var(--sf-muted);background:transparent;border:0;border-radius:0;font-size:13px;line-height:1.65}
+body.woocommerce-checkout .woocommerce #payment .payment_box::before{content:none}
+body.woocommerce-checkout .woocommerce #payment .payment_box p:last-child{margin-bottom:0}
+body.woocommerce-checkout .woocommerce #payment .place-order{margin:0;padding:0}
+body.woocommerce-checkout .sf-checkout-page :is(.woocommerce-privacy-policy-text,.woocommerce-terms-and-conditions-wrapper){font-size:12px;color:var(--sf-muted);line-height:1.7}
+body.woocommerce-checkout .sf-checkout-page #place_order{width:100%;float:none;margin:20px 0 0;--sf-ui-button-font-size:15px}
+/* Compose the native customer/address module and review in two columns. */
+body.woocommerce-checkout .sf-checkout-page form.checkout{display:grid;grid-template-columns:minmax(0,1fr);gap:24px;align-items:start}
+body.woocommerce-checkout .sf-checkout-page :is(form.checkout,#customer_details)::before,
+body.woocommerce-checkout .sf-checkout-page :is(form.checkout,#customer_details)::after{content:none}
 body.woocommerce-checkout .sf-checkout-page form.checkout > *{min-width:0}
 body.woocommerce-checkout .sf-checkout-page #customer_details{display:grid;gap:28px;width:100%}
 body.woocommerce-checkout .sf-checkout-page #customer_details > :is(.col-1,.col-2){float:none;width:100%;min-width:0}
 body.woocommerce-checkout .sf-checkout-page #customer_details h3{margin:0 0 18px}
 body.woocommerce-checkout .sf-checkout-page #order_review_heading{margin:0}
-body.woocommerce-checkout .sf-checkout-page #order_review{width:100%;min-width:0}
-body.woocommerce-checkout .sf-checkout-page table.woocommerce-checkout-review-order-table{width:100%;margin:0 0 20px;border:0;border-collapse:collapse;font-size:14px;line-height:1.6}
-body.woocommerce-checkout .sf-checkout-page table.woocommerce-checkout-review-order-table :is(th,td){padding:14px 8px;border-bottom:1px solid var(--sf-ui-border);vertical-align:top;overflow-wrap:anywhere}
-body.woocommerce-checkout .sf-checkout-page table.woocommerce-checkout-review-order-table :is(th,td):last-child{text-align:end;font-variant-numeric:tabular-nums}
-body.woocommerce-checkout .sf-checkout-page #place_order{width:100%;float:none;margin-top:16px}
+body.woocommerce-checkout .sf-checkout-page #order_review{width:100%}
 body.woocommerce-checkout .sf-checkout-page .woocommerce-additional-fields textarea{width:100%;resize:vertical}
 @media(min-width:901px){
  body.woocommerce-checkout .sf-checkout-page form.checkout{grid-template-columns:minmax(0,1.25fr) minmax(320px,1fr);column-gap:clamp(28px,4vw,56px);row-gap:18px}
@@ -83,9 +87,11 @@ body.woocommerce-checkout .sf-checkout-page .woocommerce-additional-fields texta
  body.woocommerce-checkout .sf-checkout-page form.checkout > #order_review{grid-column:2;grid-row:2}
 }
 @media(max-width:700px){
- .sf-checkout-page{padding:20px 16px 44px}
- .sf-checkout-page > .wp-block-post-title{margin-bottom:20px;padding-bottom:14px}
- body.woocommerce-checkout .wc-block-checkout__sidebar .wc-block-components-order-summary,
- body.woocommerce-checkout .woocommerce #order_review{padding:16px}
+ .sf-checkout-page{padding:24px 16px 44px}
+ body.woocommerce-checkout .woocommerce #order_review,
+ body.woocommerce-checkout .wc-block-checkout__sidebar{padding:20px 16px}
  body.woocommerce-checkout .wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button{width:100%}
+ body.woocommerce-checkout .sf-checkout-page form.checkout_coupon{padding:18px}
+ body.woocommerce-checkout .sf-checkout-page form.checkout_coupon :is(.form-row-first,.form-row-last){float:none;width:100%;margin-top:12px}
+ body.woocommerce-checkout .sf-checkout-page .showcoupon{margin-inline:0}
 }

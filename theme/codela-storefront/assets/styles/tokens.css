@@ -26,6 +26,10 @@
   --sf-ui-control-ink:#202020;
   --sf-ui-control-clear:#d8d8d8;
   --sf-ui-accent:var(--sf-accent,#656e52);
+  --sf-ui-danger:#b44d48;
+  --sf-ui-danger-surface:#fcf4f3;
+  --sf-ui-success:#668168;
+  --sf-ui-success-surface:#f3f7f2;
   --sf-ui-border:var(--sf-line,#deded5);
   --sf-ui-hit:44px;
   --sf-ui-icon:22px;

@@ -37,6 +37,7 @@ jobs:
           php tests/media-optimization.php
           php tests/navigation.php
           php tests/document-continuity.php
+          node --check tests/wordpress-commerce.cjs
           node --check tests/document-continuity-browser.cjs
           node --input-type=module --check < theme/codela-storefront/assets/scripts/navigation-controller.js
           node --check tests/shell-navigation-browser.cjs

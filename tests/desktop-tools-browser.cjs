@@ -38,6 +38,7 @@ const cart={items_count:1,items:[{key:'one',name:'Deneme ürünü',permalink:'/p
   assert.equal(await page.locator('#sf-query').count(),1,'No duplicate search');
   assert.equal(await page.evaluate(()=>document.body.style.position),'','Search never locks the document');
   assert.equal(await page.locator('#sf-query').evaluate(el=>el===document.activeElement),true,'Desktop focuses input');
+  assert.equal(await page.locator('.sf-header-search').evaluate(el=>getComputedStyle(el).outlineStyle),'none','Search opening has no outer border');
   const form=await page.locator('.sf-header-search').boundingBox(),tools=await page.locator('.sf-actions').boundingBox();
   assert(form.width>200&&form.x+form.width<=tools.x,'Expanded form fits menu slot '+width);
   await page.locator('#sf-query').fill('doğal');await page.locator('.sf-result').waitFor();
@@ -69,6 +70,14 @@ const cart={items_count:1,items:[{key:'one',name:'Deneme ürünü',permalink:'/p
  assert.equal(await page.locator('.sf-header-search').isVisible(),false,'Resize restores form');
  await page.locator('.sf-dock-item[data-panel=search]').click();assert(await dialog.evaluate(el=>el.open),'Mobile retains full screen search');
  assert.equal(Math.round((await dialog.boundingBox()).width),390);await page.keyboard.press('Escape');await dialog.waitFor({state:'hidden'});
+ await page.evaluate(()=>window.sfActions.menu());
+ assert.equal(await page.locator('.sf-menu-secondary [data-panel]').count(),0,'No duplicate search/account below menu');
+ if(assigned==='1'){
+  const centered=await page.locator('#sf-menu .sf-menu-list > li > a').first().evaluate(el=>{const a=el.getBoundingClientRect(),p=document.querySelector('#sf-menu').getBoundingClientRect();return Math.abs(a.x+a.width/2-p.x-p.width/2)});
+  assert(centered<1,'Mobile menu labels are centered');
+  await page.screenshot({path:'qa/storefront-ui-kit-mobile-menu.png'});
+ }
+ await page.keyboard.press('Escape');await dialog.waitFor({state:'hidden'});
  // On a product, the SAME cart becomes a compact header sheet with no dock.
  await page.evaluate(()=>document.body.classList.add('single-product'));
  for(const width of [320,390,768,900]){

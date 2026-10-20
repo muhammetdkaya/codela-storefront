@@ -1,5 +1,14 @@
 # Codela Storefront UI Kit — source of truth
 
+
+## Commerce consistency and first-paint geometry — 0.1.152
+
+Native classic/block coupon and order review keep Woo handlers and fragment ownership. Shared components owns Button, field and native notice paint; checkout/account CSS owns arrangement. Unconfigured OAuth providers are absent from shopper UI; admin-only setup preserves the existing Google web OAuth flow. Do not claim configured Google acceptance without actual credentials/provider login.
+
+Mobile menu is centered through native sublevels; redundant Search/Account text links below it are removed. Existing dock remains; no-dock compositions expose shared tool icons above the menu. Mobile photo frame reserve is CSS-owned before/after sheet mount, including optional urgency. Measurement only positions sheet annotations, never resizes photos. Desktop inline search has no whole-slot outline.
+
+Guest account needs auth.js but no storefront controller graph. Closed cart still fetches its session count and publishes the badge immediately; render cached rows synchronously on open before revalidation. Never defer badge correctness or add a separate cart state. Journal CSS loads only in journal contexts. Compare actual lab samples, not invented speed percentages.
+
 ## Product cart and catalog feedback — 0.1.151
 
 On mobile product pages the same native dialog/cart controller renders a compact header-adjacent cart. Hide the navigation dock there only. Preserve Escape, focus, body scroll restoration, API state, errors and checkout. Other mobile pages retain fullscreen cart. Catalog icons remain visible after Woo AJAX success; only the duplicate View cart link is hidden. Successful add banners are suppressed; validation/errors remain native.

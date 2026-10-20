@@ -9,8 +9,8 @@ const bootstrap=execFileSync(process.env.PHP_BIN||'php',['tests/render-product-s
 const quantity=execFileSync(process.env.PHP_BIN||'php',['tests/render-product-sheet.php','quantity'],{encoding:'utf8'});
 const css='.woocommerce div.product div.images .woocommerce-product-gallery__image:nth-child(n+2){width:25%;display:inline-block}'+['assets/styles/tokens.css','assets/storefront.css','assets/styles/components.css','assets/styles/navigation.css','assets/styles/gallery.css','assets/styles/product.css'].map(p=>fs.readFileSync(root+p,'utf8')).join('\n');
 const picture=n=>'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1000"><rect width="800" height="1000" fill="${['#dbd1c3','#bab4a1','#ad998a'][n]}"/><text x="200" y="300" font-size="80">${n+1}</text></svg>`);
-function fixture({variable=false,stock=true,short=false,noUrgency=false,longTitle=false,pending=false,promotion='none',visitor=false}={}){return `<!doctype html><html><head>${pending?bootstrap:''}<meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:Arial,Helvetica,sans-serif}${css}</style></head><body class="single-product woocommerce"><div class="sf-shell"><header class="sf-header"><span>Codela</span></header><nav class="sf-mobile-dock" hidden></nav><dialog id="sf-panel"></dialog></div><main class="sf-content"><div class="woocommerce-notices-wrapper"></div><div class="product">
-<div class="sf-product-overview"><div class="sf-product-media"><div class="woocommerce-product-gallery images sf-ui-gallery sf-ui-gallery--hero sf-ui-gallery--scroll"><div class="woocommerce-product-gallery__wrapper">${[0,1,2].map(n=>`<div class="woocommerce-product-gallery__image" data-thumb="${picture(n)}"><a href="${picture(n)}"><img alt="Product ${n+1}" src="${picture(n)}"></a></div>`).join('')}</div></div>${visitor?'<div id="codela-live-visitor-container" class="sf-product-visitor" hidden><div class="cdl-lv"><span class="cdl-lv-dot" aria-hidden="true"></span><span class="cdl-lv-text">Şu an <strong>2</strong> kişi bakıyor</span></div></div>':''}
+function fixture({single=false,variable=false,stock=true,short=false,noUrgency=false,longTitle=false,pending=false,promotion='none',visitor=false}={}){return `<!doctype html><html><head>${pending?bootstrap:''}<meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:Arial,Helvetica,sans-serif}${css}</style></head><body class="single-product woocommerce"><div class="sf-shell"><header class="sf-header"><span>Codela</span></header><nav class="sf-mobile-dock" hidden></nav><dialog id="sf-panel"></dialog></div><main class="sf-content"><div class="woocommerce-notices-wrapper"></div><div class="product">
+<div class="sf-product-overview"><div class="sf-product-media"><div class="woocommerce-product-gallery images sf-ui-gallery sf-ui-gallery--hero sf-ui-gallery--scroll"><div class="woocommerce-product-gallery__wrapper">${(single?[0]:[0,1,2]).map(n=>`<div class="woocommerce-product-gallery__image" data-thumb="${picture(n)}"><a href="${picture(n)}"><img alt="Product ${n+1}" src="${picture(n)}"></a></div>`).join('')}</div></div>${visitor?'<div id="codela-live-visitor-container" class="sf-product-visitor" hidden><div class="cdl-lv"><span class="cdl-lv-dot" aria-hidden="true"></span><span class="cdl-lv-text">Şu an <strong>2</strong> kişi bakıyor</span></div></div>':''}
 </div><div class="summary"><h1 class="product_title">${promotion!=='none'?'Kavis Dekoratif Obje':short?'Luna':longTitle?'Kavis Dekoratif Obje Doğal Traverten Taş Heykel Seti':'Luna Traverten Lamba'}</h1><div class="sf-product-price-row">${promotion!=='none'?'<p class="price"><del>$80,00</del><ins>$40,00</ins></p>':'<p class="price">3.490 ₺</p>'}${promotion!=='none'?`<div class="cdl-ub">${promotion!=='timer'?'<div class="cdl-ub-item cdl-ub-scarcity"><svg class="cdl-ub-ico" viewBox="0 0 24 24"></svg><span class="cdl-ub-text">Son <strong>2</strong> ürün kaldı!</span></div>':''}${promotion!=='scarcity'?'<div class="cdl-ub-item cdl-ub-timer"><svg class="cdl-ub-ico" viewBox="0 0 24 24"></svg><span class="cdl-ub-text">Kampanya bitişine: <span class="cdl-ub-countdown" data-evergreen-hours="24">23:59:49</span></span></div>':''}</div>`:short||noUrgency?'':'<div class="cdl-ub">Son 3 adet</div>'}</div><p class="woocommerce-product-details__short-description">Doğal taşın dokusu.</p>
 ${stock?`<form id="native-cart" class="cart ${variable?'variations_form':''}" method="post">${variable?'<table class="variations"><tbody><tr><th><label for="color">Renk</label></th><td><select id="color" name="attribute_color"><option value="">Seçiniz</option><option value="cream">Kum</option></select></td></tr></tbody></table><input name="variation_id" value="123" type="hidden">':''}<div class="sf-product-purchase"><div class="quantity">${quantity}</div><button class="single_add_to_cart_button button alt ${variable?'disabled wc-variation-selection-needed':''}" type="submit" name="add-to-cart" value="42">Sepete ekle</button></div></form>`:'<p class="stock out-of-stock">Stokta yok</p>'}
 <div class="cdl-fsb--product"><div class="cdl-fsb-text">Ücretsiz kargoya 510 ₺ kaldı</div><div class="cdl-fsb-track"><span class="cdl-fsb-fill" style="width:87%"></span></div></div><div class="cdl-tb">Güvenli ödeme</div></div>
@@ -293,7 +293,7 @@ assert(Math.abs(prePanel.height-postPanel.height)<2,'Real first-paint height mus
 const frameDrift=Math.abs(beforePhoto.height-afterPhoto.height);
 console.log('PRODUCT_PREPAINT_FRAME '+JSON.stringify({before:beforePhoto.height,after:afterPhoto.height,drift:frameDrift}));
 assert(Math.abs(beforePhoto.y-afterPhoto.y)<1,'Hydration must not move the first photo top');
-assert(frameDrift<5,'Initial mobile photo preserves mounted frame geometry without a visible resize');
+assert(frameDrift<1,'Initial mobile photo preserves mounted frame geometry without a visible resize');
 assert.equal(await page.locator('.sf-product-sheet .product_title').count(),1,'Same native title moves exactly once into product panel');
 assert.equal(await page.locator('form.cart .single_add_to_cart_button').count(),1,'No duplicated purchase control during async hydration');
 await page.unroute('https://sheet-async.test/**');
@@ -302,7 +302,7 @@ await page.unroute('https://sheet-async.test/**');
 // Check with and without the badge, and both single/multi-line title lengths.
 for(const width of [320,390,700]){
  await page.setViewportSize({width,height:844});
- for(const scenario of [{noUrgency:true},{short:true},{noUrgency:true,longTitle:true}]){
+ for(const scenario of [{single:true,noUrgency:true},{single:true,short:true},{single:true,noUrgency:true,longTitle:true},{noUrgency:true,longTitle:true}]){
    let release;
    const gate=new Promise(resolve=>{release=resolve;});
    await page.route('https://sheet-height.test/**',async route=>{
@@ -316,11 +316,15 @@ for(const width of [320,390,700]){
    });
    await page.goto('https://sheet-height.test/',{waitUntil:'domcontentloaded'});
    await page.evaluate(()=>new Promise(done=>requestAnimationFrame(()=>requestAnimationFrame(done))));
+   const pendingPhoto=await page.locator('.woocommerce-product-gallery__image').first().boundingBox();
    const pending=await page.locator('div.product .sf-product-overview > .summary').boundingBox();
    const padBefore=await page.locator('div.product .sf-product-overview > .summary').evaluate(e=>({height:getComputedStyle(e).height,padding:getComputedStyle(e).padding,form:getComputedStyle(e.querySelector('form.cart')).padding,title:e.querySelector('.product_title').getBoundingClientRect().height,price:e.querySelector('.sf-product-price-row').getBoundingClientRect().height,footer:e.querySelector('.sf-product-purchase').getBoundingClientRect().height}));
    release();
    await page.locator('.sf-product-sheet').waitFor({state:'visible'});
    await page.waitForFunction(()=>!document.documentElement.classList.contains('sf-product-sheet-pending'));
+   const mountedPhoto=await page.locator('.woocommerce-product-gallery__image').first().boundingBox();
+   assert(Math.abs(pendingPhoto.height-mountedPhoto.height)<1,'Photo height is identical across delayed mount: '+JSON.stringify({width,scenario,pendingPhoto,mountedPhoto}));
+   assert(Math.abs(pendingPhoto.y-mountedPhoto.y)<1,'Photo top remains stable');
    const mounted=await page.locator('.sf-product-sheet').boundingBox();
    const padAfter=await page.locator('.sf-product-sheet').evaluate(e=>({height:getComputedStyle(e).height,padding:getComputedStyle(e).padding,header:e.querySelector('.sf-product-sheet-header').getBoundingClientRect().height,footer:e.querySelector('.sf-product-purchase').getBoundingClientRect().height}));
    console.log('PRODUCT_HEIGHT_VARIANT '+JSON.stringify({width,scenario,pending,mounted,padBefore,padAfter}));

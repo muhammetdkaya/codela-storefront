@@ -84,13 +84,9 @@
       sheet.style.setProperty('--sf-product-closed-height', (sheet.querySelector('.sf-product-sheet-header').getBoundingClientRect().height + footerHeight + 8) + 'px');
       var dockHeight = !purchase ? (document.querySelector('.sf-mobile-dock')?.getBoundingClientRect().height || 0) : 0;
       var height = sheet.querySelector('.sf-product-sheet-header').getBoundingClientRect().height + footerHeight + dockHeight + 16;
-      // Preserve the visible product framing with a corner-sized overlap.
-      // Cache normal geometry per width: panel state and browser toolbar
-      // resizing must never move preceding photographs or snap positions.
+      // CSS owns photo framing before and after mount. Only cache the sheet
+      // height for annotations; never feed measured sheet size into photos.
       if (!expanded && !sheet.classList.contains('is-discovering') && photoWidth !== media.clientWidth) {
-        var inset = Math.max(0, height - 32) + 'px';
-        media.style.setProperty('--sf-product-photo-inset', inset);
-        document.documentElement.style.setProperty('--sf-product-photo-inset', inset);
         media.style.setProperty('--sf-product-normal-height', height + 'px');
         photoWidth = media.clientWidth;
       }
@@ -215,12 +211,10 @@
       sheet.classList.remove('is-expanded');
       document.body.classList.remove('sf-product-sheet-ready', 'sf-product-sheet-open');
       media.style.removeProperty('--sf-product-collapsed-height');
-      media.style.removeProperty('--sf-product-photo-inset');
       media.style.removeProperty('--sf-product-normal-height');
       photoWidth = 0;
       cancelAnimationFrame(discoveryFrame);
       discoveryFrame = 0;
-      document.documentElement.style.removeProperty('--sf-product-photo-inset');
       document.body.style.removeProperty('--sf-product-collapsed-height');
       mounted = false;
     }

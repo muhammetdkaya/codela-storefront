@@ -530,16 +530,15 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   html:has(body.sf-product-sheet-open),body.sf-product-sheet-open{overflow:hidden;overscroll-behavior-y:contain;scroll-snap-type:none}
   body.sf-product-sheet-ready .sf-content{padding-bottom:0!important}
   body.sf-product-sheet-ready div.product{margin:0}
-  /* Reserve the normal compact header/purchase overlap while the original
-     Woo nodes are still waiting to be reparented. The adapter replaces this
-     estimate with actual measured geometry before revealing the sheet. */
-  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready){
-    --sf-product-photo-inset:133px;
+  /* One photo frame from the first paint. The compact title (28px), header
+     spacing (36px), purchase (68px) and overlap (16px) reserve 116px. Optional
+     urgency adds its existing 24px row. Never resize a photograph after a
+     script measures/reparents the purchase sheet. */
+  html:is(.sf-product-sheet-pending,:has(body.sf-product-sheet-ready)){
+    --sf-product-photo-inset:116px;
   }
-  /* Prepaint gallery reservation for enabled, compact urgency. Runtime still
-     replaces this estimate with the measured native header/footer geometry. */
-  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready):has(.summary .sf-product-price-row .cdl-ub){
-    --sf-product-photo-inset:142px;
+  html:is(.sf-product-sheet-pending,:has(body.sf-product-sheet-ready)):has(div.product .cdl-ub){
+    --sf-product-photo-inset:140px;
   }
   /* Photo presentation is identical before and after the adapter moves the
      existing Woo nodes. Pending is strictly a visibility state, not a second

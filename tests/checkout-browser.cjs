@@ -46,7 +46,7 @@ assert(actual.inputHeight>=54,'Shared input height');
 assert(actual.buttonHeight>=54,'Shared button action height');
 assert.equal(actual.inputRadius,actual.buttonRadius,'Shared radius');
 assert.equal(actual.buttonBackground,'color(srgb 0.133333 0.137255 0.121569 / 0.9)','Shared primary color');
-assert.equal(actual.summaryBackground,'rgb(243, 243, 243)','Shared muted surface');
+assert.equal(actual.summaryBackground,'rgba(0, 0, 0, 0)','Summary is transparent inside its one shared sidebar surface');
 assert.equal(actual.submit,'submit','Native submit semantics');
 const checkoutHeader=await page.locator('.sf-header').evaluate(el=>{
  const logo=el.querySelector('.sf-brand').getBoundingClientRect();

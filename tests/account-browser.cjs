@@ -168,18 +168,7 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
           'The Google mark has a consistent gap and never overlaps its label');
         await page.locator('.sf-auth-social').evaluate(el=>el.remove());
         await page.locator('.woocommerce').evaluate((node,markup)=>node.insertAdjacentHTML('beforeend',markup),unconfiguredGoogle);
-        const googleButton=page.locator('.sf-auth-google[popovertarget]');
-        assert(await googleButton.isVisible(),'Google remains visible without configuration');
-        const inactiveAlignment=await googleButton.evaluate(el=>{
-          const box=el.getBoundingClientRect(),label=el.querySelector('.sf-ui-button-label').getBoundingClientRect();
-          return Math.abs((label.left+label.width/2)-(box.left+box.width/2));
-        });
-        assert(inactiveAlignment<1,'Unconfigured Google Button preserves the same exact text alignment');
-        await googleButton.click();
-        assert.equal(await page.locator('.sf-google-setup-notice').evaluate(el=>el.matches(':popover-open')),true,'Native notification opens on tap');
-        assert.equal(await page.locator('.sf-google-setup-notice').innerText(),'Google sign-in is not configured yet.');
-        await page.keyboard.press('Escape');
-        assert.equal(await page.locator('.sf-google-setup-notice').evaluate(el=>el.matches(':popover-open')),false,'Native notice closes on Escape');
+        assert.equal(await page.locator('.sf-auth-google').count(),0,'Unconfigured provider is not offered');
 
       }
       if(type==='register'){

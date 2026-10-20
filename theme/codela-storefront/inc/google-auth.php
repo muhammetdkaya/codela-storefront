@@ -182,26 +182,14 @@ add_action( 'admin_post_codela_sf_google_callback', 'codela_sf_google_callback' 
 function codela_sf_google_button(): void {
     if ( ! function_exists( 'is_account_page' ) || ( ! is_account_page() && empty( $GLOBALS['codela_sf_auth_overlay'] ) )
         || is_user_logged_in() ) { return; }
-    $configured = codela_sf_google_enabled();
+    if ( ! codela_sf_google_enabled() ) { return; }
     ?>
     <div class="sf-shell sf-auth-social">
         <div class="sf-auth-divider"><span><?php esc_html_e( 'or', 'codela-storefront' ); ?></span></div>
-        <?php if ( $configured ) : ?>
         <a class="sf-auth-google sf-ui-button sf-ui-button--secondary" href="<?php echo esc_url( codela_sf_google_auth_url() ); ?>">
             <span class="sf-google-glyph" aria-hidden="true">G</span>
             <span class="sf-ui-button-label"><?php esc_html_e( 'Continue with Google', 'codela-storefront' ); ?></span>
         </a>
-        <?php else : ?>
-        <!-- Native HTML Popover API: uses the existing UI Kit Button, not another
-             notification component or a custom event handler. -->
-        <button class="sf-auth-google sf-ui-button sf-ui-button--secondary" type="button" popovertarget="sf-google-setup-notice" aria-controls="sf-google-setup-notice">
-            <span class="sf-google-glyph" aria-hidden="true">G</span>
-            <span class="sf-ui-button-label"><?php esc_html_e( 'Continue with Google', 'codela-storefront' ); ?></span>
-        </button>
-        <div id="sf-google-setup-notice" class="sf-google-setup-notice" popover="auto" role="status">
-            <?php esc_html_e( 'Google sign-in is not configured yet.', 'codela-storefront' ); ?>
-        </div>
-        <?php endif; ?>
     </div>
     <?php
 }
@@ -226,6 +214,15 @@ function codela_sf_google_admin_menu(): void {
         'manage_options', 'codela-sf-google', 'codela_sf_google_admin_page' );
 }
 add_action( 'admin_menu', 'codela_sf_google_admin_menu' );
+
+/** Configuration belongs to the administrator; shoppers see only usable methods. */
+add_action( 'admin_notices', static function(): void {
+    if ( ! current_user_can( 'manage_options' ) || codela_sf_google_enabled() ) { return; }
+    $screen = get_current_screen();
+    if ( ! $screen || ! in_array( $screen->id, [ 'themes', 'appearance_page_codela-sf-google', 'toplevel_page_codela', 'codela_page_codela-theme' ], true ) ) { return; }
+    echo '<div class="notice notice-warning"><p>' . esc_html__( 'Google sign-in needs an OAuth web client. Configure it to enable the sign-in button.', 'codela-storefront' )
+        . ' <a href="' . esc_url( admin_url( 'themes.php?page=codela-sf-google' ) ) . '">' . esc_html__( 'Google login', 'codela-storefront' ) . '</a></p></div>';
+} );
 
 function codela_sf_google_admin_page(): void {
     if ( ! current_user_can( 'manage_options' ) ) { return; }

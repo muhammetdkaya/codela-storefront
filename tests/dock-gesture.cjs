@@ -175,7 +175,7 @@ handle.tabIndex=0;
 assert.ok(src.includes("dock.querySelector('.sf-dock-handle')?.addEventListener('click'"),'Thin handle can reopen dock');
 const overlaySource=fs.readFileSync('theme/codela-storefront/assets/scripts/overlay-controller.js','utf8');
 assert.ok(overlaySource.includes("name === 'search' ? $('.sf-search-cancel')"),'Search opens without auto focusing text input');
-assert.ok(entry.includes('preventInitialAccountAutoFocus()'),'Account autofocus guard is installed');
+assert.ok(fs.readFileSync('theme/codela-storefront/assets/scripts/auth.js','utf8').includes('preventInitialAccountAutoFocus()'),'Account autofocus guard is installed');
 assert.ok(src.includes("dock.addEventListener('touchmove'"),'Native touch support for mobil tarayıcı');
 console.log('Dock modal, scrolling, touch scrubbing, hold and focus tests passed.');
 
