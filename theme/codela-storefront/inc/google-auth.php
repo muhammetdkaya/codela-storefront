@@ -248,13 +248,13 @@ function codela_sf_google_settings_form(): void {
             <input type="hidden" name="action" value="codela_sf_google_save">
             <?php wp_nonce_field( 'codela_sf_google_save' ); ?>
             <div class="cdl-theme-field"><label for="sf-google-callback"><?php esc_html_e( 'Redirect URI', 'codela-storefront' ); ?></label>
-                <input class="regular-text" id="sf-google-callback" readonly value="<?php echo esc_attr( codela_sf_google_callback_url() ); ?>">
+                <input type="text" class="regular-text" id="sf-google-callback" readonly value="<?php echo esc_attr( codela_sf_google_callback_url() ); ?>">
                 <p class="description"><?php esc_html_e( 'Create a Google Cloud OAuth client of type Web application. Add this exact authorized redirect URI:', 'codela-storefront' ); ?></p></div>
             <?php if ( $managed ) : ?>
                 <p><?php esc_html_e( 'Credentials are managed in the server configuration.', 'codela-storefront' ); ?></p>
             <?php else : ?>
                 <div class="cdl-theme-field"><label for="sf-google-id">Client ID</label>
-                    <input id="sf-google-id" name="sf_google_id" class="regular-text" autocomplete="off" maxlength="255" value="<?php echo esc_attr( $id ); ?>"></div>
+                    <input type="text" id="sf-google-id" name="sf_google_id" class="regular-text" autocomplete="off" maxlength="255" value="<?php echo esc_attr( $id ); ?>"></div>
                 <div class="cdl-theme-field"><label for="sf-google-secret">Client secret</label>
                     <input id="sf-google-secret" name="sf_google_secret" type="password" class="regular-text" autocomplete="new-password" maxlength="512" value="">
                     <p class="description"><?php echo $secret ? esc_html__( 'A secret is saved. Leave blank to keep it.', 'codela-storefront' ) : esc_html__( 'Enter your Google OAuth client secret.', 'codela-storefront' ); ?></p></div>

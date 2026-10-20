@@ -52,7 +52,7 @@ const render=env=>execFileSync(process.env.PHP_BIN||'php',['tests/render-account
    assert.equal(style.padding,'20px');assert.equal(style.opacity,'1');assert.equal(style.float,'none');assert(style.height>=44);
    assert(!await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1));
    await action.focus();assert(await action.evaluate(e=>e===document.activeElement),'Native action remains keyboard accessible');
-   if([390,1440].includes(width)){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:`qa/storefront-account-notice-${process.env.TEST_WEBKIT?'webkit':'chromium'}-${width}.png`});}
+   if([390,1440].includes(width)){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:`qa/storefront-ui-kit-account-notice-${process.env.TEST_WEBKIT?'webkit':'chromium'}-${width}.png`});}
    console.log(`Account overview ${width}px: native no-JS menu, endpoints, owned order, empty/cancelled states passed`);
   }finally{await browser.close();}
  }
