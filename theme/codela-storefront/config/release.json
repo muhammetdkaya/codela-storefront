@@ -6,12 +6,10 @@
     "codela": "1.2.0"
   },
   "changes": [
-    "Mobil menü içerikleri ortalandı; yinelenen arama ve hesap bağlantıları kaldırıldı.",
-    "Mobil ürün fotoğrafının ilk açılışta değişen yüksekliği sabitlendi.",
-    "Kupon formu, sipariş özeti ve ödeme seçenekleri ortak tema görünümüne uyarlandı.",
-    "Hesap uyarıları, tabloları, formları ve düğmeleri ortak tasarımla bütünleştirildi.",
-    "Masaüstü arama formunun dış çerçevesi kaldırıldı.",
-    "Yapılandırılmamış Google girişi gizlendi; yönetici yapılandırma yönlendirmesi eklendi.",
-    "Misafir hesap ve blog varlıkları sayfaya göre yüklenir; kapalı sepet görselleri başlangıçta oluşturulmaz."
+    "Header logo, menü ve sağdaki araç alanlarının arka plan yükseklikleri ortak UI ölçüsüne eşitlendi.",
+    "Boş sepet karşılaması, açıklayıcı metin ve tek bir mağazaya dönüş düğmesiyle yenilendi.",
+    "Boş sepet düğmesi mevcut UI Kit bileşenini ve WooCommerce mağaza bağlantısını kullanır.",
+    "Sepet doluluk/sayaç ve Woo Store API davranışları korunur.",
+    "Türkçe metinler yeni boş sepet deneyimiyle uyumlu hale getirildi."
   ]
 }
