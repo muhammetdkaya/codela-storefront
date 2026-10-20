@@ -208,48 +208,70 @@ function codela_sf_google_notice(): void {
 }
 add_action( 'woocommerce_before_customer_login_form', 'codela_sf_google_notice', 4 );
 
-/** Only administrators may configure the exact OAuth web-client credentials. */
+/** Keep credentials in the theme; present their form inside the existing hub. */
+function codela_sf_google_settings_url(): string {
+    return function_exists( 'codela_theme_render_integrations' )
+        ? codela_theme_admin_url() : admin_url( 'themes.php?page=codela-sf-google' );
+}
 function codela_sf_google_admin_menu(): void {
+    // Older Codela versions retain a working fallback until the plugin is updated.
+    if ( function_exists( 'codela_theme_render_integrations' ) ) { return; }
     add_theme_page( __( 'Google login', 'codela-storefront' ), __( 'Google login', 'codela-storefront' ),
         'manage_options', 'codela-sf-google', 'codela_sf_google_admin_page' );
 }
 add_action( 'admin_menu', 'codela_sf_google_admin_menu' );
-
-/** Configuration belongs to the administrator; shoppers see only usable methods. */
+add_action( 'admin_init', static function(): void {
+    if ( function_exists( 'codela_theme_render_integrations' ) && current_user_can( 'manage_options' )
+        && 'codela-sf-google' === ( $_GET['page'] ?? '' ) ) {
+        wp_safe_redirect( codela_sf_google_settings_url() . '#sf-google-settings', 302 );
+        exit;
+    }
+} );
 add_action( 'admin_notices', static function(): void {
     if ( ! current_user_can( 'manage_options' ) || codela_sf_google_enabled() ) { return; }
     $screen = get_current_screen();
-    if ( ! $screen || ! in_array( $screen->id, [ 'themes', 'appearance_page_codela-sf-google', 'toplevel_page_codela', 'codela_page_codela-theme' ], true ) ) { return; }
+    if ( ! $screen || ! in_array( $screen->id, [ 'themes', 'appearance_page_codela-sf-google' ], true ) ) { return; }
     echo '<div class="notice notice-warning"><p>' . esc_html__( 'Google sign-in needs an OAuth web client. Configure it to enable the sign-in button.', 'codela-storefront' )
-        . ' <a href="' . esc_url( admin_url( 'themes.php?page=codela-sf-google' ) ) . '">' . esc_html__( 'Google login', 'codela-storefront' ) . '</a></p></div>';
+        . ' <a href="' . esc_url( codela_sf_google_settings_url() . '#sf-google-settings' ) . '">' . esc_html__( 'Google login', 'codela-storefront' ) . '</a></p></div>';
 } );
 
-function codela_sf_google_admin_page(): void {
+function codela_sf_google_settings_form(): void {
     if ( ! current_user_can( 'manage_options' ) ) { return; }
     [ $id, $secret ] = codela_sf_google_credentials();
+    $managed = defined( 'CODELA_SF_GOOGLE_CLIENT_ID' ) || defined( 'CODELA_SF_GOOGLE_CLIENT_SECRET' );
     ?>
-    <div class="wrap">
-        <h1><?php esc_html_e( 'Google login', 'codela-storefront' ); ?></h1>
-        <p><?php esc_html_e( 'Create a Google Cloud OAuth client of type Web application. Add this exact authorized redirect URI:', 'codela-storefront' ); ?></p>
-        <p><code><?php echo esc_html( codela_sf_google_callback_url() ); ?></code></p>
+    <div class="cdl-card" id="sf-google-settings"><div class="cdl-card-body">
+        <h3><?php esc_html_e( 'Google login', 'codela-storefront' ); ?></h3>
+        <p><?php esc_html_e( 'Let customers sign in with their Google account.', 'codela-storefront' ); ?></p>
+        <?php if ( isset( $_GET['sf_google_saved'] ) ) : ?><p role="status"><?php esc_html_e( 'Settings saved.', 'codela-storefront' ); ?></p><?php endif; ?>
         <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
             <input type="hidden" name="action" value="codela_sf_google_save">
             <?php wp_nonce_field( 'codela_sf_google_save' ); ?>
-            <table class="form-table" role="presentation">
-                <tr><th scope="row"><label for="sf-google-id">Client ID</label></th>
-                    <td><input id="sf-google-id" name="sf_google_id" class="regular-text" autocomplete="off" value="<?php echo esc_attr( $id ); ?>" required></td></tr>
-                <tr><th scope="row"><label for="sf-google-secret">Client secret</label></th>
-                    <td><input id="sf-google-secret" name="sf_google_secret" type="password" class="regular-text" autocomplete="new-password" value="">
-                    <p class="description"><?php echo $secret ? esc_html__( 'A secret is saved. Leave blank to keep it.', 'codela-storefront' ) : esc_html__( 'Enter your Google OAuth client secret.', 'codela-storefront' ); ?></p>
-                    <label><input type="checkbox" name="sf_google_clear" value="1"> <?php esc_html_e( 'Disable and clear saved credentials', 'codela-storefront' ); ?></label></td></tr>
-            </table>
-            <?php submit_button( __( 'Save settings', 'codela-storefront' ) ); ?>
+            <div class="cdl-theme-field"><label for="sf-google-callback"><?php esc_html_e( 'Redirect URI', 'codela-storefront' ); ?></label>
+                <input class="regular-text" id="sf-google-callback" readonly value="<?php echo esc_attr( codela_sf_google_callback_url() ); ?>">
+                <p class="description"><?php esc_html_e( 'Create a Google Cloud OAuth client of type Web application. Add this exact authorized redirect URI:', 'codela-storefront' ); ?></p></div>
+            <?php if ( $managed ) : ?>
+                <p><?php esc_html_e( 'Credentials are managed in the server configuration.', 'codela-storefront' ); ?></p>
+            <?php else : ?>
+                <div class="cdl-theme-field"><label for="sf-google-id">Client ID</label>
+                    <input id="sf-google-id" name="sf_google_id" class="regular-text" autocomplete="off" maxlength="255" value="<?php echo esc_attr( $id ); ?>"></div>
+                <div class="cdl-theme-field"><label for="sf-google-secret">Client secret</label>
+                    <input id="sf-google-secret" name="sf_google_secret" type="password" class="regular-text" autocomplete="new-password" maxlength="512" value="">
+                    <p class="description"><?php echo $secret ? esc_html__( 'A secret is saved. Leave blank to keep it.', 'codela-storefront' ) : esc_html__( 'Enter your Google OAuth client secret.', 'codela-storefront' ); ?></p></div>
+                <div class="cdl-theme-field"><label for="sf-google-clear"><?php esc_html_e( 'Disable and clear saved credentials', 'codela-storefront' ); ?></label>
+                    <input id="sf-google-clear" type="checkbox" name="sf_google_clear" value="1"></div>
+                <div class="cdl-theme-actions"><button class="codela-btn" type="submit"><?php esc_html_e( 'Save settings', 'codela-storefront' ); ?></button></div>
+            <?php endif; ?>
         </form>
-        <?php if ( isset( $_GET['updated'] ) ) : ?>
-            <div class="notice notice-success"><p><?php esc_html_e( 'Settings saved.', 'codela-storefront' ); ?></p></div>
-        <?php endif; ?>
-    </div>
+    </div></div>
     <?php
+}
+add_action( 'codela_theme_settings_integrations', 'codela_sf_google_settings_form' );
+function codela_sf_google_admin_page(): void {
+    if ( ! current_user_can( 'manage_options' ) ) { return; }
+    echo '<div class="wrap"><h1>' . esc_html__( 'Google login', 'codela-storefront' ) . '</h1>';
+    codela_sf_google_settings_form();
+    echo '</div>';
 }
 
 function codela_sf_google_save(): void {
@@ -271,7 +293,7 @@ function codela_sf_google_save(): void {
             if ( '' !== $secret ) { update_option( 'codela_sf_google_client_secret', $secret, false ); }
         }
     }
-    wp_safe_redirect( add_query_arg( [ 'page' => 'codela-sf-google', 'updated' => '1' ], admin_url( 'themes.php' ) ), 303 );
+    wp_safe_redirect( add_query_arg( [ 'sf_google_saved' => '1' ], codela_sf_google_settings_url() ) . '#sf-google-settings', 303 );
     exit;
 }
 add_action( 'admin_post_codela_sf_google_save', 'codela_sf_google_save' );

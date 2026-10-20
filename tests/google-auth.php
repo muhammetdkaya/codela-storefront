@@ -133,4 +133,28 @@ $results['callback_secure_customer']=($GLOBALS['login_cookie']??[])===[$GLOBALS[
 $results['callback_exchange_proof']=$GLOBALS['http'][0][1]['body']['code_verifier']===$verifier;
 $results['callback_replay']=run_redirect('codela_sf_google_callback');
 $results['callback_request_count']=count($GLOBALS['http']);
+function current_user_can($cap){return $GLOBALS['admin_allowed']??true;}
+function wp_nonce_field($action){echo '<input type="hidden" name="_wpnonce" value="test-nonce">';}
+function check_admin_referer($action){if(empty($GLOBALS['valid_nonce']))throw new RuntimeException('nonce');}
+function wp_die($message,...$args){throw new RuntimeException($message);}
+function sanitize_text_field($value){return trim(strip_tags($value));}
+function wp_unslash($value){return stripslashes($value);}
+function update_option($key,$value,...$args){$GLOBALS['settings'][$key]=$value;}
+function delete_option($key){unset($GLOBALS['settings'][$key]);}
+if(getenv('GOOGLE_PANEL')){
+ function codela_theme_render_integrations(){}
+ function codela_theme_admin_url(){return 'https://store.test/wp-admin/admin.php?page=codela-commerce-toolkit&view=settings&tab=theme';}
+}
+$results['settings_url']=codela_sf_google_settings_url();
+$_GET=[];ob_start();codela_sf_google_settings_form();$results['settings_html']=ob_get_clean();
+$GLOBALS['admin_allowed']=false;ob_start();codela_sf_google_settings_form();$results['unauthorized_html']=ob_get_clean();
+try{codela_sf_google_save();}catch(RuntimeException $e){$results['save_forbidden']=$e->getMessage();}
+$GLOBALS['admin_allowed']=true;
+try{codela_sf_google_save();}catch(RuntimeException $e){$results['save_nonce']=$e->getMessage();}
+$GLOBALS['valid_nonce']=true;$_POST=['sf_google_id'=>'new.apps.googleusercontent.com','sf_google_secret'=>''];
+$results['save_redirect']=run_redirect('codela_sf_google_save');$results['preserved_secret']=get_option('codela_sf_google_client_secret');
+$_POST=['sf_google_id'=>'invalid','sf_google_secret'=>'wrong'];
+try{codela_sf_google_save();}catch(RuntimeException $e){$results['save_invalid']=$e->getMessage();}
+$results['invalid_preserved_id']=get_option('codela_sf_google_client_id');
+$_POST=['sf_google_clear'=>'1'];run_redirect('codela_sf_google_save');$results['cleared']=get_option('codela_sf_google_client_id')===''&&get_option('codela_sf_google_client_secret')==='';
 echo json_encode( $results, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );

@@ -153,7 +153,7 @@ body:not(.codela-my-account-layout) .sf-content .sf-ui-icon-button--clear{
 body:not(.codela-my-account-layout) .sf-content .sf-ui-icon-button[hidden]{display:none!important}
 body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button,.codela-maa-btn):focus-visible,
 .sf-shell :is(.sf-ui-icon-button,.sf-ui-button,.sf-ui-pressable):focus-visible,
-body:not(.codela-my-account-layout) .sf-content :is(.woocommerce a.button,.woocommerce button.button,.woocommerce input.button):not(.sf-ui-button--secondary,.sf-ui-button--quiet,.sf-ui-icon-button):focus-visible,
+body:not(.codela-my-account-layout) .sf-content :is(.woocommerce a.button,.woocommerce button.button,.woocommerce input.button,.woocommerce-MyAccount-content :is(a,button,input):is(.woocommerce-Button,.woocommerce-button,.wp-element-button,.wc-forward)):not(.sf-ui-button--secondary,.sf-ui-button--quiet,.sf-ui-icon-button):focus-visible,
 body.single-product div.product form.cart button.single_add_to_cart_button:focus-visible,
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, .wc-block-components-totals-coupon__button, #place_order):focus-visible,
 body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-icon-button,.sf-ui-button,.sf-ui-pressable):focus-visible{
@@ -169,7 +169,7 @@ body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-icon-button,.sf-ui-bu
 }
 body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button,.codela-maa-btn),
 .sf-shell .sf-ui-button,
-body:not(.codela-my-account-layout) .sf-content :is(.woocommerce a.button,.woocommerce button.button,.woocommerce input.button):not(.sf-ui-button--secondary,.sf-ui-button--quiet,.sf-ui-icon-button),
+body:not(.codela-my-account-layout) .sf-content :is(.woocommerce a.button,.woocommerce button.button,.woocommerce input.button,.woocommerce-MyAccount-content :is(a,button,input):is(.woocommerce-Button,.woocommerce-button,.wp-element-button,.wc-forward)):not(.sf-ui-button--secondary,.sf-ui-button--quiet,.sf-ui-icon-button),
 body.single-product div.product form.cart button.single_add_to_cart_button,
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, .wc-block-components-totals-coupon__button, #place_order),
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit],
@@ -194,13 +194,14 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
 }
 body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button--primary,.codela-maa-btn--primary),
 .sf-shell .sf-ui-button--primary,
-body:not(.codela-my-account-layout) .sf-content :is(.woocommerce a.button,.woocommerce button.button,.woocommerce input.button):not(.sf-ui-button--secondary,.sf-ui-button--quiet,.sf-ui-icon-button),
+body:not(.codela-my-account-layout) .sf-content :is(.woocommerce a.button,.woocommerce button.button,.woocommerce input.button,.woocommerce-MyAccount-content :is(a,button,input):is(.woocommerce-Button,.woocommerce-button,.wp-element-button,.wc-forward)):not(.sf-ui-button--secondary,.sf-ui-button--quiet,.sf-ui-icon-button),
 body.single-product div.product form.cart button.single_add_to_cart_button,
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, .wc-block-components-totals-coupon__button, #place_order),
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit],
 #sf-panel.is-account-panel .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register) button[type=submit]{
+  --sf-ui-button-fill:color-mix(in srgb,var(--sf-ui-ink) 90%,transparent);
   background:var(--sf-ui-ink);
-  background:color-mix(in srgb,var(--sf-ui-ink) 90%,transparent);
+  background:var(--sf-ui-button-fill);
   background-image:var(--sf-ui-action-highlight);
   color:#fff;
   box-shadow:var(--sf-ui-action-shadow);
@@ -258,7 +259,7 @@ body:not(.codela-my-account-layout) .sf-content .sf-auth-google.sf-ui-button .sf
 
 body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button,.codela-maa-btn):is(:disabled,[aria-disabled="true"],[aria-busy="true"]),
 .sf-shell .sf-ui-button:is(:disabled,[aria-disabled="true"],[aria-busy="true"]),
-body:not(.codela-my-account-layout) .sf-content :is(.woocommerce a.button,.woocommerce button.button,.woocommerce input.button):not(.sf-ui-button--secondary,.sf-ui-button--quiet,.sf-ui-icon-button):is(:disabled,[aria-disabled="true"],[aria-busy="true"]),
+body:not(.codela-my-account-layout) .sf-content :is(.woocommerce a.button,.woocommerce button.button,.woocommerce input.button,.woocommerce-MyAccount-content :is(a,button,input):is(.woocommerce-Button,.woocommerce-button,.wp-element-button,.wc-forward)):not(.sf-ui-button--secondary,.sf-ui-button--quiet,.sf-ui-icon-button):is(:disabled,[aria-disabled="true"],[aria-busy="true"]),
 body.single-product div.product form.cart button.single_add_to_cart_button:is(:disabled,[aria-disabled="true"],[aria-busy="true"]),
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, .wc-block-components-totals-coupon__button, #place_order):is(:disabled,[aria-disabled="true"],[aria-busy="true"]),
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit]:is(:disabled,[aria-disabled="true"],[aria-busy="true"]),
@@ -269,7 +270,7 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
 }
 body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button,.codela-maa-btn):is(:disabled,[aria-disabled="true"],[aria-busy="true"]):active,
 .sf-shell .sf-ui-button:is(:disabled,[aria-disabled="true"],[aria-busy="true"]):active,
-body:not(.codela-my-account-layout) .sf-content :is(.woocommerce a.button,.woocommerce button.button,.woocommerce input.button):not(.sf-ui-button--secondary,.sf-ui-button--quiet,.sf-ui-icon-button):is(:disabled,[aria-disabled="true"],[aria-busy="true"]):active,
+body:not(.codela-my-account-layout) .sf-content :is(.woocommerce a.button,.woocommerce button.button,.woocommerce input.button,.woocommerce-MyAccount-content :is(a,button,input):is(.woocommerce-Button,.woocommerce-button,.wp-element-button,.wc-forward)):not(.sf-ui-button--secondary,.sf-ui-button--quiet,.sf-ui-icon-button):is(:disabled,[aria-disabled="true"],[aria-busy="true"]):active,
 body.single-product div.product form.cart button.single_add_to_cart_button:is(:disabled,[aria-disabled="true"],[aria-busy="true"]):active,
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, .wc-block-components-totals-coupon__button, #place_order):is(:disabled,[aria-disabled="true"],[aria-busy="true"]):active,
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit]:is(:disabled,[aria-disabled="true"],[aria-busy="true"]):active,
@@ -290,7 +291,7 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
 
 body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button,.codela-maa-btn):active,
 .sf-shell .sf-ui-button:active,
-body:not(.codela-my-account-layout) .sf-content :is(.woocommerce a.button,.woocommerce button.button,.woocommerce input.button):not(.sf-ui-button--secondary,.sf-ui-button--quiet,.sf-ui-icon-button):active,
+body:not(.codela-my-account-layout) .sf-content :is(.woocommerce a.button,.woocommerce button.button,.woocommerce input.button,.woocommerce-MyAccount-content :is(a,button,input):is(.woocommerce-Button,.woocommerce-button,.wp-element-button,.wc-forward)):not(.sf-ui-button--secondary,.sf-ui-button--quiet,.sf-ui-icon-button):active,
 body.single-product div.product form.cart button.single_add_to_cart_button:active,
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, .wc-block-components-totals-coupon__button, #place_order):active,
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit]:active,
@@ -326,7 +327,7 @@ body.single-product div.product .sf-product-sheet form.variations_form button.si
    blur/shadows never interpolate and native Woo spinner pseudo-elements stay free. */
 body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button--primary,.codela-maa-btn--primary):active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]),
 .sf-shell .sf-ui-button--primary:active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]),
-body:not(.codela-my-account-layout) .sf-content :is(.woocommerce a.button,.woocommerce button.button,.woocommerce input.button):not(.sf-ui-button--secondary,.sf-ui-button--quiet,.sf-ui-icon-button):active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]),
+body:not(.codela-my-account-layout) .sf-content :is(.woocommerce a.button,.woocommerce button.button,.woocommerce input.button,.woocommerce-MyAccount-content :is(a,button,input):is(.woocommerce-Button,.woocommerce-button,.wp-element-button,.wc-forward)):not(.sf-ui-button--secondary,.sf-ui-button--quiet,.sf-ui-icon-button):active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]),
 body.single-product div.product form.cart button.single_add_to_cart_button:active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]),
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, .wc-block-components-totals-coupon__button, #place_order):active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]),
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit]:active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]),
@@ -351,7 +352,7 @@ body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-icon-button,.sf-ui-pr
   :is(.sf-shell,.sf-product-plugin-footer) .sf-ui-icon-button .sf-icon,
   body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button,.codela-maa-btn),
   .sf-shell .sf-ui-button,
-  body:not(.codela-my-account-layout) .sf-content :is(.woocommerce a.button,.woocommerce button.button,.woocommerce input.button):not(.sf-ui-button--secondary,.sf-ui-button--quiet,.sf-ui-icon-button),
+  body:not(.codela-my-account-layout) .sf-content :is(.woocommerce a.button,.woocommerce button.button,.woocommerce input.button,.woocommerce-MyAccount-content :is(a,button,input):is(.woocommerce-Button,.woocommerce-button,.wp-element-button,.wc-forward)):not(.sf-ui-button--secondary,.sf-ui-button--quiet,.sf-ui-icon-button),
   body.single-product div.product form.cart button.single_add_to_cart_button,
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, .wc-block-components-totals-coupon__button, #place_order),
   body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit], #sf-panel.is-account-panel .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register) button[type=submit],
@@ -365,7 +366,7 @@ body:not(.codela-my-account-layout) .sf-content .sf-ui-icon-button .sf-icon{tran
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
 body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button--primary,.codela-maa-btn--primary),
 .sf-shell .sf-ui-button--primary,
-body:not(.codela-my-account-layout) .sf-content :is(.woocommerce a.button,.woocommerce button.button,.woocommerce input.button):not(.sf-ui-button--secondary,.sf-ui-button--quiet,.sf-ui-icon-button),
+body:not(.codela-my-account-layout) .sf-content :is(.woocommerce a.button,.woocommerce button.button,.woocommerce input.button,.woocommerce-MyAccount-content :is(a,button,input):is(.woocommerce-Button,.woocommerce-button,.wp-element-button,.wc-forward)):not(.sf-ui-button--secondary,.sf-ui-button--quiet,.sf-ui-icon-button),
 body.single-product div.product form.cart button.single_add_to_cart_button,
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, .wc-block-components-totals-coupon__button, #place_order),
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit],
@@ -377,7 +378,7 @@ body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button--secondary,.co
 @media(prefers-reduced-transparency:reduce){
 body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button--primary,.codela-maa-btn--primary),
 .sf-shell .sf-ui-button--primary,
-body:not(.codela-my-account-layout) .sf-content :is(.woocommerce a.button,.woocommerce button.button,.woocommerce input.button):not(.sf-ui-button--secondary,.sf-ui-button--quiet,.sf-ui-icon-button),
+body:not(.codela-my-account-layout) .sf-content :is(.woocommerce a.button,.woocommerce button.button,.woocommerce input.button,.woocommerce-MyAccount-content :is(a,button,input):is(.woocommerce-Button,.woocommerce-button,.wp-element-button,.wc-forward)):not(.sf-ui-button--secondary,.sf-ui-button--quiet,.sf-ui-icon-button),
 body.single-product div.product form.cart button.single_add_to_cart_button,
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, .wc-block-components-totals-coupon__button, #place_order),
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit],
@@ -404,7 +405,7 @@ body:not(.codela-my-account-layout) .sf-content .sf-ui-icon-button--soft{backgro
 @media(forced-colors:active){
 body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button--primary,.codela-maa-btn--primary),
 .sf-shell .sf-ui-button--primary,
-body:not(.codela-my-account-layout) .sf-content :is(.woocommerce a.button,.woocommerce button.button,.woocommerce input.button):not(.sf-ui-button--secondary,.sf-ui-button--quiet,.sf-ui-icon-button),
+body:not(.codela-my-account-layout) .sf-content :is(.woocommerce a.button,.woocommerce button.button,.woocommerce input.button,.woocommerce-MyAccount-content :is(a,button,input):is(.woocommerce-Button,.woocommerce-button,.wp-element-button,.wc-forward)):not(.sf-ui-button--secondary,.sf-ui-button--quiet,.sf-ui-icon-button),
 body.single-product div.product form.cart button.single_add_to_cart_button,
 body.woocommerce-checkout :is(.wc-block-checkout__actions_row .wc-block-components-checkout-place-order-button, .wc-block-components-totals-coupon__button, #place_order),
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit],
@@ -576,3 +577,14 @@ body:not(.codela-my-account-layout) .sf-content form.checkout_coupon input[aria-
 body:not(.codela-my-account-layout) .sf-content form.checkout_coupon .coupon-error-notice{display:block;margin-top:8px;color:var(--sf-ui-danger);font-size:13px;line-height:1.6}
 
 body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-content .codela-maa-btn--danger{color:var(--sf-ui-danger)}
+
+/* Woo block notices force wc-forward into a translucent text link with
+   !important. Adapt that native action to the SAME Button tokens above. */
+body.woocommerce-account:not(.codela-my-account-layout) .sf-content .wc-block-components-notice-banner__content .wc-forward{
+ background:var(--sf-ui-ink)!important;background:var(--sf-ui-button-fill)!important;
+ background-image:var(--sf-ui-action-highlight)!important;color:#fff!important;
+ padding:var(--sf-ui-button-padding-y,17px) var(--sf-ui-button-padding-x,24px)!important;
+ opacity:1;transition:transform var(--sf-ui-motion-release) var(--sf-ui-ease-release);
+}
+@media(prefers-reduced-motion:reduce){body.woocommerce-account:not(.codela-my-account-layout) .sf-content .wc-block-components-notice-banner__content .wc-forward{transition:none}}
+@media(forced-colors:active){body.woocommerce-account:not(.codela-my-account-layout) .sf-content .wc-block-components-notice-banner__content .wc-forward{background:ButtonFace!important;color:ButtonText!important;border:1px solid ButtonText}}

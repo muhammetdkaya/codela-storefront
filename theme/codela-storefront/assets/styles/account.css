@@ -181,7 +181,7 @@ body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerc
 .sf-account-menu summary{display:none}
 .sf-account-menu .sf-icon,.sf-account-overview .sf-icon{width:22px;height:22px;flex:none;display:block}
 body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-content{grid-column:2;float:none;width:100%;min-width:0;padding:26px;border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface);color:var(--sf-ui-ink);font-size:14px;line-height:1.65;overflow-wrap:anywhere}
-body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-content a:not(.sf-ui-button,.button){color:var(--sf-ui-control-ink);text-underline-offset:3px}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-content a:not(.sf-ui-button,.button,.woocommerce-Button,.woocommerce-button,.wp-element-button,.wc-forward){color:var(--sf-ui-control-ink);text-underline-offset:3px}
 body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-content h2{margin:0 0 16px;font-size:22px;font-weight:500;color:var(--sf-ui-ink)}
 body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-content table{width:100%;border-radius:var(--sf-ui-control-radius);border-color:var(--sf-ui-border)}
 body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-content form:is(.woocommerce-form,.woocommerce-EditAccountForm,.woocommerce-address-fields){border:0;padding:0;box-shadow:none;max-width:none}
@@ -310,3 +310,10 @@ body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-c
  body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-EditAccountForm :is(.form-row-first,.form-row-last){float:none;width:100%}
  body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-EditAccountForm button[type=submit]{width:100%}
 }
+
+/* Account compositions size the shared Button, including Woo endpoint actions. */
+body.woocommerce-account.logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content{
+ --sf-ui-button-height:44px;--sf-ui-button-padding-y:10px;--sf-ui-button-padding-x:20px;--sf-ui-button-font-size:14px;
+}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-content :is(.woocommerce-info,.woocommerce-message,.wc-block-components-notice-banner__content){display:flex;flex-wrap:wrap;align-items:center;gap:16px}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-content :is(.woocommerce-info,.woocommerce-message,.wc-block-components-notice-banner__content) :is(a,button):is(.button,.woocommerce-Button,.woocommerce-button,.wp-element-button,.wc-forward){float:none;margin:0;flex:none;max-width:100%;order:1}

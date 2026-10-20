@@ -43,6 +43,16 @@ const render=env=>execFileSync(process.env.PHP_BIN||'php',['tests/render-account
      assert.equal(await page.locator('.sf-account-status--active').count(),name==='cancelled'?0:1,'Status styling follows actual order state');
     }
    }
+   const wooNoticeCSS='.wc-block-components-notice-banner>.wc-block-components-notice-banner__content .wc-forward{appearance:none;background:transparent!important;border:0;color:#2f2f2f!important;float:right;margin:0 0 0 20px;opacity:.7;padding:0!important;text-decoration-line:underline;transition:all .2s ease-in-out}';
+   await page.setContent('<!doctype html><html><head><style>*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0}'+css+wooNoticeCSS+'</style></head><body class="woocommerce-account logged-in"><main class="sf-content"><div class="woocommerce"><div class="woocommerce-MyAccount-content"><div class="wc-block-components-notice-banner is-info"><div class="wc-block-components-notice-banner__content"><a class="woocommerce-Button button wc-forward wp-element-button" href="/shop/">Browse products</a>No downloads available yet.</div></div></div></div></main></body></html>');
+   const action=page.locator('.wc-forward');
+   const style=await action.evaluate(e=>{const s=getComputedStyle(e);return {color:s.color,background:s.backgroundColor,opacity:s.opacity,padding:s.paddingLeft,height:e.getBoundingClientRect().height,float:s.cssFloat}});
+   assert.equal(style.color,'rgb(255, 255, 255)','Native block notice cannot force dark Button text');
+   assert(!['transparent','rgba(0, 0, 0, 0)'].includes(style.background),'Native block notice cannot erase Button surface');
+   assert.equal(style.padding,'20px');assert.equal(style.opacity,'1');assert.equal(style.float,'none');assert(style.height>=44);
+   assert(!await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1));
+   await action.focus();assert(await action.evaluate(e=>e===document.activeElement),'Native action remains keyboard accessible');
+   if([390,1440].includes(width)){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:`qa/storefront-account-notice-${process.env.TEST_WEBKIT?'webkit':'chromium'}-${width}.png`});}
    console.log(`Account overview ${width}px: native no-JS menu, endpoints, owned order, empty/cancelled states passed`);
   }finally{await browser.close();}
  }

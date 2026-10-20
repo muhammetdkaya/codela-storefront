@@ -1,5 +1,16 @@
 # Codela Storefront — güncel teknik durum
 
+## Son devam noktası — 20 Ekim 2026: 0.1.154 hazırlanıyor
+
+0.1.153 (kaynak93716f9c, release39398099954) header eşitliği ve boş sepet karşılamasıyla kararlı yayındadır; deploy39396974291 ve beş canlı kabul başarılıdır. Bu çalışma85b9ca97 üstünden devam eder.
+
+**Biten:** Google OAuth ayarları Codela1.2.2 entegrasyon kancasıyla Tema → Görünüm panelinde; eski eklentide mevcut Görünüm ekranı korunur. Kayıtlı credential seçenekleri, nonce/yetki ve OAuth akışı değişmez; secret HTML içine yazılmaz. Woo block notice wc-forward için zorunlu saydam zemin/koyu metin/sıfır padding kuralı ortak Button tokenlarına adapte edildi; hesap eylemleri44px ve tutarlı iç boşluk, dashboard keşif eylemi primary Button.
+
+**Doğrulama:** Yerel24 paket, UI Kit, Google akış/ayar kaydı (yetki, nonce, secret koruma, geçersiz giriş, silme, entegre/fallback URL) başarılı. Gerçek Woo11.2.1 notice CSS kuralı sonradan yüklense de düğme kontrastı/boyutu/klavye erişimini sınayan Chromium/WebKit regresyonu eklendi. CI, canlı dağıtım ve154 stable henüz bekliyor.
+
+**Sıradaki:** Bu commitin CI ve dağıtımını doğrula; başarılı kaynağı stable154 yayımla ve kanıtları kaydet. Google gerçek OAuth hesabı ve hedef mağaza fiziksel cihaz kabulü ayrı kalır. Tema154; eklenti1.2.1→1.2.2 ayrı yayın.
+
+
 ## Son doğrulanmış devam noktası — 20 Ekim 2026: Storefront 0.1.152 kararlı yayında
 
 **Kaynak/sürüm:** 0.1.151 → **0.1.152**. [PR #71](https://github.com/muhammetdkaya/codela-storefront/pull/71), kaynak `9f1d1659c839984c76b40b61817fe10064812a5b`; parent `9b498ad3247c57576d3cf8a0063e0ad2d74a101e` doğru 0.1.151 devamıdır. 0.1.150 üzerine geri dönüş yoktur. Test edilen `1995d17d8446b8553f2e57dd7726124901a55bf5` ve merge kaynağı aynı `326e8679aabc813eb572e7047d96702063bf97a5` ağacıdır. Önceki hesap/masaüstü ürün, arama animasyonu, chevron, kart ikonu ve kompakt ürün sepeti düzeltmeleri korunur.

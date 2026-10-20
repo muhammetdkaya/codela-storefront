@@ -31,7 +31,7 @@ $order = $orders[0] ?? null;
         <div class="sf-account-order-action"><?php echo codela_sf_ui_button( __( 'View order', 'codela-storefront' ), [ 'href' => $order->get_view_order_url() ] ); ?></div>
         <?php else : ?>
         <p class="sf-account-empty"><?php esc_html_e( 'You have no orders yet.', 'codela-storefront' ); ?></p>
-        <?php echo codela_sf_ui_button( __( 'Browse products', 'codela-storefront' ), [ 'href' => wc_get_page_permalink( 'shop' ), 'variant' => 'secondary' ] ); ?>
+        <?php echo codela_sf_ui_button( __( 'Browse products', 'codela-storefront' ), [ 'href' => wc_get_page_permalink( 'shop' ), 'variant' => 'primary' ] ); ?>
         <?php endif; ?>
     </section>
     <?php endif; ?>

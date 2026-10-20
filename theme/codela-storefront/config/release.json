@@ -6,10 +6,8 @@
     "codela": "1.2.0"
   },
   "changes": [
-    "Header logo, menü ve sağdaki araç alanlarının arka plan yükseklikleri ortak UI ölçüsüne eşitlendi.",
-    "Boş sepet karşılaması, açıklayıcı metin ve tek bir mağazaya dönüş düğmesiyle yenilendi.",
-    "Boş sepet düğmesi mevcut UI Kit bileşenini ve WooCommerce mağaza bağlantısını kullanır.",
-    "Sepet doluluk/sayaç ve Woo Store API davranışları korunur.",
-    "Türkçe metinler yeni boş sepet deneyimiyle uyumlu hale getirildi."
+    "Google giriş ayarları Codela → Tema → Görünüm paneline alındı; mevcut OAuth bilgileri korunur. Codela 1.2.2 ile ortak panel, eski eklentilerde mevcut ayar ekranı kullanılır.",
+    "Hesabım ve WooCommerce uç noktalarındaki eylemler ortak düğme ölçüleri ve tipografisiyle eşlendi.",
+    "0.1.153 header eşitliği ve boş sepet karşılaması korunur."
   ]
 }

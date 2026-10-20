@@ -45,3 +45,14 @@ assert.equal(result.callback_secure_customer,true,'Valid callback sets the nativ
 assert.equal(result.callback_exchange_proof,true,'Token exchange uses the same verifier');
 assert(result.callback_replay.endsWith('?google_login=error'));
 assert.equal(result.callback_request_count,2,'Replay cannot repeat token exchange');
+
+for(const integrated of [false,true]){
+ const r=JSON.parse(execFileSync(process.env.PHP_BIN||'php',['tests/google-auth.php'],{encoding:'utf8',env:{...process.env,GOOGLE_PANEL:integrated?'1':''}}));
+ assert(r.settings_url.includes(integrated?'tab=theme':'themes.php?page=codela-sf-google'));
+ assert(r.settings_html.includes('cdl-theme-field')&&r.settings_html.includes('codela-btn')&&r.settings_html.includes('codela_sf_google_save'));
+ assert(!r.settings_html.includes('isolated-secret'),'Saved secret never enters HTML');
+ assert.equal(r.unauthorized_html,'');assert.equal(r.save_forbidden,'Forbidden');assert.equal(r.save_nonce,'nonce');
+ assert(r.save_redirect.includes('sf_google_saved=1')&&r.save_redirect.endsWith('#sf-google-settings'));
+ assert.equal(r.preserved_secret,'isolated-secret');assert.equal(r.invalid_preserved_id,'new.apps.googleusercontent.com');assert.equal(r.save_invalid,'Invalid OAuth configuration');assert(r.cleared);
+}
+console.log('Google settings: integrated/fallback URLs, shared form, secret preservation, capability, nonce, invalid input and clear passed.');
