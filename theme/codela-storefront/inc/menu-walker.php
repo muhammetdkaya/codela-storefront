@@ -10,8 +10,8 @@ class Codela_SF_Menu_Walker extends Walker_Nav_Menu {
         if ( in_array( 'menu-item-has-children', (array) $data_object->classes, true ) ) {
             $id = 'sf-desktop-submenu-' . absint( $data_object->ID );
             $this->parents[ $depth ] = $id;
-            $output .= codela_sf_ui_icon_button( 'arrow-right', sprintf( __( 'Open submenu: %s', 'codela-storefront' ), $data_object->title ), [
-                'class' => 'sf-desktop-submenu-toggle',
+            $output .= codela_sf_ui_icon_button( 'chevron-down', sprintf( __( 'Open submenu: %s', 'codela-storefront' ), $data_object->title ), [
+                'class' => 'sf-desktop-submenu-toggle', 'variant' => 'bare',
                 'attributes' => [ 'popovertarget' => $id, 'type' => 'button' ],
             ] );
         }

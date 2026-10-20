@@ -1,5 +1,9 @@
 # Codela Storefront UI Kit — source of truth
 
+## Product cart and catalog feedback — 0.1.151
+
+On mobile product pages the same native dialog/cart controller renders a compact header-adjacent cart. Hide the navigation dock there only. Preserve Escape, focus, body scroll restoration, API state, errors and checkout. Other mobile pages retain fullscreen cart. Catalog icons remain visible after Woo AJAX success; only the duplicate View cart link is hidden. Successful add banners are suppressed; validation/errors remain native.
+
 
 ## Responsive tools and journal — 0.1.150
 
@@ -14,6 +18,18 @@ Journal is native inherited Query/Post Template/featured image/title/excerpt/rea
 The standard page and checkout templates start with native post content, without an automatically inserted post-title block. Merchant-authored content headings, document titles and product/post/archive headings stay unchanged. Saved Site Editor template overrides need separate verification before deployment.
 
 Category visual bands (variant C) use four columns from 1024px, two at 701–1023px, and the existing single full-width band at 700px and below. Additional cards wrap in their saved order. Multi-column captions stay in flow so long merchant copy grows the card instead of clipping. The existing section renderer and shared tokens remain authoritative; image slot sizes follow the layout.
+
+## Manual0.1.148 package
+
+Combines the approved account/desktop product contract and critical media delivery without changing merchant data or the native updater. Native Theme_Upgrader overwrite handles the uploaded single-root theme ZIP. A manual install does not publish a stable feed; do not offer an unpublished ZIP through the updater or claim remote CI/LCP success. Preserve this integrated source when reconciling older146/147 branches.
+
+## Approved desktop product / 0.1.147 candidate
+
+Keep one bounded native gallery + summary with a44–80px gutter; source images retain contain/no crop. Media height follows its own column, not the full viewport. Reserve the below-frame three circular controls before enhancement. Shared PHP IconButtons feed the existing gallery adapter's select/IO state. Product information spans both columns above native recommendations. Original enabled trust output lives in summary after contact on desktop; the existing mobile adapter moves/restores that exact node. Central components own the plain desktop purchase/rail/contact variant; mobile glass, native form/data/zoom and Woo card ownership remain. Do not fabricate trust items or change merchant media/settings to match a mockup.
+
+## Compact signed-in account — 0.1.147 candidate
+
+The approved account starts directly with native navigation and content. No visible page title, greeting or support lead-in. One Woo endpoint list becomes a no-script native disclosure on narrow screens and a sidebar on desktop; preserve all module destinations and nonce-bearing logout URLs. Overview uses one customer-bound latest-order query, real status/price/date, a native order-detail link and registered address/account shortcuts. Empty/deleted-product/multiple-item states must remain truthful. UI Kit owns CTA paint/foreground/focus/press; account CSS owns layout. No new browser script, independent form engine or duplicated plugin dashboard. Native navigation/dashboard hooks remain. Guest authentication and checkout are separate unchanged surfaces.
 
 
 ## Theme appearance and desktop layout — 0.1.145 (acceptance pending)

@@ -174,6 +174,10 @@
         } else content.appendChild(delivery);
         shipping.forEach(function (node) { move(node, body); });
       }
+      // Desktop owns the original reassurance inside summary; the SAME node
+      // joins the mobile information panel and returns to its exact marker.
+      var reassurance = summary.querySelector(':scope > .cdl-tb');
+      if (reassurance) move(reassurance, content);
       var contact = summary.querySelector('.cdl-wa');
       if (contact) {
         move(contact, content);

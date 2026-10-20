@@ -38,7 +38,7 @@ function codela_sf_product_modules(): void {
         'Codela\\Modules\\DeliveryEta\\Module' => [ 'render', 'woocommerce_single_product_summary', 32 ],
         'Codela\\Modules\\FreeShippingBar\\Module' => [ 'render_product', 'woocommerce_single_product_summary', 33 ],
         'Codela\\Modules\\WhatsappButton\\Module' => [ 'render_product', 'woocommerce_single_product_summary', 35 ],
-        'Codela\\Modules\\TrustBadges\\Module' => [ 'render', 'woocommerce_after_single_product_summary', 12 ],
+        'Codela\\Modules\\TrustBadges\\Module' => [ 'render', 'woocommerce_single_product_summary', 36 ],
     ];
     foreach ( $hook->callbacks as $priority => $callbacks ) {
         foreach ( $callbacks as $entry ) {
@@ -209,6 +209,12 @@ function codela_sf_product_sheet_template(): void {
         </section>
     </template>
     <?php
+    ?>
+    <template id="sf-product-gallery-controls-template"><div class="sf-product-gallery-arrows">
+        <?php echo codela_sf_ui_icon_button( 'arrow-left', __( 'Previous image', 'codela-storefront' ), [ 'variant' => 'soft', 'attributes' => [ 'data-product-gallery-step' => '-1' ] ] ); ?>
+        <?php echo codela_sf_ui_icon_button( 'arrow-right', __( 'Next image', 'codela-storefront' ), [ 'variant' => 'soft', 'attributes' => [ 'data-product-gallery-step' => '1' ] ] ); ?>
+    </div></template>
+    <?php
     // Product DOM is complete here. Print the dependency-free adapter before
     // unrelated footer scripts, once through WordPress's existing script queue.
     wp_print_scripts( [ 'codela-storefront-product-information' ] );
@@ -216,3 +222,8 @@ function codela_sf_product_sheet_template(): void {
 add_action( 'woocommerce_after_single_product_summary', 'codela_sf_product_sheet_template', 99 );
 
 
+
+/** Purchase confirmation stays in the existing cart badge/control, not a Woo banner. */
+add_filter( 'wc_add_to_cart_message_html', static function( $message ) {
+    return '';
+} );

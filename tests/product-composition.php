@@ -42,7 +42,7 @@ add_action( 'wp_footer', [$contact,'render_floating'], 10 );
 codela_sf_product_modules();
 check( count(entries('woocommerce_product_thumbnails',30)) === 1, 'One gallery counter' );
 check( entries('woocommerce_single_product_summary',11)[0]['function'] === [$stock,'render'], 'Original stock instance beside price' );
-check( entries('woocommerce_after_single_product_summary',12)[0]['function'] === [$trust,'render'], 'Trust after native information callback10, before upsell15 and related20' );
+check( entries('woocommerce_single_product_summary',36)[0]['function'] === [$trust,'render'], 'Original trust instance in summary after contact, retained by mobile adapter' );
 check( entries('woocommerce_single_product_summary',32)[0]['function'] === [$eta,'render'], 'Original ETA instance' );
 check( entries('woocommerce_single_product_summary',33)[0]['function'] === [$shipping,'render_product'], 'Original live shipping instance' );
 check( entries('woocommerce_single_product_summary',33)[0]['accepted_args'] === 2, 'Callback argument contract retained' );

@@ -41,6 +41,7 @@ function get_terms( ...$args ) { return [(object)['parent'=>0,'term_id'=>1,'name
 function get_term_link( $term ) { return home_url('/category/'.$term->term_id.'/'); }
 function is_wp_error( ...$args ) { return false; }
 function add_action(...$args) {}
+function add_filter(...$args) {}
 function wc_get_template( $name ) {
     if ( $name !== 'myaccount/form-login.php' ) { throw new RuntimeException('Unexpected template'); }
     echo '<div class="sf-account-intro"><h1>My account</h1><div class="sf-auth-tabs" hidden></div></div>';

@@ -12,7 +12,7 @@ function get_queried_object() { return new WP_Term(); }
 function wc_clean($value) { return strip_tags($value); }
 function wp_unslash($value) { return stripslashes($value); }
 function wc_format_decimal($value) { return is_numeric($value) ? (string)(float)$value : ''; }
-function add_filter(...$args) {}
+if (!function_exists('add_filter')) { function add_filter(...$args) {} }
 function apply_filters($hook,$value) { return $value; }
 function get_woocommerce_currency_symbol() { return '$'; }
 function wp_parse_url($url,$component) { return parse_url($url,$component); }

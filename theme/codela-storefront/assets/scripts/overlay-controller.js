@@ -64,10 +64,18 @@ export function createOverlayController({
         searchSlot.appendChild($('#sf-search'));
         $('#sf-search').hidden = false;
         $('.sf-search-content').classList.add('sf-ui-surface');
+        $('.sf-search-toolbar').classList.add('sf-ui-surface');
         document.querySelectorAll('[data-panel="search"]').forEach(el => el.setAttribute('aria-expanded','true'));
         document.querySelectorAll('.sf-desktop-submenu:popover-open').forEach(menu => menu.hidePopover());
         if (!reducedMotion.matches && searchSlot.animate) {
-            surfaceMotion = searchSlot.animate([{clipPath:'inset(0 0 0 100%)'},{clipPath:'inset(0 0 0 0)'}], {duration:240,easing:'cubic-bezier(.2,.8,.2,1)'});
+            const toolbar = searchSlot.querySelector('.sf-search-toolbar');
+            const rect = toolbar.getBoundingClientRect();
+            const trigger = document.querySelector('.sf-header [data-panel="search"]')?.getBoundingClientRect();
+            const offset = trigger ? trigger.right - rect.right : 0;
+            surfaceMotion = toolbar.animate([
+                {clipPath:`inset(0 0 0 ${Math.max(0, rect.width - 44)}px round 24px)`, transform:`translateX(${offset}px)`},
+                {clipPath:'inset(0 0 0 0 round 24px)', transform:'translateX(0)'},
+            ], {duration:320,easing:'cubic-bezier(.2,.8,.2,1)'});
             surfaceMotion.onfinish = () => { surfaceMotion = null; };
         }
         searchFeature.start();
@@ -80,6 +88,7 @@ export function createOverlayController({
         search.hidden = true;
         searchHome.after(search);
         $('.sf-search-content').classList.remove('sf-ui-surface');
+        $('.sf-search-toolbar').classList.remove('sf-ui-surface');
         searchSlot.hidden = true;
         searchSlot.closest('.sf-header').classList.remove('is-search-expanded');
         if (hiddenHeaderControl) hiddenHeaderControl.inert = false;
@@ -191,10 +200,11 @@ export function createOverlayController({
         dialog.classList.toggle('is-menu-panel', name === 'menu');
         dialog.classList.toggle('is-search-panel', name === 'search');
         dialog.classList.toggle('is-cart-panel', name === 'cart');
+        dialog.classList.toggle('is-product-cart', name === 'cart' && document.body.classList.contains('single-product'));
         dialog.classList.toggle('is-account-panel', name === 'account');
         dialog.classList.toggle('is-filters-panel', name === 'filters');
         const dock = mobileDock();
-        if (dock && dock.parentElement === dialog) dock.hidden = name === 'menu';
+        if (dock && dock.parentElement === dialog) dock.hidden = name === 'menu' || (name === 'cart' && document.body.classList.contains('single-product'));
         markDockActive(name);
         const menuTrigger = findMenuTrigger();
         dialog.setAttribute('aria-label', name === 'menu' ? menuLabel : name === 'search' ? t('Search products') : name === 'account' ? t('My account') : name === 'filters' ? t('Filters') : t('Your cart'));
@@ -350,7 +360,7 @@ export function createOverlayController({
         };
         dialog.addEventListener('pointerdown', event => { backdropDown = outsideDrawer(event); });
         dialog.addEventListener('click', event => {
-            if (current === 'cart' && desktop.matches && backdropDown && outsideDrawer(event)) close();
+            if (current === 'cart' && (desktop.matches || dialog.classList.contains('is-product-cart')) && backdropDown && outsideDrawer(event)) close();
             backdropDown = false;
         });
         adminOffset();

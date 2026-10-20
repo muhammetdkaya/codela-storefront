@@ -3,6 +3,7 @@
 define( 'ABSPATH', __DIR__ );
 $GLOBALS['hooks'] = [];
 function add_action( $name, $fn, $priority = 10 ) { $GLOBALS['hooks'][ $name ] = $fn; }
+function add_filter( $name, $fn, $priority = 10 ) { $GLOBALS['filters'][ $name ] = $fn; }
 function is_account_page() { return getenv( 'ACCOUNT_OUTSIDE' ) !== '1'; }
 function is_user_logged_in() { return getenv( 'ACCOUNT_SIGNED_IN' ) === '1'; }
 function __( $text, $domain = '' ) { return $text; }
