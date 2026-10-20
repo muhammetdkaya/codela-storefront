@@ -22,7 +22,7 @@ body.woocommerce-checkout .sf-checkout-page :is(.woocommerce-billing-fields__fie
 /* Coupon stays in the real Woo form, outside form.checkout. Its native
    show/hide and AJAX handlers continue to own visibility and feedback. */
 body.woocommerce-checkout .sf-checkout-page .woocommerce-form-coupon-toggle{margin:0 0 12px}
-body.woocommerce-checkout .sf-checkout-page .woocommerce-form-coupon-toggle .woocommerce-info{margin:0;padding:18px 22px;font-size:14px}
+body.woocommerce-checkout .sf-checkout-page .woocommerce-form-coupon-toggle :is(.woocommerce-info,.wc-block-components-notice-banner){margin:0;padding:18px 22px;font-size:14px}
 body.woocommerce-checkout .sf-checkout-page .showcoupon{display:inline-flex;align-items:center;min-height:44px;margin-inline-start:8px;color:var(--sf-ui-ink);font-weight:500;text-underline-offset:4px}
 body.woocommerce-checkout .sf-checkout-page form.checkout_coupon{width:100%;margin:0 0 28px;padding:22px;border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface)}
 body.woocommerce-checkout .sf-checkout-page form.checkout_coupon > p:first-child{margin:0 0 16px;color:var(--sf-muted);font-size:14px}

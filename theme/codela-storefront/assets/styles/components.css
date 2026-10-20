@@ -562,7 +562,7 @@ body:not(.codela-my-account-layout) :is(.sf-content,#sf-panel) :is(.woocommerce-
 body:not(.codela-my-account-layout) :is(.sf-content,#sf-panel) :is(.woocommerce-error,.wc-block-components-notice-banner.is-error){border-color:var(--sf-ui-danger);background:var(--sf-ui-danger-surface)}
 body:not(.codela-my-account-layout) :is(.sf-content,#sf-panel) :is(.woocommerce-message,.wc-block-components-notice-banner.is-success){border-color:var(--sf-ui-success);background:var(--sf-ui-success-surface)}
 body:not(.codela-my-account-layout) .sf-content :is(.woocommerce-message,.woocommerce-info) .button{float:none;margin:0 12px 8px 0;--sf-ui-button-height:44px;--sf-ui-button-padding-y:10px;--sf-ui-button-font-size:13px}
-body:not(.codela-my-account-layout) :is(.sf-content,#sf-panel) .wc-block-components-notice-banner > svg{color:var(--sf-ui-ink);background:transparent;flex:none}
+body:not(.codela-my-account-layout) :is(.sf-content,#sf-panel) .wc-block-components-notice-banner > svg{display:none}
 /* A single field primitive for coupon and signed-in native account forms. */
 body:not(.codela-my-account-layout) .sf-content :is(form.checkout_coupon,.woocommerce-EditAccountForm,.woocommerce-address-fields__field-wrapper) :is(input.input-text,select,textarea){
  box-sizing:border-box;width:100%;min-height:var(--sf-ui-action-height);padding:14px 16px;

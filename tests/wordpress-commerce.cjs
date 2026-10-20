@@ -19,15 +19,15 @@ try{
  for(const width of [320,390,700,1024,1440]){
   await page.setViewportSize({width,height:900});
   assert(!await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1));
-  const notice=page.locator('.woocommerce-form-coupon-toggle .woocommerce-info');
+  const notice=page.locator('.woocommerce-form-coupon-toggle :is(.woocommerce-info,.wc-block-components-notice-banner)');
   assert.equal(await notice.evaluate(e=>getComputedStyle(e,'::before').content),'none','Old Woo notification icon removed');
   assert.equal(await notice.evaluate(e=>getComputedStyle(e).borderTopWidth),'1px');
   if(!await page.locator('form.checkout_coupon').isVisible())await page.locator('a.showcoupon').click();
   await page.locator('#coupon_code').fill('layout-invalid');
   await page.locator('button[name=apply_coupon]').click();
-  await page.locator('.woocommerce-error').first().waitFor();
-  assert(await page.locator('.woocommerce-error').first().innerText(),'Real native coupon error stays visible');
-  assert.equal(await page.locator('.woocommerce-error').first().evaluate(e=>getComputedStyle(e,'::before').content),'none');
+  await page.locator('.woocommerce-error,.wc-block-components-notice-banner.is-error').first().waitFor();
+  assert(await page.locator('.woocommerce-error,.wc-block-components-notice-banner.is-error').first().innerText(),'Real native coupon error stays visible');
+  assert.equal(await page.locator('.woocommerce-error,.wc-block-components-notice-banner.is-error').first().evaluate(e=>getComputedStyle(e,'::before').content),'none');
   const buttons=await page.locator('#place_order,button[name=apply_coupon]').evaluateAll(nodes=>nodes.map(e=>{const c=getComputedStyle(e);return{height:e.getBoundingClientRect().height,radius:c.borderRadius,paint:c.backgroundColor,color:c.color,type:e.type}}));
   assert(buttons.every(b=>b.height>=44&&b.type==='submit'));
   assert.equal(buttons[0].paint,buttons[1].paint,'Coupon and order use the same Button');assert.equal(buttons[0].radius,buttons[1].radius);
@@ -57,8 +57,8 @@ try{
   await page.setViewportSize({width,height:900});
   await page.goto(seed.account+'edit-account/',{waitUntil:'networkidle'});
   await page.locator('#account_first_name').fill('');await page.locator('button[name=save_account_details]').click();
-  await page.locator('.woocommerce-error').first().waitFor();
-  assert.equal(await page.locator('.woocommerce-error').first().evaluate(e=>getComputedStyle(e,'::before').content),'none');
+  await page.locator('.woocommerce-error,.wc-block-components-notice-banner.is-error').first().waitFor();
+  assert.equal(await page.locator('.woocommerce-error,.wc-block-components-notice-banner.is-error').first().evaluate(e=>getComputedStyle(e,'::before').content),'none');
   assert.equal(await page.locator('button[name=save_account_details]').evaluate(e=>getComputedStyle(e).color),'rgb(255, 255, 255)');
   assert(!await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1));
   await page.screenshot({path:`${dir}/${engine}-commerce-account-error-${width}.png`,fullPage:true});
@@ -70,5 +70,5 @@ try{
  }
  report.checks.push('Native edit-account validation, order actions and module addresses retain shared theme styling');
  assert.deepEqual(errors,[]);fs.writeFileSync(`${dir}/${engine}-commerce.json`,JSON.stringify(report,null,2));console.log(JSON.stringify(report));
-}catch(e){if(page){await page.screenshot({path:`${dir}/${engine}-commerce-failure.png`,fullPage:true}).catch(()=>{});}throw e;}finally{await browser.close();}
+}catch(e){if(page){await page.screenshot({path:`${dir}/${engine}-commerce-failure.png`,fullPage:true}).catch(()=>{});fs.writeFileSync(`${dir}/${engine}-commerce-failure.html`,await page.content());}throw e;}finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1});
