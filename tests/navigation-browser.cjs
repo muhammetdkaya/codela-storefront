@@ -5,7 +5,8 @@ const fs = require('node:fs');
 const {execFileSync} = require('node:child_process');
 const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const php = process.env.PHP_BIN || 'php';
-const googleDisabled=JSON.parse(execFileSync(php,['tests/google-auth.php'],{encoding:'utf8'})).disabled_button;
+const google=JSON.parse(execFileSync(php,['tests/google-auth.php'],{encoding:'utf8'}));
+assert.equal(google.disabled_button,'','Unconfigured Google has no customer action');
 const header = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8'});
 const noDockHeader = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8',env:{...process.env,FIXTURE_DOCK:'0'}});
 assert(!noDockHeader.includes('class="sf-mobile-dock'), 'Disabled setting omits dock');
@@ -330,7 +331,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  assert.equal(compactAuth.subtitle,false,'Account popup has no descriptive subtitle');
  assert.equal(await page.locator('#sf-account form.woocommerce-form-login').getAttribute('action'),'https://store.test/myaccount/','Login submits to genuine Account URL');
  assert.equal(page.url(),'https://store.test/','Guest Account does not reload');
- await page.locator('#sf-account .sf-overlay-auth').evaluate((element,markup)=>element.insertAdjacentHTML('beforeend',markup),googleDisabled);
+ await page.locator('#sf-account .sf-overlay-auth').evaluate((element,markup)=>element.insertAdjacentHTML('beforeend',markup),google.configured_button);
  const visualGoogle=await page.locator('#sf-account .sf-auth-google').evaluate(el=>{
   const button=el.getBoundingClientRect(),label=el.querySelector('.sf-ui-button-label').getBoundingClientRect();
   const glyph=el.querySelector('.sf-google-glyph').getBoundingClientRect();
@@ -341,13 +342,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  assert(visualGoogle.centerError<1,'Google label is precisely centered in actual dialog');
  assert(visualGoogle.iconGap>=7&&visualGoogle.iconGap<=14,'Google icon and text have consistent nonoverlapping gap');
  assert(visualGoogle.buttonHeight>=52&&visualGoogle.buttonHeight<=54,'Google retains shared compact touch target');
- await page.locator('#sf-account .sf-auth-google').click();
- assert.equal(await page.locator('#sf-google-setup-notice').evaluate(el=>el.matches(':popover-open')),true,
-  'Setup notice is visible inside the actual Account dialog');
- await page.keyboard.press('Escape');
- assert.equal(await page.locator('#sf-google-setup-notice').evaluate(el=>el.matches(':popover-open')),false,
-  'Setup notice closes without closing the Account dialog');
- assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),true,'Account dialog remains open after dismissing Google tip');
+ assert.match(await page.locator('#sf-account .sf-auth-google').getAttribute('href'),/action=codela_sf_google_start/,'Configured Google uses the real OAuth start action');
 
  await click('search');
  assert.equal(await page.locator('#sf-account').isVisible(),false,'Search hides Account in same dialog');

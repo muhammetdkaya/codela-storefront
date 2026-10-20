@@ -5,7 +5,34 @@
  */
 (function () {
     'use strict';
+function preventInitialAccountAutoFocus() {
+    const account = document.body.classList.contains('woocommerce-account')
+        || !!document.querySelector('.woocommerce-MyAccount-navigation, .woocommerce-form-login, .woocommerce-form-register');
+    if (!account) return;
+    let guarding = true;
+    const inputSelector = 'input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=submit]),textarea,[contenteditable="true"]';
+    document.querySelectorAll('[autofocus]').forEach(el => {
+        if (el.matches(inputSelector)) el.removeAttribute('autofocus');
+    });
+    const dismiss = el => {
+        if (guarding && el?.matches?.(inputSelector)) el.blur();
+    };
+    const onFocus = event => dismiss(event.target);
+    const release = () => {
+        if (!guarding) return;
+        guarding = false;
+        document.removeEventListener('focusin',onFocus,true);
+        document.removeEventListener('touchstart',release,true);
+        document.removeEventListener('pointerdown',release,true);
+        document.removeEventListener('keydown',release,true);
+    };
+    document.addEventListener('focusin',onFocus,true);
+    for (const type of ['touchstart','pointerdown','keydown']) document.addEventListener(type,release,{capture:true,once:true});
+    dismiss(document.activeElement);
+    setTimeout(release,1600);
+}
     function init() {
+        preventInitialAccountAutoFocus();
         const tabs = document.querySelector('.sf-account-intro .sf-auth-tabs');
         const container = document.querySelector('#customer_login');
         if (!tabs || !container) return;

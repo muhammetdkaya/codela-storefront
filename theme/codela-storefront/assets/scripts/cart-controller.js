@@ -83,6 +83,11 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
         document.querySelectorAll('[data-panel="cart"]').forEach(link => {
             link.setAttribute('aria-label', `${t('Your cart')} (${data.items_count || 0})`);
         });
+        renderCart(data);
+    }
+    function renderCart(data) {
+        // Keep the live badge immediate; closed-cart photos/rows do no work.
+        if (getCurrent() !== 'cart') return;
         const root = $('#sf-cart-items');
         root.innerHTML = data.items.length ? data.items.map(item => {
             const limits = item.quantity_limits || {minimum:1,maximum:9999,multiple_of:1,editable:true};
@@ -104,6 +109,7 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
         });
     }
     async function refreshCart() {
+        if (cartData) renderCart(cartData);
         if (mutating) { dirty = true; return; }
         if (cartPending) return cartPending;
         if (!cartData) $('#sf-cart-items').textContent = t('Loading…');

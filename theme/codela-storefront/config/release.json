@@ -6,11 +6,12 @@
     "codela": "1.2.0"
   },
   "changes": [
-    "Manuel paketteki hesap ve masaüstü ürün tasarımları güncel sürümle birleştirildi.",
-    "Kritik görsel önceliği ve gecikmeli alt görseller korundu.",
-    "Masaüstü arama düğmeden sola genişler; alt menü chevron tasarımı sadeleştirildi.",
-    "Ürün kartı ekleme sonrası ikonunu korur; yinelenen Sepetim bağlantısı kaldırıldı.",
-    "Başarılı sepete ekleme için eski WooCommerce banner kaldırıldı; hata bildirimleri korundu.",
-    "Mobil ürün sayfasında aynı sepet kompakt panelde gösterilir."
+    "Mobil menü içerikleri ortalandı; yinelenen arama ve hesap bağlantıları kaldırıldı.",
+    "Mobil ürün fotoğrafının ilk açılışta değişen yüksekliği sabitlendi.",
+    "Kupon formu, sipariş özeti ve ödeme seçenekleri ortak tema görünümüne uyarlandı.",
+    "Hesap uyarıları, tabloları, formları ve düğmeleri ortak tasarımla bütünleştirildi.",
+    "Masaüstü arama formunun dış çerçevesi kaldırıldı.",
+    "Yapılandırılmamış Google girişi gizlendi; yönetici yapılandırma yönlendirmesi eklendi.",
+    "Misafir hesap ve blog varlıkları sayfaya göre yüklenir; kapalı sepet görselleri başlangıçta oluşturulmaz."
   ]
 }

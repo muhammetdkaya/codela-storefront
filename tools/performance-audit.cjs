@@ -47,7 +47,7 @@ async function snapshot(page){return page.evaluate(()=>{
   if(name==='home')for(const panel of ['menu','cart','search']){
    try{
     const trigger=page.locator('[data-panel="'+panel+'"]:visible').first();
-    await trigger.click({timeout:10000});await page.locator('#sf-panel[open]').waitFor({timeout:10000});await page.waitForTimeout(600);
+    await trigger.click({timeout:10000});await page.locator(panel==='search'&&profileName==='desktop'?'.sf-header-search:not([hidden])':'#sf-panel[open]').waitFor({timeout:10000});await page.waitForTimeout(600);
     const interaction=await page.evaluate(()=>({click:window.__audit.click,events:window.__audit.events.slice(-12),cartText:document.querySelector('#sf-cart-items')?.innerText}));
     interaction.profile=profileName;interaction.repeat=repeat;interaction.panel=panel;
     if(panel==='search'){
@@ -56,7 +56,7 @@ async function snapshot(page){return page.evaluate(()=>{
     }
     report.interactions.push(interaction);console.log('PERF_INTERACTION '+JSON.stringify(interaction));save();
      // Search Escape clears its query first; use the actual visible close button.
-     if(panel==='search')await page.locator('#sf-panel button.sf-search-cancel:visible').click({timeout:10000});
+     if(panel==='search')await page.locator('button.sf-search-cancel:visible').click({timeout:10000});
      else await page.keyboard.press('Escape');
      await page.locator('#sf-panel').waitFor({state:'hidden',timeout:10000});
    }catch(e){report.interactions.push({profile:profileName,repeat,panel,error:e.message});save();console.log('PERF_INTERACTION_ERROR '+e.message);break;}

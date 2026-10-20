@@ -114,7 +114,9 @@ add_action( 'wp_enqueue_scripts', function() {
     wp_enqueue_style( 'codela-storefront-overlay', $root_uri . 'styles/overlay.css', [ 'codela-storefront-theme' ], $style_version );
     wp_enqueue_style( 'codela-storefront-navigation', $root_uri . 'styles/navigation.css', [ 'codela-storefront-overlay' ], $style_version );
     wp_enqueue_style( 'codela-storefront-components', $root_uri . 'styles/components.css', [ 'codela-storefront-navigation' ], $style_version );
-    wp_enqueue_style( 'codela-storefront-journal', $root_uri . 'styles/journal.css', [ 'codela-storefront-components' ], $style_version );
+    if ( is_home() || is_singular( 'post' ) || ( is_archive() && ! ( function_exists( 'is_woocommerce' ) && is_woocommerce() ) ) ) {
+        wp_enqueue_style( 'codela-storefront-journal', $root_uri . 'styles/journal.css', [ 'codela-storefront-components' ], $style_version );
+    }
     wp_enqueue_style( 'codela-storefront-catalog', $root_uri . 'styles/catalog.css', [ 'codela-storefront-components' ], $style_version );
     $sections = function_exists( 'codela_sections_validate_root' ) ? codela_sf_sections_capabilities() : [ 'layout' => false, 'gallery' => false, 'products' => false ];
     if ( $sections['layout'] ) {
@@ -153,7 +155,11 @@ add_action( 'wp_enqueue_scripts', function() {
         }
         wp_enqueue_script( 'codela-storefront-auth', $root_uri . 'scripts/auth.js', [], $style_version, true );
     }
-    wp_enqueue_script_module( 'codela-storefront' );
+    // The guest account has a quiet header without any dialog/store tools.
+    // Its native forms need only auth.js; avoid the entire storefront graph.
+    if ( is_user_logged_in() || ! function_exists( 'is_account_page' ) || ! is_account_page() ) {
+        wp_enqueue_script_module( 'codela-storefront' );
+    }
     if ( codela_sf_seamless_allowed() ) {
         wp_enqueue_style( 'codela-storefront-route-loading', $root_uri . 'styles/navigation-loading.css', [ 'codela-storefront-components' ], $style_version );
         wp_enqueue_script_module( 'codela-storefront/navigation' );

@@ -1,5 +1,16 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 20 Ekim 2026 — Storefront 0.1.152 hazırlanıyor
+
+Tema 0.1.151 → 0.1.152; güncel main 9b498ad tabanlıdır. Mobil menü ortalı; altındaki yinelenen Ara/Hesabım kaldırıldı. Dock olmayan kompozisyonda aynı araçlar menünün üstünde ortak IconButton olarak kalır. Mobil fotoğraf çerçevesi ilk boyamadan itibaren CSS tarafından sabittir; sheet ölçümü artık fotoğraf yüksekliğini değiştirmez. Masaüstü aramada dış focus çerçevesi kaldırıldı, input/cancel erişimi korunur. Native kupon, sipariş özeti, ödeme seçenekleri, hesap endpoint tabloları ve uyarılar ortak Button/field/notice tasarımına bağlanır. Woo form, nonce, AJAX ve modül sahipliği korunur.
+
+**Google:** Canlı codela.dev/hesabim/ yapılandırılmamış popover düğmesini gösteriyordu. Gerçek OAuth istemci bilgileri olmadan Google girişi etkin değildir. Etkin olmayan yöntem müşteriye sunulmaz; yönetici Görünüm → Google login içinde HTTPS web istemcisini ve tam callback URI'sini yapılandırır. PKCE/state/kimlik/ayrıcalık testleri ve gerçek start/callback fonksiyonlarının mock HTTP akışı sınanır. Gerçek Google hesabıyla uçtan uca giriş henüz doğrulanmadı; istemci ayarları gereklidir.
+
+**Performans:** 0.1.151 canlı laboratuvar başlangıcı run39367708406: üç soğuk mobil ölçüm medyanı home LCP2056ms, product2016ms, CLS0. Misafir hesap gereksiz storefront modül grafiğini almaz; autofocus koruması mevcut auth.js'e taşındı. Blog CSS'i sadece ilgili sayfalarda. Sepet sayacı canlı Store API cevabıyla hemen güncellenir; kapalı sepet satır/görsel DOM'u açılışa kadar oluşturulmaz. Başlangıç GET'i ve mutasyon senkronizasyonu korunur. Yüzdelik hız iddiası yok.
+
+**Durum:** Yerel PHP/JS ve paket kontrolleri yapılıyor. Tarayıcı/gerçek WP-Woo/Codela kabulü, main dağıtımı ve stable yayın henüz tamamlanmadı. Google yapılandırması, gerçek cihaz/gateway ve hedef mağaza kurulumu ayrı kabul kalemleridir.
+
+
 ## Son doğrulanmış devam noktası — 20 Ekim 2026: Storefront 0.1.151 kararlı yayında
 
 **Sürüm/kaynak:** Tema 0.1.150 → **0.1.151**, [PR #70](https://github.com/muhammetdkaya/codela-storefront/pull/70), kaynak `f3c2708435a8335315cc316e8cedf3c7a3b6a6d4`. Merge ağacı test edilen `026e757bdff6beb1a977537d7272bd56f8718a16` ile bire bir aynıdır. Manuel 0.1.148'deki #66 medya ve #67 hesap/masaüstü ürün tasarımları güncel main ile bütünleştirildi; 0.1.150 header/blog/kategori değişiklikleri korundu. Eski düşük sürümlü dallar artık doğrudan yayımlanmamalıdır.
