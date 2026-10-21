@@ -44,8 +44,10 @@ const render=env=>execFileSync(process.env.PHP_BIN||'php',['tests/render-account
    }
    const emptyOrders=render({ACCOUNT_ORDERS_EMPTY:'1'});
    assert(emptyOrders.includes('hook:woocommerce_before_account_orders')&&emptyOrders.includes('hook:woocommerce_after_account_orders'),'Empty orders retain native verification/module hooks');
-   await page.setContent('<html><head><style>*{box-sizing:border-box}body{font-family:Arial,sans-serif}'+css+'</style></head><body class="woocommerce-account logged-in"><main class="sf-content">'+emptyOrders+'</main></body></html>');
+   await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f8f7f4}'+css+'</style></head><body class="woocommerce-account logged-in"><main class="sf-content">'+emptyOrders+'</main></body></html>');
    assert(await page.locator('.sf-account-empty-orders').isVisible());
+   assert(await page.locator('body').evaluate(e=>e.matches('.woocommerce-account.logged-in')),'Endpoint fixture retains account scope');
+   if(width<=800)assert(!await page.locator('.woocommerce-MyAccount-navigation').isVisible(),'Endpoint uses header back rather than repeating hub navigation');
    assert.equal(await page.locator('.sf-account-empty-orders a').getAttribute('href'),'/shop/');
    assert(!await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),'Empty orders fit narrow screen');
    if([390,1280].includes(width)){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:`qa/storefront-ui-kit-empty-orders-${process.env.TEST_WEBKIT?'webkit':'chromium'}-${width}.png`});}
