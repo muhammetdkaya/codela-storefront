@@ -47,7 +47,7 @@ function clearPlaceholder() {
     document.querySelectorAll('.sf-route-skeleton').forEach(el => el.remove());
     document.querySelectorAll('.sf-route-loading').forEach(el => el.classList.remove('sf-route-loading'));
 }
-function applyLocation() {
+function applyLocation(from) {
     const main = document.querySelector(REGION);
     if (!main) return;
     const home = document.querySelector('.sf-dock-item[data-dock-view="home"]');
@@ -67,7 +67,7 @@ function applyLocation() {
     document.body.classList.toggle('home', isHome);
     document.body.classList.toggle('front-page', isHome);
     document.body.classList.toggle('page', !isHome);
-    window.dispatchEvent(new Event('codela:route-committed'));
+    window.dispatchEvent(new CustomEvent('codela:route-committed', { detail: { from, to: here.href } }));
 }
 function finishLoading() {
     window.clearTimeout(timer);
@@ -75,11 +75,12 @@ function finishLoading() {
 }
 function commitLocation({ focus = false } = {}) {
     const url = routerState.url || location.href;
-    const changed = previousUrl !== url;
+    const from = previousUrl;
+    const changed = from !== url;
     previousUrl = url;
     const main = document.querySelector(REGION);
     if (!main) return;
-    if (changed) applyLocation();
+    if (changed) applyLocation(from);
     // Explicit clicks start at the new content. History traversal keeps the
     // browser/core scroll restoration and focus rather than forcing the top.
     if (focus) {

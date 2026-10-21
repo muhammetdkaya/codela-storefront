@@ -34,11 +34,11 @@
             delete document.documentElement.dataset.sfAccountTransition;
         }).catch(() => {});
     }
-    function updateBackLink() {
+    function updateBackLink(event) {
         const link = document.querySelector('[data-sf-context-back]');
         if (!link) return;
         try {
-            const previous = window.navigation?.activation?.from?.url || document.referrer;
+            const previous = event?.detail?.from || window.navigation?.activation?.from?.url || document.referrer;
             if (!previous) return;
             const url = new URL(previous, location.href);
             const blocked = (config.excluded || []).some(value => {
