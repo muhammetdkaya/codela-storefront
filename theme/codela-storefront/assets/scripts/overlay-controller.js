@@ -13,6 +13,7 @@ export function createOverlayController({
     let surfaceMotion = null, closing = false, restoreScrollFrame = 0;
     let menuTrigger = null, menuHome = null, menuLabel = '';
     const desktop = window.matchMedia('(min-width:901px)');
+    const desktopMenu = window.matchMedia('(min-width:1100px)');
     let inlineSearch = false, searchHome = null, searchSlot = null, hiddenHeaderControl = null;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -45,7 +46,7 @@ export function createOverlayController({
         if (!inlineSearch) return;
         const header = searchSlot.closest('.sf-header');
         const navigation = header.querySelector('.sf-desktop-navigation');
-        const control = navigation && getComputedStyle(navigation).display !== 'none' ? navigation : header.querySelector('.sf-brand');
+        const control = navigation && desktopMenu.matches ? navigation : header.querySelector('.sf-brand');
         if (hiddenHeaderControl !== control) {
             if (hiddenHeaderControl) hiddenHeaderControl.inert = false;
             hiddenHeaderControl = control;
@@ -364,6 +365,7 @@ export function createOverlayController({
             backdropDown = false;
         });
         adminOffset();
+        desktopMenu.addEventListener('change', syncInlineHeaderControl);
         window.addEventListener('resize', () => { adminOffset(); positionMenuTrigger(); syncInlineHeaderControl(); });
         let offsetFrame = 0;
         window.addEventListener('scroll', () => {
