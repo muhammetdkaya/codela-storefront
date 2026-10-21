@@ -220,7 +220,7 @@ body.woocommerce-account .woocommerce .sf-account-card h2{margin:0;font-size:18p
  body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce #customer_login:not(.sf-auth-ready){grid-template-columns:minmax(0,1fr)}
  body.woocommerce-account:not(.codela-my-account-layout) .woocommerce:has(> .woocommerce-MyAccount-navigation){grid-template-columns:minmax(0,1fr);gap:16px}
  body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-navigation,
- body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-content{grid-column:1}
+ body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-content{grid-column:1;grid-row:auto}
  body.woocommerce-account.logged-in.sf-account-dashboard .woocommerce-MyAccount-content{grid-row:1}
  body.woocommerce-account.logged-in.sf-account-dashboard .woocommerce:has(> .woocommerce-notices-wrapper:not(:empty)) > .woocommerce-MyAccount-content{grid-row:2}
  body.woocommerce-account.logged-in.sf-account-dashboard .woocommerce:has(> .woocommerce-notices-wrapper:not(:empty)) > .woocommerce-MyAccount-navigation{grid-row:3}
