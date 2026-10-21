@@ -6,8 +6,8 @@
     "codela": "1.2.0"
   },
   "changes": [
-    "Google giriş ayarları Codela → Tema → Görünüm paneline alındı; mevcut OAuth bilgileri korunur. Codela 1.2.2 ile ortak panel, eski eklentilerde mevcut ayar ekranı kullanılır.",
-    "Hesabım ve WooCommerce uç noktalarındaki eylemler ortak düğme ölçüleri ve tipografisiyle eşlendi.",
-    "0.1.153 header eşitliği ve boş sepet karşılaması korunur."
+    "Hesabım ana ekranı ortak tema fontuyla sade bağlantı listesine dönüştürüldü; iç içe kartlar kaldırıldı.",
+    "Hesap ve bilgi sayfalarında sayfa adı ve geri bağlantısı mevcut logo kapsülünde gösterilir.",
+    "Destekleyen tarayıcılarda hesap bölümleri arasında yönlü yerel belge geçişleri; azaltılmış hareket tercihi ve native Woo form işleyişi korunur."
   ]
 }

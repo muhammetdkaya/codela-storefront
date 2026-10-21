@@ -18,20 +18,19 @@ const render=env=>execFileSync(process.env.PHP_BIN||'php',['tests/render-account
     const nav=page.locator('.woocommerce-MyAccount-navigation'), content=page.locator('.woocommerce-MyAccount-content');
     const n=await nav.boundingBox(), c=await content.boundingBox();
     if(width<=800){
-     assert(c.y>=n.y+n.height,'Mobile card follows navigation');
-     assert(await nav.locator('a').first().isVisible(),'No-JS keeps native destinations available');
-     await nav.locator('summary').click();
-     assert(!await nav.locator('a').first().isVisible(),'Native mobile disclosure closes without JS');
-     await nav.locator('summary').click();
-     assert(await nav.locator('a[href="/account/privacy/"]').isVisible(),'Independent plugin destination appears in disclosure');
-     assert(await nav.locator('a[aria-current="page"]').isVisible(),'Native current destination preserved');
-     await nav.locator('summary').focus();await page.keyboard.press('Enter');
-     assert(!await nav.locator('a').first().isVisible(),'Native keyboard closes menu');
+     assert(n.y>=c.y+c.height,'Mobile account hub follows recent order');
+     assert(await nav.locator('a[href="/account/orders/"]').isVisible(),'Native destinations available without JS');
+     assert(await nav.locator('a[href="/account/privacy/"]').isVisible(),'Independent plugin destination retained');
+     assert(!await nav.locator('a[aria-current="page"]').isVisible(),'Hub does not repeat its own destination');
+     assert.equal(await nav.locator('summary').count(),0,'No redundant disclosure');
+     await nav.locator('a[href="/account/orders/"]').focus();
+     assert(await nav.locator('a[href="/account/orders/"]').evaluate(e=>e===document.activeElement),'Hub keyboard access');
     }else{
      assert(c.x>=n.x+n.width,'Desktop sidebar and content sit alongside');
      assert(await nav.locator('a').first().isVisible(),'Desktop destinations available without JS');
-     assert(!await nav.locator('summary').isVisible(),'No redundant desktop disclosure control');
+     assert.equal(await nav.locator('summary').count(),0,'No redundant desktop disclosure control');
     }
+    if([390,1280].includes(width)){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:`qa/storefront-ui-kit-account-hub-${name}-${process.env.TEST_WEBKIT?'webkit':'chromium'}-${width}.png`});}
     if(name==='empty'){
      assert.equal(await page.locator('.sf-account-order-item').count(),0);
      assert(await page.getByRole('link',{name:'Browse products'}).isVisible(),'Empty customer gets real shop link');

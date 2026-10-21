@@ -11,17 +11,17 @@ foreach ( $items as $endpoint => $label ) {
 }
 ?>
 <nav class="woocommerce-MyAccount-navigation" aria-label="<?php esc_attr_e( 'Account pages', 'woocommerce' ); ?>">
-    <details class="sf-account-menu" open>
-        <summary class="sf-ui-pressable"><?php echo esc_html( $current_label ); ?><?php echo codela_sf_icon( 'plus' ); ?></summary>
+    <div class="sf-account-menu">
+
         <ul>
             <?php foreach ( $items as $endpoint => $label ) : ?>
             <li class="<?php echo esc_attr( $classes[ $endpoint ] ); ?>">
                 <a class="sf-ui-pressable" href="<?php echo esc_url( wc_get_account_endpoint_url( $endpoint ) ); ?>" <?php echo in_array( 'is-active', explode( ' ', $classes[ $endpoint ] ), true ) ? 'aria-current="page"' : ''; ?>>
-                    <?php echo codela_sf_account_icon( (string) $endpoint ); ?><span><?php echo esc_html( $label ); ?></span>
+                    <?php echo codela_sf_account_icon( (string) $endpoint ); ?><span><?php echo esc_html( $label ); ?></span><?php echo codela_sf_icon( 'arrow-right' ); ?>
                 </a>
             </li>
             <?php endforeach; ?>
         </ul>
-    </details>
+    </div>
 </nav>
 <?php do_action( 'woocommerce_after_account_navigation' ); ?>

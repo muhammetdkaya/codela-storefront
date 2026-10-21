@@ -1,5 +1,16 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Güncel çalışma — 21 Ekim 2026: 0.1.155 hesap düzeni ve bağlamsal header
+
+Kullanıcı ikinci sade liste tasarımını, logo kapsülünde başlık/geri bağlantısını ve hesap bölümleri için yönlü geçişleri onayladı. Tema 0.1.154 → 0.1.155; eklenti değişmez.
+
+**Uygulanan:** Native hesap menüsü mobil ana ekranda doğrudan bağlantı listesi, alt ekranlarda header geri bağlantısı; masaüstünde aynı menü sidebar. Ortak Arial/Helvetica fontu, mevcut Button/surface/pressable kullanılır. Bağımsız modül endpointleri, nonce taşıyan çıkış URL'leri ve sipariş müşteri sorgusu korunur. Bilgi sayfalarının başlığı aynı logo kapsülünde, alışveriş sayfalarında logo korunur; uzun başlıklar menüyü itmez. Native View Transitions, signed-in hesapta yönlü içerik hareketini sağlar; desteklenmeyen tarayıcılar normal belge gezinmesini sürdürür. Login/logout/checkout ve form POST akışı router'a alınmaz. Azaltılmış hareket tercihi korunur.
+
+**Doğrulama/yayın:** Yerel paket ve JS kontrolleri çalıştırılıyor. Yerel PHP/tarayıcı çalıştırıcısı mevcut değil; CI'da native belge geçişi, geri/ileri tarihçe, no-JS hesap menüsü ve Chromium/WebKit bağlamsal header kabulü bekliyor. Henüz canlı/kararlı yayımlandı sayılmaz.
+
+**Sıradaki:** PR CI ve ekranları doğrula, başarılı kaynağı ana dala birleştir; gerçek FTPS ve stable155 yayınını doğrulayıp bu kaydı kanıtlarla kapat. Gerçek Google hesabı, fiziksel cihaz ve gerçek ödeme sağlayıcısı kabulü ayrı kalır.
+
+
 ## Son doğrulanmış devam noktası — 21 Ekim 2026: Storefront 0.1.154 kararlı yayında
 
 **Sürüm/kaynak:** Tema 0.1.153 → **0.1.154**, kaynak `da5844f7d1ea05b7beaf7e2d02afd1f632d29614`. Bu kapanış ürün kodunu yeniden değiştirmez. Google ayarlarının ortak panel entegrasyonu Codela **1.2.2** gerektirir; bu çalışmada eklenti yayını veya WordPress.org yayını yapılmadı.

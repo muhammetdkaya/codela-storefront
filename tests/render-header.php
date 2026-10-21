@@ -32,7 +32,7 @@ function get_bloginfo( ...$args ) { return 'CODELA'; }
 function has_custom_logo() { return false; }
 function is_product() { return getenv('FIXTURE_PRODUCT') === '1'; }
 function is_checkout() { return getenv('FIXTURE_CHECKOUT') === '1'; }
-function is_front_page() { return getenv('FIXTURE_ACCOUNT') !== '1' && getenv('FIXTURE_GUEST_ACCOUNT') !== '1'; }
+function is_front_page() { return getenv('FIXTURE_PAGE') !== '1' && getenv('FIXTURE_ACCOUNT') !== '1' && getenv('FIXTURE_GUEST_ACCOUNT') !== '1'; }
 function is_account_page() { return getenv('FIXTURE_ACCOUNT') === '1' || getenv('FIXTURE_GUEST_ACCOUNT') === '1'; }
 function is_user_logged_in() { return getenv('FIXTURE_ACCOUNT') === '1' && getenv('FIXTURE_GUEST_ACCOUNT') !== '1'; }
 function get_privacy_policy_url() { return ''; }
@@ -75,3 +75,12 @@ function wp_nav_menu($args){
     }
     return '<ul id="'.$args['menu_id'].'" class="'.$args['menu_class'].'">'.$items.'</ul>';
 }
+
+function is_page(){return getenv('FIXTURE_PAGE') === '1';}
+function get_queried_object_id(){return 19;}
+function get_the_title($id){return getenv('FIXTURE_PAGE_TITLE') ?: 'Hakkımızda';}
+function wc_get_account_menu_items(){return ['orders'=>'Siparişlerim','edit-address'=>'Adreslerim'];}
+function WC(){return (object)['query'=>new class {
+ function get_current_endpoint(){return getenv('FIXTURE_ENDPOINT') ?: '';}
+ function get_endpoint_title($endpoint){return 'Sipariş detayları';}
+}];}

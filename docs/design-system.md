@@ -1,5 +1,12 @@
 # Codela Storefront UI Kit — source of truth
 
+## Approved account hub and contextual header — 0.1.155
+
+Use the existing native Woo account navigation as a borderless mobile hub, with recent order content first; endpoint pages return through the brand capsule. Desktop retains one sidebar. Reuse the shared font, surfaces and Button primitives. Header title and arrow occupy the same 44px brand capsule; ordinary information pages use their native titles, with a same-origin previous-page link and home fallback. Store/product/catalog retain the logo. Do not repeat a generated page title in the content. Merchant-authored headings remain unchanged.
+
+Account navigation remains full-document Woo navigation. Native cross-document transitions move content in the hierarchy direction while the header/dock use their existing named layers. Respect reduced motion; no custom fetch/cache/router, no form interception. Native module links, notices, account permissions and logout nonces remain intact.
+
+
 
 ## Commerce consistency and first-paint geometry — 0.1.152
 
