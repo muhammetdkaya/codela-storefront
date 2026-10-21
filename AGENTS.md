@@ -1,15 +1,16 @@
 # Codela Storefront — güncel çalışma kuralları
 
-## Son devam noktası — 20 Ekim 2026: 0.1.154 hazırlanıyor
+## Son doğrulanmış devam noktası — 21 Ekim 2026: Storefront 0.1.154 kararlı yayında
 
-0.1.153 (kaynak93716f9c, release39398099954) header eşitliği ve boş sepet karşılamasıyla kararlı yayındadır; deploy39396974291 ve beş canlı kabul başarılıdır. Bu çalışma85b9ca97 üstünden devam eder.
+**Sürüm/kaynak:** Tema 0.1.153 → **0.1.154**, kaynak `da5844f7d1ea05b7beaf7e2d02afd1f632d29614`. Bu kapanış ürün kodunu yeniden değiştirmez. Google ayarlarının ortak panel entegrasyonu Codela **1.2.2** gerektirir; bu çalışmada eklenti yayını veya WordPress.org yayını yapılmadı.
 
-**Biten:** Google OAuth ayarları Codela1.2.2 entegrasyon kancasıyla Tema → Görünüm panelinde; eski eklentide mevcut Görünüm ekranı korunur. Kayıtlı credential seçenekleri, nonce/yetki ve OAuth akışı değişmez; secret HTML içine yazılmaz. Woo block notice wc-forward için zorunlu saydam zemin/koyu metin/sıfır padding kuralı ortak Button tokenlarına adapte edildi; hesap eylemleri44px ve tutarlı iç boşluk, dashboard keşif eylemi primary Button.
+**Biten:** Google OAuth ayarları Codela → Tema → Görünüm paneline bağlandı; ortak text-field biçimi kullanılır, kayıtlı bilgiler ve mevcut OAuth güvenlik akışı korunur. Eski eklentide mevcut ayar ekranı korunur. Hesabım ve native Woo eylemlerinin ortak düğme ölçüleri, tipografisi ve notice kontrastı tamamlandı. Önceki header eşitliği ve boş sepet karşılaması korundu.
 
-**Doğrulama:** Yerel24 paket, UI Kit, Google akış/ayar kaydı (yetki, nonce, secret koruma, geçersiz giriş, silme, entegre/fallback URL) başarılı. Gerçek Woo11.2.1 notice CSS kuralı sonradan yüklense de düğme kontrastı/boyutu/klavye erişimini sınayan Chromium/WebKit regresyonu eklendi. CI, canlı dağıtım ve154 stable henüz bekliyor.
+**Doğrulama/dağıtım:** [Ana dal CI ve FTPS 39434343665](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39434343665) validate ve gerçek deploy adımları başarılı; deploy günlüğü 20 Ekim 2026 14:08:28Z'de `Storefront deployed; checks passed.` kaydetti. Aynı kaynak için canlı WebKit 39436563449, galeri 39436563469, belge sürekliliği 39436563502, gezinme 39436563559 ve performans ölçümü 39436563582 başarılı. Bu kapanışta yerel 24 paket testi yeniden geçti ve deterministik ZIP yeniden üretildi. Paket testlerindeki FTP çıktıları mock'tur; canlı dağıtım kanıtı yukarıdaki gerçek CI günlüğüdür. Performans koşusunun geçmesi tek başına bütün hız hedeflerinin kapandığı anlamına gelmez.
 
-**Sıradaki:** Bu commitin CI ve dağıtımını doğrula; başarılı kaynağı stable154 yayımla ve kanıtları kaydet. Google gerçek OAuth hesabı ve hedef mağaza fiziksel cihaz kabulü ayrı kalır. Tema154; eklenti1.2.1→1.2.2 ayrı yayın.
+**Kararlı yayın:** [Talep b4141e57](https://github.com/muhammetdkaya/codela-storefront/commit/b4141e577145335a13a89b51a9cdf876b9f91ae4), [release CI 39540682169](https://github.com/muhammetdkaya/codela-storefront/actions/runs/39540682169) başarılı. [v0.1.154](https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.154) public, draft/prerelease değil. ZIP **152509 bayt**, SHA256 `b40cbb64e17313b4c520d3e27a7c81df919219128318d9376ac4ab46e00a6805`. Yerel paket, GitHub asset digest ve stable manifest sürüm/kaynak/hash bakımından eşleşir; güncelleme kanalı artık 0.1.154 sunar.
 
+**Kalan/sıradaki:** Hedef mağazada Codela → Tema → Güncelleme → Şimdi kontrol et → Şimdi güncelle ile 0.1.154 kurulmalı. Müşteri sitesinin kurulumu varsayılmaz. Gerçek Google hesabıyla OAuth, fiziksel cihaz görsel kabulü ve gerçek ödeme sağlayıcısı kabulü henüz doğrulanmadı. Google ayarları için eklenti 1.2.2 kullanılmalı. Açık eski PR #14/#66/#67 güncel kaynakta karşılanan tarihli çalışmalardır; doğrudan birleştirilmemeli. Sonraki çalışma önce güncel HEAD ve hedef mağazanın somut kabul bulgularını kontrol etmelidir.
 
 ## Son doğrulanmış devam noktası — 20 Ekim 2026: Storefront 0.1.152 kararlı yayında
 
