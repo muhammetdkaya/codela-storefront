@@ -171,7 +171,7 @@ body.woocommerce-account:not(.codela-my-account-layout) .woocommerce :is(a,butto
 }
 
 /* Native account hub: one list, native endpoints, shared theme typography. */
-body.woocommerce-account.logged-in:not(.codela-my-account-layout) .woocommerce:has(> .woocommerce-MyAccount-navigation){display:grid;grid-template-columns:235px minmax(0,1fr);gap:48px;align-items:start}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce:has(> .woocommerce-MyAccount-navigation){display:grid;grid-template-columns:235px minmax(0,1fr);gap:48px;align-items:start}
 body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-navigation{grid-column:1;float:none;width:auto;min-width:0}
 body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-navigation ul{list-style:none;margin:0;padding:0}
 body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-navigation li{margin:0;padding:0;list-style:none;border-bottom:1px solid var(--sf-ui-border)}
@@ -215,7 +215,7 @@ body.woocommerce-account .woocommerce .sf-account-card h2{margin:0;font-size:18p
 
 @media(max-width:800px){
  body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce #customer_login:not(.sf-auth-ready){grid-template-columns:minmax(0,1fr)}
- body.woocommerce-account.logged-in:not(.codela-my-account-layout) .woocommerce:has(> .woocommerce-MyAccount-navigation){grid-template-columns:minmax(0,1fr);gap:16px}
+ body.woocommerce-account:not(.codela-my-account-layout) .woocommerce:has(> .woocommerce-MyAccount-navigation){grid-template-columns:minmax(0,1fr);gap:16px}
  body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-navigation,
  body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-content{grid-column:1}
  body.woocommerce-account.logged-in.sf-account-dashboard .woocommerce-MyAccount-content{grid-row:1}
