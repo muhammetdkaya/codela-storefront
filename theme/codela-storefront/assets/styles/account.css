@@ -307,3 +307,5 @@ body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-c
 body.woocommerce-account.logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content{
  --sf-ui-notice-border-width:0px;--sf-ui-notice-surface:var(--sf-ui-surface-muted);
 }
+.sf-account-empty-orders{flex-direction:column;align-items:center;text-align:center;padding:clamp(48px,10vh,96px) 0;gap:20px}
+.sf-account-empty-orders > .sf-icon{width:32px;height:32px}

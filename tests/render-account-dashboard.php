@@ -13,6 +13,7 @@ function esc_html_e( $s, ...$args ) { echo esc_html( $s ); }
 function esc_attr_e( $s, ...$args ) { echo esc_attr( $s ); }
 function wp_kses_post( $s ) { return $s; }
 function is_user_logged_in() { return true; }
+function apply_filters($name,$value){return $value;}
 function is_account_page() { return true; }
 function is_wc_endpoint_url() { return false; }
 function sanitize_html_class( $s ) { return preg_replace('/[^a-zA-Z0-9_-]/', '', $s); }
@@ -53,5 +54,5 @@ if(in_array('sf-account-dashboard',($GLOBALS['filters']['body_class'])([]),true)
 echo '<div class="woocommerce">';
 require __DIR__.'/../theme/codela-storefront/woocommerce/myaccount/navigation.php';
 echo '<div class="woocommerce-MyAccount-content">';
-require __DIR__.'/../theme/codela-storefront/woocommerce/myaccount/dashboard.php';
+if(getenv('ACCOUNT_ORDERS_EMPTY')){ $has_orders=false; require __DIR__.'/../theme/codela-storefront/woocommerce/myaccount/orders.php'; }else{ require __DIR__.'/../theme/codela-storefront/woocommerce/myaccount/dashboard.php'; }
 echo '</div></div>';
