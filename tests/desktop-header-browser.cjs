@@ -38,7 +38,7 @@ styles.splice(1,0,fs.readFileSync('theme/codela-storefront/assets/storefront.css
       assert(nav.x>=brand.x+brand.width,'Menu cannot cover brand');assert(nav.x+nav.width<=tools.x,'Menu cannot cover tools');
       assert.equal(await page.locator('.sf-desktop-menu .sub-menu').count(),1,'Desktop contains nested destinations');
       const active=await page.locator('.sf-desktop-menu>.current-menu-item').evaluate(el=>({background:getComputedStyle(el).backgroundColor,radius:getComputedStyle(el).borderRadius,decoration:getComputedStyle(el.querySelector('a')).textDecorationLine}));
-      assert.equal(active.radius,'999px');assert.equal(active.background,'rgba(118, 118, 128, 0.16)');assert.equal(active.decoration,'none');
+      const selection=await page.locator('.sf-desktop-menu>.current-menu-item').boundingBox();assert(Math.abs(selection.y-nav.y)<1&&Math.abs(selection.y+selection.height-nav.y-nav.height)<1,'Active selection touches both vertical edges');assert.equal(active.radius,'999px');assert.equal(active.background,'rgba(118, 118, 128, 0.16)');assert.equal(active.decoration,'none');
       const parent=page.locator('.sf-desktop-menu>.menu-item-has-children');
       const link=await parent.locator(':scope>a').boundingBox(),toggle=await parent.locator(':scope>button').boundingBox();
       assert(Math.abs(link.x+link.width-toggle.x)<1,'Label and arrow form one adjacent control group');assert(toggle.width>=44&&toggle.height>=44,'Disclosure keeps accessible hit target');

@@ -66,6 +66,11 @@ const doc=(path)=>{
   await page.waitForFunction(()=>sessionStorage.getItem('account-direction')==='back');
   assert(page.url().endsWith('/account/orders/'),'History traversal still browser-owned');
   await context.close();
+  const desktop=await browser.newContext({viewport:{width:1280,height:900}});
+  const d=await desktop.newPage();await d.goto(origin+'/account/');await d.locator('#account-orders').click();
+  assert.equal(await d.evaluate(()=>sessionStorage.getItem('account-direction')),'none','Desktop account navigation never slides');
+  assert.equal(await d.locator('#sf-content').evaluate(e=>getComputedStyle(e).viewTransitionName),'none','Desktop content has no horizontal transition layer');
+  await desktop.close();
 
   const quiet=await browser.newContext({viewport:{width:390,height:850},isMobile:true,hasTouch:true,reducedMotion:'reduce'});
   const p=await quiet.newPage();

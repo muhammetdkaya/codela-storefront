@@ -3,11 +3,11 @@
     "wordpress": "6.5",
     "php": "8.0",
     "woocommerce": "9.0",
-    "codela": "1.2.0"
+    "codela": "1.2.3"
   },
   "changes": [
-    "Hesabım ana ekranı ortak tema fontuyla sade bağlantı listesine dönüştürüldü; iç içe kartlar kaldırıldı.",
-    "Hesap ve bilgi sayfalarında sayfa adı ve geri bağlantısı mevcut logo kapsülünde gösterilir.",
-    "Destekleyen tarayıcılarda hesap bölümleri arasında yönlü yerel belge geçişleri; azaltılmış hareket tercihi ve native Woo form işleyişi korunur."
+    "Masaüstü menü seçimi kapsülün üst ve alt kenarına oturur.",
+    "Hesabım yatay geçişleri yalnız mobilde çalışır; masaüstü sabit menü ve içerik düzenini kullanır.",
+    "Tema ayarları sadeleştirildi; vurgu rengi Vitrin Tasarımı üzerinden yönetilir."
   ]
 }
