@@ -1,5 +1,9 @@
 # Codela Storefront UI Kit — source of truth
 
+## Centered desktop menu capsule — 0.1.158
+
+At 1100px and above, the assigned primary menu capsule is only as wide as its links and existing inline padding. Center it on the viewport using equal side tracks that reserve space for the left brand and right tools. Constrain long menus to the available middle track and keep native horizontal scrolling, keyboard reachability and browser popovers. Expanded inline search uses its existing wide grid. Shared UI Kit paint, 44px height and mobile navigation remain unchanged.
+
 ## Approved account hub and contextual header — 0.1.155
 
 Use the existing native Woo account navigation as a borderless mobile hub, with recent order content first; endpoint pages return through the brand capsule. Desktop retains one sidebar. Reuse the shared font, surfaces and Button primitives. Header title and arrow occupy the same 44px brand capsule; ordinary information pages use their native titles, with a same-origin previous-page link and home fallback. Store/product/catalog retain the logo. Do not repeat a generated page title in the content. Merchant-authored headings remain unchanged.

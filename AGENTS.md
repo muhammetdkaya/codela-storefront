@@ -1,5 +1,11 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 21 Ekim 2026 — İçeriği kadar geniş, ortalı masaüstü menü (0.1.158 hazırlanıyor)
+
+Tema **0.1.157 → 0.1.158**; Codela **1.2.3 değişmez**. Kullanıcının ekran görüntüsündeki Ana Sayfa/Blog/Mağaza/Workshop/Hakkımızda/İletişim kapsülünde bağlantılardan sonra uzayan beyaz alan kaldırılır. Mevcut navigation.css grid'inde eşit yan sütunlar menüyü viewport merkezine yerleştirir; kapsül içeriği kadar geniştir ve uzun menüler mevcut alanda native kaydırılır. Logo solda, araçlar sağda; 44px yükseklik, native alt menüler ve mobil düzen korunur. Inline arama açıkken mevcut geniş grid kullanılır. Yeni DOM/controller/bağımlılık yoktur.
+
+Yerel 24 paket testi, test JS sözdizimi ve diff kontrolü geçti. Yerel tarayıcı socket izni nedeniyle başlatılamadı; Chromium/WebKit görsel ve davranış doğrulaması mevcut GitHub CI'ına bırakıldı. Mevcut header testinde viewport merkezi, kısa menüde boş şerit olmaması ve ekran görüntüsü kontrolü eklendi; uzun menü/klavye/alt menü ile arama/sepet regresyonları korunur. CI, gerçek FTPS ve 0.1.158 kararlı release/manifest henüz bekliyor. Sıradaki: bu kaynak için CI ve görsel kanıt → gerçek dağıtım → kararlı yayın → iki durum kaydını kanıtlarla kapatma.
+
 ## Son doğrulanmış devam noktası — 21 Ekim 2026: Storefront 0.1.157 kararlı yayında
 
 **Sürüm/kaynak:** Tema **0.1.156 → 0.1.157**, [PR #75](https://github.com/muhammetdkaya/codela-storefront/pull/75), kaynak `55153e5d7665f716a728604c92d6ae50005bab77`. Test edilen PR kaynağı `dec1971c48509875eb398102a62910890b65d0c2` ile ana dal aynı `007f545046aa07dce65b344aa749e171ee6ba0b5` ağacıdır. Codela **1.2.3 gereksinimi değişmedi**; bu kapanışta eklenti veya WordPress.org yayını yapılmadı.

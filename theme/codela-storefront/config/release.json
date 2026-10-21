@@ -6,8 +6,7 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Ürün görsellerine mobilde alanı doldurma ve dokuz konumlu odak noktası ayarı eklendi.",
-    "Her galeri ve varyasyon görseli kendi mobil kadrajını kullanır; masaüstünde görselin tamamı korunur.",
-    "Ayarlar WordPress medya düzenleyicisindedir; orijinal dosya, yakınlaştırma ve responsive görsel kaynakları korunur."
+    "Masaüstü menü kapsülü bağlantıların genişliğine göre daralır ve ekranın ortasında hizalanır.",
+    "Uzun menüler logo ve araçlarla çakışmadan kaydırılır; masaüstü arama açıldığında mevcut geniş alanını kullanır."
   ]
 }

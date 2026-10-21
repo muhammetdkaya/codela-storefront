@@ -36,6 +36,7 @@ styles.splice(1,0,fs.readFileSync('theme/codela-storefront/assets/storefront.css
      if(width>=1100){
       const nav=await page.locator('.sf-desktop-navigation').boundingBox(),brand=await page.locator('.sf-brand').boundingBox(),tools=await page.locator('.sf-actions').boundingBox();
       assert(nav.x>=brand.x+brand.width,'Menu cannot cover brand');assert(nav.x+nav.width<=tools.x,'Menu cannot cover tools');
+      assert(Math.abs(nav.x+nav.width/2-width/2)<1,'Menu capsule is centered on the viewport');
       assert.equal(await page.locator('.sf-desktop-menu .sub-menu').count(),1,'Desktop contains nested destinations');
       const active=await page.locator('.sf-desktop-menu>.current-menu-item').evaluate(el=>({background:getComputedStyle(el).backgroundColor,radius:getComputedStyle(el).borderRadius,decoration:getComputedStyle(el.querySelector('a')).textDecorationLine}));
       const selection=await page.locator('.sf-desktop-menu>.current-menu-item').boundingBox();assert(Math.abs(selection.y-nav.y)<1&&Math.abs(selection.y+selection.height-nav.y-nav.height)<1,'Active selection touches both vertical edges');assert.equal(active.radius,'999px');assert.equal(active.background,'rgba(118, 118, 128, 0.16)');assert.equal(active.decoration,'none');
@@ -68,6 +69,15 @@ styles.splice(1,0,fs.readFileSync('theme/codela-storefront/assets/storefront.css
     }
    }
    if(assigned==='1'){
+    // Merchant-sized menu: inspect the same compact capsule as the reported UI.
+    await page.locator('.sf-desktop-menu').evaluate(el=>{el.innerHTML=['Ana Sayfa','Blog','Mağaza','Workshop','Hakkımızda','İletişim'].map((label,i)=>`<li class="${i?'':'current-menu-item'}"><a href="${i?'#':'/shop/'}">${label}</a></li>`).join('');});
+    for(const width of [1100,1280,1757,1920]){
+     await page.setViewportSize({width,height:300});
+     const geometry=await page.locator('.sf-desktop-navigation').evaluate(el=>{const r=el.getBoundingClientRect(),list=el.querySelector('ul').getBoundingClientRect();return {width:r.width,content:list.width,offset:r.x+r.width/2-innerWidth/2};});
+     assert(Math.abs(geometry.offset)<1,'Short menu stays at the viewport center');
+     assert(geometry.width<=geometry.content+17,'No unused white strip after the menu links');
+     if(width===1757){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:`qa/storefront-ui-kit-desktop-menu-${process.env.TEST_WEBKIT?'webkit':'chromium'}.png`});}
+    }
     await page.setViewportSize({width:1440,height:900});
     const link=page.locator('.sf-desktop-menu a').first();await Promise.all([page.waitForURL('https://store.test/shop/'),link.click()]);
    }
