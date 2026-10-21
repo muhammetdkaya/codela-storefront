@@ -171,7 +171,7 @@ add_action( 'wp_enqueue_scripts', function() {
         wp_enqueue_script_module( 'codela-storefront/navigation' );
     }
     if ( function_exists( 'codela_storefront_design_enqueue' ) ) { codela_storefront_design_enqueue( 'codela-storefront-theme' ); }
-    $accent = sanitize_hex_color( codela_theme_settings()['accent_color'] ?? '#720eec' ) ?: '#720eec';
+    $accent = class_exists( '\Codela\Includes\StoreAppearance' ) ? \Codela\Includes\StoreAppearance::get_accent_color() : '#720eec';
     wp_add_inline_style( 'codela-storefront-theme', ':root{--sf-accent:' . $accent . ';}' );
 } );
 
@@ -196,9 +196,7 @@ add_action( 'wp_print_styles', function() {
 add_action( 'admin_menu', static function() {
     add_submenu_page( 'themes.php', __( 'Menus', 'default' ), __( 'Menus', 'default' ), 'edit_theme_options', 'nav-menus.php' );
 } );
-add_filter( 'codela_store_appearance_accent_color', static function( $accent ) {
-    return sanitize_hex_color( codela_theme_settings()['accent_color'] ?? '#720eec' ) ?: '#720eec';
-} );
+
 
 // Use the plugin's existing Theme appearance mode. WooCommerce and Codela
 // endpoint modules keep their data/hooks; the optional standalone account

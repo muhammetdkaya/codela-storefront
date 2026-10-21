@@ -1,5 +1,16 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 21 Ekim 2026 — Tek tema paneli ve responsive Hesabım (hazırlanıyor)
+
+Tema 0.1.155 → 0.1.156; eklenti 1.2.2 → 1.2.3. Kullanıcının yeni kararı önceki Görünüm/Demo/Güncelleme alt sayfaları kararının yerini alır: Tema tek sayfadır; kurulum/güncelleme, kompakt Header/Ürün/Footer formu, Google entegrasyonu ve demo aynı yerde sunulur. WordPress bağlantı kartı ve Ortak görünüm grubu kaldırılır. Vurgu renginin kaynağı Vitrin Tasarımıdır; eski etkin tema rengi yetkili yönetici girişinde bir defa ortak ayara aktarılır. Storefront fontu temadan miras, köşeler sabit 12px; başka temalarda eklentinin bağımsız tasarım seçenekleri korunur.
+
+Modüllerde Hızlı İşlemler'den sonra native tema durumunu ve yönetim/kurulum bağlantısını sunan modül biçiminde kutu vardır; modül toplu aç/kapa işlemlerine katılmaz. Native güncelleme/nonce/yetki, demo journal ve Google form sahipliği korunur. Eski tema alt sayfa URL'leri aynı birleşik paneli açar; güncel bağlantılar panelin bölümüne gider.
+
+Masaüstü menü seçimi 44px yüzeyin üst/alt kenarına oturur. Hesap yatay belge hareketi yalnız ≤800px; masaüstü menü/içerik aynı satırda sabittir. Tercih formunda sabit minimum sütun genişliği ve tek satır metin zorlaması kaldırılır; uzun kanal başlıkları kırılır, seçim hedefleri 44px'tir. Tercih izin/POST/kayıt mantığı değiştirilmedi.
+
+Yerel 24 tema paket testi, tema-köprü yetki/nonce/atomik kayıt/cache testleri ve ilgili PHP/JS sözdizimi geçti. Yerel tarayıcı çalıştırılabilir dosyası yok; tarayıcı/gerçek WP-Woo CI ve dağıtım doğrulaması bekliyor. Canlı/kararlı yayın yapıldı denmez. Fiziksel cihaz ve gerçek OAuth/ödeme kabulü bu işte yapılmış sayılmaz. Sıradaki: iki depoda CI, ardından doğrulanan kaynakların dağıtımı ve yayın durumu kaydı.
+
+
 ## Son doğrulanmış devam noktası — 21 Ekim 2026: Storefront 0.1.155 kararlı yayında
 
 **Sürüm/kaynak:** Tema 0.1.154 → **0.1.155**. [PR #73](https://github.com/muhammetdkaya/codela-storefront/pull/73) birleştirildi; PR kaynağı `911afe0aef8b98b8d0d0249a4421190fad46c8dc` ile merge `6f6effcf7bf2c9134fe2a3302e4b975124bd1b33` aynı `be1c2b0e979776070f66042bb867f6c0604ecf27` ağacıdır. Son kaynak **`302463010ae639be79bd567d8b0a8ad6e464f142`**, bilgi sayfalarının core-router geçişlerinde önceki adres bilgisini mevcut route-committed olayına bağlayan ek düzeltmeyi içerir. Eklenti değiştirilmedi/yayımlanmadı; WordPress.org yayını yapılmadı.

@@ -26,7 +26,7 @@ const render=env=>execFileSync(process.env.PHP_BIN||'php',['tests/render-account
      await nav.locator('a[href="/account/orders/"]').focus();
      assert(await nav.locator('a[href="/account/orders/"]').evaluate(e=>e===document.activeElement),'Hub keyboard access');
     }else{
-     assert(c.x>=n.x+n.width,'Desktop sidebar and content sit alongside');
+     assert(c.x>=n.x+n.width,'Desktop sidebar and content sit alongside');assert(Math.abs(c.y-n.y)<1,'Desktop content starts beside navigation without an empty row');
      assert(await nav.locator('a').first().isVisible(),'Desktop destinations available without JS');
      assert.equal(await nav.locator('summary').count(),0,'No redundant desktop disclosure control');
     }

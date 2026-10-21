@@ -23,6 +23,7 @@
     function applyTransition(transition, activation) {
         if (!transition || !activation?.from?.url || !activation.entry?.url) return;
         if (submitting) { transition.skipTransition(); return; }
+        if (!window.matchMedia('(max-width:800px)').matches) return;
         const from = accountDepth(activation.from.url), to = accountDepth(activation.entry.url);
         if (from < 0 || to < 0 || activation.from.url === activation.entry.url) return;
         let direction = to < from ? 'back' : 'forward';

@@ -55,7 +55,10 @@ const cart={items_count:1,items:[{key:'one',name:'Deneme ürünü',permalink:'/p
   await dialog.waitFor({state:'hidden'});assert.equal(await page.evaluate(()=>scrollY),500,'Cart restores scroll');
  }
  await page.setViewportSize({width:1024,height:900});await search.click();
- await page.setViewportSize({width:1280,height:900});await page.waitForTimeout(50);
+ await page.setViewportSize({width:1280,height:900});
+ // WebKit delivers viewport/media-query changes asynchronously; observe the
+ // resulting accessibility state instead of sampling a fixed 50ms timer.
+ await page.waitForFunction(expected=>document.querySelector('.sf-brand').inert===expected,assigned==='0',{timeout:3000});
  assert.equal(await page.locator('.sf-brand').evaluate(el=>el.inert),assigned==='0','Inline search re-evaluates header slots across desktop menu breakpoint');
  await page.keyboard.press('Escape');
  await search.click();await page.locator('#sf-query').fill('error');failSearch=true;

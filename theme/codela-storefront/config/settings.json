@@ -2,32 +2,6 @@
   "schema_version": 1,
   "sections": [
     {
-      "id": "appearance",
-      "label": "Shared appearance",
-      "description": "One accent for the theme and Codela components.",
-      "fields": [
-        {
-          "id": "accent_color",
-          "type": "color",
-          "default": "#720eec",
-          "label": "Accent color",
-          "description": "Used by the theme and embedded Codela components."
-        },
-        {
-          "id": "corner_style",
-          "type": "select",
-          "label": "Component corners",
-          "default": "round",
-          "options": {
-            "square": "Square",
-            "soft": "Slight",
-            "round": "Rounded",
-            "pill": "Pill"
-          }
-        }
-      ]
-    },
-    {
       "id": "header",
       "label": "Header",
       "description": "Mobile navigation behavior. Site identity and menus are managed by WordPress.",
