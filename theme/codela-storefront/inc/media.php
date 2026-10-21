@@ -155,6 +155,11 @@ add_action( 'after_setup_theme', function() {
             }
         }
         if ( $tags->next_tag( 'img' ) ) {
+            if ( function_exists( 'is_product' ) && is_product() && function_exists( 'codela_sf_image_framing_attributes' ) ) {
+                foreach ( codela_sf_image_framing_attributes( (int) $attachment_id, [ 'style' => $tags->get_attribute( 'style' ) ?? '' ] ) as $name => $value ) {
+                    $tags->set_attribute( $name, $value );
+                }
+            }
             // Only after an admin-verified PNG conversion: browser chooses
             // responsive WebP, while Woo's original image link and zoom data
             // continue pointing at the untouched full-resolution upload.

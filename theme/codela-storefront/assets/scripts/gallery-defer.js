@@ -29,6 +29,16 @@
     const items=slides();
     if(!items.length)return;
     const jq=window.jQuery;
+    const initialImage=imageAt(0);
+    const initialFraming={fit:initialImage?.dataset.sfMobileFit||'cover',position:initialImage?.dataset.sfMobilePosition||'50% 50%'};
+    const frameVariation=framing=>{
+      const image=imageAt(0);
+      if(!image)return;
+      const fit=framing?.fit==='contain'?'contain':'cover';
+      const position=/^(0|50|100)% (0|50|100)%$/.test(framing?.position||'')?framing.position:'50% 50%';
+      image.style.setProperty('--sf-image-mobile-fit',fit);
+      image.style.setProperty('--sf-image-mobile-position',position);
+    };
     const zoomStates=new Map();
     const closeZoom=()=>{
       if(jq&&gallery.querySelector('.is-zoomed'))jq(document).triggerHandler('click.zoom');
@@ -197,7 +207,8 @@
       select(event.key==='Home'?0:event.key==='End'?items.length-1:Math.max(0,Math.min(items.length-1,current+delta)));
     });
     // Woo replaces the featured image for a variation; reveal that same node.
-    if(jq)jq(document).on('found_variation reset_data','.variations_form',()=>{
+    if(jq)jq(document).on('found_variation reset_data','.variations_form',(event,variation)=>{
+      frameVariation(event.type==='found_variation'?(variation?.image?.codela_sf_mobile||initialFraming):initialFraming);
       closeZoom();
       zoomStates.forEach((state,item)=>{
         jq(item).trigger('zoom.destroy');Object.assign(state,{ready:false,pending:false,wanted:false});
