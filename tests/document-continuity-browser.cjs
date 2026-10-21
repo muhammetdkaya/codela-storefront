@@ -5,6 +5,7 @@ const assert=require('node:assert/strict');
 const {chromium}=require('playwright');
 const fs=require('node:fs');
 const css=fs.readFileSync('theme/codela-storefront/assets/styles/document-continuity.css','utf8');
+const accountScript=fs.readFileSync('theme/codela-storefront/assets/scripts/document-continuity.js','utf8');
 const baseCss='body{margin:0;font-family:sans-serif}.sf-header{height:72px;display:flex;align-items:center;padding:0 20px;background:#fafafa}.sf-mobile-dock,.sf-product-purchase{position:fixed;bottom:12px;left:16px;right:16px;height:58px;border-radius:30px;background:#eee}body.single-product .sf-mobile-dock{display:none}main{padding:30px;min-height:500px}';
 const doc=(path)=>{
  const product=path==='/product/';
@@ -13,10 +14,10 @@ const doc=(path)=>{
  const style=checkout?'':css;
  const links=path==='/'?'<a id="open-category" href="/category/">Category</a>':category?'<a id="open-product" href="/product/">Product</a>':'<a id="back-home" href="/">Home</a>';
  return '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1">'+
-  '<style>'+baseCss+style+'</style><script>window.addEventListener("pageswap",e=>sessionStorage.setItem("continuity-pageswap",String(Boolean(e.viewTransition))));window.addEventListener("pagereveal",e=>sessionStorage.setItem("continuity-pagereveal",String(Boolean(e.viewTransition))));</script></head><body class="'+(product?'single-product':'')+'">'+
+  '<style>'+baseCss+style+'</style><script>window.codelaSFDocument={account:location.origin+"/account/"};'+accountScript+'</script><script>window.addEventListener("pageswap",e=>sessionStorage.setItem("continuity-pageswap",String(Boolean(e.viewTransition))));window.addEventListener("pagereveal",e=>{sessionStorage.setItem("continuity-pagereveal",String(Boolean(e.viewTransition)));sessionStorage.setItem("account-direction",document.documentElement.dataset.sfAccountTransition||"none")});</script></head><body class="'+(product?'single-product':'')+'">'+
   '<header class="sf-header" id="native-header">Codela</header><div class="sf-shell">'+
   '<nav class="sf-mobile-dock" id="native-dock">Navigation</nav></div>'+
-  '<main><h1>'+path+'</h1>'+links+'<a id="open-checkout" href="/checkout/">Checkout</a>'+
+  '<main id="sf-content"><a id="account-root" href="/account/">Account</a><a id="account-orders" href="/account/orders/">Orders</a><h1>'+path+'</h1>'+links+'<a id="open-checkout" href="/checkout/">Checkout</a>'+
   (product?'<div class="product"><form class="cart" method="post" action="/purchase"><div class="sf-product-purchase"><input name="quantity" value="1"><button type="submit" name="add-to-cart" value="42">Add to cart</button></div></form></div>':'')+
   '</main></body></html>';
 };
@@ -56,6 +57,14 @@ const doc=(path)=>{
   await page.locator('form.cart button').click();
   assert.equal(purchases,1,'Exactly one native POST made');
   assert(await page.locator('#native-post').count()===1,'Browser owns form submission');
+  await page.goto(origin+'/account/');
+  await page.locator('#account-orders').click();
+  await page.waitForFunction(()=>sessionStorage.getItem('account-direction')==='forward');
+  await page.locator('#account-root').click();
+  await page.waitForFunction(()=>sessionStorage.getItem('account-direction')==='back');
+  await page.goBack();
+  await page.waitForFunction(()=>sessionStorage.getItem('account-direction')==='back');
+  assert(page.url().endsWith('/account/orders/'),'History traversal still browser-owned');
   await context.close();
 
   const quiet=await browser.newContext({viewport:{width:390,height:850},isMobile:true,hasTouch:true,reducedMotion:'reduce'});

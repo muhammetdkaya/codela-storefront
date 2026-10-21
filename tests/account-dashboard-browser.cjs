@@ -18,20 +18,19 @@ const render=env=>execFileSync(process.env.PHP_BIN||'php',['tests/render-account
     const nav=page.locator('.woocommerce-MyAccount-navigation'), content=page.locator('.woocommerce-MyAccount-content');
     const n=await nav.boundingBox(), c=await content.boundingBox();
     if(width<=800){
-     assert(c.y>=n.y+n.height,'Mobile card follows navigation');
-     assert(await nav.locator('a').first().isVisible(),'No-JS keeps native destinations available');
-     await nav.locator('summary').click();
-     assert(!await nav.locator('a').first().isVisible(),'Native mobile disclosure closes without JS');
-     await nav.locator('summary').click();
-     assert(await nav.locator('a[href="/account/privacy/"]').isVisible(),'Independent plugin destination appears in disclosure');
-     assert(await nav.locator('a[aria-current="page"]').isVisible(),'Native current destination preserved');
-     await nav.locator('summary').focus();await page.keyboard.press('Enter');
-     assert(!await nav.locator('a').first().isVisible(),'Native keyboard closes menu');
+     assert(n.y>=c.y+c.height,'Mobile account hub follows recent order');
+     assert(await nav.locator('a[href="/account/orders/"]').isVisible(),'Native destinations available without JS');
+     assert(await nav.locator('a[href="/account/privacy/"]').isVisible(),'Independent plugin destination retained');
+     assert(!await nav.locator('a[aria-current="page"]').isVisible(),'Hub does not repeat its own destination');
+     assert.equal(await nav.locator('summary').count(),0,'No redundant disclosure');
+     await nav.locator('a[href="/account/orders/"]').focus();
+     assert(await nav.locator('a[href="/account/orders/"]').evaluate(e=>e===document.activeElement),'Hub keyboard access');
     }else{
      assert(c.x>=n.x+n.width,'Desktop sidebar and content sit alongside');
      assert(await nav.locator('a').first().isVisible(),'Desktop destinations available without JS');
-     assert(!await nav.locator('summary').isVisible(),'No redundant desktop disclosure control');
+     assert.equal(await nav.locator('summary').count(),0,'No redundant desktop disclosure control');
     }
+    if([390,1280].includes(width)){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:`qa/storefront-ui-kit-account-hub-${name}-${process.env.TEST_WEBKIT?'webkit':'chromium'}-${width}.png`});}
     if(name==='empty'){
      assert.equal(await page.locator('.sf-account-order-item').count(),0);
      assert(await page.getByRole('link',{name:'Browse products'}).isVisible(),'Empty customer gets real shop link');
@@ -43,6 +42,15 @@ const render=env=>execFileSync(process.env.PHP_BIN||'php',['tests/render-account
      assert.equal(await page.locator('.sf-account-status--active').count(),name==='cancelled'?0:1,'Status styling follows actual order state');
     }
    }
+   const emptyOrders=render({ACCOUNT_ORDERS_EMPTY:'1'});
+   assert(emptyOrders.includes('hook:woocommerce_before_account_orders')&&emptyOrders.includes('hook:woocommerce_after_account_orders'),'Empty orders retain native verification/module hooks');
+   await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f8f7f4}'+css+'</style></head><body class="woocommerce-account logged-in"><main class="sf-content">'+emptyOrders+'</main></body></html>');
+   assert(await page.locator('.sf-account-empty-orders').isVisible());
+   assert(await page.locator('body').evaluate(e=>e.matches('.woocommerce-account.logged-in')),'Endpoint fixture retains account scope');
+   if(width<=800)assert(!await page.locator('.woocommerce-MyAccount-navigation').isVisible(),'Endpoint uses header back rather than repeating hub navigation');
+   assert.equal(await page.locator('.sf-account-empty-orders a').getAttribute('href'),'/shop/');
+   assert(!await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),'Empty orders fit narrow screen');
+   if([390,1280].includes(width)){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:`qa/storefront-ui-kit-empty-orders-${process.env.TEST_WEBKIT?'webkit':'chromium'}-${width}.png`});}
    const wooNoticeCSS='.wc-block-components-notice-banner>.wc-block-components-notice-banner__content .wc-forward{appearance:none;background:transparent!important;border:0;color:#2f2f2f!important;float:right;margin:0 0 0 20px;opacity:.7;padding:0!important;text-decoration-line:underline;transition:all .2s ease-in-out}';
    await page.setContent('<!doctype html><html><head><style>*{box-sizing:border-box}body{font-family:Arial,sans-serif;margin:0}'+css+wooNoticeCSS+'</style></head><body class="woocommerce-account logged-in"><main class="sf-content"><div class="woocommerce"><div class="woocommerce-MyAccount-content"><div class="wc-block-components-notice-banner is-info"><div class="wc-block-components-notice-banner__content"><a class="woocommerce-Button button wc-forward wp-element-button" href="/shop/">Browse products</a>No downloads available yet.</div></div></div></div></main></body></html>');
    const action=page.locator('.wc-forward');

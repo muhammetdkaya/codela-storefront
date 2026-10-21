@@ -33,3 +33,20 @@
     }
   }
 }
+
+/* Account hierarchy uses native full-document transitions. Header/dock retain
+   their existing named layers; only main content moves horizontally. */
+@media (prefers-reduced-motion:no-preference) {
+  html[data-sf-account-transition] #sf-content{view-transition-name:sf-account-content}
+  html[data-sf-account-transition]::view-transition-group(sf-account-content){animation-duration:240ms;overflow:clip}
+  html[data-sf-account-transition]::view-transition-old(sf-account-content),
+  html[data-sf-account-transition]::view-transition-new(sf-account-content){animation-duration:240ms;animation-timing-function:cubic-bezier(.2,.8,.2,1);animation-fill-mode:both;mix-blend-mode:normal}
+  html[data-sf-account-transition="forward"]::view-transition-old(sf-account-content){animation-name:sf-account-out-left}
+  html[data-sf-account-transition="forward"]::view-transition-new(sf-account-content){animation-name:sf-account-in-right}
+  html[data-sf-account-transition="back"]::view-transition-old(sf-account-content){animation-name:sf-account-out-right}
+  html[data-sf-account-transition="back"]::view-transition-new(sf-account-content){animation-name:sf-account-in-left}
+  @keyframes sf-account-out-left{to{transform:translateX(-25%);opacity:0}}
+  @keyframes sf-account-in-right{from{transform:translateX(100%);opacity:0}}
+  @keyframes sf-account-out-right{to{transform:translateX(100%);opacity:0}}
+  @keyframes sf-account-in-left{from{transform:translateX(-25%);opacity:0}}
+}

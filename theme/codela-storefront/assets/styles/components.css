@@ -554,8 +554,8 @@ html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) d
    status/alert semantics, validation links and dismiss controls. */
 body:not(.codela-my-account-layout) :is(.sf-content,#sf-panel) :is(.woocommerce-error,.woocommerce-message,.woocommerce-info,.wc-block-components-notice-banner,.sf-google-error){
  box-sizing:border-box;position:relative;max-width:100%;margin:0 0 20px;padding:18px 20px;
- border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);
- background:var(--sf-ui-surface);color:var(--sf-ui-ink);box-shadow:none;
+ border:var(--sf-ui-notice-border-width,1px) solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);
+ background:var(--sf-ui-notice-surface,var(--sf-ui-surface));color:var(--sf-ui-ink);box-shadow:none;
  font:inherit;font-size:14px;line-height:1.6;list-style:none;overflow-wrap:anywhere;
 }
 body:not(.codela-my-account-layout) :is(.sf-content,#sf-panel) :is(.woocommerce-error,.woocommerce-message,.woocommerce-info)::before{content:none}

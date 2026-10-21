@@ -9,11 +9,11 @@ $order = $orders[0] ?? null;
 ?>
 <div class="sf-account-overview">
     <?php if ( isset( $menu['orders'] ) ) : ?>
-    <section class="sf-account-card sf-account-order" aria-labelledby="sf-recent-order">
-        <header class="sf-account-card-heading">
+    <section class="sf-account-card sf-account-order" aria-label="<?php esc_attr_e( 'Latest order', 'codela-storefront' ); ?>">
+        <?php if ( $order ) : ?><header class="sf-account-card-heading">
             <h2 id="sf-recent-order"><?php esc_html_e( 'Latest order', 'codela-storefront' ); ?></h2>
             <a href="<?php echo esc_url( wc_get_account_endpoint_url( 'orders' ) ); ?>"><?php esc_html_e( 'All orders', 'codela-storefront' ); ?><?php echo codela_sf_icon( 'arrow-right' ); ?></a>
-        </header>
+        </header><?php endif; ?>
         <?php if ( $order ) : ?>
         <div class="sf-account-order-meta">
             <span>#<?php echo esc_html( $order->get_order_number() ); ?><?php if ( $order->get_date_created() ) : ?> <span class="sf-account-muted">· <?php echo esc_html( wc_format_datetime( $order->get_date_created() ) ); ?></span><?php endif; ?></span>
@@ -30,23 +30,14 @@ $order = $orders[0] ?? null;
         <div class="sf-account-order-total"><span><?php esc_html_e( 'Total', 'woocommerce' ); ?></span><strong><?php echo wp_kses_post( $order->get_formatted_order_total() ); ?></strong></div>
         <div class="sf-account-order-action"><?php echo codela_sf_ui_button( __( 'View order', 'codela-storefront' ), [ 'href' => $order->get_view_order_url() ] ); ?></div>
         <?php else : ?>
-        <p class="sf-account-empty"><?php esc_html_e( 'You have no orders yet.', 'codela-storefront' ); ?></p>
-        <?php echo codela_sf_ui_button( __( 'Browse products', 'codela-storefront' ), [ 'href' => wc_get_page_permalink( 'shop' ), 'variant' => 'primary' ] ); ?>
+        <div class="sf-account-empty-state"><?php echo codela_sf_icon( 'shopping-bag' ); ?><div><p class="sf-account-empty"><?php esc_html_e( 'You have no orders yet.', 'codela-storefront' ); ?></p>
+        <p class="sf-account-muted"><?php esc_html_e( 'Your first order will appear here.', 'codela-storefront' ); ?></p>
+        <?php echo codela_sf_ui_button( __( 'Browse products', 'codela-storefront' ), [ 'href' => wc_get_page_permalink( 'shop' ), 'variant' => 'secondary', 'icon' => 'arrow-right' ] ); ?>
+        </div></div>
         <?php endif; ?>
     </section>
     <?php endif; ?>
-    <div class="sf-account-shortcuts">
-        <?php foreach ( [
-            'edit-address' => [ __( 'Addresses', 'codela-storefront' ), __( 'Manage your shipping and billing addresses.', 'codela-storefront' ), __( 'Edit addresses', 'codela-storefront' ) ],
-            'edit-account' => [ __( 'Account details', 'codela-storefront' ), __( 'Update your personal details and password.', 'codela-storefront' ), __( 'Edit details', 'codela-storefront' ) ],
-        ] as $endpoint => $copy ) : if ( ! isset( $menu[ $endpoint ] ) ) { continue; } ?>
-        <a class="sf-account-card sf-account-shortcut sf-ui-pressable" href="<?php echo esc_url( wc_get_account_endpoint_url( $endpoint ) ); ?>">
-            <?php echo codela_sf_account_icon( $endpoint ); ?>
-            <div><h2><?php echo esc_html( $copy[0] ); ?></h2><p class="sf-account-muted"><?php echo esc_html( $copy[1] ); ?></p><span class="sf-account-shortcut-label"><?php echo esc_html( $copy[2] ); ?></span></div>
-            <?php echo codela_sf_icon( 'arrow-right' ); ?>
-        </a>
-        <?php endforeach; ?>
-    </div>
+
 </div>
 <?php
 // Preserve independent Codela/third-party module output at native hooks.

@@ -1,5 +1,6 @@
 <?php
 return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR', 'plural-forms' => 'nplurals=2; plural=(n > 1);', 'messages' => [
+'Your first order will appear here.' => 'İlk siparişin burada görünecek.',
 'No posts yet.' => 'Henüz yazı yayımlanmadı.',
 'Blog' => 'Blog',
 'Open submenu: %s' => 'Alt menüyü aç: %s',

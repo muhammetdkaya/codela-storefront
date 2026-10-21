@@ -249,3 +249,9 @@ body.admin-bar{--sf-header-offset:32px}
   .sf-shell.has-catalog-header.has-header-tools .sf-header{padding-inline:12px;column-gap:4px}
   .sf-shell.has-catalog-header.has-header-tools .sf-header .sf-brand{font-size:14px;padding-inline:4px}
 }
+
+/* Contextual pages keep the existing brand capsule and shared surface paint. */
+.sf-shell .sf-header .sf-context-brand{font:inherit;font-size:16px;font-weight:400;letter-spacing:0;padding-inline:16px;max-width:100%;min-width:0}
+.sf-shell .sf-header .sf-context-brand a{gap:10px;min-height:var(--sf-ui-hit);max-width:100%;min-width:0}
+.sf-context-brand :is(.sf-context-label,a > span){overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;line-height:1.4}
+.sf-context-brand .sf-icon{flex:none;width:20px;height:20px}

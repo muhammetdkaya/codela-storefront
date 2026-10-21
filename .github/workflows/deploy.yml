@@ -87,6 +87,8 @@ jobs:
           node tests/gallery-defer-browser.cjs
           node tests/ui-kit-browser.cjs
           node tests/native-woo-buttons.cjs
+          node tests/context-header-browser.cjs
+          TEST_WEBKIT=1 node tests/context-header-browser.cjs
           node tests/account-dashboard-browser.cjs
           TEST_WEBKIT=1 node tests/account-dashboard-browser.cjs
           node tests/account-browser.cjs

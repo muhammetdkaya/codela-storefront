@@ -13,6 +13,26 @@ function codela_sf_menu( bool $desktop = false ): string {
     return (string) wp_nav_menu( [ 'menu_id' => $desktop ? 'sf-desktop-menu' : 'sf-panel-menu', 'walker' => $desktop ? new Codela_SF_Menu_Walker() : null, 'theme_location' => 'primary', 'echo' => false, 'container' => false, 'menu_class' => $desktop ? 'sf-desktop-menu' : 'sf-menu-list', 'fallback_cb' => false, 'depth' => 0 ] );
 }
 
+/** Contextual title reuses the brand surface; commerce keeps its logo. */
+function codela_sf_header_context(): array {
+    $account = function_exists( 'is_account_page' ) && is_account_page();
+    if ( $account && is_user_logged_in() ) {
+        $endpoint = function_exists( 'WC' ) && WC()->query ? WC()->query->get_current_endpoint() : '';
+        $label = __( 'My account', 'codela-storefront' );
+        if ( $endpoint ) {
+            $items = wc_get_account_menu_items();
+            $label = $items[ $endpoint ] ?? WC()->query->get_endpoint_title( $endpoint );
+        }
+        return [ 'title' => $label, 'back' => $endpoint ? wc_get_page_permalink( 'myaccount' ) : '', 'history' => false ];
+    }
+    if ( function_exists( 'is_page' ) && is_page() && ! is_front_page() && ! $account
+        && ! is_checkout() && ! ( function_exists( 'is_cart' ) && is_cart() )
+        && ! ( function_exists( 'is_shop' ) && is_shop() ) ) {
+        return [ 'title' => get_the_title( get_queried_object_id() ), 'back' => home_url( '/' ), 'history' => true ];
+    }
+    return [];
+}
+
 function codela_sf_header(): string {
     if ( ! codela_sf_ready() ) { return ''; }
     // Guest authentication has its own quiet header. Do not show the store dock,
@@ -37,6 +57,7 @@ function codela_sf_header(): string {
         <?php return ob_get_clean();
     }
     $settings = codela_theme_settings();
+    $context = codela_sf_header_context();
     $catalog_page = function_exists( 'codela_sf_is_catalog_archive' ) && codela_sf_is_catalog_archive();
     $desktop_menu = codela_sf_menu( true );
     $guest_account = ! is_user_logged_in();
@@ -68,7 +89,12 @@ function codela_sf_header(): string {
             <nav class="sf-header-menu" aria-label="<?php esc_attr_e( 'Main menu', 'codela-storefront' ); ?>">
                 <?php echo codela_sf_ui_icon_button( 'menu', __( 'Menu', 'codela-storefront' ), [ 'variant' => 'soft', 'class' => 'sf-menu-trigger', 'href' => '#sf-menu-fallback', 'attributes' => [ 'data-wp-on--click' => 'actions.menu', 'data-panel' => 'menu', 'aria-haspopup' => 'dialog', 'aria-controls' => 'sf-panel', 'aria-expanded' => 'false' ] ] ); ?>
             </nav>
-            <div class="sf-brand sf-ui-surface"><?php if ( has_custom_logo() ) { the_custom_logo(); } else { ?><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></a><?php } ?></div>
+            <div class="sf-brand sf-ui-surface<?php echo $context ? ' sf-context-brand' : ''; ?>" data-wp-router-region="codela/storefront/brand">
+                <?php if ( $context ) : ?>
+                    <?php if ( $context['back'] ) : ?><a class="sf-ui-pressable" href="<?php echo esc_url( $context['back'] ); ?>" <?php echo $context['history'] ? 'data-sf-context-back' : 'data-sf-account-back'; ?> aria-label="<?php echo esc_attr( __( 'Back', 'codela-storefront' ) . ': ' . $context['title'] ); ?>"><?php echo codela_sf_icon( 'arrow-left' ); ?><span><?php echo esc_html( $context['title'] ); ?></span></a>
+                    <?php else : ?><span class="sf-context-label"><?php echo esc_html( $context['title'] ); ?></span><?php endif; ?>
+                <?php elseif ( has_custom_logo() ) : the_custom_logo(); else : ?><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></a><?php endif; ?>
+            </div>
             <?php if ( $desktop_menu ) : ?><nav class="sf-desktop-navigation sf-ui-surface" aria-label="<?php esc_attr_e( 'Main menu', 'codela-storefront' ); ?>"><?php echo $desktop_menu; ?></nav><?php endif; ?>
             <div class="sf-header-search sf-ui-surface" hidden></div>
             <nav class="sf-actions sf-ui-surface<?php echo $product_page || ( $catalog_page && $show_mobile_dock ) ? ' sf-ui-icon-group--single-mobile' : ''; ?>" aria-label="<?php esc_attr_e( 'Store tools', 'codela-storefront' ); ?>">
