@@ -9,6 +9,7 @@ const css=['storefront.css','styles/tokens.css','styles/overlay.css','styles/nav
  try{
   for(const width of [320,390,700,1280]){
    const page=await browser.newPage({viewport:{width,height:844}});
+   await page.route('https://store.test/theme/assets/icons/**',route=>{const name=new URL(route.request().url()).pathname.split('/').pop();return route.fulfill({contentType:'image/svg+xml',body:fs.readFileSync(root+'icons/'+name)});});
    for(const [name,env,title,back] of [
     ['hub',{FIXTURE_ACCOUNT:'1'},'My account',null],
     ['orders',{FIXTURE_ACCOUNT:'1',FIXTURE_ENDPOINT:'orders'},'Siparişlerim','https://store.test/myaccount/'],
