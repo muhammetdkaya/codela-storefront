@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Masaüstü menü seçimi kapsülün üst ve alt kenarına oturur.",
-    "Hesabım yatay geçişleri yalnız mobilde çalışır; masaüstü sabit menü ve içerik düzenini kullanır.",
-    "Tema ayarları sadeleştirildi; vurgu rengi Vitrin Tasarımı üzerinden yönetilir."
+    "Ürün görsellerine mobilde alanı doldurma ve dokuz konumlu odak noktası ayarı eklendi.",
+    "Her galeri ve varyasyon görseli kendi mobil kadrajını kullanır; masaüstünde görselin tamamı korunur.",
+    "Ayarlar WordPress medya düzenleyicisindedir; orijinal dosya, yakınlaştırma ve responsive görsel kaynakları korunur."
   ]
 }

@@ -1,5 +1,14 @@
 # Codela Storefront — güncel teknik durum
 
+## 21 Ekim 2026 — Görsel başına mobil kaplama/odak (0.1.157 hazırlanıyor)
+
+Tema **0.1.156 → 0.1.157**; Codela **1.2.3 değişmez**. Kullanıcının onayıyla native WordPress medya düzenleyicisinde her görsel için Mobilde alanı doldur ve dokuz konumlu Mobil odak noktası eklenir. Varsayılan merkez/kaplama; kapatıldığında görselin tamamı görünür. Ayarlar ürün galerisinde ≤900px için geçerlidir; ≥901px masaüstü contain ve merkez düzeni korunur. Tek private attachment meta alanı, native medya formu/nonce + edit_post yetkisi kullanılır; kısmi/bozuk/yetkisiz istekler kayıtlı ayarı değiştirmez. Orijinal dosya, responsive kaynaklar, alt metin, lazy/eager yükleme ve native yakınlaştırma korunur. Aynı görsel kullanıldığı ürün galerilerinde aynı kadrajı kullanır; blog/slider/thumbnail resimleri etkilenmez.
+
+Native Woo variation payload'ı görselin mobil fit/position değerlerini taşır; mevcut gallery-defer adapter'ı found_variation/reset_data olayında yalnız CSS custom property değerlerini eşitler. Yeni frontend dosyası, istek, medya kopyası veya nesne algılama servisi yoktur. Mobil kaplama fotoğrafın yanlarını/üst-altını kırpar; fotoğrafın içine gömülü beyaz alan otomatik temizlenmez.
+
+Yerel PHP metadata/editor nonce/yetki/atomik reddetme/varyasyon testleri, mevcut media testi ve 24 paket testi başarılı; ilgili PHP/JS sözdizimi geçti. Chromium/WebKit altı genişlikte mobile fill/contain/focus, desktop contain, Woo auto-height ve varyasyon/reset testi CI'a eklendi. CI, codela.dev dağıtımı ve kararlı GitHub yayını henüz bekliyor; yapılmış sayılmaz. Sıradaki: CI → ana dal/deploy → doğrulanmış kaynağın 0.1.157 release/manifest kontrolü.
+
+
 ## Son doğrulanmış devam noktası — 21 Ekim 2026: Storefront 0.1.156 kararlı yayında
 
 **Sürüm/kaynak:** Tema **0.1.155 → 0.1.156**, [PR #74](https://github.com/muhammetdkaya/codela-storefront/pull/74), kaynak `d3606e53a74381afa2a367d6fce19a4faf19a169`. Test edilen `85f429b751808371fdec72ad3692fc111f288ca2` ile merge aynı `29aa219aba7a4b10479e82f2d3250968dbd2a183` ağacıdır. Eşlik eden Codela **1.2.3** [PR #21](https://github.com/muhammetdkaya/codela/pull/21) canlıdır ve bu tema sürümü için gereklidir; WordPress.org yayını yapılmadı.

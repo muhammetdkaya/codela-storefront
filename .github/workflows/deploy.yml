@@ -34,6 +34,7 @@ jobs:
           php tests/sections-preview.php
           node --check theme/codela-storefront/assets/scripts/media-loading.js
           php tests/media.php
+          php tests/image-framing.php
           php tests/media-optimization.php
           php tests/navigation.php
           php tests/document-continuity.php
@@ -85,6 +86,8 @@ jobs:
           node tests/shell-navigation-browser.cjs
           node tests/document-continuity-browser.cjs
           node tests/gallery-defer-browser.cjs
+          node tests/image-framing-browser.cjs
+          TEST_WEBKIT=1 node tests/image-framing-browser.cjs
           node tests/ui-kit-browser.cjs
           node tests/native-woo-buttons.cjs
           node tests/context-header-browser.cjs

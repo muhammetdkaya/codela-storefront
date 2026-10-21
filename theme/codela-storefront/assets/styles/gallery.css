@@ -117,6 +117,15 @@
   }
 }
 .sf-product-gallery-thumb[hidden]{display:none!important}
+/* Per-image framing only on mobile/tablet product photos. Woo's intrinsic
+   image height must not undo the existing full-height gallery frame. */
+@media(max-width:900px){
+  body.single-product .sf-product-media .sf-ui-gallery .woocommerce-product-gallery__image > a > img:not(.zoomImg){
+    width:100%!important;height:100%!important;max-height:none;
+    object-fit:var(--sf-image-mobile-fit,cover)!important;
+    object-position:var(--sf-image-mobile-position,50% 50%);
+  }
+}
 .sf-ui-gallery--scroll .woocommerce-product-gallery__image > a{cursor:zoom-in}
 .sf-ui-gallery--scroll .woocommerce-product-gallery__image.is-zoomed > a{cursor:zoom-out}
 .sf-ui-gallery--scroll .zoomImg{pointer-events:none}
