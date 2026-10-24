@@ -6,7 +6,9 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Masaüstü menü kapsülü bağlantıların genişliğine göre daralır ve ekranın ortasında hizalanır.",
-    "Uzun menüler logo ve araçlarla çakışmadan kaydırılır; masaüstü arama açıldığında mevcut geniş alanını kullanır."
+    "Ürün düzenleme ekranına ayrı Mobil öne çıkan görsel ve Mobil galeri alanları eklendi.",
+    "Mobil görseller yalnız ürün detayında 900px ve altında kullanılır; ana sayfa, katalog ve sepet standart WooCommerce görsellerini korur.",
+    "Mobil ve masaüstü galerileri bağımsız sıralama ve görsel sayısı kullanabilir; boş alanlar standart görsellere döner.",
+    "Eski mobil odak/kadraj ayarları kaldırıldı; galeri sayacı, önizlemeler, yakınlaştırma ve varyasyon sıfırlama uyumlandı."
   ]
 }
