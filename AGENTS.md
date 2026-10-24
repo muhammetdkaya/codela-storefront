@@ -1,5 +1,15 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 24 Ekim 2026 — Yayın ve eski PR uzlaştırması
+
+Tema 0.1.158 değişmedi; yeni runtime sürümü gerekmiyor. Public v0.1.158 Release ve stable manifest yeniden doğrulandı. Güncel main'den deterministik paket SHA256 `bac55c73a46f91ab89dfca2a6aea99983cdeb7f85c2f2cbcd0a288d0fb4c3d47` ile yayımlanmış ZIP'e birebir eşleşti. Yerel 24 paket testi, cart-race ve cart-sync başarılı; paket testlerindeki FTP çıktıları mock'tur. Bu ortamda PHP/tarayıcı kurulumu kullanılamadığından yeni tam kabul iddia edilmez.
+
+PR #14/#66/#67 güncel kodda karşılanmış eski adaylar olarak kapatıldı; eski sürümler main üzerine birleştirilmedi. Eklenti PR #16 eski tema SHA önerisi de kapatıldı. Codela PR #14 performans bütçesi ve güncel tam WP/Woo matrisi açık kalır; fiziksel cihaz/OAuth/gateway kabulü ayrı kalır.
+
+Codela eklentisindeki son bildirim ve Kurumsal etiketi düzeltmeleri 1.2.4 paketi olarak hazırlanıyor. Tema gereksinimi 1.2.3 olarak kalır. Eklenti Release yazımı için tarayıcı oturumu gerekiyor; tema yayını zaten mevcut. Kullanıcının Actions kotası nedeniyle yeni Actions/FTP başlatılmadı. AZ Seramik güncellemesi yapılmış sayılmaz. Kullanıcı mevcut temayı Codela → Tema → Şimdi kontrol et → Şimdi güncelle ile FTP olmadan alabilir.
+
+
+
 ## Son doğrulanmış devam noktası — 21 Ekim 2026: Storefront 0.1.158 kararlı yayında
 
 **Sürüm/kaynak:** Tema **0.1.157 → 0.1.158**, kaynak [d9fb1cac](https://github.com/muhammetdkaya/codela-storefront/commit/d9fb1cac6b1e20a44c2bda5ce0869e54437bb52d). Codela **1.2.3 gereksinimi değişmedi**; eklenti veya WordPress.org yayını yapılmadı.
