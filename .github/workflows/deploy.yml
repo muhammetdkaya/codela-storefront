@@ -45,6 +45,7 @@ jobs:
           node --check tools/floating-surfaces-live.cjs
           node --check theme/codela-storefront/assets/scripts/gallery-defer.js
           node --check theme/codela-storefront/assets/scripts/media-admin.js
+          node --check theme/codela-storefront/assets/scripts/product-mobile-media-admin.js
           node tests/cart-race.cjs
           node tests/cart-sync.cjs
           node tests/search-panel.cjs
@@ -86,6 +87,7 @@ jobs:
           node tests/shell-navigation-browser.cjs
           node tests/document-continuity-browser.cjs
           node tests/gallery-defer-browser.cjs
+          node tests/product-mobile-media-admin-browser.cjs
           node tests/product-mobile-media-browser.cjs
           TEST_WEBKIT=1 node tests/product-mobile-media-browser.cjs
           node tests/ui-kit-browser.cjs

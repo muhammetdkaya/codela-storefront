@@ -6,9 +6,9 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Ürün düzenleme ekranına ayrı Mobil öne çıkan görsel ve Mobil galeri alanları eklendi.",
-    "Mobil görseller yalnız ürün detayında 900px ve altında kullanılır; ana sayfa, katalog ve sepet standart WooCommerce görsellerini korur.",
-    "Mobil ve masaüstü galerileri bağımsız sıralama ve görsel sayısı kullanabilir; boş alanlar standart görsellere döner.",
-    "Eski mobil odak/kadraj ayarları kaldırıldı; galeri sayacı, önizlemeler, yakınlaştırma ve varyasyon sıfırlama uyumlandı."
+    "Mobil ürün görseli seçimi, yükleme ve galeri kaydı WordPress medya düzenleyicisiyle düzeltildi.",
+    "Mobil galerinin tüm görselleri ve sırası kaydedilir; yeniden açıldığında kayıtlı görseller yüklenir.",
+    "Sonradan yüklenen ürün düzenleme alanlarında seçim ve kaldırma düğmeleri çalışır.",
+    "Mobil görsellerin kayıt sonrası 900px ve altında seçilmesi ve masaüstü kaynaklarına dönüş doğrulandı."
   ]
 }

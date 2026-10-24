@@ -33,7 +33,7 @@ add_action( 'admin_enqueue_scripts', static function() {
     $screen = get_current_screen();
     if ( ! $screen || 'product' !== $screen->post_type || 'post' !== $screen->base ) { return; }
     wp_enqueue_media();
-    wp_enqueue_script( 'codela-sf-product-mobile-media', get_template_directory_uri() . '/assets/scripts/product-mobile-media-admin.js', [ 'media-views' ], codela_sf_style_version(), true );
+    wp_enqueue_script( 'codela-sf-product-mobile-media', get_template_directory_uri() . '/assets/scripts/product-mobile-media-admin.js', [ 'media-editor' ], codela_sf_style_version(), true );
 } );
 add_action( 'save_post_product', static function( $id ) {
     if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || wp_is_post_revision( $id ) || ! current_user_can( 'edit_post', $id ) ) { return; }

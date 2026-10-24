@@ -1,5 +1,16 @@
 # Codela Storefront — güncel teknik durum
 
+## Son doğrulanmış devam noktası — 24 Ekim 2026: 0.1.160 mobil medya düzeltmesi
+
+Tema **0.1.159 → 0.1.160**; Codela eklentisi ve 1.2.3 gereksinimi değişmedi. Mobil galeri kaydı artık GalleryEdit içindeki seçili kutucuğu değil `update` olayının tam sıralı attachment koleksiyonunu kullanır. Kayıtlı galeriler native `wp.media.gallery.edit` ile metadata yüklenerek açılır; boş galeri doğrudan oluşturma/yükleme akışıyla başlar. Mobil ana görsel yeniden açıldığında mevcut seçim yüklenir. Düğme olayları belgeye devredildiği için sonradan eklenen meta kutuları da çalışır; native `media-editor` bağımlılığı açıkça yüklenir.
+
+Mobil kaynakların görünmemesi, boş/başarısız medya kaydının standart Woo görsellerine geri dönmesiyle açıklanır; frontend'deki tek picture/galeri adapter'ı değiştirilmedi. Ürün kaydı, nonce/yetki denetimleri ve katalog görselleri korunur. Kullanıcı mobil görselleri yeniden seçip ürünü Güncelle ile kaydetmelidir.
+
+**Doğrulama:** PHP lint; metadata/yetki/nonce ve gerçek WordPress HTML parser testleri; 24 paket testi; cart-race/cart-sync; Chromium admin sözleşmesi, mobil kaynak/sayaç/thumbnail/varyasyon/reset, gallery-defer ve beş genişlikte desktop ürün regresyonu geçti. Yerel, dış istekleri engellenmiş WordPress 7.1.3 + WooCommerce 11.2.1 + SQLite ortamında üretim mobil-medya PHP/JS kodu ile gerçek ürün editöründe featured seçimi, iki görsel galeri oluşturma, kaydetme, yeniden açma, tek kutucuğa odaklanırken tam galeri koruma ve native dosya yükleyicisinden üçüncü görsel ekleme geçti. Aynı kaydın native Woo galeri HTML'i 390px'te portrait, 1280px'te desktop kaynağını seçti. Bu izole medya entegrasyonudur; tam Codela eklentisi/tema, fiziksel cihaz veya AZ Seramik canlı kabulü değildir. Paket testlerindeki FTP çıktıları mock'tur.
+
+**Yayın:** Kaynak GitHub'a gönderilmek üzere hazır; CI/FTPS ve kararlı Release henüz doğrulanmadı. Stable manifest 0.1.158 olarak korunur. Önceki Actions kota engeli tekrar çıkarsa başarılı CI/deploy iddia edilmez. **Sıradaki:** Kaynak commit'i ve CI sonucunu kaydet; başarılı üretim kontrolü sonrasında mevcut release workflow ile stable yayın yap. AZ Seramik'te yeni sürüm kurulumu ve gerçek kaydedilen ürün kabulü ayrıca doğrulanmalıdır.
+
+
 ## 24 Ekim 2026 — 0.1.159 mobil ürün görselleri
 
 Tema 0.1.158 → 0.1.159; eklenti gereksinimi değişmedi. Ürün düzenlemede ayrı Mobil öne çıkan görsel / Mobil galeri alanları ve native medya seçimi/sıralaması eklendi. Alanlar yalnız ürün detay galerisinde ≤900px için geçerli; katalog, ana sayfa, ilgili ürün ve sepet görsel kimlikleri değişmez. İki alan bağımsız olarak standart Woo görsellerine döner; mobil/masaüstü galeri uzunlukları farklı olabilir. Tek galeri track'i ve picture kaynak seçimi kullanılır; sayaç/önizleme/zoom ve breakpoint geçişi aynı adapter'dadır. Varyasyon seçilince native varyasyon resmi gösterilir, sıfırlanınca mobil ana fotoğraf döner. Standart Woo ana ürün görseli bulunmayan ürünlerde native placeholder korunur.
