@@ -8,7 +8,7 @@ Eski attachment mobil fill/focus arayüzü, okuma/kaydetme kodu, varyasyon paylo
 
 Doğrulama: PHP lint; üretim PHP metadata/fallback/bağımsız galeri uzunluğu/yetki/nonce/atomik reddetme testleri; gerçek WordPress HTML Tag Processor ile picture/zoom/kaynak kontrolü; 24 paket testi, cart-race/cart-sync; Chromium responsive kaynak, sayaç, thumbnail, resize, variation/reset ve katalog izolasyonu; mevcut gallery-defer ve beş genişlikte desktop ürün sayfası regresyonları geçti. Paket testlerinin FTP çıktıları mock'tur. Gerçek WP/Woo admin medya seçicisi, WebKit ve fiziksel cihaz kabulü yapılmadı.
 
-Yayın: kaynak ve kurulum ZIP'i hazırlanıyor; Actions kotası nedeniyle CI/FTP başlatılmayacak. Kararlı güncelleme manifesti ve public Release bu çalışmada değiştirilmez; canlı site güncellenmiş sayılmaz. Sonraki kontrol: gerçek ürün editöründe iki mobil alanı kaydet/sırala/kaldır, hedef mağazada mobil/masaüstü ve varyasyon kabulü; ardından istenirse kararlı yayın.
+Yayın: [0.1.159 kaynak commit'i](https://github.com/muhammetdkaya/codela-storefront/commit/928633bbf6784e2704e23de0dd171764038cb64b) main'e kaydedildi; 160255 bayt kurulum ZIP'i hazırlandı ve kullanıcıya sunuldu. Yerelde test edilen ağaç ile GitHub kaynak ağacı birebir eşleşir. Actions kotası nedeniyle [skip ci] ile CI/FTP başlatılmadı. Kararlı güncelleme manifesti ve public Release bu çalışmada değiştirilmez; canlı site güncellenmiş sayılmaz. Sonraki kontrol: gerçek ürün editöründe iki mobil alanı kaydet/sırala/kaldır, hedef mağazada mobil/masaüstü ve varyasyon kabulü; ardından istenirse kararlı yayın.
 
 
 ## 24 Ekim 2026 — Yayın ve eski PR uzlaştırması
