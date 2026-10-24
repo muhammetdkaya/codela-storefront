@@ -27,7 +27,10 @@ const root='theme/codela-storefront/';
  assert.equal(await page.locator('#catalog').getAttribute('src'),'https://media.example/catalog.svg');
  // A shorter mobile gallery must exclude desktop-only slides and thumbnails.
  await page.locator('[data-sf-gallery-device="mobile"]').evaluate(el=>el.dataset.sfGalleryDevice='desktop');
- await page.setViewportSize({width:1280,height:844});await page.setViewportSize({width:390,height:844});
+ await page.setViewportSize({width:1280,height:844});
+ // Wait for the intermediate breakpoint; WebKit can coalesce back-to-back resizes.
+ await page.waitForFunction(()=>document.querySelector('.sf-product-gallery-count').textContent==='1 / 3'&&document.querySelector('.woocommerce-product-gallery__image img').currentSrc.endsWith('/d1.svg'));
+ await page.setViewportSize({width:390,height:844});
  await page.waitForFunction(()=>document.querySelector('.sf-product-gallery-count').textContent==='1 / 2');
  assert.deepEqual(errors,[]);
  console.log('Responsive sources, independent counts, thumbnails, resize, variation/reset and catalog isolation passed.');
