@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs');
 const {chromium,webkit}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const root='theme/codela-storefront/';
-(async()=>{const browser=await(process.env.TEST_WEBKIT?webkit:chromium).launch(process.env.CHROME_BIN?{executablePath:process.env.CHROME_BIN,args:['--no-sandbox']}:{});try{
+(async()=>{const browser=await(process.env.TEST_WEBKIT?webkit:chromium).launch(!process.env.TEST_WEBKIT&&process.env.CHROME_BIN?{executablePath:process.env.CHROME_BIN,args:['--no-sandbox']}:{});try{
  const page=await browser.newPage({viewport:{width:390,height:844}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('https://media.example/**',route=>route.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="800" height="1200"><rect width="800" height="1200" fill="tan"/></svg>'}));
  const css=fs.readFileSync(root+'assets/styles/gallery.css','utf8');
