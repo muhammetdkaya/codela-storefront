@@ -3,9 +3,13 @@
 (()=>{
   const gallery=document.querySelector('.woocommerce-product-gallery.sf-ui-gallery');
   if(!gallery)return;
-  const slides=()=>[...gallery.querySelectorAll('.woocommerce-product-gallery__image')];
-  const imageAt=i=>slides()[i]?.querySelector('a > img:not(.zoomImg)');
+  const mobileMedia=matchMedia('(max-width:900px)');
+  const allSlides=()=>[...gallery.querySelectorAll('.woocommerce-product-gallery__image')];
+  const slides=()=>allSlides().filter(item=>item.dataset.sfGalleryDevice!==(mobileMedia.matches?'desktop':'mobile'));
+  const imageAt=i=>slides()[i]?.querySelector('a img:not(.zoomImg)');
   const activate=image=>{
+    const source=image?.closest('picture')?.querySelector('source[data-sf-gallery-srcset]');
+    if(source){source.srcset=source.dataset.sfGallerySrcset;delete source.dataset.sfGallerySrcset;}
     if(!image?.dataset.sfGallerySrc)return;
     const {sfGallerySrc:src,sfGallerySrcset:srcset,sfGallerySizes:sizes}=image.dataset;
     // Set srcset and sizes before src, so responsive selection stays native.
@@ -26,25 +30,21 @@
     track.tabIndex=0;
     track.setAttribute('role','region');
     track.setAttribute('aria-label',document.getElementById('sf-product-sheet-template')?.dataset.galleryLabel||'Product images');
-    const items=slides();
+    let items=slides();
     if(!items.length)return;
     const jq=window.jQuery;
     const initialImage=imageAt(0);
-    const initialFraming={fit:initialImage?.dataset.sfMobileFit||'cover',position:initialImage?.dataset.sfMobilePosition||'50% 50%'};
-    const frameVariation=framing=>{
-      const image=imageAt(0);
-      if(!image)return;
-      const fit=framing?.fit==='contain'?'contain':'cover';
-      const position=/^(0|50|100)% (0|50|100)%$/.test(framing?.position||'')?framing.position:'50% 50%';
-      image.style.setProperty('--sf-image-mobile-fit',fit);
-      image.style.setProperty('--sf-image-mobile-position',position);
-    };
+    const portraitSource=initialImage?.closest('picture')?.querySelector('source');
+    const originalAlts=new Map(allSlides().map(item=>{const image=item.querySelector('a img:not(.zoomImg)');return [image,image?.alt||''];}));
+    let variationActive=false;
+    const syncAlt=()=>originalAlts.forEach((alt,image)=>{if(image&&!(image===initialImage&&variationActive))image.alt=mobileMedia.matches?(image.dataset.sfMobileAlt||alt):alt;});
+    syncAlt();
     const zoomStates=new Map();
     const closeZoom=()=>{
       if(jq&&gallery.querySelector('.is-zoomed'))jq(document).triggerHandler('click.zoom');
     };
     if(jq?.fn.zoom){
-      items.forEach(item=>{
+      allSlides().forEach(item=>{
         const link=item.querySelector('a');
         if(!link)return;
         link.setAttribute('role','button');
@@ -62,16 +62,17 @@
         event.preventDefault();
         if(state.ready)return; // The same native plugin handles subsequent taps.
         if(state.pending){state.wanted=!state.wanted;return;}
-        closeZoom();activate(item.querySelector('a > img:not(.zoomImg)'));
+        closeZoom();activate(item.querySelector('a img:not(.zoomImg)'));
         state.pending=true;state.wanted=true;
         const link=item.querySelector('a'),image=link.querySelector('img');
         const bounds=item.getBoundingClientRect();
-        const width=Number(image.dataset.large_image_width)||image.naturalWidth||bounds.width;
-        const height=Number(image.dataset.large_image_height)||image.naturalHeight||bounds.height;
+        const portrait=mobileMedia.matches&&image.dataset.sfMobileUrl&&!(item===items[0]&&variationActive);
+        const width=Number(portrait?image.dataset.sfMobileWidth:image.dataset.large_image_width)||image.naturalWidth||bounds.width;
+        const height=Number(portrait?image.dataset.sfMobileHeight:image.dataset.large_image_height)||image.naturalHeight||bounds.height;
         const magnify=Math.max(1,2*Math.max(bounds.width,bounds.height*width/height)/width);
         const pageX=event.clientX?event.pageX:scrollX+bounds.left+bounds.width/2;
         const pageY=event.clientY?event.pageY:scrollY+bounds.top+bounds.height/2;
-        jq(item).zoom({on:'click',touch:false,magnify,
+        jq(item).zoom({url:portrait?image.dataset.sfMobileUrl:(image.dataset.large_image||link.href),on:'click',touch:false,magnify,
           duration:matchMedia('(prefers-reduced-motion:reduce)').matches?0:120,
           callback:function(){
             this.alt='';this.setAttribute('aria-hidden','true');
@@ -119,6 +120,8 @@
       if(vertical)window.scrollTo({top:window.scrollY+rect.top,behavior});
       else track.scrollTo({left:track.scrollLeft+rect.left-bounds.left,top:0,behavior});
     }
+    const buildNav=()=>{
+      nav.replaceChildren();
     items.forEach((item,index)=>{
       const button=document.createElement('button');
       button.type='button';
@@ -126,16 +129,18 @@
       button.setAttribute('aria-label',(index+1)+' / '+items.length);
       const image=document.createElement('img');
       image.alt='';image.loading='lazy';image.width=44;image.height=44;
-      image.src=item.getAttribute('data-thumb')||imageAt(index)?.getAttribute('src')||'';
+      image.src=(mobileMedia.matches?item.dataset.sfMobileThumb:'')||item.getAttribute('data-thumb')||imageAt(index)?.getAttribute('src')||'';
       button.appendChild(image);
       button.addEventListener('click',()=>select(index));
       nav.appendChild(button);
     });
-    if(items.length>1&&!gallery.classList.contains('sf-ui-gallery--no-thumbs'))gallery.appendChild(nav);
+    nav.hidden=items.length<2||gallery.classList.contains('sf-ui-gallery--no-thumbs');
+    };
+    buildNav();gallery.appendChild(nav);
     // Shared IconButtons use this adapter's existing select/IO state. No second
     // gallery engine, slide clones or separate index is introduced.
     const controlsTemplate=document.getElementById('sf-product-gallery-controls-template');
-    const arrows=items.length>1&&controlsTemplate?controlsTemplate.content.firstElementChild.cloneNode(true):null;
+    const arrows=allSlides().length>1&&controlsTemplate?controlsTemplate.content.firstElementChild.cloneNode(true):null;
     if(arrows){
       gallery.appendChild(arrows);
       arrows.querySelectorAll('[data-product-gallery-step]').forEach(button=>{
@@ -156,6 +161,7 @@
     track.addEventListener('keydown',event=>{if(['ArrowDown','ArrowUp','ArrowLeft','ArrowRight'].includes(event.key))beginBrowsing();});
     function update(index){
       count.textContent=(index+1)+' / '+items.length;
+      if(arrows)arrows.hidden=items.length<2;
       arrows?.querySelectorAll('[data-product-gallery-step]').forEach(button=>{button.disabled=Number(button.dataset.productGalleryStep)<0?index===0:index===items.length-1;});
       const first=Math.max(0,Math.min(index-1,items.length-3));
       [...nav.children].forEach((button,i)=>{
@@ -174,7 +180,7 @@
       visible=new IntersectionObserver(entries=>{
         if(document.documentElement.classList.contains('sf-overlay-scroll-locked'))return;
         entries.forEach(entry=>{
-          if(entry.isIntersecting){activate(entry.target.querySelector('a > img:not(.zoomImg)'));
+          if(entry.isIntersecting){activate(entry.target.querySelector('a img:not(.zoomImg)'));
             if(entry.intersectionRatio>=.55)update(items.indexOf(entry.target));}
         });
       },{root:vertical?null:track,rootMargin:'0px 0px -'+bottom+'px 0px',threshold:[0.05,.55]});
@@ -208,13 +214,20 @@
     });
     // Woo replaces the featured image for a variation; reveal that same node.
     if(jq)jq(document).on('found_variation reset_data','.variations_form',(event,variation)=>{
-      frameVariation(event.type==='found_variation'?(variation?.image?.codela_sf_mobile||initialFraming):initialFraming);
+      variationActive=event.type==='found_variation'&&Boolean(variation?.image?.src);
+      if(portraitSource)portraitSource.media=variationActive?'not all':'(max-width:900px)';
+      syncAlt();
       closeZoom();
       zoomStates.forEach((state,item)=>{
         jq(item).trigger('zoom.destroy');Object.assign(state,{ready:false,pending:false,wanted:false});
         item.classList.remove('is-zoomed');item.querySelector('a').setAttribute('aria-pressed','false');
       });
       select(0);
+    });
+    mobileMedia.addEventListener('change',()=>{
+      closeZoom();
+      zoomStates.forEach((state,item)=>{jq(item).trigger('zoom.destroy');Object.assign(state,{ready:false,pending:false,wanted:false});item.classList.remove('is-zoomed');item.querySelector('a').setAttribute('aria-pressed','false');});
+      items=slides();syncAlt();buildNav();observe();update(0);track.scrollTo(0,0);
     });
     matchMedia('(max-width:700px)').addEventListener('change',()=>{track.scrollTo(0,0);window.scrollTo({top:0,behavior:'instant'});observe();update(0);});
     update(0);
@@ -256,7 +269,7 @@
     for(const m of mutations){
       if(m.type==='attributes' && m.target.classList?.contains('flex-active-slide')
           && m.target.classList.contains('woocommerce-product-gallery__image')){
-        activate(m.target.querySelector('a > img:not(.zoomImg)'));
+        activate(m.target.querySelector('a img:not(.zoomImg)'));
       }
     }
     if(mutations.some(m=>m.type==='childList'))activateVisible();

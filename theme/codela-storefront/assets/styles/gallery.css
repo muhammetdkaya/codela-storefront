@@ -117,13 +117,13 @@
   }
 }
 .sf-product-gallery-thumb[hidden]{display:none!important}
-/* Per-image framing only on mobile/tablet product photos. Woo's intrinsic
+/* Centered mobile/tablet product photos. Woo's intrinsic
    image height must not undo the existing full-height gallery frame. */
 @media(max-width:900px){
-  body.single-product .sf-product-media .sf-ui-gallery .woocommerce-product-gallery__image > a > img:not(.zoomImg){
+  body.single-product .sf-product-media .sf-ui-gallery .woocommerce-product-gallery__image > a img:not(.zoomImg){
     width:100%!important;height:100%!important;max-height:none;
-    object-fit:var(--sf-image-mobile-fit,cover)!important;
-    object-position:var(--sf-image-mobile-position,50% 50%);
+    object-fit:cover!important;
+    object-position:50% 50%;
   }
 }
 .sf-ui-gallery--scroll .woocommerce-product-gallery__image > a{cursor:zoom-in}
@@ -137,3 +137,10 @@
 
 /* Page sliders allow vertical gestures to continue down the document. */
 [data-sf-gallery] .sf-ui-gallery-track{overscroll-behavior-y:auto}
+
+/* One gallery track, with native responsive art direction. */
+.sf-ui-gallery .woocommerce-product-gallery__image picture{display:block;width:100%;height:100%}
+@media(max-width:900px){.sf-ui-gallery [data-sf-gallery-device="desktop"]{display:none!important}}
+@media(min-width:901px){.sf-ui-gallery [data-sf-gallery-device="mobile"]{display:none!important}}
+
+.sf-ui-gallery-nav[hidden],.sf-product-gallery-arrows[hidden]{display:none!important}

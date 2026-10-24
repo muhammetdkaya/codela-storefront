@@ -1,5 +1,16 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 24 Ekim 2026 — 0.1.159 mobil ürün görselleri
+
+Tema 0.1.158 → 0.1.159; eklenti gereksinimi değişmedi. Ürün düzenlemede ayrı Mobil öne çıkan görsel / Mobil galeri alanları ve native medya seçimi/sıralaması eklendi. Alanlar yalnız ürün detay galerisinde ≤900px için geçerli; katalog, ana sayfa, ilgili ürün ve sepet görsel kimlikleri değişmez. İki alan bağımsız olarak standart Woo görsellerine döner; mobil/masaüstü galeri uzunlukları farklı olabilir. Tek galeri track'i ve picture kaynak seçimi kullanılır; sayaç/önizleme/zoom ve breakpoint geçişi aynı adapter'dadır. Varyasyon seçilince native varyasyon resmi gösterilir, sıfırlanınca mobil ana fotoğraf döner. Standart Woo ana ürün görseli bulunmayan ürünlerde native placeholder korunur.
+
+Eski attachment mobil fill/focus arayüzü, okuma/kaydetme kodu, varyasyon payload'ı ve CSS değişkenleri kaldırıldı. Eski özel metadata pasif kalır; dosyalar silinmez. Mobil cover/merkez ve masaüstü contain korunur. Native ürün görsel ID'leri filtrelenmez. Nonce/yetki, autosave/revision, kısmi veya bozuk POST reddi vardır. Üçüncü taraf thumbnail hook'ları ve canlı ziyaretçi sayacı korunur.
+
+Doğrulama: PHP lint; üretim PHP metadata/fallback/bağımsız galeri uzunluğu/yetki/nonce/atomik reddetme testleri; gerçek WordPress HTML Tag Processor ile picture/zoom/kaynak kontrolü; 24 paket testi, cart-race/cart-sync; Chromium responsive kaynak, sayaç, thumbnail, resize, variation/reset ve katalog izolasyonu; mevcut gallery-defer ve beş genişlikte desktop ürün sayfası regresyonları geçti. Paket testlerinin FTP çıktıları mock'tur. Gerçek WP/Woo admin medya seçicisi, WebKit ve fiziksel cihaz kabulü yapılmadı.
+
+Yayın: kaynak ve kurulum ZIP'i hazırlanıyor; Actions kotası nedeniyle CI/FTP başlatılmayacak. Kararlı güncelleme manifesti ve public Release bu çalışmada değiştirilmez; canlı site güncellenmiş sayılmaz. Sonraki kontrol: gerçek ürün editöründe iki mobil alanı kaydet/sırala/kaldır, hedef mağazada mobil/masaüstü ve varyasyon kabulü; ardından istenirse kararlı yayın.
+
+
 ## 24 Ekim 2026 — Yayın ve eski PR uzlaştırması
 
 Tema 0.1.158 değişmedi; yeni runtime sürümü gerekmiyor. Public v0.1.158 Release ve stable manifest yeniden doğrulandı. Güncel main'den deterministik paket SHA256 `bac55c73a46f91ab89dfca2a6aea99983cdeb7f85c2f2cbcd0a288d0fb4c3d47` ile yayımlanmış ZIP'e birebir eşleşti. Yerel 24 paket testi, cart-race ve cart-sync başarılı; paket testlerindeki FTP çıktıları mock'tur. Bu ortamda PHP/tarayıcı kurulumu kullanılamadığından yeni tam kabul iddia edilmez.

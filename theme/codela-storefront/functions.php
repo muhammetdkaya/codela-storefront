@@ -49,7 +49,7 @@ function codela_sf_style_version(): string {
     return $version;
 }
 require_once get_template_directory() . '/inc/render.php';
-require_once get_template_directory() . '/inc/image-framing.php';
+require_once get_template_directory() . '/inc/product-mobile-media.php';
 require_once get_template_directory() . '/inc/media.php';
 require_once get_template_directory() . '/inc/navigation.php';
 require_once get_template_directory() . '/inc/document-continuity.php';

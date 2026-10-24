@@ -97,7 +97,7 @@
       if (!mounted) return;
       expanded = open;
       if (open && !preservePhoto && !sheet.classList.contains('is-discovering')) {
-        var photos = Array.from(media.querySelectorAll('.woocommerce-product-gallery__image,.woocommerce-product-gallery__image--placeholder'));
+        var photos = Array.from(media.querySelectorAll('.woocommerce-product-gallery__image,.woocommerce-product-gallery__image--placeholder')).filter(node=>node.getClientRects().length);
         var nearest = photos.reduce(function (best, node) { return !best || Math.abs(node.getBoundingClientRect().top) < Math.abs(best.getBoundingClientRect().top) ? node : best; }, null);
         if (nearest) window.scrollTo({top:window.scrollY + nearest.getBoundingClientRect().top, behavior:'instant'});
       }

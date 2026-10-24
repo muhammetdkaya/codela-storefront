@@ -12,10 +12,12 @@ function codela_sf_image_preloads( string $html = '' ): array {
     if ( '' === $html ) { return $resources; }
     $picture = new WP_HTML_Tag_Processor( $html );
     $mobile = null;
-    if ( $picture->next_tag( 'source' ) && '(max-width:700px)' === $picture->get_attribute( 'media' ) ) {
+    $mobile_media = '(max-width:700px)';
+    if ( $picture->next_tag( 'source' ) && in_array( $picture->get_attribute( 'media' ), [ '(max-width:700px)', '(max-width:900px)' ], true ) ) {
+        $mobile_media = $picture->get_attribute( 'media' );
         $srcset = $picture->get_attribute( 'srcset' );
         if ( is_string( $srcset ) && $srcset ) {
-            $mobile = [ 'as' => 'image', 'imagesrcset' => $srcset, 'imagesizes' => $picture->get_attribute( 'sizes' ) ?: '100vw', 'media' => '(max-width:700px)', 'fetchpriority' => 'high' ];
+            $mobile = [ 'as' => 'image', 'imagesrcset' => $srcset, 'imagesizes' => $picture->get_attribute( 'sizes' ) ?: '100vw', 'media' => $mobile_media, 'fetchpriority' => 'high' ];
         }
     }
     $image = new WP_HTML_Tag_Processor( $html );
@@ -29,7 +31,7 @@ function codela_sf_image_preloads( string $html = '' ): array {
         $resource['imagesizes'] = $image->get_attribute( 'sizes' ) ?: '100vw';
     }
     if ( $mobile ) {
-        $resource['media'] = '(min-width:701px)';
+        $resource['media'] = '(max-width:900px)' === $mobile_media ? '(min-width:901px)' : '(min-width:701px)';
         $resources[] = $mobile;
     }
     $resources[] = $resource;
@@ -155,11 +157,6 @@ add_action( 'after_setup_theme', function() {
             }
         }
         if ( $tags->next_tag( 'img' ) ) {
-            if ( function_exists( 'is_product' ) && is_product() && function_exists( 'codela_sf_image_framing_attributes' ) ) {
-                foreach ( codela_sf_image_framing_attributes( (int) $attachment_id, [ 'style' => $tags->get_attribute( 'style' ) ?? '' ] ) as $name => $value ) {
-                    $tags->set_attribute( $name, $value );
-                }
-            }
             // Only after an admin-verified PNG conversion: browser chooses
             // responsive WebP, while Woo's original image link and zoom data
             // continue pointing at the untouched full-resolution upload.
@@ -204,6 +201,7 @@ add_action( 'after_setup_theme', function() {
             }
         }
         $html = $tags->get_updated_html();
+        if ( function_exists( 'codela_sf_mobile_gallery_picture' ) ) { $html = codela_sf_mobile_gallery_picture( $html ); }
         if ( $is_hero ) { codela_sf_image_preloads( $html ); }
         return $html;
     }, 10, 2 );
