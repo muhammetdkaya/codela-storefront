@@ -68,13 +68,18 @@ const doc=(path)=>{
   assert(page.url().endsWith('/account/orders/'),'History traversal still browser-owned');
   // A delayed native HTML request must show immediate main-only feedback.
   await page.goto(origin+'/account/');
-  await page.evaluate(()=>document.querySelector('#slow-account').click());
-  await page.waitForSelector('#sf-content[data-sf-account-pending]',{timeout:300});
-  assert(await page.locator('.sf-account-loading').isVisible(),'Skeleton appears before delayed response');
-  assert(await page.locator('#native-header').isVisible(),'Header remains visible during slow GET');
-  assert(await page.locator('#native-dock').isVisible(),'Dock remains visible during slow GET');
-  assert.equal(await page.locator('#sf-content').getAttribute('aria-busy'),'true');
-  assert.equal(await page.locator('#account-root').evaluate(el=>el.inert || el.closest('[inert]')!==null),true,'Hidden old actions cannot receive keyboard focus');
+  const pending=await page.evaluate(()=>{
+   const started=performance.now();document.querySelector('#slow-account').click();
+   const main=document.querySelector('#sf-content'), skeleton=main.querySelector('.sf-account-loading');
+   const visible=el=>!!el && el.getBoundingClientRect().height>0 && getComputedStyle(el).visibility==='visible';
+   return {elapsed:performance.now()-started,pending:main.hasAttribute('data-sf-account-pending'),busy:main.getAttribute('aria-busy'),skeleton:visible(skeleton),header:visible(document.querySelector('#native-header')),dock:visible(document.querySelector('#native-dock')),inert:!!document.querySelector('#account-root').closest('[inert]')};
+  });
+  // Read synchronously inside the outgoing document: Playwright locators wait
+  // for pending navigation and cannot inspect that document during a native GET.
+  assert(pending.pending && pending.skeleton,'Skeleton paints in the click task, before the delayed response');
+  assert(pending.elapsed<100,'Feedback has no timer or network dependency');
+  assert(pending.header && pending.dock,'Header and dock remain visible during slow GET');
+  assert.equal(pending.busy,'true');assert(pending.inert,'Hidden old actions cannot receive keyboard focus');
   await page.waitForURL('**/account/orders/?slow=1');
   await page.waitForLoadState('load');
   assert.equal(await page.locator('.sf-account-loading').count(),0,'Fresh native document clears feedback');
@@ -83,9 +88,12 @@ const doc=(path)=>{
   await context.close();
   const desktop=await browser.newContext({viewport:{width:1280,height:900}});
   const d=await desktop.newPage();await d.goto(origin+'/account/');await d.locator('#account-orders').click();
-  await d.evaluate(()=>document.querySelector('#slow-account').click());
-  await d.waitForSelector('#sf-content[data-sf-account-pending]',{timeout:300});
-  assert(await d.locator('#native-header').isVisible(),'Desktop header visible during slow GET');
+  const desktopPending=await d.evaluate(()=>{
+   document.querySelector('#slow-account').click();
+   return {pending:document.querySelector('#sf-content').hasAttribute('data-sf-account-pending'),header:getComputedStyle(document.querySelector('#native-header')).visibility};
+  });
+  assert(desktopPending.pending,'Desktop also paints feedback in the click task');
+  assert.equal(desktopPending.header,'visible','Desktop header visible during slow GET');
   await d.waitForURL('**/account/orders/?slow=1');
   await d.waitForLoadState('load');
   assert.equal(await d.evaluate(()=>sessionStorage.getItem('account-direction')),'none','Desktop account navigation never slides');
