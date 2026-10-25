@@ -1,5 +1,7 @@
 # Codela Storefront UI Kit — source of truth
 
+Account dashboard summary (0.1.164): Order summary heading and bag icon above a thin divider; centered empty-state copy without shopping CTA or all-orders duplicate. Existing single-column navigation remains ungrouped and has no Account actions heading. Populated summaries keep native order data and the View order action.
+
 Account navigation (0.1.163): replace content in place without horizontal transitions. Immediate static circle-and-line skeleton follows the shared muted surface token; loading status is screen-reader-only. Header/dock remain visible and the back control updates synchronously.
 
 ## Account hierarchy and immediate document feedback — 0.1.161

@@ -8,6 +8,8 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'Only shown in the mobile product gallery (up to 900px). Catalog cards always use WooCommerce images. Empty fields use the standard images.' => 'Yalnızca mobil ürün detay galerisinde (900px ve altı) gösterilir. Ürün kartlarında WooCommerce görselleri kullanılır. Boş bırakılan alanlar standart görselleri kullanır.',
 'Reopen the gallery to reorder images by dragging them.' => 'Sıralamayı sürükleyerek değiştirmek için galeriyi yeniden açın.',
 
+'Order summary' => 'Sipariş özeti',
+'Track your orders here.' => 'Siparişlerini buradan takip edebilirsin.',
 'Your first order will appear here.' => 'İlk siparişin burada görünecek.',
 'No posts yet.' => 'Henüz yazı yayımlanmadı.',
 'Blog' => 'Blog',
@@ -185,3 +187,4 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'Quantity: %s' => 'Adet: %s',
 '%s more items' => '%s ürün daha',
 ] ];
+

@@ -9,10 +9,10 @@ $order = $orders[0] ?? null;
 ?>
 <div class="sf-account-overview">
     <?php if ( isset( $menu['orders'] ) ) : ?>
-    <section class="sf-account-card sf-ui-card sf-account-order" aria-label="<?php esc_attr_e( 'Latest order', 'codela-storefront' ); ?>">
+    <section class="sf-account-card sf-ui-card sf-account-order" aria-labelledby="sf-recent-order">
         <header class="sf-account-card-heading">
-            <h2 id="sf-recent-order"><?php echo $order ? esc_html__( 'Latest order', 'codela-storefront' ) : esc_html__( 'Orders', 'woocommerce' ); ?></h2>
-            <a href="<?php echo esc_url( wc_get_account_endpoint_url( 'orders' ) ); ?>"><?php esc_html_e( 'All orders', 'codela-storefront' ); ?><?php echo codela_sf_icon( 'arrow-right' ); ?></a>
+            <h2 id="sf-recent-order"><?php esc_html_e( 'Order summary', 'codela-storefront' ); ?></h2>
+            <?php echo codela_sf_icon( 'shopping-bag' ); ?>
         </header>
         <?php if ( $order ) : ?>
         <div class="sf-account-order-meta">
@@ -30,9 +30,8 @@ $order = $orders[0] ?? null;
         <div class="sf-account-order-total"><span><?php esc_html_e( 'Total', 'woocommerce' ); ?></span><strong><?php echo wp_kses_post( $order->get_formatted_order_total() ); ?></strong></div>
         <div class="sf-account-order-action"><?php echo codela_sf_ui_button( __( 'View order', 'codela-storefront' ), [ 'href' => $order->get_view_order_url() ] ); ?></div>
         <?php else : ?>
-        <div class="sf-account-empty-state"><?php echo codela_sf_icon( 'shopping-bag' ); ?><div><p class="sf-account-empty"><?php esc_html_e( 'You have no orders yet.', 'codela-storefront' ); ?></p>
-        <p class="sf-account-muted"><?php esc_html_e( 'Your first order will appear here.', 'codela-storefront' ); ?></p>
-        <?php echo codela_sf_ui_button( __( 'Browse products', 'codela-storefront' ), [ 'href' => wc_get_page_permalink( 'shop' ), 'variant' => 'secondary', 'icon' => 'arrow-right' ] ); ?>
+        <div class="sf-account-empty-state sf-account-summary-empty"><div><p class="sf-account-empty"><?php esc_html_e( 'You have no orders yet.', 'codela-storefront' ); ?></p>
+        <p class="sf-account-muted"><?php esc_html_e( 'Track your orders here.', 'codela-storefront' ); ?></p>
         </div></div>
         <?php endif; ?>
     </section>

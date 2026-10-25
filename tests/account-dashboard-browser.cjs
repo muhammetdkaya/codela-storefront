@@ -35,7 +35,10 @@ const render=env=>execFileSync(process.env.PHP_BIN||'php',['tests/render-account
     if([390,1280].includes(width)){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:`qa/storefront-ui-kit-account-hub-${name}-${process.env.TEST_WEBKIT?'webkit':'chromium'}-${width}.png`});}
     if(name==='empty'){
      assert.equal(await page.locator('.sf-account-order-item').count(),0);
-     assert(await page.getByRole('link',{name:'Browse products'}).isVisible(),'Empty customer gets real shop link');
+     assert.equal(await page.locator('.sf-account-order a').count(),0,'Approved empty summary has no shopping CTA');
+     assert.equal(await page.getByRole('heading',{name:'Order summary'}).count(),1);
+     assert.equal(await page.locator('.sf-account-summary-empty').evaluate(e=>getComputedStyle(e).textAlign),'center');
+     assert.equal(await page.locator('.sf-account-card-heading .sf-icon').count(),1,'Bag icon belongs in summary header');
     }else{
      assert.equal(await page.locator('.sf-account-order-item strong').innerText(),'<Test product with a very long title & characters>','Order item escaped');
      assert(await page.locator('.sf-account-order-item').innerText().then(t=>t.includes('1 more items')),'Multiple items not silently omitted');

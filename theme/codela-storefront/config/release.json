@@ -6,7 +6,7 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Hesabım içindeki sağa-sola geçiş kaldırıldı.",
-    "Yükleniyor yazısı yerine sabit, soluk içerik iskeleti gösterilir; header ve alt menü anında hazır kalır."
+    "Pano sipariş özeti onaylanan kompakt kart tasarımına uyarlandı.",
+    "Boş sipariş özetindeki alışveriş düğmesi kaldırıldı; mevcut tek sütunlu hesap listesi korundu."
   ]
 }

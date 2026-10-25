@@ -1,5 +1,9 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 25 Ekim 2026 — 0.1.164 onaylanan sipariş özeti (CI bekliyor)
+
+0.1.163 → 0.1.164: Yalnız pano sipariş özeti onaylanan kart tasarımına uyarlandı: Sipariş özeti başlığı, sağda çanta ikonu, ince ayırıcı ve ortalı boş durum. Pano kartından Tüm siparişlerim ve Ürünleri incele kaldırıldı; altındaki mevcut tek sütunlu native hesap listesi aynı, Hesap işlemleri başlığı eklenmedi. Siparişli kartta gerçek son sipariş/total/detay bağlantısı korunur. Endpoint boş sipariş görünümü, header/dock ve skeleton değişmedi. TR çeviri eklendi; test SVG fixture multiline sınıfı düzeltildi. Eklenti değişmedi. Yerel paket/sözdizimi ve CI/yayın bekliyor; sıradaki adım görsel kabul ve 0.1.164 kararlı yayın.
+
 ## 25 Ekim 2026 — 0.1.163 sabit hesap içerik iskeleti kararlı yayında
 
 0.1.162 → 0.1.163: Kullanıcı geri bildirimiyle hesap içi sağa/sola geçiş kaldırıldı. Native account→account geçişi skipTransition kullanır; yön dataset/keyframe kodu çıkarıldı, diğer sayfa geçişleri değişmez. Görünür Yükleniyor yazısı yerine örnekteki gibi üç soluk yuvarlak ve kısa/uzun satırdan oluşan sabit skeleton var. Ekran okuyucu durum metni, aria-busy, anlık header/dock, Escape/timeout/BFCache geri yüklemesi korunur. Eklenti değişmedi.
