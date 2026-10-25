@@ -1,12 +1,14 @@
 # Codela Storefront — güncel çalışma kuralları
 
-## 25 Ekim 2026 — 0.1.164 onaylanan sipariş özeti (dağıtıldı, yayın bekleniyor)
+## 25 Ekim 2026 — 0.1.164 onaylanan sipariş özeti kararlı yayında
 
 0.1.163 → 0.1.164: Yalnız pano sipariş özeti onaylanan kart tasarımına uyarlandı: Sipariş özeti başlığı, sağda çanta ikonu, ince ayırıcı ve ortalı boş durum. Pano kartından Tüm siparişlerim ve Ürünleri incele kaldırıldı; altındaki mevcut tek sütunlu native hesap listesi aynı, Hesap işlemleri başlığı eklenmedi. Siparişli kartta gerçek son sipariş/total/detay bağlantısı korunur. Endpoint boş sipariş görünümü, header/dock ve skeleton değişmedi. TR çeviri eklendi; test SVG fixture multiline sınıfı düzeltildi. Eklenti değişmedi.
 
 **Doğrulama/dağıtım:** [Kaynak 3c8a87d9](https://github.com/muhammetdkaya/codela-storefront/commit/3c8a87d906fbe7f806c2637c4af3b8a69b8a26ba), [CI/deploy 40170167237](https://github.com/muhammetdkaya/codela-storefront/actions/runs/40170167237) başarılı. PHP/JS ve 24 paket testi, Chromium/WebKit 320/390/800/1280/1440px boş/siparişli/iptal durumları ve mevcut commerce regresyonları geçti. Mobil WebKit 390px ve masaüstü Chromium 1280px boş pano görüntüleri incelendi (İngilizce deterministik fixture; canlı girişli mağaza kabulü değil). codela.dev dağıtımı tamamlandı. AZ Seramik kurulumu ve fiziksel cihaz kabulü yapılmış sayılmaz.
 
-**Yayın:** 0.1.164 için test edilmiş kaynakla kararlı yayın talebi hazırlanmıştır; sonuç bekleniyor. Sonraki adım release/stable manifest doğrulaması ve hedef mağazada güncelleme.
+**Yayın:** [v0.1.164](https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.164) kararlı yayında; [yayın koşusu 40170635208](https://github.com/muhammetdkaya/codela-storefront/actions/runs/40170635208) başarılı. Tag ve stable manifest test edilmiş kaynakla eşleşti. ZIP 163595 bayt, SHA256 `fc04a24424a695e461c999864274efbb9c7a0d3f223f723e4858c136fc2d352e`; asset digest doğrulandı. Güncelleme kanalı 0.1.164 sunar.
+
+**Kalan/sıradaki:** İstenen pano kartı, test, codela.dev dağıtımı ve kararlı yayın tamamlandı. AZ Seramik için Codela → Tema → Şimdi kontrol et → Şimdi güncelle; ardından Türkçe boş/siparişli pano kartı ve değişmeyen tek sütunlu listeyi hedef mağazada kontrol et.
 
 ## 25 Ekim 2026 — 0.1.163 sabit hesap içerik iskeleti kararlı yayında
 
