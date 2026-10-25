@@ -1,8 +1,12 @@
 # Codela Storefront — güncel teknik durum
 
-## 25 Ekim 2026 — 0.1.162 kullanıcı düzeltmesi (CI bekliyor)
+## 25 Ekim 2026 — 0.1.162 kullanıcı düzeltmesi (dağıtıldı, kararlı yayın bekleniyor)
 
-0.1.161 → 0.1.162: Hesap bağlantıları eski tek sütunlu listeye döndü. Sipariş kartı korunur. Header sol üst kontrolü native hesap bağlantısına tıklamada hedefin üst sayfa adı/adresiyle senkron hazırlanır; yanıt beklenmez. Escape/timeout/pageshow eski düğümleri geri getirir. Sunucu native belgeyi ve formları yönetir. Yerel JS/paket kontrolü; CI ve yayın bekliyor. Eklenti değişmedi. Sonraki adım CI ve dağıtımı doğrulayıp 0.1.162 kararlı yayınını tamamlamak.
+0.1.161 → 0.1.162: Hesap bağlantıları eski tek sütunlu listeye döndü; sipariş kartı korunur. Header sol üst kontrolü tıklamada hedefin üst sayfa adı/adresiyle senkron hazırlanır; yerel SVG inline olduğu için ikon isteğini de beklemez. Sipariş detayı → Siparişler, adres formu → Adresler, diğer endpointler → Hesabım. Escape/timeout/pageshow eski düğümleri geri getirir. Native belge, form ve geçmiş akışı korunur; ikinci router yok. Eklenti değişmedi.
+
+**Doğrulama/dağıtım:** [Kaynak b99dc933](https://github.com/muhammetdkaya/codela-storefront/commit/b99dc933629b0d0fcdc03a2e184ce55612623393), [CI ve deploy 40166938154](https://github.com/muhammetdkaya/codela-storefront/actions/runs/40166938154) başarılı. PHP/JS ve 24 paket testi, mevcut commerce regresyonları, Chromium/WebKit 320/390/800/1280/1440px tek sütun/sidebar kontrolleri geçti. Native gecikmeli HTTP testinde mobil/masaüstü header yanıt öncesinde güncellenir; üst hedef adları ve Escape geri yüklemesi doğrulandı. WebKit 390px boş pano görseli incelendi. codela.dev dağıtımı başarılı; AZ Seramik kurulmuş sayılmaz. Fiziksel cihaz/girişli canlı TTFB ölçümü yapılmadı.
+
+**Yayın:** 0.1.162 kararlı yayın talebi bu test edilmiş kaynak için hazırlanmıştır; sonuç bekleniyor. Sonraki adım release ve stable manifest doğrulaması, ardından hedef mağazada Codela → Tema → Şimdi kontrol et → Şimdi güncelle.
 
 ## Son doğrulanmış devam noktası — 25 Ekim 2026: 0.1.161 hesap düzeni kararlı yayında
 
