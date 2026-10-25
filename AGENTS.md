@@ -1,6 +1,6 @@
 # Codela Storefront — güncel çalışma kuralları
 
-## Son doğrulanmış devam noktası — 25 Ekim 2026: 0.1.161 hesap düzeni, dağıtıldı; kararlı yayın hazırlanıyor
+## Son doğrulanmış devam noktası — 25 Ekim 2026: 0.1.161 hesap düzeni kararlı yayında
 
 Tema **0.1.160 → 0.1.161**; eklenti ve Codela 1.2.3 gereksinimi değişmedi. Eklentinin pano sipariş kartı yaklaşımı ortak sf-ui-card/Button ile temaya uyarlandı. Mobil native endpoint listesi iki sütunlu kompakt hub, masaüstü tek sidebar olarak kalır; indirme/tercih ikonları semantiktir. Son sipariş müşteriyle sınırlandırılmış tek Woo sorgusudur; hook/modül hedefleri/logout nonce korunur. Gereksiz karşılama eklenmedi.
 
@@ -12,7 +12,9 @@ Hesapta native tam belge GET tamamlanana kadar görsel tepki olmaması kodda do�
 
 **Kaynak/canlı:** Test edilmiş kaynak [af07f213](https://github.com/muhammetdkaya/codela-storefront/commit/af07f213372d5bbd8366e389ea6ab2ce62d9df2a). Gerçek deploy günlüğü 25 Ekim 2026 **08:34:17 TSİ**: `Storefront deployed; checks passed.` codela.dev kaynak/sağlık kontrolü geçti. AZ Seramik kurulumu yapılmış sayılmaz. CI hesap görselleri deterministik sipariş ve inline SVG fixture'ıdır; gerçek mağaza medya/ikon sunumu için birebir görsel kabul yerine geçmez.
 
-**Yayın/kalan:** .releases/storefront.json bu doğrulanmış kaynak için 0.1.161 isteğine taşınıyor; kararlı Release/manifest henüz doğrulanmadı. Sıradaki iş yayın koşusunun sonucunu ve stable manifest source/sürüm/hash eşleşmesini doğrulamak; ardından hedef mağazada panelden güncelleme ve gerçek girişli hesapta mobil/masaüstü kabulü. Canlı TTFB, tam WP/Woo entegrasyon matrisi ve fiziksel cihaz kabulü bu çalışmada yapılmış değildir.
+**Kararlı yayın:** [Talep 76c79d0b](https://github.com/muhammetdkaya/codela-storefront/commit/76c79d0b87f2bb628c9e8c239060652b156094a4), [yayın 40166139566](https://github.com/muhammetdkaya/codela-storefront/actions/runs/40166139566) başarılı. [v0.1.161](https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.161) public, draft/prerelease değil. ZIP 163197 bayt, SHA256 `8925b53b14320e465bdc8307edfc4658b557bfbf82f2feccafcad4ecf0569d9b`; asset digest ve stable manifest eşleşti. Tag/manifest kaynağı doğrulanmış `af07f213372d5bbd8366e389ea6ab2ce62d9df2a`. Güncelleme kanalı 0.1.161 sunar.
+
+**Kalan/sıradaki:** İstenen kod, codela.dev dağıtımı ve kararlı tema yayını tamamlandı. Hedef mağazada **Codela → Tema → Şimdi kontrol et → Şimdi güncelle**; ardından girişli hesap panosu, sipariş→detay→geri ve adres formu→geri akışını mobil/masaüstü doğrula. AZ Seramik otomatik güncellendi sayılmaz. Canlı girişli sunucu TTFB, tam WP/Woo entegrasyon matrisi ve fiziksel cihaz kabulü bu çalışmada yapılmadı; gecikme devam ederse ağ/TTFB ölçümü sonraki somut adımdır.
 
 ## Son doğrulanmış devam noktası — 24 Ekim 2026: 0.1.160 mobil medya düzeltmesi
 
