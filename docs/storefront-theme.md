@@ -1,5 +1,9 @@
 # Codela Storefront — güncel teknik durum
 
+## 25 Ekim 2026 — 0.1.163 sabit hesap içerik iskeleti (CI bekliyor)
+
+0.1.162 → 0.1.163: Kullanıcı geri bildirimiyle hesap içi sağa/sola geçiş kaldırıldı. Native account→account geçişi skipTransition kullanır; diğer sayfa geçişleri değişmez. Görünür Yükleniyor yazısı yerine örnekteki gibi üç soluk yuvarlak ve kısa/uzun satırdan oluşan sabit skeleton var. Ekran okuyucu durum metni, aria-busy, anlık header/dock, Escape/timeout/BFCache geri yüklemesi korunur. Eklenti değişmedi. Yerel ve CI doğrulaması/yayın bekliyor; sıradaki adım test ve kararlı 0.1.163 yayını. Canlı girişli TTFB veya fiziksel cihaz ölçülmedi.
+
 ## 25 Ekim 2026 — 0.1.162 tek liste ve anlık geri düğmesi kararlı yayında
 
 0.1.161 → 0.1.162: Hesap bağlantıları eski tek sütunlu listeye döndü; sipariş kartı korunur. Header sol üst kontrolü tıklamada hedefin üst sayfa adı/adresiyle senkron hazırlanır; yerel SVG inline olduğu için ikon isteğini de beklemez. Sipariş detayı → Siparişler, adres formu → Adresler, diğer endpointler → Hesabım. Escape/timeout/pageshow eski düğümleri geri getirir. Native belge, form ve geçmiş akışı korunur; ikinci router yok. Eklenti değişmedi.

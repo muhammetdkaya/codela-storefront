@@ -6,7 +6,7 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Hesap menüsü önceki tek sütunlu liste düzenine döndü.",
-    "Sol üst geri kontrolü hesap geçişlerinde sunucu yanıtını beklemeden güncellenir."
+    "Hesabım içindeki sağa-sola geçiş kaldırıldı.",
+    "Yükleniyor yazısı yerine sabit, soluk içerik iskeleti gösterilir; header ve alt menü anında hazır kalır."
   ]
 }

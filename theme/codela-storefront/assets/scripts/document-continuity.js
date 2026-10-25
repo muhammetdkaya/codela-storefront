@@ -71,11 +71,19 @@
         placeholder.className = 'sf-account-loading';
         placeholder.setAttribute('role', 'status');
         const label = document.createElement('span');
+        label.className = 'sf-account-loading-status';
         label.textContent = config.loading || 'Loading…';
         placeholder.append(label);
         for (let i = 0; i < 3; i++) {
             const row = document.createElement('div');
+            row.className = 'sf-account-loading-row';
             row.setAttribute('aria-hidden', 'true');
+            for (const part of ['media', 'lines']) {
+                const shape = document.createElement('div');
+                shape.className = 'sf-account-loading-' + part;
+                if (part === 'lines') shape.append(document.createElement('i'), document.createElement('i'));
+                row.append(shape);
+            }
             placeholder.append(row);
         }
         main.append(placeholder);
@@ -104,17 +112,11 @@
     function applyTransition(transition, activation) {
         if (!transition || !activation?.from?.url || !activation.entry?.url) return;
         if (submitting) { transition.skipTransition(); return; }
-        if (!window.matchMedia('(max-width:800px)').matches) return;
-        const from = accountDepth(activation.from.url), to = accountDepth(activation.entry.url);
-        if (from < 0 || to < 0 || activation.from.url === activation.entry.url) return;
-        let direction = to < from ? 'back' : 'forward';
-        if (activation.navigationType === 'traverse') {
-            direction = activation.entry.index < activation.from.index ? 'back' : 'forward';
+        // Account feedback is already visible in the outgoing document.
+        // Replace it in place; never slide or crossfade a late loading snapshot.
+        if (accountDepth(activation.from.url) >= 0 && accountDepth(activation.entry.url) >= 0) {
+            transition.skipTransition();
         }
-        document.documentElement.dataset.sfAccountTransition = direction;
-        transition.finished.finally(() => {
-            delete document.documentElement.dataset.sfAccountTransition;
-        }).catch(() => {});
     }
     function updateBackLink(event) {
         const link = document.querySelector('[data-sf-context-back]');

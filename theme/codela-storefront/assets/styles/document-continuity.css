@@ -34,28 +34,16 @@
   }
 }
 
-/* Account hierarchy uses native full-document transitions. Header/dock retain
-   their existing named layers; only main content moves horizontally. */
-@media (max-width:800px) and (prefers-reduced-motion:no-preference) {
-  html[data-sf-account-transition] #sf-content{view-transition-name:sf-account-content}
-  html[data-sf-account-transition]::view-transition-group(sf-account-content){animation-duration:240ms;overflow:clip}
-  html[data-sf-account-transition]::view-transition-old(sf-account-content),
-  html[data-sf-account-transition]::view-transition-new(sf-account-content){animation-duration:240ms;animation-timing-function:cubic-bezier(.2,.8,.2,1);animation-fill-mode:both;mix-blend-mode:normal}
-  html[data-sf-account-transition="forward"]::view-transition-old(sf-account-content){animation-name:sf-account-out-left}
-  html[data-sf-account-transition="forward"]::view-transition-new(sf-account-content){animation-name:sf-account-in-right}
-  html[data-sf-account-transition="back"]::view-transition-old(sf-account-content){animation-name:sf-account-out-right}
-  html[data-sf-account-transition="back"]::view-transition-new(sf-account-content){animation-name:sf-account-in-left}
-  @keyframes sf-account-out-left{to{transform:translateX(-25%);opacity:0}}
-  @keyframes sf-account-in-right{from{transform:translateX(100%);opacity:0}}
-  @keyframes sf-account-out-right{to{transform:translateX(100%);opacity:0}}
-  @keyframes sf-account-in-left{from{transform:translateX(-25%);opacity:0}}
-}
-
-
 /* The existing document paints feedback immediately while its native GET runs.
    Chrome/dock stay outside main and remain available throughout the wait. */
 #sf-content[data-sf-account-pending]{position:relative;min-height:360px}
 #sf-content[data-sf-account-pending] > :not(.sf-account-loading){visibility:hidden}
-.sf-account-loading{position:absolute;inset:30px clamp(20px,5vw,48px) auto;display:grid;gap:18px;max-width:1080px;margin-inline:auto;color:var(--sf-muted);font:inherit;font-size:14px}
-.sf-account-loading > div{height:72px;border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface-muted)}
-.sf-account-loading > div:last-child{width:65%}
+/* Static content silhouettes: no moving loading text or shimmer. */
+.sf-account-loading{position:absolute;inset:30px clamp(20px,5vw,48px) auto;display:grid;gap:32px;max-width:1080px;margin-inline:auto}
+.sf-account-loading-status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+.sf-account-loading-row{display:flex;align-items:center;gap:20px;min-width:0}
+.sf-account-loading-media{width:56px;height:56px;flex:none;border-radius:50%;background:var(--sf-ui-surface-muted,#eee)}
+.sf-account-loading-lines{display:grid;gap:12px;width:65%;max-width:560px;min-width:0}
+.sf-account-loading-lines i{display:block;height:12px;border-radius:999px;background:var(--sf-ui-surface-muted,#eee)}
+.sf-account-loading-lines i:last-child{width:75%}
+@media(min-width:801px){.sf-account-loading{gap:40px}.sf-account-loading-media{width:64px;height:64px}}

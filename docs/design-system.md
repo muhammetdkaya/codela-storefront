@@ -1,5 +1,7 @@
 # Codela Storefront UI Kit — source of truth
 
+Account navigation (0.1.163): replace content in place without horizontal transitions. Immediate static circle-and-line skeleton follows the shared muted surface token; loading status is screen-reader-only. Header/dock remain visible and the back control updates synchronously.
+
 ## Account hierarchy and immediate document feedback — 0.1.161
 
 Back controls name their parent destination at every width; current endpoint titles belong in main content. Order details return to Orders and address forms to Addresses. Information-page history labels and URLs update together only for a known previous title, otherwise retain the truthful Home fallback. The account hub uses one shared surface for the recent-order/empty card, single-column mobile destinations, and one desktop sidebar. Keep native hooks, query ownership and shared Button paint.
