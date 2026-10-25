@@ -6,9 +6,9 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mobil ürün görseli seçimi, yükleme ve galeri kaydı WordPress medya düzenleyicisiyle düzeltildi.",
-    "Mobil galerinin tüm görselleri ve sırası kaydedilir; yeniden açıldığında kayıtlı görseller yüklenir.",
-    "Sonradan yüklenen ürün düzenleme alanlarında seçim ve kaldırma düğmeleri çalışır.",
-    "Mobil görsellerin kayıt sonrası 900px ve altında seçilmesi ve masaüstü kaynaklarına dönüş doğrulandı."
+    "Hesabım panosu, eklentinin sipariş kartı yaklaşımı ve temanın ortak bileşenleriyle mobil/masaüstüne uyarlandı.",
+    "Geri düğmesi mevcut ekran yerine döneceği üst sayfanın adını gösterir; sipariş ve adres alt adımları doğru hedefe döner.",
+    "Hesap bağlantılarında yüklenme tepkisi anında görünür; içerik beklenirken header ve alt menü görünür kalır.",
+    "Native WooCommerce formları, modül bağlantıları ve sipariş yetkileri korunur."
   ]
 }

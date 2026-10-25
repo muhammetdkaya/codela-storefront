@@ -69,7 +69,7 @@ add_filter( 'body_class', function ( array $classes ): array {
 
 /** Shared local icon vocabulary; unknown plugin destinations remain real links. */
 function codela_sf_account_icon( string $endpoint ): string {
-    $icons = [ 'dashboard' => 'house', 'orders' => 'shopping-bag', 'edit-address' => 'map-pin', 'edit-account' => 'user-round', 'customer-logout' => 'log-out' ];
+    $icons = [ 'dashboard' => 'house', 'orders' => 'shopping-bag', 'downloads' => 'download', 'communication-preferences' => 'sliders-horizontal', 'privacy' => 'sliders-horizontal', 'edit-address' => 'map-pin', 'edit-account' => 'user-round', 'customer-logout' => 'log-out' ];
     return codela_sf_icon( $icons[ $endpoint ] ?? 'arrow-right' );
 }
 

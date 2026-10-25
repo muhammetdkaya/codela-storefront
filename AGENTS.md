@@ -2,7 +2,7 @@
 
 ## Son doğrulanmış devam noktası — 25 Ekim 2026: 0.1.161 hesap düzeni (doğrulama sürüyor)
 
-Tema **0.1.160 → 0.1.161**; eklenti ve Codela 1.2.3 gereksinimi değişmedi. Eklentinin pano sipariş kartı yaklaşımı ortak sf-ui-surface/Button ile temaya uyarlandı; mobil native endpoint listesi iki sütunlu kompakt hub, masaüstü tek sidebar olarak kalır. Son sipariş müşteriyle sınırlandırılmış tek Woo sorgusudur; hooks/modül hedefleri/logout nonce korunur. Gereksiz karşılama eklenmedi.
+Tema **0.1.160 → 0.1.161**; eklenti ve Codela 1.2.3 gereksinimi değişmedi. Eklentinin pano sipariş kartı yaklaşımı ortak sf-ui-card/Button ile temaya uyarlandı; mobil native endpoint listesi iki sütunlu kompakt hub, masaüstü tek sidebar olarak kalır. Son sipariş müşteriyle sınırlandırılmış tek Woo sorgusudur; hooks/modül hedefleri/logout nonce korunur. Gereksiz karşılama eklenmedi.
 
 Header geri kontrolü mevcut ekranı değil üst hedefi adlandırır: endpoint → Hesabım; sipariş detayı → Siparişler; adres formu → Adresler. Geçerli endpoint başlığı içerikte yer alır. Bilgi sayfalarında bilinen site içi önceki sayfanın adı/adresi birlikte kullanılır; bilinmeyen referrer için doğru Ana Sayfa fallback korunur. Her iki breakpoint aynı PHP sözleşmesini kullanır.
 

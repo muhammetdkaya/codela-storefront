@@ -9,9 +9,9 @@ $order = $orders[0] ?? null;
 ?>
 <div class="sf-account-overview">
     <?php if ( isset( $menu['orders'] ) ) : ?>
-    <section class="sf-account-card sf-ui-surface sf-account-order" aria-label="<?php esc_attr_e( 'Latest order', 'codela-storefront' ); ?>">
+    <section class="sf-account-card sf-ui-card sf-account-order" aria-label="<?php esc_attr_e( 'Latest order', 'codela-storefront' ); ?>">
         <header class="sf-account-card-heading">
-            <h2 id="sf-recent-order"><?php esc_html_e( 'Latest order', 'codela-storefront' ); ?></h2>
+            <h2 id="sf-recent-order"><?php echo $order ? esc_html__( 'Latest order', 'codela-storefront' ) : esc_html__( 'Orders', 'woocommerce' ); ?></h2>
             <a href="<?php echo esc_url( wc_get_account_endpoint_url( 'orders' ) ); ?>"><?php esc_html_e( 'All orders', 'codela-storefront' ); ?><?php echo codela_sf_icon( 'arrow-right' ); ?></a>
         </header>
         <?php if ( $order ) : ?>
