@@ -3,8 +3,34 @@
     const config = window.codelaSFDocument || {};
     let submitting = false;
     let pendingTimer = 0;
+    let savedBrand = null;
+    function previewAccountHeader(url) {
+        const brand = document.querySelector('.sf-header .sf-brand');
+        if (!brand || !config.accountLabel) return;
+        savedBrand = { brand, nodes: [...brand.childNodes] };
+        const root = new URL(config.account, location.href);
+        const isRoot = url.pathname.replace(/\/$/, '') === root.pathname.replace(/\/$/, '') && url.search === root.search;
+        let parent = { back: config.account, label: config.accountLabel };
+        for (const candidate of config.accountParents || []) {
+            const target = new URL(candidate.url, location.href);
+            const path = target.pathname.replace(/\/$/, '');
+            const key = [...target.searchParams.keys()].find(k => !root.searchParams.has(k));
+            const matches = key ? url.searchParams.has(key) && (!candidate.childOnly || !!url.searchParams.get(key)) :
+                (url.pathname.replace(/\/$/, '') === path && !candidate.childOnly) || url.pathname.startsWith(path + '/') && (!candidate.childOnly || url.pathname.slice(path.length + 1).replace(/\/$/, '') !== '');
+            if (matches) { parent = candidate; break; }
+        }
+        const label = document.createElement('span');
+        label.textContent = isRoot ? config.accountLabel : parent.label;
+        if (isRoot) { label.className = 'sf-context-label'; brand.replaceChildren(label); return; }
+        const link = document.createElement('a');
+        link.className = 'sf-ui-pressable'; link.href = parent.back;
+        link.dataset.sfAccountBack = ''; link.setAttribute('aria-label', parent.label);
+        const icon = document.createElement('template'); icon.innerHTML = config.backIcon || '';
+        link.append(icon.content.cloneNode(true), label); brand.replaceChildren(link);
+    }
     function clearPending() {
         window.clearTimeout(pendingTimer);
+        if (savedBrand) { savedBrand.brand.replaceChildren(...savedBrand.nodes); savedBrand = null; }
         document.querySelector('.sf-account-loading')?.remove();
         const main = document.querySelector('#sf-content[data-sf-account-pending]');
         if (main) {
@@ -34,6 +60,7 @@
         const main = document.querySelector('#sf-content');
         if (!main || !document.body.matches('.woocommerce-account.logged-in')) return;
         clearPending();
+        previewAccountHeader(url);
         main.dataset.sfAccountPending = '';
         main.setAttribute('aria-busy', 'true');
         // Existing content remains in the DOM for BFCache/cancel restoration.

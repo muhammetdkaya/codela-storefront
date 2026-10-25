@@ -2,7 +2,7 @@
 
 ## Account hierarchy and immediate document feedback — 0.1.161
 
-Back controls name their parent destination at every width; current endpoint titles belong in main content. Order details return to Orders and address forms to Addresses. Information-page history labels and URLs update together only for a known previous title, otherwise retain the truthful Home fallback. The account hub uses one shared surface for the recent-order/empty card, compact two-column mobile destinations, and one desktop sidebar. Keep native hooks, query ownership and shared Button paint.
+Back controls name their parent destination at every width; current endpoint titles belong in main content. Order details return to Orders and address forms to Addresses. Information-page history labels and URLs update together only for a known previous title, otherwise retain the truthful Home fallback. The account hub uses one shared surface for the recent-order/empty card, single-column mobile destinations, and one desktop sidebar. Keep native hooks, query ownership and shared Button paint.
 
 Native account GET links paint a main-only skeleton immediately; header/dock remain visible. No extra router/fetch/cache or form interception. Hidden old content is inert until pageshow, Escape or timeout restores it. This improves feedback while waiting and does not claim lower server response time. Supersedes the previous borderless single-column mobile hub presentation.
 

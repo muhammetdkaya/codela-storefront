@@ -23,10 +23,8 @@ const render=env=>execFileSync(process.env.PHP_BIN||'php',['tests/render-account
      assert(await nav.locator('a[href="/account/privacy/"]').isVisible(),'Independent plugin destination retained');
      assert(!await nav.locator('a[aria-current="page"]').isVisible(),'Hub does not repeat its own destination');
      assert.equal(await nav.locator('summary').count(),0,'No redundant disclosure');
-     const links=nav.locator('li:not(.woocommerce-MyAccount-navigation-link--dashboard):not(.woocommerce-MyAccount-navigation-link--customer-logout) a');
-     const first=await links.nth(0).boundingBox(),second=await links.nth(1).boundingBox();
-     assert(Math.abs(first.y-second.y)<1 && second.x>first.x,'Mobile dashboard uses two balanced columns');
-     assert(first.height>=44,'Account tiles retain touch targets');
+     const rows=await nav.locator('li:visible').evaluateAll(els=>els.map(e=>{const r=e.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,bottom:r.bottom}}));
+     for(let i=1;i<rows.length;i++){assert(Math.abs(rows[i].x-rows[0].x)<1,'Mobile destinations share one column');assert(rows[i].y>=rows[i-1].bottom-1,'Mobile destinations stack vertically');assert(Math.abs(rows[i].width-rows[0].width)<1,'Mobile rows retain full width');}
      await nav.locator('a[href="/account/orders/"]').focus();
      assert(await nav.locator('a[href="/account/orders/"]').evaluate(e=>e===document.activeElement),'Hub keyboard access');
     }else{

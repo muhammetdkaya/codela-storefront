@@ -135,6 +135,13 @@ add_action( 'wp_enqueue_scripts', function() {
         wp_add_inline_script( 'codela-storefront-document-continuity', 'window.codelaSFDocument=' . wp_json_encode( [
             'account' => wc_get_page_permalink( 'myaccount' ),
             'loading' => __( 'Loading…', 'codela-storefront' ),
+            'accountLabel' => __( 'My account', 'codela-storefront' ),
+            // Trusted bundled SVG is available before the navigation response or icon request.
+            'backIcon' => str_replace( [ '<svg', 'class="lucide' ], [ '<svg aria-hidden="true"', 'class="sf-icon lucide' ], file_get_contents( __DIR__ . '/assets/icons/arrow-left.svg' ) ),
+            'accountParents' => [
+                [ 'url' => wc_get_account_endpoint_url( 'view-order' ), 'back' => wc_get_account_endpoint_url( 'orders' ), 'label' => wc_get_account_menu_items()['orders'] ?? __( 'My account', 'codela-storefront' ) ],
+                [ 'url' => wc_get_account_endpoint_url( 'edit-address' ), 'back' => wc_get_account_endpoint_url( 'edit-address' ), 'label' => wc_get_account_menu_items()['edit-address'] ?? __( 'My account', 'codela-storefront' ), 'childOnly' => true ],
+            ],
             'excluded' => [ wc_get_cart_url(), wc_get_checkout_url(), wc_get_account_endpoint_url( 'customer-logout' ) ],
         ] ) . ';', 'before' );
     }

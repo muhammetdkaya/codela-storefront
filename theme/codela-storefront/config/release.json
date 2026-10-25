@@ -6,9 +6,7 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Hesabım panosu, eklentinin sipariş kartı yaklaşımı ve temanın ortak bileşenleriyle mobil/masaüstüne uyarlandı.",
-    "Geri düğmesi mevcut ekran yerine döneceği üst sayfanın adını gösterir; sipariş ve adres alt adımları doğru hedefe döner.",
-    "Hesap bağlantılarında yüklenme tepkisi anında görünür; içerik beklenirken header ve alt menü görünür kalır.",
-    "Native WooCommerce formları, modül bağlantıları ve sipariş yetkileri korunur."
+    "Hesap menüsü önceki tek sütunlu liste düzenine döndü.",
+    "Sol üst geri kontrolü hesap geçişlerinde sunucu yanıtını beklemeden güncellenir."
   ]
 }

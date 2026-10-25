@@ -226,11 +226,6 @@ body.woocommerce-account .woocommerce .sf-account-card h2{margin:0;font-size:18p
  body.woocommerce-account.logged-in.sf-account-dashboard .woocommerce:has(> .woocommerce-notices-wrapper:not(:empty)) > .woocommerce-MyAccount-navigation{grid-row:3}
  body.woocommerce-account.logged-in.sf-account-dashboard .woocommerce-MyAccount-navigation{grid-row:2}
  body.woocommerce-account.logged-in.sf-account-dashboard .woocommerce-MyAccount-navigation-link--dashboard{display:none}
- body.woocommerce-account.logged-in.sf-account-dashboard .sf-account-menu ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 20px}
- body.woocommerce-account.logged-in.sf-account-dashboard .sf-account-menu li a{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;min-height:76px;font-size:14px;padding:14px 0}
- body.woocommerce-account.logged-in.sf-account-dashboard .sf-account-menu a > .sf-icon:last-child{display:none}
- body.woocommerce-account.logged-in.sf-account-dashboard .woocommerce-MyAccount-navigation-link--customer-logout{grid-column:1/-1;margin-top:8px}
- body.woocommerce-account.logged-in.sf-account-dashboard .sf-account-menu li.woocommerce-MyAccount-navigation-link--customer-logout a{min-height:48px}
 
  body.woocommerce-account.logged-in:not(.sf-account-dashboard) .woocommerce-MyAccount-navigation{display:none}
  .sf-account-card-heading{gap:8px;margin-bottom:12px}

@@ -1,5 +1,9 @@
 # Codela Storefront — güncel teknik durum
 
+## 25 Ekim 2026 — 0.1.162 kullanıcı düzeltmesi (CI bekliyor)
+
+0.1.161 → 0.1.162: Hesap bağlantıları eski tek sütunlu listeye döndü. Sipariş kartı korunur. Header sol üst kontrolü native hesap bağlantısına tıklamada hedefin üst sayfa adı/adresiyle senkron hazırlanır; yanıt beklenmez. Escape/timeout/pageshow eski düğümleri geri getirir. Sunucu native belgeyi ve formları yönetir. Yerel JS/paket kontrolü; CI ve yayın bekliyor. Eklenti değişmedi. Sonraki adım CI ve dağıtımı doğrulayıp 0.1.162 kararlı yayınını tamamlamak.
+
 ## Son doğrulanmış devam noktası — 25 Ekim 2026: 0.1.161 hesap düzeni kararlı yayında
 
 Tema **0.1.160 → 0.1.161**; eklenti ve Codela 1.2.3 gereksinimi değişmedi. Eklentinin pano sipariş kartı yaklaşımı ortak sf-ui-card/Button ile temaya uyarlandı. Mobil native endpoint listesi iki sütunlu kompakt hub, masaüstü tek sidebar olarak kalır; indirme/tercih ikonları semantiktir. Son sipariş müşteriyle sınırlandırılmış tek Woo sorgusudur; hook/modül hedefleri/logout nonce korunur. Gereksiz karşılama eklenmedi.
