@@ -134,6 +134,7 @@ add_action( 'wp_enqueue_scripts', function() {
         wp_enqueue_script( 'codela-storefront-document-continuity', $root_uri . 'scripts/document-continuity.js', [], codela_sf_script_module_version( 'scripts/document-continuity.js' ), false );
         wp_add_inline_script( 'codela-storefront-document-continuity', 'window.codelaSFDocument=' . wp_json_encode( [
             'account' => wc_get_page_permalink( 'myaccount' ),
+            'loading' => __( 'Loading…', 'codela-storefront' ),
             'excluded' => [ wc_get_cart_url(), wc_get_checkout_url(), wc_get_account_endpoint_url( 'customer-logout' ) ],
         ] ) . ';', 'before' );
     }
@@ -205,3 +206,4 @@ add_action( 'admin_menu', static function() {
 add_filter( 'codela_store_appearance_surface_mode', static function( $mode, $surface ) {
     return 'account' === $surface ? 'theme' : $mode;
 }, 10, 2 );
+

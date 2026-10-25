@@ -1,5 +1,17 @@
 # Codela Storefront — güncel teknik durum
 
+## Son doğrulanmış devam noktası — 25 Ekim 2026: 0.1.161 hesap düzeni (doğrulama sürüyor)
+
+Tema **0.1.160 → 0.1.161**; eklenti ve Codela 1.2.3 gereksinimi değişmedi. Eklentinin pano sipariş kartı yaklaşımı ortak sf-ui-surface/Button ile temaya uyarlandı; mobil native endpoint listesi iki sütunlu kompakt hub, masaüstü tek sidebar olarak kalır. Son sipariş müşteriyle sınırlandırılmış tek Woo sorgusudur; hooks/modül hedefleri/logout nonce korunur. Gereksiz karşılama eklenmedi.
+
+Header geri kontrolü mevcut ekranı değil üst hedefi adlandırır: endpoint → Hesabım; sipariş detayı → Siparişler; adres formu → Adresler. Geçerli endpoint başlığı içerikte yer alır. Bilgi sayfalarında bilinen site içi önceki sayfanın adı/adresi birlikte kullanılır; bilinmeyen referrer için doğru Ana Sayfa fallback korunur. Her iki breakpoint aynı PHP sözleşmesini kullanır.
+
+Hesapta native tam belge GET tamamlanana kadar görsel tepki olmaması kodda doğrulandı. Mevcut document-continuity gözlemcisi güvenli hesap bağlantısına tıklamada hemen main skeleton/aria-busy gösterir; eski içerik inert, header/dock görünür kalır. Yeni router/fetch/cache/history/POST interception yok. Escape, pageshow/BFCache ve 10 saniye timeout eski belgeyi yeniden kullanılabilir kılar. Bu sunucu TTFB ölçümü veya sunucu hızlanması iddiası değildir; canlı girişli profil ölçümü henüz yapılmadı.
+
+**Yerel doğrulama:** JS sözdizimi; cart-race/cart-sync; 24 paket testi başarılı (FTP çıktıları mock). Bu ortamda PHP ve tarayıcı yürütücüsü bulunmadığı için PHP/browser kabulü CI bekliyor. Testler parent label/URL, 320–1440px pano, iki sütun ve gerçek gecikmeli HTTP gezinmesinde hemen skeleton/kalıcı chrome/BFCache için genişletildi.
+
+**Yayın/kalan:** Kaynak commit ve CI/dağıtım sonucu henüz bekliyor; kararlı manifest/Release değiştirilmedi. Sıradaki iş CI PHP/browser sonuçlarını doğrulamak, varsa hatayı düzeltmek ve gerçek dağıtım durumunu kaydetmek. AZ Seramik güncellemesi, fiziksel cihaz ve canlı girişli TTFB kabulü yapılmış değildir.
+
 ## Son doğrulanmış devam noktası — 24 Ekim 2026: 0.1.160 mobil medya düzeltmesi
 
 Tema **0.1.159 → 0.1.160**; Codela eklentisi ve 1.2.3 gereksinimi değişmedi. Mobil galeri kaydı artık GalleryEdit içindeki seçili kutucuğu değil `update` olayının tam sıralı attachment koleksiyonunu kullanır. Kayıtlı galeriler native `wp.media.gallery.edit` ile metadata yüklenerek açılır; boş galeri doğrudan oluşturma/yükleme akışıyla başlar. Mobil ana görsel yeniden açıldığında mevcut seçim yüklenir. Düğme olayları belgeye devredildiği için sonradan eklenen meta kutuları da çalışır; native `media-editor` bağımlılığı açıkça yüklenir.
@@ -967,5 +979,6 @@ Bu Header/katalog kodu, yayın ve otomatik kabul işi tamamlandı. Aynı yayın�
 - [15 Ekim uygulama aşamaları](releases/2026-10-15-implementation-notes.md), [14 Ekim teknik geçmiş](storefront-theme-history-2026-10-14.md).
 - [0.1.84 gerçek kabulü](acceptance/2026-10-14.md); F1–F7 bulgularının önceki kapanışı ve tarihli mimari raporlar bu kanıtlara göre değerlendirilir.
 - Yeni sürümde eklenti deposundaki gerçek entegrasyon workflow paket/hash/source pin'ini güncelle. Dondurulmuş eklenti içi0.1.1 temayı değiştirme.
+
 
 

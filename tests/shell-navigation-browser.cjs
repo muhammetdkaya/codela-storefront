@@ -13,12 +13,12 @@ const main=(type='home')=>'<main id="sf-content" class="sf-content" data-wp-rout
  const browser=await chromium.launch();
  try{
   const page=await browser.newPage();
-  const html = '<!doctype html><html><head><style>'+css+'</style></head><body>'+
-   '<header id="persistent-header"><a data-sf-context-back href="https://store.test/">Back</a></header><div class="sf-shell has-mobile-dock">'+
+  const html = '<!doctype html><html><head><title>Home</title><style>'+css+'</style></head><body>'+
+   '<header id="persistent-header"><a data-sf-context-back href="https://store.test/"><span>Home</span></a></header><div class="sf-shell has-mobile-dock">'+
    '<a id="to-content" data-sf-route="content" href="https://store.test/about/">About</a>'+
    '<a id="to-checkout" href="https://store.test/checkout/">Checkout</a>'+
    '<nav class="sf-mobile-dock has-selection"><a class="sf-dock-item" data-dock-view="home" aria-current="page" data-sf-route="home" href="https://store.test/">Home</a></nav></div>'+
-   main()+'<script>window.__routeState={url:"https://store.test/",};window.__watchers=[];window.store=()=>({state:window.__routeState});window.watch=fn=>{window.__watchers.push(fn);fn()};window.__duration=350;window.__routeCalls=0;window.__routeNavigate=(url)=>new Promise(resolve=>{window.__routeCalls++;window.__watchers.forEach(fn=>fn());setTimeout(()=>{document.querySelector("#sf-content").outerHTML='+JSON.stringify(main('page'))+';history.pushState({},"",new URL(url).pathname);window.__routeState.url=url;window.__watchers.forEach(fn=>fn());resolve()},window.__duration)});</script></body></html>';
+   main()+'<script>window.__routeState={url:"https://store.test/",};window.__watchers=[];window.store=()=>({state:window.__routeState});window.watch=fn=>{window.__watchers.push(fn);fn()};window.__duration=350;window.__routeCalls=0;window.__routeNavigate=(url)=>new Promise(resolve=>{window.__routeCalls++;window.__watchers.forEach(fn=>fn());setTimeout(()=>{document.querySelector("#sf-content").outerHTML='+JSON.stringify(main('page'))+';history.pushState({},"",new URL(url).pathname);document.title=new URL(url).pathname==="/about/"?"About":"Home";window.__routeState.url=url;window.__watchers.forEach(fn=>fn());resolve()},window.__duration)});</script></body></html>';
   await page.route('https://store.test/**',route=>route.fulfill({status:200,contentType:'text/html',body:html}));
   await page.goto('https://store.test/');
   await page.addScriptTag({content:documentScript});
@@ -35,6 +35,7 @@ const main=(type='home')=>'<main id="sf-content" class="sf-content" data-wp-rout
   assert.equal(await page.locator('main').getAttribute('tabindex'),'-1','New main focusable');
   assert.equal(await page.locator('main').evaluate(el=>document.activeElement===el),true,'Focus moves to new content');
   assert.equal(await page.locator('[data-sf-context-back]').getAttribute('href'),'https://store.test/','First route knows the previous home address');
+  assert.equal(await page.locator('[data-sf-context-back] span').innerText(),'Home','Back label names previous home page');
   // Subsequent fast cached route does not flash skeleton.
   await page.evaluate(()=>{window.__duration=30});
   await page.locator('.sf-dock-item').click();
@@ -42,6 +43,7 @@ const main=(type='home')=>'<main id="sf-content" class="sf-content" data-wp-rout
   assert.equal(await page.locator('.sf-route-skeleton').count(),0,'Quick navigation never displays placeholder');
   assert.equal(await page.locator('.sf-dock-item').getAttribute('aria-current'),'page','Home active again');
   assert.equal(await page.locator('[data-sf-context-back]').getAttribute('href'),'https://store.test/about/','Subsequent same-document route retains the real previous address');
+  assert.equal(await page.locator('[data-sf-context-back] span').innerText(),'About','Back label and URL both name the previous page');
   // A history URL update does not force scroll/focus as an explicit click does.
   await page.evaluate(()=>{
     window.__historyScrollCalls=0;
@@ -62,3 +64,4 @@ const main=(type='home')=>'<main id="sf-content" class="sf-content" data-wp-rout
   console.log('Shell navigation: persistent header/dock, slow skeleton, fast no-flash, focus and native fallback passed.');
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exit(1)});
+

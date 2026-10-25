@@ -19,16 +19,24 @@ function codela_sf_header_context(): array {
     if ( $account && is_user_logged_in() ) {
         $endpoint = function_exists( 'WC' ) && WC()->query ? WC()->query->get_current_endpoint() : '';
         $label = __( 'My account', 'codela-storefront' );
+        $back = $endpoint ? wc_get_page_permalink( 'myaccount' ) : '';
         if ( $endpoint ) {
             $items = wc_get_account_menu_items();
-            $label = $items[ $endpoint ] ?? WC()->query->get_endpoint_title( $endpoint );
+            // A back control names its destination, on desktop as on mobile.
+            if ( 'view-order' === $endpoint && isset( $items['orders'] ) ) {
+                $label = $items['orders'];
+                $back = wc_get_account_endpoint_url( 'orders' );
+            } elseif ( 'edit-address' === $endpoint && function_exists( 'get_query_var' ) && get_query_var( 'edit-address' ) ) {
+                $label = $items['edit-address'] ?? $label;
+                $back = wc_get_account_endpoint_url( 'edit-address' );
+            }
         }
-        return [ 'title' => $label, 'back' => $endpoint ? wc_get_page_permalink( 'myaccount' ) : '', 'history' => false ];
+        return [ 'title' => $label, 'back' => $back, 'history' => false ];
     }
     if ( function_exists( 'is_page' ) && is_page() && ! is_front_page() && ! $account
         && ! is_checkout() && ! ( function_exists( 'is_cart' ) && is_cart() )
         && ! ( function_exists( 'is_shop' ) && is_shop() ) ) {
-        return [ 'title' => get_the_title( get_queried_object_id() ), 'back' => home_url( '/' ), 'history' => true ];
+        return [ 'title' => __( 'Home', 'codela-storefront' ), 'back' => home_url( '/' ), 'history' => true ];
     }
     return [];
 }
@@ -91,7 +99,7 @@ function codela_sf_header(): string {
             </nav>
             <div class="sf-brand sf-ui-surface<?php echo $context ? ' sf-context-brand' : ''; ?>" data-wp-router-region="codela/storefront/brand">
                 <?php if ( $context ) : ?>
-                    <?php if ( $context['back'] ) : ?><a class="sf-ui-pressable" href="<?php echo esc_url( $context['back'] ); ?>" <?php echo $context['history'] ? 'data-sf-context-back' : 'data-sf-account-back'; ?> aria-label="<?php echo esc_attr( __( 'Back', 'codela-storefront' ) . ': ' . $context['title'] ); ?>"><?php echo codela_sf_icon( 'arrow-left' ); ?><span><?php echo esc_html( $context['title'] ); ?></span></a>
+                    <?php if ( $context['back'] ) : ?><a class="sf-ui-pressable" href="<?php echo esc_url( $context['back'] ); ?>" <?php echo $context['history'] ? 'data-sf-context-back' : 'data-sf-account-back'; ?> aria-label="<?php echo esc_attr( __( 'Back', 'codela-storefront' ) . ': ' . $context['title'] ); ?>"><?php echo codela_sf_icon( 'arrow-left' ); ?><span data-sf-page-title="<?php echo esc_attr( get_the_title( get_queried_object_id() ) ); ?>"><?php echo esc_html( $context['title'] ); ?></span></a>
                     <?php else : ?><span class="sf-context-label"><?php echo esc_html( $context['title'] ); ?></span><?php endif; ?>
                 <?php elseif ( has_custom_logo() ) : the_custom_logo(); else : ?><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></a><?php endif; ?>
             </div>
@@ -203,4 +211,5 @@ function codela_sf_footer(): string {
 
     return $html . '</div></footer>';
 }
+
 

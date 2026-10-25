@@ -84,3 +84,7 @@ function WC(){return (object)['query'=>new class {
  function get_current_endpoint(){return getenv('FIXTURE_ENDPOINT') ?: '';}
  function get_endpoint_title($endpoint){return 'Sipariş detayları';}
 }];}
+
+
+function wc_get_account_endpoint_url($endpoint){return home_url('/myaccount/'.$endpoint.'/');}
+function get_query_var($name){return $name==='edit-address'?(getenv('FIXTURE_ADDRESS')?:''):'';}

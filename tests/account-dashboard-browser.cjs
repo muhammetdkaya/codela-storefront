@@ -23,6 +23,10 @@ const render=env=>execFileSync(process.env.PHP_BIN||'php',['tests/render-account
      assert(await nav.locator('a[href="/account/privacy/"]').isVisible(),'Independent plugin destination retained');
      assert(!await nav.locator('a[aria-current="page"]').isVisible(),'Hub does not repeat its own destination');
      assert.equal(await nav.locator('summary').count(),0,'No redundant disclosure');
+     const links=nav.locator('li:not(.woocommerce-MyAccount-navigation-link--dashboard):not(.woocommerce-MyAccount-navigation-link--customer-logout) a');
+     const first=await links.nth(0).boundingBox(),second=await links.nth(1).boundingBox();
+     assert(Math.abs(first.y-second.y)<1 && second.x>first.x,'Mobile dashboard uses two balanced columns');
+     assert(first.height>=44,'Account tiles retain touch targets');
      await nav.locator('a[href="/account/orders/"]').focus();
      assert(await nav.locator('a[href="/account/orders/"]').evaluate(e=>e===document.activeElement),'Hub keyboard access');
     }else{
@@ -65,3 +69,4 @@ const render=env=>execFileSync(process.env.PHP_BIN||'php',['tests/render-account
   }finally{await browser.close();}
  }
 })().catch(e=>{console.error(e);process.exit(1)});
+

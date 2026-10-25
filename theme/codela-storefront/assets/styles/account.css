@@ -171,7 +171,7 @@ body.woocommerce-account:not(.codela-my-account-layout) .woocommerce :is(a,butto
 }
 
 /* Native account hub: one list, native endpoints, shared theme typography. */
-body.woocommerce-account:not(.codela-my-account-layout) .woocommerce:has(> .woocommerce-MyAccount-navigation){display:grid;grid-template-columns:235px minmax(0,1fr);gap:48px;align-items:start}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce:has(> .woocommerce-MyAccount-navigation){display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;align-items:start}
 body.woocommerce-account .woocommerce > .woocommerce-notices-wrapper{grid-column:1/-1;grid-row:1}
 body.woocommerce-account .woocommerce > .woocommerce-notices-wrapper:empty{display:none}
 body.woocommerce-account .woocommerce:has(> .woocommerce-notices-wrapper:not(:empty)) > :is(.woocommerce-MyAccount-navigation,.woocommerce-MyAccount-content){grid-row:2}
@@ -190,7 +190,7 @@ body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerc
 body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-content table{width:100%;border-color:var(--sf-ui-border)}
 body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-content form:is(.woocommerce-form,.woocommerce-EditAccountForm,.woocommerce-address-fields){border:0;padding:0;box-shadow:none;max-width:none}
 .sf-account-overview{display:grid;gap:24px}
-.sf-account-card{padding:0;min-width:0}
+.sf-account-card{padding:clamp(20px,3vw,32px);min-width:0;border-radius:var(--sf-ui-control-radius)}
 .sf-account-card-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
 body.woocommerce-account .woocommerce .sf-account-card h2{margin:0;font-size:18px;line-height:1.35;font-weight:500}
 .sf-account-card-heading a{display:flex;align-items:center;gap:8px;font-size:12px;min-height:44px;text-decoration:none}
@@ -208,13 +208,13 @@ body.woocommerce-account .woocommerce .sf-account-card h2{margin:0;font-size:18p
 .sf-account-order-total{display:flex;justify-content:space-between;align-items:start;gap:16px;padding:18px 0}
 .sf-account-order-total strong{text-align:end}
 .sf-account-order-action{display:flex;justify-content:flex-end}
-.sf-account-empty-state{display:flex;align-items:flex-start;gap:18px;padding:12px 0 28px}
+.sf-account-empty-state{display:flex;align-items:flex-start;gap:18px;padding:20px 0 0}
 .sf-account-empty-state > .sf-icon{margin-top:4px}
 .sf-account-empty-state > div{min-width:0}
 .sf-account-empty-state p{margin:0 0 8px}
 .sf-account-empty-state .sf-account-empty{font-size:16px;color:var(--sf-ui-ink)}
 .sf-account-empty-state .sf-account-muted{font-size:13px}
-.sf-account-empty-state .sf-ui-button{margin-top:10px;--sf-ui-control-radius:var(--sf-ui-pill)}
+.sf-account-empty-state .sf-ui-button{margin-top:16px}
 
 @media(max-width:800px){
  body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce #customer_login:not(.sf-auth-ready){grid-template-columns:minmax(0,1fr)}
@@ -226,6 +226,12 @@ body.woocommerce-account .woocommerce .sf-account-card h2{margin:0;font-size:18p
  body.woocommerce-account.logged-in.sf-account-dashboard .woocommerce:has(> .woocommerce-notices-wrapper:not(:empty)) > .woocommerce-MyAccount-navigation{grid-row:3}
  body.woocommerce-account.logged-in.sf-account-dashboard .woocommerce-MyAccount-navigation{grid-row:2}
  body.woocommerce-account.logged-in.sf-account-dashboard .woocommerce-MyAccount-navigation-link--dashboard{display:none}
+ body.woocommerce-account.logged-in.sf-account-dashboard .sf-account-menu ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 20px}
+ body.woocommerce-account.logged-in.sf-account-dashboard .sf-account-menu li a{display:grid;grid-template-columns:24px minmax(0,1fr);gap:10px;min-height:76px;font-size:14px;padding:14px 0}
+ body.woocommerce-account.logged-in.sf-account-dashboard .sf-account-menu a > .sf-icon:last-child{display:none}
+ body.woocommerce-account.logged-in.sf-account-dashboard .woocommerce-MyAccount-navigation-link--customer-logout{grid-column:1/-1;margin-top:8px}
+ body.woocommerce-account.logged-in.sf-account-dashboard .sf-account-menu li.woocommerce-MyAccount-navigation-link--customer-logout a{min-height:48px}
+
  body.woocommerce-account.logged-in:not(.sf-account-dashboard) .woocommerce-MyAccount-navigation{display:none}
  .sf-account-card-heading{gap:8px;margin-bottom:12px}
  .sf-account-order-item{gap:14px}
@@ -320,3 +326,6 @@ body.woocommerce-account .codela-prefs{font-family:inherit;--cp-accent:var(--sf-
  body.woocommerce-account .sf-account-menu a > .sf-icon:last-child{display:none}
  body.woocommerce-account .woocommerce .woocommerce-MyAccount-navigation li.is-active a{background:var(--sf-ui-nav-selection);border-radius:var(--sf-ui-control-radius);padding-inline:12px}
 }
+
+
+.sf-account-endpoint-title{margin:0 0 24px;font-size:clamp(22px,3vw,28px);line-height:1.25;font-weight:500;letter-spacing:-.025em}

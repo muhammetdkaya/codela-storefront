@@ -14,10 +14,10 @@ const doc=(path)=>{
  const style=checkout?'':css;
  const links=path==='/'?'<a id="open-category" href="/category/">Category</a>':category?'<a id="open-product" href="/product/">Product</a>':'<a id="back-home" href="/">Home</a>';
  return '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1">'+
-  '<style>'+baseCss+style+'</style><script>window.codelaSFDocument={account:location.origin+"/account/"};'+accountScript+'</script><script>window.addEventListener("pageswap",e=>sessionStorage.setItem("continuity-pageswap",String(Boolean(e.viewTransition))));window.addEventListener("pagereveal",e=>{sessionStorage.setItem("continuity-pagereveal",String(Boolean(e.viewTransition)));sessionStorage.setItem("account-direction",document.documentElement.dataset.sfAccountTransition||"none")});</script></head><body class="'+(product?'single-product':'')+'">'+
+  '<style>'+baseCss+style+'</style><script>window.codelaSFDocument={account:location.origin+"/account/"};'+accountScript+'</script><script>window.addEventListener("pageswap",e=>sessionStorage.setItem("continuity-pageswap",String(Boolean(e.viewTransition))));window.addEventListener("pagereveal",e=>{sessionStorage.setItem("continuity-pagereveal",String(Boolean(e.viewTransition)));sessionStorage.setItem("account-direction",document.documentElement.dataset.sfAccountTransition||"none")});</script></head><body class="'+(product?'single-product':path.startsWith('/account/')?'woocommerce-account logged-in':'')+'">'+
   '<header class="sf-header" id="native-header">Codela</header><div class="sf-shell">'+
   '<nav class="sf-mobile-dock" id="native-dock">Navigation</nav></div>'+
-  '<main id="sf-content"><a id="account-root" href="/account/">Account</a><a id="account-orders" href="/account/orders/">Orders</a><h1>'+path+'</h1>'+links+'<a id="open-checkout" href="/checkout/">Checkout</a>'+
+  '<main id="sf-content"><a id="slow-account" href="/account/orders/?slow=1">Slow orders</a><a id="account-root" href="/account/">Account</a><a id="account-orders" href="/account/orders/">Orders</a><h1>'+path+'</h1>'+links+'<a id="open-checkout" href="/checkout/">Checkout</a>'+
   (product?'<div class="product"><form class="cart" method="post" action="/purchase"><div class="sf-product-purchase"><input name="quantity" value="1"><button type="submit" name="add-to-cart" value="42">Add to cart</button></div></form></div>':'')+
   '</main></body></html>';
 };
@@ -28,6 +28,7 @@ const doc=(path)=>{
    purchases++;let data='';req.on('data',x=>data+=x);req.on('end',()=>{res.writeHead(200,{'Content-Type':'text/html'});res.end('<html><body id="native-post">Received '+data+'</body></html>')});return;
   }
   res.writeHead(200,{'Content-Type':'text/html','Cache-Control':'no-store'});
+  if(req.url.includes('slow=1')) { setTimeout(()=>res.end(doc(req.url.split('?')[0])),900); return; }
   res.end(doc(req.url.split('?')[0]));
  });
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
@@ -65,9 +66,28 @@ const doc=(path)=>{
   await page.goBack();
   await page.waitForFunction(()=>sessionStorage.getItem('account-direction')==='back');
   assert(page.url().endsWith('/account/orders/'),'History traversal still browser-owned');
+  // A delayed native HTML request must show immediate main-only feedback.
+  await page.goto(origin+'/account/');
+  await page.evaluate(()=>document.querySelector('#slow-account').click());
+  await page.waitForSelector('#sf-content[data-sf-account-pending]',{timeout:300});
+  assert(await page.locator('.sf-account-loading').isVisible(),'Skeleton appears before delayed response');
+  assert(await page.locator('#native-header').isVisible(),'Header remains visible during slow GET');
+  assert(await page.locator('#native-dock').isVisible(),'Dock remains visible during slow GET');
+  assert.equal(await page.locator('#sf-content').getAttribute('aria-busy'),'true');
+  assert.equal(await page.locator('#account-root').evaluate(el=>el.inert || el.closest('[inert]')!==null),true,'Hidden old actions cannot receive keyboard focus');
+  await page.waitForURL('**/account/orders/?slow=1');
+  await page.waitForLoadState('load');
+  assert.equal(await page.locator('.sf-account-loading').count(),0,'Fresh native document clears feedback');
+  await page.goBack();
+  assert.equal(await page.locator('[data-sf-account-pending]').count(),0,'History/BFCache restores usable content');
   await context.close();
   const desktop=await browser.newContext({viewport:{width:1280,height:900}});
   const d=await desktop.newPage();await d.goto(origin+'/account/');await d.locator('#account-orders').click();
+  await d.evaluate(()=>document.querySelector('#slow-account').click());
+  await d.waitForSelector('#sf-content[data-sf-account-pending]',{timeout:300});
+  assert(await d.locator('#native-header').isVisible(),'Desktop header visible during slow GET');
+  await d.waitForURL('**/account/orders/?slow=1');
+  await d.waitForLoadState('load');
   assert.equal(await d.evaluate(()=>sessionStorage.getItem('account-direction')),'none','Desktop account navigation never slides');
   assert.equal(await d.locator('#sf-content').evaluate(e=>getComputedStyle(e).viewTransitionName),'none','Desktop content has no horizontal transition layer');
   await desktop.close();
@@ -85,3 +105,4 @@ const doc=(path)=>{
   await new Promise(resolve=>server.close(resolve));
  }
 })().catch(e=>{console.error(e);process.exitCode=1});
+

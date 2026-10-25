@@ -1,5 +1,11 @@
 # Codela Storefront UI Kit — source of truth
 
+## Account hierarchy and immediate document feedback — 0.1.161
+
+Back controls name their parent destination at every width; current endpoint titles belong in main content. Order details return to Orders and address forms to Addresses. Information-page history labels and URLs update together only for a known previous title, otherwise retain the truthful Home fallback. The account hub uses one shared surface for the recent-order/empty card, compact two-column mobile destinations, and one desktop sidebar. Keep native hooks, query ownership and shared Button paint.
+
+Native account GET links paint a main-only skeleton immediately; header/dock remain visible. No extra router/fetch/cache or form interception. Hidden old content is inert until pageshow, Escape or timeout restores it. This improves feedback while waiting and does not claim lower server response time. Supersedes the previous borderless single-column mobile hub presentation.
+
 ## Centered desktop menu capsule — 0.1.158
 
 At 1100px and above, the assigned primary menu capsule is only as wide as its links and existing inline padding. Center it on the viewport using equal side tracks that reserve space for the left brand and right tools. Constrain long menus to the available middle track and keep native horizontal scrolling, keyboard reachability and browser popovers. Expanded inline search uses its existing wide grid. Shared UI Kit paint, 44px height and mobile navigation remain unchanged.
@@ -738,5 +744,6 @@ Floating controls retain one shared tint and transparent perimeter. Use one diff
 ## Product enlargement ownership (0.1.77)
 
 The product image link opens native Woo PhotoSwipe directly. Disable inline zoom on the product document with the native zoom-enabled filter at priority 100: ClassicTemplate forces it on at priority 10, and its touch click handler intercepts the lightbox link. Other contexts keep their own setting. This supersedes the 0.1.65 note about retaining product inline zoom. Native slider, variation updates and fullscreen zoom remain owned by Woo; do not add a second gallery engine.
+
 
 

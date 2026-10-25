@@ -9,11 +9,11 @@ $order = $orders[0] ?? null;
 ?>
 <div class="sf-account-overview">
     <?php if ( isset( $menu['orders'] ) ) : ?>
-    <section class="sf-account-card sf-account-order" aria-label="<?php esc_attr_e( 'Latest order', 'codela-storefront' ); ?>">
-        <?php if ( $order ) : ?><header class="sf-account-card-heading">
+    <section class="sf-account-card sf-ui-surface sf-account-order" aria-label="<?php esc_attr_e( 'Latest order', 'codela-storefront' ); ?>">
+        <header class="sf-account-card-heading">
             <h2 id="sf-recent-order"><?php esc_html_e( 'Latest order', 'codela-storefront' ); ?></h2>
             <a href="<?php echo esc_url( wc_get_account_endpoint_url( 'orders' ) ); ?>"><?php esc_html_e( 'All orders', 'codela-storefront' ); ?><?php echo codela_sf_icon( 'arrow-right' ); ?></a>
-        </header><?php endif; ?>
+        </header>
         <?php if ( $order ) : ?>
         <div class="sf-account-order-meta">
             <span>#<?php echo esc_html( $order->get_order_number() ); ?><?php if ( $order->get_date_created() ) : ?> <span class="sf-account-muted">· <?php echo esc_html( wc_format_datetime( $order->get_date_created() ) ); ?></span><?php endif; ?></span>
@@ -44,3 +44,4 @@ $order = $orders[0] ?? null;
 do_action( 'woocommerce_account_dashboard' );
 do_action( 'woocommerce_before_my_account' );
 do_action( 'woocommerce_after_my_account' );
+

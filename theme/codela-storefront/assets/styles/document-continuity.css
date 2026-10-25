@@ -50,3 +50,12 @@
   @keyframes sf-account-out-right{to{transform:translateX(100%);opacity:0}}
   @keyframes sf-account-in-left{from{transform:translateX(-25%);opacity:0}}
 }
+
+
+/* The existing document paints feedback immediately while its native GET runs.
+   Chrome/dock stay outside main and remain available throughout the wait. */
+#sf-content[data-sf-account-pending]{position:relative;min-height:360px}
+#sf-content[data-sf-account-pending] > :not(.sf-account-loading){visibility:hidden}
+.sf-account-loading{position:absolute;inset:30px clamp(20px,5vw,48px) auto;display:grid;gap:18px;max-width:1080px;margin-inline:auto;color:var(--sf-muted);font:inherit;font-size:14px}
+.sf-account-loading > div{height:72px;border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface-muted)}
+.sf-account-loading > div:last-child{width:65%}

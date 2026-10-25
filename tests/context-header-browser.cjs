@@ -12,9 +12,11 @@ const css=['storefront.css','styles/tokens.css','styles/overlay.css','styles/nav
    await page.route('https://store.test/theme/assets/icons/**',route=>{const name=new URL(route.request().url()).pathname.split('/').pop();return route.fulfill({contentType:'image/svg+xml',body:fs.readFileSync(root+'icons/'+name)});});
    for(const [name,env,title,back] of [
     ['hub',{FIXTURE_ACCOUNT:'1'},'My account',null],
-    ['orders',{FIXTURE_ACCOUNT:'1',FIXTURE_ENDPOINT:'orders'},'Siparişlerim','https://store.test/myaccount/'],
-    ['page',{FIXTURE_PAGE:'1'},'Hakkımızda','https://store.test/'],
-    ['long',{FIXTURE_PAGE:'1',FIXTURE_PAGE_TITLE:'Çok uzun bir sayfa başlığının dar ekranda görünümü'},'Çok uzun', 'https://store.test/'],
+    ['orders',{FIXTURE_ACCOUNT:'1',FIXTURE_ENDPOINT:'orders'},'My account','https://store.test/myaccount/'],
+    ['detail',{FIXTURE_ACCOUNT:'1',FIXTURE_ENDPOINT:'view-order'},'Siparişlerim','https://store.test/myaccount/orders/'],
+    ['address',{FIXTURE_ACCOUNT:'1',FIXTURE_ENDPOINT:'edit-address',FIXTURE_ADDRESS:'billing'},'Adreslerim','https://store.test/myaccount/edit-address/'],
+    ['page',{FIXTURE_PAGE:'1'},'Home','https://store.test/'],
+    ['long',{FIXTURE_PAGE:'1',FIXTURE_PAGE_TITLE:'Çok uzun bir sayfa başlığının dar ekranda görünümü'},'Home', 'https://store.test/'],
     ['home',{},'CODELA','https://store.test/'],
    ]){
     const html=execFileSync('php',['tests/render-header.php'],{encoding:'utf8',env:{...process.env,...env}});
@@ -34,3 +36,4 @@ const css=['storefront.css','styles/tokens.css','styles/overlay.css','styles/nav
  }finally{await browser.close();}
  console.log('Context header: native destinations, 44px shared capsule, long labels and mobile menu clearance passed.');
 })().catch(e=>{console.error(e);process.exit(1)});
+

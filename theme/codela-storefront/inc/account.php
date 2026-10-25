@@ -72,3 +72,14 @@ function codela_sf_account_icon( string $endpoint ): string {
     $icons = [ 'dashboard' => 'house', 'orders' => 'shopping-bag', 'edit-address' => 'map-pin', 'edit-account' => 'user-round', 'customer-logout' => 'log-out' ];
     return codela_sf_icon( $icons[ $endpoint ] ?? 'arrow-right' );
 }
+
+
+/** Current endpoint is a content heading; the header names its parent. */
+add_action( 'woocommerce_account_content', function (): void {
+    if ( ! is_user_logged_in() || ! function_exists( 'WC' ) || ! WC()->query ) { return; }
+    $endpoint = WC()->query->get_current_endpoint();
+    if ( ! $endpoint ) { return; }
+    $items = wc_get_account_menu_items();
+    $title = $items[ $endpoint ] ?? WC()->query->get_endpoint_title( $endpoint );
+    if ( $title ) { echo '<h1 class="sf-account-endpoint-title">' . esc_html( $title ) . '</h1>'; }
+}, 5 );
