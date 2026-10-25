@@ -1,8 +1,12 @@
 # Codela Storefront — güncel teknik durum
 
-## 25 Ekim 2026 — 0.1.163 sabit hesap içerik iskeleti (CI bekliyor)
+## 25 Ekim 2026 — 0.1.163 sabit hesap içerik iskeleti (dağıtıldı, kararlı yayın bekleniyor)
 
-0.1.162 → 0.1.163: Kullanıcı geri bildirimiyle hesap içi sağa/sola geçiş kaldırıldı. Native account→account geçişi skipTransition kullanır; diğer sayfa geçişleri değişmez. Görünür Yükleniyor yazısı yerine örnekteki gibi üç soluk yuvarlak ve kısa/uzun satırdan oluşan sabit skeleton var. Ekran okuyucu durum metni, aria-busy, anlık header/dock, Escape/timeout/BFCache geri yüklemesi korunur. Eklenti değişmedi. Yerel ve CI doğrulaması/yayın bekliyor; sıradaki adım test ve kararlı 0.1.163 yayını. Canlı girişli TTFB veya fiziksel cihaz ölçülmedi.
+0.1.162 → 0.1.163: Kullanıcı geri bildirimiyle hesap içi sağa/sola geçiş kaldırıldı. Native account→account geçişi skipTransition kullanır; yön dataset/keyframe kodu çıkarıldı, diğer sayfa geçişleri değişmez. Görünür Yükleniyor yazısı yerine örnekteki gibi üç soluk yuvarlak ve kısa/uzun satırdan oluşan sabit skeleton var. Ekran okuyucu durum metni, aria-busy, anlık header/dock, Escape/timeout/BFCache geri yüklemesi korunur. Eklenti değişmedi.
+
+**Doğrulama/dağıtım:** [Kaynak b34a82a3](https://github.com/muhammetdkaya/codela-storefront/commit/b34a82a3cc08577b920002116a96f659d1f9dea8), [CI ve deploy 40168662953](https://github.com/muhammetdkaya/codela-storefront/actions/runs/40168662953) başarılı. PHP/JS, 24 paket testi, mevcut commerce regresyonları, Chromium/WebKit hesap/header kontrolleri geçti. Native gecikmeli HTTP testi üç skeleton satırı/dokuz şekil, ekran okuyucuya özel durum metni, görünür header/dock, yatay transform/katman yokluğu ve geri dönüşü doğruladı. Testte skeleton screenshot üretildi fakat artifact glob'una dahil olmadığı için görsel dosya ayrıca incelenmedi. codela.dev dağıtımı 09:29:18 TSİ tamamlandı. Fiziksel cihaz, AZ Seramik kurulumu ve girişli canlı TTFB ölçümü yapılmış sayılmaz.
+
+**Yayın:** Test edilmiş kaynak için 0.1.163 kararlı yayın talebi hazırlanmıştır; sonuç bekleniyor. Sonraki adım release/stable manifest doğrulaması, ardından hedef mağazada güncelleme ve hesap geçişi kabulü.
 
 ## 25 Ekim 2026 — 0.1.162 tek liste ve anlık geri düğmesi kararlı yayında
 
