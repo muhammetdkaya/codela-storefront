@@ -1,5 +1,13 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 26 Ekim 2026 — 0.1.165 GitHub ana dalına eklendi
+
+Kullanıcının açık talebiyle PR #76 ana dala birleştirildi: https://github.com/muhammetdkaya/codela-storefront/commit/5ea0d1618e8e3562ab7e074b0d157ccf25baf1da . Tema sürümü 0.1.164 → 0.1.165; eklenti değişmedi. Anlık native/core-router skeleton değişiklikleri ana dalda. Skeleton tarayıcı testleri, PHP/build ve paket kontrolleri geçti; genel test paketinin ilk koşusundaki bağımsız WebKit mobil galeri zaman aşımı ve yeniden koşu kabulü aşağıda açık olarak kayıtlıdır. Tüm testler geçti veya sunucu hızlandı denmez.
+
+Dağıtım tercihi: Bu görev yalnız GitHub kaynak/sürüm güncellemesidir. AZ Seramik kullanıcı tarafından manuel güncellenir. Merge [skip ci] ile yapıldı; yeni FTP dağıtımı başlatılmadı. GitHub Release/tag ve stable güncelleme manifesti bu görevde yayımlanmadı; 0.1.165 kaynak sürümü ile kararlı indirme kanalı aynı şey değildir.
+
+Sıradaki kontrol: CI 40329604002 attempt 2 sonucunu oku; genel kabul ve fiziksel cihaz kontrolü kalan işlerdir. Ana dala birleştirme tamamlandı, tekrar yapılmasın.
+
 ## 26 Ekim 2026 — 0.1.165 anlık gezinme skeleton adayı
 
 Tema 0.1.164 → 0.1.165; eklenti değişmedi. Mevcut native belge gözlemcisi, yalnız hesap yerine normal mağaza/kategori/ürün/bilgi sayfası bağlantılarında tıklama görevi içinde sabit skeleton oluşturur. Viewport yerleşimi eski sayfanın scroll konumundan bağımsızdır; mevcut header/dock korunur, menü mevcut overlay controller üzerinden kapanır. Hesap üst hedef etiketi ve Escape/timeout/pageshow geri yükleme korunur. İşlem/nonceli URL, popup, dosya, dış bağlantı ve core-router sahipliği dışlanır. Ürünün mevcut satın alma alanı görünür fakat eski içerik inert kalır.
