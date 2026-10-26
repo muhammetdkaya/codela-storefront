@@ -1,26 +1,23 @@
 /* Only the router-owned main region changes; header, dialog and dock stay mounted.
-   The 160ms JS delay prevents placeholder flashes on cache-hot transitions. */
+   Feedback is synchronous; ready content never waits for a minimum duration. */
 #sf-content.sf-route-loading{
   position:relative;
   min-height:clamp(420px,72svh,820px);
-  isolation:isolate;
 }
 #sf-content.sf-route-loading > :not(.sf-route-skeleton){visibility:hidden}
 #sf-content > .sf-route-skeleton{
-  position:absolute;
+  position:fixed;
   inset:0;
-  z-index:1;
-  min-height:100%;
+  z-index:900;
   box-sizing:border-box;
-  padding:clamp(22px,5vw,52px) max(20px,5vw);
+  padding:calc(100px + var(--sf-header-offset,0px)) max(20px,5vw) 110px;
   background:var(--sf-ui-page);
   pointer-events:none;
 }
 .sf-route-skeleton :is(.sf-route-hero,.sf-route-line,.sf-route-cards>div,.sf-route-heading,.sf-route-entry i,.sf-route-entry span){
   display:block;
-  background:#eeeeee;
+  background:var(--sf-ui-surface-muted,#eee);
   border-radius:12px;
-  animation:sf-route-pulse 1.5s ease-in-out infinite;
 }
 .sf-route-skeleton .sf-route-heading{width:min(62%,430px);height:28px;margin:6px 0 38px}
 .sf-route-skeleton .sf-route-entry{display:flex;align-items:center;gap:22px;max-width:730px;margin:0 0 28px}
@@ -32,7 +29,7 @@
 .sf-route-skeleton .sf-route-line{width:min(50%,300px);height:22px;margin:0 0 22px}
 .sf-route-skeleton .sf-route-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
 .sf-route-skeleton .sf-route-cards>div{height:clamp(120px,18vw,200px)}
-@keyframes sf-route-pulse{0%,100%{opacity:.78}50%{opacity:1}}
+body:has(.sf-route-loading) .sf-shell > .sf-mobile-dock .sf-dock-surface{transform:none;transition:none}
 @media(max-width:700px){
   .sf-route-skeleton .sf-route-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
   .sf-route-skeleton .sf-route-entry{gap:16px}

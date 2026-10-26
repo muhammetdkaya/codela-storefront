@@ -1,5 +1,5 @@
 // The real core router is tested post-deploy. This checks controller ownership,
-// delay, navigation guards and the visual placeholder in an isolated browser.
+// immediate feedback, navigation guards and the visual placeholder in an isolated browser.
 const {chromium}=require('playwright');
 const fs=require('node:fs');
 const assert=require('node:assert/strict');
@@ -24,23 +24,23 @@ const main=(type='home')=>'<main id="sf-content" class="sf-content" data-wp-rout
   await page.addScriptTag({content:documentScript});
   await page.addScriptTag({content:script});
   await page.locator('#persistent-header').evaluate(el=>{el.dataset.original='yes'});
-  await page.locator('#to-content').click();
-  await page.waitForTimeout(210);
-  assert.equal(await page.locator('.sf-route-skeleton').count(),1,'Skeleton visible after 160ms only in main');
+  const immediate=await page.evaluate(()=>{document.querySelector('#to-content').click();return {count:document.querySelectorAll('.sf-route-skeleton').length,busy:document.querySelector('main').getAttribute('aria-busy'),native:document.querySelectorAll('.sf-document-loading').length};});
+  assert.deepEqual(immediate,{count:1,busy:'true',native:0},'Exactly one skeleton is present in the click task');
+  assert.equal(await page.locator('.sf-route-skeleton').count(),1,'Skeleton visible immediately in main');
   assert.equal(await page.locator('#persistent-header').getAttribute('data-original'),'yes','Header stays in DOM');
   assert.equal(await page.locator('.sf-mobile-dock').count(),1,'One dock retained during navigation');
-  await page.waitForTimeout(250);
+  await page.waitForTimeout(400);
   assert.equal(await page.locator('.sf-route-skeleton').count(),0,'Skeleton removed after new page');
   assert.equal(await page.locator('.sf-dock-item').getAttribute('aria-current'),null,'Home no longer active after page');
   assert.equal(await page.locator('main').getAttribute('tabindex'),'-1','New main focusable');
   assert.equal(await page.locator('main').evaluate(el=>document.activeElement===el),true,'Focus moves to new content');
   assert.equal(await page.locator('[data-sf-context-back]').getAttribute('href'),'https://store.test/','First route knows the previous home address');
   assert.equal(await page.locator('[data-sf-context-back] span').innerText(),'Home','Back label names previous home page');
-  // Subsequent fast cached route does not flash skeleton.
+  // Cached responses replace feedback immediately without a minimum dwell time.
   await page.evaluate(()=>{window.__duration=30});
   await page.locator('.sf-dock-item').click();
   await page.waitForTimeout(70);
-  assert.equal(await page.locator('.sf-route-skeleton').count(),0,'Quick navigation never displays placeholder');
+  assert.equal(await page.locator('.sf-route-skeleton').count(),0,'Quick navigation removes placeholder without a minimum delay');
   assert.equal(await page.locator('.sf-dock-item').getAttribute('aria-current'),'page','Home active again');
   assert.equal(await page.locator('[data-sf-context-back]').getAttribute('href'),'https://store.test/about/','Subsequent same-document route retains the real previous address');
   assert.equal(await page.locator('[data-sf-context-back] span').innerText(),'About','Back label and URL both name the previous page');
@@ -61,7 +61,7 @@ const main=(type='home')=>'<main id="sf-content" class="sf-content" data-wp-rout
   await page.waitForTimeout(50);
   assert.equal(await page.evaluate(()=>window.__routeCalls||0),before,'Modified navigation not hijacked');
   assert.equal(await page.locator('#to-checkout').getAttribute('data-sf-route'),null,'Checkout left to browser');
-  console.log('Shell navigation: persistent header/dock, slow skeleton, fast no-flash, focus and native fallback passed.');
+  console.log('Shell navigation: persistent header/dock, immediate skeleton, ready-content replacement, focus and native fallback passed.');
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exit(1)});
 

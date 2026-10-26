@@ -36,14 +36,21 @@
 
 /* The existing document paints feedback immediately while its native GET runs.
    Chrome/dock stay outside main and remain available throughout the wait. */
-#sf-content[data-sf-account-pending]{position:relative;min-height:360px}
-#sf-content[data-sf-account-pending] > :not(.sf-account-loading){visibility:hidden}
+#sf-content[data-sf-document-pending]{position:relative;min-height:360px}
+#sf-content[data-sf-document-pending] > :not(.sf-document-loading){visibility:hidden}
 /* Static content silhouettes: no moving loading text or shimmer. */
-.sf-account-loading{position:absolute;inset:30px clamp(20px,5vw,48px) auto;display:grid;gap:32px;max-width:1080px;margin-inline:auto}
-.sf-account-loading-status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
-.sf-account-loading-row{display:flex;align-items:center;gap:20px;min-width:0}
-.sf-account-loading-media{width:56px;height:56px;flex:none;border-radius:50%;background:var(--sf-ui-surface-muted,#eee)}
-.sf-account-loading-lines{display:grid;gap:12px;width:65%;max-width:560px;min-width:0}
-.sf-account-loading-lines i{display:block;height:12px;border-radius:999px;background:var(--sf-ui-surface-muted,#eee)}
-.sf-account-loading-lines i:last-child{width:75%}
-@media(min-width:801px){.sf-account-loading{gap:40px}.sf-account-loading-media{width:64px;height:64px}}
+.sf-document-loading{position:fixed;inset:0;z-index:900;box-sizing:border-box;padding:calc(100px + var(--sf-header-offset,0px)) clamp(20px,5vw,48px) 110px;display:grid;align-content:start;gap:32px;background:var(--sf-ui-page,#fff);pointer-events:none}
+html[data-sf-document-pending] .sf-shell > .sf-mobile-dock .sf-dock-surface{transform:none;transition:none}
+@media(max-width:700px){
+  /* Preserve the existing product bottom surface; inert ancestors keep its
+     old purchase controls unavailable while a new document is requested. */
+  html[data-sf-document-pending] body.single-product .sf-product-sheet{visibility:hidden}
+  html[data-sf-document-pending] body.single-product .sf-product-purchase{visibility:visible}
+}
+.sf-document-loading-status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+.sf-document-loading-row{display:flex;align-items:center;gap:20px;min-width:0}
+.sf-document-loading-media{width:56px;height:56px;flex:none;border-radius:50%;background:var(--sf-ui-surface-muted,#eee)}
+.sf-document-loading-lines{display:grid;gap:12px;width:65%;max-width:560px;min-width:0}
+.sf-document-loading-lines i{display:block;height:12px;border-radius:999px;background:var(--sf-ui-surface-muted,#eee)}
+.sf-document-loading-lines i:last-child{width:75%}
+@media(min-width:801px){.sf-document-loading{gap:40px}.sf-document-loading-media{width:64px;height:64px}}

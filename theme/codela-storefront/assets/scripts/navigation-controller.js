@@ -5,8 +5,6 @@
 import { store, watch } from '@wordpress/interactivity';
 const { state: routerState } = store('core/router');
 const REGION = '#sf-content[data-wp-router-region="codela/storefront/main"]';
-const DELAY_MS = 160;
-let timer = 0;
 let navigationGeneration = 0;
 let desired = 'content';
 let previousUrl = routerState.url || location.href;
@@ -42,10 +40,14 @@ function renderPlaceholder() {
     }
     main.prepend(wrapper);
     main.classList.add('sf-route-loading');
+    main.setAttribute('aria-busy', 'true');
 }
 function clearPlaceholder() {
     document.querySelectorAll('.sf-route-skeleton').forEach(el => el.remove());
-    document.querySelectorAll('.sf-route-loading').forEach(el => el.classList.remove('sf-route-loading'));
+    document.querySelectorAll('.sf-route-loading').forEach(el => {
+        el.classList.remove('sf-route-loading');
+        el.removeAttribute('aria-busy');
+    });
 }
 function applyLocation(from) {
     const main = document.querySelector(REGION);
@@ -70,7 +72,6 @@ function applyLocation(from) {
     window.dispatchEvent(new CustomEvent('codela:route-committed', { detail: { from, to: here.href } }));
 }
 function finishLoading() {
-    window.clearTimeout(timer);
     clearPlaceholder();
 }
 function commitLocation({ focus = false } = {}) {
@@ -112,7 +113,7 @@ document.addEventListener('click', event => {
     const url = link.href;
     const generation = ++navigationGeneration;
     finishLoading();
-    timer = window.setTimeout(renderPlaceholder, DELAY_MS);
+    renderPlaceholder();
     // Dynamic import means the router is paid for only on actual navigation.
     import('@wordpress/interactivity-router').then(({actions}) =>
         actions.navigate(url, { timeout: 7000, loadingAnimation: false })
