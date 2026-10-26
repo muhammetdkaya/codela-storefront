@@ -34,23 +34,42 @@
   }
 }
 
-/* The existing document paints feedback immediately while its native GET runs.
-   Chrome/dock stay outside main and remain available throughout the wait. */
+/* The pending surface belongs to the viewport, never the outgoing product. */
 #sf-content[data-sf-document-pending]{position:relative;min-height:360px}
-#sf-content[data-sf-document-pending] > :not(.sf-document-loading){visibility:hidden}
-/* Static content silhouettes: no moving loading text or shimmer. */
-.sf-document-loading{position:fixed;inset:0;z-index:900;box-sizing:border-box;padding:calc(100px + var(--sf-header-offset,0px)) clamp(20px,5vw,48px) 110px;display:grid;align-content:start;gap:32px;background:var(--sf-ui-page,#fff);pointer-events:none}
-html[data-sf-document-pending] .sf-shell > .sf-mobile-dock .sf-dock-surface{transform:none;transition:none}
-@media(max-width:700px){
-  /* Preserve the existing product bottom surface; inert ancestors keep its
-     old purchase controls unavailable while a new document is requested. */
-  html[data-sf-document-pending] body.single-product .sf-product-sheet{visibility:hidden}
-  html[data-sf-document-pending] body.single-product .sf-product-purchase{visibility:visible}
-}
+html[data-sf-document-pending] #sf-content *{visibility:hidden!important}
+html[data-sf-document-pending] :is(.sf-product-sheet,.sf-product-sheet *,.sf-product-purchase,.sf-product-plugin-footer){visibility:hidden!important}
+.sf-document-loading{position:fixed;inset:0;z-index:990;box-sizing:border-box;padding:calc(100px + var(--sf-header-offset,0px)) clamp(20px,5vw,48px) 110px;background:var(--sf-ui-page,#fff);pointer-events:none;overflow:hidden}
+.sf-document-layout{display:grid;align-content:start;gap:28px}
 .sf-document-loading-status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
 .sf-document-loading-row{display:flex;align-items:center;gap:20px;min-width:0}
-.sf-document-loading-media{width:56px;height:56px;flex:none;border-radius:50%;background:var(--sf-ui-surface-muted,#eee)}
+.sf-document-loading-media{width:56px;height:56px;flex:none;border-radius:50%}
 .sf-document-loading-lines{display:grid;gap:12px;width:65%;max-width:560px;min-width:0}
-.sf-document-loading-lines i{display:block;height:12px;border-radius:999px;background:var(--sf-ui-surface-muted,#eee)}
+.sf-document-loading-lines i{display:block;height:12px;border-radius:999px}
 .sf-document-loading-lines i:last-child{width:75%}
-@media(min-width:801px){.sf-document-loading{gap:40px}.sf-document-loading-media{width:64px;height:64px}}
+.sf-document-shape{border-radius:12px}
+.sf-document-loading :is(.sf-document-shape,.sf-document-loading-media,.sf-document-loading-lines i){background:var(--sf-ui-skeleton,#dfe1e5)}
+.sf-document-heading{width:58%;height:28px;max-width:420px}
+.sf-document-text{width:100%;height:120px;max-width:760px}
+.sf-document-hero{height:40svh;max-height:430px}
+.sf-document-filters{height:40px;width:70%}
+.sf-document-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+.sf-document-card{height:clamp(120px,22vw,280px);margin-bottom:18px}
+.sf-document-product-layout{display:grid;grid-template-columns:1.3fr 1fr;gap:40px}
+.sf-document-product-layout>div:last-child{display:grid;align-content:start;gap:28px}
+.sf-document-gallery{height:65svh}
+.sf-document-purchase{display:none}
+html[data-sf-document-pending] .sf-shell > .sf-mobile-dock .sf-dock-surface{transform:none;transition:none}
+@media(max-width:700px){
+  html[data-sf-document-pending]:not([data-sf-document-target="product"]) .sf-shell > .sf-mobile-dock{display:block!important}
+  html[data-sf-document-target="product"] .sf-shell > .sf-mobile-dock{display:none!important}
+  .sf-document-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+  .sf-document-product-layout{display:block}
+  .sf-document-product-layout>div:last-child{display:none}
+  .sf-document-gallery{height:calc(100svh - 240px)}
+  .sf-document-purchase{display:flex;align-items:center;gap:16px;position:fixed;inset-inline:var(--sf-ui-bottom-bar-inset,16px);bottom:calc(var(--sf-ui-bottom-bar-gap,12px) + env(safe-area-inset-bottom,0px));max-width:var(--sf-ui-bottom-bar-max-width,600px);margin:auto;min-height:var(--sf-ui-bottom-bar-height,64px);padding:16px;box-sizing:border-box;view-transition-name:sf-persistent-bottom}
+  .sf-document-purchase .sf-document-loading-lines{flex:1}
+  .sf-document-quantity{width:60px;height:40px}
+  .sf-document-button{width:100px;height:40px}
+}
+@media(forced-colors:active){.sf-document-loading :is(.sf-document-shape,.sf-document-loading-media,.sf-document-loading-lines i){border:1px solid CanvasText}}
+@media(prefers-reduced-motion:reduce){.sf-document-purchase{view-transition-name:none}}

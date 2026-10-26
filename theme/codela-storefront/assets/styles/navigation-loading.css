@@ -16,7 +16,7 @@
 }
 .sf-route-skeleton :is(.sf-route-hero,.sf-route-line,.sf-route-cards>div,.sf-route-heading,.sf-route-entry i,.sf-route-entry span){
   display:block;
-  background:var(--sf-ui-surface-muted,#eee);
+  background:var(--sf-ui-skeleton,#dfe1e5);
   border-radius:12px;
 }
 .sf-route-skeleton .sf-route-heading{width:min(62%,430px);height:28px;margin:6px 0 38px}
@@ -41,3 +41,5 @@ body:has(.sf-route-loading) .sf-shell > .sf-mobile-dock .sf-dock-surface{transfo
 @media(forced-colors:active){
   .sf-route-skeleton :is(.sf-route-hero,.sf-route-line,.sf-route-cards>div,.sf-route-heading,.sf-route-entry i,.sf-route-entry span){border:1px solid CanvasText}
 }
+
+.sf-route-skeleton .sf-route-text{height:120px;max-width:760px;border-radius:12px;background:var(--sf-ui-skeleton,#dfe1e5);margin-bottom:28px}

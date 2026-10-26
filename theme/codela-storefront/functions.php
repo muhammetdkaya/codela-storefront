@@ -133,6 +133,11 @@ add_action( 'wp_enqueue_scripts', function() {
         // Head script registers pagereveal before the first rendering opportunity.
         wp_enqueue_script( 'codela-storefront-document-continuity', $root_uri . 'scripts/document-continuity.js', [], codela_sf_script_module_version( 'scripts/document-continuity.js' ), false );
         wp_add_inline_script( 'codela-storefront-document-continuity', 'window.codelaSFDocument=' . wp_json_encode( [
+            'home' => home_url( '/' ),
+            'shop' => wc_get_page_permalink( 'shop' ),
+            // Use the store's configured permalink bases, including translated slugs.
+            'productBase' => home_url( '/' . trim( explode( '%', wc_get_permalink_structure()['product_rewrite_slug'] )[0], '/' ) . '/' ),
+            'catalogBases' => [ home_url( '/' . wc_get_permalink_structure()['category_rewrite_slug'] . '/' ), home_url( '/' . wc_get_permalink_structure()['tag_rewrite_slug'] . '/' ) ],
             'account' => wc_get_page_permalink( 'myaccount' ),
             'loading' => __( 'Loading…', 'codela-storefront' ),
             'accountLabel' => __( 'My account', 'codela-storefront' ),

@@ -36,7 +36,7 @@ function renderPlaceholder() {
             '<div></div>'.repeat(4) + '</div>';
     } else {
         wrapper.innerHTML = '<div class="sf-route-heading"></div>' +
-            '<div class="sf-route-entry"><i></i><div><span></span><span></span></div></div>'.repeat(3);
+            '<div class="sf-route-text"></div>'.repeat(2);
     }
     main.prepend(wrapper);
     main.classList.add('sf-route-loading');

@@ -14,7 +14,7 @@ const doc=(path)=>{
  const style=checkout?'':css;
  const links=path==='/'?'<a id="open-category" href="/category/">Category</a>':category?'<a id="open-product" href="/product/">Product</a>':'<a id="back-home" href="/">Home</a>';
  return '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1">'+
-  '<style>'+baseCss+style+'</style><script>window.codelaSFDocument={account:location.origin+"/account/",accountLabel:"My account",excluded:["/checkout/","/cart/","/account/customer-logout/"],backIcon:"<svg></svg>",accountParents:[{url:"/account/view-order/",back:"/account/orders/",label:"Orders"},{url:"/account/edit-address/",back:"/account/edit-address/",label:"Addresses",childOnly:true}]};'+accountScript+'</script><script>window.addEventListener("pageswap",e=>sessionStorage.setItem("continuity-pageswap",String(Boolean(e.viewTransition))));window.addEventListener("pagereveal",e=>{sessionStorage.setItem("continuity-pagereveal",String(Boolean(e.viewTransition)));sessionStorage.setItem("account-direction",document.documentElement.dataset.sfAccountTransition||"none")});</script></head><body class="'+(product?'single-product':path.startsWith('/account/')?'woocommerce-account logged-in':'')+'">'+
+  '<style>'+baseCss+style+'</style><script>window.codelaSFDocument={home:location.origin+"/",shop:location.origin+"/category/",productBase:location.origin+"/product/",catalogBases:[location.origin+"/category/"],account:location.origin+"/account/",accountLabel:"My account",excluded:["/checkout/","/cart/","/account/customer-logout/"],backIcon:"<svg></svg>",accountParents:[{url:"/account/view-order/",back:"/account/orders/",label:"Orders"},{url:"/account/edit-address/",back:"/account/edit-address/",label:"Addresses",childOnly:true}]};'+accountScript+'</script><script>window.addEventListener("pageswap",e=>sessionStorage.setItem("continuity-pageswap",String(Boolean(e.viewTransition))));window.addEventListener("pagereveal",e=>{sessionStorage.setItem("continuity-pagereveal",String(Boolean(e.viewTransition)));sessionStorage.setItem("account-direction",document.documentElement.dataset.sfAccountTransition||"none")});</script></head><body class="'+(product?'single-product':path.startsWith('/account/')?'woocommerce-account logged-in':'')+'">'+
   '<header class="sf-header" id="native-header"><div class="sf-brand">Codela</div></header><div class="sf-shell">'+
   '<nav class="sf-mobile-dock" id="native-dock">Navigation</nav></div>'+
   '<main id="sf-content"><a id="slow-account" href="/account/orders/?slow=1">Slow orders</a><a id="account-root" href="/account/">Account</a><a id="account-orders" href="/account/orders/">Orders</a><h1>'+path+'</h1>'+links+'<a id="open-checkout" href="/checkout/">Checkout</a>'+
@@ -83,6 +83,61 @@ const doc=(path)=>{
    });
   });
   assert(guards.every(value=>!value),'Commerce, external, media and fragment links never get browsing feedback');
+  // Target-based feedback must cover the entire old product, including
+  // descendants which explicitly restore visibility and transformed containers.
+  for (const width of [390, 1280]) {
+   await page.setViewportSize({width,height:850});
+   for (const source of ['/', '/product/']) {
+    await page.goto(origin+source);
+    await page.addStyleTag({content:fs.readFileSync('theme/codela-storefront/assets/styles/product.css','utf8')});
+    const cases=await page.evaluate(()=>{
+     window.addEventListener('click',e=>e.preventDefault());
+     const main=document.querySelector('#sf-content');
+     main.style.transform='translateZ(0)';
+     const sheet=document.createElement('div');sheet.className='sf-product-sheet';sheet.innerHTML='<div style="visibility:visible">OLD PRODUCT</div>';main.append(sheet);
+     const paths=[['/','home'],['/category/','catalog'],['/product/example/','product'],['/account/orders/','account'],['/about/','page'],['/?post_type=product&p=42','product'],['/?product_cat=tiles','catalog']];
+     return paths.map(([href,type])=>{
+      const a=document.createElement('a');a.href=href;document.body.append(a);
+      // Home must differ from the current URL to be an actual navigation.
+      if(a.href===location.href) a.search='?preview=1';
+      if(type==='home') a.dataset.sfRoute='home';
+      a.click();
+      const surface=document.querySelector('.sf-document-loading');
+      const dock=document.querySelector('.sf-mobile-dock');
+      const purchase=document.querySelector('.sf-document-purchase');
+      const result={type:document.documentElement.dataset.sfDocumentTarget,expected:type,
+       top:surface?.getBoundingClientRect().top, outside:surface?.parentNode===document.body,
+       old:getComputedStyle(sheet.firstChild).visibility,
+       dock:getComputedStyle(dock).display!=='none'&&!dock.hidden,
+       purchase:!!purchase&&getComputedStyle(purchase).display!=='none',
+       color:getComputedStyle(surface.querySelector('.sf-document-shape,.sf-document-loading-media')).backgroundColor};
+      document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}));
+      result.restored=!document.querySelector('.sf-document-loading')&&!dock.inert&&getComputedStyle(sheet.firstChild).visibility==='visible';
+      a.remove();return result;
+     });
+    });
+    if(source==='/product/' && width===390){
+     fs.mkdirSync('qa',{recursive:true});
+     for(const target of ['home','product','catalog']){
+      await page.evaluate(target=>{
+       const a=document.createElement('a');a.href='/preview/';a.dataset.sfSkeleton=target;document.body.append(a);a.click();a.remove();
+      },target);
+      await page.screenshot({path:'qa/storefront-product-to-'+target+'-skeleton.png'});
+      await page.evaluate(()=>document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'})));
+     }
+    }
+    for(const result of cases){
+     assert.equal(result.type,result.expected,'Destination silhouette');
+     assert.equal(result.top,0,'Viewport surface escapes transformed product');
+     assert(result.outside&&result.restored,'Outside main and cancellation restores state');
+     assert.equal(result.old,'hidden','Old explicitly visible product descendants hidden');
+     assert.equal(result.purchase,width<=700&&result.type==='product','Purchase silhouette only on mobile product destination');
+     if(width<=700) assert.equal(result.dock,result.type!=='product','Target owns the bottom surface');
+     assert.equal(result.color,'rgb(223, 225, 229)','Stronger static contrast');
+    }
+   }
+  }
+  await page.setViewportSize({width:390,height:850});
   await page.goto(origin+'/account/');
   const previews=await page.evaluate(()=>{
    const cases=['/account/orders/','/account/view-order/1048/','/account/edit-address/','/account/edit-address/billing/'];
@@ -109,7 +164,7 @@ const doc=(path)=>{
   await page.goto(origin+'/account/');
   const pending=await page.evaluate(()=>{
    const started=performance.now();document.querySelector('#slow-account').click();
-   const main=document.querySelector('#sf-content'), skeleton=main.querySelector('.sf-document-loading');
+   const main=document.querySelector('#sf-content'), skeleton=document.querySelector('.sf-document-loading');
    const visible=el=>!!el && el.getBoundingClientRect().height>0 && getComputedStyle(el).visibility==='visible';
    return {rows:skeleton.querySelectorAll('.sf-document-loading-row').length,shapes:skeleton.querySelectorAll('.sf-document-loading-media,.sf-document-loading-lines i').length,statusClipped:getComputedStyle(skeleton.querySelector('.sf-document-loading-status')).clipPath,transform:getComputedStyle(main).transform,backLabel:document.querySelector('[data-sf-account-back]')?.textContent,backHref:document.querySelector('[data-sf-account-back]')?.getAttribute('href'),icon:!!document.querySelector('[data-sf-account-back] svg'),elapsed:performance.now()-started,pending:main.hasAttribute('data-sf-document-pending'),busy:main.getAttribute('aria-busy'),skeleton:visible(skeleton),header:visible(document.querySelector('#native-header')),dock:visible(document.querySelector('#native-dock')),inert:!!document.querySelector('#account-root').closest('[inert]')};
   });

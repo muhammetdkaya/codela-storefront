@@ -81,6 +81,8 @@ add_filter( 'render_block', function( string $html, array $block ): string {
 }, 10, 2 );
 /** Link hints only: links not explicitly marked still perform normal navigation. */
 add_filter( 'nav_menu_link_attributes', function( array $attrs, $item ) {
+    if ( 'product' === ( $item->object ?? '' ) ) { $attrs['data-sf-skeleton'] = 'product'; }
+    if ( in_array( $item->object ?? '', [ 'product_cat', 'product_tag' ], true ) ) { $attrs['data-sf-skeleton'] = 'catalog'; }
     if ( ! codela_sf_seamless_allowed() || empty( $item->object_id )
         || 'page' !== ( $item->object ?? '' ) || 'post_type' !== ( $item->type ?? '' ) ) {
         return $attrs;
