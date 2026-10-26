@@ -6,7 +6,7 @@ const {chromium}=require('playwright');
 const fs=require('node:fs');
 const css=fs.readFileSync('theme/codela-storefront/assets/styles/document-continuity.css','utf8');
 const accountScript=fs.readFileSync('theme/codela-storefront/assets/scripts/document-continuity.js','utf8');
-const baseCss='body{margin:0;font-family:sans-serif}.sf-header{height:72px;display:flex;align-items:center;padding:0 20px;background:#fafafa}.sf-mobile-dock,.sf-product-purchase{position:fixed;bottom:12px;left:16px;right:16px;height:58px;border-radius:30px;background:#eee}body.single-product .sf-mobile-dock{display:none}main{padding:30px;min-height:500px}';
+const baseCss='body{margin:0;font-family:sans-serif}.sf-header{position:fixed;inset:0 0 auto;z-index:1000;height:72px;display:flex;align-items:center;padding:0 20px;background:#fafafa}.sf-mobile-dock,.sf-product-purchase{z-index:1000;position:fixed;bottom:12px;left:16px;right:16px;height:58px;border-radius:30px;background:#eee}body.single-product .sf-mobile-dock{display:none}main{padding:100px 30px 30px;min-height:1800px}';
 const doc=(path)=>{
  const product=path==='/product/';
  const category=path==='/category/';
@@ -14,7 +14,7 @@ const doc=(path)=>{
  const style=checkout?'':css;
  const links=path==='/'?'<a id="open-category" href="/category/">Category</a>':category?'<a id="open-product" href="/product/">Product</a>':'<a id="back-home" href="/">Home</a>';
  return '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1">'+
-  '<style>'+baseCss+style+'</style><script>window.codelaSFDocument={account:location.origin+"/account/",accountLabel:"My account",backIcon:"<svg></svg>",accountParents:[{url:"/account/view-order/",back:"/account/orders/",label:"Orders"},{url:"/account/edit-address/",back:"/account/edit-address/",label:"Addresses",childOnly:true}]};'+accountScript+'</script><script>window.addEventListener("pageswap",e=>sessionStorage.setItem("continuity-pageswap",String(Boolean(e.viewTransition))));window.addEventListener("pagereveal",e=>{sessionStorage.setItem("continuity-pagereveal",String(Boolean(e.viewTransition)));sessionStorage.setItem("account-direction",document.documentElement.dataset.sfAccountTransition||"none")});</script></head><body class="'+(product?'single-product':path.startsWith('/account/')?'woocommerce-account logged-in':'')+'">'+
+  '<style>'+baseCss+style+'</style><script>window.codelaSFDocument={account:location.origin+"/account/",accountLabel:"My account",excluded:["/checkout/","/cart/","/account/customer-logout/"],backIcon:"<svg></svg>",accountParents:[{url:"/account/view-order/",back:"/account/orders/",label:"Orders"},{url:"/account/edit-address/",back:"/account/edit-address/",label:"Addresses",childOnly:true}]};'+accountScript+'</script><script>window.addEventListener("pageswap",e=>sessionStorage.setItem("continuity-pageswap",String(Boolean(e.viewTransition))));window.addEventListener("pagereveal",e=>{sessionStorage.setItem("continuity-pagereveal",String(Boolean(e.viewTransition)));sessionStorage.setItem("account-direction",document.documentElement.dataset.sfAccountTransition||"none")});</script></head><body class="'+(product?'single-product':path.startsWith('/account/')?'woocommerce-account logged-in':'')+'">'+
   '<header class="sf-header" id="native-header"><div class="sf-brand">Codela</div></header><div class="sf-shell">'+
   '<nav class="sf-mobile-dock" id="native-dock">Navigation</nav></div>'+
   '<main id="sf-content"><a id="slow-account" href="/account/orders/?slow=1">Slow orders</a><a id="account-root" href="/account/">Account</a><a id="account-orders" href="/account/orders/">Orders</a><h1>'+path+'</h1>'+links+'<a id="open-checkout" href="/checkout/">Checkout</a>'+
@@ -58,11 +58,36 @@ const doc=(path)=>{
   await page.locator('form.cart button').click();
   assert.equal(purchases,1,'Exactly one native POST made');
   assert(await page.locator('#native-post').count()===1,'Browser owns form submission');
+  // Browse links show feedback synchronously even far down an old page.
+  for (const path of ['/', '/category/', '/product/']) {
+   await page.goto(origin+path);
+   const result=await page.evaluate(()=>{
+    window.scrollTo(0,800);
+    window.addEventListener('click',e=>e.preventDefault());
+    const a=document.createElement('a');a.href='/category/?slow=1';document.body.append(a);a.click();
+    const skeleton=document.querySelector('.sf-document-loading');
+    const result={count:document.querySelectorAll('.sf-document-loading').length,top:skeleton?.getBoundingClientRect().top,
+     busy:document.querySelector('main').getAttribute('aria-busy'),header:!!document.elementFromPoint(30,30)?.closest('.sf-header')};
+    document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}));
+    result.restored=!document.querySelector('[data-sf-document-pending]')&&!document.querySelector('[data-sf-pending-inert]');
+    return result;
+   });
+   assert.deepEqual(result,{count:1,top:0,busy:'true',header:true,restored:true},'Immediate scrolled native feedback: '+path);
+  }
+  await page.goto(origin+'/');
+  const guards=await page.evaluate(()=>{
+   window.addEventListener('click',e=>e.preventDefault());
+   return ['/checkout/','/checkout/order-pay/42/','/cart/','/?add-to-cart=42','/account/customer-logout/?_wpnonce=abc','/#section','https://elsewhere.test/','/photo.webp'].map(href=>{
+    const a=document.createElement('a');a.href=href;document.body.append(a);a.click();
+    const pending=!!document.querySelector('[data-sf-document-pending]');a.remove();return pending;
+   });
+  });
+  assert(guards.every(value=>!value),'Commerce, external, media and fragment links never get browsing feedback');
   await page.goto(origin+'/account/');
   const previews=await page.evaluate(()=>{
    const cases=['/account/orders/','/account/view-order/1048/','/account/edit-address/','/account/edit-address/billing/'];
    window.addEventListener('click',e=>e.preventDefault(),{once:false});
-   return cases.map(href=>{const a=document.createElement('a');a.href=href;document.body.append(a);a.click();const b=document.querySelector('[data-sf-account-back]');const result={label:b?.textContent,path:b?new URL(b.href).pathname:null};document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}));result.restored=document.querySelector('.sf-brand').textContent==='Codela'&&!document.querySelector('[data-sf-account-pending]');a.remove();return result;});
+   return cases.map(href=>{const a=document.createElement('a');a.href=href;document.body.append(a);a.click();const b=document.querySelector('[data-sf-account-back]');const result={label:b?.textContent,path:b?new URL(b.href).pathname:null};document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}));result.restored=document.querySelector('.sf-brand').textContent==='Codela'&&!document.querySelector('[data-sf-document-pending]');a.remove();return result;});
   });
   assert.deepEqual(previews.map(x=>[x.label,x.path]),[['My account','/account/'],['Orders','/account/orders/'],['My account','/account/'],['Addresses','/account/edit-address/']]);
   assert(previews.every(x=>x.restored),'Cancelled navigation restores header and content');
@@ -84,9 +109,9 @@ const doc=(path)=>{
   await page.goto(origin+'/account/');
   const pending=await page.evaluate(()=>{
    const started=performance.now();document.querySelector('#slow-account').click();
-   const main=document.querySelector('#sf-content'), skeleton=main.querySelector('.sf-account-loading');
+   const main=document.querySelector('#sf-content'), skeleton=main.querySelector('.sf-document-loading');
    const visible=el=>!!el && el.getBoundingClientRect().height>0 && getComputedStyle(el).visibility==='visible';
-   return {rows:skeleton.querySelectorAll('.sf-account-loading-row').length,shapes:skeleton.querySelectorAll('.sf-account-loading-media,.sf-account-loading-lines i').length,statusClipped:getComputedStyle(skeleton.querySelector('.sf-account-loading-status')).clipPath,transform:getComputedStyle(main).transform,backLabel:document.querySelector('[data-sf-account-back]')?.textContent,backHref:document.querySelector('[data-sf-account-back]')?.getAttribute('href'),icon:!!document.querySelector('[data-sf-account-back] svg'),elapsed:performance.now()-started,pending:main.hasAttribute('data-sf-account-pending'),busy:main.getAttribute('aria-busy'),skeleton:visible(skeleton),header:visible(document.querySelector('#native-header')),dock:visible(document.querySelector('#native-dock')),inert:!!document.querySelector('#account-root').closest('[inert]')};
+   return {rows:skeleton.querySelectorAll('.sf-document-loading-row').length,shapes:skeleton.querySelectorAll('.sf-document-loading-media,.sf-document-loading-lines i').length,statusClipped:getComputedStyle(skeleton.querySelector('.sf-document-loading-status')).clipPath,transform:getComputedStyle(main).transform,backLabel:document.querySelector('[data-sf-account-back]')?.textContent,backHref:document.querySelector('[data-sf-account-back]')?.getAttribute('href'),icon:!!document.querySelector('[data-sf-account-back] svg'),elapsed:performance.now()-started,pending:main.hasAttribute('data-sf-document-pending'),busy:main.getAttribute('aria-busy'),skeleton:visible(skeleton),header:visible(document.querySelector('#native-header')),dock:visible(document.querySelector('#native-dock')),inert:!!document.querySelector('#account-root').closest('[inert]')};
   });
   // Read synchronously inside the outgoing document: Playwright locators wait
   // for pending navigation and cannot inspect that document during a native GET.
@@ -98,16 +123,16 @@ const doc=(path)=>{
   assert.equal(pending.busy,'true');assert(pending.inert,'Hidden old actions cannot receive keyboard focus');
   await page.waitForURL('**/account/orders/?slow=1');
   await page.waitForLoadState('load');
-  assert.equal(await page.locator('.sf-account-loading').count(),0,'Fresh native document clears feedback');
+  assert.equal(await page.locator('.sf-document-loading').count(),0,'Fresh native document clears feedback');
   await page.goBack();
   assert.equal(await page.locator('#sf-content').evaluate(e=>getComputedStyle(e).viewTransitionName),'none','Mobile account content has no slide layer');
-  assert.equal(await page.locator('[data-sf-account-pending]').count(),0,'History/BFCache restores usable content');
+  assert.equal(await page.locator('[data-sf-document-pending]').count(),0,'History/BFCache restores usable content');
   await context.close();
   const desktop=await browser.newContext({viewport:{width:1280,height:900}});
   const d=await desktop.newPage();await d.goto(origin+'/account/');await d.locator('#account-orders').click();
   const desktopPending=await d.evaluate(()=>{
    document.querySelector('#slow-account').click();
-   return {backLabel:document.querySelector('[data-sf-account-back]')?.textContent,pending:document.querySelector('#sf-content').hasAttribute('data-sf-account-pending'),header:getComputedStyle(document.querySelector('#native-header')).visibility};
+   return {backLabel:document.querySelector('[data-sf-account-back]')?.textContent,pending:document.querySelector('#sf-content').hasAttribute('data-sf-document-pending'),header:getComputedStyle(document.querySelector('#native-header')).visibility};
   });
   assert.equal(desktopPending.backLabel,'My account','Desktop back label updates before response');
   assert(desktopPending.pending,'Desktop also paints feedback in the click task');

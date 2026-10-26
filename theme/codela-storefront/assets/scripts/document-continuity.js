@@ -30,11 +30,12 @@
     }
     function clearPending() {
         window.clearTimeout(pendingTimer);
+        document.documentElement.removeAttribute('data-sf-document-pending');
         if (savedBrand) { savedBrand.brand.replaceChildren(...savedBrand.nodes); savedBrand = null; }
-        document.querySelector('.sf-account-loading')?.remove();
-        const main = document.querySelector('#sf-content[data-sf-account-pending]');
+        document.querySelector('.sf-document-loading')?.remove();
+        const main = document.querySelector('#sf-content[data-sf-document-pending]');
         if (main) {
-            main.removeAttribute('data-sf-account-pending');
+            main.removeAttribute('data-sf-document-pending');
             main.removeAttribute('aria-busy');
             main.querySelectorAll('[data-sf-pending-inert]').forEach(el => {
                 el.inert = false;
@@ -54,33 +55,47 @@
         try {
             sessionStorage.setItem('sf-previous-page', JSON.stringify({ url: location.href, title: document.querySelector('[data-sf-page-title]')?.dataset.sfPageTitle || document.title }));
         } catch { /* Navigation also works when storage is unavailable. */ }
-        if (accountDepth(location.href) < 0 || accountDepth(url.href) < 0 ||
-            url.href === location.href || url.hash || url.searchParams.has('action') ||
-            url.searchParams.has('add-to-cart') || url.searchParams.has('remove_item')) return;
+        // Native browsing only. Commerce mutations, popups and the existing
+        // core-router region retain their own handlers and loading lifecycle.
+        if (url.href === location.href || url.hash ||
+            ['action', 'add-to-cart', 'remove_item', '_wpnonce', 'download_file', 'wc-ajax'].some(key => url.searchParams.has(key)) ||
+            /\/(wp-admin|wp-login\.php|wp-json|customer-logout|lost-password)(\/|$)/.test(url.pathname) ||
+            /\.[a-z0-9]{2,5}$/i.test(url.pathname) && !/\.(html?|php)$/i.test(url.pathname) ||
+            link.matches('[data-panel],.ajax_add_to_cart') ||
+            link.hasAttribute('data-sf-route') && document.querySelector('#sf-content[data-wp-router-region]') ||
+            (config.excluded || []).some(value => {
+                const excluded = new URL(value, location.href);
+                const path = excluded.pathname.replace(/\/$/, '');
+                return excluded.search ? url.pathname === excluded.pathname &&
+                    [...excluded.searchParams].every(([key, value]) => url.searchParams.get(key) === value) :
+                    url.pathname === path || url.pathname.startsWith(path + '/');
+            })) return;
         const main = document.querySelector('#sf-content');
-        if (!main || !document.body.matches('.woocommerce-account.logged-in')) return;
+        if (!main) return;
         clearPending();
-        previewAccountHeader(url);
-        main.dataset.sfAccountPending = '';
+        window.dispatchEvent(new Event('codela:before-route'));
+        if (accountDepth(url.href) >= 0 && document.body.matches('.logged-in')) previewAccountHeader(url);
+        document.documentElement.dataset.sfDocumentPending = '';
+        main.dataset.sfDocumentPending = '';
         main.setAttribute('aria-busy', 'true');
         // Existing content remains in the DOM for BFCache/cancel restoration.
         [...main.children].forEach(el => {
             if (!el.inert) { el.inert = true; el.dataset.sfPendingInert = ''; }
         });
         const placeholder = document.createElement('div');
-        placeholder.className = 'sf-account-loading';
+        placeholder.className = 'sf-document-loading';
         placeholder.setAttribute('role', 'status');
         const label = document.createElement('span');
-        label.className = 'sf-account-loading-status';
+        label.className = 'sf-document-loading-status';
         label.textContent = config.loading || 'Loading…';
         placeholder.append(label);
         for (let i = 0; i < 3; i++) {
             const row = document.createElement('div');
-            row.className = 'sf-account-loading-row';
+            row.className = 'sf-document-loading-row';
             row.setAttribute('aria-hidden', 'true');
             for (const part of ['media', 'lines']) {
                 const shape = document.createElement('div');
-                shape.className = 'sf-account-loading-' + part;
+                shape.className = 'sf-document-loading-' + part;
                 if (part === 'lines') shape.append(document.createElement('i'), document.createElement('i'));
                 row.append(shape);
             }

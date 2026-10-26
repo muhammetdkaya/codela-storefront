@@ -1,5 +1,18 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 26 Ekim 2026 — 0.1.165 anlık gezinme skeleton adayı
+
+Tema 0.1.164 → 0.1.165; eklenti değişmedi. Mevcut native belge gözlemcisi, yalnız hesap yerine normal mağaza/kategori/ürün/bilgi sayfası bağlantılarında tıklama görevi içinde sabit skeleton oluşturur. Viewport yerleşimi eski sayfanın scroll konumundan bağımsızdır; mevcut header/dock korunur, menü mevcut overlay controller üzerinden kapanır. Hesap üst hedef etiketi ve Escape/timeout/pageshow geri yükleme korunur. İşlem/nonceli URL, popup, dosya, dış bağlantı ve core-router sahipliği dışlanır. Ürünün mevcut satın alma alanı görünür fakat eski içerik inert kalır.
+
+Native core-router yolunda 160ms bekleme kaldırıldı; skeleton anlık, yeni içerik hazır olduğunda bekletmeden kaldırılır. Statik token renkleri kullanılır; pulse kaldırıldı. Yeni router, fetch, prefetch, cache veya bağımlılık eklenmedi. Bu değişiklik sunucu TTFB hızlanması iddiası değildir.
+
+Doğrulama: Yerel JS sözdizimi, cart-race, cart-sync, search-panel, format, dock-gesture ve 24 paket testi geçti. Yerelde PHP yok; Chromium indirmesi geçersiz ZIP döndürdü. GitHub CI 40329604002 ilk koşusunda PHP/build ve yeni Chromium native gecikmeli-HTTP/shell testleri geçti: anlık skeleton, kaydırılmış sayfa, tek header/dock, işlem URL dışlamaları, iptal/geri, native POST ve reduced-motion doğrulandı. Genel paket değiştirilmemiş tests/product-mobile-media-browser.cjs:34 WebKit resize/count kontrolünde zaman aşımına uğradı; bu fixture değişen gezinme dosyalarını yüklemiyor. Bir kez yeniden çalıştırılan validate işi 121597928718 son kontrolde sürüyor; tüm suite geçti deneme. Skeleton screenshot dosyaları artifact glob'una dahil değil; görsel dosya ayrıca incelenmedi.
+
+Kaynak: ebbf6eb6a2d5bc73fbb378c0aff95b3c92ceffdd; PR https://github.com/muhammetdkaya/codela-storefront/pull/76 taslak. CI https://github.com/muhammetdkaya/codela-storefront/actions/runs/40329604002. Canlı/AZ Seramik dağıtımı ve kararlı yayın yapılmadı.
+
+Sıradaki adım: Koşu 40329604002 attempt 2 sonucunu ve varsa başarısız job logunu oku; genel test kabulünü tamamla. Kaynak değişmeden yalnız dokümantasyon güncellendi. Fiziksel cihaz, canlı TTFB ve skeleton screenshot incelemesi ayrıca açık; bunları doğrulamadan tamamlandı/hızlandı deme.
+
+
 ## 25 Ekim 2026 — 0.1.164 onaylanan sipariş özeti kararlı yayında
 
 0.1.163 → 0.1.164: Yalnız pano sipariş özeti onaylanan kart tasarımına uyarlandı: Sipariş özeti başlığı, sağda çanta ikonu, ince ayırıcı ve ortalı boş durum. Pano kartından Tüm siparişlerim ve Ürünleri incele kaldırıldı; altındaki mevcut tek sütunlu native hesap listesi aynı, Hesap işlemleri başlığı eklenmedi. Siparişli kartta gerçek son sipariş/total/detay bağlantısı korunur. Endpoint boş sipariş görünümü, header/dock ve skeleton değişmedi. TR çeviri eklendi; test SVG fixture multiline sınıfı düzeltildi. Eklenti değişmedi.
