@@ -1,5 +1,14 @@
 # Codela Storefront — güncel teknik durum
 
+## 26 Ekim 2026 — 0.1.166 hedef sayfaya göre skeleton
+
+Tema 0.1.165 → 0.1.166; eklenti değişmedi. Native geçişte hedef URL, Woo kalıcı bağlantı tabanları ve ürün/menü bağlantı ipuçları ile ana sayfa, katalog, ürün, hesap ve bilgi sayfası iskeleti seçilir. Belirsiz bağlantı genel içerik iskeletidir; yeni fetch/router/cache yok. Ürüne giderken mobil satın alma iskeleti; üründen çıkarken mevcut tek dock görünür. Eski ürün sheet/purchase ve açık visibility kullanan alt düğümler gizlenir. Viewport katmanı body altında olduğundan ürün transform/containment/background etkisinden çıkmıştır. Skeleton kontrastı ortak token ile artırıldı. Escape/timeout/pageshow dock, seçim, header ve inert durumunu geri yükler.
+
+Doğrulama: Yerel Chromium 153 ile native document-continuity ve core-router shell tarayıcı testleri geçti. Mobil 390px/masaüstü 1280px hedef türleri, plain permalink, transformed ürün içeriği, alt alan, Escape, BFCache, native POST ve reduced-motion kontrol edildi. Ürün→ürün/ana sayfa/katalog skeleton ekran görüntüleri üretildi; ürün görüntüsü incelendi. JS syntax, cart-race/cart-sync ve 24 paket testi geçti. Chromium standart indirmesi bozuk ZIP döndürdü; npm paketli Chromium ile çalışıldı. Yerelde PHP CLI yok; PHP runtime ve gerçek WP/Woo/canlı fiziksel Safari kabulü bu aşamada doğrulanmadı.
+
+Yayın durumu: GitHub inceleme dalı hazırlanıyor; FTP çalıştırılmadı. Ana dala gönderim otomatik onay denetimince açık yayın yetkisi bulunmadığı gerekçesiyle reddedildi. Main merge ve kararlı Release/manifest için kullanıcı onayı beklenir. Sonraki adım: inceleme dalını/PR'ı doğrula ve onay sonrası ana dal/yayın işlemini tamamla; AZ Seramik kullanıcı tarafından manuel güncellendikten sonra gerçek ürün→ana sayfa/kategori ve ters geçişleri fiziksel cihazda kontrol et.
+
+
 ## 26 Ekim 2026 — 0.1.165 GitHub ana dalına eklendi
 
 Kullanıcının açık talebiyle PR #76 ana dala birleştirildi: https://github.com/muhammetdkaya/codela-storefront/commit/5ea0d1618e8e3562ab7e074b0d157ccf25baf1da . Tema sürümü 0.1.164 → 0.1.165; eklenti değişmedi. Anlık native/core-router skeleton değişiklikleri ana dalda. Skeleton tarayıcı testleri, PHP/build ve paket kontrolleri geçti; genel test paketinin ilk koşusundaki bağımsız WebKit mobil galeri zaman aşımı ve yeniden koşu kabulü aşağıda açık olarak kayıtlıdır. Tüm testler geçti veya sunucu hızlandı denmez.

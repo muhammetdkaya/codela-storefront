@@ -4,6 +4,39 @@
     let submitting = false;
     let pendingTimer = 0;
     let savedBrand = null;
+    let savedDock = null;
+    function destination(url, link) {
+        const matches = (value, children = false) => {
+            if (!value) return false;
+            const base = new URL(value, location.href);
+            const path = base.pathname.replace(/\/$/, '');
+            return url.origin === base.origin &&
+                (url.pathname.replace(/\/$/, '') === path || children && path && url.pathname.startsWith(path + '/')) &&
+                [...base.searchParams].every(([key, value]) => url.searchParams.get(key) === value);
+        };
+        if (accountDepth(url.href) >= 0) return 'account';
+        if (url.searchParams.get('post_type') === 'product' && (url.searchParams.has('p') || url.searchParams.has('product'))) return 'product';
+        if (url.searchParams.has('product')) return 'product';
+        if (url.searchParams.has('product_cat') || url.searchParams.has('product_tag') ||
+            url.searchParams.get('post_type') === 'product' && url.searchParams.has('s')) return 'catalog';
+        const shopPagination = config.shop && /\/page\/\d+\/?$/.test(url.pathname) &&
+            url.pathname.replace(/page\/\d+\/?$/, '').replace(/\/$/, '') === new URL(config.shop, location.href).pathname.replace(/\/$/, '');
+        if (matches(config.shop) || shopPagination || (config.catalogBases || []).some(base => matches(base, true))) return 'catalog';
+        if (link.dataset.sfSkeleton) return link.dataset.sfSkeleton;
+        if (link.matches('.woocommerce-loop-product__link,.woocommerce-LoopProduct-link,.wc-block-components-product-name,.wc-block-components-product-image a,.sf-result') ||
+            matches(config.productBase, true) && new URL(config.productBase, location.href).pathname !== '/') return 'product';
+        if (matches(config.home) && !['page_id','p','s'].some(key => url.searchParams.has(key)) || link.dataset.sfRoute === 'home') return 'home';
+        return 'page';
+    }
+    function layout(type) {
+        const shape = name => '<div class="sf-document-shape sf-document-' + name + '"></div>';
+        const lines = '<div class="sf-document-loading-lines"><i></i><i></i></div>';
+        const rows = ('<div class="sf-document-loading-row"><div class="sf-document-loading-media"></div>' + lines + '</div>').repeat(3);
+        if (type === 'account') return rows;
+        if (type === 'product') return '<div class="sf-document-product-layout">' + shape('gallery') + '<div>' + shape('heading') + lines + shape('text') + '</div></div><div class="sf-document-purchase sf-ui-surface">' + lines + shape('quantity') + shape('button') + '</div>';
+        if (type === 'home' || type === 'catalog') return (type === 'home' ? shape('hero') : shape('heading') + shape('filters')) + '<div class="sf-document-cards">' + ('<div>' + shape('card') + lines + '</div>').repeat(4) + '</div>';
+        return shape('heading') + shape('text') + shape('text');
+    }
     function previewAccountHeader(url) {
         const brand = document.querySelector('.sf-header .sf-brand');
         if (!brand || !config.accountLabel) return;
@@ -31,6 +64,21 @@
     function clearPending() {
         window.clearTimeout(pendingTimer);
         document.documentElement.removeAttribute('data-sf-document-pending');
+        document.documentElement.removeAttribute('data-sf-document-target');
+        if (savedDock) {
+            savedDock.node.hidden = savedDock.hidden;
+            savedDock.node.inert = savedDock.inert;
+            savedDock.node.classList.toggle('is-collapsed', savedDock.collapsed);
+            savedDock.node.classList.toggle('has-selection', savedDock.selection);
+            if (savedDock.style === null) savedDock.node.removeAttribute('style');
+            else savedDock.node.setAttribute('style', savedDock.style);
+            savedDock.items.forEach(({node, active, current}) => {
+                node.classList.toggle('is-active', active);
+                if (current === null) node.removeAttribute('aria-current');
+                else node.setAttribute('aria-current', current);
+            });
+            savedDock = null;
+        }
         if (savedBrand) { savedBrand.brand.replaceChildren(...savedBrand.nodes); savedBrand = null; }
         document.querySelector('.sf-document-loading')?.remove();
         const main = document.querySelector('#sf-content[data-sf-document-pending]');
@@ -75,7 +123,27 @@
         clearPending();
         window.dispatchEvent(new Event('codela:before-route'));
         if (accountDepth(url.href) >= 0 && document.body.matches('.logged-in')) previewAccountHeader(url);
+        const type = destination(url, link);
         document.documentElement.dataset.sfDocumentPending = '';
+        document.documentElement.dataset.sfDocumentTarget = type;
+        const dock = document.querySelector('.sf-shell > .sf-mobile-dock');
+        if (dock) {
+            savedDock = { node: dock, hidden: dock.hidden, inert: dock.inert, collapsed: dock.classList.contains('is-collapsed'),
+                selection: dock.classList.contains('has-selection'), style: dock.getAttribute('style'),
+                items: [...dock.querySelectorAll('[data-dock-view]')].map(node => ({node, active: node.classList.contains('is-active'), current: node.getAttribute('aria-current')})) };
+            const selected = type === 'home' || type === 'account';
+            dock.classList.toggle('has-selection', selected);
+            dock.style.setProperty('--sf-dock-index', type === 'account' ? '3' : '0');
+            dock.style.removeProperty('--sf-dock-position');
+            savedDock.items.forEach(({node}) => {
+                const active = selected && node.dataset.dockView === type;
+                node.classList.toggle('is-active', active);
+                node.removeAttribute('aria-current');
+            });
+            dock.hidden = type === 'product';
+            dock.inert = true;
+            dock.classList.remove('is-collapsed');
+        }
         main.dataset.sfDocumentPending = '';
         main.setAttribute('aria-busy', 'true');
         // Existing content remains in the DOM for BFCache/cancel restoration.
@@ -89,19 +157,14 @@
         label.className = 'sf-document-loading-status';
         label.textContent = config.loading || 'Loading…';
         placeholder.append(label);
-        for (let i = 0; i < 3; i++) {
-            const row = document.createElement('div');
-            row.className = 'sf-document-loading-row';
-            row.setAttribute('aria-hidden', 'true');
-            for (const part of ['media', 'lines']) {
-                const shape = document.createElement('div');
-                shape.className = 'sf-document-loading-' + part;
-                if (part === 'lines') shape.append(document.createElement('i'), document.createElement('i'));
-                row.append(shape);
-            }
-            placeholder.append(row);
-        }
-        main.append(placeholder);
+        const silhouettes = document.createElement('div');
+        silhouettes.className = 'sf-document-layout';
+        silhouettes.setAttribute('aria-hidden', 'true');
+        silhouettes.innerHTML = layout(type);
+        placeholder.append(silhouettes);
+        // Outside main: product transforms, containment and backgrounds must
+        // never trap the fixed feedback or keep the old sheet above it.
+        document.body.append(placeholder);
         // A cancelled/stalled document request must never strand inert content.
         pendingTimer = window.setTimeout(clearPending, 10000);
     });

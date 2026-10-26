@@ -86,3 +86,6 @@
 }
 
 
+
+/* Static navigation silhouettes remain distinct on the light page surface. */
+:root{--sf-ui-skeleton:#dfe1e5}
