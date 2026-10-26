@@ -6,9 +6,11 @@ Tema 0.1.164 → 0.1.165; eklenti değişmedi. Mevcut native belge gözlemcisi, 
 
 Native core-router yolunda 160ms bekleme kaldırıldı; skeleton anlık, yeni içerik hazır olduğunda bekletmeden kaldırılır. Statik token renkleri kullanılır; pulse kaldırıldı. Yeni router, fetch, prefetch, cache veya bağımlılık eklenmedi. Bu değişiklik sunucu TTFB hızlanması iddiası değildir.
 
-Doğrulama: JS sözdizimi, cart-race, cart-sync ve 24 paket testi geçti. Native gecikmeli HTTP ve core-router fixture testleri genişletildi. Yerel Chromium indirmesi bozuk/eksik ZIP döndürdüğünden tarayıcı testleri henüz çalıştırılamadı; PHP yürütücüsü yok. CI/tarayıcı kabulü bekliyor. Canlı/AZ Seramik dağıtımı ve kararlı yayın yapılmadı.
+Doğrulama: Yerel JS sözdizimi, cart-race, cart-sync, search-panel, format, dock-gesture ve 24 paket testi geçti. Yerelde PHP yok; Chromium indirmesi geçersiz ZIP döndürdü. GitHub CI 40329604002 ilk koşusunda PHP/build ve yeni Chromium native gecikmeli-HTTP/shell testleri geçti: anlık skeleton, kaydırılmış sayfa, tek header/dock, işlem URL dışlamaları, iptal/geri, native POST ve reduced-motion doğrulandı. Genel paket değiştirilmemiş tests/product-mobile-media-browser.cjs:34 WebKit resize/count kontrolünde zaman aşımına uğradı; bu fixture değişen gezinme dosyalarını yüklemiyor. Bir kez yeniden çalıştırılan validate işi 121597928718 son kontrolde sürüyor; tüm suite geçti deneme. Skeleton screenshot dosyaları artifact glob'una dahil değil; görsel dosya ayrıca incelenmedi.
 
-Sıradaki adım: Chromium native geçiş/shell testlerini ve mevcut commerce regresyonlarını çalıştır; scroll, header/dock, menü kapanışı, iptal/geri ve native POST davranışını doğrula. Kabulden önce yayınlandı veya gerçek cihazda hızlandı deme.
+Kaynak: ebbf6eb6a2d5bc73fbb378c0aff95b3c92ceffdd; PR https://github.com/muhammetdkaya/codela-storefront/pull/76 taslak. CI https://github.com/muhammetdkaya/codela-storefront/actions/runs/40329604002. Canlı/AZ Seramik dağıtımı ve kararlı yayın yapılmadı.
+
+Sıradaki adım: Koşu 40329604002 attempt 2 sonucunu ve varsa başarısız job logunu oku; genel test kabulünü tamamla. Kaynak değişmeden yalnız dokümantasyon güncellendi. Fiziksel cihaz, canlı TTFB ve skeleton screenshot incelemesi ayrıca açık; bunları doğrulamadan tamamlandı/hızlandı deme.
 
 
 ## 25 Ekim 2026 — 0.1.164 onaylanan sipariş özeti kararlı yayında

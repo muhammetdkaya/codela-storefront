@@ -1,7 +1,7 @@
 # Codela Storefront UI Kit — source of truth
 
 
-Navigation feedback (0.1.165 candidate): ordinary native browsing links render the existing static circle/line skeleton synchronously across eligible storefront documents, anchored to the viewport even after scrolling. Header and the existing bottom surface stay visible. Transactional, external, download, popup and core-router-owned links keep their original lifecycle. The core-router skeleton also starts synchronously with no 160ms delay or minimum display time. No new navigation/data owner. Browser acceptance pending.
+Navigation feedback (0.1.165 candidate): ordinary native browsing links render the existing static circle/line skeleton synchronously across eligible storefront documents, anchored to the viewport even after scrolling. Header and the existing bottom surface stay visible. Transactional, external, download, popup and core-router-owned links keep their original lifecycle. The core-router skeleton also starts synchronously with no 160ms delay or minimum display time. No new navigation/data owner. Native delayed-HTTP and core-router Chromium tests passed in run 40329604002. Full-suite acceptance remains pending after an unrelated WebKit mobile-gallery timeout; retry is running.
 
 Account dashboard summary (0.1.164): Order summary heading and bag icon above a thin divider; centered empty-state copy without shopping CTA or all-orders duplicate. Existing single-column navigation remains ungrouped and has no Account actions heading. Populated summaries keep native order data and the View order action.
 
