@@ -1,1 +1,18 @@
-{"changes": ["Pano sipari\u015f \u00f6zeti onaylanan kompakt kart tasar\u0131m\u0131na uyarland\u0131.", "Bo\u015f sipari\u015f \u00f6zetindeki al\u0131\u015fveri\u015f d\u00fc\u011fmesi kald\u0131r\u0131ld\u0131; mevcut tek s\u00fctunlu hesap listesi korundu."], "package": "https://github.com/muhammetdkaya/codela-storefront/releases/download/v0.1.165/codela-storefront-0.1.165.zip", "requires": {"codela": "1.2.3", "php": "8.0", "woocommerce": "9.0", "wordpress": "6.5"}, "sha256": "b56d182b2e581d4c5ea4be7bdd7602c4c5b5246304d698ead5a3fecf63001028", "source_sha": "353d2f42306598137d5ce8de12e5181056021d28", "theme": "codela-storefront", "version": "0.1.165"}
+{
+  "changes": [
+    "Mağaza, kategori, ürün ve bilgi sayfalarına geçişte skeleton tıklama anında gösterilir; header ve alt menü korunur.",
+    "Core-router geçişindeki 160 ms bekleme kaldırıldı; içerik hazır olunca skeleton gecikmeden kapanır.",
+    "Sepet, ödeme, işlem formları ve harici bağlantıların mevcut gezinme davranışı korunur."
+  ],
+  "package": "https://github.com/muhammetdkaya/codela-storefront/releases/download/v0.1.165/codela-storefront-0.1.165.zip",
+  "requires": {
+    "codela": "1.2.3",
+    "php": "8.0",
+    "woocommerce": "9.0",
+    "wordpress": "6.5"
+  },
+  "sha256": "b56d182b2e581d4c5ea4be7bdd7602c4c5b5246304d698ead5a3fecf63001028",
+  "source_sha": "353d2f42306598137d5ce8de12e5181056021d28",
+  "theme": "codela-storefront",
+  "version": "0.1.165"
+}
