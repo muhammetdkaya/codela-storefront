@@ -30,12 +30,23 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ steps.request.outputs.source }}
-      - name: Require tested production revision
-        env:
-          GH_TOKEN: ${{ github.token }}
-          SOURCE_SHA: ${{ steps.request.outputs.source }}
+      # A GitHub-only release must not depend on the FTP deployment workflow.
+      # Validate the immutable source revision here, without touching the live site.
+      - name: Verify release candidate without FTP deployment
         run: |
-          gh api "repos/$GITHUB_REPOSITORY/actions/workflows/deploy.yml/runs?head_sha=$SOURCE_SHA&status=success" --jq '.workflow_runs | map(select(.event == "push")) | length > 0' | grep -qx true
+          php tests/navigation.php
+          php tests/document-continuity.php
+          php tests/product-mobile-media.php
+          node --input-type=module --check < theme/codela-storefront/assets/scripts/navigation-controller.js
+          node --check tests/shell-navigation-browser.cjs
+          node --check tests/document-continuity-browser.cjs
+          node tests/cart-race.cjs
+          node tests/cart-sync.cjs
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium webkit
+          node tests/shell-navigation-browser.cjs
+          node tests/document-continuity-browser.cjs
+          TEST_WEBKIT=1 node tests/desktop-header-browser.cjs
       - name: Validate and package exact revision
         env:
           CODELA_SOURCE_SHA: ${{ steps.request.outputs.source }}
