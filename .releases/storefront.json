@@ -1,5 +1,6 @@
 {
   "confirm": "PUBLISH_STABLE",
   "version": "0.1.165",
-  "source_sha": "353d2f42306598137d5ce8de12e5181056021d28"
+  "source_sha": "353d2f42306598137d5ce8de12e5181056021d28",
+  "validation": "Prior navigation browser checks in CI 40329604002; standalone PHP, JS and package validation"
 }
