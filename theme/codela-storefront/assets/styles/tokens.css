@@ -89,3 +89,9 @@
 
 /* Static navigation silhouettes remain distinct on the light page surface. */
 :root{--sf-ui-skeleton:#dfe1e5}
+
+/* Loading feedback changes opacity only; never animate shell or panel geometry. */
+@keyframes sf-skeleton-pulse{0%,100%{opacity:1}50%{opacity:.45}}
+@media(prefers-reduced-motion:no-preference){
+  :is(.sf-document-loading,.sf-route-skeleton) :is(.sf-document-shape,.sf-document-loading-media,.sf-document-loading-lines i,.sf-route-hero,.sf-route-line,.sf-route-cards>div,.sf-route-heading,.sf-route-text){animation:sf-skeleton-pulse 1.4s ease-in-out infinite}
+}

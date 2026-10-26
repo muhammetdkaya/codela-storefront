@@ -7,7 +7,7 @@ let script=fs.readFileSync('theme/codela-storefront/assets/scripts/navigation-co
  .replace(/^import .*;\s*$/gm,'')
  .replace("import('@wordpress/interactivity-router')","Promise.resolve({actions:{navigate:window.__routeNavigate}})");
 const documentScript=fs.readFileSync('theme/codela-storefront/assets/scripts/document-continuity.js','utf8');
-const css=fs.readFileSync('theme/codela-storefront/assets/styles/navigation-loading.css','utf8');
+const css=['tokens','navigation-loading'].map(name=>fs.readFileSync('theme/codela-storefront/assets/styles/'+name+'.css','utf8')).join('\n');
 const main=(type='home')=>'<main id="sf-content" class="sf-content" data-wp-router-region="codela/storefront/main" data-sf-route-type="'+type+'"><h1>Example</h1><p>Page content</p></main>';
 (async()=>{
  const browser=await chromium.launch();
@@ -27,6 +27,7 @@ const main=(type='home')=>'<main id="sf-content" class="sf-content" data-wp-rout
   const immediate=await page.evaluate(()=>{document.querySelector('#to-content').click();return {count:document.querySelectorAll('.sf-route-skeleton').length,busy:document.querySelector('main').getAttribute('aria-busy'),native:document.querySelectorAll('.sf-document-loading').length};});
   assert.deepEqual(immediate,{count:1,busy:'true',native:0},'Exactly one skeleton is present in the click task');
   assert.equal(await page.locator('.sf-route-skeleton').count(),1,'Skeleton visible immediately in main');
+  assert.equal(await page.locator('.sf-route-text').first().evaluate(el=>getComputedStyle(el).animationName),'sf-skeleton-pulse','Core router shares loading motion');
   assert.equal(await page.locator('#persistent-header').getAttribute('data-original'),'yes','Header stays in DOM');
   assert.equal(await page.locator('.sf-mobile-dock').count(),1,'One dock retained during navigation');
   await page.waitForTimeout(400);

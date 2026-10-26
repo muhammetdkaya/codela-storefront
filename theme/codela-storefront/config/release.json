@@ -6,7 +6,7 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Pano sipariş özeti onaylanan kompakt kart tasarımına uyarlandı.",
-    "Boş sipariş özetindeki alışveriş düğmesi kaldırıldı; mevcut tek sütunlu hesap listesi korundu."
+    "Skeleton yükleme sırasında yumuşak pulse animasyonu gösterir; azaltılmış hareket tercihi korunur.",
+    "Mobil ürün skeleton görünümü tam genişlik galeri, küçük önizlemeler ve başlık/fiyat/adet/buton içeren gerçekçi alt panel ile eşleştirildi."
   ]
 }

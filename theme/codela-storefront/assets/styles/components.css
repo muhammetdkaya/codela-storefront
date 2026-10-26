@@ -101,6 +101,7 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product a.sf-ui
    progressively enhanced sheet use the exact same material and corner shape.
    Unlike pills and icon controls, both are panels, not generic soft buttons. */
 .sf-product-sheet,
+.sf-document-purchase,
 html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary{
   /* No invisible 1px borders: they inflate intrinsic first-paint height
      but were omitted by the final sheet's content-based measurement. */

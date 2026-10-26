@@ -4,7 +4,7 @@ const {createServer}=require('node:http');
 const assert=require('node:assert/strict');
 const {chromium}=require('playwright');
 const fs=require('node:fs');
-const css=fs.readFileSync('theme/codela-storefront/assets/styles/document-continuity.css','utf8');
+const css=['tokens','components','document-continuity'].map(name=>fs.readFileSync('theme/codela-storefront/assets/styles/'+name+'.css','utf8')).join('\n');
 const accountScript=fs.readFileSync('theme/codela-storefront/assets/scripts/document-continuity.js','utf8');
 const baseCss='body{margin:0;font-family:sans-serif}.sf-header{position:fixed;inset:0 0 auto;z-index:1000;height:72px;display:flex;align-items:center;padding:0 20px;background:#fafafa}.sf-mobile-dock,.sf-product-purchase{z-index:1000;position:fixed;bottom:12px;left:16px;right:16px;height:58px;border-radius:30px;background:#eee}body.single-product .sf-mobile-dock{display:none}main{padding:100px 30px 30px;min-height:1800px}';
 const doc=(path)=>{
@@ -122,6 +122,21 @@ const doc=(path)=>{
       await page.evaluate(target=>{
        const a=document.createElement('a');a.href='/preview/';a.dataset.sfSkeleton=target;document.body.append(a);a.click();a.remove();
       },target);
+      if(target==='product'){
+       const geometry=await page.evaluate(()=>{
+        const gallery=document.querySelector('.sf-document-gallery'),panel=document.querySelector('.sf-document-purchase');
+        const rect=gallery.getBoundingClientRect();
+        return {left:rect.left,top:rect.top,width:rect.width,height:rect.height,viewport:innerHeight,
+         animation:getComputedStyle(gallery).animationName,panelHeight:panel.getBoundingClientRect().height,
+         radius:getComputedStyle(panel).borderTopLeftRadius,thumbs:document.querySelectorAll('.sf-document-thumb').length,
+         controls:!!panel.querySelector('.sf-document-product-meta')&&!!panel.querySelector('.sf-document-product-controls')};
+       });
+       assert.equal(geometry.left,0);assert.equal(geometry.top,0);assert.equal(geometry.width,width);assert.equal(geometry.height,geometry.viewport);
+       assert.equal(geometry.animation,'sf-skeleton-pulse');assert.equal(geometry.panelHeight,164);assert.equal(geometry.radius,'28px');assert.equal(geometry.thumbs,3);assert(geometry.controls);
+       await page.emulateMedia({reducedMotion:'reduce'});
+       assert.equal(await page.locator('.sf-document-gallery').evaluate(el=>getComputedStyle(el).animationName),'none','Reduced motion keeps static silhouettes');
+       await page.emulateMedia({reducedMotion:'no-preference'});
+      }
       await page.screenshot({path:'qa/storefront-product-to-'+target+'-skeleton.png'});
       await page.evaluate(()=>document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'})));
      }

@@ -33,7 +33,7 @@
         const lines = '<div class="sf-document-loading-lines"><i></i><i></i></div>';
         const rows = ('<div class="sf-document-loading-row"><div class="sf-document-loading-media"></div>' + lines + '</div>').repeat(3);
         if (type === 'account') return rows;
-        if (type === 'product') return '<div class="sf-document-product-layout">' + shape('gallery') + '<div>' + shape('heading') + lines + shape('text') + '</div></div><div class="sf-document-purchase sf-ui-surface">' + lines + shape('quantity') + shape('button') + '</div>';
+        if (type === 'product') return '<div class="sf-document-product-layout">' + shape('gallery') + '<div>' + shape('heading') + lines + shape('text') + '</div></div><div class="sf-document-thumbs">' + shape('thumb').repeat(3) + '</div>' + shape('count') + '<div class="sf-document-purchase">' + shape('handle') + '<div class="sf-document-product-meta">' + lines + shape('price') + '</div><div class="sf-document-product-controls">' + shape('quantity') + shape('button') + '</div></div>';
         if (type === 'home' || type === 'catalog') return (type === 'home' ? shape('hero') : shape('heading') + shape('filters')) + '<div class="sf-document-cards">' + ('<div>' + shape('card') + lines + '</div>').repeat(4) + '</div>';
         return shape('heading') + shape('text') + shape('text');
     }

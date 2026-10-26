@@ -1,5 +1,14 @@
 # Codela Storefront — güncel teknik durum
 
+## 26 Ekim 2026 — 0.1.167 hareketli ve ürün yerleşimine uygun skeleton
+
+Tema 0.1.166 → 0.1.167; eklenti değişmedi. Kullanıcı görsellerine göre mobil ürün skeleton galerisi kenardan kenara ve header arkasına uzanır; üç yuvarlak önizleme ve sayaç yeri, ortak ürün-panel yüzeyi üzerinde tutamak, başlık/fiyat ve adet/sepete ekle siluetleri bulunur. Panel 164px başlangıç iskeletidir; gerçek ürünün değişken içerik yüksekliği sunucu geldikten sonra doğal hesaplanır. Native ve core-router skeleton şekilleri ortak 1.4s opacity pulse kullanır; header/panel geometrisi hareket etmez, reduced-motion statiktir. Yeni bağımlılık veya gecikme eklenmedi. Yayın açıklamaları güncellendi.
+
+Doğrulama: Chromium 153 native document-continuity ve shell-navigation tarayıcı testleri geçti. Mobil tam viewport galeri, 164px/28px panel ölçüleri, üç önizleme, pulse ve reduced-motion kontrol edildi; ürün skeleton ekran görüntüsü incelendi. JS syntax ve 24 paket testi geçti. Fiziksel Safari ve gerçek WP/Woo mağaza kabulü yapılmadı.
+
+Yayın durumu: GitHub kaynak/yayın güncellemesi hazırlanıyor; FTP yok. Sonraki adım: kaynak ve kararlı yayın kontrollerini tamamla; AZ Seramik manuel güncellemesi sonrası mobil ürün yüklemesini fiziksel cihazda kontrol et.
+
+
 ## 26 Ekim 2026 — 0.1.166 hedef sayfaya göre skeleton
 
 Tema 0.1.165 → 0.1.166; eklenti değişmedi. Native geçişte hedef URL, Woo kalıcı bağlantı tabanları ve ürün/menü bağlantı ipuçları ile ana sayfa, katalog, ürün, hesap ve bilgi sayfası iskeleti seçilir. Belirsiz bağlantı genel içerik iskeletidir; yeni fetch/router/cache yok. Ürüne giderken mobil satın alma iskeleti; üründen çıkarken mevcut tek dock görünür. Eski ürün sheet/purchase ve açık visibility kullanan alt düğümler gizlenir. Viewport katmanı body altında olduğundan ürün transform/containment/background etkisinden çıkmıştır. Skeleton kontrastı ortak token ile artırıldı. Escape/timeout/pageshow dock, seçim, header ve inert durumunu geri yükler.
