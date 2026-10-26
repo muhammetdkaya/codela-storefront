@@ -1,6 +1,6 @@
 {
   "confirm": "PUBLISH_STABLE",
-  "version": "0.1.166",
-  "source_sha": "5e43781ce931878266e6950c747b05b78053b9b6",
-  "validation": "Local Chromium 153 document and shell navigation tests, cart race/sync and 24 package tests passed; release workflow validates PHP and exact package."
+  "version": "0.1.167",
+  "source_sha": "c49375c2e6f3d9f32043f67e066879d0e5383561",
+  "validation": "Local Chromium 153 native and shell navigation tests, pulse/reduced-motion and product geometry checks, 24 package tests passed."
 }
