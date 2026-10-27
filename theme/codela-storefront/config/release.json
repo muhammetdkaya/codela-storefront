@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Üründen ana sayfaya ve diğer normal sayfalara geçerken normal alt menü hemen gösterilir.",
-    "Ana sayfadan ürüne geçerken sabit adet ve Sepete ekle görünümü gösterilir; gerçek WooCommerce belgesi geldiğinde kendi satın alma alanı devralır.",
-    "Eski ürün fiyatı, miktarı ve satın alma formu yükleme görünümüne taşınmaz; iptal, geçmiş ve görünür ekran yüksekliği korunur."
+    "Mobil ürün geçişinde alttaki önizleme gerçek ürün paneliyle aynı yükseklik, tutamaç ve satın alma düzenini kullanır.",
+    "Ana sayfaya dönüşte normal alt menü Safari tarayıcı çubuğuna göre iki kez yukarı kaydırılmaz.",
+    "Geçiş katmanı tarayıcının kendi sabit ekran koordinatlarını kullanır; eski ürün verileri ve formlar yeni ekrana taşınmaz."
   ]
 }
