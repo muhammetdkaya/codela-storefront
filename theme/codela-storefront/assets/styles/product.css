@@ -822,7 +822,9 @@ html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:
   body.single-product div.product .sf-product-media > .sf-ui-gallery--scroll{opacity:1!important}
   body.single-product div.product .sf-product-media > .woocommerce-product-gallery:not(.sf-ui-gallery--no-thumbs):has(.woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image:nth-child(2),> .sf-ui-gallery-nav,> .flex-control-thumbs > li:nth-child(2)){min-height:calc(var(--sf-gallery-height) + 72px)}
   body.single-product div.product .sf-product-media .woocommerce-product-gallery__wrapper{height:var(--sf-gallery-height);border-radius:var(--sf-gallery-radius);overflow:hidden}
-  body.single-product div.product .sf-product-media .sf-ui-gallery--scroll .woocommerce-product-gallery__wrapper{overflow-x:auto;overflow-y:hidden}
+  /* Keep horizontal photo containment, but let vertical wheel/trackpad input
+     chain to the document instead of trapping it over the photograph. */
+  body.single-product div.product .sf-product-media .sf-ui-gallery--scroll .woocommerce-product-gallery__wrapper{overflow-x:auto;overflow-y:hidden;overscroll-behavior-y:auto}
   body.single-product div.product .sf-product-overview > .summary{grid-column:2;grid-row:1;max-width:none;justify-self:stretch;padding:0}
   body.single-product div.product .product_title{font-size:clamp(26px,2.3vw,34px);margin-bottom:10px}
   body.single-product .sf-product-price-row{margin-bottom:14px}
