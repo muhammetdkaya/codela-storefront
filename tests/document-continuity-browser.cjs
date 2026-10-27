@@ -26,9 +26,9 @@ const doc=(path)=>{
  let purchases=0;
  const server=createServer((req,res)=>{
   if(req.method==='POST'&&req.url==='/purchase'){
-   purchases++;let data='';req.on('data',x=>data+=x);req.on('end',()=>{res.writeHead(200,{'Content-Type':'text/html'});res.end('<html><body id="native-post">Received '+data+'</body></html>')});return;
+   purchases++;let data='';req.on('data',x=>data+=x);req.on('end',()=>{res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});res.end('<html><body id="native-post">Received '+data+'</body></html>')});return;
   }
-  res.writeHead(200,{'Content-Type':'text/html','Cache-Control':'no-store'});
+  res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});
   if(req.url.includes('slow=1')) { setTimeout(()=>res.end(doc(req.url.split('?')[0])),900); return; }
   res.end(doc(req.url.split('?')[0]));
  });
@@ -199,14 +199,19 @@ const doc=(path)=>{
    await page.evaluate(()=>{
     window.addEventListener('pageswap',event=>{sessionStorage.setItem('native-bottom-pageswap',String(document.documentElement.dataset.sfNavigationBottom||'none'));event.viewTransition?.finished.catch(()=>{});});
    });
-   const bottomState=await page.evaluate(to=>{
+   // Read in the click task. A later locator may resolve in the committed
+   // document, where pending attributes must correctly have disappeared.
+   const pendingBottom=await page.evaluate(to=>{
     const a=document.createElement('a');a.href=to+'?slow=1';a.textContent='Next';document.body.append(a);a.click();
-    const visible=node=>!!node&&getComputedStyle(node).display!=='none'&&getComputedStyle(node).visibility!=='hidden'&&node.getBoundingClientRect().height>0;
-    return {bottom:document.documentElement.dataset.sfNavigationBottom,dock:visible(document.querySelector('.sf-mobile-dock')),panel:visible(document.querySelector('[data-sf-feedback-bottom]')),price:document.querySelector('[data-product-price]')?.textContent};
+    const visible=el=>!!el&&getComputedStyle(el).display!=='none'&&getComputedStyle(el).visibility!=='hidden'&&el.getBoundingClientRect().height>0;
+    return {bottom:document.documentElement.dataset.sfNavigationBottom,pending:document.documentElement.hasAttribute('data-sf-navigation-pending'),dock:visible(document.querySelector('.sf-mobile-dock')),panel:visible(document.querySelector('[data-sf-feedback-bottom]')),price:document.querySelector('[data-product-price]')?.textContent,url:location.href};
    },to);
-   assert.equal(bottomState.bottom,expectedBottom);
-   assert.equal(bottomState.dock,expectedBottom==='dock');
-   if(expectedBottom==='product'){assert(bottomState.panel);assert.equal(bottomState.price,'42 ₺');}
+   console.log('NATIVE_BOTTOM_PENDING',from,to,JSON.stringify(pendingBottom));
+   assert.equal(pendingBottom.url,origin+from,'Pending data belongs to the source document URL');
+   assert.equal(pendingBottom.pending,true);
+   assert.equal(pendingBottom.bottom,expectedBottom);
+   assert.equal(pendingBottom.dock,expectedBottom==='dock');
+   if(expectedBottom==='product'){assert(pendingBottom.panel);assert.equal(pendingBottom.price,'42 ₺');}
    await page.waitForURL(origin+to+'?slow=1');
    await page.waitForLoadState('domcontentloaded');
    assert.equal(await page.locator('[data-sf-navigation-pending]').count(),0);
