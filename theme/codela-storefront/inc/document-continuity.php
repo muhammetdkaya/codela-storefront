@@ -26,8 +26,14 @@ function codela_sf_document_continuity_allowed(): bool {
     return function_exists( 'codela_sf_seamless_allowed' ) && codela_sf_seamless_allowed();
 }
 
-/** Inert destination purchase layout; no product data or commerce form. */
+/** Destination preview shares the native closed-sheet geometry, never Woo product data. */
 function codela_sf_navigation_purchase_preview(): string {
-    return '<div class="sf-navigation-purchase"><span class="sf-navigation-quantity">−<span>1</span>+</span>'
-        . codela_sf_ui_button( __( 'Add to cart', 'woocommerce' ), [ 'disabled' => true ] ) . '</div>';
+    return '<section class="sf-navigation-purchase sf-ui-surface sf-ui-surface--glass-panel">'
+        . '<header class="sf-product-sheet-header"><div class="sf-product-sheet-heading">'
+        . '<span class="sf-navigation-heading-placeholder sf-navigation-heading-placeholder--title"></span>'
+        . '<span class="sf-navigation-heading-placeholder sf-navigation-heading-placeholder--price"></span>'
+        . '</div></header><div class="sf-navigation-controls">'
+        . '<span class="sf-navigation-quantity"><span>−</span><span>1</span><span>+</span></span>'
+        . codela_sf_ui_button( __( 'Add to cart', 'woocommerce' ), [ 'disabled' => true ] )
+        . '</div></section>';
 }
