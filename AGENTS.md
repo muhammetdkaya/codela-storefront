@@ -6,7 +6,7 @@ Tema **0.1.168 → 0.1.169**; eklenti değişmedi. Kullanıcının Safari ekran 
 
 **Doğrulama:** Eski JS ile yeni görünür viewport testi beklenen şekilde başarısız; düzeltmeyle 650/740/620px görünür yükseklik, 25px üst ofset, 300px dar alan, zoom, API yokluğu, masaüstü ve temizleme geçti. Native gecikmeli HTTP/BFCache/POST, core-router yaşam döngüsü ve gerçek PHP header/overlay/dock tarayıcı kontrolleri geçti. Testler Chromium kontrollü VisualViewport sınırıdır; fiziksel Safari veya canlı AZ Seramik kabulü değildir.
 
-**Yayın:** 0.1.169 kaynak/paket hazırlanıyor; FTP ve AZ Seramik kurulumu yapılmadı. **Sıradaki:** kaynak/kararlı yayın kanıtını kaydet; kullanıcı manuel güncelledikten sonra Safari araç çubuğu açık/kapalı ürün geçişinde alt satırın tamamen görünür olduğunu fiziksel cihazda doğrula.
+**Yayın:** [Kaynak c02a8af](https://github.com/muhammetdkaya/codela-storefront/commit/c02a8af98e3b10f878d8e94fae879397893cc8c9) main’de; test edilmiş yerel/GitHub ağaçları eşleşti. [GitHub-only yayın 40470886504](https://github.com/muhammetdkaya/codela-storefront/actions/runs/40470886504) başarılı; PHP/JS ve 24 paket testleri geçti. [v0.1.169](https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.169) public ve stable manifest sürüm/kaynak/hash ile doğrulandı. ZIP 166848 bayt; SHA256 `c3d9cbac9ac18c04efc7ea8e80dc476890b848793a377d4a8e93cd1de5ec080c`, yerel paket ve GitHub digest aynı. FTP ve AZ Seramik kurulumu yapılmadı. **Sıradaki:** manuel 0.1.169 güncellemesinden sonra Safari araç çubuğu açık/kapalı ürün geçişlerinde satın alma skeleton satırının bütünüyle görünür kaldığını fiziksel cihazda doğrula; bu kabul henüz yapılmadı.
 
 ## Son doğrulanmış devam noktası — 27 Ekim 2026: 0.1.168 ortak skeleton paketi
 
