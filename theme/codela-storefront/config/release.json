@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Ürün görseli için hareketli skeleton geri getirildi.",
-    "Alt satın alma panelinde skeleton gösterilmez; gerçek ürün bilgileri beklenir.",
-    "Üründen diğer sayfalara geçişte hedef skeleton ve alt menü korunur."
+    "Mobil sayfa geçişinde mevcut gerçek alt menü veya satın alma paneli korunur; yükleme boyunca etkileşim kilitlenir.",
+    "Masaüstünde ürün fotoğrafı üzerinden sayfa kaydırma ve sağ sütunda açık ürün açıklaması desteklenir.",
+    "Skeleton arkasındaki footer etkileşimleri engellenir; iptal ve geçmiş dönüşünde önceki durum geri gelir."
   ]
 }

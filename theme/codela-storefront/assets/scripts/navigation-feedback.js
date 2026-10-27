@@ -90,11 +90,14 @@
         const state = pending; pending = null;
         clearTimeout(state.timer);
         state.releaseViewport?.();
+        state.releaseBottom?.();
+        state.releaseSubmit?.();
         state.surface.remove();
         state.snapshots.reverse().forEach(restore);
         if (state.brand?.brand.isConnected) state.brand.brand.replaceChildren(...state.brand.nodes);
         document.documentElement.removeAttribute('data-sf-navigation-pending');
         document.documentElement.removeAttribute('data-sf-navigation-target');
+        document.documentElement.removeAttribute('data-sf-navigation-bottom');
         if (focus && state.focus?.isConnected && !state.focus.closest('[inert]')) state.focus.focus({ preventScroll: true });
         return true;
     }
@@ -106,8 +109,8 @@
         window.dispatchEvent(new Event('codela:before-route'));
         const target = new URL(url, location.href);
         const type = destination(target, link);
-        // Product feedback covers only the gallery. Purchase data and controls
-        // belong exclusively to the incoming Woo document.
+        // Never invent the destination's purchase data. Until the native document
+        // replaces this one, keep only its existing bottom surface, busy/inert.
         const surface = document.createElement('div');
         surface.className = 'sf-skeleton';
         surface.dataset.owner = owner;
@@ -126,13 +129,14 @@
         save(main, ['aria-busy']);
         main.setAttribute('aria-busy', 'true');
         // Preserve pre-existing inert/ARIA values, including on cancelled requests.
-        [...main.children, ...document.querySelectorAll('.sf-header')].forEach(node => {
+        // The native footer sits outside main, beneath the viewport surface.
+        [...main.children, ...document.querySelectorAll('.sf-header,.sf-footer')].forEach(node => {
             save(node, ['inert']); node.inert = true;
         });
         if (type === 'account' && document.body.matches('.logged-in')) previewAccountHeader(target);
         const dock = document.querySelector('.sf-shell > .sf-mobile-dock');
         if (dock) {
-            save(dock, ['hidden', 'inert', 'class', 'style']);
+            save(dock, ['hidden', 'inert', 'aria-busy', 'class', 'style']);
             const selected = type === 'home' || type === 'account';
             dock.classList.toggle('has-selection', selected);
             dock.style.setProperty('--sf-dock-index', type === 'account' ? '3' : '0');
@@ -142,8 +146,8 @@
                 node.classList.toggle('is-active', selected && node.dataset.dockView === type);
                 node.removeAttribute('aria-current');
             });
-            dock.hidden = type === 'product';
             dock.inert = true;
+            dock.setAttribute('aria-busy', 'true');
             dock.classList.remove('is-collapsed');
         }
         document.documentElement.dataset.sfNavigationPending = owner;
@@ -155,9 +159,102 @@
         // surface to the visible area; all skeleton controls are local to it.
         const viewport = window.visualViewport;
         let viewportFrame = 0;
+        let bottom = null;
+        let bottomSnapshot = null;
+        let releaseBottomOffset = null;
+        let bottomReleased = false;
+        const guardedForms = new Set();
+        const bottomResize = typeof ResizeObserver === 'function' ? new ResizeObserver(() => scheduleViewport()) : null;
+        const viewportFixed = node => {
+            if (!node || getComputedStyle(node).position !== 'fixed') return false;
+            for (let parent = node.parentElement; parent; parent = parent.parentElement) {
+                const style = getComputedStyle(parent);
+                if (['transform', 'perspective', 'filter', 'backdropFilter'].some(key => style[key] && style[key] !== 'none') ||
+                    /(?:layout|paint|strict|content)/.test(style.contain) ||
+                    /(?:transform|perspective|filter)/.test(style.willChange)) return false;
+                // A nested stacking context may trap the panel below the body-level
+                // skeleton even when its fixed geometry is otherwise correct.
+                if (parent !== document.body && parent !== document.documentElement &&
+                    (style.isolation === 'isolate' || Number.parseFloat(style.opacity) < 1 ||
+                    style.zIndex && style.zIndex !== 'auto' || style.mixBlendMode && style.mixBlendMode !== 'normal')) return false;
+            }
+            return true;
+        };
+        const syncBottom = () => {
+            // The same native form stays in place. In particular, normal -> product
+            // keeps the real dock until the new Woo document owns a purchase panel.
+            const purchase = !bottomReleased && matchMedia('(max-width:700px)').matches && document.body.matches('.single-product') ?
+                main.querySelector('form.cart .sf-product-purchase') : null;
+            const candidate = purchase && (purchase.closest('.sf-product-sheet') ||
+                document.documentElement.classList.contains('sf-product-sheet-pending') && purchase.closest('.sf-product-overview > .summary') ||
+                purchase);
+            // A transformed/contained outgoing main cannot host a viewport-fixed
+            // panel safely. Keep the existing shell dock instead; never clone/move it.
+            const nativePanel = viewportFixed(candidate) ? candidate : null;
+            if (nativePanel !== bottom) {
+                bottomResize?.disconnect();
+                if (bottomSnapshot) restore(bottomSnapshot);
+                releaseBottomOffset?.();
+                bottom = nativePanel || null;
+                bottomSnapshot = bottom ? remember(bottom, ['data-sf-feedback-bottom', 'inert', 'aria-busy', 'aria-disabled']) : null;
+                releaseBottomOffset = null;
+                if (bottom) {
+                    guardedForms.add(purchase.closest('form.cart'));
+                    // Restore only our property, not native sheet measurements that
+                    // may legitimately change while fonts/viewport finish loading.
+                    const node = bottom, name = '--sf-feedback-bottom-offset';
+                    const originalStyle = node.getAttribute('style');
+                    const value = node.style.getPropertyValue(name), priority = node.style.getPropertyPriority(name);
+                    releaseBottomOffset = () => {
+                        if (value) node.style.setProperty(name, value, priority); else node.style.removeProperty(name);
+                        if (originalStyle === null && !node.style.cssText) node.removeAttribute('style');
+                    };
+                    bottom.setAttribute('data-sf-feedback-bottom', '');
+                    bottom.inert = true;
+                    bottom.setAttribute('aria-busy', 'true');
+                    bottom.setAttribute('aria-disabled', 'true');
+                    bottomResize?.observe(bottom);
+                }
+            }
+            document.documentElement.dataset.sfNavigationBottom = bottom ? 'product' : dock ? 'dock' : 'none';
+            state.hasProductBottom = !!bottom;
+            if (dock) dock.hidden = !!bottom;
+        };
+        // Inert blocks real pointer/keyboard input; also reject an async requestSubmit
+        // against the outgoing form. Do not rewrite its controls, values or callbacks.
+        const blockOldSubmit = event => {
+            if (event.target.isConnected && guardedForms.has(event.target)) {
+                event.preventDefault(); event.stopImmediatePropagation();
+            }
+        };
+        document.addEventListener('submit', blockOldSubmit, true);
+        state.releaseSubmit = () => {
+            document.removeEventListener('submit', blockOldSubmit, true); guardedForms.clear();
+        };
+        // Late native sheet mount and breakpoint restoration can reparent the real
+        // nodes while a response is pending. Observe only for this bounded lifetime.
+        const retireBottom = () => { state.releaseBottom(); syncBottom(); };
+        const bottomMount = new MutationObserver(() => {
+            if (!main.isConnected) retireBottom(); else scheduleViewport();
+        });
+        bottomMount.observe(main, { childList: true, subtree: true });
+        bottomMount.observe(main.parentElement, { childList: true });
+        window.addEventListener('codela:route-committed', retireBottom);
+        state.releaseBottom = () => {
+            bottomMount.disconnect(); bottomResize?.disconnect();
+            window.removeEventListener('codela:route-committed', retireBottom);
+            if (bottomSnapshot) restore(bottomSnapshot);
+            releaseBottomOffset?.();
+            bottom = null; bottomSnapshot = null; releaseBottomOffset = null;
+            bottomReleased = true; state.hasProductBottom = false;
+        };
         const fitViewport = () => {
             viewportFrame = 0;
             if (pending !== state) return;
+            syncBottom();
+            const nativeViewport = viewport && viewport.scale === 1 && viewport.height > 0;
+            const bottomOffset = nativeViewport ? Math.max(0, innerHeight - viewport.height - viewport.offsetTop) : 0;
+            [bottom, dock].filter(Boolean).forEach(node => node.style.setProperty('--sf-feedback-bottom-offset', bottomOffset + 'px'));
             if (viewport && viewport.scale === 1 && viewport.height > 0) {
                 surface.style.setProperty('--sf-feedback-height', viewport.height + 'px');
                 surface.style.setProperty('--sf-feedback-top', viewport.offsetTop + 'px');
@@ -166,6 +263,12 @@
                 surface.style.removeProperty('--sf-feedback-height');
                 surface.style.removeProperty('--sf-feedback-top');
             }
+            // A translucent native bottom must not pulse with the gallery behind it.
+            const visibleBottom = bottom || dock;
+            if (matchMedia('(max-width:700px)').matches && visibleBottom) {
+                const top = nativeViewport ? viewport.offsetTop : 0;
+                surface.style.setProperty('--sf-feedback-gallery-height', Math.max(0, visibleBottom.getBoundingClientRect().top - top) + 'px');
+            } else surface.style.removeProperty('--sf-feedback-gallery-height');
         };
         const scheduleViewport = () => {
             if (!viewportFrame) viewportFrame = requestAnimationFrame(fitViewport);
@@ -184,6 +287,11 @@
         return state.token;
     }
     document.addEventListener('keydown', event => { if (event.key === 'Escape') end(undefined, { focus: true }); });
+    // Cross-document snapshots must not display the outgoing price under the
+    // destination URL after commit. Keep native replacement, without crossfade.
+    window.addEventListener('pageswap', event => {
+        if (pending?.hasProductBottom) event.viewTransition?.skipTransition();
+    });
     window.addEventListener('pageshow', () => end());
     window.codelaSFFeedback = Object.freeze({ begin, end, active, accountDepth });
 })();

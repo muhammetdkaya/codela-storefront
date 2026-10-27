@@ -57,6 +57,10 @@
     var price = summary.querySelector('.sf-product-price-row, :scope > .price');
     var purchase = summary.querySelector('.sf-product-purchase');
     var mobile = matchMedia('(max-width:700px)');
+    var desktop = matchMedia('(min-width:901px)');
+    var description = product.querySelector(':scope > .sf-product-information > #sf-product-section-description');
+    var descriptionHome = null;
+    var descriptionOpen = false;
     var track = media.querySelector('.woocommerce-product-gallery__wrapper');
     var discovery = document.createElement('div');
     discovery.className = 'sf-product-discovery';
@@ -218,7 +222,28 @@
       document.body.style.removeProperty('--sf-product-collapsed-height');
       mounted = false;
     }
-    function adapt() { if (mobile.matches) mount(); else unmount(); }
+    function adaptDescription() {
+      if (desktop.matches && description && !descriptionHome) {
+        // Reuse Woo's one rendered description, including its IDs, extension
+        // content and listeners. Optional delivery modules remain native.
+        descriptionOpen = description.open;
+        descriptionHome = document.createComment('sf-product-description-position');
+        description.before(descriptionHome);
+        var next = summary.querySelector(':scope > .cdl-de, :scope > .cdl-fsb-live--product, :scope > .cdl-fsb--product, :scope > .cdl-wa, :scope > .cdl-tb');
+        summary.insertBefore(description, next);
+        description.open = true;
+      } else if (!desktop.matches && descriptionHome) {
+        descriptionHome.replaceWith(description);
+        descriptionHome = null;
+        description.open = descriptionOpen;
+      }
+    }
+    function adapt() {
+      // Restore description BEFORE the mobile sheet captures its children and
+      // disclosure states; unmount that same sheet BEFORE desktop composition.
+      if (mobile.matches) { adaptDescription(); mount(); }
+      else { unmount(); adaptDescription(); }
+    }
     toggle.addEventListener('click', function (event) {
       // Touch browsers can synthesize click well after pointerup. Keep that
       // release from toggling the snap state again; keyboard clicks stay usable.
@@ -318,6 +343,7 @@
       finishDrag(true); measure();
     });
     mobile.addEventListener('change', adapt);
+    desktop.addEventListener('change', adapt);
     sheetState = {open: function () { setOpen(true); }};
     adapt();
   }

@@ -70,6 +70,8 @@ const main=(type='home')=>'<main id="sf-content" class="sf-content" data-wp-rout
   await page.evaluate(()=>window.__pendingRoutes[1].resolve());
   await page.waitForFunction(()=>!document.querySelector('.sf-skeleton'));
   await page.evaluate(()=>{window.__routeNavigate=window.__originalNavigate});
+  const footerChecks = await page.evaluate(require('./navigation-feedback-footer.cjs'));
+  assert.equal(footerChecks.length, 15, 'Footer lifecycle and exact restoration checks');
   // Shared lifecycle owns ARIA, inert, shell and stale-completion cleanup.
   const lifecycle=await page.evaluate(()=>{
    const f=window.codelaSFFeedback,main=document.querySelector('main'),dock=document.querySelector('.sf-mobile-dock');

@@ -1,5 +1,20 @@
 # Codela Storefront UI Kit — source of truth
 
+## Native current bottom continuity — unpublished local candidate, 27 October 2026
+
+The clarified mobile bottom means the source document’s **real contextual surface**: one global dock on normal pages, or its original native purchase sheet on a purchasable product. Keep that surface visible but inert/aria-busy while navigation is pending. Normal → product cannot invent a destination panel before Woo HTML arrives: keep the existing dock until native replacement. Never display both bars, clone a form, substitute destination title/price from link metadata or keep the old CTA interactive. The global status announces loading; the outgoing form’s async submit is blocked only during this bounded state.
+
+Only the gallery pulses; stop its animated shape above the real translucent bottom. CSS may temporarily mask an expanded native sheet as compact, but must not rewrite its underlying open state or reveal hidden details/variation fields. Restore only feedback-owned CSS properties, preserving native measurements updated during pending. Pending observers handle late native mount and breakpoints and disconnect on end or source-region retirement. Main replacement / route commit retires source-panel ownership without stealing the router’s completion token; native product pageswap skips old-price cross-document snapshots. A native panel trapped by an ancestor containing/stacking context falls back to the existing real shell dock, never a cloned/moved surface.
+
+This supersedes the old 0.1.171 prohibition on showing the outgoing panel: its **busy source-document appearance** is permitted, but no stale price/form is adopted by the committed target. 700px mobile-bottom boundary and desktop product adapter/CSS remain unchanged. No-dock configuration never gains fabricated navigation. Browser geometry/input, real Woo and physical Safari acceptance remain pending; source/DOM-only checks are not visual acceptance. Version metadata remains 0.1.171 for review only, not distribution.
+
+
+## Historical gallery-only product feedback — 0.1.171 (superseded by candidate above)
+
+## Desktop description and page scrolling — unreleased review
+
+At 901px+, reuse the single native Woo description disclosure in the existing summary immediately before enabled delivery output; keep it readable on entry. Preserve its original marker and open state and restore both before the unchanged mobile sheet mounts. Additional information/reviews remain in the original below-overview information container; callbacks, IDs, forms and content are never duplicated. Missing description/delivery never creates invented content. The existing product gallery retains horizontal containment, but allows vertical scroll chaining on desktop only. At <=900px all previous CSS and composition remain; no-JS keeps the original server-rendered information fallback. This is an unreleased draft, not a new installable version or visual/native-device acceptance.
+
 ## Gallery-only product feedback — 0.1.171
 
 User clarification supersedes 0.1.170: product destinations keep animated gallery feedback, full visible viewport on mobile and left gallery on desktop. No skeleton summary, title, price, quantity, purchase panel or submit. The incoming native Woo document owns actual product information and the purchase form. Never reveal an outgoing product form while waiting. Existing header cart is shown and dock hidden for product destinations; other targets retain their own feedback and dock. Use the shared token animation, reduced-motion and viewport lifecycle.
