@@ -14,7 +14,7 @@ const doc=(path)=>{
  const checkout=path==='/checkout/';
  const style=checkout?'':css;
  const links=path==='/'?'<a id="open-category" href="/category/">Category</a>':category?'<a id="open-product" href="/product/">Product</a>':'<a id="back-home" href="/">Home</a>';
- return '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1">'+
+ return '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
   '<style>'+baseCss+style+'</style><script>window.codelaSFDocument={home:location.origin+"/",shop:location.origin+"/category/",productBase:location.origin+"/product/",catalogBases:[location.origin+"/category/"],account:location.origin+"/account/",accountLabel:"My account",excluded:["/checkout/","/cart/","/account/customer-logout/"],backIcon:"<svg></svg>",accountParents:[{url:"/account/view-order/",back:"/account/orders/",label:"Orders"},{url:"/account/edit-address/",back:"/account/edit-address/",label:"Addresses",childOnly:true}]};window.addEventListener("pageswap",event=>{sessionStorage.removeItem("retained-bottom-transition-skipped");if(event.viewTransition){const skip=event.viewTransition.skipTransition.bind(event.viewTransition);event.viewTransition.skipTransition=()=>{sessionStorage.setItem("retained-bottom-transition-skipped","true");return skip();};}});'+accountScript+'</script><script>window.addEventListener("pageswap",e=>sessionStorage.setItem("continuity-pageswap",String(Boolean(e.viewTransition))));window.addEventListener("pagereveal",e=>{sessionStorage.setItem("continuity-pagereveal",String(Boolean(e.viewTransition)));sessionStorage.setItem("account-direction",document.documentElement.dataset.sfAccountTransition||"none")});</script></head><body class="'+(product?'single-product':path.startsWith('/account/')?'woocommerce-account logged-in':'')+'">'+
   '<header class="sf-header" id="native-header"><div class="sf-brand">Codela</div></header><div class="sf-shell">'+
   '<nav class="sf-mobile-dock" id="native-dock">Navigation</nav></div>'+
@@ -26,9 +26,9 @@ const doc=(path)=>{
  let purchases=0;
  const server=createServer((req,res)=>{
   if(req.method==='POST'&&req.url==='/purchase'){
-   purchases++;let data='';req.on('data',x=>data+=x);req.on('end',()=>{res.writeHead(200,{'Content-Type':'text/html'});res.end('<html><body id="native-post">Received '+data+'</body></html>')});return;
+   purchases++;let data='';req.on('data',x=>data+=x);req.on('end',()=>{res.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});res.end('<html><body id="native-post">Received '+data+'</body></html>')});return;
   }
-  res.writeHead(200,{'Content-Type':'text/html','Cache-Control':'no-store'});
+  res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});
   if(req.url.includes('slow=1')) { setTimeout(()=>res.end(doc(req.url.split('?')[0])),900); return; }
   res.end(doc(req.url.split('?')[0]));
  });
