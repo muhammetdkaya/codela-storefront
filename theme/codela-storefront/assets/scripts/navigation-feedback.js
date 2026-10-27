@@ -169,28 +169,21 @@
         document.documentElement.dataset.sfNavigationBottom = type === 'product' ? 'product' : dock ? 'dock' : 'none';
         // Outside transformed/contained outgoing main, including router regions.
         document.body.append(surface);
-        // Mobile browser chrome can shrink the visible viewport without resizing
-        // the layout viewport that a nested fixed element uses. Size one parent
-        // surface to the visible area; all skeleton controls are local to it.
+        // iOS Safari already anchors fixed elements to its visible viewport.
+        // Reapplying (innerHeight - visualViewport.height) moved the native dock
+        // upwards, while setting a second viewport top/height clipped the fake
+        // purchase area behind the browser chrome. Use the SAME fixed anchoring
+        // as the real product sheet/dock; observe viewport changes only to size
+        // the gallery up to the actual rendered bottom surface.
         const viewport = window.visualViewport;
         let viewportFrame = 0;
         const fitViewport = () => {
             viewportFrame = 0;
             if (pending !== state) return;
-            const nativeViewport = viewport && viewport.scale === 1 && viewport.height > 0;
-            if (dock) dock.style.setProperty('--sf-feedback-bottom-offset', (nativeViewport ? Math.max(0, innerHeight - viewport.height - viewport.offsetTop) : 0) + 'px');
-            if (nativeViewport) {
-                surface.style.setProperty('--sf-feedback-height', viewport.height + 'px');
-                surface.style.setProperty('--sf-feedback-top', viewport.offsetTop + 'px');
-            } else {
-                // Pinch zoom retains the browser's normal magnification/panning.
-                surface.style.removeProperty('--sf-feedback-height');
-                surface.style.removeProperty('--sf-feedback-top');
-            }
             const preview = surface.querySelector('.sf-navigation-preview');
             const bottom = type === 'product' ? preview : dock;
-            const top = nativeViewport ? viewport.offsetTop : 0;
-            if (matchMedia('(max-width:700px)').matches && bottom) {
+            if (matchMedia('(max-width:700px)').matches && bottom && bottom.getClientRects().length) {
+                const top = surface.getBoundingClientRect().top;
                 surface.style.setProperty('--sf-feedback-gallery-height', Math.max(0, bottom.getBoundingClientRect().top - top) + 'px');
             } else surface.style.removeProperty('--sf-feedback-gallery-height');
         };
