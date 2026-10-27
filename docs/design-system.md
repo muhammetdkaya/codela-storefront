@@ -1,5 +1,9 @@
 # Codela Storefront UI Kit — source of truth
 
+## Visible viewport ownership — 0.1.169
+
+The pending surface is the sole viewport owner: VisualViewport height/offsetTop at scale 1, otherwise CSS 100dvh/native zoom. Purchase silhouette is absolute inside that surface, never another fixed descendant. Counter and thumbnail geometry uses the same parent. Resize/scroll callbacks are coalesced and removed when feedback ends; stale frames cannot resize another request. The real product sheet remains native and content-measured. Controlled viewport regressions do not substitute for physical Safari/browser-toolbar acceptance.
+
 ## Navigation feedback package — 0.1.168
 
 `assets/scripts/navigation-feedback.js` and `assets/styles/navigation-feedback.css` own all pending presentation. `window.codelaSFFeedback.begin({url, link, owner})` returns a monotonically increasing ownership token. `end(token)` only clears that request; `active(token)` guards late callbacks. The native document observer and existing core/router controller are adapters, not competing renderers. No loading HTML/CSS belongs in either adapter; the retired navigation-loading stylesheet must not return.

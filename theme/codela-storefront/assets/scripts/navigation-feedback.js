@@ -89,6 +89,7 @@
         if (!pending || token !== undefined && !active(token)) return false;
         const state = pending; pending = null;
         clearTimeout(state.timer);
+        state.releaseViewport?.();
         state.surface.remove();
         state.snapshots.reverse().forEach(restore);
         if (state.brand?.brand.isConnected) state.brand.brand.replaceChildren(...state.brand.nodes);
@@ -147,6 +148,36 @@
         document.documentElement.dataset.sfNavigationTarget = type;
         // Outside transformed/contained outgoing main, including router regions.
         document.body.append(surface);
+        // Mobile browser chrome can shrink the visible viewport without resizing
+        // the layout viewport that a nested fixed element uses. Size one parent
+        // surface to the visible area; all skeleton controls are local to it.
+        const viewport = window.visualViewport;
+        let viewportFrame = 0;
+        const fitViewport = () => {
+            viewportFrame = 0;
+            if (pending !== state) return;
+            if (viewport && viewport.scale === 1 && viewport.height > 0) {
+                surface.style.setProperty('--sf-feedback-height', viewport.height + 'px');
+                surface.style.setProperty('--sf-feedback-top', viewport.offsetTop + 'px');
+            } else {
+                // Pinch zoom retains the browser's normal magnification/panning.
+                surface.style.removeProperty('--sf-feedback-height');
+                surface.style.removeProperty('--sf-feedback-top');
+            }
+        };
+        const scheduleViewport = () => {
+            if (!viewportFrame) viewportFrame = requestAnimationFrame(fitViewport);
+        };
+        viewport?.addEventListener('resize', scheduleViewport);
+        viewport?.addEventListener('scroll', scheduleViewport);
+        window.addEventListener('resize', scheduleViewport);
+        state.releaseViewport = () => {
+            cancelAnimationFrame(viewportFrame);
+            viewport?.removeEventListener('resize', scheduleViewport);
+            viewport?.removeEventListener('scroll', scheduleViewport);
+            window.removeEventListener('resize', scheduleViewport);
+        };
+        fitViewport();
         state.timer = setTimeout(() => end(state.token, { focus: true }), 10000);
         return state.token;
     }

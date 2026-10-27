@@ -41,6 +41,7 @@ jobs:
           php tests/product-mobile-media.php
           node --input-type=module --check < theme/codela-storefront/assets/scripts/navigation-controller.js
           node --check tests/shell-navigation-browser.cjs
+          node --check tests/navigation-viewport-browser.cjs
           node --check tests/document-continuity-browser.cjs
           node tests/cart-race.cjs
           node tests/cart-sync.cjs

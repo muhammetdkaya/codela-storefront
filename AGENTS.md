@@ -1,5 +1,13 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## Son doğrulanmış devam noktası — 27 Ekim 2026: 0.1.169 görünür viewport düzeltmesi
+
+Tema **0.1.168 → 0.1.169**; eklenti değişmedi. Kullanıcının Safari ekran görüntüsünde skeleton satın alma alt satırı tarayıcı araç çubuğunun altında kalıyor. Ortak skeleton paketinde dış viewport ve iç satın alma panelinin ayrı fixed containing block kullanması kaldırıldı: tek dış yüzey VisualViewport height/offsetTop ile ölçülür, iç panel absolute olarak bu yüzeye bağlanır. Galeri/sayaç/önizlemeler aynı ölçüde kalır. Dinleyiciler yalnız pending süresince yaşar; resize/scroll rAF ile birleştirilir, bitişte dinleyici ve bekleyen frame temizlenir. API yoksa 100dvh fallback; pinch zoom sırasında doğal tarayıcı büyütmesi korunur. Gerçek Woo satın alma paneli, header/dock, ürün verisi ve native form değişmedi. Skeleton yüksekliği gerçek ürün başlık/fiyat satırları gelmeden birebir içerik yüksekliği iddiası taşımaz.
+
+**Doğrulama:** Eski JS ile yeni görünür viewport testi beklenen şekilde başarısız; düzeltmeyle 650/740/620px görünür yükseklik, 25px üst ofset, 300px dar alan, zoom, API yokluğu, masaüstü ve temizleme geçti. Native gecikmeli HTTP/BFCache/POST, core-router yaşam döngüsü ve gerçek PHP header/overlay/dock tarayıcı kontrolleri geçti. Testler Chromium kontrollü VisualViewport sınırıdır; fiziksel Safari veya canlı AZ Seramik kabulü değildir.
+
+**Yayın:** 0.1.169 kaynak/paket hazırlanıyor; FTP ve AZ Seramik kurulumu yapılmadı. **Sıradaki:** kaynak/kararlı yayın kanıtını kaydet; kullanıcı manuel güncelledikten sonra Safari araç çubuğu açık/kapalı ürün geçişinde alt satırın tamamen görünür olduğunu fiziksel cihazda doğrula.
+
 ## Son doğrulanmış devam noktası — 27 Ekim 2026: 0.1.168 ortak skeleton paketi
 
 Tema **0.1.167 → 0.1.168**; Codela eklentisi ve 1.2.3 gereksinimi değişmedi. `navigation-feedback.js/css` tek sunum paketidir: beş hedef şablonu (home/catalog/product/account/page), token tabanlı şekiller/hareket, tek viewport yüzeyi ve begin/end sahiplik kimliği. Native belge gözlemcisi ve core/router adaptörü bu paketi kullanır. İki ayrı placeholder üreticisi ve `navigation-loading.css` kaldırıldı; document-continuity yalnız native link uygunluğu, geçmiş/geri etiketi ve View Transition köprüsüdür. Yeni router, veri motoru, fetch/cache veya üçüncü taraf bağımlılık yok.

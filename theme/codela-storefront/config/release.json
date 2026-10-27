@@ -6,9 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Normal sayfa ve WordPress içerik geçişleri tek skeleton paketi ve ortak yaşam döngüsünde birleştirildi.",
-    "Header ve tek alt menü yükleme, iptal, zaman aşımı ve geri dönüşlerde tutarlı biçimde korunur.",
-    "Hedef sayfaya uygun ana sayfa, katalog, ürün, hesap ve içerik iskeletleri aynı tasarım ve hareket kurallarını kullanır.",
-    "Gecikmiş eski geçişler yeni yükleme durumunu temizleyemez; azaltılmış hareket ve erişilebilirlik durumları korunur."
+    "Mobil tarayıcı araç çubuğu açıkken skeleton satın alma panelinin görünür alanın altında kalması düzeltildi.",
+    "Skeleton tek görünür ekran ölçüsünü kullanır; alt panel, sayaç ve önizlemeler aynı katmana bağlıdır.",
+    "Araç çubuğu açılıp kapanması, ekran dönüşü, yakınlaştırma ve geçiş temizliği için viewport regresyon testleri eklendi."
   ]
 }

@@ -1,7 +1,7 @@
 /* The pending surface belongs to the viewport, never the outgoing product. */
 html[data-sf-navigation-pending] #sf-content *{visibility:hidden!important}
 html[data-sf-navigation-pending] :is(.sf-product-sheet,.sf-product-sheet *,.sf-product-purchase,.sf-product-plugin-footer){visibility:hidden!important}
-.sf-skeleton{position:fixed;inset:0;z-index:990;box-sizing:border-box;padding:calc(100px + var(--sf-header-offset,0px)) clamp(20px,5vw,48px) 110px;background:var(--sf-ui-page,#fff);pointer-events:none;overflow:hidden}
+.sf-skeleton{position:fixed;inset:var(--sf-feedback-top,0px) 0 auto;height:var(--sf-feedback-height,100dvh);z-index:990;box-sizing:border-box;padding:calc(100px + var(--sf-header-offset,0px)) clamp(20px,5vw,48px) 110px;background:var(--sf-ui-page,#fff);pointer-events:none;overflow:hidden}
 .sf-skeleton-layout{display:grid;align-content:start;gap:28px}
 .sf-skeleton-status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
 .sf-skeleton-row{display:flex;align-items:center;gap:20px;min-width:0}
@@ -39,7 +39,7 @@ html[data-sf-navigation-pending] .sf-shell > .sf-mobile-dock .sf-dock-surface{tr
   .sf-skeleton-product-layout>div:last-child{display:none}
   html[data-sf-navigation-target="product"] .sf-skeleton{padding:0;--sf-skeleton-panel-height:164px}
   .sf-skeleton-gallery{position:absolute;inset:0;width:100%;height:100%;border-radius:0}
-  .sf-skeleton-purchase{display:grid;gap:20px;position:fixed;inset-inline:var(--sf-ui-bottom-bar-inset,16px);bottom:calc(var(--sf-ui-bottom-bar-gap,4px) + env(safe-area-inset-bottom,0px));max-width:var(--sf-ui-bottom-bar-max-width,430px);margin:auto;height:var(--sf-skeleton-panel-height);padding:32px 12px 12px;box-sizing:border-box;view-transition-name:sf-persistent-bottom}
+  .sf-skeleton-purchase{display:grid;gap:20px;position:absolute;inset-inline:var(--sf-ui-bottom-bar-inset,16px);bottom:calc(var(--sf-ui-bottom-bar-gap,4px) + env(safe-area-inset-bottom,0px));max-width:var(--sf-ui-bottom-bar-max-width,430px);margin:auto;height:var(--sf-skeleton-panel-height);padding:32px 12px 12px;box-sizing:border-box;view-transition-name:sf-persistent-bottom}
   .sf-skeleton-handle{position:absolute;top:12px;left:calc(50% - 22px);width:44px;height:4px;border-radius:999px}
   .sf-skeleton-product-meta{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:0 4px}
   .sf-skeleton-product-meta .sf-skeleton-lines{width:62%;gap:9px}

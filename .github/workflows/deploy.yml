@@ -87,6 +87,7 @@ jobs:
           node tests/product-browser.cjs
           node tests/product-modules-browser.cjs
           node tests/shell-navigation-browser.cjs
+          node tests/navigation-viewport-browser.cjs
           node tests/document-continuity-browser.cjs
           node tests/gallery-defer-browser.cjs
           node tests/product-mobile-media-admin-browser.cjs
