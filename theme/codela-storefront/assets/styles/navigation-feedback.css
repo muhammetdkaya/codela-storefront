@@ -17,10 +17,18 @@ html[data-sf-navigation-pending] :is(.sf-product-sheet,.sf-product-sheet *,.sf-p
 .sf-skeleton-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
 .sf-skeleton-card{height:clamp(120px,22vw,280px);margin-bottom:18px}
 html[data-sf-navigation-pending] .sf-shell > .sf-mobile-dock .sf-dock-surface{transform:none;transition:none}
+/* Product feedback has no synthetic summary, price or purchase panel. */
+.sf-skeleton-gallery{width:calc((100% - 40px)*.5652);height:65svh}
 @media(max-width:700px){
-  html[data-sf-navigation-pending] .sf-shell.has-mobile-dock .sf-header .sf-actions{display:none!important}
+  html[data-sf-navigation-target="product"] .sf-skeleton{padding:0}
+  html[data-sf-navigation-target="product"] .sf-skeleton-gallery{position:absolute;inset:0;width:100%;height:100%;border-radius:0}
+  html[data-sf-navigation-target="product"] .sf-shell .sf-header .sf-actions{display:flex!important}
+  html[data-sf-navigation-target="product"] .sf-shell .sf-header .sf-actions > :not(.sf-cart-trigger){display:none!important}
+  html[data-sf-navigation-target="product"] .sf-shell .sf-header .sf-cart-trigger{display:inline-flex!important}
+  html[data-sf-navigation-target="product"] .sf-shell > .sf-mobile-dock{display:none!important}
+  html[data-sf-navigation-pending]:not([data-sf-navigation-target="product"]) .sf-shell.has-mobile-dock .sf-header .sf-actions{display:none!important}
 
-  html[data-sf-navigation-pending] .sf-shell > .sf-mobile-dock{display:block!important}
+  html[data-sf-navigation-pending]:not([data-sf-navigation-target="product"]) .sf-shell > .sf-mobile-dock{display:block!important}
   .sf-skeleton-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 
 }
