@@ -6,7 +6,7 @@ Tema 0.1.171 → 0.1.173; eklenti değişmedi. Kullanıcının son yayını yap 
 
 Doğrulama: 24 paket testi; tüm tema PHP lint ve JS syntax; navigation/document-continuity/mobile-media PHP; cart-race/cart-sync/search/format/UI-kit/Google/footer/dock geçti. Chromium 153 native gecikmeli HTTP/POST/Back/Forward, gerçek PHP native alt panel pointer/klavye/viewport/reduced-motion, shell/footer sözleşmesi, mobil görsel ve masaüstü beş genişlik/wheel/breakpoint testleri geçti. Native pending testleri click task içinde okunacak şekilde düzeltildi; fixture UTF-8 charset eklendi. Önceki #80 CI WebKit medya timeout'u bu ortamda doğrulanmadı; fiziksel Safari ve gerçek WP/Woo kabulü açık.
 
-Yayın durumu: kaynak, GitHub Release ve stable manifest hazırlanıyor; henüz başarılı yayın iddiası yok. FTP/AZ kurulumu yapılmaz. Sıradaki: immutable source ile 0.1.173 yayını ve stable sürüm/kaynak/hash eşleşmesini doğrula; sonra kullanıcı manuel kurulumu ve fiziksel Safari kabulü.
+Yayın tamamlandı: [kaynak f5ce541](https://github.com/muhammetdkaya/codela-storefront/commit/f5ce54149235129c169f516dd482067e41c45e47) main’de. [GitHub-only koşu 40506460163](https://github.com/muhammetdkaya/codela-storefront/actions/runs/40506460163) başarılı; [v0.1.173](https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.173) public. Stable manifest sürüm/kaynak/ZIP hash ile eşleşir. ZIP 168932 bayt; SHA256 900d6a6d36c9a95d409d5cea2a7394ee18b07cce8d80221d1c091e3c64ec1927, yerel paket ve GitHub digest aynı. FTP/AZ kurulumu yapılmadı. Sıradaki: kullanıcı Codela → Tema üzerinden manuel güncellesin; fiziksel Safari ve gerçek WP/Woo kabulü tamamlanmalı.
 
 
 ## 27 Ekim 2026 — yerel aday: gerçek bağlamsal mobil alt alan
