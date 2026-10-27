@@ -8,17 +8,18 @@ const css=['tokens','components','navigation-feedback','document-continuity'].ma
 const accountScript=fs.readFileSync('theme/codela-storefront/assets/scripts/navigation-feedback.js','utf8')+fs.readFileSync('theme/codela-storefront/assets/scripts/document-continuity.js','utf8');
 const baseCss='body{margin:0;font-family:sans-serif}.sf-header{position:fixed;inset:0 0 auto;z-index:1000;height:72px;display:flex;align-items:center;padding:0 20px;background:#fafafa}.sf-mobile-dock,.sf-product-purchase{z-index:1000;position:fixed;bottom:12px;left:16px;right:16px;height:58px;border-radius:30px;background:#eee}body.single-product .sf-mobile-dock{display:none}main{padding:100px 30px 30px;min-height:1800px}';
 const doc=(path)=>{
- const product=path==='/product/';
+ const product=path.startsWith('/product/');
+ const productId=path.includes('/next/')?84:42;
  const category=path==='/category/';
  const checkout=path==='/checkout/';
  const style=checkout?'':css;
  const links=path==='/'?'<a id="open-category" href="/category/">Category</a>':category?'<a id="open-product" href="/product/">Product</a>':'<a id="back-home" href="/">Home</a>';
  return '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1">'+
-  '<style>'+baseCss+style+'</style><script>window.codelaSFDocument={home:location.origin+"/",shop:location.origin+"/category/",productBase:location.origin+"/product/",catalogBases:[location.origin+"/category/"],account:location.origin+"/account/",accountLabel:"My account",excluded:["/checkout/","/cart/","/account/customer-logout/"],backIcon:"<svg></svg>",accountParents:[{url:"/account/view-order/",back:"/account/orders/",label:"Orders"},{url:"/account/edit-address/",back:"/account/edit-address/",label:"Addresses",childOnly:true}]};'+accountScript+'</script><script>window.addEventListener("pageswap",e=>sessionStorage.setItem("continuity-pageswap",String(Boolean(e.viewTransition))));window.addEventListener("pagereveal",e=>{sessionStorage.setItem("continuity-pagereveal",String(Boolean(e.viewTransition)));sessionStorage.setItem("account-direction",document.documentElement.dataset.sfAccountTransition||"none")});</script></head><body class="'+(product?'single-product':path.startsWith('/account/')?'woocommerce-account logged-in':'')+'">'+
+  '<style>'+baseCss+style+'</style><script>window.codelaSFDocument={home:location.origin+"/",shop:location.origin+"/category/",productBase:location.origin+"/product/",catalogBases:[location.origin+"/category/"],account:location.origin+"/account/",accountLabel:"My account",excluded:["/checkout/","/cart/","/account/customer-logout/"],backIcon:"<svg></svg>",accountParents:[{url:"/account/view-order/",back:"/account/orders/",label:"Orders"},{url:"/account/edit-address/",back:"/account/edit-address/",label:"Addresses",childOnly:true}]};window.addEventListener("pageswap",event=>{sessionStorage.removeItem("retained-bottom-transition-skipped");if(event.viewTransition){const skip=event.viewTransition.skipTransition.bind(event.viewTransition);event.viewTransition.skipTransition=()=>{sessionStorage.setItem("retained-bottom-transition-skipped","true");return skip();};}});'+accountScript+'</script><script>window.addEventListener("pageswap",e=>sessionStorage.setItem("continuity-pageswap",String(Boolean(e.viewTransition))));window.addEventListener("pagereveal",e=>{sessionStorage.setItem("continuity-pagereveal",String(Boolean(e.viewTransition)));sessionStorage.setItem("account-direction",document.documentElement.dataset.sfAccountTransition||"none")});</script></head><body class="'+(product?'single-product':path.startsWith('/account/')?'woocommerce-account logged-in':'')+'">'+
   '<header class="sf-header" id="native-header"><div class="sf-brand">Codela</div></header><div class="sf-shell">'+
   '<nav class="sf-mobile-dock" id="native-dock">Navigation</nav></div>'+
   '<main id="sf-content"><a id="slow-account" href="/account/orders/?slow=1">Slow orders</a><a id="account-root" href="/account/">Account</a><a id="account-orders" href="/account/orders/">Orders</a><h1>'+path+'</h1>'+links+'<a id="open-checkout" href="/checkout/">Checkout</a>'+
-  (product?'<div class="product"><form class="cart" method="post" action="/purchase"><div class="sf-product-purchase"><input name="quantity" value="1"><button type="submit" name="add-to-cart" value="42">Add to cart</button></div></form></div>':'')+
+  (product?'<div class="product"><form class="cart" method="post" action="/purchase"><div class="sf-product-purchase"><span data-product-price>'+productId+' ₺</span><input name="quantity" value="1"><button type="submit" name="add-to-cart" value="'+productId+'">Add to cart</button></div></form></div>':'')+
   '</main></body></html>';
 };
 (async()=>{
@@ -124,7 +125,8 @@ const doc=(path)=>{
       },target);
       if(target==='product') {
        const gallery=page.locator('.sf-skeleton-gallery');
-       assert.deepEqual(await gallery.boundingBox(),{x:0,y:0,width:390,height:850});
+       const dockTop=await page.locator('.sf-mobile-dock').evaluate(el=>el.getBoundingClientRect().top);
+       assert.deepEqual(await gallery.boundingBox(),{x:0,y:0,width:390,height:dockTop});
        assert.equal(await gallery.evaluate(el=>getComputedStyle(el).animationName),'sf-skeleton-pulse');
        assert.equal(await page.locator('.sf-skeleton-purchase,.sf-skeleton-summary,.sf-skeleton-product-controls').count(),0,'No fabricated purchase panel');
        await page.emulateMedia({reducedMotion:'reduce'});
@@ -141,7 +143,7 @@ const doc=(path)=>{
      assert(result.outside&&result.restored,'Outside main and cancellation restores state');
      assert.equal(result.old,'hidden','Old explicitly visible product descendants hidden');
      assert.equal(result.purchase,false,'Purchase panel never uses skeleton');
-     if(width<=700) assert.equal(result.dock,result.type!=='product','Target owns the bottom surface');
+     if(width<=700) assert.equal(result.dock,true,'Contained old product uses the one real shell dock, never a fabricated destination panel');
      assert.equal(result.color,'rgb(223, 225, 229)','Stronger static contrast');
     }
    }
@@ -191,6 +193,28 @@ const doc=(path)=>{
   await page.goBack();
   assert.equal(await page.locator('#sf-content').evaluate(e=>getComputedStyle(e).viewTransitionName),'none','Mobile account content has no slide layer');
   assert.equal(await page.locator('[data-sf-navigation-pending]').count(),0,'History/BFCache restores usable content');
+  // Delayed real native takeovers cannot carry an outgoing price under the new URL.
+  for(const [from,to,expectedBottom] of [['/product/','/product/next/','product'],['/','/product/next/','dock'],['/product/','/category/','product']]){
+   await page.goto(origin+from);
+   await page.evaluate(()=>{
+    window.addEventListener('pageswap',event=>{sessionStorage.setItem('native-bottom-pageswap',String(document.documentElement.dataset.sfNavigationBottom||'none'));event.viewTransition?.finished.catch(()=>{});});
+   });
+   await page.evaluate(to=>{const a=document.createElement('a');a.href=to+'?slow=1';a.textContent='Next';document.body.append(a);a.click();},to);
+   assert.equal(await page.locator('html').getAttribute('data-sf-navigation-bottom'),expectedBottom);
+   assert.equal(await page.locator('.sf-mobile-dock').isVisible(),expectedBottom==='dock');
+   if(expectedBottom==='product'){assert(await page.locator('[data-sf-feedback-bottom]').isVisible());assert.equal(await page.locator('[data-product-price]').textContent(),'42 ₺');}
+   await page.waitForURL(origin+to+'?slow=1');
+   await page.waitForLoadState('domcontentloaded');
+   assert.equal(await page.locator('[data-sf-navigation-pending]').count(),0);
+   assert.equal(await page.locator('[data-sf-feedback-bottom]').count(),0);
+   assert.equal(await page.locator('button[value="42"]').count(),0,'Committed target never adopts the old product control');
+   if(to.startsWith('/product/'))assert.equal(await page.locator('[data-product-price]').textContent(),'84 ₺');
+   if(expectedBottom==='product')assert.equal(await page.evaluate(()=>sessionStorage.getItem('retained-bottom-transition-skipped')),'true','Outgoing-price View Transition is skipped before native commit');
+   await page.goBack();
+   assert.equal(await page.locator('[data-sf-navigation-pending]').count(),0,'Back restores a non-busy native document');
+   await page.goForward();
+   assert.equal(await page.locator('[data-sf-navigation-pending]').count(),0,'Forward restores a non-busy native document');
+  }
   await context.close();
   const desktop=await browser.newContext({viewport:{width:1280,height:900}});
   const d=await desktop.newPage();await d.goto(origin+'/account/');await d.locator('#account-orders').click();
@@ -214,6 +238,7 @@ const doc=(path)=>{
   await p.locator('#open-category').click();
   assert(p.url().endsWith('/category/'),'Reduced motion still navigates normally');
   await quiet.close();
+  await require('./navigation-feedback-bottom-browser.cjs')(browser);
   console.log('Native continuity: real HTML navigation, browser snapshots, purchase bar, one WC-style form POST, reduced-motion opt-out passed.');
  } finally {
   await browser.close();
