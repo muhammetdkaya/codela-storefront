@@ -6,7 +6,7 @@ import { store, watch } from '@wordpress/interactivity';
 const { state: routerState } = store('core/router');
 const REGION = '#sf-content[data-wp-router-region="codela/storefront/main"]';
 let navigationGeneration = 0;
-let desired = 'content';
+let feedbackToken = null;
 let previousUrl = routerState.url || location.href;
 
 function sameDocument(url) {
@@ -22,32 +22,6 @@ function allowedClick(event, link) {
     try { url = new URL(link.href, location.href); } catch { return false; }
     return ['http:', 'https:'].includes(url.protocol) && url.origin === location.origin &&
         !url.hash && !sameDocument(url);
-}
-function renderPlaceholder() {
-    const main = document.querySelector(REGION);
-    if (!main || main.querySelector(':scope > .sf-route-skeleton')) return;
-    const wrapper = document.createElement('div');
-    wrapper.className = 'sf-route-skeleton';
-    wrapper.setAttribute('aria-hidden', 'true');
-    // Layout adapted to the destination, but never reproduces a real product
-    // title or stale customer information.
-    if (desired === 'home') {
-        wrapper.innerHTML = '<div class="sf-route-hero"></div><div class="sf-route-line"></div><div class="sf-route-cards">' +
-            '<div></div>'.repeat(4) + '</div>';
-    } else {
-        wrapper.innerHTML = '<div class="sf-route-heading"></div>' +
-            '<div class="sf-route-text"></div>'.repeat(2);
-    }
-    main.prepend(wrapper);
-    main.classList.add('sf-route-loading');
-    main.setAttribute('aria-busy', 'true');
-}
-function clearPlaceholder() {
-    document.querySelectorAll('.sf-route-skeleton').forEach(el => el.remove());
-    document.querySelectorAll('.sf-route-loading').forEach(el => {
-        el.classList.remove('sf-route-loading');
-        el.removeAttribute('aria-busy');
-    });
 }
 function applyLocation(from) {
     const main = document.querySelector(REGION);
@@ -72,7 +46,8 @@ function applyLocation(from) {
     window.dispatchEvent(new CustomEvent('codela:route-committed', { detail: { from, to: here.href } }));
 }
 function finishLoading() {
-    clearPlaceholder();
+    window.codelaSFFeedback?.end(feedbackToken);
+    feedbackToken = null;
 }
 function commitLocation({ focus = false } = {}) {
     const url = routerState.url || location.href;
@@ -95,8 +70,7 @@ function commitLocation({ focus = false } = {}) {
 // The URL watcher also handles native router history traversal.
 watch(() => {
     const url = routerState.url || location.href;
-    if (previousUrl !== url) {
-        finishLoading();
+    if (previousUrl !== url && !window.codelaSFFeedback?.active(feedbackToken)) {
         commitLocation();
     }
 });
@@ -106,25 +80,27 @@ document.addEventListener('click', event => {
     const link = event.target.closest?.('a[data-sf-route]');
     if (!allowedClick(event, link)) return;
     event.preventDefault();
-    desired = link.dataset.sfRoute === 'home' ? 'home' : 'content';
-    if (document.querySelector('#sf-panel[open]')) {
-        window.dispatchEvent(new Event('codela:before-route'));
-    }
     const url = link.href;
     const generation = ++navigationGeneration;
     finishLoading();
-    renderPlaceholder();
+    feedbackToken = window.codelaSFFeedback?.begin({ url, link, owner: 'router' });
+    const token = feedbackToken;
+    let fallingBack = false;
     // Dynamic import means the router is paid for only on actual navigation.
     import('@wordpress/interactivity-router').then(({actions}) =>
         actions.navigate(url, { timeout: 7000, loadingAnimation: false })
     ).catch(() => {
-        if (generation !== navigationGeneration) return;
+        if (generation !== navigationGeneration || token != null && !window.codelaSFFeedback?.active(token)) return;
         // No custom fetch/caching: if the router module cannot load, restore
         // normal navigation for this click.
+        fallingBack = true;
         window.location.assign(url);
     }).finally(() => {
-        if (generation !== navigationGeneration) return;
-        finishLoading();
-        commitLocation({ focus: true });
+        if (generation !== navigationGeneration || fallingBack) return;
+        const ownsFeedback = window.codelaSFFeedback?.active(token);
+        if (ownsFeedback) {
+            finishLoading();
+            commitLocation({ focus: true });
+        } else feedbackToken = null;
     });
 });

@@ -35,6 +35,8 @@ jobs:
       - name: Verify release candidate without FTP deployment
         run: |
           php tests/navigation.php
+          node --check theme/codela-storefront/assets/scripts/navigation-feedback.js
+          node --check theme/codela-storefront/assets/scripts/document-continuity.js
           php tests/document-continuity.php
           php tests/product-mobile-media.php
           node --input-type=module --check < theme/codela-storefront/assets/scripts/navigation-controller.js

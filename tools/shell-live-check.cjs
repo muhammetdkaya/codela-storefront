@@ -64,12 +64,12 @@ const fs=require('node:fs');
   // This URL shares the current home content; the WordPress router can serve
   // it instantly without a fetch. In that case NO skeleton is correct.
   const click=page.locator('#sf-route-qa-link').click({noWaitAfter:true});
-  const pending=page.locator('.sf-route-skeleton').waitFor({state:'visible',timeout:1200}).then(()=>true).catch(()=>false);
+  const pending=page.locator('.sf-skeleton[data-owner="router"]').waitFor({state:'visible',timeout:1200}).then(()=>true).catch(()=>false);
   await click;
   await page.waitForURL(/codela_sf_navigation_qa=1/,{timeout:15000});
   report.checks.skeletonObserved=await pending;
   report.checks.skeletonRule='Fast cached navigation may bypass the 160ms loading skeleton';
-  await page.locator('.sf-route-skeleton').waitFor({state:'detached',timeout:15000});
+  await page.locator('.sf-skeleton[data-owner="router"]').waitFor({state:'detached',timeout:15000});
   report.checks.sameNodes=await page.evaluate(()=>window.__shellOriginal.header===document.querySelector('.sf-header')&&window.__shellOriginal.dialog===document.querySelector('#sf-panel')&&window.__shellOriginal.dock===document.querySelector('.sf-mobile-dock'));
   assert(report.checks.sameNodes,'Core router must preserve header/dialog/dock DOM identity.');
   await page.goBack({waitUntil:'domcontentloaded',timeout:15000});
@@ -117,7 +117,7 @@ const fs=require('node:fs');
   await context.close();
  }catch(error){
   if(page && !page.isClosed()) {
-    report.debug=await page.evaluate(()=>({url:location.href,ready:document.readyState,routeLink:!!document.querySelector('#sf-route-qa-link'),region:!!document.querySelector('#sf-content[data-wp-router-region]'),mainRegionHTML:document.querySelector('#sf-content')?.outerHTML.slice(0,350),scripts:[...document.querySelectorAll('script[src]')].filter(x=>x.src.includes('navigation')).map(x=>({src:x.src,type:x.type})),skeleton:!!document.querySelector('.sf-route-skeleton'),routerModule:!!document.querySelector('script[type=importmap]')})).catch(e=>({evaluateError:e.message}));
+    report.debug=await page.evaluate(()=>({url:location.href,ready:document.readyState,routeLink:!!document.querySelector('#sf-route-qa-link'),region:!!document.querySelector('#sf-content[data-wp-router-region]'),mainRegionHTML:document.querySelector('#sf-content')?.outerHTML.slice(0,350),scripts:[...document.querySelectorAll('script[src]')].filter(x=>x.src.includes('navigation')).map(x=>({src:x.src,type:x.type})),skeleton:!!document.querySelector('.sf-skeleton[data-owner="router"]'),routerModule:!!document.querySelector('script[type=importmap]')})).catch(e=>({evaluateError:e.message}));
   }
   report.checks.pageErrors=typeof errors==='undefined'?[]:errors;
   report.checks.navigationRequests=typeof navigationRequests==='undefined'?[]:navigationRequests;

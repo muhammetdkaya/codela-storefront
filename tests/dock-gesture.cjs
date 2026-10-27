@@ -31,7 +31,9 @@ const dock={
 const dialogHandlers={};
 const dialog={open:false,appendChild(el){el.parentElement=this},before(el){el.parentElement=shell},contains(){return false},addEventListener(k,fn){dialogHandlers[k]=fn}};
 const docHandlers={};
+let navigationPending=false;
 const document={
+ documentElement:{hasAttribute:name=>name==='data-sf-navigation-pending'&&navigationPending},
  body:{classList:{contains:()=>false}},
  scrollingElement:{scrollHeight:3000,clientHeight:800},
  createComment:()=>({after(el){el.parentElement=shell}}),
@@ -64,6 +66,9 @@ assert.equal(items[2].classList.contains('is-active'),true);
 helpers.restoreDock();
 assert.equal(dock.parentElement,shell);
 assert.equal(items[0].classList.contains('is-active'),true);
+navigationPending=true;helpers.setDockCollapsed(true);
+assert.equal(dock.classList.contains('is-collapsed'),false,'Loading feedback owns dock visibility');
+navigationPending=false;
 // A single installation owns both gesture and scroll listeners, even if init repeats.
 helpers.init(dialog);helpers.init(dialog);
 assert.equal(scrollListeners,1,'Scroll listener installed once');

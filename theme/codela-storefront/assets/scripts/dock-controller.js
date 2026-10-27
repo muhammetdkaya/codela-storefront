@@ -22,6 +22,7 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
         pendingDockTransition = null;
     }
     function setDockCollapsed(collapsed) {
+        if (document.documentElement.hasAttribute('data-sf-navigation-pending')) return;
         // Explicit navigation, reveal-handle or scroll-to-top actions take precedence.
         cancelPendingDockTransition();
         const dock = mobileDock();
@@ -37,6 +38,7 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
         dock.querySelectorAll('.sf-dock-item').forEach(item => { item.inert = collapsed; });
     }
     function requestDockCollapsed(collapsed) {
+        if (document.documentElement.hasAttribute('data-sf-navigation-pending')) return;
         const dock = mobileDock();
         if (!dock || dock.hidden || dock.classList.contains('is-collapsed') === collapsed) return;
         const remaining = DOCK_REST_MS - (Date.now() - lastDockChangeAt);

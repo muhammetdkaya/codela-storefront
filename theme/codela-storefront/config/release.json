@@ -6,7 +6,9 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Skeleton yükleme sırasında yumuşak pulse animasyonu gösterir; azaltılmış hareket tercihi korunur.",
-    "Mobil ürün skeleton görünümü tam genişlik galeri, küçük önizlemeler ve başlık/fiyat/adet/buton içeren gerçekçi alt panel ile eşleştirildi."
+    "Normal sayfa ve WordPress içerik geçişleri tek skeleton paketi ve ortak yaşam döngüsünde birleştirildi.",
+    "Header ve tek alt menü yükleme, iptal, zaman aşımı ve geri dönüşlerde tutarlı biçimde korunur.",
+    "Hedef sayfaya uygun ana sayfa, katalog, ürün, hesap ve içerik iskeletleri aynı tasarım ve hareket kurallarını kullanır.",
+    "Gecikmiş eski geçişler yeni yükleme durumunu temizleyemez; azaltılmış hareket ve erişilebilirlik durumları korunur."
   ]
 }

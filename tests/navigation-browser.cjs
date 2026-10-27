@@ -16,7 +16,7 @@ let activeHeader=header;
 const checkout = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8',env:{...process.env,FIXTURE_CHECKOUT:'1'}});
 const footer = execFileSync(php, ['tests/render-footer.php'], {encoding:'utf8',env:{...process.env,FOOTER_PRIVACY:'1',FOOTER_TERMS:'1',FOOTER_NOTE:'1'}});
 assert(!checkout.includes('class="sf-mobile-dock'), 'Checkout omits the dock');
-const css = ['assets/styles/tokens.css','assets/storefront.css','assets/styles/overlay.css','assets/styles/navigation.css','assets/styles/components.css','assets/styles/account-overlay.css'].map(p=>fs.readFileSync('theme/codela-storefront/'+p,'utf8')).join('\n');
+const css = ['assets/styles/tokens.css','assets/storefront.css','assets/styles/overlay.css','assets/styles/navigation.css','assets/styles/components.css','assets/styles/account-overlay.css','assets/styles/navigation-feedback.css'].map(p=>fs.readFileSync('theme/codela-storefront/'+p,'utf8')).join('\n');
 const moduleSource = name => fs.readFileSync(
  'theme/codela-storefront/assets/scripts/'+name+'.js','utf8'
  ).replace(/^import .*;$/gm,'').replace(/^export /gm,'');
@@ -562,6 +562,43 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
    if(mode==='cart'&&width>=901)await page.locator('#sf-panel').waitFor({state:'hidden'});
   }
  }
+ // Real shell integration: close the existing menu, return its original dock,
+ // freeze old controls, and restore them on cancellation at each breakpoint.
+ activeHeader=header;
+ for(const width of [320,390,700,1024,1440]){
+  await page.setViewportSize({width,height:844});
+  await page.goto('https://store.test/feedback');
+  await page.evaluate(()=>{document.querySelector('main').id='sf-content';window.codelaSFDocument={home:'https://store.test/',productBase:'https://store.test/product/'};});
+  await page.addScriptTag({content:js});
+  await page.addScriptTag({content:fs.readFileSync('theme/codela-storefront/assets/scripts/navigation-feedback.js','utf8')});
+  await page.evaluate(()=>document.addEventListener('click',event=>{const el=event.target.closest('[data-wp-on--click]');if(el)window.sfActions[el.getAttribute('data-wp-on--click').split('.')[1]](event);}));
+  if(width<1100) await page.locator('.sf-header-menu .sf-menu-trigger').click();
+  const feedback=await page.evaluate(()=>{
+   const dock=document.querySelector('.sf-mobile-dock'),header=document.querySelector('.sf-header');
+   window.originalDock=dock;window.originalHeader=header;
+   const link=document.createElement('a');link.href='https://store.test/product/test/';
+   const token=window.codelaSFFeedback.begin({url:link.href,link});
+   const result={closed:!document.querySelector('#sf-panel').open,dockHome:dock.parentElement.classList.contains('sf-shell'),oneDock:document.querySelectorAll('.sf-mobile-dock').length===1,headerLocked:header.inert,dockHidden:dock.hidden,menuReset:document.querySelector('.sf-menu-trigger')?.getAttribute('aria-expanded')!=='true',cartVisible:getComputedStyle(header.querySelector('.sf-cart-trigger')).display!=='none'&&getComputedStyle(header.querySelector('.sf-actions')).display!=='none'};
+   window.feedbackToken=token;return result;
+  });
+  assert.deepEqual(feedback,{closed:true,dockHome:true,oneDock:true,headerLocked:true,dockHidden:true,menuReset:true,cartVisible:true});
+  await page.screenshot({path:'qa/storefront-ui-kit-skeleton-product-'+width+'.png'});
+  await page.keyboard.press('Escape');
+  assert(await page.evaluate(()=>!document.querySelector('.sf-skeleton')&&!originalHeader.inert&&!originalDock.inert&&originalDock===document.querySelector('.sf-mobile-dock')&&originalHeader===document.querySelector('.sf-header')),'Same shell is usable after cancellation');
+  if(width<1100){
+   await page.locator('.sf-header-menu .sf-menu-trigger').click();
+   assert(await page.locator('#sf-panel').evaluate(el=>el.open),'Menu reopens after cancellation');
+  }
+ }
+ activeHeader=noDockHeader;
+ await page.goto('https://store.test/no-dock-feedback');
+ await page.setViewportSize({width:390,height:844});
+ await page.evaluate(()=>{document.querySelector('main').id='sf-content';window.codelaSFDocument={home:'https://store.test/'};});
+ await page.addScriptTag({content:fs.readFileSync('theme/codela-storefront/assets/scripts/navigation-feedback.js','utf8')});
+ await page.evaluate(()=>window.codelaSFFeedback.begin({url:'https://store.test/'}));
+ assert.equal(await page.locator('.sf-mobile-dock').count(),0,'Feedback never invents a disabled dock');
+ assert.equal(await page.locator('.sf-header .sf-actions').evaluate(el=>getComputedStyle(el).display),'flex','No-dock header tools stay in their real slot');
+ await page.keyboard.press('Escape');
  assert.deepEqual(errors,[]);
  assert(searchRequests>0);
  console.log('Browser navigation: real PHP markup, 4 viewport sizes, touch/hold/outside release, scroll/safe-area, focus/reopen, API race, rapid switching and reduced motion passed.');

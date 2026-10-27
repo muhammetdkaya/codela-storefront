@@ -37,6 +37,8 @@ jobs:
           php tests/product-mobile-media.php
           php tests/media-optimization.php
           php tests/navigation.php
+          node --check theme/codela-storefront/assets/scripts/navigation-feedback.js
+          node --check theme/codela-storefront/assets/scripts/document-continuity.js
           php tests/document-continuity.php
           node --check tests/wordpress-commerce.cjs
           node --check tests/document-continuity-browser.cjs

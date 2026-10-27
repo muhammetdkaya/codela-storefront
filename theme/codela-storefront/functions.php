@@ -130,9 +130,11 @@ add_action( 'wp_enqueue_scripts', function() {
     if ( $sections['products'] || is_front_page() || is_search() ) { wp_enqueue_script( 'wc-add-to-cart' ); }
     if ( codela_sf_document_continuity_allowed() ) {
         wp_enqueue_style( 'codela-storefront-document-continuity', $root_uri . 'styles/document-continuity.css', [ 'codela-storefront-components' ], $style_version );
+        wp_enqueue_style( 'codela-storefront-navigation-feedback', $root_uri . 'styles/navigation-feedback.css', [ 'codela-storefront-components' ], $style_version );
+        wp_enqueue_script( 'codela-storefront-navigation-feedback', $root_uri . 'scripts/navigation-feedback.js', [], codela_sf_script_module_version( 'scripts/navigation-feedback.js' ), false );
         // Head script registers pagereveal before the first rendering opportunity.
-        wp_enqueue_script( 'codela-storefront-document-continuity', $root_uri . 'scripts/document-continuity.js', [], codela_sf_script_module_version( 'scripts/document-continuity.js' ), false );
-        wp_add_inline_script( 'codela-storefront-document-continuity', 'window.codelaSFDocument=' . wp_json_encode( [
+        wp_enqueue_script( 'codela-storefront-document-continuity', $root_uri . 'scripts/document-continuity.js', [ 'codela-storefront-navigation-feedback' ], codela_sf_script_module_version( 'scripts/document-continuity.js' ), false );
+        wp_add_inline_script( 'codela-storefront-navigation-feedback', 'window.codelaSFDocument=' . wp_json_encode( [
             'home' => home_url( '/' ),
             'shop' => wc_get_page_permalink( 'shop' ),
             // Use the store's configured permalink bases, including translated slugs.
@@ -181,7 +183,6 @@ add_action( 'wp_enqueue_scripts', function() {
         wp_enqueue_script_module( 'codela-storefront' );
     }
     if ( codela_sf_seamless_allowed() ) {
-        wp_enqueue_style( 'codela-storefront-route-loading', $root_uri . 'styles/navigation-loading.css', [ 'codela-storefront-components' ], $style_version );
         wp_enqueue_script_module( 'codela-storefront/navigation' );
     }
     if ( function_exists( 'codela_storefront_design_enqueue' ) ) { codela_storefront_design_enqueue( 'codela-storefront-theme' ); }

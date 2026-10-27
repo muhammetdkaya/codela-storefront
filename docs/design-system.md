@@ -1,5 +1,16 @@
 # Codela Storefront UI Kit — source of truth
 
+## Navigation feedback package — 0.1.168
+
+`assets/scripts/navigation-feedback.js` and `assets/styles/navigation-feedback.css` own all pending presentation. `window.codelaSFFeedback.begin({url, link, owner})` returns a monotonically increasing ownership token. `end(token)` only clears that request; `active(token)` guards late callbacks. The native document observer and existing core/router controller are adapters, not competing renderers. No loading HTML/CSS belongs in either adapter; the retired navigation-loading stylesheet must not return.
+
+The package selects home, catalog, product, account or page silhouettes. Shapes use `--sf-ui-skeleton` and `--sf-ui-skeleton-duration`; shared components owns purchase surface paint. Header/dock stay as their original nodes. The one overlay closes before state capture; hidden old controls become inert. Target product uses the purchase silhouette and existing header cart; configured no-dock pages never gain a fabricated dock. Pending controls are intentionally unavailable until commit or Escape/timeout restores the previous document. This is feedback cancellation, not cancellation of the browser's request.
+
+One body-level viewport surface escapes old product transforms and router region replacement. ARIA/inert values, dock selection/style and account back nodes restore on cancellation/pageshow. Router success clears presentation before committing active dock state/focus; fallback leaves it until the native document arrives. No artificial minimum loading duration. Reduced motion disables pulse/snapshots; forced colors retains shape outlines. Never animate header or bottom-bar geometry, clone purchase controls, intercept Woo POST, or claim lower server TTFB from this package.
+
+Acceptance owners: `document-continuity-browser.cjs` (native HTTP/history/POST), `shell-navigation-browser.cjs` (core boundary/races/fallback/lifecycle), `navigation-browser.cjs` (real PHP header + overlay/dock, 320–1440px), `dock-gesture.cjs` (pending collapse guard). Full WordPress core-router integration and physical-device acceptance remain separate from deterministic fixtures.
+
+
 
 Navigation feedback (0.1.165 candidate): ordinary native browsing links render the existing static circle/line skeleton synchronously across eligible storefront documents, anchored to the viewport even after scrolling. Header and the existing bottom surface stay visible. Transactional, external, download, popup and core-router-owned links keep their original lifecycle. The core-router skeleton also starts synchronously with no 160ms delay or minimum display time. No new navigation/data owner. Native delayed-HTTP and core-router Chromium tests passed in run 40329604002. Full-suite acceptance remains pending after an unrelated WebKit mobile-gallery timeout; retry is running.
 
