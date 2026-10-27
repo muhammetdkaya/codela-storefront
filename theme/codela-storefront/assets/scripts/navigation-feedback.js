@@ -35,7 +35,6 @@
         const lines = '<div class="sf-skeleton-lines"><i></i><i></i></div>';
         const rows = ('<div class="sf-skeleton-row"><div class="sf-skeleton-media"></div>' + lines + '</div>').repeat(3);
         if (type === 'account') return rows;
-        if (type === 'product') return '<div class="sf-skeleton-product-layout">' + shape('gallery') + '<div class="sf-skeleton-summary">' + shape('heading') + shape('price') + '<div class="sf-skeleton-copy">' + lines.repeat(3) + '</div><div class="sf-skeleton-product-controls">' + shape('quantity') + shape('button') + '</div></div></div><div class="sf-skeleton-thumbs">' + shape('thumb').repeat(3) + '</div>' + shape('count') + '<div class="sf-skeleton-purchase">' + shape('handle') + '<div class="sf-skeleton-product-meta">' + lines + shape('price') + '</div><div class="sf-skeleton-product-controls">' + shape('quantity') + shape('button') + '</div></div>';
         if (type === 'home' || type === 'catalog') return (type === 'home' ? shape('hero') : shape('heading') + shape('filters')) + '<div class="sf-skeleton-cards">' + ('<div>' + shape('card') + lines + '</div>').repeat(4) + '</div>';
         return shape('heading') + '<div class="sf-skeleton-copy">' + (lines + lines + lines).repeat(2) + '</div>';
     }
@@ -106,6 +105,9 @@
         window.dispatchEvent(new Event('codela:before-route'));
         const target = new URL(url, location.href);
         const type = destination(target, link);
+        // Product price/stock/form must come from the destination document.
+        // Keep native navigation rather than masking it with a fake purchase UI.
+        if (type === 'product') return null;
         const surface = document.createElement('div');
         surface.className = 'sf-skeleton';
         surface.dataset.owner = owner;
@@ -140,7 +142,7 @@
                 node.classList.toggle('is-active', selected && node.dataset.dockView === type);
                 node.removeAttribute('aria-current');
             });
-            dock.hidden = type === 'product';
+            dock.hidden = false;
             dock.inert = true;
             dock.classList.remove('is-collapsed');
         }

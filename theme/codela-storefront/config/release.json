@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mobil tarayıcı araç çubuğu açıkken skeleton satın alma panelinin görünür alanın altında kalması düzeltildi.",
-    "Skeleton tek görünür ekran ölçüsünü kullanır; alt panel, sayaç ve önizlemeler aynı katmana bağlıdır.",
-    "Araç çubuğu açılıp kapanması, ekran dönüşü, yakınlaştırma ve geçiş temizliği için viewport regresyon testleri eklendi."
+    "Ürün geçişlerindeki yapay satın alma skeleton görünümü kaldırıldı.",
+    "Ürün başlığı, fiyat, adet ve Sepete Ekle alanı doğrudan gerçek WooCommerce belgesinden gösterilir.",
+    "Diğer sayfalarda ortak skeleton ve görünür ekran uyumu korunur."
   ]
 }

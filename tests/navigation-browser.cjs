@@ -576,13 +576,13 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
   const feedback=await page.evaluate(()=>{
    const dock=document.querySelector('.sf-mobile-dock'),header=document.querySelector('.sf-header');
    window.originalDock=dock;window.originalHeader=header;
-   const link=document.createElement('a');link.href='https://store.test/product/test/';
+   const link=document.createElement('a');link.href='https://store.test/about/';
    const token=window.codelaSFFeedback.begin({url:link.href,link});
    const result={closed:!document.querySelector('#sf-panel').open,dockHome:dock.parentElement.classList.contains('sf-shell'),oneDock:document.querySelectorAll('.sf-mobile-dock').length===1,headerLocked:header.inert,dockHidden:dock.hidden,menuReset:document.querySelector('.sf-menu-trigger')?.getAttribute('aria-expanded')!=='true',cartVisible:getComputedStyle(header.querySelector('.sf-cart-trigger')).display!=='none'&&getComputedStyle(header.querySelector('.sf-actions')).display!=='none'};
    window.feedbackToken=token;return result;
   });
-  assert.deepEqual(feedback,{closed:true,dockHome:true,oneDock:true,headerLocked:true,dockHidden:true,menuReset:true,cartVisible:true});
-  await page.screenshot({path:'qa/storefront-ui-kit-skeleton-product-'+width+'.png'});
+  assert.deepEqual(feedback,{closed:true,dockHome:true,oneDock:true,headerLocked:true,dockHidden:false,menuReset:true,cartVisible:width>700});
+  await page.screenshot({path:'qa/storefront-ui-kit-skeleton-page-'+width+'.png'});
   await page.keyboard.press('Escape');
   assert(await page.evaluate(()=>!document.querySelector('.sf-skeleton')&&!originalHeader.inert&&!originalDock.inert&&originalDock===document.querySelector('.sf-mobile-dock')&&originalHeader===document.querySelector('.sf-header')),'Same shell is usable after cancellation');
   if(width<1100){

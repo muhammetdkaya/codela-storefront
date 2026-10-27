@@ -1,5 +1,13 @@
 # Codela Storefront — güncel teknik durum
 
+## 27 Ekim 2026 — 0.1.170 gerçek ürün satın alma alanı
+
+Tema 0.1.169 → 0.1.170; eklenti değişmedi. Kullanıcı isteğiyle ürün hedefleri artık sentetik skeleton kullanmaz. Normal Woo belge geçişi korunur; hedefin başlık/fiyat/stok/adet/sepete ekle bilgileri yalnız gerçek sunucu belgesinden gelir. Eski ürün verisi yeni ürün adına kopyalanmaz. Yapay ürün galeri/summary/purchase şablonu ve CSS'i kaldırıldı. Mevcut native ilk-paint summary ve tek form korunur. Diğer dört hedef türünün ortak skeleton/viewport yaşam döngüsü değişmez. Açık overlay ürün navigasyonu öncesinde mevcut controller üzerinden kapanır.
+
+Doğrulama: native HTTP/POST/BFCache, core router, görünür viewport, gerçek PHP header/overlay/dock 320–1440px ve 24 paket testleri geçti. Ek product-sheet tarayıcı suite'i 44px beklenen CTA yüksekliğini Chromium 134 ortamında 48px ölçüyor; aynı hata değişiklik öncesi components.css ile de üretildi. Bu suite tamamen başarılı gösterilmez; native ürün görünürlüğü/form ve geçiş kontrolleri geçti. Fiziksel Safari/canlı AZ kabulü yapılmadı.
+
+Yayın: kaynak/kararlı paket hazırlanıyor; FTP ve AZ kurulumu yapılmadı. Sıradaki: kaynak/Release kanıtını kaydet; manuel güncellemeden sonra gerçek ürün alt alanını hedef mağazada doğrula. Mevcut CTA test beklentisi ayrı inceleme gerektirir.
+
 ## Son doğrulanmış devam noktası — 27 Ekim 2026: 0.1.169 görünür viewport düzeltmesi
 
 Tema **0.1.168 → 0.1.169**; eklenti değişmedi. Kullanıcının Safari ekran görüntüsünde skeleton satın alma alt satırı tarayıcı araç çubuğunun altında kalıyor. Ortak skeleton paketinde dış viewport ve iç satın alma panelinin ayrı fixed containing block kullanması kaldırıldı: tek dış yüzey VisualViewport height/offsetTop ile ölçülür, iç panel absolute olarak bu yüzeye bağlanır. Galeri/sayaç/önizlemeler aynı ölçüde kalır. Dinleyiciler yalnız pending süresince yaşar; resize/scroll rAF ile birleştirilir, bitişte dinleyici ve bekleyen frame temizlenir. API yoksa 100dvh fallback; pinch zoom sırasında doğal tarayıcı büyütmesi korunur. Gerçek Woo satın alma paneli, header/dock, ürün verisi ve native form değişmedi. Skeleton yüksekliği gerçek ürün başlık/fiyat satırları gelmeden birebir içerik yüksekliği iddiası taşımaz.

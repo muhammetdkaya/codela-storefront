@@ -103,6 +103,7 @@ const doc=(path)=>{
       if(type==='home') a.dataset.sfRoute='home';
       a.click();
       const surface=document.querySelector('.sf-skeleton');
+      if(type==='product'){const result={expected:type,native:!surface&&!main.hasAttribute('aria-busy')&&!document.querySelector('.sf-header').inert&&getComputedStyle(sheet.firstChild).visibility==='visible'};a.remove();return result;}
       const dock=document.querySelector('.sf-mobile-dock');
       const purchase=document.querySelector('.sf-skeleton-purchase');
       const result={type:document.documentElement.dataset.sfNavigationTarget,expected:type,
@@ -122,26 +123,13 @@ const doc=(path)=>{
       await page.evaluate(target=>{
        const a=document.createElement('a');a.href='/preview/';a.dataset.sfSkeleton=target;document.body.append(a);a.click();a.remove();
       },target);
-      if(target==='product'){
-       const geometry=await page.evaluate(()=>{
-        const gallery=document.querySelector('.sf-skeleton-gallery'),panel=document.querySelector('.sf-skeleton-purchase');
-        const rect=gallery.getBoundingClientRect();
-        return {left:rect.left,top:rect.top,width:rect.width,height:rect.height,viewport:innerHeight,
-         animation:getComputedStyle(gallery).animationName,panelHeight:panel.getBoundingClientRect().height,
-         radius:getComputedStyle(panel).borderTopLeftRadius,thumbs:document.querySelectorAll('.sf-skeleton-thumb').length,
-         controls:!!panel.querySelector('.sf-skeleton-product-meta')&&!!panel.querySelector('.sf-skeleton-product-controls')};
-       });
-       assert.equal(geometry.left,0);assert.equal(geometry.top,0);assert.equal(geometry.width,width);assert.equal(geometry.height,geometry.viewport);
-       assert.equal(geometry.animation,'sf-skeleton-pulse');assert.equal(geometry.panelHeight,164);assert.equal(geometry.radius,'28px');assert.equal(geometry.thumbs,3);assert(geometry.controls);
-       await page.emulateMedia({reducedMotion:'reduce'});
-       assert.equal(await page.locator('.sf-skeleton-gallery').evaluate(el=>getComputedStyle(el).animationName),'none','Reduced motion keeps static silhouettes');
-       await page.emulateMedia({reducedMotion:'no-preference'});
-      }
+      if(target==='product') assert.equal(await page.locator('.sf-skeleton').count(),0,'Product uses the real native document');
       await page.screenshot({path:'qa/storefront-product-to-'+target+'-skeleton.png'});
       await page.evaluate(()=>document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'})));
      }
     }
     for(const result of cases){
+     if(result.expected==='product'){assert(result.native,'Real product content stays native without synthetic purchase controls');continue;}
      assert.equal(result.type,result.expected,'Destination silhouette');
      assert.equal(result.top,0,'Viewport surface escapes transformed product');
      assert(result.outside&&result.restored,'Outside main and cancellation restores state');

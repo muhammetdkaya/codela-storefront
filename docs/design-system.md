@@ -1,5 +1,9 @@
 # Codela Storefront UI Kit — source of truth
 
+## Real product controls — 0.1.170
+
+Product destinations use native document navigation without synthetic product/purchase UI. Price, stock, title, quantity and submit belong to the incoming Woo document. Do not reuse an outgoing product form under a destination skeleton. Home/catalog/account/page feedback keeps the shared package and viewport cleanup. This supersedes prior product-silhouette instructions.
+
 ## Visible viewport ownership — 0.1.169
 
 The pending surface is the sole viewport owner: VisualViewport height/offsetTop at scale 1, otherwise CSS 100dvh/native zoom. Purchase silhouette is absolute inside that surface, never another fixed descendant. Counter and thumbnail geometry uses the same parent. Resize/scroll callbacks are coalesced and removed when feedback ends; stale frames cannot resize another request. The real product sheet remains native and content-measured. Controlled viewport regressions do not substitute for physical Safari/browser-toolbar acceptance.

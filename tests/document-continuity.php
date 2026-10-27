@@ -25,5 +25,5 @@ foreach(['admin','checkout','cart','guest-account','logout','unsupported'] as $n
 $css=file_get_contents(__DIR__.'/../theme/codela-storefront/assets/styles/document-continuity.css');
 if(!str_contains($css,'@view-transition { navigation: auto; }'))throw new RuntimeException('Native CSS opt-in missing');
 if(!str_contains($css,'prefers-reduced-motion: no-preference'))throw new RuntimeException('Reduced-motion opt out missing');
-if(!str_contains(file_get_contents(__DIR__.'/../theme/codela-storefront/assets/styles/navigation-feedback.css'),'data-sf-navigation-target'))throw new RuntimeException('Destination bottom surface rules missing');
+if(!str_contains(file_get_contents(__DIR__.'/../theme/codela-storefront/assets/styles/navigation-feedback.css'),'data-sf-navigation-pending'))throw new RuntimeException('Destination bottom surface rules missing');
 echo "Cross-document eligibility: browse and signed-in account snapshots; checkout/cart/guest/logout/admin excluded.\n";
