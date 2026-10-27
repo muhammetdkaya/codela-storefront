@@ -6,7 +6,7 @@ Tema 0.1.169 → 0.1.170; eklenti değişmedi. Kullanıcı isteğiyle ürün hed
 
 Doğrulama: native HTTP/POST/BFCache, core router, görünür viewport, gerçek PHP header/overlay/dock 320–1440px ve 24 paket testleri geçti. Ek product-sheet tarayıcı suite'i 44px beklenen CTA yüksekliğini Chromium 134 ortamında 48px ölçüyor; aynı hata değişiklik öncesi components.css ile de üretildi. Bu suite tamamen başarılı gösterilmez; native ürün görünürlüğü/form ve geçiş kontrolleri geçti. Fiziksel Safari/canlı AZ kabulü yapılmadı.
 
-Yayın: kaynak/kararlı paket hazırlanıyor; FTP ve AZ kurulumu yapılmadı. Sıradaki: kaynak/Release kanıtını kaydet; manuel güncellemeden sonra gerçek ürün alt alanını hedef mağazada doğrula. Mevcut CTA test beklentisi ayrı inceleme gerektirir.
+Yayın: [kaynak e1d03af](https://github.com/muhammetdkaya/codela-storefront/commit/e1d03af7e4b2a9e2e51d578e401a824a1fedefa2) main’de; [GitHub-only yayın 40471759318](https://github.com/muhammetdkaya/codela-storefront/actions/runs/40471759318) başarılı. [v0.1.170](https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.170) ve stable manifest doğrulandı. FTP ve AZ kurulumu yapılmadı. Sıradaki: manuel güncellemeden sonra gerçek ürün alt alanını hedef mağazada doğrula. Mevcut CTA test beklentisi ayrı inceleme gerektirir.
 
 ## Son doğrulanmış devam noktası — 27 Ekim 2026: 0.1.169 görünür viewport düzeltmesi
 
