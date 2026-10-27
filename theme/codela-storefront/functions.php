@@ -142,6 +142,8 @@ add_action( 'wp_enqueue_scripts', function() {
             'catalogBases' => [ home_url( '/' . wc_get_permalink_structure()['category_rewrite_slug'] . '/' ), home_url( '/' . wc_get_permalink_structure()['tag_rewrite_slug'] . '/' ) ],
             'account' => wc_get_page_permalink( 'myaccount' ),
             'loading' => __( 'Loading…', 'codela-storefront' ),
+            // Static target layout only: no price, product ID, form or cart action.
+            'purchasePreview' => codela_sf_navigation_purchase_preview(),
             'accountLabel' => __( 'My account', 'codela-storefront' ),
             // Trusted bundled SVG is available before the navigation response or icon request.
             'backIcon' => str_replace( [ '<svg', 'class="lucide' ], [ '<svg aria-hidden="true"', 'class="sf-icon lucide' ], file_get_contents( __DIR__ . '/assets/icons/arrow-left.svg' ) ),

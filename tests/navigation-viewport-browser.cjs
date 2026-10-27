@@ -3,6 +3,7 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const {chromium}=require('playwright');
+const preview=require('node:child_process').execFileSync(process.env.PHP_BIN||'php',['tests/render-product-sheet.php','navigation'],{encoding:'utf8'});
 const root='theme/codela-storefront/assets/';
 const script=fs.readFileSync(root+'scripts/navigation-feedback.js','utf8');
 const css=['tokens','components','navigation-feedback'].map(name=>fs.readFileSync(root+'styles/'+name+'.css','utf8')).join('\n');
@@ -12,14 +13,14 @@ const css=['tokens','components','navigation-feedback'].map(name=>fs.readFileSyn
   const page=await browser.newPage({viewport:{width:390,height:850}});
   page.setDefaultTimeout(3000);
   await page.setContent('<style>'+css+'</style><main id="sf-content"><a id="product" data-sf-skeleton="product" href="https://store.test/product/item/">Product</a></main>');
-  await page.evaluate(()=>{
+  await page.evaluate(preview=>{
    const vv=new EventTarget();Object.assign(vv,{height:650,offsetTop:0,scale:1});
    const add=vv.addEventListener.bind(vv),remove=vv.removeEventListener.bind(vv);vv.listeners=new Set();
    vv.addEventListener=(type,fn)=>{vv.listeners.add(fn);add(type,fn)};
    vv.removeEventListener=(type,fn)=>{remove(type,fn);vv.listeners.delete(fn)};
    Object.defineProperty(window,'visualViewport',{value:vv,configurable:true});
-   window.codelaSFDocument={productBase:'https://store.test/product/'};
-  });
+   window.codelaSFDocument={productBase:'https://store.test/product/',purchasePreview:preview};
+  },preview);
   await page.addScriptTag({content:script});
   await page.evaluate(()=>{const link=document.querySelector('#product');window.token=codelaSFFeedback.begin({url:link.href,link});});
   for(const [height,offsetTop] of [[650,0],[740,0],[620,25],[300,0]]){
@@ -28,10 +29,11 @@ const css=['tokens','components','navigation-feedback'].map(name=>fs.readFileSyn
    const boxes=await page.evaluate(()=>{
     const surface=document.querySelector('.sf-skeleton').getBoundingClientRect();
     const gallery=document.querySelector(".sf-skeleton-gallery").getBoundingClientRect();
-    return {top:surface.top,bottom:surface.bottom,galleryTop:gallery.top,galleryBottom:gallery.bottom};
+    const panel=document.querySelector('.sf-navigation-preview').getBoundingClientRect();
+    return {top:surface.top,bottom:surface.bottom,galleryTop:gallery.top,galleryBottom:gallery.bottom,panelTop:panel.top,panelBottom:panel.bottom};
    });
    assert.equal(boxes.top,offsetTop);assert.equal(boxes.bottom,height+offsetTop);
-    assert.equal(boxes.galleryTop,offsetTop);assert.equal(boxes.galleryBottom,height+offsetTop);
+    assert.equal(boxes.galleryTop,offsetTop);assert.equal(boxes.galleryBottom,boxes.panelTop);assert(boxes.panelBottom<=height+offsetTop&&boxes.panelTop>offsetTop,'Static purchase preview fits the visible viewport');
    if(height===650){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:'qa/storefront-ui-kit-skeleton-visible-viewport.png',clip:{x:0,y:0,width:390,height:650}});}
   }
   await page.evaluate(()=>{visualViewport.scale=2;visualViewport.dispatchEvent(new Event('resize'));});
@@ -45,7 +47,7 @@ const css=['tokens','components','navigation-feedback'].map(name=>fs.readFileSyn
   await page.evaluate(()=>{const link=document.querySelector('#product');codelaSFFeedback.begin({url:link.href,link});});
   assert.equal(await page.locator('.sf-skeleton').evaluate(el=>el.getBoundingClientRect().height),850,'CSS dynamic viewport fallback without VisualViewport');
   await page.setViewportSize({width:1280,height:800});
-  assert.equal(await page.locator('.sf-skeleton-purchase').isVisible(),false,'No synthetic purchase controls');
+  assert.equal(await page.locator('.sf-navigation-preview').isVisible(),false,'Desktop has no mobile preview');
   console.log('Visible viewport shrink/expand/offset, zoom, cleanup and desktop fallback passed.');
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exit(1)});

@@ -1,5 +1,16 @@
 # Codela Storefront — güncel teknik durum
 
+## Son doğrulanmış devam noktası — 27 Ekim 2026: 0.1.174 hedefe göre alt alan
+
+Tema 0.1.173 → 0.1.174; eklenti değişmedi. Kullanıcı 0.1.173 davranışını düzeltti: alt alan çıkılan sayfayı değil hedefi temsil etmeli. Ürün→ana sayfa/katalog/bilgi/hesap geçişinde mevcut normal dock hemen görünür; normal→ürün ve ürün→ürün geçişinde ortak UI Kit ile statik adet/Sepete ekle önizlemesi görünür. Alt alan pulse/skeleton değildir. Eski ürünün başlığı, fiyatı, miktarı veya formu aktarılmaz. Önizleme inert/aria-hidden, düğme disabled/type=button; form/ürün ID/fiyat/içerik isteği içermez. Gerçek hedef WooCommerce belgesi kendi satın alma durumunu devralır. Sepete ekle çevirisi WooCommerce alanından gelir. Yükleme boyunca eski native formun gecikmiş submit'i de engellenir.
+
+0.1.173'ün mevcut ürün panelini koruyan/ölçen karmaşık alt alan gözlemcileri kaldırıldı. Tek body-level yüzey ve hedef seçimi native/controller tarafından paylaşılır. Mevcut footer inert kilidi, dock/ARIA geri yükleme, token sahipliği ve viewport temizliği korundu. Masaüstü ürün düzeni değişmedi; 700px üstünde mobil satın alma önizlemesi yok.
+
+Doğrulama: 24 paket; PHP lint/navigation/document-continuity; tüm tema JS syntax; cart-race/cart-sync/dock/UI-kit geçti. Chromium 153 yedi genişlikte iki yönde hedef alt alanı, native form kimliği/değeri, submit kilidi/iptal sonrası kullanım, dock yokluğu, timeout/pageshow/stale token; native gecikmeli HTTP/POST/Back/Forward, core-router/footer sözleşmesi, VisualViewport daralma/ofset/zoom ve reduced-motion geçti. 0.1.173 kaynak yeni hedef testinde dock != product ile beklendiği gibi başarısız. Ürün→ana sayfa ve ürün→ürün ekran görüntüleri incelendi. Eski ters davranışı bekleyen kullanılmayan DOM testi yeni browser sözleşmesiyle değiştirildi. Fiziksel Safari ve gerçek WP/Woo kabulü yapılmadı.
+
+Yayın: kaynak ve GitHub-only 0.1.174 yayını hazırlanıyor; henüz başarılı yayın iddiası yok. FTP/AZ kurulumu yapılmaz. Sıradaki: immutable source ile Release/stable sürüm-kaynak-hash eşleşmesini doğrula; ardından kullanıcı manuel kurulumunda ana sayfa↔ürün yönlerini fiziksel Safari'de kontrol etsin.
+
+
 ## Son doğrulanmış devam noktası — 27 Ekim 2026: 0.1.173 birleşik GitHub yayını
 
 Tema 0.1.171 → 0.1.173; eklenti değişmedi. Kullanıcının son yayını yap talebiyle #79 footer inert, #80 masaüstü açıklama/kaydırma ve #81 mobil gerçek alt alan çalışmaları birlikte hazırlandı. 0.1.172 bağımsız aday numarası atlandı. Mobil pending sırasında gerçek mevcut dock/satın alma düğümleri busy/inert kalır; hedef ürün verisi üretilmez. Masaüstü açıklama sağ sütuna taşınır, mobilde aynı düğüm geri döner; dikey wheel sayfaya zincirlenir.

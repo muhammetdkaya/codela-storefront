@@ -6,6 +6,7 @@ const {chromium}=require('playwright');
 const fs=require('node:fs');
 const css=['tokens','components','navigation-feedback','document-continuity'].map(name=>fs.readFileSync('theme/codela-storefront/assets/styles/'+name+'.css','utf8')).join('\n');
 const accountScript=fs.readFileSync('theme/codela-storefront/assets/scripts/navigation-feedback.js','utf8')+fs.readFileSync('theme/codela-storefront/assets/scripts/document-continuity.js','utf8');
+const purchasePreview=require('node:child_process').execFileSync(process.env.PHP_BIN||'php',['tests/render-product-sheet.php','navigation'],{encoding:'utf8'});
 const baseCss='body{margin:0;font-family:sans-serif}.sf-header{position:fixed;inset:0 0 auto;z-index:1000;height:72px;display:flex;align-items:center;padding:0 20px;background:#fafafa}.sf-mobile-dock,.sf-product-purchase{z-index:1000;position:fixed;bottom:12px;left:16px;right:16px;height:58px;border-radius:30px;background:#eee}body.single-product .sf-mobile-dock{display:none}main{padding:100px 30px 30px;min-height:1800px}';
 const doc=(path)=>{
  const product=path.startsWith('/product/');
@@ -15,7 +16,7 @@ const doc=(path)=>{
  const style=checkout?'':css;
  const links=path==='/'?'<a id="open-category" href="/category/">Category</a>':category?'<a id="open-product" href="/product/">Product</a>':'<a id="back-home" href="/">Home</a>';
  return '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
-  '<style>'+baseCss+style+'</style><script>window.codelaSFDocument={home:location.origin+"/",shop:location.origin+"/category/",productBase:location.origin+"/product/",catalogBases:[location.origin+"/category/"],account:location.origin+"/account/",accountLabel:"My account",excluded:["/checkout/","/cart/","/account/customer-logout/"],backIcon:"<svg></svg>",accountParents:[{url:"/account/view-order/",back:"/account/orders/",label:"Orders"},{url:"/account/edit-address/",back:"/account/edit-address/",label:"Addresses",childOnly:true}]};window.addEventListener("pageswap",event=>{sessionStorage.removeItem("retained-bottom-transition-skipped");if(event.viewTransition){const skip=event.viewTransition.skipTransition.bind(event.viewTransition);event.viewTransition.skipTransition=()=>{sessionStorage.setItem("retained-bottom-transition-skipped","true");return skip();};}});'+accountScript+'</script><script>window.addEventListener("pageswap",e=>sessionStorage.setItem("continuity-pageswap",String(Boolean(e.viewTransition))));window.addEventListener("pagereveal",e=>{sessionStorage.setItem("continuity-pagereveal",String(Boolean(e.viewTransition)));sessionStorage.setItem("account-direction",document.documentElement.dataset.sfAccountTransition||"none")});</script></head><body class="'+(product?'single-product':path.startsWith('/account/')?'woocommerce-account logged-in':'')+'">'+
+  '<style>'+baseCss+style+'</style><script>window.codelaSFDocument={purchasePreview:'+JSON.stringify(purchasePreview)+',home:location.origin+"/",shop:location.origin+"/category/",productBase:location.origin+"/product/",catalogBases:[location.origin+"/category/"],account:location.origin+"/account/",accountLabel:"My account",excluded:["/checkout/","/cart/","/account/customer-logout/"],backIcon:"<svg></svg>",accountParents:[{url:"/account/view-order/",back:"/account/orders/",label:"Orders"},{url:"/account/edit-address/",back:"/account/edit-address/",label:"Addresses",childOnly:true}]};window.addEventListener("pageswap",event=>{sessionStorage.removeItem("retained-bottom-transition-skipped");if(event.viewTransition){const skip=event.viewTransition.skipTransition.bind(event.viewTransition);event.viewTransition.skipTransition=()=>{sessionStorage.setItem("retained-bottom-transition-skipped","true");return skip();};}});'+accountScript+'</script><script>window.addEventListener("pageswap",e=>sessionStorage.setItem("continuity-pageswap",String(Boolean(e.viewTransition))));window.addEventListener("pagereveal",e=>{sessionStorage.setItem("continuity-pagereveal",String(Boolean(e.viewTransition)));sessionStorage.setItem("account-direction",document.documentElement.dataset.sfAccountTransition||"none")});</script></head><body class="'+(product?'single-product':path.startsWith('/account/')?'woocommerce-account logged-in':'')+'">'+
   '<header class="sf-header" id="native-header"><div class="sf-brand">Codela</div></header><div class="sf-shell">'+
   '<nav class="sf-mobile-dock" id="native-dock">Navigation</nav></div>'+
   '<main id="sf-content"><a id="slow-account" href="/account/orders/?slow=1">Slow orders</a><a id="account-root" href="/account/">Account</a><a id="account-orders" href="/account/orders/">Orders</a><h1>'+path+'</h1>'+links+'<a id="open-checkout" href="/checkout/">Checkout</a>'+
@@ -125,10 +126,10 @@ const doc=(path)=>{
       },target);
       if(target==='product') {
        const gallery=page.locator('.sf-skeleton-gallery');
-       const dockTop=await page.locator('.sf-mobile-dock').evaluate(el=>el.getBoundingClientRect().top);
+       const dockTop=await page.locator('.sf-navigation-preview').evaluate(el=>el.getBoundingClientRect().top);
        assert.deepEqual(await gallery.boundingBox(),{x:0,y:0,width:390,height:dockTop});
        assert.equal(await gallery.evaluate(el=>getComputedStyle(el).animationName),'sf-skeleton-pulse');
-       assert.equal(await page.locator('.sf-skeleton-purchase,.sf-skeleton-summary,.sf-skeleton-product-controls').count(),0,'No fabricated purchase panel');
+       assert.equal(await page.locator('.sf-skeleton-purchase,.sf-skeleton-summary,.sf-skeleton-product-controls').count(),0,'No pulsing purchase skeleton or invented product data');
        await page.emulateMedia({reducedMotion:'reduce'});
        assert.equal(await gallery.evaluate(el=>getComputedStyle(el).animationName),'none');
        await page.emulateMedia({reducedMotion:'no-preference'});
@@ -143,7 +144,7 @@ const doc=(path)=>{
      assert(result.outside&&result.restored,'Outside main and cancellation restores state');
      assert.equal(result.old,'hidden','Old explicitly visible product descendants hidden');
      assert.equal(result.purchase,false,'Purchase panel never uses skeleton');
-     if(width<=700) assert.equal(result.dock,true,'Contained old product uses the one real shell dock, never a fabricated destination panel');
+     if(width<=700) assert.equal(result.dock,result.type!=='product','Normal dock appears only for non-product destinations');
      assert.equal(result.color,'rgb(223, 225, 229)','Stronger static contrast');
     }
    }
@@ -194,7 +195,7 @@ const doc=(path)=>{
   assert.equal(await page.locator('#sf-content').evaluate(e=>getComputedStyle(e).viewTransitionName),'none','Mobile account content has no slide layer');
   assert.equal(await page.locator('[data-sf-navigation-pending]').count(),0,'History/BFCache restores usable content');
   // Delayed real native takeovers cannot carry an outgoing price under the new URL.
-  for(const [from,to,expectedBottom] of [['/product/','/product/next/','product'],['/','/product/next/','dock'],['/product/','/category/','product']]){
+  for(const [from,to,expectedBottom] of [['/product/','/product/next/','product'],['/','/product/next/','product'],['/product/','/category/','dock']]){
    await page.goto(origin+from);
    await page.evaluate(()=>{
     window.addEventListener('pageswap',event=>{sessionStorage.setItem('native-bottom-pageswap',String(document.documentElement.dataset.sfNavigationBottom||'none'));event.viewTransition?.finished.catch(()=>{});});
@@ -202,18 +203,17 @@ const doc=(path)=>{
    const bottomState=await page.evaluate(to=>{
     const a=document.createElement('a');a.href=to+'?slow=1';a.textContent='Next';document.body.append(a);a.click();
     const visible=node=>!!node&&getComputedStyle(node).display!=='none'&&getComputedStyle(node).visibility!=='hidden'&&node.getBoundingClientRect().height>0;
-    return {bottom:document.documentElement.dataset.sfNavigationBottom,dock:visible(document.querySelector('.sf-mobile-dock')),panel:visible(document.querySelector('[data-sf-feedback-bottom]')),price:document.querySelector('[data-product-price]')?.textContent};
+    return {bottom:document.documentElement.dataset.sfNavigationBottom,dock:visible(document.querySelector('.sf-mobile-dock')),panel:visible(document.querySelector('.sf-navigation-preview')),oldPriceVisible:visible(document.querySelector('[data-product-price]'))};
    },to);
    assert.equal(bottomState.bottom,expectedBottom);
    assert.equal(bottomState.dock,expectedBottom==='dock');
-   if(expectedBottom==='product'){assert(bottomState.panel);assert.equal(bottomState.price,'42 ₺');}
+   assert.equal(bottomState.panel,expectedBottom==='product');assert(!bottomState.oldPriceVisible,'Outgoing price is hidden for every target');
    await page.waitForURL(origin+to+'?slow=1');
    await page.waitForLoadState('domcontentloaded');
    assert.equal(await page.locator('[data-sf-navigation-pending]').count(),0);
-   assert.equal(await page.locator('[data-sf-feedback-bottom]').count(),0);
+   assert.equal(await page.locator('.sf-navigation-preview').count(),0);
    assert.equal(await page.locator('button[value="42"]').count(),0,'Committed target never adopts the old product control');
    if(to.startsWith('/product/'))assert.equal(await page.locator('[data-product-price]').textContent(),'84 ₺');
-   if(expectedBottom==='product')assert.equal(await page.evaluate(()=>sessionStorage.getItem('retained-bottom-transition-skipped')),'true','Outgoing-price View Transition is skipped before native commit');
    await page.goBack();
    assert.equal(await page.locator('[data-sf-navigation-pending]').count(),0,'Back restores a non-busy native document');
    await page.goForward();

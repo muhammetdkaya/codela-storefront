@@ -1,6 +1,6 @@
 /* The pending surface belongs to the viewport, never the outgoing product. */
-html[data-sf-navigation-pending] #sf-content *:not([data-sf-feedback-bottom],[data-sf-feedback-bottom] *){visibility:hidden!important}
-html[data-sf-navigation-pending] :is(.sf-product-sheet,.sf-product-sheet *,.sf-product-purchase,.sf-product-plugin-footer):not([data-sf-feedback-bottom],[data-sf-feedback-bottom] *){visibility:hidden!important}
+html[data-sf-navigation-pending] #sf-content *{visibility:hidden!important}
+html[data-sf-navigation-pending] :is(.sf-product-sheet,.sf-product-sheet *,.sf-product-purchase,.sf-product-plugin-footer){visibility:hidden!important}
 .sf-skeleton{position:fixed;inset:var(--sf-feedback-top,0px) 0 auto;height:var(--sf-feedback-height,100dvh);z-index:990;box-sizing:border-box;padding:calc(100px + var(--sf-header-offset,0px)) clamp(20px,5vw,48px) 110px;background:var(--sf-ui-page,#fff);pointer-events:none;overflow:hidden}
 .sf-skeleton-layout{display:grid;align-content:start;gap:28px}
 .sf-skeleton-status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
@@ -17,10 +17,15 @@ html[data-sf-navigation-pending] :is(.sf-product-sheet,.sf-product-sheet *,.sf-p
 .sf-skeleton-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
 .sf-skeleton-card{height:clamp(120px,22vw,280px);margin-bottom:18px}
 html[data-sf-navigation-pending] .sf-shell > .sf-mobile-dock .sf-dock-surface{transform:none;transition:none}
-/* Product feedback has no synthetic summary, price or purchase panel. */
+/* Only gallery shapes pulse. The destination purchase preview is static. */
+.sf-navigation-preview{display:none}
 .sf-skeleton-gallery{width:calc((100% - 40px)*.5652);height:65svh}
 @media(max-width:700px){
   html[data-sf-navigation-target="product"] .sf-skeleton{padding:0}
+  html[data-sf-navigation-target="product"] .sf-navigation-preview{display:block;position:absolute;inset:auto 16px calc(var(--sf-ui-bottom-bar-gap,12px) + env(safe-area-inset-bottom,0px));max-width:430px;margin:0 auto;padding:0;pointer-events:none}
+  .sf-navigation-purchase{display:grid;grid-template-columns:122px minmax(0,1fr);gap:12px;padding:12px}
+  .sf-navigation-quantity{display:flex;align-items:center;justify-content:space-around;min-height:44px}
+  .sf-navigation-purchase .sf-ui-button{width:100%;min-width:0;--sf-ui-button-height:var(--sf-ui-bottom-bar-control-height,44px);--sf-ui-button-padding-y:10px;--sf-ui-control-radius:var(--sf-ui-pill);cursor:default}
   html[data-sf-navigation-target="product"] .sf-skeleton-gallery{position:absolute;inset:0;width:100%;height:var(--sf-feedback-gallery-height,100%);border-radius:0}
   html[data-sf-navigation-pending]:not([data-sf-navigation-target="product"]) .sf-skeleton-layout{max-height:max(0px,calc(var(--sf-feedback-gallery-height,100dvh) - 100px - var(--sf-header-offset,0px)));overflow:hidden}
   html[data-sf-navigation-bottom="product"] .sf-shell .sf-header .sf-actions{display:flex!important}
@@ -30,12 +35,6 @@ html[data-sf-navigation-pending] .sf-shell > .sf-mobile-dock .sf-dock-surface{tr
   html[data-sf-navigation-bottom="dock"] .sf-shell.has-mobile-dock .sf-header .sf-actions{display:none!important}
 
   html[data-sf-navigation-bottom="dock"] .sf-shell > .sf-mobile-dock{display:block!important;bottom:calc(var(--sf-ui-bottom-bar-gap) + env(safe-area-inset-bottom,0px) + var(--sf-feedback-bottom-offset,0px))}
-  /* Retain the real current panel, never a fabricated destination price/form.
-     Its original expanded/drag state is only masked; cancellation restores it. */
-  html[data-sf-navigation-pending] #sf-content [data-sf-feedback-bottom]{visibility:visible!important;pointer-events:none;bottom:calc(var(--sf-ui-bottom-bar-gap) + env(safe-area-inset-bottom,0px) + var(--sf-feedback-bottom-offset,0px))!important}
-  html[data-sf-navigation-pending] #sf-content .sf-product-sheet[data-sf-feedback-bottom]{height:var(--sf-product-closed-height,190px)!important;transition:none!important}
-  html[data-sf-navigation-pending] #sf-content .sf-product-sheet[data-sf-feedback-bottom] .sf-product-sheet-body{height:0!important;flex:0 1 auto!important;visibility:hidden!important;padding-bottom:0!important}
-  html[data-sf-navigation-pending] #sf-content .sf-product-sheet[data-sf-feedback-bottom] .sf-product-sheet-body *:not(.sf-product-purchase,.sf-product-purchase *){visibility:hidden!important}
   .sf-skeleton-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 
 }

@@ -1,5 +1,10 @@
 # Codela Storefront UI Kit — source of truth
 
+## Destination bottom chrome — 0.1.174 (current)
+
+The destination determines the loading bottom surface. Home/catalog/account/page show the existing normal dock; product shows a static, inert quantity/Add to cart preview using the shared PHP Button and panel material. Only content/gallery shapes pulse. The preview has no price, product identity, form or commerce handler; the incoming native Woo document owns actual availability and purchase data. Never retain the outgoing product panel for a normal destination. Never keep the normal dock for a product destination. Cancel/timeout/pageshow restore the original dock and native form; configured dock absence is respected. This supersedes the retained-current-bottom behavior of 0.1.173 below. Native products and desktop composition remain document-owned.
+
+
 ## Native current bottom continuity — unpublished local candidate, 27 October 2026
 
 The clarified mobile bottom means the source document’s **real contextual surface**: one global dock on normal pages, or its original native purchase sheet on a purchasable product. Keep that surface visible but inert/aria-busy while navigation is pending. Normal → product cannot invent a destination panel before Woo HTML arrives: keep the existing dock until native replacement. Never display both bars, clone a form, substitute destination title/price from link metadata or keep the old CTA interactive. The global status announces loading; the outgoing form’s async submit is blocked only during this bounded state.

@@ -25,3 +25,9 @@ function codela_sf_document_continuity_allowed(): bool {
     if ( function_exists( 'is_product_tag' ) && is_product_tag() ) { return true; }
     return function_exists( 'codela_sf_seamless_allowed' ) && codela_sf_seamless_allowed();
 }
+
+/** Inert destination purchase layout; no product data or commerce form. */
+function codela_sf_navigation_purchase_preview(): string {
+    return '<div class="sf-navigation-purchase"><span class="sf-navigation-quantity">−<span>1</span>+</span>'
+        . codela_sf_ui_button( __( 'Add to cart', 'woocommerce' ), [ 'disabled' => true ] ) . '</div>';
+}

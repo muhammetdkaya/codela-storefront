@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mobil sayfa geçişinde mevcut gerçek alt menü veya satın alma paneli korunur; yükleme boyunca etkileşim kilitlenir.",
-    "Masaüstünde ürün fotoğrafı üzerinden sayfa kaydırma ve sağ sütunda açık ürün açıklaması desteklenir.",
-    "Skeleton arkasındaki footer etkileşimleri engellenir; iptal ve geçmiş dönüşünde önceki durum geri gelir."
+    "Üründen ana sayfaya ve diğer normal sayfalara geçerken normal alt menü hemen gösterilir.",
+    "Ana sayfadan ürüne geçerken sabit adet ve Sepete ekle görünümü gösterilir; gerçek WooCommerce belgesi geldiğinde kendi satın alma alanı devralır.",
+    "Eski ürün fiyatı, miktarı ve satın alma formu yükleme görünümüne taşınmaz; iptal, geçmiş ve görünür ekran yüksekliği korunur."
   ]
 }
