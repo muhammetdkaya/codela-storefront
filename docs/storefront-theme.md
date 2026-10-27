@@ -6,7 +6,7 @@ Tema 0.1.170 → 0.1.171; eklenti değişmedi. Kullanıcının açıklaması ön
 
 Doğrulama: JS sözdizimi, 24 paket testi, cart-race/cart-sync; Chromium 153 native HTTP/POST/geçmiş ve hedef geçişleri, core-router fixture yaşam döngüsü, VisualViewport daralma/ofset/zoom/temizleme geçti. Mobil galeri tam viewport, pulse/reduced-motion, alt panel yokluğu kontrol edildi; 390px screenshot incelendi. Standart Chromium indirmesi geçersiz ZIP verdi; testler geçici npm Chromium binary ile çalıştı. Fiziksel Safari, gerçek WP/Woo ve AZ kabulü yapılmadı.
 
-Yayın: doğrulanmış kaynak GitHub için hazır; FTP ve AZ kurulumu yok. Sıradaki: GitHub 0.1.171 yayınını doğrula; manuel kurulum sonrası fiziksel Safari üzerinde ürün geçişini kontrol et.
+Yayın: [PR #78](https://github.com/muhammetdkaya/codela-storefront/pull/78) taslak; kaynak f1412382663994189dcdf60b6338b4eacaee643a. Ana dala doğrudan gönderim otomatik onay denetimince açık yetki eksikliği nedeniyle engellendi. Merge/Release/FTP/AZ kurulumu yapılmadı. Sıradaki: kullanıcı yayın onayından sonra PR’ı birleştir ve GitHub-only 0.1.171 Release/stable manifesti doğrula; manuel kurulum sonrası fiziksel Safari kabulü.
 
 
 ## 27 Ekim 2026 — 0.1.170 gerçek ürün satın alma alanı
