@@ -126,7 +126,8 @@
         save(main, ['aria-busy']);
         main.setAttribute('aria-busy', 'true');
         // Preserve pre-existing inert/ARIA values, including on cancelled requests.
-        [...main.children, ...document.querySelectorAll('.sf-header')].forEach(node => {
+        // The native footer sits outside main, beneath the viewport surface.
+        [...main.children, ...document.querySelectorAll('.sf-header,.sf-footer')].forEach(node => {
             save(node, ['inert']); node.inert = true;
         });
         if (type === 'account' && document.body.matches('.logged-in')) previewAccountHeader(target);

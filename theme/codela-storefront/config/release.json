@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Ürün görseli için hareketli skeleton geri getirildi.",
-    "Alt satın alma panelinde skeleton gösterilmez; gerçek ürün bilgileri beklenir.",
-    "Üründen diğer sayfalara geçişte hedef skeleton ve alt menü korunur."
+    "Sayfa skeleton gösterimi sırasında görünmeyen alt bilgi bağlantıları mevcut inert yaşam döngüsüne dahil edilir.",
+    "İptal, zaman aşımı ve geçmiş dönüşünde alt bilginin önceki durumu korunur.",
+    "0.1.171 ürün galerisi skeleton ve gerçek satın alma alanı davranışı değiştirilmez."
   ]
 }

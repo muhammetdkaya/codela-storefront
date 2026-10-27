@@ -1,5 +1,13 @@
 # Codela Storefront — güncel teknik durum
 
+## 27 Ekim 2026 — 0.1.172 inceleme adayı (kararlı yayın yok)
+
+Tema 0.1.171 → 0.1.172 **inceleme adayı**; eklenti değişmedi. Taban `eb381bca47de55bd043875f7f8c2e70176963559`; eşzamanlı PR #78 değişiklikleri korunur. Tam viewport skeleton arkasında kalan `.sf-footer`, main dışında olduğu için mevcut inert kilidine katılmıyordu. Aynı snapshot/geri yükleme yaşam döngüsüne eklendi; yeni controller, CSS veya satın alma davranışı yok.
+
+Doğrulama: eski 0.1.170 ve PR #78 kaynaklarında footer kilidi DOM sözleşme testinde başarısız; adayda 15 yaşam döngüsü kontrolü başarılı. Testler jsdom ve yalnız inert öznitelik yansıma shim'i ile çalıştı; gerçek klavye/pointer veya görsel kabul değildir. Yeni sözleşme mevcut shell-navigation-browser suite'ine eklendi. 24 paket testi ve bağımsız cart-race/cart-sync/search-panel/format/dock-gesture kontrolleri başarılı; PHP CLI bulunmadığından PHP bağımlı kontroller çalışmadı. Yerel Chromium başlatılamadığı için yeni tam browser suite'i çalışmadı. Canlı normal gezinme ayrı QA kanıtıdır; aday kod canlıda test edilmiş değildir.
+
+Yayın: Kullanıcı 27 Ekim 2026 tarihinde bu kapsamın inceleme dalına yüklenmesini ve taslak PR açılmasını onayladı; bu commit bu inceleme adayıdır. PR ve CI sonucu henüz bu kayıtta doğrulanmış değildir. Merge, Release, kararlı kanal ve canlı dağıtım kapsam dışıdır. Sıradaki: yetkili test ortamında shell-navigation-browser (footer klavye/pointer dahil) ve tam ilgili browser regresyonlarını çalıştır; eksik gerçek mobil/Safari kabulünü merge öncesinde tamamla. Canlıya alma kullanıcı ekibinde kalır.
+
 ## 27 Ekim 2026 — 0.1.171 yalnız ürün galerisi skeleton
 
 Tema 0.1.170 → 0.1.171; eklenti değişmedi. Kullanıcının açıklaması önceki 0.1.170 yorumunu düzeltir: yalnız alt satın alma paneli skeleton olmamalı; ürün görselinde hareketli skeleton kalmalı. Ortak feedback paketinde ürün hedefi yeniden etkin; mobil galeri tam görünür viewport, masaüstü sol galeri alanıdır. Başlık/fiyat/adet/CTA için sahte panel veya önceki ürün bilgisi gösterilmez. Ürün hedefinde mevcut dock gizlenir, header sepeti görünür; diğer hedeflerin skeleton/dock yaşam döngüsü korunur. Gerçek satın alma paneli yeni Woo belgesiyle gelir.
