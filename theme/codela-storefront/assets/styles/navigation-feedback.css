@@ -1,7 +1,7 @@
 /* The pending surface belongs to the viewport, never the outgoing product. */
 html[data-sf-navigation-pending] #sf-content *{visibility:hidden!important}
 html[data-sf-navigation-pending] :is(.sf-product-sheet,.sf-product-sheet *,.sf-product-purchase,.sf-product-plugin-footer){visibility:hidden!important}
-.sf-skeleton{position:fixed;inset:var(--sf-feedback-top,0px) 0 auto;height:var(--sf-feedback-height,100dvh);z-index:990;box-sizing:border-box;padding:calc(100px + var(--sf-header-offset,0px)) clamp(20px,5vw,48px) 110px;background:var(--sf-ui-page,#fff);pointer-events:none;overflow:hidden}
+.sf-skeleton{position:fixed;inset:0;height:auto;z-index:990;box-sizing:border-box;padding:calc(100px + var(--sf-header-offset,0px)) clamp(20px,5vw,48px) 110px;background:var(--sf-ui-page,#fff);pointer-events:none;overflow:hidden}
 .sf-skeleton-layout{display:grid;align-content:start;gap:28px}
 .sf-skeleton-status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
 .sf-skeleton-row{display:flex;align-items:center;gap:20px;min-width:0}
@@ -22,10 +22,33 @@ html[data-sf-navigation-pending] .sf-shell > .sf-mobile-dock .sf-dock-surface{tr
 .sf-skeleton-gallery{width:calc((100% - 40px)*.5652);height:65svh}
 @media(max-width:700px){
   html[data-sf-navigation-target="product"] .sf-skeleton{padding:0}
-  html[data-sf-navigation-target="product"] .sf-navigation-preview{display:block;position:absolute;inset:auto 16px calc(var(--sf-ui-bottom-bar-gap,12px) + env(safe-area-inset-bottom,0px));max-width:430px;margin:0 auto;padding:0;pointer-events:none}
-  .sf-navigation-purchase{display:grid;grid-template-columns:122px minmax(0,1fr);gap:12px;padding:12px}
-  .sf-navigation-quantity{display:flex;align-items:center;justify-content:space-around;min-height:44px}
-  .sf-navigation-purchase .sf-ui-button{width:100%;min-width:0;--sf-ui-button-height:var(--sf-ui-bottom-bar-control-height,44px);--sf-ui-button-padding-y:10px;--sf-ui-control-radius:var(--sf-ui-pill);cursor:default}
+  html[data-sf-navigation-target="product"] .sf-navigation-preview{
+    display:block;position:absolute;inset:auto var(--sf-ui-bottom-bar-inset,16px) calc(var(--sf-ui-bottom-bar-gap,12px) + env(safe-area-inset-bottom,0px));
+    max-width:var(--sf-ui-bottom-bar-max-width,430px);margin:0 auto;padding:0;pointer-events:none;
+  }
+  /* Reproduce the real native collapsed Woo sheet, not an isolated CTA strip.
+     Only the heading is intentionally blank until the destination HTML arrives. */
+  .sf-navigation-purchase{display:flex;flex-direction:column;min-height:144px;padding:0 0 8px;box-sizing:border-box;overflow:hidden}
+  .sf-navigation-purchase .sf-product-sheet-header{position:relative;flex:none;min-height:64px;padding:28px 16px 8px;box-sizing:border-box}
+  .sf-navigation-purchase .sf-product-sheet-header::before{
+    content:'';position:absolute;top:12px;left:calc(50% - 22px);width:44px;height:4px;
+    background:var(--sf-ui-border);border-radius:var(--sf-ui-pill,999px);
+  }
+  .sf-navigation-purchase .sf-product-sheet-heading{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,42%);align-items:center;gap:10px;min-height:28px}
+  .sf-navigation-heading-placeholder{height:15px;border-radius:5px;background:var(--sf-ui-skeleton,#dfe1e5);opacity:.7}
+  .sf-navigation-heading-placeholder--title{width:75%}
+  .sf-navigation-heading-placeholder--price{width:72%;justify-self:end}
+  .sf-navigation-controls{display:flex;align-items:center;gap:12px;padding:12px;min-height:72px;box-sizing:border-box}
+  .sf-navigation-quantity{
+    display:flex;align-items:center;justify-content:space-around;flex:0 0 122px;min-width:0;min-height:48px;
+    border-radius:var(--sf-ui-pill,999px);background:var(--sf-ui-glass-surface,#f7f7f9);
+    box-shadow:var(--sf-ui-glass-shadow);
+  }
+  .sf-navigation-purchase .sf-ui-button{
+    flex:0 1 200px;width:auto;min-width:0;margin-inline-start:auto;
+    --sf-ui-button-height:var(--sf-ui-bottom-bar-control-height,48px);
+    --sf-ui-button-padding-y:8px;--sf-ui-control-radius:var(--sf-ui-pill);cursor:default;
+  }
   html[data-sf-navigation-target="product"] .sf-skeleton-gallery{position:absolute;inset:0;width:100%;height:var(--sf-feedback-gallery-height,100%);border-radius:0}
   html[data-sf-navigation-pending]:not([data-sf-navigation-target="product"]) .sf-skeleton-layout{max-height:max(0px,calc(var(--sf-feedback-gallery-height,100dvh) - 100px - var(--sf-header-offset,0px)));overflow:hidden}
   html[data-sf-navigation-bottom="product"] .sf-shell .sf-header .sf-actions{display:flex!important}
@@ -34,7 +57,7 @@ html[data-sf-navigation-pending] .sf-shell > .sf-mobile-dock .sf-dock-surface{tr
   html[data-sf-navigation-bottom="product"] .sf-shell > .sf-mobile-dock{display:none!important}
   html[data-sf-navigation-bottom="dock"] .sf-shell.has-mobile-dock .sf-header .sf-actions{display:none!important}
 
-  html[data-sf-navigation-bottom="dock"] .sf-shell > .sf-mobile-dock{display:block!important;bottom:calc(var(--sf-ui-bottom-bar-gap) + env(safe-area-inset-bottom,0px) + var(--sf-feedback-bottom-offset,0px))}
+  html[data-sf-navigation-bottom="dock"] .sf-shell > .sf-mobile-dock{display:block!important;bottom:var(--sf-dock-bottom,calc(var(--sf-ui-bottom-bar-gap) + env(safe-area-inset-bottom,0px)))}
   .sf-skeleton-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 
 }
