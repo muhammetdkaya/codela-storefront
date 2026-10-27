@@ -11,6 +11,12 @@ This supersedes the old 0.1.171 prohibition on showing the outgoing panel: its *
 
 ## Historical gallery-only product feedback — 0.1.171 (superseded by candidate above)
 
+## Desktop description and page scrolling — unreleased review
+
+At 901px+, reuse the single native Woo description disclosure in the existing summary immediately before enabled delivery output; keep it readable on entry. Preserve its original marker and open state and restore both before the unchanged mobile sheet mounts. Additional information/reviews remain in the original below-overview information container; callbacks, IDs, forms and content are never duplicated. Missing description/delivery never creates invented content. The existing product gallery retains horizontal containment, but allows vertical scroll chaining on desktop only. At <=900px all previous CSS and composition remain; no-JS keeps the original server-rendered information fallback. This is an unreleased draft, not a new installable version or visual/native-device acceptance.
+
+## Gallery-only product feedback — 0.1.171
+
 User clarification supersedes 0.1.170: product destinations keep animated gallery feedback, full visible viewport on mobile and left gallery on desktop. No skeleton summary, title, price, quantity, purchase panel or submit. The incoming native Woo document owns actual product information and the purchase form. Never reveal an outgoing product form while waiting. Existing header cart is shown and dock hidden for product destinations; other targets retain their own feedback and dock. Use the shared token animation, reduced-motion and viewport lifecycle.
 
 ## Historical product controls decision — 0.1.170 (superseded)
