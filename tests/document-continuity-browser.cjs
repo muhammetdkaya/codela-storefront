@@ -199,10 +199,19 @@ const doc=(path)=>{
    await page.evaluate(()=>{
     window.addEventListener('pageswap',event=>{sessionStorage.setItem('native-bottom-pageswap',String(document.documentElement.dataset.sfNavigationBottom||'none'));event.viewTransition?.finished.catch(()=>{});});
    });
-   await page.evaluate(to=>{const a=document.createElement('a');a.href=to+'?slow=1';a.textContent='Next';document.body.append(a);a.click();},to);
-   assert.equal(await page.locator('html').getAttribute('data-sf-navigation-bottom'),expectedBottom);
-   assert.equal(await page.locator('.sf-mobile-dock').isVisible(),expectedBottom==='dock');
-   if(expectedBottom==='product'){assert(await page.locator('[data-sf-feedback-bottom]').isVisible());assert.equal(await page.locator('[data-product-price]').textContent(),'42 ₺');}
+   // Read in the click task. A later locator may resolve in the committed
+   // document, where pending attributes must correctly have disappeared.
+   const pendingBottom=await page.evaluate(to=>{
+    const a=document.createElement('a');a.href=to+'?slow=1';a.textContent='Next';document.body.append(a);a.click();
+    const visible=el=>!!el&&getComputedStyle(el).display!=='none'&&getComputedStyle(el).visibility!=='hidden'&&el.getBoundingClientRect().height>0;
+    return {bottom:document.documentElement.dataset.sfNavigationBottom,pending:document.documentElement.hasAttribute('data-sf-navigation-pending'),dock:visible(document.querySelector('.sf-mobile-dock')),panel:visible(document.querySelector('[data-sf-feedback-bottom]')),price:document.querySelector('[data-product-price]')?.textContent,url:location.href};
+   },to);
+   console.log('NATIVE_BOTTOM_PENDING',from,to,JSON.stringify(pendingBottom));
+   assert.equal(pendingBottom.url,origin+from,'Pending data belongs to the source document URL');
+   assert.equal(pendingBottom.pending,true);
+   assert.equal(pendingBottom.bottom,expectedBottom);
+   assert.equal(pendingBottom.dock,expectedBottom==='dock');
+   if(expectedBottom==='product'){assert(pendingBottom.panel);assert.equal(pendingBottom.price,'42 ₺');}
    await page.waitForURL(origin+to+'?slow=1');
    await page.waitForLoadState('domcontentloaded');
    assert.equal(await page.locator('[data-sf-navigation-pending]').count(),0);
