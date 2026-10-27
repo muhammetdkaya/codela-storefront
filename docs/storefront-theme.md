@@ -1,5 +1,14 @@
 # Codela Storefront — güncel teknik durum
 
+## 27 Ekim 2026 — 0.1.175 Safari mobil alt alan hizalama düzeltmesi
+
+Kullanıcının iPhone ekran görüntülerinde 0.1.174 geçiş önizlemesi Safari araç çubuğunun altında kesiliyor, ürün panelinin gerçek kapalı hâlinden çok kısa kalıyor ve ürün→ana sayfada normal dock fazla yukarı taşınıyordu.
+
+0.1.175 adayı: navigasyon skeleton'ı tarayıcının native fixed inset:0 alanını kullanır. Safari zaten fixed öğeleri görünür alana hizaladığı için window.innerHeight/visualViewport farkından ikinci bir bottom/top hesabı yapılmaz. Galeri yüksekliği, gerçekten konumlanmış alt öğenin yüzey içindeki Y koordinatından alınır. Ürün hedefinde PHP UI Kit düğmesi ve gerçek Woo paneliyle aynı sınıf malzeme, 64px tutamaç/başlık, statik boş başlık/fiyat çizgileri ve 72px satın alma kontrolleri kullanılır; fiyat, ürün ID'si ve native form asla üretilmez. Normal hedef dock önceki CSS bottom konumunu korur.
+
+tests/navigation-viewport-browser.cjs artık viewport gerçek ölçüsü ile bilerek uyumsuz sentetik visualViewport bildirimleri altında hem ürün panelinin tamamen sığmasını hem normal dock'un aşağıda kalmasını doğrular. Bu kontrollü tarayıcı koşulu **fiziksel iPhone Safari kabulü değildir**. Eklenti, sunucu FTP ve AZ Seramik canlı kurulumu değiştirilmez. Gerçek cihaz kabulü kullanıcı güncellemeyi kurduktan sonra gereklidir.
+
+
 ## Son doğrulanmış devam noktası — 27 Ekim 2026: 0.1.174 hedefe göre alt alan
 
 Tema 0.1.173 → 0.1.174; eklenti değişmedi. Kullanıcı 0.1.173 davranışını düzeltti: alt alan çıkılan sayfayı değil hedefi temsil etmeli. Ürün→ana sayfa/katalog/bilgi/hesap geçişinde mevcut normal dock hemen görünür; normal→ürün ve ürün→ürün geçişinde ortak UI Kit ile statik adet/Sepete ekle önizlemesi görünür. Alt alan pulse/skeleton değildir. Eski ürünün başlığı, fiyatı, miktarı veya formu aktarılmaz. Önizleme inert/aria-hidden, düğme disabled/type=button; form/ürün ID/fiyat/içerik isteği içermez. Gerçek hedef WooCommerce belgesi kendi satın alma durumunu devralır. Sepete ekle çevirisi WooCommerce alanından gelir. Yükleme boyunca eski native formun gecikmiş submit'i de engellenir.
