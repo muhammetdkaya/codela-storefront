@@ -1,6 +1,12 @@
 # Codela Storefront UI Kit — source of truth
 
-## Real product controls — 0.1.170
+## Gallery-only product feedback — 0.1.171
+
+User clarification supersedes 0.1.170: product destinations keep animated gallery feedback, full visible viewport on mobile and left gallery on desktop. No skeleton summary, title, price, quantity, purchase panel or submit. The incoming native Woo document owns actual product information and the purchase form. Never reveal an outgoing product form while waiting. Existing header cart is shown and dock hidden for product destinations; other targets retain their own feedback and dock. Use the shared token animation, reduced-motion and viewport lifecycle.
+
+## Historical product controls decision — 0.1.170 (superseded)
+
+## Historical product controls decision — 0.1.170 (superseded)
 
 Product destinations use native document navigation without synthetic product/purchase UI. Price, stock, title, quantity and submit belong to the incoming Woo document. Do not reuse an outgoing product form under a destination skeleton. Home/catalog/account/page feedback keeps the shared package and viewport cleanup. This supersedes prior product-silhouette instructions.
 

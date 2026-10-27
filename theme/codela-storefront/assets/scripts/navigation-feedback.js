@@ -35,6 +35,7 @@
         const lines = '<div class="sf-skeleton-lines"><i></i><i></i></div>';
         const rows = ('<div class="sf-skeleton-row"><div class="sf-skeleton-media"></div>' + lines + '</div>').repeat(3);
         if (type === 'account') return rows;
+        if (type === 'product') return shape('gallery');
         if (type === 'home' || type === 'catalog') return (type === 'home' ? shape('hero') : shape('heading') + shape('filters')) + '<div class="sf-skeleton-cards">' + ('<div>' + shape('card') + lines + '</div>').repeat(4) + '</div>';
         return shape('heading') + '<div class="sf-skeleton-copy">' + (lines + lines + lines).repeat(2) + '</div>';
     }
@@ -105,9 +106,8 @@
         window.dispatchEvent(new Event('codela:before-route'));
         const target = new URL(url, location.href);
         const type = destination(target, link);
-        // Product price/stock/form must come from the destination document.
-        // Keep native navigation rather than masking it with a fake purchase UI.
-        if (type === 'product') return null;
+        // Product feedback covers only the gallery. Purchase data and controls
+        // belong exclusively to the incoming Woo document.
         const surface = document.createElement('div');
         surface.className = 'sf-skeleton';
         surface.dataset.owner = owner;
@@ -142,7 +142,7 @@
                 node.classList.toggle('is-active', selected && node.dataset.dockView === type);
                 node.removeAttribute('aria-current');
             });
-            dock.hidden = false;
+            dock.hidden = type === 'product';
             dock.inert = true;
             dock.classList.remove('is-collapsed');
         }

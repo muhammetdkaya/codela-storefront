@@ -103,7 +103,6 @@ const doc=(path)=>{
       if(type==='home') a.dataset.sfRoute='home';
       a.click();
       const surface=document.querySelector('.sf-skeleton');
-      if(type==='product'){const result={expected:type,native:!surface&&!main.hasAttribute('aria-busy')&&!document.querySelector('.sf-header').inert&&getComputedStyle(sheet.firstChild).visibility==='visible'};a.remove();return result;}
       const dock=document.querySelector('.sf-mobile-dock');
       const purchase=document.querySelector('.sf-skeleton-purchase');
       const result={type:document.documentElement.dataset.sfNavigationTarget,expected:type,
@@ -123,18 +122,25 @@ const doc=(path)=>{
       await page.evaluate(target=>{
        const a=document.createElement('a');a.href='/preview/';a.dataset.sfSkeleton=target;document.body.append(a);a.click();a.remove();
       },target);
-      if(target==='product') assert.equal(await page.locator('.sf-skeleton').count(),0,'Product uses the real native document');
+      if(target==='product') {
+       const gallery=page.locator('.sf-skeleton-gallery');
+       assert.deepEqual(await gallery.boundingBox(),{x:0,y:0,width:390,height:850});
+       assert.equal(await gallery.evaluate(el=>getComputedStyle(el).animationName),'sf-skeleton-pulse');
+       assert.equal(await page.locator('.sf-skeleton-purchase,.sf-skeleton-summary,.sf-skeleton-product-controls').count(),0,'No fabricated purchase panel');
+       await page.emulateMedia({reducedMotion:'reduce'});
+       assert.equal(await gallery.evaluate(el=>getComputedStyle(el).animationName),'none');
+       await page.emulateMedia({reducedMotion:'no-preference'});
+      }
       await page.screenshot({path:'qa/storefront-product-to-'+target+'-skeleton.png'});
       await page.evaluate(()=>document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'})));
      }
     }
     for(const result of cases){
-     if(result.expected==='product'){assert(result.native,'Real product content stays native without synthetic purchase controls');continue;}
      assert.equal(result.type,result.expected,'Destination silhouette');
      assert.equal(result.top,0,'Viewport surface escapes transformed product');
      assert(result.outside&&result.restored,'Outside main and cancellation restores state');
      assert.equal(result.old,'hidden','Old explicitly visible product descendants hidden');
-     assert.equal(result.purchase,width<=700&&result.type==='product','Purchase silhouette only on mobile product destination');
+     assert.equal(result.purchase,false,'Purchase panel never uses skeleton');
      if(width<=700) assert.equal(result.dock,result.type!=='product','Target owns the bottom surface');
      assert.equal(result.color,'rgb(223, 225, 229)','Stronger static contrast');
     }

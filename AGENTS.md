@@ -1,5 +1,14 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 27 Ekim 2026 — 0.1.171 yalnız ürün galerisi skeleton
+
+Tema 0.1.170 → 0.1.171; eklenti değişmedi. Kullanıcının açıklaması önceki 0.1.170 yorumunu düzeltir: yalnız alt satın alma paneli skeleton olmamalı; ürün görselinde hareketli skeleton kalmalı. Ortak feedback paketinde ürün hedefi yeniden etkin; mobil galeri tam görünür viewport, masaüstü sol galeri alanıdır. Başlık/fiyat/adet/CTA için sahte panel veya önceki ürün bilgisi gösterilmez. Ürün hedefinde mevcut dock gizlenir, header sepeti görünür; diğer hedeflerin skeleton/dock yaşam döngüsü korunur. Gerçek satın alma paneli yeni Woo belgesiyle gelir.
+
+Doğrulama: JS sözdizimi, 24 paket testi, cart-race/cart-sync; Chromium 153 native HTTP/POST/geçmiş ve hedef geçişleri, core-router fixture yaşam döngüsü, VisualViewport daralma/ofset/zoom/temizleme geçti. Mobil galeri tam viewport, pulse/reduced-motion, alt panel yokluğu kontrol edildi; 390px screenshot incelendi. Standart Chromium indirmesi geçersiz ZIP verdi; testler geçici npm Chromium binary ile çalıştı. Fiziksel Safari, gerçek WP/Woo ve AZ kabulü yapılmadı.
+
+Yayın: doğrulanmış kaynak GitHub için hazır; FTP ve AZ kurulumu yok. Sıradaki: GitHub 0.1.171 yayınını doğrula; manuel kurulum sonrası fiziksel Safari üzerinde ürün geçişini kontrol et.
+
+
 ## 27 Ekim 2026 — 0.1.170 gerçek ürün satın alma alanı
 
 Tema 0.1.169 → 0.1.170; eklenti değişmedi. Kullanıcı isteğiyle ürün hedefleri artık sentetik skeleton kullanmaz. Normal Woo belge geçişi korunur; hedefin başlık/fiyat/stok/adet/sepete ekle bilgileri yalnız gerçek sunucu belgesinden gelir. Eski ürün verisi yeni ürün adına kopyalanmaz. Yapay ürün galeri/summary/purchase şablonu ve CSS'i kaldırıldı. Mevcut native ilk-paint summary ve tek form korunur. Diğer dört hedef türünün ortak skeleton/viewport yaşam döngüsü değişmez. Açık overlay ürün navigasyonu öncesinde mevcut controller üzerinden kapanır.

@@ -11,7 +11,7 @@ const css=['tokens','components','navigation-feedback'].map(name=>fs.readFileSyn
  try{
   const page=await browser.newPage({viewport:{width:390,height:850}});
   page.setDefaultTimeout(3000);
-  await page.setContent('<style>'+css+'</style><main id="sf-content"><a id="product" href="https://store.test/about/">Product</a></main>');
+  await page.setContent('<style>'+css+'</style><main id="sf-content"><a id="product" data-sf-skeleton="product" href="https://store.test/product/item/">Product</a></main>');
   await page.evaluate(()=>{
    const vv=new EventTarget();Object.assign(vv,{height:650,offsetTop:0,scale:1});
    const add=vv.addEventListener.bind(vv),remove=vv.removeEventListener.bind(vv);vv.listeners=new Set();
@@ -27,9 +27,11 @@ const css=['tokens','components','navigation-feedback'].map(name=>fs.readFileSyn
    await page.waitForFunction(h=>document.querySelector('.sf-skeleton').getBoundingClientRect().height===h,height);
    const boxes=await page.evaluate(()=>{
     const surface=document.querySelector('.sf-skeleton').getBoundingClientRect();
-    return {top:surface.top,bottom:surface.bottom};
+    const gallery=document.querySelector(".sf-skeleton-gallery").getBoundingClientRect();
+    return {top:surface.top,bottom:surface.bottom,galleryTop:gallery.top,galleryBottom:gallery.bottom};
    });
    assert.equal(boxes.top,offsetTop);assert.equal(boxes.bottom,height+offsetTop);
+    assert.equal(boxes.galleryTop,offsetTop);assert.equal(boxes.galleryBottom,height+offsetTop);
    if(height===650){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:'qa/storefront-ui-kit-skeleton-visible-viewport.png',clip:{x:0,y:0,width:390,height:650}});}
   }
   await page.evaluate(()=>{visualViewport.scale=2;visualViewport.dispatchEvent(new Event('resize'));});
