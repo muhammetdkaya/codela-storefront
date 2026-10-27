@@ -1,6 +1,5 @@
 {
   "confirm": "PUBLISH_STABLE",
-  "version": "0.1.167",
-  "source_sha": "c49375c2e6f3d9f32043f67e066879d0e5383561",
-  "validation": "Local Chromium 153 native and shell navigation tests, pulse/reduced-motion and product geometry checks, 24 package tests passed."
+  "version": "0.1.168",
+  "source_sha": "f8afc7aa1d748b8f6defe9f58129fc714398ee19"
 }
