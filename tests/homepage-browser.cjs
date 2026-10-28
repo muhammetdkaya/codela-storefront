@@ -40,17 +40,17 @@ for(const width of [320,390,700,701,1023,1024,1280])for(const promos of ['split,
      const children=copy?[...copy.children].filter(child=>getComputedStyle(child).display!=='none'):[];
      const requiredHeight=copy?parseFloat(style.paddingTop)+parseFloat(style.paddingBottom)+parseFloat(style.rowGap)*Math.max(0,children.length-1)+children.reduce((sum,child)=>sum+child.getBoundingClientRect().height,0):0;
      return copy?{requiredHeight,imageBottom:slide.querySelector('.sf-section-art').getBoundingClientRect().bottom,
-       titleGap:copy.querySelector('h1,h2').getBoundingClientRect().top-copy.getBoundingClientRect().top,
+       firstChildGap:copy.firstElementChild.getBoundingClientRect().top-copy.getBoundingClientRect().top,
        ctaBottom:slide.getBoundingClientRect().bottom-copy.querySelector('.sf-ui-button').getBoundingClientRect().bottom}:null;
    }).filter(Boolean);
    return{heroHeight:hero.height,imageHeight:image.height,captionHeight:caption.height,
      buttonRight:button.right,buttonBottom:button.bottom,controlsLeft:controls.left,
      controlsBottom:controls.bottom,heroBottom:hero.bottom,headlineTop:headline.top,captionTop:caption.top,seams};
   });
-  assert(Math.abs(layout.heroHeight-Math.max(560,844-68))<2,'Mobile Vitrin preserves existing slider height '+width+' '+JSON.stringify(layout));
+  assert(Math.abs(layout.heroHeight-Math.max(420,844*.75-51))<2,'Mobile Vitrin is 25% shorter '+width+' '+JSON.stringify(layout));
   assert(Math.abs(layout.imageHeight-layout.heroHeight)<1,'Mobile photo fills the entire existing slider height '+width);
   assert(Math.abs(layout.captionHeight-Math.max(...layout.seams.map(s=>s.requiredHeight)))<2,'Mobile caption equals rendered copy rather than an arbitrary fixed-height cap '+width+' '+JSON.stringify(layout));
-  assert(layout.seams.every(s=>Math.abs(s.titleGap-18)<1),'Mobile overlaid caption keeps its 18px top padding '+width+' '+JSON.stringify(layout.seams));
+  assert(layout.seams.every(s=>Math.abs(s.firstChildGap-18)<1),'Mobile overlaid caption keeps its 18px top padding '+width+' '+JSON.stringify(layout.seams));
   assert(layout.seams.every(s=>Math.abs(s.ctaBottom-20)<2),'Every CTA shares the bottom anchor with navigation '+width);
   assert(layout.seams.every(s=>Math.abs(s.imageBottom-layout.seams[0].imageBottom)<1),'Different subtitles do not change full-background image bounds '+width);
   const categoryGap=await page.locator('.sf-section--hero').evaluate(el=>el.nextElementSibling.getBoundingClientRect().top-el.getBoundingClientRect().bottom);
@@ -60,14 +60,29 @@ for(const width of [320,390,700,701,1023,1024,1280])for(const promos of ['split,
   assert(Math.abs(layout.heroBottom-layout.controlsBottom-20)<2,'Slider controls align with CTA bottom '+width);
  }
 
- assert.equal(await page.locator('.sf-section--hero [data-gallery-next]').evaluate(el=>getComputedStyle(el).color),'rgb(255, 255, 255)','Arrows contrast with the dark caption');
+ assert.equal(await page.locator('.sf-section--hero [data-gallery-prev],.sf-section--hero [data-gallery-next]').count(),0,'Hero arrows are removed, not merely hidden');
+ assert(await page.locator('.sf-section--hero .sf-ui-button').first().evaluate(el=>el.getBoundingClientRect().height>=44),'Compact CTA retains a 44px hit area');
  const progress=page.locator('.sf-section--hero .sf-hero-progress > span');
  assert.equal(await progress.count(),await page.locator('.sf-section--hero .sf-section-slide').count(),'One progress segment per hero slide');
  const galleries=page.locator('[data-sf-gallery]');assert.equal(await galleries.count(),4);
- for(let i=0;i<await galleries.count();i++){const gallery=galleries.nth(i),track=gallery.locator('.sf-ui-gallery-track'),count=gallery.locator('[data-gallery-count]');assert((await count.textContent()).startsWith('1 / '));await gallery.locator('[data-gallery-next]').click();await page.waitForFunction(el=>!el.textContent.startsWith('1 / '),await count.elementHandle());await track.focus();await page.keyboard.press('End');await page.waitForFunction(el=>el.disabled,await gallery.locator('[data-gallery-next]').elementHandle());await page.keyboard.press('Home');await page.waitForFunction(el=>el.disabled,await gallery.locator('[data-gallery-prev]').elementHandle());}
+ for(let i=0;i<await galleries.count();i++){
+  const gallery=galleries.nth(i),track=gallery.locator('.sf-ui-gallery-track'),count=gallery.locator('[data-gallery-count]');
+  const isHero=await gallery.evaluate(el=>el.classList.contains('sf-section--hero'));
+  const total=await track.locator(':scope > *').count(),format=n=>isHero?String(n).padStart(2,'0'):String(n);
+  assert.equal(await count.textContent(),format(1)+' / '+format(total));
+  if(isHero){await track.focus();await page.keyboard.press('ArrowRight');}
+  else await gallery.locator('[data-gallery-next]').click();
+  await page.waitForFunction(({el,text})=>el.textContent===text,{el:await count.elementHandle(),text:format(2)+' / '+format(total)});
+  await track.focus();await page.keyboard.press('End');
+  await page.waitForFunction(({el,text})=>el.textContent===text,{el:await count.elementHandle(),text:format(total)+' / '+format(total)});
+  if(!isHero)assert(await gallery.locator('[data-gallery-next]').isDisabled(),'Nonhero next control still reaches its boundary');
+  await page.keyboard.press('Home');
+  await page.waitForFunction(({el,text})=>el.textContent===text,{el:await count.elementHandle(),text:format(1)+' / '+format(total)});
+  if(!isHero)assert(await gallery.locator('[data-gallery-prev]').isDisabled(),'Nonhero previous control still reaches its boundary');
+ }
  assert.equal(await progress.locator('..').locator('.is-current').count(),1);
  await page.addScriptTag({content:fs.readFileSync(root+'assets/scripts/gallery-horizontal.js','utf8')});
- const hero=page.locator('.sf-section--hero');await hero.locator('h1').evaluate(e=>e.textContent='Doğal dokularla yaşam alanınıza sıcaklık katan özel koleksiyonlardan seçmeler ve yeni ürünler');await hero.locator('.sf-section-copy p').first().evaluate(e=>e.textContent='Doğal taş ve sade çizgilerle yaşam alanınızı keşfedin. '.repeat(6));const bounds=await hero.evaluate(el=>{const r=el.getBoundingClientRect(),c=el.querySelector('.sf-section-copy').getBoundingClientRect(),b=el.querySelector('.sf-ui-button').getBoundingClientRect();return{top:c.top-r.top,bottom:b.bottom-r.top,height:r.height};});assert(bounds.top>=0&&bounds.bottom<=bounds.height-(width<=700?16:70),'Long copy stays in caption '+JSON.stringify(bounds));const fullBackground=await hero.locator('.sf-section-slide').first().evaluate(el=>{const slide=el.getBoundingClientRect(),art=el.querySelector('picture').getBoundingClientRect();return Math.abs(art.top-slide.top)<1&&Math.abs(art.bottom-slide.bottom)<1;});assert(fullBackground,'Long copy never changes full-background coverage');
+ const hero=page.locator('.sf-section--hero');await hero.locator('h1').evaluate(e=>e.textContent='Doğal dokularla yaşam alanınıza sıcaklık katan özel koleksiyonlardan seçmeler ve yeni ürünler');await hero.locator('.sf-section-copy p').first().evaluate(e=>e.textContent='Doğal taş ve sade çizgilerle yaşam alanınızı keşfedin. '.repeat(6));await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));const bounds=await hero.evaluate(el=>{const r=el.getBoundingClientRect(),c=el.querySelector('.sf-section-copy').getBoundingClientRect(),b=el.querySelector('.sf-ui-button').getBoundingClientRect();return{top:c.top-r.top,bottom:b.bottom-r.top,height:r.height};});assert(bounds.top>=0&&bounds.bottom<=bounds.height-(width<=700?16:20),'Long copy stays in caption '+JSON.stringify(bounds));const fullBackground=await hero.locator('.sf-section-slide').first().evaluate(el=>{const slide=el.getBoundingClientRect(),art=el.querySelector('picture').getBoundingClientRect();return Math.abs(art.top-slide.top)<1&&Math.abs(art.bottom-slide.bottom)<1;});assert(fullBackground,'Long copy never changes full-background coverage');
  assert.equal(await page.locator('.sf-categories--editorial .sf-category-story').first().evaluate(e=>getComputedStyle(e).display),'grid');assert(await page.locator('.sf-categories--carousel .sf-category-story').first().evaluate(e=>e.getBoundingClientRect().width<e.parentElement.getBoundingClientRect().width*.9),'Next card peeks');
  const contentHtml=execFileSync(process.env.PHP_BIN||'php',['tests/homepage.php'],{encoding:'utf8',env:{...process.env,RENDER_CONTENT:'1'}});
  await page.locator('main').evaluate((el,html)=>el.insertAdjacentHTML('beforeend',html),contentHtml);

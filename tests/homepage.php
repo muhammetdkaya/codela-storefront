@@ -24,6 +24,14 @@ foreach(['compact','editorial','bands','mosaic','carousel','grid'] as $variant){
 foreach(explode(',',getenv('PROMO_VARIANTS')?:'split,inset') as $variant){$html.=codela_sf_render_section(null,'promo',data('promo',$variant,[item('Yeni koleksiyon'),item('Doğadan ilham',12)]));}
 $row=data('products','grid');$html.=codela_sf_render_section(null,'products',$row);$html.='</div>';
 expect(substr_count($html,'fetchpriority="high"')===1,'Only the first hero receives high priority');
+preg_match('/<section class="sf-section sf-section--hero[\\s\\S]*?<\\/section>/', $html, $hero_markup);
+expect(!str_contains($hero_markup[0],'data-gallery-prev')&&!str_contains($hero_markup[0],'data-gallery-next'),'Hero removes arrows, not just their icons');
+expect(str_contains($hero_markup[0],'01 / 02'),'Hero counter is padded and uses actual valid slide total');
+expect(str_contains(codela_sf_section_controls(5,true),'01 / 05'),'Five slides use 01 / 05');
+expect(str_contains(codela_sf_section_controls(12,true),'01 / 12'),'Two digit totals are not truncated');
+expect(str_contains(codela_sf_section_controls(2,false),'data-gallery-next'),'Other galleries keep their controls');
+expect(codela_sf_section_controls(1,true)==='','Single-slide hero has no false navigation');
+
 expect(substr_count($html,'<h1>')===1,'Exactly one page H1');
 expect(str_contains($html,'<source media="(max-width:700px)"'),'Responsive mobile image');
 preg_match_all('/<picture[^>]*><source[^>]*sizes="([^"]+)"[^>]*><img[^>]*sizes="([^"]+)"/', $html, $responsive, PREG_SET_ORDER);

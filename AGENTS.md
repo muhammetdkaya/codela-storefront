@@ -1,5 +1,13 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 28 Ekim 2026 — 0.1.184 yalnız tema: etiketsiz Vitrin inceltme adayı
+
+Muhammet’in 18:22 TR takip mesajı “Başlık üstündeki etiketi atla diğerlerini yap yayınla” ile yeni etiket özelliği kapsamdan çıkarıldı. Yeni hero eyebrow renderer/CSS/test fixture’ları ve skeleton etiket şekli kaldırıldı; eklenti değişikliği veya 1.2.5 gereksinimi yok. Önceden mevcut diğer bölüm etiketlerine dokunulmaz. Özel codela dalı birleştirilmez/yayımlanmaz; Actions runner engeli çözülmüş sayılmaz, bu tema işinin bağımlılığı kaldırılmıştır.
+
+Kalan kapsam: referanstaki yükseklik dörtte bir (%25) azalır, 4:1 en-boy yapılmaz. Masaüstü clamp(510px,64.5svh,675px), mobil max(420px,75svh - 51px); tam cover, kayıtlı kaynaklar/odak noktaları korunur. Kompakt ortak Button 44px dokunma hedefini korur. Hero okları kalkar; gerçek toplamla 01 / 05 sayacı, native klavye/swipe ve diğer galerilerin okları korunur. Home skeleton aynı frame token’ını ve görünür title/CTA/counter siluetini kullanır; mevcut shell/inert/cancel sahipliği korunur.
+
+Taban main 2ab3e621, önceki tam tarayıcı kabulü 92b1d611 / Actions 40709593005 (97’şer Chromium/WebKit senaryosu, 24 home-skeleton kombinasyonu). Etiketsiz bu kesin yeni aday tekrar sınanır; önceki sonuç yeni SHA kabulü değildir. Fiziksel Safari/canlı kurulum kabulü ayrıdır. Kullanıcının mevcut GitHub yükleme/test ve başarılıysa yayın onayının daraltılmış alt kapsamıdır. Main entegrasyonu [skip ci]; sonra ayrı GitHub-only release isteği. FTP, WordPress.org, AZ canlı kurulumu ve özel plugin değişikliği yok. Yeni CI, kaynak SHA ve paket/stable hash sonucu yayın sonrası eklenir.
+
 ## 28 Ekim 2026 — 0.1.183 Vitrin arka plan düzeltmesi yayımlandı
 
 Muhammet’in düzeltmesiyle 182’nin yorumu geri alındı: istenen daha yüksek slider değil, fotoğrafın mevcut alanın metin/kontroller dahil tamamını kaplamasıdır. Tema 0.1.182 → 0.1.183; eklenti değişmez. Aynı responsive picture tam slaytta absolute/cover, caption saydam overlay ve alt karartma kullanır; ayrı opak bant yoktur. Masaüstü `clamp(680px,86svh,900px)` ve mobil `max(560px,100svh - 68px)` 181 ölçüleri geri geldi. Kayıtlı mobil/masaüstü kaynakları/odak noktaları korunur; cover oran farkında kırpar. Uzun metin slider’ı büyütmeden kendi katmanında kayar.

@@ -16,35 +16,36 @@
 @media(max-width:700px){.sf-section--story .has-image,.sf-section--info .sf-content-cards,.codela-contact-list{grid-template-columns:minmax(0,1fr)}.sf-section--story .has-image>:is(.sf-section-art,.sf-content-copy){grid-column:auto;grid-row:auto}.sf-section--info .sf-content-cards{gap:0}}
 
 /* Vitrin: the existing picture covers the whole slide behind its caption.
-   Preserve the 0.1.181 frame dimensions; image coverage must not make the
-   slider taller. Responsive picture sources and saved focal points stay native. */
-.sf-section--hero{--sf-media-height:clamp(680px,86svh,900px);width:100%;max-width:none}
+   The new height request reduces the 183 frame by one quarter; cover remains
+   independent. Responsive picture sources and saved focal points stay native. */
+.sf-section--hero{--sf-media-height:var(--sf-ui-showcase-height);width:100%;max-width:none}
 .sf-section--hero .sf-section-slide:has(.sf-section-copy){display:block;height:var(--sf-media-height);min-height:0;background:#403a33}
 .sf-section--hero .sf-section-slide:has(.sf-section-copy)::after{display:block;inset:0;background:linear-gradient(180deg,transparent 15%,rgba(0,0,0,.3) 50%,rgba(0,0,0,.78));pointer-events:none}
 .sf-section--hero .sf-section-slide:has(.sf-section-copy)>.sf-section-art{position:absolute;inset:0;min-height:0;background:#ded4c5}
 .sf-section--hero .sf-section-slide:has(.sf-section-copy)>.sf-section-art img{position:absolute;inset:0;object-fit:cover}
 .sf-section--hero .sf-section-copy{
- position:absolute;inset:auto 0 0;height:356px;max-height:100%;overflow-y:auto;width:auto;max-width:none;
- padding:24px clamp(24px,5vw,80px) 80px;gap:14px;justify-content:flex-start;color:#fff;background:transparent;
+ position:absolute;inset:auto 0 0;height:auto;max-height:100%;overflow-y:auto;width:auto;max-width:none;
+ padding:24px clamp(24px,5vw,80px);gap:14px;justify-content:flex-start;color:#fff;background:transparent;
 }
 .sf-section--hero .sf-section-copy>*{flex-shrink:0}
 .sf-section--hero .sf-section-copy :is(h1,h2){
  max-width:22ch;font-size:clamp(30px,3.8vw,54px);line-height:1.15;letter-spacing:-.035em;font-weight:500;-webkit-line-clamp:2;min-height:2.3em;
 }
 .sf-section--hero .sf-section-copy p{font-size:14px;line-height:1.5;max-width:42ch;-webkit-line-clamp:2}
-.sf-section--hero .sf-section-copy .sf-ui-button{margin-top:6px;min-height:48px;--sf-ui-control-radius:var(--sf-ui-pill)}
+.sf-section--hero .sf-section-copy .sf-ui-button{margin-top:6px;max-width:calc(100% - 92px);min-height:44px;--sf-ui-button-height:44px;--sf-ui-button-padding-y:8px;--sf-ui-button-padding-x:14px;--sf-ui-button-font-size:13px;--sf-ui-control-radius:var(--sf-ui-pill)}
+.sf-section--hero .sf-ui-button-label{min-width:0;overflow-wrap:anywhere}
 .sf-section--hero>.sf-section-gallery-controls{
- right:clamp(24px,5vw,80px);bottom:24px;display:grid;grid-template-columns:44px auto 44px;
+ right:clamp(24px,5vw,80px);bottom:24px;display:grid;grid-template-columns:1fr;min-width:72px;
  gap:4px 8px;color:#fff;background:none;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;border:0;padding:0;
 }
 .sf-section--hero>.sf-section-gallery-controls[hidden]{display:none}
-.sf-hero-progress{grid-column:1/-1;display:flex;gap:6px;padding:4px 8px;max-width:220px;width:100%}
+.sf-hero-progress{grid-column:1/-1;display:flex;gap:6px;padding:4px 0;max-width:96px;width:100%}
 .sf-hero-progress>span{flex:1;min-width:0;height:3px;border-radius:var(--sf-ui-pill);background:rgba(255,255,255,.35)}
 .sf-hero-progress>.is-current{background:#fff}
 @media(max-width:700px){
- /* Keep the pre-correction mobile frame. Dock/safe-area clearance belongs
+ /* The frame is 75% of 183. Dock/safe-area clearance belongs
     inside the overlaid copy; it must never increase the frame height. */
- .sf-section--hero{--sf-media-height:max(560px,calc(100svh - 68px));--sf-hero-bottom-reserve:env(safe-area-inset-bottom,0px)}
+ .sf-section--hero{--sf-media-height:var(--sf-ui-showcase-height);--sf-hero-bottom-reserve:env(safe-area-inset-bottom,0px)}
  body:has(.sf-shell.has-mobile-dock) .sf-section--hero{
   --sf-hero-bottom-reserve:calc(var(--sf-ui-bottom-bar-height,58px) + var(--sf-ui-bottom-bar-gap,4px) + env(safe-area-inset-bottom,0px));
  }
@@ -57,12 +58,9 @@
  .sf-section--hero .sf-section-copy :is(h1,h2){font-size:clamp(28px,7.6vw,38px)}
  /* Only the flexible space between the copy and CTA may grow. Never put
     dead air above the headline or detach the CTA from the right-hand controls. */
- .sf-section--hero .sf-section-copy .sf-ui-button{margin-top:auto;max-width:calc(100vw - 184px);--sf-ui-button-padding-x:12px;gap:8px;font-size:13px}
- .sf-section--hero>.sf-section-gallery-controls{right:16px;bottom:calc(20px + var(--sf-hero-bottom-reserve));grid-template-columns:44px auto 44px;gap:2px}
- .sf-section--hero .sf-hero-progress{max-width:142px}
+ .sf-section--hero .sf-section-copy .sf-ui-button{margin-top:auto;max-width:calc(100vw - 124px);--sf-ui-button-padding-x:12px;gap:8px;font-size:13px}
+ .sf-section--hero>.sf-section-gallery-controls{right:16px;bottom:calc(20px + var(--sf-hero-bottom-reserve));grid-template-columns:1fr;gap:2px}
+ .sf-section--hero .sf-hero-progress{width:72px}
  /* Preserve existing first-category spacing. */
  .codela-page-layout>.sf-section--hero+.sf-section{margin-top:12px}
 }
-
-.sf-section--hero>.sf-section-gallery-controls{--sf-ui-control-ink:#fff}
-.sf-section--hero>.sf-section-gallery-controls .sf-icon{filter:brightness(0) invert(1)}

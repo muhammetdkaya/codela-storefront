@@ -49,9 +49,10 @@
     const update=()=>{
       frame=0;const edge=track.getBoundingClientRect().left;
       current=items.reduce((best,item,i)=>Math.abs(item.getBoundingClientRect().left-edge)<Math.abs(items[best].getBoundingClientRect().left-edge)?i:best,0);
-      count.textContent=(current+1)+' / '+items.length;
+      const format=value=>gallery.classList.contains('sf-section--hero')?String(value).padStart(2,'0'):String(value);
+      count.textContent=format(current+1)+' / '+format(items.length);
       controls.querySelectorAll('.sf-hero-progress > span').forEach((step,i)=>step.classList.toggle('is-current',i===current));
-      previous.disabled=current===0;next.disabled=current===items.length-1;
+      if(previous)previous.disabled=current===0;if(next)next.disabled=current===items.length-1;
     };
     const prepare=index=>items[index]?.dispatchEvent(new Event('codela:media-intent',{bubbles:true}));
     const select=index=>{
@@ -59,7 +60,7 @@
       const item=items[Math.max(0,Math.min(items.length-1,index))];
       track.scrollTo({left:track.scrollLeft+item.getBoundingClientRect().left-track.getBoundingClientRect().left,behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'});
     };
-    previous.addEventListener('click',()=>select(current-1));next.addEventListener('click',()=>select(current+1));
+    previous?.addEventListener('click',()=>select(current-1));next?.addEventListener('click',()=>select(current+1));
     track.addEventListener('scroll',()=>{if(!frame)frame=requestAnimationFrame(update);},{passive:true});
     track.addEventListener('pointerdown',()=>{prepare(current-1);prepare(current+1);},{passive:true});
     track.addEventListener('keydown',event=>{

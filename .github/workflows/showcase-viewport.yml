@@ -1,7 +1,7 @@
-name: Showcase background regression (no deployment)
+name: Showcase refinement regression (no deployment)
 on:
   push:
-    branches: [fix/showcase-background-cover-20261028]
+    branches: [fix/showcase-refinement-20261028]
     paths: ['theme/**', 'tests/**', '.github/workflows/showcase-viewport.yml']
   pull_request:
     paths: ['theme/**', 'tests/**', '.github/workflows/showcase-viewport.yml']
@@ -43,26 +43,40 @@ jobs:
         run: |
           curl --fail --location --retry 1 --max-time 30 'https://azseramik.com/wp-content/uploads/2026/10/AZ-Seramik-Kadin-Girisimci-Slider-v4-1024x466.webp' -o /tmp/showcase-az.webp
           echo 'SHOWCASE_REAL_IMAGE=/tmp/showcase-az.webp' >> "$GITHUB_ENV"
-      - name: Background coverage, preserved frame, native header/dock and fallback acceptance
+      - name: Background coverage, shorter frame, counter and skeleton acceptance
         env:
+          SHOWCASE_INLINE_VISUALS: '1'
           TEST_WEBKIT: ${{ matrix.browser == 'webkit' && '1' || '' }}
         run: |
           node tests/showcase-viewport-browser.cjs
           node tests/homepage-browser.cjs
-      - name: Prove the previous separate-band CSS fails the background contract
+      - name: Prove previous 183 CSS fails the shorter-frame contract
         env:
           TEST_WEBKIT: ${{ matrix.browser == 'webkit' && '1' || '' }}
         run: |
-          git fetch origin c4d6d387abad1f847b82f2d742dcc27ac9e4b761 --depth=1
-          git show c4d6d387abad1f847b82f2d742dcc27ac9e4b761:theme/codela-storefront/assets/styles/sections.css > /tmp/showcase-before.css
-          SHOWCASE_CSS=/tmp/showcase-before.css SHOWCASE_PHASE=before-182 SHOWCASE_SCREENSHOTS_ONLY=1 node tests/showcase-viewport-browser.cjs
+          git fetch origin 2ab3e6211115d6210fc632de504af90425bc9258 --depth=1
+          git show 2ab3e6211115d6210fc632de504af90425bc9258:theme/codela-storefront/assets/styles/sections.css > /tmp/showcase-before.css
+          SHOWCASE_CSS=/tmp/showcase-before.css SHOWCASE_PHASE=before-183 SHOWCASE_SCREENSHOTS_ONLY=1 node tests/showcase-viewport-browser.cjs
           if SHOWCASE_CSS=/tmp/showcase-before.css node tests/showcase-viewport-browser.cjs > /tmp/showcase-before.log 2>&1; then
             cat /tmp/showcase-before.log
-            echo '::error::Previous separate-band CSS unexpectedly passed'
+            echo '::error::Previous 183 CSS unexpectedly passed'
             exit 1
           fi
           cat /tmp/showcase-before.log
-          grep -q 'photo covers entire slide including caption' /tmp/showcase-before.log
+          grep -q 'reduces the 0.1.183 frame height by 25%' /tmp/showcase-before.log
+      - name: Prove previous skeleton CSS fails visible-caption contrast
+        env:
+          TEST_WEBKIT: ${{ matrix.browser == 'webkit' && '1' || '' }}
+        run: |
+          git fetch origin 9a70c2e81a85c756b77dea2dced29b601b2f058d --depth=1
+          git show 9a70c2e81a85c756b77dea2dced29b601b2f058d:theme/codela-storefront/assets/styles/navigation-feedback.css > /tmp/showcase-feedback-before.css
+          if SHOWCASE_FEEDBACK_CSS=/tmp/showcase-feedback-before.css SHOWCASE_CONTRAST_ONLY=1 SHOWCASE_PHASE=before-contrast node tests/showcase-viewport-browser.cjs > /tmp/showcase-contrast-before.log 2>&1; then
+            cat /tmp/showcase-contrast-before.log
+            echo '::error::Previous invisible skeleton caption unexpectedly passed'
+            exit 1
+          fi
+          cat /tmp/showcase-contrast-before.log
+          grep -q 'placeholder contrasts with the image skeleton fill' /tmp/showcase-contrast-before.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:

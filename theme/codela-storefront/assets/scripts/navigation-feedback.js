@@ -36,7 +36,8 @@
         const rows = ('<div class="sf-skeleton-row"><div class="sf-skeleton-media"></div>' + lines + '</div>').repeat(3);
         if (type === 'account') return rows;
         if (type === 'product') return shape('gallery');
-        if (type === 'home' || type === 'catalog') return (type === 'home' ? shape('hero') : shape('heading') + shape('filters')) + '<div class="sf-skeleton-cards">' + ('<div>' + shape('card') + lines + '</div>').repeat(4) + '</div>';
+        const hero = '<div class="sf-skeleton-hero">' + shape('hero-image') + '<div class="sf-skeleton-hero-caption">' + shape('hero-title') + '<div class="sf-skeleton-hero-bottom">' + shape('hero-button') + shape('hero-count') + '</div></div></div>';
+        if (type === 'home' || type === 'catalog') return (type === 'home' ? hero : shape('heading') + shape('filters')) + '<div class="sf-skeleton-cards">' + ('<div>' + shape('card') + lines + '</div>').repeat(4) + '</div>';
         return shape('heading') + '<div class="sf-skeleton-copy">' + (lines + lines + lines).repeat(2) + '</div>';
     }
     function previewAccountHeader(url) {
