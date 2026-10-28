@@ -146,6 +146,7 @@ assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
     await page.locator('.sf-section--hero img').first().evaluate(img=>img.decode());await settle();await settle();
     if(assertGeometry)await check('actual AZ photo fixture '+width,{dock:width<=700,real:true});
     await page.screenshot({path:`qa/storefront-ui-kit-showcase-${engine}-${phase}-az-${width}.png`});
+    if(process.env.SHOWCASE_INLINE_VISUALS){const jpeg=await page.screenshot({type:'jpeg',quality:65});console.log('SHOWCASE_VISUAL:'+engine+':'+width+':'+jpeg.toString('base64'));}
    }
   }
   if(process.env.SHOWCASE_SCREENSHOTS_ONLY){
@@ -162,8 +163,41 @@ assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
   // Keep the same DOM across breakpoint changes and repeated adapter execution.
   await load({dock:true});
   for(const width of [700,701,390,1280,320,701,390]){await page.setViewportSize({width,height:844});await settle();await page.addScriptTag({content:script});await settle();await check('repeat breakpoint '+width);}
-  for(const size of [[390,350],[844,390],[1280,400]]){await page.setViewportSize({width:size[0],height:size[1]});await load({long:true});await check('short viewport '+size.join('x'),{});await page.locator('.sf-section--hero .sf-ui-button').first().scrollIntoViewIfNeeded();
-   assert(await page.locator('.sf-section--hero .sf-ui-button').first().evaluate(button=>{const r=button.getBoundingClientRect(),dock=document.querySelector('.sf-mobile-dock');const visibleDock=dock&&getComputedStyle(dock).display!=='none';return r.top>=document.querySelector('.sf-header').getBoundingClientRect().bottom&&r.bottom<=(visibleDock?dock.getBoundingClientRect().top:innerHeight)&&button.contains(document.elementFromPoint(r.left+r.width/2,r.top+r.height/2));}),'Short-window CTA can be scrolled clear of fixed chrome and receives input');}
+  for(const size of [[390,350],[844,390],[1280,400]]){
+   await page.setViewportSize({width:size[0],height:size[1]});await load({long:true});await check('short viewport '+size.join('x'),{});
+   const cta=page.locator('.sf-section--hero .sf-ui-button').first();
+   const inspectCTA=()=>cta.evaluate(button=>{
+    const rect=el=>el?.getBoundingClientRect().toJSON(),r=rect(button),header=rect(document.querySelector('.sf-header')),dock=document.querySelector('.sf-mobile-dock'),visibleDock=!!dock&&getComputedStyle(dock).display!=='none',dockRect=rect(dock),copy=button.closest('.sf-section-copy'),hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
+    return {viewport:{width:innerWidth,height:innerHeight},scrollY,button:r,header,dock:dockRect,visibleDock,copy:{rect:rect(copy),scrollTop:copy.scrollTop,scrollHeight:copy.scrollHeight,clientHeight:copy.clientHeight,overflowY:getComputedStyle(copy).overflowY},hit:hit?{tag:hit.tagName,className:hit.className}:null,reachable:r.top>=header.bottom&&r.bottom<=(visibleDock?dockRect.top:innerHeight)&&button.contains(hit)};
+   });
+   await cta.scrollIntoViewIfNeeded();
+   const before=await inspectCTA();
+   const prefix='qa/storefront-ui-kit-showcase-short-'+engine+'-'+size.join('x');
+   fs.mkdirSync('qa',{recursive:true});
+   let wheel=null;
+   if(!before.reachable){
+    await page.screenshot({path:prefix+'-before-scroll.png'});
+    // scrollIntoView only considers the viewport, not fixed header/dock
+    // occlusion. Exercise the user's real page scroll before asserting access.
+    const clearTop=before.header.bottom+16,clearBottom=(before.visibleDock?before.dock.top:before.viewport.height)-16;
+    const delta=before.button.bottom>clearBottom?before.button.bottom-clearBottom:before.button.top<clearTop?before.button.top-clearTop:0;
+    if(delta){
+     const x=Math.min(before.viewport.width-24,Math.max(24,before.button.left+before.button.width/2));
+     const imageBottom=Math.min(before.copy.rect.top,clearBottom);
+     const y=before.header.bottom+Math.min(8,(imageBottom-before.header.bottom)/2);
+     wheel={x,y,delta,target:await page.evaluate(({x,y})=>{const hit=document.elementFromPoint(x,y);return {tag:hit?.tagName,className:hit?.className,onImage:!!hit?.closest('.sf-section-art')};},{x,y})};
+     if(wheel.target.onImage){await page.mouse.move(x,y);await page.mouse.wheel(0,delta);}
+     else console.error('No unobstructed image wheel target',JSON.stringify({case:size.join('x'),before,wheel}));
+     await page.waitForFunction(previous=>Math.abs(scrollY-previous)>.5,before.scrollY,{timeout:1500}).catch(()=>{});
+     await settle();await settle();
+    }
+   }
+   const after=await inspectCTA();
+   const diagnostic={case:size.join('x'),engine,before,wheel,after};
+   fs.writeFileSync('qa/showcase-viewport-short-'+engine+'-'+size.join('x')+'.json',JSON.stringify(diagnostic,null,2));
+   if(!after.reachable){await page.screenshot({path:prefix+'-failure.png'});console.error('Short-window CTA diagnostic',JSON.stringify(diagnostic));}
+   assert(after.reachable,'Short-window CTA can be scrolled clear of fixed chrome and receives input '+JSON.stringify(diagnostic));
+  }
   for(const width of [320,390,1280])for(const single of [false,true])for(const noJS of [false,true]){
    await page.setViewportSize({width,height:900});await load({single,noJS,long:true});await check(`fallback ${width} single=${single} noJS=${noJS}`,{single,noJS});
   }
