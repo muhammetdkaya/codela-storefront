@@ -1,8 +1,8 @@
 # Codela Storefront UI Kit — source of truth
 
-## Showcase background — 0.1.183 correction candidate
+## Showcase background — 0.1.183
 
-The image covers the **entire existing slide**, including behind caption/controls. Keep the native responsive picture and focal point, absolute full-frame cover, transparent caption and a nonopaque readability gradient. Never fix image coverage by increasing slider height. Restore the 0.1.181 frame: desktop clamp(680px,86svh,900px), mobile max(560px,100svh - 68px). Caption/dock/safe-area reserve stays inside this frame; extreme copy scrolls within its overlay. This supersedes 182’s full-viewport/separate-band interpretation. Real-browser before/after photo evidence is pending; static tests are not design acceptance.
+The image covers the **entire existing slide**, including behind caption/controls. Keep the native responsive picture and focal point, absolute full-frame cover, transparent caption and a nonopaque readability gradient. Never fix image coverage by increasing slider height. Restore the 0.1.181 frame: desktop clamp(680px,86svh,900px), mobile max(560px,100svh - 68px). Caption/dock/safe-area reserve stays inside this frame; extreme copy scrolls within its overlay. This supersedes 182’s full-viewport/separate-band interpretation. Exact-candidate Chromium/WebKit coverage passed (73 cases each); actual AZ-photo before/after fixtures at 390/1280 were visually inspected. GitHub v0.1.183 is published; physical Safari/live installation acceptance remains separate.
 
 ## Product feedback geometry — 28 October 2026 candidate
 
