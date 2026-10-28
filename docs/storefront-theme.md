@@ -1,5 +1,13 @@
 # Codela Storefront — güncel teknik durum
 
+## 28 Ekim 2026 — 0.1.185 Vitrin alt hizalaması yayımlandı
+
+Muhammet’in 18:37 TR ekranında ve canlı 184 CSS’inde başlık/düğme/sayaç grubunun altındaki 82px boşluk doğrulandı: 20px temel + gereksiz 58px dock/4px aralık rezervi. Kısalan hero dock’un üstünde bittiğinden grup normal mobilde 62px aşağı alındı; alt boşluk 20px. Yalnız gerçekten çakışan kısa viewport’ta clamp ile gerekli dock/güvenli-alan rezervi kalır. Aynı token skeleton CTA/sayaç alt ankrajını hizalar. 184 yüksekliği, tam cover/odak/kaynaklar, kompakt 44px CTA ve sıfır dolgulu sayaç korunur. Etiket veya eklenti değişikliği yok.
+
+[4fb7ec0 adayı](https://github.com/muhammetdkaya/codela-storefront/commit/4fb7ec05ed968131c4aaf7d427c6197190267df2) [CI 40719467892](https://github.com/muhammetdkaya/codela-storefront/actions/runs/40719467892) ile Chromium/WebKit’te 109’ar senaryoyu, homepage/PHP, 28 adapter ve 24 paket kontrolünü geçti. 184 CSS’i yeni alt-boşluk negatif testinde başarısız oldu. İki motorda AZ fotoğraflı önce/sonra ve skeleton ekranları incelendi. Ölçüm: 390×900 hero 624px sabit, CTA/sayaç altı 82→20px ; 1280×900 hero 580.5px ve 24px alt boşluk değişmedi. 390×500/admin/safe0 durumunda yalnız 28px çakışma rezerviyle 48px alt boşluk; skeleton aynı gerçek ankrajda. Fiziksel Safari/canlı185 kurulumu kabulü değildir.
+
+Yayın: [kaynak 7559f9b](https://github.com/muhammetdkaya/codela-storefront/commit/7559f9b9d76b63add12a2522add35f9d5e26a760) test edilen adayla aynı tree; main entegrasyonu [skip ci]. [GitHub-only 40720088490](https://github.com/muhammetdkaya/codela-storefront/actions/runs/40720088490) başarılı; [v0.1.185](https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.185) public. Tag/stable kaynak/sürüm ve indirilen ZIP yerel deterministik paketle eşleşir: 171118 bayt, SHA256 `f86b5bed2bb02417f5b77134b3b931cff5c0cc4acf74feac8a15b0a070a8056a`. FTP/AZ kurulumu yapılmadı. Sonraki: kullanıcının manuel güncellemesi sonrası gerçek cihaz kontrolü; 185’i tekrar yayımlama.
+
 ## 28 Ekim 2026 — 0.1.184 yalnız tema: etiketsiz Vitrin yayımlandı
 
 Muhammet’in 18:22 TR takip mesajı “Başlık üstündeki etiketi atla diğerlerini yap yayınla” ile yeni etiket özelliği kapsamdan çıkarıldı. Yeni hero eyebrow renderer/CSS/test fixture’ları ve skeleton etiket şekli kaldırıldı; eklenti değişikliği veya 1.2.5 gereksinimi yok. Önceden mevcut diğer bölüm etiketlerine dokunulmaz. Özel codela dalı birleştirilmez/yayımlanmaz; Actions runner engeli çözülmüş sayılmaz, bu tema işinin bağımlılığı kaldırılmıştır.
