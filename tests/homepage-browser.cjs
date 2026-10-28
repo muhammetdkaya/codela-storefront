@@ -50,6 +50,8 @@ for(const width of [320,390,700,701,1023,1024,1280])for(const promos of ['split,
   assert(layout.seams.every(s=>Math.abs(s.titleGap-18)<1),'Mobile caption starts immediately below image with 18px padding '+width+' '+JSON.stringify(layout.seams));
   assert(layout.seams.every(s=>Math.abs(s.ctaBottom-20)<2),'Every CTA shares the bottom anchor with navigation '+width);
   assert(layout.seams.every(s=>Math.abs(s.imageBottom-layout.seams[0].imageBottom)<1),'Different subtitle lengths do not shift the image boundary '+width);
+  const categoryGap=await page.locator('.sf-section--hero').evaluate(el=>el.nextElementSibling.getBoundingClientRect().top-el.getBoundingClientRect().bottom);
+  assert(categoryGap>=11&&categoryGap<=14,'First category heading no longer starts underneath mobile dock '+width+' '+categoryGap);
   assert(layout.buttonRight<=layout.controlsLeft+1,'CTA remains left of counter and progress '+width+' '+JSON.stringify(layout));
   assert(Math.abs(layout.heroBottom-layout.buttonBottom-20)<2,'CTA bottom anchor stable '+width+' '+JSON.stringify(layout));
   assert(Math.abs(layout.heroBottom-layout.controlsBottom-20)<2,'Slider controls align with CTA bottom '+width);
