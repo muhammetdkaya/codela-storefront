@@ -1,5 +1,14 @@
 # Codela Storefront — güncel teknik durum
 
+## 28 Ekim 2026 — 0.1.178 gerçek Vitrin kompozisyonu
+
+Tema 0.1.177 → 0.1.178; eklenti ve ürün skeleton düzeltmeleri korunur. Kullanıcı 177'nin yalnız metin/gradient kontrol düzenlemesi olduğunu, onaylanan tasarımı karşılamadığını bildirdi ve yeniden düzenleme/yeni sürüm yayını istedi. Vitrin artık gerçek iki grid bölgesidir: üstte kırpılmadan görünen banner, altta koyu başlık/alt metin/açık ortak secondary kapsül Button. Metin fotoğrafın üzerinde değildir; eski overlay gradient kaldırıldı. Mobil yükseklik sadeleştirildi; sayaç, oklar ve gerçek slayt sayısına bağlı ilerleme korunur. Kayıtlı görseller/bağlantılar değiştirilmedi; geniş ilk banner'ın içindeki ürünler ve grafik artık birlikte görünür. Kullanıcının mevcut fotoğrafının yerine temsili mockup fotoğrafı konulmadı.
+
+Doğrulama: Chromium 320/390/700/701/1023/1024/1280 px ve iki promo varyantı, yatay/dikey touch, bağımsız galeriler/klavye/uzun metin geçti. Yeni test gerçek görsel ile caption'ın bitişik ama çakışmayan iki bölge olduğunu ve contain sunumunu doğrular. Gerçek AZ ana sayfa HTML'i/banner'ı + üretim CSS'li izole 390/1280 önizleme incelendi; ağla alınamayan logo/ikonlar bu önizlemede eksiktir, canlı ekran görüntüsü sayılmaz. PHP lint/homepage ve 24 paket testi; dört mobil genişlikte skeleton gerçek panel geometrisi ve yedi genişlikte destination-bottom geçti. 177 tabanının tam CI doğrulaması 40652926792 başarılıdır (Chromium/WebKit); FTP işi TLS/authentication error_temp ile dosya yazımından önce durdu. Bu hata kaynak veya AZ kurulumu başarısı değildir.
+
+Yayın: kullanıcı yetkisiyle 178 GitHub kararlı paketi hazırlanır. Kaynak [skip ci] ile kaydedilir; aynı tam test/başarısız FTP akışı tekrar otomatik başlatılmaz. Yeni Release/stable ve source/hash sonucu takip kaydına eklenecek. AZ Seramik 177 CSS'i daha önce doğrulanmıştır; 178 kurulumu kullanıcı güncellemesi ve fiziksel Safari kabulünden sonra doğrulanmalıdır.
+
+
 ## 28 Ekim 2026 — 0.1.177 birleşik slider ve ürün skeleton yayını
 
 Tema 0.1.176 → 0.1.177; eklenti değişmedi. Kullanıcı slider ve PR #82 skeleton çalışmalarını birleştirip canlıya alma yetkisi verdi. Ana sayfa kampanya slider'ı korunarak ürün hedefindeki fotoğraf/sheet/quantity/CTA koordinatları gerçek ürünle hizalandı. Ortak fotoğraf inset, iki satırlık başlık rezervi ve 12px panel alt boşluğu kullanılır. Skeleton eski ürün verisi/formu taşımaz. Dar mobil CTA yatay iç boşluğu ortak token ile 16px oldu; 320px'te metin tek satır ve 44px hedef korunur. Galeri ziyaretçi host'u flex olarak native sayaçla aynı satır yüksekliğini kullanır.

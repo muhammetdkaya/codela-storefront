@@ -20,6 +20,9 @@ for(const width of [320,390,700,701,1023,1024,1280])for(const promos of ['split,
   await bands.first().locator('p').evaluate(el=>el.textContent='Doğal dokular ve zamansız tasarımlarla evinizin her köşesine ilham veren seçkiler. '.repeat(3));
   assert(await bands.first().evaluate(el=>{const card=el.getBoundingClientRect();return [...el.querySelectorAll('h3,p,.sf-category-explore')].every(child=>{const r=child.getBoundingClientRect();return r.top>=card.top&&r.bottom<=card.bottom+1&&r.left>=card.left&&r.right<=card.right+1;});}),'Long visual-band copy fits '+width);
  }
+ const vitrin=await page.locator('.sf-section--hero .sf-section-slide').first().evaluate(el=>{const art=el.querySelector('picture').getBoundingClientRect(),copy=el.querySelector('.sf-section-copy').getBoundingClientRect();return {imageBottom:art.bottom,copyTop:copy.top,fit:getComputedStyle(el.querySelector('picture img')).objectFit};});
+ assert(Math.abs(vitrin.imageBottom-vitrin.copyTop)<1,'Vitrin image and caption are separate adjacent regions');
+ assert.equal(vitrin.fit,'contain','Wide banners keep all their content visible');
  const progress=page.locator('.sf-section--hero .sf-hero-progress > span');
  assert.equal(await progress.count(),await page.locator('.sf-section--hero .sf-section-slide').count(),'One progress segment per hero slide');
  const galleries=page.locator('[data-sf-gallery]');assert.equal(await galleries.count(),4);

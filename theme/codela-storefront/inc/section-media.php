@@ -51,7 +51,7 @@ function codela_sf_section_media( array $data, string $type ): string {
         if ( $item['title'] || $item['subtitle'] || $item['button_label'] && $item['button_url'] ) {
             $out .= '<div class="sf-section-copy">' . ( $item['title'] ? '<' . $heading . '>' . esc_html( $item['title'] ) . '</' . $heading . '>' : '' );
             if ( $item['subtitle'] ) { $out .= '<p>' . esc_html( $item['subtitle'] ) . '</p>'; }
-            if ( $item['button_label'] && $item['button_url'] ) { $out .= codela_sf_ui_primary_link( $item['button_url'], $item['button_label'] ); }
+            if ( $item['button_label'] && $item['button_url'] ) { $out .= $hero ? codela_sf_ui_button( $item['button_label'], [ 'href' => $item['button_url'], 'variant' => 'secondary', 'icon' => 'arrow-right' ] ) : codela_sf_ui_primary_link( $item['button_url'], $item['button_label'] ); }
             $out .= '</div>';
         }
         $out .= '</article>';
