@@ -1,7 +1,7 @@
-name: Showcase viewport regression (no deployment)
+name: Showcase background regression (no deployment)
 on:
   push:
-    branches: [fix/showcase-viewport-sizing-20261028]
+    branches: [fix/showcase-background-cover-20261028]
     paths: ['theme/**', 'tests/**', '.github/workflows/showcase-viewport.yml']
   pull_request:
     paths: ['theme/**', 'tests/**', '.github/workflows/showcase-viewport.yml']
@@ -39,25 +39,30 @@ jobs:
           else
             npx playwright install --with-deps ${{ matrix.browser }}
           fi
-      - name: Viewport, native header/dock, responsive-source and fallback acceptance
+      - name: Fetch the public AZ banner for labeled fixture previews
+        run: |
+          curl --fail --location --retry 1 --max-time 30 'https://azseramik.com/wp-content/uploads/2026/10/AZ-Seramik-Kadin-Girisimci-Slider-v4-1024x466.webp' -o /tmp/showcase-az.webp
+          echo 'SHOWCASE_REAL_IMAGE=/tmp/showcase-az.webp' >> "$GITHUB_ENV"
+      - name: Background coverage, preserved frame, native header/dock and fallback acceptance
         env:
           TEST_WEBKIT: ${{ matrix.browser == 'webkit' && '1' || '' }}
         run: |
           node tests/showcase-viewport-browser.cjs
           node tests/homepage-browser.cjs
-      - name: Prove the previous viewport CSS fails the new regression
+      - name: Prove the previous separate-band CSS fails the background contract
         env:
           TEST_WEBKIT: ${{ matrix.browser == 'webkit' && '1' || '' }}
         run: |
-          git fetch origin cd2b5bebae97693b5f8137d6e917e06cfd6b6868 --depth=1
-          git show cd2b5bebae97693b5f8137d6e917e06cfd6b6868:theme/codela-storefront/assets/styles/sections.css > /tmp/showcase-before.css
+          git fetch origin c4d6d387abad1f847b82f2d742dcc27ac9e4b761 --depth=1
+          git show c4d6d387abad1f847b82f2d742dcc27ac9e4b761:theme/codela-storefront/assets/styles/sections.css > /tmp/showcase-before.css
+          SHOWCASE_CSS=/tmp/showcase-before.css SHOWCASE_PHASE=before-182 SHOWCASE_SCREENSHOTS_ONLY=1 node tests/showcase-viewport-browser.cjs
           if SHOWCASE_CSS=/tmp/showcase-before.css node tests/showcase-viewport-browser.cjs > /tmp/showcase-before.log 2>&1; then
             cat /tmp/showcase-before.log
-            echo '::error::Previous viewport CSS unexpectedly passed'
+            echo '::error::Previous separate-band CSS unexpectedly passed'
             exit 1
           fi
           cat /tmp/showcase-before.log
-          grep -q 'follows visible viewport or readable short-window minimum' /tmp/showcase-before.log
+          grep -q 'photo covers entire slide including caption' /tmp/showcase-before.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:

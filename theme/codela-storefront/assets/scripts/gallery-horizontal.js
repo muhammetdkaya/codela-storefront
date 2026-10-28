@@ -12,8 +12,8 @@
     const next=controls.querySelector('[data-gallery-next]');
     const count=controls.querySelector('[data-gallery-count]');
     // Mobile Vitrin: measure the real rendered heading/subtitle/button rather
-    // than reserving 248–280px on every slide. One shared height avoids the
-    // image-to-caption seam jumping when a visitor swipes between campaigns.
+    // than reserving 248–280px on every slide. One shared overlay height keeps
+    // the copy aligned; it must never change the full-background frame height.
     if(gallery.classList.contains('sf-section--hero')){
       const captions=items.map(item=>item.querySelector('.sf-section-copy')).filter(Boolean);
       const syncCaption=()=>{

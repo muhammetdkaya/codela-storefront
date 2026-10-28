@@ -15,25 +15,17 @@
 .sf-content-cards{display:grid;gap:var(--sf-section-gap)}.sf-content-card{min-width:0}.sf-content-copy h3{font-size:clamp(22px,3vw,32px);font-weight:500;line-height:1.2;letter-spacing:-.025em;margin:0 0 14px}.sf-content-copy p,.codela-contact-list dd{font-size:15px;line-height:1.75;white-space:pre-line;margin:0;overflow-wrap:anywhere}.sf-content-copy p{max-width:65ch;color:var(--sf-muted)}.sf-content-copy>.sf-ui-button{margin-top:24px}.sf-section--story .has-image{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(24px,5vw,72px);align-items:center}.sf-section--story .sf-section-art{aspect-ratio:4/3;border-radius:var(--sf-ui-control-radius)}.sf-content--image-right .sf-section-art{grid-column:2;grid-row:1}.sf-content--image-right .has-image .sf-content-copy{grid-column:1;grid-row:1}.sf-section--info .sf-content-cards{grid-template-columns:repeat(3,minmax(0,1fr))}.sf-section--info .sf-content-card{padding-block:24px;border-top:1px solid var(--sf-ui-border)}.sf-section--info .sf-content-copy h3{font-size:22px}.codela-contact-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;margin:0 0 24px}.codela-contact-row{min-width:0}.codela-contact-list dt{font-size:13px;color:var(--sf-muted);margin-bottom:6px}.codela-contact-list a{display:inline-flex;align-items:center;min-height:44px;color:inherit;text-underline-offset:4px}
 @media(max-width:700px){.sf-section--story .has-image,.sf-section--info .sf-content-cards,.codela-contact-list{grid-template-columns:minmax(0,1fr)}.sf-section--story .has-image>:is(.sf-section-art,.sf-content-copy){grid-column:auto;grid-row:auto}.sf-section--info .sf-content-cards{gap:0}}
 
-/* Vitrin campaign: a real media frame and caption band, never text on the photo. */
-/* The home header overlays the image; it does not consume document height.
-   Only WordPress's toolbar reserves space above the hero. dvh follows browser
-   chrome without adding a second VisualViewport/Safari offset. Keep a readable
-   minimum on very short windows; that case scrolls instead of clipping copy. */
-.sf-section--hero{
- --sf-hero-viewport-height:100vh;
- --sf-media-height:max(560px,calc(var(--sf-hero-caption-height,0px) + 120px),calc(var(--sf-hero-viewport-height) - var(--sf-header-offset,0px)));
- width:100%;max-width:none;
-}
-@supports(height:100svh){.sf-section--hero{--sf-hero-viewport-height:100svh}}
-@supports(height:100dvh){.sf-section--hero{--sf-hero-viewport-height:100dvh}}
-.sf-section--hero .sf-section-slide:has(.sf-section-copy){display:flex;flex-direction:column;height:auto;min-height:var(--sf-media-height);background:#403a33}
-.sf-section--hero .sf-section-slide:has(.sf-section-copy)::after{display:none}
-.sf-section--hero .sf-section-slide:has(.sf-section-copy)>.sf-section-art{position:relative;inset:auto;flex:1 0 120px;min-height:120px;background:#ded4c5}
+/* Vitrin: the existing picture covers the whole slide behind its caption.
+   Preserve the 0.1.181 frame dimensions; image coverage must not make the
+   slider taller. Responsive picture sources and saved focal points stay native. */
+.sf-section--hero{--sf-media-height:clamp(680px,86svh,900px);width:100%;max-width:none}
+.sf-section--hero .sf-section-slide:has(.sf-section-copy){display:block;height:var(--sf-media-height);min-height:0;background:#403a33}
+.sf-section--hero .sf-section-slide:has(.sf-section-copy)::after{display:block;inset:0;background:linear-gradient(180deg,transparent 15%,rgba(0,0,0,.3) 50%,rgba(0,0,0,.78));pointer-events:none}
+.sf-section--hero .sf-section-slide:has(.sf-section-copy)>.sf-section-art{position:absolute;inset:0;min-height:0;background:#ded4c5}
 .sf-section--hero .sf-section-slide:has(.sf-section-copy)>.sf-section-art img{position:absolute;inset:0;object-fit:cover}
 .sf-section--hero .sf-section-copy{
- position:relative;inset:auto;flex:0 0 356px;align-self:stretch;width:auto;max-width:none;
- padding:24px clamp(24px,5vw,80px) 80px;gap:14px;justify-content:flex-start;color:#fff;
+ position:absolute;inset:auto 0 0;height:356px;max-height:100%;overflow-y:auto;width:auto;max-width:none;
+ padding:24px clamp(24px,5vw,80px) 80px;gap:14px;justify-content:flex-start;color:#fff;background:transparent;
 }
 .sf-section--hero .sf-section-copy>*{flex-shrink:0}
 .sf-section--hero .sf-section-copy :is(h1,h2){
@@ -50,27 +42,25 @@
 .sf-hero-progress>span{flex:1;min-width:0;height:3px;border-radius:var(--sf-ui-pill);background:rgba(255,255,255,.35)}
 .sf-hero-progress>.is-current{background:#fff}
 @media(max-width:700px){
- /* Reserve the configured dock inside the caption, never by shortening the
-    hero. With no dock only the browser-owned safe area needs clearance. */
- .sf-section--hero{--sf-hero-bottom-reserve:env(safe-area-inset-bottom,0px)}
+ /* Keep the pre-correction mobile frame. Dock/safe-area clearance belongs
+    inside the overlaid copy; it must never increase the frame height. */
+ .sf-section--hero{--sf-media-height:max(560px,calc(100svh - 68px));--sf-hero-bottom-reserve:env(safe-area-inset-bottom,0px)}
  body:has(.sf-shell.has-mobile-dock) .sf-section--hero{
   --sf-hero-bottom-reserve:calc(var(--sf-ui-bottom-bar-height,58px) + var(--sf-ui-bottom-bar-gap,4px) + env(safe-area-inset-bottom,0px));
  }
- /* The caption follows measured content, not an oversized viewport row.
-    JS shares the tallest caption measurement among slides for a stable
-    image boundary; the CSS-only single-slide/fallback layout stays intrinsic. */
- .sf-section--hero .sf-section-copy{flex-basis:var(--sf-hero-caption-height,auto)}
+ /* Share the caption overlay height across campaigns, independently of the
+    full-frame image. Very long fallback content scrolls inside this overlay. */
+ .sf-section--hero .sf-section-copy{height:var(--sf-hero-caption-height,auto)}
  /* Keep the headline, copy and CTA grouped at the bottom-left, while
     navigation sits to the CTA's right at a consistent vertical anchor. */
- .sf-section--hero .sf-section-copy{left:auto;bottom:auto;width:auto;max-width:none;gap:8px;justify-content:flex-start;padding:18px 20px calc(20px + var(--sf-hero-bottom-reserve))}
+ .sf-section--hero .sf-section-copy{left:0;bottom:0;width:auto;max-width:none;gap:8px;justify-content:flex-start;padding:18px 20px calc(20px + var(--sf-hero-bottom-reserve))}
  .sf-section--hero .sf-section-copy :is(h1,h2){font-size:clamp(28px,7.6vw,38px)}
  /* Only the flexible space between the copy and CTA may grow. Never put
     dead air above the headline or detach the CTA from the right-hand controls. */
  .sf-section--hero .sf-section-copy .sf-ui-button{margin-top:auto;max-width:calc(100vw - 184px);--sf-ui-button-padding-x:12px;gap:8px;font-size:13px}
  .sf-section--hero>.sf-section-gallery-controls{right:16px;bottom:calc(20px + var(--sf-hero-bottom-reserve));grid-template-columns:44px auto 44px;gap:2px}
  .sf-section--hero .sf-hero-progress{max-width:142px}
- /* First-category spacing remains compact, but the full-height hero now
-    keeps it below the initial viewport rather than behind the dock. */
+ /* Preserve existing first-category spacing. */
  .codela-page-layout>.sf-section--hero+.sf-section{margin-top:12px}
 }
 

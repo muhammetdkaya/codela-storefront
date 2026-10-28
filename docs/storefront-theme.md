@@ -1,5 +1,13 @@
 # Codela Storefront — güncel teknik durum
 
+## 28 Ekim 2026 — 0.1.183 Vitrin arka plan düzeltmesi (yerel aday)
+
+Muhammet’in yeni açıklaması 0.1.182’nin tasarım yorumunu düzeltti: istenen daha yüksek slider değil, mevcut alanın metin/kontroller dahil tamamında fotoğraftır. 182’nin tarayıcı testleri yanlış geometri sözleşmesini doğrulamıştı; bu görsel kabul sayılmaz. Tema 0.1.182 → 0.1.183 adayı, eklenti değişmez. Picture artık tüm slaytta absolute/cover; caption saydam overlay ve alt karartma kullanır, ayrı opak bant yoktur. Masaüstü `clamp(680px,86svh,900px)` ve mobil `max(560px,100svh - 68px)` 181 ölçüleri korunur. Kayıtlı mobil/masaüstü kaynakları ve odak noktaları değişmez; cover oran farkında kırpar. Uzun metin slider’ı büyütmez, kendi katmanında kayar.
+
+Doğrulanan: güncel main `c4d6d38`, canlı CSS 182 ve gerçek fotoğraf/önceki ekran incelendi; dört ilgili PHP suite (PHP WASM), UI Kit, 10 caption observer assertion, 24 paket testi, JS syntax/CSS parse geçti. Bunlar tarayıcı/geometri kabulü değildir. Yerel Chromium socket ve cloud file-URL engelleri yeniden aşılmaya çalışılmadı. Yeni odaklı Chromium/WebKit testleri fotoğrafın bütün çerçeveyi kaplamasını ve 181 yüksekliğinin büyümemesini doğrulayacak; gerçek AZ fotoğrafıyla önce/sonra fixture ekranları ayrıca incelenecek.
+
+Durum: yalnız `fix/showcase-background-cover-20261028` yerel adayı; push/PR/merge/Release/mail/canlı işlem yapılmadı. Yayın için yeni birleşik onay gerekir. Sıradaki: onaylı izole CI, iki motor ve görsel kanıt başarılıysa concurrency kontrollü GitHub-only 183; fiziksel Safari/gerçek WP kabulünü ayrıca belirt. Canlı kurulum kullanıcı ekibinde.
+
 ## 28 Ekim 2026 — 0.1.182 Vitrin viewport adayı (tarayıcı CI bekliyor)
 
 Tema 0.1.181 → 0.1.182; eklenti, kayıtlı görseller/odak noktaları ve ürün skeleton değişmedi. Mobilde header fotoğrafın üstüne bindiği hâlde düşülen 68px ve masaüstündeki 86svh/900px üst sınırı kaldırıldı. Hero mevcut içerik genişliği ve dinamik viewport yüksekliğini kullanır; yalnız WordPress toolbar rezervi düşülür. Alt menü/güvenli alan caption içinde ayrılır. Çok kısa pencerede okunabilir minimum içerik ve sayfa kaydırma korunur. Caption ölçümü padding değişikliklerini de izler; güncellemeler rAF ile birleştirilir. Tek slayt/JS kapalı içerik CSS intrinsic minimumuyla korunur. Mevcut cover oran farkında kırpma yapar; ilk canlı yatay görsel için kayıtlı mobil kaynak yoktur, kırpmasız fotoğraf iddiası yok.
