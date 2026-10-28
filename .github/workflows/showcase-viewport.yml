@@ -64,6 +64,19 @@ jobs:
           fi
           cat /tmp/showcase-before.log
           grep -q 'reduces the 0.1.183 frame height by 25%' /tmp/showcase-before.log
+      - name: Prove previous skeleton CSS fails visible-caption contrast
+        env:
+          TEST_WEBKIT: ${{ matrix.browser == 'webkit' && '1' || '' }}
+        run: |
+          git fetch origin 9a70c2e81a85c756b77dea2dced29b601b2f058d --depth=1
+          git show 9a70c2e81a85c756b77dea2dced29b601b2f058d:theme/codela-storefront/assets/styles/navigation-feedback.css > /tmp/showcase-feedback-before.css
+          if SHOWCASE_FEEDBACK_CSS=/tmp/showcase-feedback-before.css SHOWCASE_CONTRAST_ONLY=1 SHOWCASE_PHASE=before-contrast node tests/showcase-viewport-browser.cjs > /tmp/showcase-contrast-before.log 2>&1; then
+            cat /tmp/showcase-contrast-before.log
+            echo '::error::Previous invisible skeleton caption unexpectedly passed'
+            exit 1
+          fi
+          cat /tmp/showcase-contrast-before.log
+          grep -q 'placeholder contrasts with the image skeleton fill' /tmp/showcase-contrast-before.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:

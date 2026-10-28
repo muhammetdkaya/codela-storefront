@@ -3,7 +3,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),{execFileSync}=require('node:child_process');
 const {chromium,webkit}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const root='theme/codela-storefront/assets/';
-const css=['styles/tokens.css','storefront.css','styles/overlay.css','styles/navigation.css','styles/components.css','styles/catalog.css','styles/gallery.css','styles/sections.css','styles/navigation-feedback.css'].map(p=>fs.readFileSync(process.env.SHOWCASE_CSS&&p==='styles/sections.css'?process.env.SHOWCASE_CSS:root+p,'utf8')).join('\n');
+const css=['styles/tokens.css','storefront.css','styles/overlay.css','styles/navigation.css','styles/components.css','styles/catalog.css','styles/gallery.css','styles/sections.css','styles/navigation-feedback.css'].map(p=>fs.readFileSync(process.env.SHOWCASE_CSS&&p==='styles/sections.css'?process.env.SHOWCASE_CSS:process.env.SHOWCASE_FEEDBACK_CSS&&p==='styles/navigation-feedback.css'?process.env.SHOWCASE_FEEDBACK_CSS:root+p,'utf8')).join('\n');
 const php=process.env.PHP_BIN||'php';
 const html=execFileSync(php,['tests/homepage.php'],{encoding:'utf8',env:{...process.env,RENDER_HOME:'1'}});
 const headers=Object.fromEntries([false,true].map(dock=>[dock,execFileSync(php,['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_DOCK:dock?'1':'0'}})]));
@@ -107,11 +107,19 @@ assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
    assert(token,'Home navigation starts feedback synchronously');
    const pending=await page.evaluate(()=>{
     const rect=el=>el?.getBoundingClientRect().toJSON(),surface=document.querySelector('.sf-skeleton');
-    return {surface:rect(surface),layout:rect(surface.querySelector('.sf-skeleton-layout')),layoutMaxHeight:getComputedStyle(surface.querySelector('.sf-skeleton-layout')).maxHeight,hero:rect(surface?.querySelector('.sf-skeleton-hero')),button:rect(surface?.querySelector('.sf-skeleton-hero-button')),count:rect(surface?.querySelector('.sf-skeleton-hero-count')),label:rect(surface?.querySelector('.sf-skeleton-hero-label')),title:rect(surface?.querySelector('.sf-skeleton-hero-title')),surfaceCount:document.querySelectorAll('.sf-skeleton').length,headerCount:document.querySelectorAll('.sf-header').length,dockCount:document.querySelectorAll('.sf-mobile-dock').length,headerSame:window.fixtureHeader===document.querySelector('.sf-header'),dockSame:window.fixtureDock===document.querySelector('.sf-mobile-dock'),headerInert:window.fixtureHeader.inert,dockInert:window.fixtureDock?.inert,dock:rect(window.fixtureDock),busy:document.querySelector('#sf-content').getAttribute('aria-busy'),hasInteractivePreview:!!surface.querySelector('a,button,input,form'),target:document.documentElement.dataset.sfNavigationTarget};
+    const paint=el=>{const style=getComputedStyle(el);return {background:style.backgroundColor,opacity:Number(style.opacity),display:style.display,visibility:style.visibility};};
+    const imagePaint=paint(surface.querySelector('.sf-skeleton-hero-image'));
+    const captionPaint=['label','title','button','count'].map(name=>({name,...paint(surface.querySelector('.sf-skeleton-hero-'+name))}));
+    return {imagePaint,captionPaint,surface:rect(surface),layout:rect(surface.querySelector('.sf-skeleton-layout')),layoutMaxHeight:getComputedStyle(surface.querySelector('.sf-skeleton-layout')).maxHeight,hero:rect(surface?.querySelector('.sf-skeleton-hero')),button:rect(surface?.querySelector('.sf-skeleton-hero-button')),count:rect(surface?.querySelector('.sf-skeleton-hero-count')),label:rect(surface?.querySelector('.sf-skeleton-hero-label')),title:rect(surface?.querySelector('.sf-skeleton-hero-title')),surfaceCount:document.querySelectorAll('.sf-skeleton').length,headerCount:document.querySelectorAll('.sf-header').length,dockCount:document.querySelectorAll('.sf-mobile-dock').length,headerSame:window.fixtureHeader===document.querySelector('.sf-header'),dockSame:window.fixtureDock===document.querySelector('.sf-mobile-dock'),headerInert:window.fixtureHeader.inert,dockInert:window.fixtureDock?.inert,dock:rect(window.fixtureDock),busy:document.querySelector('#sf-content').getAttribute('aria-busy'),hasInteractivePreview:!!surface.querySelector('a,button,input,form'),target:document.documentElement.dataset.sfNavigationTarget};
    });
    const description='home skeleton '+width+'x'+height+' dock='+dock+' admin='+admin;
    assert.equal(pending.target,'home',description+' uses home silhouette');
    assert(pending.hero,description+' paints immediately without delay');
+   for(const shape of pending.captionPaint){
+    assert(shape.display!=='none'&&shape.visibility==='visible'&&shape.opacity>0,description+' '+shape.name+' placeholder is visibly painted');
+    assert(shape.background!=='transparent'&&!/^rgba\([^)]*,\s*0(?:\.0+)?\s*\)$/.test(shape.background)&&! /\/\s*0(?:\.0+)?\s*\)$/.test(shape.background),description+' '+shape.name+' placeholder fill is not transparent');
+    assert.notEqual(shape.background,pending.imagePaint.background,description+' '+shape.name+' placeholder contrasts with the image skeleton fill');
+   }
    assert.equal(pending.layoutMaxHeight,'none',description+' generic mobile content cap does not crop the home preview');
    assert(pending.layout.height>=pending.hero.height-1,description+' layout reserves the full hero height');
    assert(Math.min(pending.layout.bottom,pending.surface.bottom)>=Math.min(pending.hero.bottom,pending.surface.bottom)-1,description+' only viewport boundary may clip the intentionally taller short-window hero');
@@ -137,7 +145,7 @@ assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
    const restored=await page.evaluate(()=>({surfaceCount:document.querySelectorAll('.sf-skeleton').length,headerSame:window.fixtureHeader===document.querySelector('.sf-header'),dockSame:window.fixtureDock===document.querySelector('.sf-mobile-dock'),headerInert:window.fixtureHeader.inert,dockInert:window.fixtureDock?.inert,busy:document.querySelector('#sf-content').getAttribute('aria-busy'),pending:document.documentElement.hasAttribute('data-sf-navigation-pending')}));
    assert.equal(restored.surfaceCount,0,description+' cancellation removes feedback');assert(!restored.pending,description+' cancellation clears pending state');
    assert(restored.headerSame&&restored.dockSame,description+' cancellation keeps original shell identity');assert.equal(restored.headerInert,before.headerInert);assert.equal(restored.dockInert,before.dockInert);assert.equal(restored.busy,null);
-   results.push({label:description,width,height,hero:pending.hero,layout:pending.layout,layoutMaxHeight:pending.layoutMaxHeight,surface:pending.surface,kind:'home-skeleton'});
+   results.push({label:description,width,height,hero:pending.hero,layout:pending.layout,layoutMaxHeight:pending.layoutMaxHeight,surface:pending.surface,imagePaint:pending.imagePaint,captionPaint:pending.captionPaint,kind:'home-skeleton'});
   }
   // Real public AZ banner and its visible copy, inside the deterministic PHP
   // fixture. These are before/after source previews, not live-site screenshots.
@@ -157,6 +165,7 @@ assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
     if(process.env.SHOWCASE_INLINE_VISUALS){const jpeg=await page.screenshot({type:'jpeg',quality:65});console.log('SHOWCASE_VISUAL:'+engine+':'+width+':'+jpeg.toString('base64'));}
    }
   }
+  if(process.env.SHOWCASE_CONTRAST_ONLY){await checkHomeSkeleton({width:390,height:900,dock:true,admin:false});return;}
   if(process.env.SHOWCASE_SCREENSHOTS_ONLY){
    assert(realImage,'Before/after screenshots require SHOWCASE_REAL_IMAGE');
    await captureRealPhotos({assertGeometry:false});
