@@ -39,6 +39,9 @@ jobs:
           node --check theme/codela-storefront/assets/scripts/document-continuity.js
           php tests/document-continuity.php
           php tests/product-mobile-media.php
+          php tests/homepage.php
+          node --check theme/codela-storefront/assets/scripts/gallery-horizontal.js
+          node --check tests/homepage-browser.cjs
           node --input-type=module --check < theme/codela-storefront/assets/scripts/navigation-controller.js
           node --check tests/shell-navigation-browser.cjs
           node --check tests/navigation-viewport-browser.cjs
