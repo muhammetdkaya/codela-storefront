@@ -14,7 +14,7 @@ html[data-sf-navigation-pending] :is(.sf-product-sheet,.sf-product-sheet *,.sf-p
 .sf-skeleton-heading{width:58%;height:28px;max-width:420px}
 /* Home preview uses the real showcase frame, not a generic inset card. */
 html[data-sf-navigation-target="home"] .sf-skeleton{padding:var(--sf-header-offset,0px) 0 0}
-html[data-sf-navigation-target="home"] .sf-skeleton-layout{max-width:none;max-height:none;gap:clamp(36px,6vw,84px)}
+html[data-sf-navigation-pending][data-sf-navigation-target="home"] .sf-skeleton-layout{max-width:none;max-height:none;gap:clamp(36px,6vw,84px)}
 html[data-sf-navigation-target="home"] .sf-skeleton-cards{padding-inline:clamp(16px,3vw,40px);max-width:1360px;width:100%;margin-inline:auto}
 .sf-skeleton-hero{position:relative;height:var(--sf-ui-showcase-height);flex:none;overflow:hidden}
 .sf-skeleton-hero-image{position:absolute;inset:0;border-radius:0}
@@ -87,7 +87,7 @@ html[data-sf-navigation-pending] .sf-shell > .sf-mobile-dock .sf-dock-surface{tr
 }
 
 @media(max-width:700px){
- html[data-sf-navigation-target="home"] .sf-skeleton-layout{max-height:none;gap:12px}
+ html[data-sf-navigation-pending][data-sf-navigation-target="home"] .sf-skeleton-layout{max-height:none;gap:12px}
  .sf-skeleton-hero-caption{gap:8px;padding:18px 20px calc(20px + env(safe-area-inset-bottom,0px))}
  body:has(.sf-shell.has-mobile-dock) .sf-skeleton-hero-caption{padding-bottom:calc(20px + var(--sf-ui-bottom-bar-height,58px) + var(--sf-ui-bottom-bar-gap,4px) + env(safe-area-inset-bottom,0px))}
  .sf-skeleton-hero-title{font-size:clamp(28px,7.6vw,38px)}

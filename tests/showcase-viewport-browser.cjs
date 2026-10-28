@@ -94,8 +94,8 @@ assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
    }else assert(!state.dockVisible,label+' no desktop dock');
    results.push({label,width:state.viewport.width,height:state.viewport.height,hero:state.hero,caption:state.slides[0].copy.height});
   }
-  async function checkHomeSkeleton({width,dock,admin}){
-   await page.setViewportSize({width,height:900});await load({dock,admin});
+  async function checkHomeSkeleton({width,dock,admin,height=900}){
+   await page.setViewportSize({width,height});await load({dock,admin});
    const before=await page.evaluate(()=>{
     const rect=el=>el?.getBoundingClientRect().toJSON();
     window.fixtureHeader=document.querySelector('.sf-header');window.fixtureDock=document.querySelector('.sf-mobile-dock');
@@ -107,11 +107,14 @@ assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
    assert(token,'Home navigation starts feedback synchronously');
    const pending=await page.evaluate(()=>{
     const rect=el=>el?.getBoundingClientRect().toJSON(),surface=document.querySelector('.sf-skeleton');
-    return {hero:rect(surface?.querySelector('.sf-skeleton-hero')),button:rect(surface?.querySelector('.sf-skeleton-hero-button')),count:rect(surface?.querySelector('.sf-skeleton-hero-count')),label:rect(surface?.querySelector('.sf-skeleton-hero-label')),title:rect(surface?.querySelector('.sf-skeleton-hero-title')),surfaceCount:document.querySelectorAll('.sf-skeleton').length,headerCount:document.querySelectorAll('.sf-header').length,dockCount:document.querySelectorAll('.sf-mobile-dock').length,headerSame:window.fixtureHeader===document.querySelector('.sf-header'),dockSame:window.fixtureDock===document.querySelector('.sf-mobile-dock'),headerInert:window.fixtureHeader.inert,dockInert:window.fixtureDock?.inert,dock:rect(window.fixtureDock),busy:document.querySelector('#sf-content').getAttribute('aria-busy'),hasInteractivePreview:!!surface.querySelector('a,button,input,form'),target:document.documentElement.dataset.sfNavigationTarget};
+    return {surface:rect(surface),layout:rect(surface.querySelector('.sf-skeleton-layout')),layoutMaxHeight:getComputedStyle(surface.querySelector('.sf-skeleton-layout')).maxHeight,hero:rect(surface?.querySelector('.sf-skeleton-hero')),button:rect(surface?.querySelector('.sf-skeleton-hero-button')),count:rect(surface?.querySelector('.sf-skeleton-hero-count')),label:rect(surface?.querySelector('.sf-skeleton-hero-label')),title:rect(surface?.querySelector('.sf-skeleton-hero-title')),surfaceCount:document.querySelectorAll('.sf-skeleton').length,headerCount:document.querySelectorAll('.sf-header').length,dockCount:document.querySelectorAll('.sf-mobile-dock').length,headerSame:window.fixtureHeader===document.querySelector('.sf-header'),dockSame:window.fixtureDock===document.querySelector('.sf-mobile-dock'),headerInert:window.fixtureHeader.inert,dockInert:window.fixtureDock?.inert,dock:rect(window.fixtureDock),busy:document.querySelector('#sf-content').getAttribute('aria-busy'),hasInteractivePreview:!!surface.querySelector('a,button,input,form'),target:document.documentElement.dataset.sfNavigationTarget};
    });
-   const description='home skeleton '+width+' dock='+dock+' admin='+admin;
+   const description='home skeleton '+width+'x'+height+' dock='+dock+' admin='+admin;
    assert.equal(pending.target,'home',description+' uses home silhouette');
    assert(pending.hero,description+' paints immediately without delay');
+   assert.equal(pending.layoutMaxHeight,'none',description+' generic mobile content cap does not crop the home preview');
+   assert(pending.layout.height>=pending.hero.height-1,description+' layout reserves the full hero height');
+   assert(Math.min(pending.layout.bottom,pending.surface.bottom)>=Math.min(pending.hero.bottom,pending.surface.bottom)-1,description+' only viewport boundary may clip the intentionally taller short-window hero');
    for(const edge of ['left','top','right','bottom'])assert(Math.abs(pending.hero[edge]-before.hero[edge])<1,description+' matches real showcase '+edge+' '+JSON.stringify({before:before.hero,pending:pending.hero}));
    assert.equal(pending.surfaceCount,1,description+' one feedback owner');
    assert.equal(pending.headerCount,1,description+' does not clone the header');
@@ -125,11 +128,16 @@ assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
    assert(pending.button.right<=pending.count.left,description+' CTA and count do not overlap');
    assert(pending.label.bottom<=pending.title.top,description+' label placeholder is above title');
    assert(pending.button.bottom<=pending.hero.bottom&&pending.count.bottom<=pending.hero.bottom,description+' placeholders fit the reduced hero');
+   if(width===390&&height===900&&dock&&!admin){
+    fs.mkdirSync('qa',{recursive:true});
+    await page.screenshot({path:'qa/storefront-ui-kit-showcase-'+engine+'-home-skeleton-390.png'});
+    if(process.env.SHOWCASE_INLINE_VISUALS){const jpeg=await page.screenshot({type:'jpeg',quality:65});console.log('SHOWCASE_VISUAL:'+engine+':390-skeleton:'+jpeg.toString('base64'));}
+   }
    assert(await page.evaluate(token=>window.codelaSFFeedback.end(token),token),description+' cancellation succeeds');
    const restored=await page.evaluate(()=>({surfaceCount:document.querySelectorAll('.sf-skeleton').length,headerSame:window.fixtureHeader===document.querySelector('.sf-header'),dockSame:window.fixtureDock===document.querySelector('.sf-mobile-dock'),headerInert:window.fixtureHeader.inert,dockInert:window.fixtureDock?.inert,busy:document.querySelector('#sf-content').getAttribute('aria-busy'),pending:document.documentElement.hasAttribute('data-sf-navigation-pending')}));
    assert.equal(restored.surfaceCount,0,description+' cancellation removes feedback');assert(!restored.pending,description+' cancellation clears pending state');
    assert(restored.headerSame&&restored.dockSame,description+' cancellation keeps original shell identity');assert.equal(restored.headerInert,before.headerInert);assert.equal(restored.dockInert,before.dockInert);assert.equal(restored.busy,null);
-   results.push({label:description,width,height:900,hero:pending.hero,kind:'home-skeleton'});
+   results.push({label:description,width,height,hero:pending.hero,layout:pending.layout,layoutMaxHeight:pending.layoutMaxHeight,surface:pending.surface,kind:'home-skeleton'});
   }
   // Real public AZ banner and its visible copy, inside the deterministic PHP
   // fixture. These are before/after source previews, not live-site screenshots.
@@ -224,6 +232,7 @@ assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
   await page.setViewportSize({width:1280,height:900});await load({dock:false});await check('desktop screenshot',{dock:false});await page.screenshot({path:`qa/storefront-ui-kit-showcase-${engine}-1280.png`});
 
   for(const width of [320,390,700,701,1280])for(const dock of [false,true])for(const admin of [false,true])await checkHomeSkeleton({width,dock,admin});
+  for(const dock of [false,true])for(const admin of [false,true])await checkHomeSkeleton({width:390,height:350,dock,admin});
 
   if(realImage)await captureRealPhotos();else console.log('Actual AZ-photo fixture screenshots skipped: SHOWCASE_REAL_IMAGE was not supplied.');
   assert.deepEqual(errors,[]);
