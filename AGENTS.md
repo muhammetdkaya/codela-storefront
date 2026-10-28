@@ -6,7 +6,7 @@ Tema 0.1.178 → 0.1.179; eklenti ve ürün skeleton değişmedi. Kullanıcını
 
 Doğrulama: Chromium 320/390/700/701/1023/1024/1280 × iki promo varyantı; slaytlar arasında eşit görsel yüksekliği, bitişik görsel/caption, uzun metinde kontrol alanı, beyaz kontrol rengi, swipe/klavye ve mevcut ana sayfa regresyonları geçti. 24 paket testi başarılı. Gerçek AZ HTML/banner ve yerel üretim CSS/ikonlarıyla izole 390px görsel kontrol yapıldı; canlı kurulum/fiziksel Safari kabulü değildir. WebKit bu düzeltmede çalıştırılmadı.
 
-Yayın hazırlığı: önceki yeni sürüm yetkisi kapsamında 179 kararlı paket hazırlanıyor; FTP/AZ kurulum işlemi yapılmadı. Sonraki: kaynak SHA, Release ve stable manifest/hash sonucunu doğrula ve bu kayda ekle. Kullanıcı güncellemesinden sonra gerçek cihaz kabulü gerekir.
+Yayın tamamlandı: [kaynak e026709](https://github.com/muhammetdkaya/codela-storefront/commit/e0267093c592b39f9b48bdf74fe1e9d246279114), [kararlı yayın koşusu 40659964533](https://github.com/muhammetdkaya/codela-storefront/actions/runs/40659964533) başarılı. [v0.1.179](https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.179) public; indirilen 168938 bayt ZIP, yerel deterministik paket ve stable manifest SHA256 658f61364e8d4699674265cff5ea314f708273cd88916e9f82ab4785462c3690 ile eşleşti; manifest kaynak SHA da doğrulandı. FTP/AZ kurulumu yapılmadı. Sonraki: kullanıcı Codela → Tema üzerinden 179 güncellemesini kurduktan sonra gerçek Safari slayt/geometri kabulü.
 
 
 
