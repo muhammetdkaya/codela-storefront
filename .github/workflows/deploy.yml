@@ -142,7 +142,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           LATEST=$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)
-          if [ "$LATEST" = "$GITHUB_SHA" ]; then echo 'current=true' >> "$GITHUB_OUTPUT"; else echo 'current=false' >> "$GITHUB_OUTPUT"; fi
+          # Release requests and documentation must not cancel the validated deployment.
+          # Refuse deployment only if a newer commit changed its code or validation.
+          git fetch origin "$LATEST" --depth=1
+          if git diff --quiet "$GITHUB_SHA" "$LATEST" -- theme scripts tests .github/workflows/deploy.yml; then
+            echo 'current=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'current=false' >> "$GITHUB_OUTPUT"
+          fi
       - name: Deploy Storefront only
         if: steps.head.outputs.current == 'true'
         env:
