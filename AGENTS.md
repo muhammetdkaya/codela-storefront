@@ -1,5 +1,14 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 28 Ekim 2026 — ürün skeleton geometri düzeltmesi (inceleme dalı)
+
+Taban 0.1.175 / c34d40b; sürüm metadata'sı ve eklenti değişmedi. Ürün hedefinin önizlemesi gerçek sheet gibi doğrudan fixed konumlanır; kaynak sayfanın 4px dock aralığını miras almak yerine ortak 12px ürün boşluğunu kullanır. Görsel, panelin üst kenarında kesilmek yerine gerçek fotoğrafın 100lvh − 116px − safe-area çerçevesini kullanır ve cam panelin arkasına uzanır. Fotoğraf inset ve ürün alt boşluğu ortak token'lardır. Native ilk kare/mounted başlık ile önizleme iki satırlık ortak minimumu kullanır; kısa başlık paneli küçültmez. Adet kutusunun border dahil 122px genişliği, 46px yüksekliği, CTA fontu/esnek genişliği ve satın alma satırının panel tabanına hizası gerçek ürünle eşleştirildi.
+
+Doğrulama: üretim PHP şablonu ve product-information/gallery adapter ile Chromium'da 320/390/430/700px × kısa/uzun başlık × normal/ürün kaynağı: fotoğraf, panel, quantity ve CTA'nın x/y/genişlik/yüksekliği <1px farkla eşleşti; 390px görüntü incelendi. Viewport, hedef-alt-alan ve shell-navigation suite'leri ile 24 paket testi geçti. Native HTTP continuity suite'i yeni fotoğraf beklentisini geçti, sonraki testte npm Chromium'un single-process bağlamı kapanınca tamamlanamadı; başarı sayılmadı. Genel product-sheet suite'i 320px CTA 48px != 44px eski beklentisinde duruyor; aynı hata değişmemiş HEAD product.css ile de yeniden üretildi. Bu test gevşetilmedi. Fiziksel Safari ve gerçek WP/Woo kabulü yapılmadı. Opsiyonel urgency/sale/stok/varyasyon içeriği hedef HTML gelince doğal olarak ölçülür; skeleton bilinmeyen ürün verisini tahmin etmez.
+
+Yayın: yalnız inceleme dalı/PR; main merge, Release/stable, FTP ve AZ Seramik kurulumu yok. Sıradaki: PR CI Chromium/WebKit sonucunu doğrula; fiziksel Safari'de araç çubuğu açık/kapalı ekran kabulü sonrası sürüm yayını değerlendir.
+
+
 ## 27 Ekim 2026 — 0.1.175 Safari mobil alt alan hizalama düzeltmesi
 
 Kullanıcının iPhone ekran görüntülerinde 0.1.174 geçiş önizlemesi Safari araç çubuğunun altında kesiliyor, ürün panelinin gerçek kapalı hâlinden çok kısa kalıyor ve ürün→ana sayfada normal dock fazla yukarı taşınıyordu.

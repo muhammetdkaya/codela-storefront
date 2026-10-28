@@ -127,7 +127,9 @@ const doc=(path)=>{
       if(target==='product') {
        const gallery=page.locator('.sf-skeleton-gallery');
        const dockTop=await page.locator('.sf-navigation-preview').evaluate(el=>el.getBoundingClientRect().top);
-       assert.deepEqual(await gallery.boundingBox(),{x:0,y:0,width:390,height:dockTop});
+       const photoHeight=await page.evaluate(()=>innerHeight-116);
+       assert.deepEqual(await gallery.boundingBox(),{x:0,y:0,width:390,height:photoHeight});
+       assert(photoHeight>dockTop,'Native photo overlaps the translucent destination panel');
        assert.equal(await gallery.evaluate(el=>getComputedStyle(el).animationName),'sf-skeleton-pulse');
        assert.equal(await page.locator('.sf-skeleton-purchase,.sf-skeleton-summary,.sf-skeleton-product-controls').count(),0,'No pulsing purchase skeleton or invented product data');
        await page.emulateMedia({reducedMotion:'reduce'});

@@ -535,10 +535,10 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
      urgency adds its existing 24px row. Never resize a photograph after a
      script measures/reparents the purchase sheet. */
   html:is(.sf-product-sheet-pending,:has(body.sf-product-sheet-ready)){
-    --sf-product-photo-inset:116px;
+    --sf-product-photo-inset:var(--sf-ui-product-photo-inset);
   }
   html:is(.sf-product-sheet-pending,:has(body.sf-product-sheet-ready)):has(div.product .cdl-ub){
-    --sf-product-photo-inset:140px;
+    --sf-product-photo-inset:var(--sf-ui-product-photo-urgency-inset);
   }
   /* Photo presentation is identical before and after the adapter moves the
      existing Woo nodes. Pending is strictly a visibility state, not a second
@@ -594,7 +594,7 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
     /* Intrinsic first-paint height: the exact same heading, native cart footer
        and spacing as the mounted sheet. Do not hard-code a height measured from
        a test product with extra price/urgency lines. */
-    grid-template-rows:minmax(28px,max-content);grid-auto-rows:max-content;align-content:start;align-items:center;
+    grid-template-rows:minmax(var(--sf-ui-product-heading-height),max-content);grid-auto-rows:max-content;align-content:start;align-items:center;
     column-gap:10px;row-gap:0;overflow:hidden;box-sizing:border-box;
     padding:28px 16px 0;margin:0 auto!important;width:calc(100% - var(--sf-ui-bottom-bar-inset) - var(--sf-ui-bottom-bar-inset))!important;max-width:var(--sf-ui-bottom-bar-max-width);
     height:max-content;
@@ -647,6 +647,7 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
      product title down. No additional display-only labels are generated. */
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary,
   body.single-product.sf-product-sheet-ready div.product .sf-product-sheet-heading{
+    grid-template-rows:minmax(var(--sf-ui-product-heading-height),max-content);
     grid-template-columns:minmax(0,1fr) minmax(0,42%);
   }
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary > .sf-product-price-row,
@@ -803,7 +804,7 @@ body.single-product div.product .sf-product-quantity .sf-product-quantity-step[d
 }
 
 /* Product purchase and its overlay navigation share a little more browser clearance. */
-@media(max-width:700px){body.single-product{--sf-ui-bottom-bar-gap:12px}}
+@media(max-width:700px){body.single-product{--sf-ui-bottom-bar-gap:var(--sf-ui-product-panel-gap)}}
 
 /* Fixing the body must not let root snap choose a new product/discovery target. */
 html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:none}

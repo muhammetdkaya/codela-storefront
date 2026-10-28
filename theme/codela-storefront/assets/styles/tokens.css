@@ -45,6 +45,10 @@
   --sf-ui-bottom-bar-max-width:430px;
   --sf-ui-bottom-bar-inset:16px;
   --sf-ui-bottom-bar-gap:4px;
+  --sf-ui-product-panel-gap:12px;
+  --sf-ui-product-photo-inset:116px;
+  --sf-ui-product-photo-urgency-inset:140px;
+  --sf-ui-product-heading-height:max(28px,calc(clamp(16px,4.5vw,20px) * 2.5));
   --sf-ui-control-radius:var(--cdl-ct-radius,12px);
   --sf-ui-pill:999px;
   /* Shared control material: tint preserves contrast over changing content. */

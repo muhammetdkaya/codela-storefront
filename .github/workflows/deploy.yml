@@ -77,6 +77,8 @@ jobs:
           node tests/homepage-browser.cjs
           node tests/product-menu-scroll-browser.cjs
           TEST_WEBKIT=1 node tests/product-menu-scroll-browser.cjs
+          node tests/product-skeleton-geometry-browser.cjs
+          TEST_WEBKIT=1 node tests/product-skeleton-geometry-browser.cjs
           node tests/product-sheet-browser.cjs
           node tests/navigation-browser.cjs
           node tests/checkout-browser.cjs
