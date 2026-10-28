@@ -27,12 +27,12 @@
 }
 @supports(height:100svh){.sf-section--hero{--sf-hero-viewport-height:100svh}}
 @supports(height:100dvh){.sf-section--hero{--sf-hero-viewport-height:100dvh}}
-.sf-section--hero .sf-section-slide:has(.sf-section-copy){display:grid;min-height:min-content;grid-template-rows:minmax(120px,1fr) 356px;background:#403a33}
+.sf-section--hero .sf-section-slide:has(.sf-section-copy){display:flex;flex-direction:column;height:auto;min-height:var(--sf-media-height);background:#403a33}
 .sf-section--hero .sf-section-slide:has(.sf-section-copy)::after{display:none}
-.sf-section--hero .sf-section-slide:has(.sf-section-copy)>.sf-section-art{position:relative;inset:auto;grid-row:1;min-height:0;background:#ded4c5}
-.sf-section--hero .sf-section-slide:has(.sf-section-copy)>.sf-section-art img{object-fit:cover}
+.sf-section--hero .sf-section-slide:has(.sf-section-copy)>.sf-section-art{position:relative;inset:auto;flex:1 0 120px;min-height:120px;background:#ded4c5}
+.sf-section--hero .sf-section-slide:has(.sf-section-copy)>.sf-section-art img{position:absolute;inset:0;object-fit:cover}
 .sf-section--hero .sf-section-copy{
- position:relative;inset:auto;grid-row:2;align-self:stretch;width:auto;max-width:none;
+ position:relative;inset:auto;flex:0 0 356px;align-self:stretch;width:auto;max-width:none;
  padding:24px clamp(24px,5vw,80px) 80px;gap:14px;justify-content:flex-start;color:#fff;
 }
 .sf-section--hero .sf-section-copy>*{flex-shrink:0}
@@ -59,7 +59,7 @@
  /* The caption follows measured content, not an oversized viewport row.
     JS shares the tallest caption measurement among slides for a stable
     image boundary; the CSS-only single-slide/fallback layout stays intrinsic. */
- .sf-section--hero .sf-section-slide:has(.sf-section-copy){grid-template-rows:minmax(120px,1fr) var(--sf-hero-caption-height,auto)}
+ .sf-section--hero .sf-section-copy{flex-basis:var(--sf-hero-caption-height,auto)}
  /* Keep the headline, copy and CTA grouped at the bottom-left, while
     navigation sits to the CTA's right at a consistent vertical anchor. */
  .sf-section--hero .sf-section-copy{left:auto;bottom:auto;width:auto;max-width:none;gap:8px;justify-content:flex-start;padding:18px 20px calc(20px + var(--sf-hero-bottom-reserve))}
