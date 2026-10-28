@@ -52,6 +52,7 @@ assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
    if(!single)assert.equal(state.counter,'01 / '+String(state.slides.length).padStart(2,'0'),label+' counter is zero-padded and derives total from slides');
    const mobile=state.viewport.width<=700,toolbar=admin?(state.viewport.width<=782?46:32):0;
    const expected=mobile?Math.max(420,state.viewport.height*.75-51):Math.min(675,Math.max(510,state.viewport.height*.645));
+   const reserve=mobile&&dock?Math.min(58+4+safe,Math.max(0,expected+toolbar+58+4+safe-state.viewport.height)):0;
    // Check the design contract first: the previous separate-band CSS must fail
    // here, not merely because its height differed from the requested frame.
    for(const slide of state.slides){
@@ -80,23 +81,22 @@ assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
    assert.equal(state.slides[0].position,'25% 50%',label+' saved focal point retained');
    assert.match(state.slides[0].src,real?/showcase-real-image\.webp/:mobile?/image-11-/:/image-10/,label+' independent responsive source retained');
    if(mobile){
-    const reserve=(dock?58+4:0)+safe;
-    if(!extreme)assert(Math.abs(state.hero.bottom-state.slides[0].button.bottom-(20+reserve))<2,label+' CTA bottom respects configured dock/safe area');
+    if(!extreme)assert(Math.abs(state.hero.bottom-state.slides[0].button.bottom-(20+reserve))<2,label+' CTA bottom uses only actual dock overlap, not an unconditional dock-sized gap');
     if(state.controlsVisible){
-     assert(Math.abs(state.hero.bottom-state.controls.bottom-(20+reserve))<2,label+' controls bottom respects configured dock/safe area');
+     assert(Math.abs(state.hero.bottom-state.controls.bottom-(20+reserve))<2,label+' controls bottom uses only actual dock overlap');
      assert(state.slides[0].button.right<=state.controls.left+1,label+' CTA does not overlap controls');
     }
     assert.equal(state.dockVisible,dock,label+' never creates an absent dock');
     if(dock&&state.hero.bottom<=state.viewport.height+1&&!extreme){assert(state.slides[0].button.bottom<=state.dock.top-19,label+' CTA clears actual PHP dock');if(state.controlsVisible)assert(state.controls.bottom<=state.dock.top-19,label+' navigation clears actual PHP dock');}
    }else assert(!state.dockVisible,label+' no desktop dock');
-   results.push({label,width:state.viewport.width,height:state.viewport.height,hero:state.hero,caption:state.slides[0].copy.height});
+   results.push({label,width:state.viewport.width,height:state.viewport.height,hero:state.hero,caption:state.slides[0].copy.height,ctaBottomGap:state.hero.bottom-state.slides[0].button.bottom,controlsBottomGap:state.controlsVisible?state.hero.bottom-state.controls.bottom:null,expectedBottomGap:mobile?20+reserve:24,overlapReserve:reserve});
   }
-  async function checkHomeSkeleton({width,dock,admin,height=900}){
-   await page.setViewportSize({width,height});await load({dock,admin});
+  async function checkHomeSkeleton({width,dock,admin,height=900,safe=0}){
+   await page.setViewportSize({width,height});await load({dock,admin,safe});
    const before=await page.evaluate(()=>{
     const rect=el=>el?.getBoundingClientRect().toJSON();
     window.fixtureHeader=document.querySelector('.sf-header');window.fixtureDock=document.querySelector('.sf-mobile-dock');
-    return {hero:rect(document.querySelector('.sf-section--hero')),header:rect(window.fixtureHeader),dock:rect(window.fixtureDock),headerInert:window.fixtureHeader.inert,dockInert:window.fixtureDock?.inert};
+    return {hero:rect(document.querySelector('.sf-section--hero')),button:rect(document.querySelector('.sf-section--hero .sf-ui-button')),controls:rect(document.querySelector('.sf-section--hero [data-gallery-controls]')),header:rect(window.fixtureHeader),dock:rect(window.fixtureDock),headerInert:window.fixtureHeader.inert,dockInert:window.fixtureDock?.inert};
    });
    await page.evaluate(()=>{window.codelaSFDocument={home:'https://store.test/'};});
    await page.addScriptTag({content:feedbackScript});
@@ -109,7 +109,7 @@ assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
     const captionPaint=['title','button','count'].map(name=>({name,...paint(surface.querySelector('.sf-skeleton-hero-'+name))}));
     return {imagePaint,captionPaint,surface:rect(surface),layout:rect(surface.querySelector('.sf-skeleton-layout')),layoutMaxHeight:getComputedStyle(surface.querySelector('.sf-skeleton-layout')).maxHeight,hero:rect(surface?.querySelector('.sf-skeleton-hero')),button:rect(surface?.querySelector('.sf-skeleton-hero-button')),count:rect(surface?.querySelector('.sf-skeleton-hero-count')),title:rect(surface?.querySelector('.sf-skeleton-hero-title')),surfaceCount:document.querySelectorAll('.sf-skeleton').length,headerCount:document.querySelectorAll('.sf-header').length,dockCount:document.querySelectorAll('.sf-mobile-dock').length,headerSame:window.fixtureHeader===document.querySelector('.sf-header'),dockSame:window.fixtureDock===document.querySelector('.sf-mobile-dock'),headerInert:window.fixtureHeader.inert,dockInert:window.fixtureDock?.inert,dock:rect(window.fixtureDock),busy:document.querySelector('#sf-content').getAttribute('aria-busy'),hasInteractivePreview:!!surface.querySelector('a,button,input,form'),target:document.documentElement.dataset.sfNavigationTarget};
    });
-   const description='home skeleton '+width+'x'+height+' dock='+dock+' admin='+admin;
+   const description='home skeleton '+width+'x'+height+' dock='+dock+' admin='+admin+' safe='+safe;
    assert.equal(pending.target,'home',description+' uses home silhouette');
    assert(pending.hero,description+' paints immediately without delay');
    for(const shape of pending.captionPaint){
@@ -131,6 +131,8 @@ assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
    if(dock){assert(pending.dockInert,description+' actual dock is inert');for(const edge of ['left','top','right','bottom'])assert(Math.abs(pending.dock[edge]-before.dock[edge])<1,description+' actual dock position preserved '+edge);}
    assert(Math.abs(pending.button.height-44)<1,description+' compact CTA placeholder shares the touch-target height');
    assert(pending.button.right<=pending.count.left,description+' CTA and count do not overlap');
+   assert(Math.abs(pending.button.bottom-before.button.bottom)<1,description+' skeleton CTA shares the actual CTA bottom anchor');
+   assert(Math.abs(pending.count.bottom-before.controls.bottom)<1,description+' skeleton counter shares the actual counter bottom anchor');
    assert(pending.button.bottom<=pending.hero.bottom&&pending.count.bottom<=pending.hero.bottom,description+' placeholders fit the reduced hero');
    if(width===390&&height===900&&dock&&!admin){
     fs.mkdirSync('qa',{recursive:true});
@@ -141,7 +143,7 @@ assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
    const restored=await page.evaluate(()=>({surfaceCount:document.querySelectorAll('.sf-skeleton').length,headerSame:window.fixtureHeader===document.querySelector('.sf-header'),dockSame:window.fixtureDock===document.querySelector('.sf-mobile-dock'),headerInert:window.fixtureHeader.inert,dockInert:window.fixtureDock?.inert,busy:document.querySelector('#sf-content').getAttribute('aria-busy'),pending:document.documentElement.hasAttribute('data-sf-navigation-pending')}));
    assert.equal(restored.surfaceCount,0,description+' cancellation removes feedback');assert(!restored.pending,description+' cancellation clears pending state');
    assert(restored.headerSame&&restored.dockSame,description+' cancellation keeps original shell identity');assert.equal(restored.headerInert,before.headerInert);assert.equal(restored.dockInert,before.dockInert);assert.equal(restored.busy,null);
-   results.push({label:description,width,height,hero:pending.hero,layout:pending.layout,layoutMaxHeight:pending.layoutMaxHeight,surface:pending.surface,imagePaint:pending.imagePaint,captionPaint:pending.captionPaint,kind:'home-skeleton'});
+   results.push({label:description,width,height,hero:pending.hero,layout:pending.layout,layoutMaxHeight:pending.layoutMaxHeight,surface:pending.surface,ctaBottomGap:pending.hero.bottom-pending.button.bottom,controlsBottomGap:pending.hero.bottom-pending.count.bottom,actualCTABottomGap:before.hero.bottom-before.button.bottom,actualControlsBottomGap:before.hero.bottom-before.controls.bottom,imagePaint:pending.imagePaint,captionPaint:pending.captionPaint,kind:'home-skeleton'});
   }
   // Real public AZ banner and its visible copy, inside the deterministic PHP
   // fixture. These are before/after source previews, not live-site screenshots.
@@ -161,6 +163,7 @@ assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
     if(process.env.SHOWCASE_INLINE_VISUALS){const jpeg=await page.screenshot({type:'jpeg',quality:65});console.log('SHOWCASE_VISUAL:'+engine+':'+width+':'+jpeg.toString('base64'));}
    }
   }
+  if(process.env.SHOWCASE_ALIGNMENT_ONLY){await page.setViewportSize({width:390,height:900});await load({dock:true});await check('mobile bottom alignment 390x900',{dock:true});return;}
   if(process.env.SHOWCASE_CONTRAST_ONLY){await checkHomeSkeleton({width:390,height:900,dock:true,admin:false});return;}
   if(process.env.SHOWCASE_SCREENSHOTS_ONLY){
    assert(realImage,'Before/after screenshots require SHOWCASE_REAL_IMAGE');
@@ -173,6 +176,10 @@ assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
    await page.setViewportSize({width,height});await load({dock,admin});await check(`${width}x${height} dock=${dock} admin=${admin}`,{dock,admin});
   }
   for(const height of [650,740,620,844,600,844]){await page.setViewportSize({width:390,height});await load({dock:true,safe:34});await check('toolbar-size/safe-area '+height,{safe:34});}
+  for(const dock of [false,true])for(const admin of [false,true])for(const safe of [0,34]){
+   await page.setViewportSize({width:390,height:500});await load({dock,admin,safe});await check('partial dock overlap 390x500 dock='+dock+' admin='+admin+' safe='+safe,{dock,admin,safe});
+   if(dock)await checkHomeSkeleton({width:390,height:500,dock,admin,safe});
+  }
   // Keep the same DOM across breakpoint changes and repeated adapter execution.
   await load({dock:true});
   for(const width of [700,701,390,1280,320,701,390]){await page.setViewportSize({width,height:844});await settle();await page.addScriptTag({content:script});await settle();await check('repeat breakpoint '+width);}
