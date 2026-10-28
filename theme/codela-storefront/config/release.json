@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Vitrin slider mobil ve masaüstünde görünür ekran yüksekliğini ve tam içerik genişliğini kullanır; üstteki sabit header ikinci kez düşülmez.",
-    "Mobil CTA ve slider kontrolleri mevcut alt menü ile güvenli alanın üstünde kalır; çok kısa pencerelerde içerik kırpılmadan sayfa kaydırılabilir.",
-    "Mevcut mobil/masaüstü görsel kaynakları, odak noktası ve cover davranışı korunur; yeni görsel, ayar veya slider motoru eklenmez."
+    "Vitrin görseli, metin ve kontrollerin arkasını da içerecek şekilde mevcut slider alanının tamamını cover ile doldurur; ayrı opak alt bant kaldırıldı.",
+    "Slider yüksekliği büyütülmez: masaüstü ve mobil 0.1.181 çerçeve ölçüleri korunur; okunabilirlik için görsel üzerinde saydam alt karartma kullanılır.",
+    "Kayıtlı masaüstü/mobil görselleri, odak noktaları ve native slider korunur; mobil alt menü/güvenli alan boşluğu metin katmanı içinde ayrılır."
   ]
 }
