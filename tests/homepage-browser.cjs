@@ -35,8 +35,10 @@ for(const width of [320,390,700,701,1023,1024,1280])for(const promos of ['split,
    const controls=el.querySelector('.sf-section-gallery-controls').getBoundingClientRect();
    const headline=el.querySelector('.sf-section-copy h1,.sf-section-copy h2').getBoundingClientRect();
    const seams=[...el.querySelectorAll('.sf-section-slide')].map(slide=>{
-     const copy=slide.querySelector('.sf-section-copy');
-     return copy?{imageBottom:slide.querySelector('.sf-section-art').getBoundingClientRect().bottom,
+     const copy=slide.querySelector('.sf-section-copy'),style=copy&&getComputedStyle(copy);
+     const children=copy?[...copy.children].filter(child=>getComputedStyle(child).display!=='none'):[];
+     const requiredHeight=copy?parseFloat(style.paddingTop)+parseFloat(style.paddingBottom)+parseFloat(style.rowGap)*Math.max(0,children.length-1)+children.reduce((sum,child)=>sum+child.getBoundingClientRect().height,0):0;
+     return copy?{requiredHeight,imageBottom:slide.querySelector('.sf-section-art').getBoundingClientRect().bottom,
        titleGap:copy.querySelector('h1,h2').getBoundingClientRect().top-copy.getBoundingClientRect().top,
        ctaBottom:slide.getBoundingClientRect().bottom-copy.querySelector('.sf-ui-button').getBoundingClientRect().bottom}:null;
    }).filter(Boolean);
@@ -44,9 +46,9 @@ for(const width of [320,390,700,701,1023,1024,1280])for(const promos of ['split,
      buttonRight:button.right,buttonBottom:button.bottom,controlsLeft:controls.left,
      controlsBottom:controls.bottom,heroBottom:hero.bottom,headlineTop:headline.top,captionTop:caption.top,seams};
   });
-  assert(Math.abs(layout.heroHeight-Math.max(560,844-68))<2,'Mobile Vitrin fills viewport below header '+width+' '+JSON.stringify(layout));
+  assert(Math.abs(layout.heroHeight-844)<2,'Mobile Vitrin fills viewport behind overlay header '+width+' '+JSON.stringify(layout));
   assert(layout.imageHeight>460,'Mobile image uses remaining vertical height, not a landscape banner slot '+width);
-  assert(layout.captionHeight<240,'Mobile caption is sized to rendered copy instead of a hard 248px minimum '+width+' '+JSON.stringify(layout));
+  assert(Math.abs(layout.captionHeight-Math.max(...layout.seams.map(s=>s.requiredHeight)))<2,'Mobile caption equals rendered copy rather than an arbitrary fixed-height cap '+width+' '+JSON.stringify(layout));
   assert(layout.seams.every(s=>Math.abs(s.titleGap-18)<1),'Mobile caption starts immediately below image with 18px padding '+width+' '+JSON.stringify(layout.seams));
   assert(layout.seams.every(s=>Math.abs(s.ctaBottom-20)<2),'Every CTA shares the bottom anchor with navigation '+width);
   assert(layout.seams.every(s=>Math.abs(s.imageBottom-layout.seams[0].imageBottom)<1),'Different subtitle lengths do not shift the image boundary '+width);

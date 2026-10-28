@@ -1,5 +1,8 @@
 # Codela Storefront UI Kit — source of truth
 
+## Showcase viewport — 0.1.182 candidate
+
+The Vitrin hero fills its containing width (never viewport-width overflow) and the dynamic viewport, less only the WordPress toolbar's document reservation. The floating header overlays the media and must not be subtracted again. Existing mobile dock tokens and bottom safe area are reserved inside the caption/control region. Short windows may scroll a readable content minimum rather than clipping controls. Keep existing cover/focal point and distinct responsive sources; cover still crops differing aspect ratios. Caption updates are measured/batched by the existing horizontal adapter, not a new viewport controller. Browser/physical Safari acceptance remains pending.
 
 ## Product feedback geometry — 28 October 2026 candidate
 

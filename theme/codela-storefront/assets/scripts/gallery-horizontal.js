@@ -29,12 +29,21 @@
         });
         if(required.length)gallery.style.setProperty('--sf-hero-caption-height',Math.max(...required)+'px');
       };
+      let captionFrame=0;
+      const scheduleCaption=()=>{
+        if(!captionFrame)captionFrame=requestAnimationFrame(()=>{captionFrame=0;syncCaption();});
+      };
       syncCaption();
       if(typeof ResizeObserver!=='undefined'){
-        const observer=new ResizeObserver(syncCaption);
-        captions.forEach(copy=>[...copy.children].forEach(child=>observer.observe(child)));
-      }else window.addEventListener('resize',syncCaption,{passive:true});
-      document.fonts?.ready?.then(syncCaption);
+        const observer=new ResizeObserver(scheduleCaption);
+        captions.forEach(copy=>{
+          // Padding changes with the dock/safe area even when text dimensions
+          // do not. Observe the caption box as well as its intrinsic children.
+          observer.observe(copy);
+          [...copy.children].forEach(child=>observer.observe(child));
+        });
+      }else window.addEventListener('resize',scheduleCaption,{passive:true});
+      document.fonts?.ready?.then(scheduleCaption);
     }
     let current=0,frame=0;
     const update=()=>{
