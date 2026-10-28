@@ -24,12 +24,13 @@ function codela_sf_section_image( array $item, bool $priority = false, string $s
     if ( $priority && function_exists( 'codela_sf_image_preloads' ) ) { codela_sf_image_preloads( $html ); }
     return ! $priority && function_exists( 'codela_sf_defer_media' ) ? codela_sf_defer_media( $html ) : $html;
 }
-function codela_sf_section_controls( int $count ): string {
+function codela_sf_section_controls( int $count, bool $hero = false ): string {
+    $progress = $hero ? '<span class="sf-hero-progress" aria-hidden="true">' . str_repeat( '<span></span>', $count ) . '</span>' : '';
     if ( $count < 2 ) { return ''; }
     return '<nav class="sf-section-gallery-controls sf-ui-surface" data-gallery-controls aria-label="' . esc_attr__( 'Gallery navigation', 'codela-storefront' ) . '" hidden>'
         . codela_sf_ui_icon_button( 'arrow-left', __( 'Previous image', 'codela-storefront' ), [ 'attributes' => [ 'data-gallery-prev' => '' ] ] )
         . '<span data-gallery-count aria-live="polite">1 / ' . $count . '</span>'
-        . codela_sf_ui_icon_button( 'arrow-right', __( 'Next image', 'codela-storefront' ), [ 'attributes' => [ 'data-gallery-next' => '' ] ] ) . '</nav>';
+        . codela_sf_ui_icon_button( 'arrow-right', __( 'Next image', 'codela-storefront' ), [ 'attributes' => [ 'data-gallery-next' => '' ] ] ) . $progress . '</nav>';
 }
 function codela_sf_section_heading( array $data ): string {
     return ( $data['title'] ? '<h2>' . esc_html( $data['title'] ) . '</h2>' : '' ) . ( $data['description'] ? '<p class="sf-section-description">' . esc_html( $data['description'] ) . '</p>' : '' );
@@ -55,7 +56,7 @@ function codela_sf_section_media( array $data, string $type ): string {
         }
         $out .= '</article>';
     }
-    $out .= '</div>' . codela_sf_section_controls( count( $items ) ) . '</section>';
+    $out .= '</div>' . codela_sf_section_controls( count( $items ), $hero ) . '</section>';
     if ( $hero && is_front_page() && ! $items[0]['title'] ) { $out = '<h1 class="screen-reader-text">' . esc_html( get_bloginfo( 'name' ) ) . '</h1>' . $out; }
     return $out;
 }

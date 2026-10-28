@@ -1,5 +1,15 @@
 # Codela Storefront — güncel teknik durum
 
+## 28 Ekim 2026 — 0.1.176 ana sayfa kampanya slider’ı
+
+Tema 0.1.175 → 0.1.176; eklenti değişmedi. Kullanıcının onayladığı referansın kompozisyonuyla açık üst fotoğraf, koyulaşan alt metin alanı, ortak sans-serif/Button ve alt sağ sayaç/oklar kullanılır. Ürün paneli/thumbnail kopyalanmaz. Hero başlığı üç, alt metin iki satıra kadar; uzun metinde CTA ve kontrol alanı ayrılır. Her gerçek slayt için dekoratif ilerleme segmenti, mevcut native yatay adapter ile swipe/ok/klavye değişiminde eşitlenir. Yeni slider motoru, otomatik oynatma, istek veya görsel bağımlılığı yok. Kayıtlı görseller, odak noktası, mobil kaynak ve düzenlenebilir metinler korunur; referans fotoğraf mağazaya eklenmedi.
+
+Doğrulama: PHP lint/homepage/front-page-source/sections-preview; JS syntax; 24 paket testi başarılı. Chromium’da 320/390/700/701/1023/1024/1280 px, iki promo varyantı, bağımsız galeriler, ok/klavye, H1/LCP önceliği, uzun metin, yatay/dikey touch geçti. Mobil fixture ekranı incelendi; fixture sentetik görsel/ikonlar kullanır, gerçek mağaza görsel kabulü değildir. İlk single-process Chromium başlatması çoklu context’te kapandı; normal çok süreçli Chromium koşusu başarılı. WebKit, fiziksel Safari ve gerçek WP/Woo kabulü yapılmadı.
+
+Yayın durumu: GitHub kaynak değişikliği bu commit ile kaydedilir; yerel sürümlü ZIP üretimi başarılı. Actions kotası ve mevcut manuel kurulum tercihine uygun [skip ci]; FTP/AZ kurulumu ve kararlı Release/manifest bu çalışmada yapılmaz. Sonraki: kaynak commit’ini doğrula; kullanıcı tema paketini kurduktan sonra gerçek slider fotoğrafları ve fiziksel Safari görünümünü kontrol et.
+
+
+
 ## 27 Ekim 2026 — 0.1.175 Safari mobil alt alan hizalama düzeltmesi
 
 Kullanıcının iPhone ekran görüntülerinde 0.1.174 geçiş önizlemesi Safari araç çubuğunun altında kesiliyor, ürün panelinin gerçek kapalı hâlinden çok kısa kalıyor ve ürün→ana sayfada normal dock fazla yukarı taşınıyordu.
