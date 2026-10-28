@@ -1,7 +1,7 @@
 name: Showcase refinement regression (no deployment)
 on:
   push:
-    branches: [fix/showcase-refinement-20261028]
+    branches: [fix/showcase-bottom-align-20261028]
     paths: ['theme/**', 'tests/**', '.github/workflows/showcase-viewport.yml']
   pull_request:
     paths: ['theme/**', 'tests/**', '.github/workflows/showcase-viewport.yml']
@@ -77,6 +77,20 @@ jobs:
           fi
           cat /tmp/showcase-contrast-before.log
           grep -q 'placeholder contrasts with the image skeleton fill' /tmp/showcase-contrast-before.log
+      - name: Prove previous 184 CSS fails the compact bottom-gap contract
+        env:
+          TEST_WEBKIT: ${{ matrix.browser == 'webkit' && '1' || '' }}
+        run: |
+          git fetch origin 0908ab278a4e6b6f425cfb90c9f2862fd673a85a --depth=1
+          git show 0908ab278a4e6b6f425cfb90c9f2862fd673a85a:theme/codela-storefront/assets/styles/sections.css > /tmp/showcase-184-before.css
+          SHOWCASE_CSS=/tmp/showcase-184-before.css SHOWCASE_PHASE=before-184 SHOWCASE_SCREENSHOTS_ONLY=1 node tests/showcase-viewport-browser.cjs
+          if SHOWCASE_CSS=/tmp/showcase-184-before.css SHOWCASE_ALIGNMENT_ONLY=1 node tests/showcase-viewport-browser.cjs > /tmp/showcase-alignment-before.log 2>&1; then
+            cat /tmp/showcase-alignment-before.log
+            echo '::error::Previous reserved gap unexpectedly passed'
+            exit 1
+          fi
+          cat /tmp/showcase-alignment-before.log
+          grep -q 'CTA bottom uses only actual dock overlap' /tmp/showcase-alignment-before.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:

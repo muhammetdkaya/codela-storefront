@@ -43,12 +43,9 @@
 .sf-hero-progress>span{flex:1;min-width:0;height:3px;border-radius:var(--sf-ui-pill);background:rgba(255,255,255,.35)}
 .sf-hero-progress>.is-current{background:#fff}
 @media(max-width:700px){
- /* The frame is 75% of 183. Dock/safe-area clearance belongs
-    inside the overlaid copy; it must never increase the frame height. */
- .sf-section--hero{--sf-media-height:var(--sf-ui-showcase-height);--sf-hero-bottom-reserve:env(safe-area-inset-bottom,0px)}
- body:has(.sf-shell.has-mobile-dock) .sf-section--hero{
-  --sf-hero-bottom-reserve:calc(var(--sf-ui-bottom-bar-height,58px) + var(--sf-ui-bottom-bar-gap,4px) + env(safe-area-inset-bottom,0px));
- }
+ /* Keep the 184 frame. A dock below it needs no empty reservation;
+    only genuinely overlapping short viewports retain dock clearance. */
+ .sf-section--hero{--sf-media-height:var(--sf-ui-showcase-height);--sf-hero-bottom-reserve:var(--sf-ui-showcase-bottom-reserve)}
  /* Share the caption overlay height across campaigns, independently of the
     full-frame image. Very long fallback content scrolls inside this overlay. */
  .sf-section--hero .sf-section-copy{height:var(--sf-hero-caption-height,auto)}

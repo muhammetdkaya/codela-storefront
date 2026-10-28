@@ -20,6 +20,9 @@ assert(copies.flatMap(copy=>copy.children).every(el=>observed.includes(el)),'Int
 assert.equal(count.textContent,'01 / 02','Hero counter works without previous/next nodes');
 assert.equal(controls.hidden,false,'Counter remains visible after adapter setup');
 bottom=116;resized();assert.equal(values.get('--sf-hero-caption-height'),'300px','Safe-area padding updates without changing child heights');
+bottom=48;resized();assert.equal(values.get('--sf-hero-caption-height'),'232px','Partial dock overlap reduces the measured caption reserve');
+bottom=20;resized();assert.equal(values.get('--sf-hero-caption-height'),'204px','A hero above the dock retains only its 20px bottom inset');
+bottom=116;
 copies[1].children[1].height=150;resized();assert.equal(values.get('--sf-hero-caption-height'),'356px','Long CTA participates in the shared caption height');
 mobile=false;resized();assert(!values.has('--sf-hero-caption-height'),'Desktop removes mobile-only shared height');
 mobile=true;bottom=20;resized();assert.equal(values.get('--sf-hero-caption-height'),'260px','Return to mobile/no-dock clears the old reserve');
@@ -47,4 +50,4 @@ assert.equal(hero.key('Home',{}),false,'Nested CTA key events are not hijacked')
 const promo=counterFixture(false,3);
 assert.equal(promo.count.textContent,'1 / 3','Other galleries retain their original unpadded format');assert(promo.prev.disabled&&!promo.next.disabled);
 promo.key('End');assert.equal(promo.count.textContent,'3 / 3');assert(!promo.prev.disabled&&promo.next.disabled,'Nonhero arrow state still updates');
-console.log('Showcase caption/counter: 26 adapter/observer/keyboard assertions passed (no real browser layout).');
+console.log('Showcase caption/counter: 28 adapter/observer/keyboard assertions passed (no real browser layout).');

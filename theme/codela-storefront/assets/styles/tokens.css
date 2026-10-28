@@ -100,3 +100,13 @@
 :root{--sf-ui-skeleton-duration:1.4s}
 
 @media(max-width:700px){:root{--sf-ui-showcase-height:max(420px,calc(75svh - 51px))}}
+
+/* A shorter showcase is usually above the fixed dock. Reserve only actual
+   viewport overlap, capped at one dock; native page scrolling handles taller
+   minimum-height frames. Shared by the real hero and its loading silhouette. */
+:root{--sf-ui-showcase-bottom-reserve:0px}
+@media(max-width:700px){
+ body:has(.sf-shell.has-mobile-dock){
+  --sf-ui-showcase-bottom-reserve:clamp(0px,calc(var(--sf-ui-showcase-height) + var(--sf-header-offset,0px) + var(--sf-ui-bottom-bar-height,58px) + var(--sf-ui-bottom-bar-gap,4px) + env(safe-area-inset-bottom,0px) - 100dvh),calc(var(--sf-ui-bottom-bar-height,58px) + var(--sf-ui-bottom-bar-gap,4px) + env(safe-area-inset-bottom,0px)));
+ }
+}
