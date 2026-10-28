@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Vitrin görsellerindeki boş bantlar kaldırıldı; yatay ve dikey fotoğraflar kayıtlı odak noktasıyla alanı doldurur.",
-    "Slaytlar arasında görsel/metin sınırı ve başlık rezervi sabitlendi; koyu zemindeki oklar beyaz oldu.",
-    "Ürün skeleton ve mevcut kaydırma davranışı korunur."
+    "Mobil Vitrin yüksekliği ekranın kullanılabilir yüksekliğine bağlandı; görsel, alt açıklama alanından kalan yüksekliği kaplar ve kategoriler sonraki kaydırmada başlar.",
+    "Başlık ve buton alt-sol referans yerleşimine taşındı; sayaç, oklar ve ilerleme çizgileri butonun sağında hizalanır.",
+    "Kaplama ve odak noktası, mevcut galeri etkileşimleri ve ürün skeleton korunur."
   ]
 }

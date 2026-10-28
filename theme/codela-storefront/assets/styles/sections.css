@@ -39,10 +39,17 @@
 .sf-hero-progress>span{flex:1;min-width:0;height:3px;border-radius:var(--sf-ui-pill);background:rgba(255,255,255,.35)}
 .sf-hero-progress>.is-current{background:#fff}
 @media(max-width:700px){
- .sf-section--hero{--sf-media-height:calc(clamp(220px,56.25vw,394px) + 320px)}
- .sf-section--hero .sf-section-slide:has(.sf-section-copy){grid-template-rows:minmax(0,1fr) 320px}
- .sf-section--hero .sf-section-copy{left:auto;bottom:auto;width:auto;max-width:none;gap:12px}
+ /* Reserve the visible phone viewport below the 68px mobile header. The
+    image takes the remaining vertical space instead of a 16:9 width slot. */
+ .sf-section--hero{--sf-media-height:max(560px,calc(100svh - 68px))}
+ .sf-section--hero .sf-section-slide:has(.sf-section-copy){grid-template-rows:minmax(0,1fr) clamp(248px,32svh,280px)}
+ /* Keep the headline, copy and CTA grouped at the bottom-left, while
+    navigation sits to the CTA's right at a consistent vertical anchor. */
+ .sf-section--hero .sf-section-copy{left:auto;bottom:auto;width:auto;max-width:none;gap:8px;justify-content:flex-end;padding:18px 20px 20px}
  .sf-section--hero .sf-section-copy :is(h1,h2){font-size:clamp(28px,7.6vw,38px)}
+ .sf-section--hero .sf-section-copy .sf-ui-button{margin-top:4px;max-width:calc(100vw - 184px);--sf-ui-button-padding-x:12px;gap:8px;font-size:13px}
+ .sf-section--hero>.sf-section-gallery-controls{right:16px;bottom:20px;grid-template-columns:44px auto 44px;gap:2px}
+ .sf-section--hero .sf-hero-progress{max-width:142px}
 }
 
 .sf-section--hero>.sf-section-gallery-controls{--sf-ui-control-ink:#fff}

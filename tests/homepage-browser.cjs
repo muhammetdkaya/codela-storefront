@@ -25,6 +25,23 @@ for(const width of [320,390,700,701,1023,1024,1280])for(const promos of ['split,
  assert.equal(vitrin.fit,'cover','Landscape and portrait photos fill the frame without letterboxing');
  const frames=await page.locator('.sf-section--hero .sf-section-slide').evaluateAll(els=>els.map(el=>{const a=el.querySelector('picture').getBoundingClientRect();return {top:a.top,height:a.height};}));
  assert(frames.every(r=>Math.abs(r.height-frames[0].height)<1),'Every slide has the same image height regardless of copy');
+ if(width<=700){
+  const layout=await page.locator('.sf-section--hero').evaluate(el=>{
+   const hero=el.getBoundingClientRect(),image=el.querySelector('.sf-section-art').getBoundingClientRect();
+   const caption=el.querySelector('.sf-section-copy').getBoundingClientRect();
+   const button=el.querySelector('.sf-section-copy .sf-ui-button').getBoundingClientRect();
+   const controls=el.querySelector('.sf-section-gallery-controls').getBoundingClientRect();
+   return{heroHeight:hero.height,imageHeight:image.height,captionHeight:caption.height,
+     buttonRight:button.right,buttonBottom:button.bottom,controlsLeft:controls.left,
+     controlsBottom:controls.bottom,heroBottom:hero.bottom};
+  });
+  assert(Math.abs(layout.heroHeight-Math.max(560,844-68))<2,'Mobile Vitrin fills viewport below header '+width+' '+JSON.stringify(layout));
+  assert(layout.imageHeight>460,'Mobile image uses remaining vertical height, not a landscape banner slot '+width);
+  assert(layout.buttonRight<=layout.controlsLeft+1,'CTA remains left of counter and progress '+width+' '+JSON.stringify(layout));
+  assert(Math.abs(layout.heroBottom-layout.buttonBottom-20)<2,'CTA bottom anchor stable '+width+' '+JSON.stringify(layout));
+  assert(Math.abs(layout.heroBottom-layout.controlsBottom-20)<2,'Slider controls align with CTA bottom '+width);
+ }
+
  assert.equal(await page.locator('.sf-section--hero [data-gallery-next]').evaluate(el=>getComputedStyle(el).color),'rgb(255, 255, 255)','Arrows contrast with the dark caption');
  const progress=page.locator('.sf-section--hero .sf-hero-progress > span');
  assert.equal(await progress.count(),await page.locator('.sf-section--hero .sf-section-slide').count(),'One progress segment per hero slide');
@@ -32,7 +49,7 @@ for(const width of [320,390,700,701,1023,1024,1280])for(const promos of ['split,
  for(let i=0;i<await galleries.count();i++){const gallery=galleries.nth(i),track=gallery.locator('.sf-ui-gallery-track'),count=gallery.locator('[data-gallery-count]');assert((await count.textContent()).startsWith('1 / '));await gallery.locator('[data-gallery-next]').click();await page.waitForFunction(el=>!el.textContent.startsWith('1 / '),await count.elementHandle());await track.focus();await page.keyboard.press('End');await page.waitForFunction(el=>el.disabled,await gallery.locator('[data-gallery-next]').elementHandle());await page.keyboard.press('Home');await page.waitForFunction(el=>el.disabled,await gallery.locator('[data-gallery-prev]').elementHandle());}
  assert.equal(await progress.locator('..').locator('.is-current').count(),1);
  await page.addScriptTag({content:fs.readFileSync(root+'assets/scripts/gallery-horizontal.js','utf8')});
- const hero=page.locator('.sf-section--hero');await hero.locator('h1').evaluate(e=>e.textContent='Doğal dokularla yaşam alanınıza sıcaklık katan özel koleksiyonlardan seçmeler ve yeni ürünler');await hero.locator('.sf-section-copy p').first().evaluate(e=>e.textContent='Doğal taş ve sade çizgilerle yaşam alanınızı keşfedin. '.repeat(6));const bounds=await hero.evaluate(el=>{const r=el.getBoundingClientRect(),c=el.querySelector('.sf-section-copy').getBoundingClientRect(),b=el.querySelector('.sf-ui-button').getBoundingClientRect();return{top:c.top-r.top,bottom:b.bottom-r.top,height:r.height};});assert(bounds.top>=0&&bounds.bottom<=bounds.height-70,'Long copy stays above controls '+JSON.stringify(bounds));assert(Math.abs(bounds.top-(vitrin.copyTop-vitrin.imageBottom+frames[0].height))<1,'Long copy never shifts image boundary');
+ const hero=page.locator('.sf-section--hero');await hero.locator('h1').evaluate(e=>e.textContent='Doğal dokularla yaşam alanınıza sıcaklık katan özel koleksiyonlardan seçmeler ve yeni ürünler');await hero.locator('.sf-section-copy p').first().evaluate(e=>e.textContent='Doğal taş ve sade çizgilerle yaşam alanınızı keşfedin. '.repeat(6));const bounds=await hero.evaluate(el=>{const r=el.getBoundingClientRect(),c=el.querySelector('.sf-section-copy').getBoundingClientRect(),b=el.querySelector('.sf-ui-button').getBoundingClientRect();return{top:c.top-r.top,bottom:b.bottom-r.top,height:r.height};});assert(bounds.top>=0&&bounds.bottom<=bounds.height-(width<=700?16:70),'Long copy stays in caption '+JSON.stringify(bounds));assert(Math.abs(bounds.top-(vitrin.copyTop-vitrin.imageBottom+frames[0].height))<1,'Long copy never shifts image boundary');
  assert.equal(await page.locator('.sf-categories--editorial .sf-category-story').first().evaluate(e=>getComputedStyle(e).display),'grid');assert(await page.locator('.sf-categories--carousel .sf-category-story').first().evaluate(e=>e.getBoundingClientRect().width<e.parentElement.getBoundingClientRect().width*.9),'Next card peeks');
  const contentHtml=execFileSync(process.env.PHP_BIN||'php',['tests/homepage.php'],{encoding:'utf8',env:{...process.env,RENDER_CONTENT:'1'}});
  await page.locator('main').evaluate((el,html)=>el.insertAdjacentHTML('beforeend',html),contentHtml);
