@@ -1,12 +1,14 @@
 # Codela Storefront — güncel teknik durum
 
-## 28 Ekim 2026 — 0.1.184 yalnız tema: etiketsiz Vitrin inceltme adayı
+## 28 Ekim 2026 — 0.1.184 yalnız tema: etiketsiz Vitrin yayımlandı
 
 Muhammet’in 18:22 TR takip mesajı “Başlık üstündeki etiketi atla diğerlerini yap yayınla” ile yeni etiket özelliği kapsamdan çıkarıldı. Yeni hero eyebrow renderer/CSS/test fixture’ları ve skeleton etiket şekli kaldırıldı; eklenti değişikliği veya 1.2.5 gereksinimi yok. Önceden mevcut diğer bölüm etiketlerine dokunulmaz. Özel codela dalı birleştirilmez/yayımlanmaz; Actions runner engeli çözülmüş sayılmaz, bu tema işinin bağımlılığı kaldırılmıştır.
 
 Kalan kapsam: referanstaki yükseklik dörtte bir (%25) azalır, 4:1 en-boy yapılmaz. Masaüstü clamp(510px,64.5svh,675px), mobil max(420px,75svh - 51px); tam cover, kayıtlı kaynaklar/odak noktaları korunur. Kompakt ortak Button 44px dokunma hedefini korur. Hero okları kalkar; gerçek toplamla 01 / 05 sayacı, native klavye/swipe ve diğer galerilerin okları korunur. Home skeleton aynı frame token’ını ve görünür title/CTA/counter siluetini kullanır; mevcut shell/inert/cancel sahipliği korunur.
 
-Taban main 2ab3e621, önceki tam tarayıcı kabulü 92b1d611 / Actions 40709593005 (97’şer Chromium/WebKit senaryosu, 24 home-skeleton kombinasyonu). Etiketsiz bu kesin yeni aday tekrar sınanır; önceki sonuç yeni SHA kabulü değildir. Fiziksel Safari/canlı kurulum kabulü ayrıdır. Kullanıcının mevcut GitHub yükleme/test ve başarılıysa yayın onayının daraltılmış alt kapsamıdır. Main entegrasyonu [skip ci]; sonra ayrı GitHub-only release isteği. FTP, WordPress.org, AZ canlı kurulumu ve özel plugin değişikliği yok. Yeni CI, kaynak SHA ve paket/stable hash sonucu yayın sonrası eklenir.
+Doğrulama: [etiketsiz aday e4517ad](https://github.com/muhammetdkaya/codela-storefront/commit/e4517ad1067d06a070cde86e819186cf1cc2009c) için [CI 40716448074](https://github.com/muhammetdkaya/codela-storefront/actions/runs/40716448074) Chromium/WebKit başarılı: 97’şer geometri/etkileşim senaryosu (24 home-skeleton kombinasyonu), 10 bölüm/homepage/uzun metin, PHP suite/lint, 26 adapter ve 24 paket kontrolü. Eski 183 yüksekliği ve görünmez skeleton CSS’i negatif regresyonda beklendiği gibi başarısız. İki motorda 390/1280 gerçek AZ fotoğraflı fixture ve etiketsiz skeleton ekranları incelendi. Bunlar canlı kurulum veya fiziksel Safari kabulü değildir.
+
+Yayın tamamlandı: test edilen adayla aynı tree’ye sahip [kaynak 0908ab2](https://github.com/muhammetdkaya/codela-storefront/commit/0908ab278a4e6b6f425cfb90c9f2862fd673a85a) main’e [skip ci] ile alındı. Ayrı [GitHub-only yayın 40717051924](https://github.com/muhammetdkaya/codela-storefront/actions/runs/40717051924) başarılı; [v0.1.184](https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.184) public. Tag/stable manifest kaynak ve sürüm eşleşir. İndirilen ZIP yerel deterministik paketle byte-for-byte aynı: 170981 bayt, SHA256 `4d0716a6f2d38a61ca8c2f9d638cd71dff06e89a66bc09afa0ea1ca7032c8ad5`. FTP/AZ kurulumu veya özel plugin yayını yapılmadı; eklenti güncellemesi gerekmez. Sıradaki: kullanıcı temayı manuel kurduktan sonra gerçek cihaz kabulü; 184’ü tekrar yayımlama.
 
 ## 28 Ekim 2026 — 0.1.183 Vitrin arka plan düzeltmesi yayımlandı
 
