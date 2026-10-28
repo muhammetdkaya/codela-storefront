@@ -1,5 +1,9 @@
 # Codela Storefront UI Kit — source of truth
 
+## Showcase refinement — 0.1.184 candidate
+
+The supplied portrait reference requests a quarter reduction of the 183 frame, not a 4:1 aspect ratio. The shared showcase-height token also sets the full-bleed home skeleton. Preserve full-frame responsive cover/focal points. Optional plain-text eyebrow has no DOM/spacing when empty. Compact shared Button keeps a 44px hit target. Hero-only arrows disappear; padded actual-total counter/progress and native keyboard/swipe remain. Other galleries retain arrows. Skeleton has neutral label/title/CTA/counter shapes and original shell/inert/cancel lifecycle. This candidate was reconstructed via connector after executor loss; earlier local hashes and 183 screenshots are not acceptance of this SHA. Exact-candidate browser evidence is pending.
+
 ## Showcase background — 0.1.183
 
 The image covers the **entire existing slide**, including behind caption/controls. Keep the native responsive picture and focal point, absolute full-frame cover, transparent caption and a nonopaque readability gradient. Never fix image coverage by increasing slider height. Restore the 0.1.181 frame: desktop clamp(680px,86svh,900px), mobile max(560px,100svh - 68px). Caption/dock/safe-area reserve stays inside this frame; extreme copy scrolls within its overlay. This supersedes 182’s full-viewport/separate-band interpretation. Exact-candidate Chromium/WebKit coverage passed (73 cases each); actual AZ-photo before/after fixtures at 390/1280 were visually inspected. GitHub v0.1.183 is published; physical Safari/live installation acceptance remains separate.

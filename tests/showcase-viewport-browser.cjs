@@ -3,15 +3,16 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),{execFileSync}=require('node:child_process');
 const {chromium,webkit}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const root='theme/codela-storefront/assets/';
-const css=['styles/tokens.css','storefront.css','styles/overlay.css','styles/navigation.css','styles/components.css','styles/catalog.css','styles/gallery.css','styles/sections.css'].map(p=>fs.readFileSync(process.env.SHOWCASE_CSS&&p==='styles/sections.css'?process.env.SHOWCASE_CSS:root+p,'utf8')).join('\n');
+const css=['styles/tokens.css','storefront.css','styles/overlay.css','styles/navigation.css','styles/components.css','styles/catalog.css','styles/gallery.css','styles/sections.css','styles/navigation-feedback.css'].map(p=>fs.readFileSync(process.env.SHOWCASE_CSS&&p==='styles/sections.css'?process.env.SHOWCASE_CSS:root+p,'utf8')).join('\n');
 const php=process.env.PHP_BIN||'php';
 const html=execFileSync(php,['tests/homepage.php'],{encoding:'utf8',env:{...process.env,RENDER_HOME:'1'}});
 const headers=Object.fromEntries([false,true].map(dock=>[dock,execFileSync(php,['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_DOCK:dock?'1':'0'}})]));
 const script=fs.readFileSync(root+'scripts/gallery-horizontal.js','utf8');
+const feedbackScript=fs.readFileSync(root+'scripts/navigation-feedback.js','utf8');
 const engine=process.env.TEST_WEBKIT?'webkit':'chromium';
 const results=[];
 const realImage=process.env.SHOWCASE_REAL_IMAGE?fs.readFileSync(process.env.SHOWCASE_REAL_IMAGE):null;
-const phase=process.env.SHOWCASE_PHASE||'after-183';
+const phase=process.env.SHOWCASE_PHASE||'after-refinement';
 assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
 (async()=>{
  const browser=await (engine==='webkit'?webkit:chromium).launch(process.env.CHROMIUM_BIN&&engine==='chromium'?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-dev-shm-usage']}:{});
@@ -45,10 +46,15 @@ assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
    const state=await page.locator('.sf-section--hero').evaluate(hero=>{
     const rect=el=>el?.getBoundingClientRect().toJSON();
     const slides=[...hero.querySelectorAll('.sf-section-slide')];
-    return {viewport:{width:innerWidth,height:innerHeight,clientWidth:document.documentElement.clientWidth},hero:rect(hero),header:rect(document.querySelector('.sf-header')),dock:rect(document.querySelector('.sf-mobile-dock')),dockVisible:!!document.querySelector('.sf-mobile-dock')&&getComputedStyle(document.querySelector('.sf-mobile-dock')).display!=='none',controls:rect(hero.querySelector('[data-gallery-controls]')),controlsVisible:!!hero.querySelector('[data-gallery-controls]')&&!hero.querySelector('[data-gallery-controls]').hidden,overflow:document.documentElement.scrollWidth,category:rect(hero.nextElementSibling),slides:slides.map(slide=>({box:rect(slide),art:rect(slide.querySelector('.sf-section-art')),copy:rect(slide.querySelector('.sf-section-copy')),copyBackground:getComputedStyle(slide.querySelector('.sf-section-copy')).backgroundColor,copyOverflow:getComputedStyle(slide.querySelector('.sf-section-copy')).overflowY,copyScrollHeight:slide.querySelector('.sf-section-copy').scrollHeight,copyClientHeight:slide.querySelector('.sf-section-copy').clientHeight,button:rect(slide.querySelector('.sf-ui-button')),image:rect(slide.querySelector('img')),src:slide.querySelector('img').currentSrc,fit:getComputedStyle(slide.querySelector('img')).objectFit,position:slide.querySelector('img').style.objectPosition})),caption:parseFloat(hero.style.getPropertyValue('--sf-hero-caption-height'))||0};
+    return {viewport:{width:innerWidth,height:innerHeight,clientWidth:document.documentElement.clientWidth},hero:rect(hero),header:rect(document.querySelector('.sf-header')),dock:rect(document.querySelector('.sf-mobile-dock')),dockVisible:!!document.querySelector('.sf-mobile-dock')&&getComputedStyle(document.querySelector('.sf-mobile-dock')).display!=='none',controls:rect(hero.querySelector('[data-gallery-controls]')),controlsVisible:!!hero.querySelector('[data-gallery-controls]')&&!hero.querySelector('[data-gallery-controls]').hidden,arrows:hero.querySelectorAll('[data-gallery-prev],[data-gallery-next]').length,counter:hero.querySelector('[data-gallery-count]')?.textContent,overflow:document.documentElement.scrollWidth,category:rect(hero.nextElementSibling),slides:slides.map(slide=>({box:rect(slide),art:rect(slide.querySelector('.sf-section-art')),copy:rect(slide.querySelector('.sf-section-copy')),copyBackground:getComputedStyle(slide.querySelector('.sf-section-copy')).backgroundColor,copyOverflow:getComputedStyle(slide.querySelector('.sf-section-copy')).overflowY,copyScrollHeight:slide.querySelector('.sf-section-copy').scrollHeight,copyClientHeight:slide.querySelector('.sf-section-copy').clientHeight,button:rect(slide.querySelector('.sf-ui-button')),eyebrow:rect(slide.querySelector('.sf-hero-eyebrow')),heading:rect(slide.querySelector('h1,h2')),image:rect(slide.querySelector('img')),src:slide.querySelector('img').currentSrc,fit:getComputedStyle(slide.querySelector('img')).objectFit,position:slide.querySelector('img').style.objectPosition})),caption:parseFloat(hero.style.getPropertyValue('--sf-hero-caption-height'))||0};
    });
+   assert.equal(state.arrows,0,label+' hero arrows are absent');
+   if(!single)assert.equal(state.counter,'01 / '+String(state.slides.length).padStart(2,'0'),label+' counter is zero-padded and derives total from slides');
+   assert(state.slides[0].eyebrow,label+' configured eyebrow is rendered');
+   assert(state.slides[0].eyebrow.bottom<=state.slides[0].heading.top+1,label+' eyebrow is above the title');
+   if(!single)assert(!state.slides[1].eyebrow,label+' blank eyebrow adds no spacer');
    const mobile=state.viewport.width<=700,toolbar=admin?(state.viewport.width<=782?46:32):0;
-   const expected=mobile?Math.max(560,state.viewport.height-68):Math.min(900,Math.max(680,state.viewport.height*.86));
+   const expected=mobile?Math.max(420,state.viewport.height*.75-51):Math.min(675,Math.max(510,state.viewport.height*.645));
    // Check the design contract first: the previous separate-band CSS must fail
    // here, not merely because its height differed from the requested frame.
    for(const slide of state.slides){
@@ -60,7 +66,7 @@ assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
     assert(slide.copy.bottom>slide.art.top&&slide.copy.top<slide.art.bottom,label+' caption overlays the photo');
     assert(slide.button.height>=44,label+' CTA preserves a full touch target');
     if(!extreme)assert(slide.button.top>=slide.copy.top-1&&slide.button.bottom<=slide.copy.bottom+1,label+' ordinary CTA fits within caption');
-    if(!noJS&&!single)assert(Math.abs(slide.copy.height-state.slides[0].copy.height)<1,label+' shared caption anchor across slides');
+    if(mobile&&!noJS&&!single)assert(Math.abs(slide.copy.height-state.slides[0].copy.height)<1,label+' shared caption anchor across slides');
     if(state.controlsVisible){
      const c=state.controls,b=slide.button;
      // Compare each slide in its own horizontal coordinate space.
@@ -71,7 +77,7 @@ assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
    assert(Math.abs(state.hero.left)<1&&Math.abs(state.hero.width-state.viewport.clientWidth)<1,label+' full containing width '+JSON.stringify(state));
    assert(state.overflow<=state.viewport.width+1,label+' no horizontal overflow');
    assert(Math.abs(state.hero.top-toolbar)<1,label+' admin toolbar keeps its original top reservation');
-   assert(Math.abs(state.hero.height-expected)<2,label+' preserves 0.1.181 slider height; background does not enlarge it '+JSON.stringify(state));
+   assert(Math.abs(state.hero.height-expected)<2,label+' reduces the 0.1.183 frame height by 25% without changing background coverage '+JSON.stringify(state));
    assert(state.category.top>=state.hero.bottom,label+' category remains after the existing slider');
    assert(state.header.top>=0&&state.header.bottom<=state.slides[0].art.bottom,label+' header remains over the full background');
    assert.equal(state.slides[0].position,'25% 50%',label+' saved focal point retained');
@@ -87,6 +93,43 @@ assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
     if(dock&&state.hero.bottom<=state.viewport.height+1&&!extreme){assert(state.slides[0].button.bottom<=state.dock.top-19,label+' CTA clears actual PHP dock');if(state.controlsVisible)assert(state.controls.bottom<=state.dock.top-19,label+' navigation clears actual PHP dock');}
    }else assert(!state.dockVisible,label+' no desktop dock');
    results.push({label,width:state.viewport.width,height:state.viewport.height,hero:state.hero,caption:state.slides[0].copy.height});
+  }
+  async function checkHomeSkeleton({width,dock,admin}){
+   await page.setViewportSize({width,height:900});await load({dock,admin});
+   const before=await page.evaluate(()=>{
+    const rect=el=>el?.getBoundingClientRect().toJSON();
+    window.fixtureHeader=document.querySelector('.sf-header');window.fixtureDock=document.querySelector('.sf-mobile-dock');
+    return {hero:rect(document.querySelector('.sf-section--hero')),header:rect(window.fixtureHeader),dock:rect(window.fixtureDock),headerInert:window.fixtureHeader.inert,dockInert:window.fixtureDock?.inert};
+   });
+   await page.evaluate(()=>{window.codelaSFDocument={home:'https://store.test/'};});
+   await page.addScriptTag({content:feedbackScript});
+   const token=await page.evaluate(()=>window.codelaSFFeedback.begin({url:'https://store.test/'}));
+   assert(token,'Home navigation starts feedback synchronously');
+   const pending=await page.evaluate(()=>{
+    const rect=el=>el?.getBoundingClientRect().toJSON(),surface=document.querySelector('.sf-skeleton');
+    return {hero:rect(surface?.querySelector('.sf-skeleton-hero')),button:rect(surface?.querySelector('.sf-skeleton-hero-button')),count:rect(surface?.querySelector('.sf-skeleton-hero-count')),label:rect(surface?.querySelector('.sf-skeleton-hero-label')),title:rect(surface?.querySelector('.sf-skeleton-hero-title')),surfaceCount:document.querySelectorAll('.sf-skeleton').length,headerCount:document.querySelectorAll('.sf-header').length,dockCount:document.querySelectorAll('.sf-mobile-dock').length,headerSame:window.fixtureHeader===document.querySelector('.sf-header'),dockSame:window.fixtureDock===document.querySelector('.sf-mobile-dock'),headerInert:window.fixtureHeader.inert,dockInert:window.fixtureDock?.inert,dock:rect(window.fixtureDock),busy:document.querySelector('#sf-content').getAttribute('aria-busy'),hasInteractivePreview:!!surface.querySelector('a,button,input,form'),target:document.documentElement.dataset.sfNavigationTarget};
+   });
+   const description='home skeleton '+width+' dock='+dock+' admin='+admin;
+   assert.equal(pending.target,'home',description+' uses home silhouette');
+   assert(pending.hero,description+' paints immediately without delay');
+   for(const edge of ['left','top','right','bottom'])assert(Math.abs(pending.hero[edge]-before.hero[edge])<1,description+' matches real showcase '+edge+' '+JSON.stringify({before:before.hero,pending:pending.hero}));
+   assert.equal(pending.surfaceCount,1,description+' one feedback owner');
+   assert.equal(pending.headerCount,1,description+' does not clone the header');
+   assert.equal(pending.dockCount,dock?1:0,description+' preserves configured dock presence');
+   assert(pending.headerSame&&pending.dockSame,description+' retains original shell nodes');
+   assert(pending.headerInert,description+' header is inert while loading');
+   assert.equal(pending.busy,'true',description+' original main is busy');
+   assert(!pending.hasInteractivePreview,description+' placeholders cannot activate controls');
+   if(dock){assert(pending.dockInert,description+' actual dock is inert');for(const edge of ['left','top','right','bottom'])assert(Math.abs(pending.dock[edge]-before.dock[edge])<1,description+' actual dock position preserved '+edge);}
+   assert(Math.abs(pending.button.height-44)<1,description+' compact CTA placeholder shares the touch-target height');
+   assert(pending.button.right<=pending.count.left,description+' CTA and count do not overlap');
+   assert(pending.label.bottom<=pending.title.top,description+' label placeholder is above title');
+   assert(pending.button.bottom<=pending.hero.bottom&&pending.count.bottom<=pending.hero.bottom,description+' placeholders fit the reduced hero');
+   assert(await page.evaluate(token=>window.codelaSFFeedback.end(token),token),description+' cancellation succeeds');
+   const restored=await page.evaluate(()=>({surfaceCount:document.querySelectorAll('.sf-skeleton').length,headerSame:window.fixtureHeader===document.querySelector('.sf-header'),dockSame:window.fixtureDock===document.querySelector('.sf-mobile-dock'),headerInert:window.fixtureHeader.inert,dockInert:window.fixtureDock?.inert,busy:document.querySelector('#sf-content').getAttribute('aria-busy'),pending:document.documentElement.hasAttribute('data-sf-navigation-pending')}));
+   assert.equal(restored.surfaceCount,0,description+' cancellation removes feedback');assert(!restored.pending,description+' cancellation clears pending state');
+   assert(restored.headerSame&&restored.dockSame,description+' cancellation keeps original shell identity');assert.equal(restored.headerInert,before.headerInert);assert.equal(restored.dockInert,before.dockInert);assert.equal(restored.busy,null);
+   results.push({label:description,width,height:900,hero:pending.hero,kind:'home-skeleton'});
   }
   // Real public AZ banner and its visible copy, inside the deterministic PHP
   // fixture. These are before/after source previews, not live-site screenshots.
@@ -137,12 +180,16 @@ assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
   }
   await page.setViewportSize({width:390,height:844});await load({dock:true});
   const hero=page.locator('.sf-section--hero'),track=hero.locator('.sf-ui-gallery-track');
-  await hero.locator('[data-gallery-next]').click();await page.waitForFunction(()=>document.querySelector('.sf-section--hero [data-gallery-count]').textContent==='2 / 2');
-  await track.focus();await page.keyboard.press('Home');await page.waitForFunction(()=>document.querySelector('.sf-section--hero [data-gallery-count]').textContent==='1 / 2');
-  await page.keyboard.press('End');await page.waitForFunction(()=>document.querySelector('.sf-section--hero [data-gallery-next]').disabled);
+  assert.equal(await hero.locator('[data-gallery-prev],[data-gallery-next]').count(),0,'No hero arrow nodes');
+  await track.focus();await page.keyboard.press('ArrowRight');await page.waitForFunction(()=>document.querySelector('.sf-section--hero [data-gallery-count]').textContent==='02 / 02');
+  await page.keyboard.press('Home');await page.waitForFunction(()=>document.querySelector('.sf-section--hero [data-gallery-count]').textContent==='01 / 02');
+  await page.keyboard.press('End');await page.waitForFunction(()=>document.querySelector('.sf-section--hero [data-gallery-count]').textContent==='02 / 02');
+  await page.keyboard.press('ArrowLeft');await page.waitForFunction(()=>document.querySelector('.sf-section--hero [data-gallery-count]').textContent==='01 / 02');
   await page.keyboard.press('Home');await settle();
   fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:`qa/storefront-ui-kit-showcase-${engine}-390.png`});
   await page.setViewportSize({width:1280,height:900});await load({dock:false});await check('desktop screenshot',{dock:false});await page.screenshot({path:`qa/storefront-ui-kit-showcase-${engine}-1280.png`});
+
+  for(const width of [320,390,700,701,1280])for(const dock of [false,true])for(const admin of [false,true])await checkHomeSkeleton({width,dock,admin});
 
   if(realImage)await captureRealPhotos();else console.log('Actual AZ-photo fixture screenshots skipped: SHOWCASE_REAL_IMAGE was not supplied.');
   assert.deepEqual(errors,[]);

@@ -48,6 +48,8 @@
   --sf-ui-product-panel-gap:12px;
   --sf-ui-product-button-padding-x:16px;
   --sf-ui-product-photo-inset:116px;
+  /* Showcase and its destination skeleton share one 25%-shorter frame. */
+  --sf-ui-showcase-height:clamp(510px,64.5svh,675px);
   --sf-ui-product-photo-urgency-inset:140px;
   --sf-ui-product-heading-height:max(28px,calc(clamp(16px,4.5vw,20px) * 2.5));
   --sf-ui-control-radius:var(--cdl-ct-radius,12px);
@@ -96,3 +98,5 @@
 :root{--sf-ui-skeleton:#dfe1e5}
 
 :root{--sf-ui-skeleton-duration:1.4s}
+
+@media(max-width:700px){:root{--sf-ui-showcase-height:max(420px,calc(75svh - 51px))}}

@@ -28,9 +28,9 @@ function codela_sf_section_controls( int $count, bool $hero = false ): string {
     $progress = $hero ? '<span class="sf-hero-progress" aria-hidden="true">' . str_repeat( '<span></span>', $count ) . '</span>' : '';
     if ( $count < 2 ) { return ''; }
     return '<nav class="sf-section-gallery-controls sf-ui-surface" data-gallery-controls aria-label="' . esc_attr__( 'Gallery navigation', 'codela-storefront' ) . '" hidden>'
-        . codela_sf_ui_icon_button( 'arrow-left', __( 'Previous image', 'codela-storefront' ), [ 'attributes' => [ 'data-gallery-prev' => '' ] ] )
-        . '<span data-gallery-count aria-live="polite">1 / ' . $count . '</span>'
-        . codela_sf_ui_icon_button( 'arrow-right', __( 'Next image', 'codela-storefront' ), [ 'attributes' => [ 'data-gallery-next' => '' ] ] ) . $progress . '</nav>';
+        . ( $hero ? '' : codela_sf_ui_icon_button( 'arrow-left', __( 'Previous image', 'codela-storefront' ), [ 'attributes' => [ 'data-gallery-prev' => '' ] ] ) )
+        . '<span data-gallery-count aria-live="polite" aria-atomic="true">' . ( $hero ? '01 / ' . sprintf( '%02d', $count ) : '1 / ' . $count ) . '</span>'
+        . ( $hero ? '' : codela_sf_ui_icon_button( 'arrow-right', __( 'Next image', 'codela-storefront' ), [ 'attributes' => [ 'data-gallery-next' => '' ] ] ) ) . $progress . '</nav>';
 }
 function codela_sf_section_heading( array $data ): string {
     return ( $data['title'] ? '<h2>' . esc_html( $data['title'] ) . '</h2>' : '' ) . ( $data['description'] ? '<p class="sf-section-description">' . esc_html( $data['description'] ) . '</p>' : '' );
@@ -48,8 +48,9 @@ function codela_sf_section_media( array $data, string $type ): string {
         $heading = $hero && 0 === $index && is_front_page() ? 'h1' : 'h2';
         $out .= '<article class="sf-section-slide' . ( $gallery ? ' sf-ui-gallery-slide' : '' ) . '" aria-label="' . esc_attr( ( $index + 1 ) . ' / ' . count( $items ) ) . '">';
         $out .= codela_sf_section_image( $item, $priority, ! $hero && in_array( $data['variant'], [ 'split', 'editorial' ], true ) ? '(max-width:700px) 100vw, 60vw' : '100vw' );
-        if ( $item['title'] || $item['subtitle'] || $item['button_label'] && $item['button_url'] ) {
-            $out .= '<div class="sf-section-copy">' . ( $item['title'] ? '<' . $heading . '>' . esc_html( $item['title'] ) . '</' . $heading . '>' : '' );
+        $eyebrow = $hero && is_string( $item['eyebrow'] ?? null ) ? trim( $item['eyebrow'] ) : '';
+        if ( $eyebrow !== '' || $item['title'] || $item['subtitle'] || $item['button_label'] && $item['button_url'] ) {
+            $out .= '<div class="sf-section-copy">' . ( $eyebrow !== '' ? '<span class="sf-hero-eyebrow">' . esc_html( $eyebrow ) . '</span>' : '' ) . ( $item['title'] ? '<' . $heading . '>' . esc_html( $item['title'] ) . '</' . $heading . '>' : '' );
             if ( $item['subtitle'] ) { $out .= '<p>' . esc_html( $item['subtitle'] ) . '</p>'; }
             if ( $item['button_label'] && $item['button_url'] ) { $out .= $hero ? codela_sf_ui_button( $item['button_label'], [ 'href' => $item['button_url'], 'variant' => 'secondary', 'icon' => 'arrow-right' ] ) : codela_sf_ui_primary_link( $item['button_url'], $item['button_label'] ); }
             $out .= '</div>';
