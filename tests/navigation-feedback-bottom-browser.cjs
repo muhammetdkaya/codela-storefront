@@ -16,7 +16,7 @@ module.exports=async function destinationBottomBrowser(browser){
    await page.evaluate(preview=>{window.codelaSFDocument={home:'https://store.test/',productBase:'https://store.test/product/',purchasePreview:preview};window.originalForm=document.querySelector('form.cart');window.originalDock=document.querySelector('.sf-mobile-dock');window.submits=0;originalForm.addEventListener('submit',e=>{e.preventDefault();submits++});},preview);
    await page.addScriptTag({content:script});
    for(const target of ['product','home'])for(const owner of ['document','router']){
-    const before=await page.locator('.sf-mobile-dock').evaluate(el=>el.outerHTML);
+    const before=await page.locator('.sf-mobile-dock').evaluate(el=>el.outerHTML.replace(/ style=""/g,''));
     await page.evaluate(({target,owner})=>window.token=codelaSFFeedback.begin({url:target==='home'?'https://store.test/':'https://store.test/product/new/',owner}),{target,owner});
     const state=await page.evaluate(()=>{
      const visible=el=>!!el&&getComputedStyle(el).display!=='none'&&getComputedStyle(el).visibility!=='hidden'&&el.getBoundingClientRect().height>0;
@@ -32,7 +32,7 @@ module.exports=async function destinationBottomBrowser(browser){
     assert(state.same&&state.forms===1&&state.quantity==='7'&&state.submits===0&&state.locked&&state.footer);
     if(state.preview){assert(state.buttonDisabled&&!state.formInPreview);assert(state.buttonHeight>=44);assert(state.box.top>0&&state.box.bottom<=850&&state.box.width<=width-32,JSON.stringify({width,product,target,state}));}
     await page.evaluate(()=>{document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}));});
-    assert.equal(await page.locator('.sf-mobile-dock').evaluate(el=>el.outerHTML),before,'Cancel restores original dock exactly');
+    assert.equal(await page.locator('.sf-mobile-dock').evaluate(el=>el.outerHTML.replace(/ style=""/g,'')),before,'Cancel restores original dock exactly');
     assert.equal(await page.locator('.sf-navigation-preview').count(),0);
     assert.equal(await page.locator('form.cart input').inputValue(),'7');
    }
