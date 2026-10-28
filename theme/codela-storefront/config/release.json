@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mobil Vitrin yüksekliği ekranın kullanılabilir yüksekliğine bağlandı; görsel, alt açıklama alanından kalan yüksekliği kaplar ve kategoriler sonraki kaydırmada başlar.",
-    "Başlık ve buton alt-sol referans yerleşimine taşındı; sayaç, oklar ve ilerleme çizgileri butonun sağında hizalanır.",
-    "Kaplama ve odak noktası, mevcut galeri etkileşimleri ve ürün skeleton korunur."
+    "Mobil Vitrin başlığının üstündeki gereksiz boşluk kaldırıldı; açıklama bandı gerçek metin ve buton yüksekliğine uyarlanır.",
+    "Farklı uzunluktaki slayt başlıkları/açıklamaları için görsel sınırı eşit tutulur; buton ve sayaç aynı alt çizgiye sabitlenir.",
+    "Görsel kaplama/odak noktası, yatay kaydırma ve ürün skeleton davranışı korunur."
   ]
 }

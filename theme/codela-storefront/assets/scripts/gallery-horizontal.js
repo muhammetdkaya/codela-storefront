@@ -11,6 +11,31 @@
     const previous=controls.querySelector('[data-gallery-prev]');
     const next=controls.querySelector('[data-gallery-next]');
     const count=controls.querySelector('[data-gallery-count]');
+    // Mobile Vitrin: measure the real rendered heading/subtitle/button rather
+    // than reserving 248–280px on every slide. One shared height avoids the
+    // image-to-caption seam jumping when a visitor swipes between campaigns.
+    if(gallery.classList.contains('sf-section--hero')){
+      const captions=items.map(item=>item.querySelector('.sf-section-copy')).filter(Boolean);
+      const syncCaption=()=>{
+        if(!matchMedia('(max-width:700px)').matches){
+          gallery.style.removeProperty('--sf-hero-caption-height');return;
+        }
+        const required=captions.map(copy=>{
+          const style=getComputedStyle(copy);
+          const children=[...copy.children].filter(child=>getComputedStyle(child).display!=='none');
+          const padding=(parseFloat(style.paddingTop)||0)+(parseFloat(style.paddingBottom)||0);
+          const gap=(parseFloat(style.rowGap)||0)*Math.max(0,children.length-1);
+          return Math.ceil(padding+gap+children.reduce((total,child)=>total+child.getBoundingClientRect().height,0));
+        });
+        if(required.length)gallery.style.setProperty('--sf-hero-caption-height',Math.max(...required)+'px');
+      };
+      syncCaption();
+      if(typeof ResizeObserver!=='undefined'){
+        const observer=new ResizeObserver(syncCaption);
+        captions.forEach(copy=>[...copy.children].forEach(child=>observer.observe(child)));
+      }else window.addEventListener('resize',syncCaption,{passive:true});
+      document.fonts?.ready?.then(syncCaption);
+    }
     let current=0,frame=0;
     const update=()=>{
       frame=0;const edge=track.getBoundingClientRect().left;

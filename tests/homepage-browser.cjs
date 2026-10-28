@@ -7,7 +7,9 @@ for(const width of [320,390,700,701,1023,1024,1280])for(const promos of ['split,
  const page=await browser.newPage({viewport:{width,height:844},hasTouch:true,isMobile:width===390,...(width===390?{userAgent:'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36'}:{}),reducedMotion:'reduce'}),errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',route=>new URL(route.request().url()).pathname==='/'?route.fulfill({contentType:'text/html',body:'<html></html>'}):route.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900"><rect width="1200" height="900" fill="#cbbdad"/><circle cx="620" cy="440" r="230" fill="#e8dfcf"/></svg>'}));
  await page.goto('https://store.test/');
- await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body class="home"><main class="sf-content">'+html+'</main></body></html>');await page.addScriptTag({content:fs.readFileSync(root+'assets/scripts/gallery-horizontal.js','utf8')});
+ await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body class="home"><main class="sf-content">'+html+'</main></body></html>');
+ if(width<=700)await page.locator('.sf-section--hero .sf-section-slide').nth(1).locator('.sf-section-copy p').evaluate(el=>el.textContent='Özenle üretilen, doğal dokularla yaşam alanınızı zenginleştiren özel koleksiyonlarımızı keşfedin.');
+ await page.addScriptTag({content:fs.readFileSync(root+'assets/scripts/gallery-horizontal.js','utf8')});
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No page overflow '+width+' '+promos);assert.equal(await page.locator('.sf-section').count(),10);assert.equal(await page.locator('h1').count(),1);assert.equal(await page.locator('img[fetchpriority=high]').count(),1);
  if(width===390){const image=page.locator('.sf-categories--editorial img').first();await image.scrollIntoViewIfNeeded();await image.evaluate(img=>img.decode());assert.match(await image.evaluate(img=>img.currentSrc),/image-13-(160|320)\.svg$/,'Small mobile category selects a small responsive candidate');}
  const bands=page.locator('.sf-categories--bands .sf-category-story'),columns=width>=1024?4:width>700?2:1;
@@ -31,12 +33,23 @@ for(const width of [320,390,700,701,1023,1024,1280])for(const promos of ['split,
    const caption=el.querySelector('.sf-section-copy').getBoundingClientRect();
    const button=el.querySelector('.sf-section-copy .sf-ui-button').getBoundingClientRect();
    const controls=el.querySelector('.sf-section-gallery-controls').getBoundingClientRect();
+   const headline=el.querySelector('.sf-section-copy h1,.sf-section-copy h2').getBoundingClientRect();
+   const seams=[...el.querySelectorAll('.sf-section-slide')].map(slide=>{
+     const copy=slide.querySelector('.sf-section-copy');
+     return copy?{imageBottom:slide.querySelector('.sf-section-art').getBoundingClientRect().bottom,
+       titleGap:copy.querySelector('h1,h2').getBoundingClientRect().top-copy.getBoundingClientRect().top,
+       ctaBottom:slide.getBoundingClientRect().bottom-copy.querySelector('.sf-ui-button').getBoundingClientRect().bottom}:null;
+   }).filter(Boolean);
    return{heroHeight:hero.height,imageHeight:image.height,captionHeight:caption.height,
      buttonRight:button.right,buttonBottom:button.bottom,controlsLeft:controls.left,
-     controlsBottom:controls.bottom,heroBottom:hero.bottom};
+     controlsBottom:controls.bottom,heroBottom:hero.bottom,headlineTop:headline.top,captionTop:caption.top,seams};
   });
   assert(Math.abs(layout.heroHeight-Math.max(560,844-68))<2,'Mobile Vitrin fills viewport below header '+width+' '+JSON.stringify(layout));
   assert(layout.imageHeight>460,'Mobile image uses remaining vertical height, not a landscape banner slot '+width);
+  assert(layout.captionHeight<240,'Mobile caption is sized to rendered copy instead of a hard 248px minimum '+width+' '+JSON.stringify(layout));
+  assert(layout.seams.every(s=>Math.abs(s.titleGap-18)<1),'Mobile caption starts immediately below image with 18px padding '+width+' '+JSON.stringify(layout.seams));
+  assert(layout.seams.every(s=>Math.abs(s.ctaBottom-20)<2),'Every CTA shares the bottom anchor with navigation '+width);
+  assert(layout.seams.every(s=>Math.abs(s.imageBottom-layout.seams[0].imageBottom)<1),'Different subtitle lengths do not shift the image boundary '+width);
   assert(layout.buttonRight<=layout.controlsLeft+1,'CTA remains left of counter and progress '+width+' '+JSON.stringify(layout));
   assert(Math.abs(layout.heroBottom-layout.buttonBottom-20)<2,'CTA bottom anchor stable '+width+' '+JSON.stringify(layout));
   assert(Math.abs(layout.heroBottom-layout.controlsBottom-20)<2,'Slider controls align with CTA bottom '+width);
