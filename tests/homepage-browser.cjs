@@ -61,10 +61,6 @@ for(const width of [320,390,700,701,1023,1024,1280])for(const promos of ['split,
  }
 
  assert.equal(await page.locator('.sf-section--hero [data-gallery-prev],.sf-section--hero [data-gallery-next]').count(),0,'Hero arrows are removed, not merely hidden');
- const label=page.locator('.sf-section--hero .sf-section-slide').first().locator('.sf-hero-eyebrow');
- assert.equal(await label.count(),1,'Optional label is rendered for the configured first hero');
- assert(await label.evaluate(el=>el.nextElementSibling.matches('h1,h2')),'Label precedes the headline');
- assert.equal(await page.locator('.sf-section--hero .sf-section-slide').nth(1).locator('.sf-hero-eyebrow').count(),0,'Empty label produces no spacer');
  assert(await page.locator('.sf-section--hero .sf-ui-button').first().evaluate(el=>el.getBoundingClientRect().height>=44),'Compact CTA retains a 44px hit area');
  const progress=page.locator('.sf-section--hero .sf-hero-progress > span');
  assert.equal(await progress.count(),await page.locator('.sf-section--hero .sf-section-slide').count(),'One progress segment per hero slide');

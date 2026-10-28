@@ -7,7 +7,7 @@
   },
   "changes": [
     "Vitrin yüksekliği 0.1.183’e göre %25 azaltıldı; görsel tüm alanı cover ile doldurmaya devam eder.",
-    "Başlık üstü isteğe bağlı etiket desteği ve kompakt 44px düğme eklendi. Etiket düzenleme alanı eşlik eden Codela 1.2.5 güncellemesini gerektirir.",
+    "Vitrin düğmesi kompakt hale getirildi; 44px dokunma hedefi korundu. Başlık üstü etiket kapsam dışı bırakıldı; eklenti güncellemesi gerekmez.",
     "Vitrin okları kaldırıldı; gerçek slayt sayısına bağlı 01 / 05 biçimi, native klavye ve kaydırma korunur. Ana sayfa skeleton çerçevesi yeni geometriyle eşleşir."
   ]
 }

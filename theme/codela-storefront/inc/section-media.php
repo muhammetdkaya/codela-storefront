@@ -48,9 +48,8 @@ function codela_sf_section_media( array $data, string $type ): string {
         $heading = $hero && 0 === $index && is_front_page() ? 'h1' : 'h2';
         $out .= '<article class="sf-section-slide' . ( $gallery ? ' sf-ui-gallery-slide' : '' ) . '" aria-label="' . esc_attr( ( $index + 1 ) . ' / ' . count( $items ) ) . '">';
         $out .= codela_sf_section_image( $item, $priority, ! $hero && in_array( $data['variant'], [ 'split', 'editorial' ], true ) ? '(max-width:700px) 100vw, 60vw' : '100vw' );
-        $eyebrow = $hero && is_string( $item['eyebrow'] ?? null ) ? trim( $item['eyebrow'] ) : '';
-        if ( $eyebrow !== '' || $item['title'] || $item['subtitle'] || $item['button_label'] && $item['button_url'] ) {
-            $out .= '<div class="sf-section-copy">' . ( $eyebrow !== '' ? '<span class="sf-hero-eyebrow">' . esc_html( $eyebrow ) . '</span>' : '' ) . ( $item['title'] ? '<' . $heading . '>' . esc_html( $item['title'] ) . '</' . $heading . '>' : '' );
+        if ( $item['title'] || $item['subtitle'] || $item['button_label'] && $item['button_url'] ) {
+            $out .= '<div class="sf-section-copy">' . ( $item['title'] ? '<' . $heading . '>' . esc_html( $item['title'] ) . '</' . $heading . '>' : '' );
             if ( $item['subtitle'] ) { $out .= '<p>' . esc_html( $item['subtitle'] ) . '</p>'; }
             if ( $item['button_label'] && $item['button_url'] ) { $out .= $hero ? codela_sf_ui_button( $item['button_label'], [ 'href' => $item['button_url'], 'variant' => 'secondary', 'icon' => 'arrow-right' ] ) : codela_sf_ui_primary_link( $item['button_url'], $item['button_label'] ); }
             $out .= '</div>';

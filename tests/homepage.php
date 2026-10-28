@@ -15,7 +15,7 @@ function expect($ok,$msg){if(!$ok)throw new RuntimeException($msg);}
 function item($title='Sade yaşam',$image=10){return ['id'=>'item-'.$image,'enabled'=>true,'term_id'=>7,'image_id'=>$image,'mobile_image_id'=>11,'title'=>$title,'subtitle'=>'Doğal dokular ve zamansız koleksiyonlar.','button_label'=>'Keşfet','button_url'=>'/shop/','focal_x'=>50,'focal_y'=>50];}
 function data($type,$variant,$items=[]){return ['id'=>'section-'.$type.'-'.$variant,'enabled'=>true,'variant'=>$variant,'title'=>$type==='hero'?'':'Kategorileri keşfet','description'=>'','items'=>$items,'source'=>'new','category_id'=>7,'limit'=>4,'show_all'=>true];}
 $html='<div class="codela-page-layout">';
-$html.=codela_sf_render_section(null,'hero',data('hero','showcase',[array_merge(item(),['eyebrow'=>'Kadın girişimci • El yapımı']),item('Işığı keşfet',12)]));
+$html.=codela_sf_render_section(null,'hero',data('hero','showcase',[item(),item('Işığı keşfet',12)]));
 foreach(['compact','editorial','bands','mosaic','carousel','grid'] as $variant){
     $items=[item('Aydınlatma'),item('Objeler',12),item('Ev tekstili')];
     if($variant==='bands'){$items[]=item('Dekorasyon');$items[]=item('Yeni koleksiyonlar');}
@@ -25,16 +25,8 @@ foreach(explode(',',getenv('PROMO_VARIANTS')?:'split,inset') as $variant){$html.
 $row=data('products','grid');$html.=codela_sf_render_section(null,'products',$row);$html.='</div>';
 expect(substr_count($html,'fetchpriority="high"')===1,'Only the first hero receives high priority');
 preg_match('/<section class="sf-section sf-section--hero[\\s\\S]*?<\\/section>/', $html, $hero_markup);
-expect(str_contains($hero_markup[0],'<span class="sf-hero-eyebrow">Kadın girişimci • El yapımı</span><h1>'),'Optional hero label precedes title');
-expect(substr_count($hero_markup[0],'sf-hero-eyebrow')===1,'Missing label creates no empty element or spacing');
 expect(!str_contains($hero_markup[0],'data-gallery-prev')&&!str_contains($hero_markup[0],'data-gallery-next'),'Hero removes arrows, not just their icons');
 expect(str_contains($hero_markup[0],'01 / 02'),'Hero counter is padded and uses actual valid slide total');
-$label_only = array_merge(item(''), ['eyebrow'=>'<script>alert(1)</script>', 'subtitle'=>'', 'button_label'=>'']);
-$escaped_label=codela_sf_section_media(data('hero','showcase',[$label_only]),'hero');
-expect(str_contains($escaped_label,'&lt;script&gt;')&&!str_contains($escaped_label,'<script>'),'Label is escaped, never executable markup');
-expect(!str_contains(codela_sf_section_media(data('promo','split',[$label_only]),'promo'),'sf-hero-eyebrow'),'Label does not leak into other section types');
-expect(!str_contains(codela_sf_section_media(data('hero','showcase',[array_merge($label_only,['eyebrow'=>'   '])]),'hero'),'sf-section-copy'),'Whitespace-only label creates no copy container');
-expect(str_contains(codela_sf_section_media(data('hero','showcase',[array_merge($label_only,['eyebrow'=>'0'])]),'hero'),'>0</span>'),'Zero is a valid plain-text label');
 expect(str_contains(codela_sf_section_controls(5,true),'01 / 05'),'Five slides use 01 / 05');
 expect(str_contains(codela_sf_section_controls(12,true),'01 / 12'),'Two digit totals are not truncated');
 expect(str_contains(codela_sf_section_controls(2,false),'data-gallery-next'),'Other galleries keep their controls');

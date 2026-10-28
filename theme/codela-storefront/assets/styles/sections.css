@@ -34,7 +34,6 @@
 .sf-section--hero .sf-section-copy p{font-size:14px;line-height:1.5;max-width:42ch;-webkit-line-clamp:2}
 .sf-section--hero .sf-section-copy .sf-ui-button{margin-top:6px;max-width:calc(100% - 92px);min-height:44px;--sf-ui-button-height:44px;--sf-ui-button-padding-y:8px;--sf-ui-button-padding-x:14px;--sf-ui-button-font-size:13px;--sf-ui-control-radius:var(--sf-ui-pill)}
 .sf-section--hero .sf-ui-button-label{min-width:0;overflow-wrap:anywhere}
-.sf-section--hero .sf-hero-eyebrow{display:block;max-width:100%;font-size:12px;font-weight:600;line-height:1.4;letter-spacing:.08em;overflow-wrap:anywhere}
 .sf-section--hero>.sf-section-gallery-controls{
  right:clamp(24px,5vw,80px);bottom:24px;display:grid;grid-template-columns:1fr;min-width:72px;
  gap:4px 8px;color:#fff;background:none;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;border:0;padding:0;

@@ -43,7 +43,7 @@ jobs:
         run: |
           curl --fail --location --retry 1 --max-time 30 'https://azseramik.com/wp-content/uploads/2026/10/AZ-Seramik-Kadin-Girisimci-Slider-v4-1024x466.webp' -o /tmp/showcase-az.webp
           echo 'SHOWCASE_REAL_IMAGE=/tmp/showcase-az.webp' >> "$GITHUB_ENV"
-      - name: Background coverage, shorter frame, counter, label and skeleton acceptance
+      - name: Background coverage, shorter frame, counter and skeleton acceptance
         env:
           SHOWCASE_INLINE_VISUALS: '1'
           TEST_WEBKIT: ${{ matrix.browser == 'webkit' && '1' || '' }}
