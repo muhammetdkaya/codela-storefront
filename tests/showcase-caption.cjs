@@ -1,0 +1,26 @@
+// Adapter/observer contract only. This is not browser geometry acceptance.
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const source=fs.readFileSync('theme/codela-storefront/assets/scripts/gallery-horizontal.js','utf8');
+const values=new Map(),observed=[],observers=[];
+let mobile=true,bottom=82,frame=0;const queue=[];
+const flush=()=>{while(queue.length)queue.shift()()};
+const resized=()=>{observers[0]();flush()};
+const child=height=>({height,getBoundingClientRect(){return{height:this.height}},style:{display:'block'}});
+const copies=[{children:[child(64),child(42),child(48)]},{children:[child(64),child(48)]}];
+const items=copies.map((copy,i)=>({querySelector:s=>s==='.sf-section-copy'?copy:null,getBoundingClientRect:()=>({left:i*390}),dispatchEvent(){}}));
+const track={children:items,getBoundingClientRect:()=>({left:0}),addEventListener(){}};
+const previous={addEventListener(){}},next={addEventListener(){}},count={};
+const controls={querySelector:s=>s==='[data-gallery-prev]'?previous:s==='[data-gallery-next]'?next:count,querySelectorAll:()=>[]};
+const gallery={dataset:{},classList:{contains:s=>s==='sf-section--hero'},querySelector:s=>s==='.sf-ui-gallery-track'?track:controls,style:{setProperty:(k,v)=>values.set(k,v),removeProperty:k=>values.delete(k)}};
+const context={document:{querySelectorAll:()=>[gallery]},window:{addEventListener(){}},matchMedia:()=>({matches:mobile}),getComputedStyle:el=>copies.includes(el)?{paddingTop:'18px',paddingBottom:bottom+'px',rowGap:'8px'}:{display:'block'},ResizeObserver:class{constructor(fn){observers.push(fn)}observe(el){observed.push(el)}},Event:class{},requestAnimationFrame(fn){queue.push(fn);return ++frame}};
+vm.runInNewContext(source,context);
+assert.equal(values.get('--sf-hero-caption-height'),'270px','Tallest actual caption includes dock padding, child heights and gaps');
+assert(copies.every(copy=>observed.includes(copy)),'Padding-only geometry changes are observed on the caption itself');
+assert(copies.flatMap(copy=>copy.children).every(el=>observed.includes(el)),'Intrinsic text/button changes remain observed');
+assert.equal(count.textContent,'1 / 2');assert(previous.disabled&&!next.disabled);
+bottom=116;resized();assert.equal(values.get('--sf-hero-caption-height'),'304px','Safe-area padding updates without changing child heights');
+copies[1].children[1].height=150;resized();assert.equal(values.get('--sf-hero-caption-height'),'356px','Long CTA participates in the shared caption height');
+mobile=false;resized();assert(!values.has('--sf-hero-caption-height'),'Desktop removes mobile-only shared height');
+mobile=true;bottom=20;resized();assert.equal(values.get('--sf-hero-caption-height'),'260px','Return to mobile/no-dock clears the old reserve');
+vm.runInNewContext(source,context);assert.equal(observers.length,1,'Repeated adapter execution cannot duplicate ownership');
+console.log('Showcase caption: 10 adapter/observer assertions passed (no real browser layout).');

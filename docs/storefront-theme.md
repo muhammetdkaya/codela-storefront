@@ -1,5 +1,13 @@
 # Codela Storefront — güncel teknik durum
 
+## 28 Ekim 2026 — 0.1.182 Vitrin viewport adayı (tarayıcı CI bekliyor)
+
+Tema 0.1.181 → 0.1.182; eklenti, kayıtlı görseller/odak noktaları ve ürün skeleton değişmedi. Mobilde header fotoğrafın üstüne bindiği hâlde düşülen 68px ve masaüstündeki 86svh/900px üst sınırı kaldırıldı. Hero mevcut içerik genişliği ve dinamik viewport yüksekliğini kullanır; yalnız WordPress toolbar rezervi düşülür. Alt menü/güvenli alan caption içinde ayrılır. Çok kısa pencerede okunabilir minimum içerik ve sayfa kaydırma korunur. Caption ölçümü padding değişikliklerini de izler; güncellemeler rAF ile birleştirilir. Tek slayt/JS kapalı içerik CSS intrinsic minimumuyla korunur. Mevcut cover oran farkında kırpma yapar; ilk canlı yatay görsel için kayıtlı mobil kaynak yoktur, kırpmasız fotoğraf iddiası yok.
+
+Yerel doğrulama: PHP 8.5 WASM ile 25 PHP syntax, altı ilgili PHP suite; cart-race/cart-sync/search/format/UI-kit/Google/footer/dock; 10 caption observer assertion; 24 paket testi; JS syntax/CSS parse başarılı. Bunlar fiziksel cihaz veya tarayıcı geometrisi kabulü değildir. Chromium socket sandbox engeli, WebKit binary yokluğu ve cloud file-URL politikası nedeniyle yerel browser suite çalışmadı. İzole dalda yalnız Chromium/WebKit Vitrin ve homepage testlerini çalıştıran, deploy içermeyen CI hazırlandı; sonucu bekleniyor. Eski bağımsız WebKit galeri fixture hatası bu çalışmanın başarısı gibi gösterilmez.
+
+Durum: izole aday; main merge, Release/stable, FTP ve AZ kurulumu yapılmadı. Sıradaki: kesin aday SHA'nın odaklı CI geometri/etkileşim ekranlarını doğrula; parent incelemesi sonrası yalnız GitHub sürüm yayını. Canlı kurulum kullanıcı ekibinde.
+
 ## 28 Ekim 2026 — 0.1.179 Vitrin boş bant ve hizalama düzeltmesi
 
 Tema 0.1.178 → 0.1.179; eklenti ve ürün skeleton değişmedi. Kullanıcının gerçek Safari ekranlarında contain boş bantları, metne göre hareket eden görsel sınırı ve koyu oklar görüldü. Görseller kayıtlı odak noktasıyla cover kullanır; bu nedenle farklı oranlar gerektiğinde kırpılır. Mobilde yatay görsel çerçevesi, tüm slaytlarda sabit caption alanı ve iki satır başlık rezervi kullanılır. Oklar beyaz; disabled opacity ortak UI Kit'ten gelir. Yeni slider/controller yok.

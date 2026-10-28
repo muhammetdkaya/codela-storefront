@@ -44,7 +44,7 @@ for(const width of [320,390,700,701,1023,1024,1280])for(const promos of ['split,
      buttonRight:button.right,buttonBottom:button.bottom,controlsLeft:controls.left,
      controlsBottom:controls.bottom,heroBottom:hero.bottom,headlineTop:headline.top,captionTop:caption.top,seams};
   });
-  assert(Math.abs(layout.heroHeight-Math.max(560,844-68))<2,'Mobile Vitrin fills viewport below header '+width+' '+JSON.stringify(layout));
+  assert(Math.abs(layout.heroHeight-844)<2,'Mobile Vitrin fills viewport behind overlay header '+width+' '+JSON.stringify(layout));
   assert(layout.imageHeight>460,'Mobile image uses remaining vertical height, not a landscape banner slot '+width);
   assert(layout.captionHeight<240,'Mobile caption is sized to rendered copy instead of a hard 248px minimum '+width+' '+JSON.stringify(layout));
   assert(layout.seams.every(s=>Math.abs(s.titleGap-18)<1),'Mobile caption starts immediately below image with 18px padding '+width+' '+JSON.stringify(layout.seams));

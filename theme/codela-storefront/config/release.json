@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mobil Vitrin başlığının üstündeki gereksiz boşluk kaldırıldı; açıklama bandı gerçek metin ve buton yüksekliğine uyarlanır.",
-    "Farklı uzunluktaki slaytlarda görsel sınırı korunur; buton ve sayaç aynı alt çizgide kalır, ilk kategori başlığı alt menünün arkasına girmez.",
-    "Görsel kaplama/odak noktası, yatay kaydırma ve ürün skeleton davranışı korunur."
+    "Vitrin slider mobil ve masaüstünde görünür ekran yüksekliğini ve tam içerik genişliğini kullanır; üstteki sabit header ikinci kez düşülmez.",
+    "Mobil CTA ve slider kontrolleri mevcut alt menü ile güvenli alanın üstünde kalır; çok kısa pencerelerde içerik kırpılmadan sayfa kaydırılabilir.",
+    "Mevcut mobil/masaüstü görsel kaynakları, odak noktası ve cover davranışı korunur; yeni görsel, ayar veya slider motoru eklenmez."
   ]
 }
