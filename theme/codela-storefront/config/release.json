@@ -7,7 +7,7 @@
   },
   "changes": [
     "Mobil Vitrin başlığının üstündeki gereksiz boşluk kaldırıldı; açıklama bandı gerçek metin ve buton yüksekliğine uyarlanır.",
-    "Farklı uzunluktaki slayt başlıkları/açıklamaları için görsel sınırı eşit tutulur; buton ve sayaç aynı alt çizgiye sabitlenir.",
+    "Farklı uzunluktaki slaytlarda görsel sınırı korunur; buton ve sayaç aynı alt çizgide kalır, ilk kategori başlığı alt menünün arkasına girmez.",
     "Görsel kaplama/odak noktası, yatay kaydırma ve ürün skeleton davranışı korunur."
   ]
 }
