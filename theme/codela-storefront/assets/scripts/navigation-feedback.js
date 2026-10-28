@@ -174,14 +174,14 @@
         // upwards, while setting a second viewport top/height clipped the fake
         // purchase area behind the browser chrome. Use the SAME fixed anchoring
         // as the real product sheet/dock; observe viewport changes only to size
-        // the gallery up to the actual rendered bottom surface.
+        // non-product content up to the actual rendered dock. Product photos
+        // use the native stable large-viewport frame and overlap the sheet.
         const viewport = window.visualViewport;
         let viewportFrame = 0;
         const fitViewport = () => {
             viewportFrame = 0;
             if (pending !== state) return;
-            const preview = surface.querySelector('.sf-navigation-preview');
-            const bottom = type === 'product' ? preview : dock;
+            const bottom = type === 'product' ? null : dock;
             if (matchMedia('(max-width:700px)').matches && bottom && bottom.getClientRects().length) {
                 const top = surface.getBoundingClientRect().top;
                 surface.style.setProperty('--sf-feedback-gallery-height', Math.max(0, bottom.getBoundingClientRect().top - top) + 'px');

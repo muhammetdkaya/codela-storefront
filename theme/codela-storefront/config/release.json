@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mobil ürün geçişinde alttaki önizleme gerçek ürün paneliyle aynı yükseklik, tutamaç ve satın alma düzenini kullanır.",
-    "Ana sayfaya dönüşte normal alt menü Safari tarayıcı çubuğuna göre iki kez yukarı kaydırılmaz.",
-    "Geçiş katmanı tarayıcının kendi sabit ekran koordinatlarını kullanır; eski ürün verileri ve formlar yeni ekrana taşınmaz."
+    "Ana sayfa slider: altta okunaklı metin alanı, ortak kapsül buton ve kaydırmayla eşleşen ilerleme çizgileri.",
+    "Ürün skeleton fotoğrafı, alt paneli ve satın alma kontrolleri gerçek ürün sayfasının ölçüleriyle hizalandı.",
+    "Dar mobil ekranda satın alma butonunun metni tek satırda kalır; gerçek panel ve skeleton aynı ölçüleri kullanır."
   ]
 }

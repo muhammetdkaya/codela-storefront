@@ -1,8 +1,7 @@
 // Exercise the real overlay controller with the real mobile product composition.
 const fs=require('node:fs'),assert=require('node:assert/strict'),{execFileSync}=require('node:child_process');
 const {chromium,webkit}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
-const fixtureSource=fs.readFileSync('tests/product-sheet-browser.cjs','utf8').split('(async()=>{const browser=')[0];
-const {fixture,load}=new Function('require',fixtureSource+'\nreturn {fixture,load};')(require);
+const {fixture,load}=require('./product-sheet-browser.cjs');
 const header=execFileSync(process.env.PHP_BIN||'php',['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_PRODUCT:'1'}});
 const overlay=fs.readFileSync('theme/codela-storefront/assets/scripts/overlay-controller.js','utf8').replace('export function','function');
 (async()=>{const browser=await(process.env.TEST_WEBKIT?webkit:chromium).launch(process.env.CHROMIUM_BIN?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-dev-shm-usage']}:{});try{

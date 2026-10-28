@@ -23,33 +23,34 @@ html[data-sf-navigation-pending] .sf-shell > .sf-mobile-dock .sf-dock-surface{tr
 @media(max-width:700px){
   html[data-sf-navigation-target="product"] .sf-skeleton{padding:0}
   html[data-sf-navigation-target="product"] .sf-navigation-preview{
-    display:block;position:absolute;inset:auto var(--sf-ui-bottom-bar-inset,16px) calc(var(--sf-ui-bottom-bar-gap,12px) + env(safe-area-inset-bottom,0px));
+    display:block;position:fixed;inset:auto var(--sf-ui-bottom-bar-inset,16px) calc(var(--sf-ui-product-panel-gap,12px) + env(safe-area-inset-bottom,0px));
     max-width:var(--sf-ui-bottom-bar-max-width,430px);margin:0 auto;padding:0;pointer-events:none;
   }
   /* Reproduce the real native collapsed Woo sheet, not an isolated CTA strip.
      Only the heading is intentionally blank until the destination HTML arrives. */
-  .sf-navigation-purchase{display:flex;flex-direction:column;min-height:144px;padding:0 0 8px;box-sizing:border-box;overflow:hidden}
-  .sf-navigation-purchase .sf-product-sheet-header{position:relative;flex:none;min-height:64px;padding:28px 16px 8px;box-sizing:border-box}
+  .sf-navigation-purchase{display:flex;flex-direction:column;padding:0;box-sizing:border-box;overflow:hidden}
+  .sf-navigation-purchase .sf-product-sheet-header{position:relative;flex:none;min-height:64px;margin-bottom:8px;padding:28px 16px 8px;box-sizing:border-box}
   .sf-navigation-purchase .sf-product-sheet-header::before{
     content:'';position:absolute;top:12px;left:calc(50% - 22px);width:44px;height:4px;
     background:var(--sf-ui-border);border-radius:var(--sf-ui-pill,999px);
   }
-  .sf-navigation-purchase .sf-product-sheet-heading{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,42%);align-items:center;gap:10px;min-height:28px}
+  .sf-navigation-purchase .sf-product-sheet-heading{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,42%);align-items:center;gap:10px;min-height:var(--sf-ui-product-heading-height)}
   .sf-navigation-heading-placeholder{height:15px;border-radius:5px;background:var(--sf-ui-skeleton,#dfe1e5);opacity:.7}
   .sf-navigation-heading-placeholder--title{width:75%}
   .sf-navigation-heading-placeholder--price{width:72%;justify-self:end}
-  .sf-navigation-controls{display:flex;align-items:center;gap:12px;padding:12px;min-height:72px;box-sizing:border-box}
+  .sf-navigation-controls{display:flex;align-items:center;gap:12px;padding:12px;min-height:var(--sf-ui-bottom-bar-height,58px);box-sizing:border-box}
   .sf-navigation-quantity{
-    display:flex;align-items:center;justify-content:space-around;flex:0 0 122px;min-width:0;min-height:48px;
+    display:flex;align-items:center;justify-content:space-around;flex:0 0 122px;min-width:0;min-height:46px;border:1px solid var(--sf-ui-glass-border);
     border-radius:var(--sf-ui-pill,999px);background:var(--sf-ui-glass-surface,#f7f7f9);
     box-shadow:var(--sf-ui-glass-shadow);
   }
   .sf-navigation-purchase .sf-ui-button{
     flex:0 1 200px;width:auto;min-width:0;margin-inline-start:auto;
-    --sf-ui-button-height:var(--sf-ui-bottom-bar-control-height,48px);
-    --sf-ui-button-padding-y:8px;--sf-ui-control-radius:var(--sf-ui-pill);cursor:default;
+    --sf-ui-button-height:44px;
+    --sf-ui-button-font-size:14px;
+    --sf-ui-button-padding-y:8px;--sf-ui-button-padding-x:var(--sf-ui-product-button-padding-x);--sf-ui-control-radius:var(--sf-ui-pill);cursor:default;
   }
-  html[data-sf-navigation-target="product"] .sf-skeleton-gallery{position:absolute;inset:0;width:100%;height:var(--sf-feedback-gallery-height,100%);border-radius:0}
+  html[data-sf-navigation-target="product"] .sf-skeleton-gallery{position:absolute;inset:0;width:100%;height:calc(var(--sf-product-viewport-large,100lvh) - var(--sf-ui-product-photo-inset,116px) - env(safe-area-inset-bottom,0px));border-radius:0}
   html[data-sf-navigation-pending]:not([data-sf-navigation-target="product"]) .sf-skeleton-layout{max-height:max(0px,calc(var(--sf-feedback-gallery-height,100dvh) - 100px - var(--sf-header-offset,0px)));overflow:hidden}
   html[data-sf-navigation-bottom="product"] .sf-shell .sf-header .sf-actions{display:flex!important}
   html[data-sf-navigation-bottom="product"] .sf-shell .sf-header .sf-actions > :not(.sf-cart-trigger){display:none!important}

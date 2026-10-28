@@ -1,5 +1,10 @@
 # Codela Storefront UI Kit — source of truth
 
+
+## Product feedback geometry — 28 October 2026 candidate
+
+The product preview uses native fixed anchoring and the shared product-panel gap, independent of the outgoing body's dock gap. The pulsing photo uses the same stable large-viewport frame/inset as native product photos and extends behind the glass sheet. Native first-paint/mounted heading and preview reserve the same two-line minimum; optional destination urgency, sale/stock/variation rows remain native and content-driven. Never copy outgoing product data to estimate them. Browser regressions compare all four coordinates of the real PHP/adapter photo, panel, quantity and CTA at 320–700px, short/long titles and normal/product sources. Physical Safari acceptance remains separate. Supersedes historical gallery-ending-at-panel and absolute-preview instructions below.
+
 ## Destination bottom chrome — 0.1.174 (current)
 
 The destination determines the loading bottom surface. Home/catalog/account/page show the existing normal dock; product shows a static, inert quantity/Add to cart preview using the shared PHP Button and panel material. Only content/gallery shapes pulse. The preview has no price, product identity, form or commerce handler; the incoming native Woo document owns actual availability and purchase data. Never retain the outgoing product panel for a normal destination. Never keep the normal dock for a product destination. Cancel/timeout/pageshow restore the original dock and native form; configured dock absence is respected. This supersedes the retained-current-bottom behavior of 0.1.173 below. Native products and desktop composition remain document-owned.

@@ -45,8 +45,9 @@ const css=['tokens','components','navigation','navigation-feedback'].map(name=>f
    assert.equal(boxes.top,0,'Browser native fixed top, independent of visualViewport.offsetTop');
    assert.equal(boxes.bottom,height,'Browser native bottom, no double compensation');
    assert.equal(boxes.galleryTop,0);
-   assert(Math.abs(boxes.galleryBottom-boxes.panelTop)<2,'Gallery meets full product sheet');
-   assert(boxes.panelHeight>=144,'Destination includes native sheet header and controls');
+   assert(Math.abs(boxes.galleryBottom-(height-116))<2,'Gallery uses native photo frame, not panel top');
+   assert(boxes.galleryBottom>boxes.panelTop,'Photo continues behind glass panel');
+   assert(boxes.panelHeight>=150,'Destination includes native sheet header and controls');
    assert(boxes.panelBottom<=height&&boxes.panelTop>=0,'Whole purchase panel visible above bottom chrome');
    assert.equal(boxes.manualTop,'');assert.equal(boxes.manualHeight,'');assert.equal(boxes.manualDock,'');
    if(height===650){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:'qa/storefront-ui-kit-skeleton-visible-viewport.png'});}

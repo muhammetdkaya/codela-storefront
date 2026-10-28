@@ -297,6 +297,7 @@ body.single-product .woocommerce-product-gallery a:focus-visible{
 /* The visitor counter is gallery-frame metadata, like the native 1/N
    index, not a floating CTA or part of the scrolling first photo. */
 body.single-product .sf-product-visitor{
+  display:flex;align-items:center;
   position:absolute;z-index:4;inset-inline-start:72px;bottom:20px;
   max-width:calc(100% - 92px);margin:0!important;pointer-events:none;
 }
@@ -535,10 +536,10 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
      urgency adds its existing 24px row. Never resize a photograph after a
      script measures/reparents the purchase sheet. */
   html:is(.sf-product-sheet-pending,:has(body.sf-product-sheet-ready)){
-    --sf-product-photo-inset:116px;
+    --sf-product-photo-inset:var(--sf-ui-product-photo-inset);
   }
   html:is(.sf-product-sheet-pending,:has(body.sf-product-sheet-ready)):has(div.product .cdl-ub){
-    --sf-product-photo-inset:140px;
+    --sf-product-photo-inset:var(--sf-ui-product-photo-urgency-inset);
   }
   /* Photo presentation is identical before and after the adapter moves the
      existing Woo nodes. Pending is strictly a visibility state, not a second
@@ -594,7 +595,7 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
     /* Intrinsic first-paint height: the exact same heading, native cart footer
        and spacing as the mounted sheet. Do not hard-code a height measured from
        a test product with extra price/urgency lines. */
-    grid-template-rows:minmax(28px,max-content);grid-auto-rows:max-content;align-content:start;align-items:center;
+    grid-template-rows:minmax(var(--sf-ui-product-heading-height),max-content);grid-auto-rows:max-content;align-content:start;align-items:center;
     column-gap:10px;row-gap:0;overflow:hidden;box-sizing:border-box;
     padding:28px 16px 0;margin:0 auto!important;width:calc(100% - var(--sf-ui-bottom-bar-inset) - var(--sf-ui-bottom-bar-inset))!important;max-width:var(--sf-ui-bottom-bar-max-width);
     height:max-content;
@@ -638,7 +639,7 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
     width:32px;min-width:0;min-height:44px;padding:0;appearance:textfield;-moz-appearance:textfield;text-align:center;
   }
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary form.cart .sf-product-purchase .single_add_to_cart_button{
-    flex:0 1 200px;margin-inline-start:auto;--sf-ui-button-height:44px;--sf-ui-button-padding-y:8px;
+    flex:0 1 200px;margin-inline-start:auto;--sf-ui-button-height:44px;--sf-ui-button-padding-y:8px;--sf-ui-button-padding-x:var(--sf-ui-product-button-padding-x);
   }
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary > .stock{grid-column:1/-1;grid-row:2;margin:0}
   /* The real native price and Codela urgency share one semantic grid in the
@@ -647,6 +648,7 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
      product title down. No additional display-only labels are generated. */
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary,
   body.single-product.sf-product-sheet-ready div.product .sf-product-sheet-heading{
+    grid-template-rows:minmax(var(--sf-ui-product-heading-height),max-content);
     grid-template-columns:minmax(0,1fr) minmax(0,42%);
   }
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary > .sf-product-price-row,
@@ -771,7 +773,7 @@ body.single-product div.product .sf-product-quantity .sf-product-quantity-step[d
   body.single-product.sf-product-sheet-ready div.product .sf-product-quantity input.qty::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
   body.sf-product-sheet-ready div.product form.cart .sf-product-purchase{gap:12px}
   body.single-product.sf-product-sheet-ready div.product form.cart .sf-product-purchase .single_add_to_cart_button{
-    flex:0 1 200px;margin-inline-start:auto;--sf-ui-button-height:44px;--sf-ui-button-padding-y:8px;
+    flex:0 1 200px;margin-inline-start:auto;--sf-ui-button-height:44px;--sf-ui-button-padding-y:8px;--sf-ui-button-padding-x:var(--sf-ui-product-button-padding-x);
   }
 }
 
@@ -803,7 +805,7 @@ body.single-product div.product .sf-product-quantity .sf-product-quantity-step[d
 }
 
 /* Product purchase and its overlay navigation share a little more browser clearance. */
-@media(max-width:700px){body.single-product{--sf-ui-bottom-bar-gap:12px}}
+@media(max-width:700px){body.single-product{--sf-ui-bottom-bar-gap:var(--sf-ui-product-panel-gap)}}
 
 /* Fixing the body must not let root snap choose a new product/discovery target. */
 html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:none}

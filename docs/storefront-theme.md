@@ -1,5 +1,16 @@
 # Codela Storefront — güncel teknik durum
 
+## 28 Ekim 2026 — 0.1.177 birleşik slider ve ürün skeleton yayını
+
+Tema 0.1.176 → 0.1.177; eklenti değişmedi. Kullanıcı slider ve PR #82 skeleton çalışmalarını birleştirip canlıya alma yetkisi verdi. Ana sayfa kampanya slider'ı korunarak ürün hedefindeki fotoğraf/sheet/quantity/CTA koordinatları gerçek ürünle hizalandı. Ortak fotoğraf inset, iki satırlık başlık rezervi ve 12px panel alt boşluğu kullanılır. Skeleton eski ürün verisi/formu taşımaz. Dar mobil CTA yatay iç boşluğu ortak token ile 16px oldu; 320px'te metin tek satır ve 44px hedef korunur. Galeri ziyaretçi host'u flex olarak native sayaçla aynı satır yüksekliğini kullanır.
+
+PR #82'nin fixture export'u eski product-menu eval tüketicisini bozuyordu; tüketici doğrudan export edilen fixture/load'u kullanır. Kompakt panel testi, onaylanan iki satırlık başlık rezervine uygun 200px sınırını kontrol eder; diğer geometri/ilk kare/native form/girdi testleri korunur.
+
+Doğrulama: PHP lint, homepage/front-page-source/sections-preview/navigation/document-continuity/mobile-media ve 24 paket testi geçti. Chromium skeleton gerçek PHP/adapter geometri matrisi, viewport, hedef alt alan, shell ve gerçek HTTP continuity geçti. Birleşik tam ürün ve ana sayfa regresyonları ile CI/yayın sonuçları takip kaydında tamamlanacak. Fiziksel Safari ve AZ Seramik kurulumu henüz doğrulanmadı.
+
+Yayın: kullanıcı yetkisiyle birleşik kaynak ve bağımsız codela.dev dağıtımı/kararlı güncelleme paketi hazırlanır. Sonraki: kesin kaynak SHA'nın CI/FTPS sonucunu doğrula; Release/stable source/hash eşitliğini ve public tema dosyalarını kontrol et. AZ Seramik'e kurulum sonucu ayrıca belirtilmelidir.
+
+
 ## 28 Ekim 2026 — 0.1.176 ana sayfa kampanya slider’ı
 
 Tema 0.1.175 → 0.1.176; eklenti değişmedi. Kullanıcının onayladığı referansın kompozisyonuyla açık üst fotoğraf, koyulaşan alt metin alanı, ortak sans-serif/Button ve alt sağ sayaç/oklar kullanılır. Ürün paneli/thumbnail kopyalanmaz. Hero başlığı üç, alt metin iki satıra kadar; uzun metinde CTA ve kontrol alanı ayrılır. Her gerçek slayt için dekoratif ilerleme segmenti, mevcut native yatay adapter ile swipe/ok/klavye değişiminde eşitlenir. Yeni slider motoru, otomatik oynatma, istek veya görsel bağımlılığı yok. Kayıtlı görseller, odak noktası, mobil kaynak ve düzenlenebilir metinler korunur; referans fotoğraf mağazaya eklenmedi.
