@@ -1,5 +1,16 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 28 Ekim 2026 — 0.1.179 Vitrin boş bant ve hizalama düzeltmesi
+
+Tema 0.1.178 → 0.1.179; eklenti ve ürün skeleton değişmedi. Kullanıcının gerçek Safari ekranlarında contain boş bantları, metne göre hareket eden görsel sınırı ve koyu oklar görüldü. Görseller kayıtlı odak noktasıyla cover kullanır; bu nedenle farklı oranlar gerektiğinde kırpılır. Mobilde yatay görsel çerçevesi, tüm slaytlarda sabit caption alanı ve iki satır başlık rezervi kullanılır. Oklar beyaz; disabled opacity ortak UI Kit'ten gelir. Yeni slider/controller yok.
+
+Doğrulama: Chromium 320/390/700/701/1023/1024/1280 × iki promo varyantı; slaytlar arasında eşit görsel yüksekliği, bitişik görsel/caption, uzun metinde kontrol alanı, beyaz kontrol rengi, swipe/klavye ve mevcut ana sayfa regresyonları geçti. 24 paket testi başarılı. Gerçek AZ HTML/banner ve yerel üretim CSS/ikonlarıyla izole 390px görsel kontrol yapıldı; canlı kurulum/fiziksel Safari kabulü değildir. WebKit bu düzeltmede çalıştırılmadı.
+
+Yayın hazırlığı: önceki yeni sürüm yetkisi kapsamında 179 kararlı paket hazırlanıyor; FTP/AZ kurulum işlemi yapılmadı. Sonraki: kaynak SHA, Release ve stable manifest/hash sonucunu doğrula ve bu kayda ekle. Kullanıcı güncellemesinden sonra gerçek cihaz kabulü gerekir.
+
+
+
+
 ## 28 Ekim 2026 — 0.1.178 gerçek Vitrin kompozisyonu
 
 Yayın tamamlandı: [kaynak 8ad691f](https://github.com/muhammetdkaya/codela-storefront/commit/8ad691f0682912bcc51dbc5879fcb6003913b0ae), [kararlı yayın koşusu 40654536964](https://github.com/muhammetdkaya/codela-storefront/actions/runs/40654536964) başarılı; [v0.1.178](https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.178) public. Stable manifest source/sürüm/hash ile yerel deterministik ZIP eşleşir: SHA256 8ffa0a1cae27a693b8a18f35fbc5e56d7d8ef55d388be63aa449217d3223b1df. Yayın PHP/JS/paket kontrolleri başarılı. 178 için FTP dağıtımı yapılmadı; önceki 177 dağıtımında sunucu TLS/authentication error_temp hatası dosya yazılmadan oluşmuştu. AZ Seramik kullanıcı Codela → Tema üzerinden 178'i kurduktan sonra gerçek Safari kadrajı ve Vitrin alanını doğrulamalı; 177'nin eski görünümü 178 görsel kabulü sayılmaz.

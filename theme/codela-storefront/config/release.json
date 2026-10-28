@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Vitrin slider gerçek iki bölüme ayrıldı: üstte tam görünen görsel, altta koyu başlık ve açık kapsül buton alanı.",
-    "Geniş banner mobilde büyük bir parçaya kırpılmaz; görsel içindeki ürünler ve yazılar birlikte görünür.",
-    "Kaydırma, oklar, sayaç ve ilerleme çizgileri korunur; ürün skeleton hizalama düzeltmeleri bu sürüme dahildir."
+    "Vitrin görsellerindeki boş bantlar kaldırıldı; yatay ve dikey fotoğraflar kayıtlı odak noktasıyla alanı doldurur.",
+    "Slaytlar arasında görsel/metin sınırı ve başlık rezervi sabitlendi; koyu zemindeki oklar beyaz oldu.",
+    "Ürün skeleton ve mevcut kaydırma davranışı korunur."
   ]
 }
