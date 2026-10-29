@@ -13,7 +13,7 @@ function codela_sf_menu( bool $desktop = false ): string {
     return (string) wp_nav_menu( [ 'menu_id' => $desktop ? 'sf-desktop-menu' : 'sf-panel-menu', 'walker' => $desktop ? new Codela_SF_Menu_Walker() : null, 'theme_location' => 'primary', 'echo' => false, 'container' => false, 'menu_class' => $desktop ? 'sf-desktop-menu' : 'sf-menu-list', 'fallback_cb' => false, 'depth' => 0 ] );
 }
 
-/** Contextual title reuses the brand surface; commerce keeps its logo. */
+/** Contextual titles and return controls reuse the shared brand surface. */
 function codela_sf_header_context(): array {
     $account = function_exists( 'is_account_page' ) && is_account_page();
     if ( $account && is_user_logged_in() ) {
@@ -32,6 +32,17 @@ function codela_sf_header_context(): array {
             }
         }
         return [ 'title' => $label, 'back' => $back, 'history' => false ];
+    }
+    // Catalog archives are top-level destinations in the shared header.
+    if ( function_exists( 'is_shop' ) && is_shop() ) {
+        $shop_id = function_exists( 'wc_get_page_id' ) ? (int) wc_get_page_id( 'shop' ) : 0;
+        $title = $shop_id > 0 ? get_the_title( $shop_id ) : '';
+        return [ 'title' => $title ?: __( 'Shop', 'woocommerce' ), 'back' => '', 'history' => false ];
+    }
+    if ( ( function_exists( 'is_product_category' ) && is_product_category() ) || ( function_exists( 'is_product_tag' ) && is_product_tag() ) ) {
+        $term = get_queried_object();
+        $title = is_object( $term ) && isset( $term->name ) ? (string) $term->name : '';
+        return [ 'title' => $title ?: __( 'Shop', 'woocommerce' ), 'back' => '', 'history' => false ];
     }
     if ( function_exists( 'is_product' ) && is_product() ) {
         return [ 'title' => get_the_title( get_queried_object_id() ), 'back' => wc_get_page_permalink( 'shop' ), 'history' => true, 'root' => false ];

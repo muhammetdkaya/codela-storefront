@@ -1,5 +1,11 @@
 # Codela Storefront — güncel teknik durum
 
+## 29 Ekim 2026 — 0.1.189 mağaza başlığı ve ürün geri dönüşü adayı
+
+Tema 0.1.188 → 0.1.189; eklenti değişmedi. Mağaza ve ürün kategori/etiket arşivleri header alanında gerçek başlıklarını sunar. Ürün ve içerik geri hedefi, aynı sekmede son tıklanan hedefle eşleşen kısa ömürlü geçiş kaydı sayesinde referrer kısıtlı olsa da kaynak URL ve filtreyi korur. Doğrudan giriş için mağaza/blog fallback, menüden açılan ana sayfada başlık, hesap üst sayfaları ve ödeme/mutasyon dışlamaları korunur; düz permalink dışlamalarında sorgu dikkate alınır. Üründen ilişkili ürüne gidip geri dönerken önceki ürünün kendi hedefi korunur.
+
+Yerel PHP/JS ve 24 paket kontrolü başarılı. Gerçek PHP header ve gerçek link navigasyonu için 320/390/1280 ile no-referrer/origin/normal testleri; 0.1.188 negatif regresyon, mobil panel, hesap ve Chromium/WebKit kontrolü CI bekliyor. Gerçek fiziksel Safari veya mağaza kurulumu henüz doğrulanmadı. Kullanıcının onayıyla GitHub-only kararlı yayın hedeflenir; sürüm/paket sonucu doğrulanınca güncelle.
+
 ## 29 Ekim 2026 — 0.1.188 bağlamsal başlık ve masaüstü ürün skeleton adayı
 
 Tema 0.1.187 → 0.1.188; eklenti değişmedi. Menüden açılan ana sayfalarda isim, içerikten geçişle açılan sayfalarda yalnız geri ikonu kullanılır. Ürün ve blog yazısının güvenli mağaza/blog fallback hedefi vardır. Hesap endpointleri kendi üst sayfasına döner. URL hedefiyle eşleşen ve aynı kaynaklı kayıt filtreleri korur; dış kaynak, checkout ve tehlikeli parametreler geri hedefi olmaz. Desktop ürün skeleton gerçek iki sütunlu ürün yerleşimini izler. Mobil üründe mevcut panel korunur.

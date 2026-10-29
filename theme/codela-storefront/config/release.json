@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Vitrin başlık/düğme/sayaç grubu aşağı hizalandı: normal mobil görünümde gereksiz dock rezervi kaldırılarak alt boşluk 82px yerine 20px oldu.",
-    "Çok kısa pencerelerde yalnız gerçek dock çakışması kadar koruma bırakılır; ana sayfa skeleton aynı alt hizalamayı kullanır.",
-    "0.1.184 yüksekliği, tam cover, odak noktaları, kompakt 44px düğme ve 01 / 05 sayaç korunur. Etiket/eklenti değişikliği yok."
+    "Mağaza, ürün kategorisi ve ürün etiketi adları mobil ve masaüstünde header alanında gösterilir.",
+    "Ürün sayfasındaki geri oku ana sayfa veya filtreli kategori gibi gelinen sayfaya döner; doğrudan ürün bağlantılarında mağaza hedefi korunur.",
+    "Yenileme, yönlendirme ve referrer bilgisi kısıtlı tarayıcı geçişleri desteklenir."
   ]
 }

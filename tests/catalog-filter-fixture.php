@@ -4,10 +4,13 @@ class WP_Term {
     public $term_id = 7;
     public $taxonomy = 'product_cat';
     public $name = 'Bags & more';
+    public function __construct(){ $this->name = getenv('FIXTURE_CATEGORY_TITLE') ?: 'Bags & more'; }
     public $count = 3;
 }
 function is_shop() { return getenv('FIXTURE_CATALOG') === 'shop'; }
-function is_product_taxonomy() { return getenv('FIXTURE_CATALOG') === 'category'; }
+function is_product_taxonomy() { return in_array(getenv('FIXTURE_CATALOG'), ['category','tag'], true); }
+function is_product_category() { return getenv('FIXTURE_CATALOG') === 'category'; }
+function is_product_tag() { return getenv('FIXTURE_CATALOG') === 'tag'; }
 function get_queried_object() { return new WP_Term(); }
 function wc_clean($value) { return strip_tags($value); }
 function wp_unslash($value) { return stripslashes($value); }

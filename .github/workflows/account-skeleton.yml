@@ -1,7 +1,7 @@
 name: Account skeleton and icon back regression
 on:
   push:
-    branches: [fix/header-routing-product-skeleton]
+    branches: [fix/catalog-product-return-20261029]
   workflow_dispatch:
 permissions:
   contents: read
@@ -19,6 +19,7 @@ jobs:
         run: |
           php -l theme/codela-storefront/inc/render.php
           php tests/navigation.php
+          php tests/catalog.php
           php tests/document-continuity.php
           node tests/ui-kit.cjs
           node --check theme/codela-storefront/assets/scripts/navigation-feedback.js
@@ -27,10 +28,24 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.62.1
           npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Confirm 0.1.188 fails the reported no-referrer return
+        env:
+          TEST_WEBKIT: ${{ matrix.browser == 'webkit' && '1' || '' }}
+        run: |
+          git fetch origin 4a1e9b38d774735a72aa5433b59a912d3aa516b2 --depth=1
+          git show 4a1e9b38d774735a72aa5433b59a912d3aa516b2:theme/codela-storefront/assets/scripts/document-continuity.js > /tmp/storefront-188-continuity.js
+          if CONTEXT_SCRIPT=/tmp/storefront-188-continuity.js node tests/catalog-context-return-browser.cjs > /tmp/before.log 2>&1; then
+            cat /tmp/before.log
+            echo '::error::Old code unexpectedly passed the home return test'
+            exit 1
+          fi
+          cat /tmp/before.log
+          grep -q 'home to product must return home' /tmp/before.log
       - name: Responsive skeleton and context regression
         env:
           TEST_WEBKIT: ${{ matrix.browser == 'webkit' && '1' || '' }}
         run: |
+          node tests/catalog-context-return-browser.cjs
           node tests/header-routing-browser.cjs
           node tests/desktop-product-skeleton-browser.cjs
           node tests/account-skeleton-browser.cjs

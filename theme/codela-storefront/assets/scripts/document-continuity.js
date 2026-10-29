@@ -4,20 +4,41 @@
     let submitting = false;
     // Observe native link activation, never prevent it. The browser still owns
     // redirects, authentication, endpoint scripts, POST and history restoration.
-    // Save only an explicit same-site navigation, scoped to its destination.
-    // Menu entries start a new section; account hierarchy remains server-owned.
+    // Record the actual clicked destination for this tab. A matching, recent
+    // activation works even if privacy settings remove or shorten referrers.
+    // Accepted return paths are kept separately for reload and history visits.
+    const contextKey = 'sf-context-history';
+    const pendingKey = 'sf-context-pending';
+    const normalise = value => {
+        const url = new URL(value, location.href);
+        url.hash = '';
+        if (url.pathname !== '/') url.pathname = url.pathname.replace(/\/+$/, '');
+        for (const key of [...url.searchParams.keys()]) {
+            if (/^(utm_.+|gclid|fbclid)$/i.test(key)) url.searchParams.delete(key);
+        }
+        url.searchParams.sort();
+        return url.href;
+    };
+    const blocked = url => (config.excluded || []).some(value => {
+        const excluded = new URL(value, location.href);
+        const path = excluded.pathname.replace(/\/$/, '') || '/';
+        const actual = url.pathname.replace(/\/$/, '') || '/';
+        if (excluded.search) return actual === path && [...excluded.searchParams].every(([key, value]) => url.searchParams.get(key) === value);
+        return actual === path || path !== '/' && actual.startsWith(path + '/');
+    });
+    function safePrevious(previous, target) {
+        return previous.origin === target.origin && ['http:', 'https:'].includes(previous.protocol) &&
+            normalise(previous.href) !== normalise(target.href) && !blocked(previous) &&
+            !['action','add-to-cart','remove_item','_wpnonce','wc-ajax','download_file'].some(key => previous.searchParams.has(key)) &&
+            !/\/(wp-admin|wp-login\.php|wp-json|customer-logout|lost-password)(\/|$)/.test(previous.pathname);
+    }
     document.addEventListener('click', event => {
         const link = event.target.closest?.('a[href]');
         if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || link.hasAttribute('download') || (link.target && link.target !== '_self') || link.closest('form,[contenteditable]') || link.matches('[data-panel],.ajax_add_to_cart')) return;
         try {
             const target = new URL(link.href, location.href), from = new URL(location.href);
-            if (target.origin !== from.origin || !['http:','https:'].includes(target.protocol) || target.href === from.href || target.hash || ['action','add-to-cart','_wpnonce','wc-ajax','remove_item'].some(k => target.searchParams.has(k))) return;
-            const isMenu = !!link.closest('#sf-menu,.sf-desktop-navigation,.sf-mobile-dock');
-            const clean = u => { u.hash = ''; return u.href; };
-            const saved = JSON.parse(sessionStorage.getItem('sf-context-history') || '{}');
-            saved[clean(target)] = { from: clean(from), menu: isMenu };
-            const keys = Object.keys(saved); while (keys.length > 30) delete saved[keys.shift()];
-            sessionStorage.setItem('sf-context-history', JSON.stringify(saved));
+            if (target.origin !== from.origin || !['http:','https:'].includes(target.protocol) || normalise(target.href) === normalise(from.href) || target.hash || ['action','add-to-cart','_wpnonce','wc-ajax','remove_item','download_file'].some(k => target.searchParams.has(k))) return;
+            sessionStorage.setItem(pendingKey, JSON.stringify({ to: normalise(target.href), from: from.href.split('#')[0], menu: !!link.closest('#sf-menu,.sf-desktop-navigation,.sf-mobile-dock'), returning: link.hasAttribute('data-sf-context-back'), time: Date.now() }));
         } catch { /* Server fallback remains usable without storage. */ }
     }, true);
     document.addEventListener('click', event => {
@@ -60,23 +81,40 @@
             transition.skipTransition();
         }
     }
+    let resolvedLink = null, resolvedTarget = '';
     function updateBackLink(event) {
         const link = document.querySelector('[data-sf-context-back]');
         if (!link) return;
         const label = link.parentElement.querySelector('.sf-context-label');
-        // A hidden link denotes a top-level page; visible links have a stable
-        // Woo/blog parent supplied by the server when no in-site path exists.
-        const root = link.dataset.sfContextRoot === 'true' || link.hasAttribute('data-sf-context-root');
+        const root = link.hasAttribute('data-sf-context-root');
         try {
             const target = new URL(event?.detail?.to || location.href, location.href); target.hash = '';
-            const saved = JSON.parse(sessionStorage.getItem('sf-context-history') || '{}')[target.href];
+            const key = normalise(target.href);
+            if (resolvedLink === link && resolvedTarget === key) return;
+            resolvedLink = link; resolvedTarget = key;
+            const saved = JSON.parse(sessionStorage.getItem(contextKey) || '{}');
+            const pending = JSON.parse(sessionStorage.getItem(pendingKey) || 'null');
             const nav = performance.getEntriesByType('navigation')[0];
             const source = event?.detail?.from || document.referrer;
-            const sameSource = source && saved && new URL(source, target).href.split('#')[0] === saved.from;
-            let previous = saved && !saved.menu && (sameSource || nav?.type === 'reload') ? new URL(saved.from, target) : null;
-            if (previous && ((config.excluded || []).some(value => { const excluded = new URL(value, target); const path = excluded.pathname.replace(/\/$/, ''); return previous.pathname === path || previous.pathname.startsWith(path + '/'); }) || previous.origin !== target.origin || previous.href === target.href || ['_wpnonce','action','add-to-cart','wc-ajax'].some(k => previous.searchParams.has(k)) || /\/(wp-admin|wp-login\.php|customer-logout|lost-password)(\/|$)/.test(previous.pathname))) previous = null;
-            if (previous) link.href = previous.href;
-            link.hidden = root && !previous;
+            const sourceUrl = source ? new URL(source, target) : null;
+            const pendingMatches = pending && (pending.to === key || nav?.type === 'navigate' && nav.redirectCount > 0) && Date.now() - pending.time >= 0 && Date.now() - pending.time < 120000 && (!sourceUrl || sourceUrl.origin === target.origin);
+            let record = null;
+            if (pendingMatches) {
+                sessionStorage.removeItem(pendingKey);
+                // A back action must not overwrite that page's original parent.
+                record = pending.returning ? saved[key] : pending;
+                if (!pending.returning) {
+                    saved[key] = { from: pending.from, menu: pending.menu };
+                    const keys = Object.keys(saved); while (keys.length > 30) delete saved[keys.shift()];
+                    sessionStorage.setItem(contextKey, JSON.stringify(saved));
+                }
+            } else if (saved[key] && (nav?.type === 'reload' || nav?.type === 'back_forward' || sourceUrl && normalise(sourceUrl.href) === normalise(saved[key].from))) {
+                record = saved[key];
+            }
+            const previous = record && !record.menu ? new URL(record.from, target) : null;
+            const usable = previous && safePrevious(previous, target);
+            if (usable) link.href = previous.href;
+            link.hidden = root && !usable;
             if (label) label.hidden = !link.hidden;
         } catch { link.hidden = root; if (label) label.hidden = !root; }
     }
