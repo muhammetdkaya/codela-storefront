@@ -250,5 +250,5 @@ const doc=(path)=>{
   await browser.close();
   await new Promise(resolve=>server.close(resolve));
  }
-})().catch(e=>{console.error(e);process.exitCode=1});
+})().catch(e=>{console.error(e);process.exit(1)});
 

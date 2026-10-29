@@ -35,7 +35,9 @@ jobs:
           node tests/context-header-browser.cjs
           node tests/product-skeleton-geometry-browser.cjs
           node tests/navigation-feedback-bottom-browser.cjs
-          node tests/document-continuity-browser.cjs
+      - name: Native cross-document continuity (Chromium API)
+        if: matrix.browser == 'chromium'
+        run: node tests/document-continuity-browser.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
