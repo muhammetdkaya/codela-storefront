@@ -4,7 +4,7 @@
 
 Kullanıcının Safari ekranında 0.1.186 skeleton panelinin altı kesiliyor. Önceki 12px ek kaldırıldı; skeleton gerçek panelin `--sf-ui-product-panel-gap` + güvenli alan konumunu ve aynı fixed/transform yaklaşımını kullanır. Preview ayrı body çocuğudur; skeleton yüzeyinin taşma kırpmasına bağlı değildir. İptal ve tamamlanmada preview kaldırılır. Gerçek panel ve normal dock değişmedi.
 
-Doğrulama: runtime adayı a50651c, GitHub CI 40928067697 Chromium/WebKit başarılı; gerçek PHP paneli ile dört mobil genişlikte koordinatlar eşleşir; hedef alt alan, hesap, header, iptal ve Chromium belge geçişi geçti. Fiziksel Safari ve gerçek mağaza kurulumu ayrıca doğrulanmalı. Tema 0.1.186 → 0.1.187; eklenti değişmedi. Yayın sonucu daha sonra kaydedilecek.
+Doğrulama: runtime adayı a50651c, GitHub CI 40928067697 Chromium/WebKit başarılı; gerçek PHP paneli ile dört mobil genişlikte koordinatlar eşleşir; hedef alt alan, hesap, header, iptal ve Chromium belge geçişi geçti. Fiziksel Safari ve gerçek mağaza kurulumu ayrıca doğrulanmalı. Tema 0.1.186 → 0.1.187; eklenti değişmedi. GitHub v0.1.187 kararlı yayın 40928347548 başarılı, stable manifest source 02391409275dc35499ecba8f85348cd4ab35b52c, ZIP SHA256 2a5eb0b73aa3311244062d60e9a8fec59b452a3d07ce5828aa4869c14f981b79. FTP veya mağaza kurulumu yapılmadı. Sonraki: manuel kurulum sonrası Safari cihaz kabulü.
 
 ## 29 Ekim 2026 — 0.1.186 hesap skeleton ve ikon geri bağlantısı adayı
 
