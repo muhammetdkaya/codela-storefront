@@ -1,0 +1,43 @@
+name: Account skeleton and icon back regression
+on:
+  push:
+    branches: [fix/account-skeleton-icon-back-20261029]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  responsive:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, webkit]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Source and package checks
+        run: |
+          php -l theme/codela-storefront/inc/render.php
+          php tests/navigation.php
+          php tests/document-continuity.php
+          node tests/ui-kit.cjs
+          node --check theme/codela-storefront/assets/scripts/navigation-feedback.js
+          python3 tests/package.py
+      - name: Install browser
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps ${{ matrix.browser }}
+      - name: Responsive skeleton and context regression
+        env:
+          TEST_WEBKIT: ${{ matrix.browser == 'webkit' && '1' || '' }}
+        run: |
+          node tests/account-skeleton-browser.cjs
+          node tests/context-header-browser.cjs
+          node tests/product-skeleton-geometry-browser.cjs
+          node tests/navigation-feedback-bottom-browser.cjs
+          node tests/document-continuity-browser.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: account-skeleton-${{ matrix.browser }}
+          path: qa/

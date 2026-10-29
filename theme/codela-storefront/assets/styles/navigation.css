@@ -258,3 +258,6 @@ body.admin-bar{--sf-header-offset:32px}
 .sf-shell .sf-header .sf-context-brand a{gap:10px;min-height:var(--sf-ui-hit);max-width:100%;min-width:0}
 .sf-context-brand :is(.sf-context-label,a > span){overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;line-height:1.4}
 .sf-context-brand .sf-icon{flex:none;width:20px;height:20px}
+
+.sf-shell .sf-header .sf-context-brand:has([data-sf-context-back],[data-sf-account-back]){padding-inline:0;width:var(--sf-ui-hit);min-width:var(--sf-ui-hit)}
+.sf-shell .sf-header .sf-context-brand :is([data-sf-context-back],[data-sf-account-back]){width:var(--sf-ui-hit)}

@@ -30,11 +30,18 @@
         if (matches(config.home) && !['page_id','p','s'].some(key => url.searchParams.has(key)) || link?.dataset.sfRoute === 'home') return 'home';
         return 'page';
     }
-    function layout(type) {
+    function layout(type, url) {
         const shape = name => '<div class="sf-skeleton-shape sf-skeleton-' + name + '"></div>';
         const lines = '<div class="sf-skeleton-lines"><i></i><i></i></div>';
-        const rows = ('<div class="sf-skeleton-row"><div class="sf-skeleton-media"></div>' + lines + '</div>').repeat(3);
-        if (type === 'account') return rows;
+        if (type === 'account') {
+            const menu = '<div class="sf-skeleton-account-menu">' + ('<div class="sf-skeleton-account-link">' + shape('account-icon') + shape('account-label') + '</div>').repeat(6) + '</div>';
+            const heading = shape('heading');
+            const mode = !document.body.matches('.logged-in') ? 'guest' : accountDepth(url.href) === 0 ? 'dashboard' : 'endpoint';
+            const form = '<div class="sf-skeleton-account-fields">' + (shape('account-label') + shape('account-input')).repeat(3) + shape('account-button') + '</div>';
+            const summary = '<div class="sf-skeleton-account-summary">' + heading + shape('account-stat') + lines + '</div>';
+            const content = mode === 'guest' ? heading + form : mode === 'dashboard' ? summary : heading + (/edit-account|edit-address/.test(url.href) ? form : '<div class="sf-skeleton-account-table">' + lines.repeat(4) + '</div>');
+            return '<div class="sf-skeleton-account sf-skeleton-account--' + mode + '">' + (mode === 'guest' ? '' : menu) + '<div class="sf-skeleton-account-content">' + content + '</div></div>';
+        }
         if (type === 'product') return shape('gallery');
         const hero = '<div class="sf-skeleton-hero">' + shape('hero-image') + '<div class="sf-skeleton-hero-caption">' + shape('hero-title') + '<div class="sf-skeleton-hero-bottom">' + shape('hero-button') + shape('hero-count') + '</div></div></div>';
         if (type === 'home' || type === 'catalog') return (type === 'home' ? hero : shape('heading') + shape('filters')) + '<div class="sf-skeleton-cards">' + ('<div>' + shape('card') + lines + '</div>').repeat(4) + '</div>';
@@ -44,6 +51,8 @@
         const brand = document.querySelector('.sf-header .sf-brand');
         if (!brand || !config.accountLabel) return;
         pending.brand = { brand, nodes: [...brand.childNodes] };
+        pending.snapshots.push(remember(brand, ['class']));
+        brand.classList.add('sf-context-brand');
         const root = new URL(config.account, location.href);
         const isRoot = url.pathname.replace(/\/$/, '') === root.pathname.replace(/\/$/, '') && url.search === root.search;
         let parent = { back: config.account, label: config.accountLabel };
@@ -62,7 +71,7 @@
         link.className = 'sf-ui-pressable'; link.href = parent.back;
         link.dataset.sfAccountBack = ''; link.setAttribute('aria-label', parent.label);
         const icon = document.createElement('template'); icon.innerHTML = config.backIcon || '';
-        link.append(icon.content.cloneNode(true), label); brand.replaceChildren(link);
+        link.append(icon.content.cloneNode(true)); brand.replaceChildren(link);
     }
     function accountDepth(value) {
         if (!value || !config.account) return -1;
@@ -122,7 +131,7 @@
         const shapes = document.createElement('div');
         shapes.className = 'sf-skeleton-layout';
         shapes.setAttribute('aria-hidden', 'true');
-        shapes.innerHTML = layout(type);
+        shapes.innerHTML = layout(type, target);
         surface.append(label, shapes);
         if (type === 'product' && config.purchasePreview) {
             const preview = document.createElement('div');

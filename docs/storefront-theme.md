@@ -1,5 +1,13 @@
 # Codela Storefront — güncel teknik durum
 
+## 29 Ekim 2026 — 0.1.186 hesap skeleton ve ikon geri bağlantısı adayı
+
+Tema 0.1.185 → 0.1.186; eklenti değişmedi. Kullanıcı isteğiyle yalnız ürün hedefi skeleton satın alma paneli 12px yukarı taşındı; gerçek ürün paneli/fotoğraf yüksekliği korunur. Hesap skeleton'ı gerçek 220px/32px masaüstü menü/içerik sütunlarını ve 800px mobil kırılımını izler: panoda özet önce, hesap menüsü sonra; alt sayfalarda mobil menü gizli. Misafir için form, hesap/adres düzenleme için alanlar, diğer alt sayfalar için satırlar gösterilir. Pretty/plain URL desteği, inert/cancel/timeout sahipliği korunur. Header, hesap geçiş önizlemesi ve misafir mağazaya dönüş bağlantısı yalnız ikon gösterir; erişilebilir adlar ve native hedefler korunur. Sayfa başlığı history verisi link dataset'inde kalır.
+
+Yerel: 24 paket testi, PHP render lint/navigation/document-continuity, ortak UI Kit ve JS sözdizimi başarılı. Yeni responsive hesap testi ve güncellenen gerçek PHP panel/header/continuity regresyonları iki browser motorunda ayrı deploy içermeyen CI'ye hazırlandı. Yerel browser indirmesi bozuk ZIP döndürdü; geometri veya ekran incelemesi henüz başarılı sayılmaz.
+
+Durum: aday dal; GitHub Release/stable, FTP veya mağaza kurulumu yapılmadı. Sonraki: odaklı Chromium/WebKit koşusunun sonucunu ve üretilen ekranları incele, gerekli düzeltmeleri yap; kaynak PR/commit ve kesin test sonucunu bu kayda ekle. Fiziksel Safari kabulü ayrı kalır.
+
 ## 28 Ekim 2026 — 0.1.185 Vitrin alt hizalaması yayımlandı
 
 Muhammet’in 18:37 TR ekranında ve canlı 184 CSS’inde başlık/düğme/sayaç grubunun altındaki 82px boşluk doğrulandı: 20px temel + gereksiz 58px dock/4px aralık rezervi. Kısalan hero dock’un üstünde bittiğinden grup normal mobilde 62px aşağı alındı; alt boşluk 20px. Yalnız gerçekten çakışan kısa viewport’ta clamp ile gerekli dock/güvenli-alan rezervi kalır. Aynı token skeleton CTA/sayaç alt ankrajını hizalar. 184 yüksekliği, tam cover/odak/kaynaklar, kompakt 44px CTA ve sıfır dolgulu sayaç korunur. Etiket veya eklenti değişikliği yok.
