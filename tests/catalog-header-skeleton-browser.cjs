@@ -43,7 +43,7 @@ const headerBox=()=>{
    await load({FIXTURE_CATALOG:'shop',FIXTURE_CATALOG_FRONT:'1'},'home woocommerce-shop post-type-archive-product','<header class="woocommerce-products-header"><h1 class="woocommerce-products-header__title">Home shop</h1></header>');
    assert((await page.locator('.woocommerce-products-header__title').boundingBox()).width>1,'Homepage shop retains its only visible title');
    await load({FIXTURE_PAGE:'1'},'page','<h1 class="woocommerce-products-header__title">Other page</h1>');
-   assert((await page.locator('h1').boundingBox()).width>1,'Other pages retain their headings');
+   assert((await page.locator('#sf-content h1').boundingBox()).width>1,'Other pages retain their headings');
   }
   if(scope!=='heading'){
    for(const width of [320,390,700])for(const dock of ['0','1']){
