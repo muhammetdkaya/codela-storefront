@@ -159,6 +159,22 @@
         document.addEventListener('submit', blockOldSubmit, true);
         state.releaseSubmit = () => document.removeEventListener('submit', blockOldSubmit, true);
         if (type === 'account' && document.body.matches('.logged-in')) previewAccountHeader(target);
+        if (type === 'product') {
+            // The destination uses the same single soft cart control as the
+            // real product header. Keep the original nodes and restore their
+            // exact classes on cancellation or when a newer route starts.
+            const shell = document.querySelector('.sf-shell');
+            const actions = shell?.querySelector('.sf-header .sf-actions');
+            const cart = actions?.querySelector('.sf-cart-trigger');
+            if (shell && actions && cart) {
+                save(shell, ['class']); save(actions, ['class']); save(cart, ['class']);
+                shell.classList.remove('has-catalog-header', 'has-header-tools');
+                shell.classList.add('has-product-header');
+                actions.classList.add('sf-ui-icon-group--single-mobile');
+                cart.classList.remove('sf-ui-icon-button--bare');
+                cart.classList.add('sf-ui-icon-button--soft');
+            }
+        }
         const dock = document.querySelector('.sf-shell > .sf-mobile-dock');
         if (dock) {
             save(dock, ['hidden', 'inert', 'aria-busy', 'class', 'style']);

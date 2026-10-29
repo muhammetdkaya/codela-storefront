@@ -1,7 +1,7 @@
 name: Account skeleton and icon back regression
 on:
   push:
-    branches: [fix/catalog-product-return-20261029]
+    branches: [fix/catalog-heading-product-cart-20261029]
   workflow_dispatch:
 permissions:
   contents: read
@@ -28,30 +28,31 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.62.1
           npx playwright install --with-deps ${{ matrix.browser }}
-      - name: Confirm 0.1.188 fails the reported no-referrer return
+      - name: Confirm the previous CSS and header fail the new checks
         env:
           TEST_WEBKIT: ${{ matrix.browser == 'webkit' && '1' || '' }}
         run: |
-          git fetch origin 4a1e9b38d774735a72aa5433b59a912d3aa516b2 --depth=1
-          git show 4a1e9b38d774735a72aa5433b59a912d3aa516b2:theme/codela-storefront/assets/scripts/document-continuity.js > /tmp/storefront-188-continuity.js
-          if CONTEXT_SCRIPT=/tmp/storefront-188-continuity.js node tests/catalog-context-return-browser.cjs > /tmp/before.log 2>&1; then
-            cat /tmp/before.log
-            echo '::error::Old code unexpectedly passed the home return test'
-            exit 1
-          fi
-          cat /tmp/before.log
-          grep -q 'home to product must return home' /tmp/before.log
+          git fetch origin 7abfadd64ece836629351729b13e2b128b037f33 --depth=1
+          git show 7abfadd64ece836629351729b13e2b128b037f33:theme/codela-storefront/assets/scripts/navigation-feedback.js > /tmp/previous-feedback.js
+          git show 7abfadd64ece836629351729b13e2b128b037f33:theme/codela-storefront/assets/styles/catalog.css > /tmp/previous-catalog.css
+          if HEADER_TEST_SCOPE=cart HEADER_FEEDBACK_SCRIPT=/tmp/previous-feedback.js node tests/catalog-header-skeleton-browser.cjs > /tmp/before-cart.log 2>&1; then cat /tmp/before-cart.log; exit 1; fi
+          cat /tmp/before-cart.log
+          grep -q 'cart header .* should match actual product' /tmp/before-cart.log
+          if HEADER_TEST_SCOPE=heading HEADER_CATALOG_CSS=/tmp/previous-catalog.css node tests/catalog-header-skeleton-browser.cjs > /tmp/before-heading.log 2>&1; then cat /tmp/before-heading.log; exit 1; fi
+          cat /tmp/before-heading.log
+          grep -q 'duplicate archive title visually hidden' /tmp/before-heading.log
       - name: Responsive skeleton and context regression
         env:
           TEST_WEBKIT: ${{ matrix.browser == 'webkit' && '1' || '' }}
         run: |
-          node tests/catalog-context-return-browser.cjs
-          node tests/header-routing-browser.cjs
-          node tests/desktop-product-skeleton-browser.cjs
-          node tests/account-skeleton-browser.cjs
+          node tests/catalog-header-skeleton-browser.cjs
           node tests/context-header-browser.cjs
+          node tests/catalog-context-return-browser.cjs
           node tests/product-skeleton-geometry-browser.cjs
           node tests/navigation-feedback-bottom-browser.cjs
+      - name: Catalog filters remain functional
+        if: matrix.browser == 'chromium'
+        run: node tests/catalog-filters-browser.cjs
       - name: Native cross-document continuity (Chromium API)
         if: matrix.browser == 'chromium'
         run: node tests/document-continuity-browser.cjs

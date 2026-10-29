@@ -6,8 +6,7 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mağaza, ürün kategorisi ve ürün etiketi adları mobil ve masaüstünde header alanında gösterilir.",
-    "Ürün sayfasındaki geri oku ana sayfa veya filtreli kategori gibi gelinen sayfaya döner; doğrudan ürün bağlantılarında mağaza hedefi korunur.",
-    "Yenileme, yönlendirme ve referrer bilgisi kısıtlı tarayıcı geçişleri desteklenir."
+    "Mağaza ve kategori sayfalarında tekrarlanan başlık görsel olarak kaldırıldı; erişilebilir başlık ve açıklamalar korundu.",
+    "Mobil ürüne geçişte header sepet butonu gerçek ürün sayfasındaki ölçü ve görünüme eşitlendi."
   ]
 }

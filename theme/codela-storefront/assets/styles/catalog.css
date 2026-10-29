@@ -140,6 +140,14 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-pro
 body:is(.post-type-archive-product,.tax-product_cat,.tax-product_tag) .sf-content{padding:24px clamp(12px,2.2vw,30px) 36px}
 body:is(.post-type-archive-product,.tax-product_cat,.tax-product_tag) .sf-content .woocommerce-products-header{margin:0 0 20px}
 body:is(.post-type-archive-product,.tax-product_cat,.tax-product_tag) .sf-content .woocommerce-products-header__title{margin:0;font-size:clamp(26px,4vw,40px);font-weight:500;line-height:1.2;letter-spacing:-.025em}
+/* The same archive title is already in the header. Keep the native H1 in
+   the accessibility tree and preserve any Woo description or extension. */
+body:not(.home):is(.woocommerce-shop,.post-type-archive-product,.tax-product_cat,.tax-product_tag) .sf-content .woocommerce-products-header__title{
+  position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
+  clip:rect(1px,1px,1px,1px);clip-path:inset(50%);white-space:nowrap;border:0;
+}
+body:not(.home):is(.woocommerce-shop,.post-type-archive-product,.tax-product_cat,.tax-product_tag) .sf-content .woocommerce-products-header:not(:has(> :not(.woocommerce-products-header__title))){margin-bottom:0}
+
 body:is(.post-type-archive-product,.tax-product_cat,.tax-product_tag) .sf-content .term-description{max-width:65ch;color:var(--sf-muted);font-size:14px;line-height:1.6}
 body:is(.post-type-archive-product,.tax-product_cat,.tax-product_tag) .sf-content .woocommerce-result-count{float:none;margin:0 0 20px;font-size:13px;color:var(--sf-muted)}
 .sf-catalog-filters{max-width:640px;margin-inline:auto;padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}

@@ -1,5 +1,11 @@
 # Codela Storefront — güncel teknik durum
 
+## 29 Ekim 2026 — 0.1.190 katalog başlığı ve ürün skeleton sepeti adayı
+
+Tema 0.1.189 → 0.1.190; eklenti değişmedi. Mağaza ve ürün kategori/etiket arşivlerinde header başlığı varken tekrar eden native H1 görsel olarak gizlenir; erişilebilir H1 ve Woo kategori açıklamaları/sonuç sayısı korunur. Mağaza aynı zamanda ana sayfaysa logo ile ana H1 korunur. Ürün hedefli skeleton, mevcut header sepet kontrolünü gerçek ürünün tekli soft ikonu ve grup geometrisiyle gösterir; eski shell, grup ve buton sınıfları iptal/sonlanmada aynen geri alınır, yeni sepet düğümü veya eylemi yaratılmaz.
+
+Yerel PHP, JS ve 24 paket testi başarılı. Gerçek PHP header ve ürün butonu karşılaştırması 320/390/700 × beş kaynak × dock açık/kapalı ile iki motor, başlık ve açıklama/erişilebilirlik, native filtre ve önceki kodla negatif testler CI bekliyor. Fiziksel Safari veya mağaza kurulumu doğrulanmadı. Sıradaki: kesin aday CI'sini ve görünümü doğrula; GitHub-only yayın sonrası sürüm/manifest ve test kanıtlarını kaydet.
+
 ## 29 Ekim 2026 — 0.1.189 mağaza başlığı ve ürün geri dönüşü adayı
 
 Tema 0.1.188 → 0.1.189; eklenti değişmedi. Mağaza ve ürün kategori/etiket arşivleri header alanında gerçek başlıklarını sunar. Ürün ve içerik geri hedefi, aynı sekmede son tıklanan hedefle eşleşen kısa ömürlü geçiş kaydı sayesinde referrer kısıtlı olsa da kaynak URL ve filtreyi korur. Doğrudan giriş için mağaza/blog fallback, menüden açılan ana sayfada başlık, hesap üst sayfaları ve ödeme/mutasyon dışlamaları korunur; düz permalink dışlamalarında sorgu dikkate alınır. Üründen ilişkili ürüne gidip geri dönerken önceki ürünün kendi hedefi korunur.
