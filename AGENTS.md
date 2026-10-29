@@ -4,7 +4,7 @@
 
 Tema 0.1.187 → 0.1.188; eklenti değişmedi. Menüden açılan ana sayfalarda isim, içerikten geçişle açılan sayfalarda yalnız geri ikonu kullanılır. Ürün ve blog yazısının güvenli mağaza/blog fallback hedefi vardır. Hesap endpointleri kendi üst sayfasına döner. URL hedefiyle eşleşen ve aynı kaynaklı kayıt filtreleri korur; dış kaynak, checkout ve tehlikeli parametreler geri hedefi olmaz. Desktop ürün skeleton gerçek iki sütunlu ürün yerleşimini izler. Mobil üründe mevcut panel korunur.
 
-Doğrulama: aday a917037, CI 40931549672 Chromium ve WebKit başarılı. Menü ve içerik bağlantıları, doğrudan ürün/blog fallback, yenileme, filtreli kaynak, ödeme dışlama, gerçek PHP header ve dört masaüstü genişliğinde gerçek ürün geometrisi ile mobil/hizmet geçiş regresyonları geçti. 24 paket testi başarılı. Gerçek cihaz ve mağaza kabulü yapılmadı. GitHub-only yayın bekleniyor; sonraki adım stable paketi ve manifesti doğrulamak.
+Doğrulama: aday a917037, CI 40931549672 Chromium ve WebKit başarılı. Menü ve içerik bağlantıları, doğrudan ürün/blog fallback, yenileme, filtreli kaynak, ödeme dışlama, gerçek PHP header ve dört masaüstü genişliğinde gerçek ürün geometrisi ile mobil/hizmet geçiş regresyonları geçti. 24 paket testi başarılı. Gerçek cihaz ve mağaza kabulü yapılmadı. GitHub-only 0.1.188 yayın koşusu 40931854378 başarılı. Stable manifest kaynak 4a1e9b38d774735a72aa5433b59a912d3aa516b2; ZIP SHA256 d92ef4115b37533f21341d705ddbe75ae79e1131a7ecfb6e871c87be891adbba. FTP ve mağaza kurulumu yapılmadı. Sonraki: kullanıcı kurulumundan sonra gerçek mobil Safari ve masaüstü gezinme kabulü.
 
 ## 29 Ekim 2026 — 0.1.187 ürün skeleton panel konumu
 
