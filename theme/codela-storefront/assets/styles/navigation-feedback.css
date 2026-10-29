@@ -34,7 +34,7 @@ html[data-sf-navigation-pending] .sf-shell > .sf-mobile-dock .sf-dock-surface{tr
 @media(max-width:700px){
   html[data-sf-navigation-target="product"] .sf-skeleton{padding:0}
   html[data-sf-navigation-target="product"] .sf-navigation-preview{
-    display:block;position:fixed;inset:auto var(--sf-ui-bottom-bar-inset,16px) calc(var(--sf-ui-product-panel-gap,12px) + env(safe-area-inset-bottom,0px));
+    display:block;position:fixed;inset:auto var(--sf-ui-bottom-bar-inset,16px) calc(var(--sf-ui-product-panel-gap,12px) + 12px + env(safe-area-inset-bottom,0px));
     max-width:var(--sf-ui-bottom-bar-max-width,430px);margin:0 auto;padding:0;pointer-events:none;
   }
   /* Reproduce the real native collapsed Woo sheet, not an isolated CTA strip.
@@ -90,4 +90,35 @@ html[data-sf-navigation-pending] .sf-shell > .sf-mobile-dock .sf-dock-surface{tr
  .sf-skeleton-hero-caption{gap:8px;padding:18px 20px calc(20px + var(--sf-ui-showcase-bottom-reserve))}
  .sf-skeleton-hero-title{font-size:clamp(28px,7.6vw,38px)}
  .sf-skeleton-hero-bottom{margin-top:0}
+}
+
+/* Match the native account hub: 220px menu, 32px gutter, 800px breakpoint. */
+html[data-sf-navigation-target="account"] .sf-skeleton{padding:calc(76px + var(--sf-header-offset,0px) + clamp(30px,6vw,66px)) max(0px,calc((100vw - 1180px)/2)) 88px}
+html[data-sf-navigation-target="account"] .sf-skeleton-layout{padding-inline:clamp(18px,5vw,48px);box-sizing:border-box;width:100%;max-width:1180px}
+.sf-skeleton-account{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;align-items:start}
+.sf-skeleton-account-menu,.sf-skeleton-account-content{min-width:0}
+.sf-skeleton-account-link{display:flex;align-items:center;gap:16px;min-height:56px;padding:12px 4px;box-sizing:border-box;border-bottom:1px solid var(--sf-ui-border)}
+.sf-skeleton-account-icon{width:22px;height:22px;flex:none;border-radius:5px}
+.sf-skeleton-account-label{width:60%;height:14px}
+.sf-skeleton-account-content{display:grid;gap:24px}
+.sf-skeleton-account-summary{display:grid;gap:24px;padding:clamp(20px,3vw,32px);border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius,12px)}
+.sf-skeleton-account-stat{width:40%;height:44px}
+.sf-skeleton-account-summary .sf-skeleton-lines{width:100%}
+.sf-skeleton-account-table{display:grid;gap:28px}
+.sf-skeleton-account-table .sf-skeleton-lines{width:100%;max-width:none;padding-bottom:16px;border-bottom:1px solid var(--sf-ui-border)}
+.sf-skeleton-account-fields{display:grid;gap:12px}
+.sf-skeleton-account-input{height:48px;margin-bottom:12px}
+.sf-skeleton-account-button{height:44px;width:160px;border-radius:var(--sf-ui-pill)}
+.sf-skeleton-account--guest{display:block;max-width:440px;margin-inline:auto}
+.sf-skeleton-account--guest .sf-skeleton-heading{justify-self:center}
+@media(max-width:800px){
+ .sf-skeleton-account{grid-template-columns:minmax(0,1fr);gap:16px}
+ .sf-skeleton-account--dashboard .sf-skeleton-account-content{grid-row:1}
+ .sf-skeleton-account--dashboard .sf-skeleton-account-menu{grid-row:2}
+ .sf-skeleton-account--dashboard .sf-skeleton-account-link:first-child{display:none}
+ .sf-skeleton-account--endpoint .sf-skeleton-account-menu{display:none}
+}
+@media(max-width:700px){
+ html[data-sf-navigation-target="account"] .sf-skeleton{padding:calc(98px + var(--sf-header-offset,0px)) 0 88px}
+ html[data-sf-navigation-target="account"] .sf-skeleton-layout{padding-inline:20px}
 }

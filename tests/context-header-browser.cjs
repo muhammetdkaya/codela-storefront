@@ -22,7 +22,12 @@ const css=['storefront.css','styles/tokens.css','styles/overlay.css','styles/nav
     const html=execFileSync('php',['tests/render-header.php'],{encoding:'utf8',env:{...process.env,...env}});
     await page.setContent('<html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif}'+css+'</style></head><body>'+html+'</body></html>');
     const brand=page.locator('.sf-header .sf-brand'), menu=page.locator('.sf-menu-trigger');
-    assert((await brand.innerText()).includes(title),'Correct page context');
+    if (back && name !== 'home') {
+     assert.equal((await brand.innerText()).trim(),'','Back is icon-only');
+     assert((await brand.locator('a').getAttribute('aria-label')).includes(title));
+     assert.equal(await brand.locator('.sf-icon').count(),1);
+     assert.equal(Math.round((await brand.boundingBox()).width),44);
+    } else assert((await brand.innerText()).includes(title),'Correct page context');
     const b=await brand.boundingBox(),m=await menu.boundingBox();
     assert.equal(Math.round(b.height),44,'Shared logo capsule height');
     assert(b.x+b.width<=m.x || width>700,'Long title does not collide with mobile menu');

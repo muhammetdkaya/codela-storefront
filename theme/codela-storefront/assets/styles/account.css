@@ -37,7 +37,7 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-auth
 .sf-auth-store-link{display:inline-flex;align-items:center;gap:9px;min-height:44px;flex:none;font-size:13px;color:#686c72;text-decoration:none;white-space:nowrap}
 .sf-auth-store-link .sf-icon{
   display:block;width:16px;height:16px;opacity:.8;
-  transform:rotate(-45deg);
+  transform:none;
 }
 .sf-auth-store-link:hover{color:var(--sf-ui-control-ink)}
 
@@ -328,3 +328,5 @@ body.woocommerce-account .codela-prefs{font-family:inherit;--cp-accent:var(--sf-
 .sf-account-order .sf-account-summary-empty{display:block;text-align:center;padding:12px 0 8px}
 .sf-account-order .sf-account-summary-empty .sf-account-empty{font-size:18px;font-weight:500;line-height:1.4;margin:0 0 8px}
 .sf-account-order .sf-account-summary-empty .sf-account-muted{font-size:14px;line-height:1.6;margin:0}
+
+.sf-auth-store-link{justify-content:center;min-width:44px;min-height:44px}

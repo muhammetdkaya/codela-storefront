@@ -156,7 +156,7 @@ const doc=(path)=>{
   const previews=await page.evaluate(()=>{
    const cases=['/account/orders/','/account/view-order/1048/','/account/edit-address/','/account/edit-address/billing/'];
    window.addEventListener('click',e=>e.preventDefault(),{once:false});
-   return cases.map(href=>{const a=document.createElement('a');a.href=href;document.body.append(a);a.click();const b=document.querySelector('[data-sf-account-back]');const result={label:b?.textContent,path:b?new URL(b.href).pathname:null};document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}));result.restored=document.querySelector('.sf-brand').textContent==='Codela'&&!document.querySelector('[data-sf-navigation-pending]');a.remove();return result;});
+   return cases.map(href=>{const a=document.createElement('a');a.href=href;document.body.append(a);a.click();const b=document.querySelector('[data-sf-account-back]');const result={label:b?.getAttribute('aria-label'),path:b?new URL(b.href).pathname:null};document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}));result.restored=document.querySelector('.sf-brand').textContent==='Codela'&&!document.querySelector('[data-sf-navigation-pending]');a.remove();return result;});
   });
   assert.deepEqual(previews.map(x=>[x.label,x.path]),[['My account','/account/'],['Orders','/account/orders/'],['My account','/account/'],['Addresses','/account/edit-address/']]);
   assert(previews.every(x=>x.restored),'Cancelled navigation restores header and content');
@@ -180,13 +180,13 @@ const doc=(path)=>{
    const started=performance.now();document.querySelector('#slow-account').click();
    const main=document.querySelector('#sf-content'), skeleton=document.querySelector('.sf-skeleton');
    const visible=el=>!!el && el.getBoundingClientRect().height>0 && getComputedStyle(el).visibility==='visible';
-   return {rows:skeleton.querySelectorAll('.sf-skeleton-row').length,shapes:skeleton.querySelectorAll('.sf-skeleton-media,.sf-skeleton-lines i').length,statusClipped:getComputedStyle(skeleton.querySelector('.sf-skeleton-status')).clipPath,transform:getComputedStyle(main).transform,backLabel:document.querySelector('[data-sf-account-back]')?.textContent,backHref:document.querySelector('[data-sf-account-back]')?.getAttribute('href'),icon:!!document.querySelector('[data-sf-account-back] svg'),elapsed:performance.now()-started,pending:document.documentElement.hasAttribute('data-sf-navigation-pending'),busy:main.getAttribute('aria-busy'),skeleton:visible(skeleton),header:visible(document.querySelector('#native-header')),dock:visible(document.querySelector('#native-dock')),inert:!!document.querySelector('#account-root').closest('[inert]')};
+   return {rows:skeleton.querySelectorAll('.sf-skeleton-account-link').length,shapes:skeleton.querySelectorAll('.sf-skeleton-media,.sf-skeleton-lines i').length,statusClipped:getComputedStyle(skeleton.querySelector('.sf-skeleton-status')).clipPath,transform:getComputedStyle(main).transform,backLabel:document.querySelector('[data-sf-account-back]')?.textContent,backHref:document.querySelector('[data-sf-account-back]')?.getAttribute('href'),icon:!!document.querySelector('[data-sf-account-back] svg'),elapsed:performance.now()-started,pending:document.documentElement.hasAttribute('data-sf-navigation-pending'),busy:main.getAttribute('aria-busy'),skeleton:visible(skeleton),header:visible(document.querySelector('#native-header')),dock:visible(document.querySelector('#native-dock')),inert:!!document.querySelector('#account-root').closest('[inert]')};
   });
   // Read synchronously inside the outgoing document: Playwright locators wait
   // for pending navigation and cannot inspect that document during a native GET.
-  assert.equal(pending.rows,3);assert.equal(pending.shapes,9);assert.equal(pending.statusClipped,'inset(50%)','Loading text is screen-reader-only');assert.equal(pending.transform,'none','Skeleton never slides');
+  assert.equal(pending.rows,6);assert.equal(pending.shapes,8);assert.equal(pending.statusClipped,'inset(50%)','Loading text is screen-reader-only');assert.equal(pending.transform,'none','Skeleton never slides');
   assert(pending.pending && pending.skeleton,'Skeleton paints in the click task, before the delayed response');
-  assert.equal(pending.backLabel,'My account','Back label changes in click task');assert.equal(pending.backHref,origin+'/account/');assert(pending.icon,'Back icon requires no request');
+  assert.equal(pending.backLabel,'','Back stays icon-only in click task');assert.equal(pending.backHref,origin+'/account/');assert(pending.icon,'Back icon requires no request');
   assert(pending.elapsed<100,'Feedback has no timer or network dependency');
   assert(pending.header && pending.dock,'Header and dock remain visible during slow GET');
   assert.equal(pending.busy,'true');assert(pending.inert,'Hidden old actions cannot receive keyboard focus');
@@ -228,7 +228,7 @@ const doc=(path)=>{
    document.querySelector('#slow-account').click();
    return {backLabel:document.querySelector('[data-sf-account-back]')?.textContent,pending:document.documentElement.hasAttribute('data-sf-navigation-pending'),header:getComputedStyle(document.querySelector('#native-header')).visibility};
   });
-  assert.equal(desktopPending.backLabel,'My account','Desktop back label updates before response');
+  assert.equal(desktopPending.backLabel,'','Desktop back stays icon-only before response');
   assert(desktopPending.pending,'Desktop also paints feedback in the click task');
   assert.equal(desktopPending.header,'visible','Desktop header visible during slow GET');
   await d.waitForURL('**/account/orders/?slow=1');
@@ -250,5 +250,5 @@ const doc=(path)=>{
   await browser.close();
   await new Promise(resolve=>server.close(resolve));
  }
-})().catch(e=>{console.error(e);process.exitCode=1});
+})().catch(e=>{console.error(e);process.exit(1)});
 
