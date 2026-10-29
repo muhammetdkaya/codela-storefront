@@ -1,5 +1,9 @@
 # Codela Storefront — güncel teknik durum
 
+## 29 Ekim 2026 — masaüstü ürün skeleton adayı
+
+Ürün hedefi skeleton 901px ve üzerinde gerçek 1.2:1 grid, sütun aralığı ve görsel çerçevesini kullanır; sağda başlık/fiyat/açıklama/miktar/buton siluetleri, görsel altında önizleme siluetleri gösterilir. 701–900px tek sütun; mobil ürün paneli aynen korunur. Tarayıcı CI 40930113201 Chromium/WebKit başarılı: dört masaüstü genişliğinde gerçek fixture görsel/özet ölçüleri, mevcut mobil panel ve hesap navigasyon regresyonları. Fixture gerçek mağaza/cihaz kabulü değildir. Kaynak aday dalında, yayınlanmadı; sıradaki iş kullanıcının yayın talebiyle yeni sürüm hazırlamak. Geri butonu/sayfa başlığı için öneri kullanıcıya sunuluyor; henüz uygulanmadı.
+
 ## 29 Ekim 2026 — 0.1.187 ürün skeleton panel konumu
 
 Kullanıcının Safari ekranında 0.1.186 skeleton panelinin altı kesiliyor. Önceki 12px ek kaldırıldı; skeleton gerçek panelin `--sf-ui-product-panel-gap` + güvenli alan konumunu ve aynı fixed/transform yaklaşımını kullanır. Preview ayrı body çocuğudur; skeleton yüzeyinin taşma kırpmasına bağlı değildir. İptal ve tamamlanmada preview kaldırılır. Gerçek panel ve normal dock değişmedi.
