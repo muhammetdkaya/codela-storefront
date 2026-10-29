@@ -122,3 +122,30 @@ html[data-sf-navigation-target="account"] .sf-skeleton-layout{padding-inline:cla
  html[data-sf-navigation-target="account"] .sf-skeleton{padding:calc(98px + var(--sf-header-offset,0px)) 0 88px}
  html[data-sf-navigation-target="account"] .sf-skeleton-layout{padding-inline:20px}
 }
+
+/* Desktop preview follows the actual product overview grid and media frame. */
+.sf-skeleton-product-summary,.sf-skeleton-product-thumbs{display:none}
+@media(min-width:901px){
+ html[data-sf-navigation-target="product"] .sf-skeleton{padding:calc(104px + var(--sf-header-offset,0px)) max(24px,4vw) 64px}
+ html[data-sf-navigation-target="product"] .sf-skeleton-layout{max-width:1360px;width:100%}
+ .sf-skeleton-product{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:clamp(44px,5vw,80px);align-items:start}
+ .sf-skeleton-product-media{min-width:0;container-type:inline-size}
+ .sf-skeleton-product .sf-skeleton-gallery{width:100%;height:min(640px,94cqw);border-radius:var(--sf-ui-control-radius,12px)}
+ .sf-skeleton-product-thumbs{display:flex;gap:10px;padding:16px 4px}
+ .sf-skeleton-product-thumb{width:48px;height:48px;border-radius:50%}
+ .sf-skeleton-product-summary{display:grid;align-content:start;gap:18px;min-width:0}
+ .sf-skeleton-product-title{width:80%;height:38px}
+ .sf-skeleton-product-price{width:34%;height:28px}
+ .sf-skeleton-product-summary .sf-skeleton-lines{width:90%}
+ .sf-skeleton-product-actions{display:flex;gap:12px;margin-block:4px 12px}
+ .sf-skeleton-product-quantity{width:122px;height:48px;border-radius:var(--sf-ui-pill)}
+ .sf-skeleton-product-button{width:min(200px,55%);height:48px;border-radius:var(--sf-ui-pill)}
+ .sf-skeleton-product-detail{width:42%;height:20px;margin-top:8px}
+}
+@media(min-width:701px) and (max-width:900px){
+ .sf-skeleton-product-summary{display:grid;gap:18px;padding:32px max(20px,5vw)}
+ .sf-skeleton-product .sf-skeleton-gallery{width:100%}
+ .sf-skeleton-product-title{width:70%;height:32px}.sf-skeleton-product-price{width:30%;height:24px}
+ .sf-skeleton-product-actions{display:flex;gap:12px}.sf-skeleton-product-quantity{width:122px;height:48px}.sf-skeleton-product-button{width:200px;height:48px}
+ .sf-skeleton-product-detail{width:40%;height:18px}
+}

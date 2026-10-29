@@ -15,8 +15,10 @@ const css=['storefront.css','styles/tokens.css','styles/overlay.css','styles/nav
     ['orders',{FIXTURE_ACCOUNT:'1',FIXTURE_ENDPOINT:'orders'},'My account','https://store.test/myaccount/'],
     ['detail',{FIXTURE_ACCOUNT:'1',FIXTURE_ENDPOINT:'view-order'},'Siparişlerim','https://store.test/myaccount/orders/'],
     ['address',{FIXTURE_ACCOUNT:'1',FIXTURE_ENDPOINT:'edit-address',FIXTURE_ADDRESS:'billing'},'Adreslerim','https://store.test/myaccount/edit-address/'],
-    ['page',{FIXTURE_PAGE:'1'},'Home','https://store.test/'],
-    ['long',{FIXTURE_PAGE:'1',FIXTURE_PAGE_TITLE:'Çok uzun bir sayfa başlığının dar ekranda görünümü'},'Home', 'https://store.test/'],
+    ['page',{FIXTURE_PAGE:'1'},'Hakkımızda',null],
+    ['long',{FIXTURE_PAGE:'1',FIXTURE_PAGE_TITLE:'Çok uzun bir sayfa başlığının dar ekranda görünümü'},'Çok uzun bir sayfa başlığının dar ekranda görünümü',null],
+    ['product',{FIXTURE_PRODUCT:'1'},'Back','https://store.test/shop/'],
+    ['post',{FIXTURE_POST:'1'},'Back','https://store.test/blog/'],
     ['home',{},'CODELA','https://store.test/'],
    ]){
     const html=execFileSync('php',['tests/render-header.php'],{encoding:'utf8',env:{...process.env,...env}});
@@ -33,7 +35,7 @@ const css=['storefront.css','styles/tokens.css','styles/overlay.css','styles/nav
     assert(b.x+b.width<=m.x || width>700,'Long title does not collide with mobile menu');
     assert(!await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),'No page overflow');
     if(back)assert.equal(await brand.locator('a').getAttribute('href'),back,'Native fallback destination');
-    else assert.equal(await brand.locator('a').count(),0,'Root account title is not a misleading back link');
+    else assert.equal(await brand.locator('a:visible').count(),0,'Top-level page has no visible back link');
     if(width===390){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:`qa/storefront-ui-kit-context-${name}-${process.env.TEST_WEBKIT?'webkit':'chromium'}.png`});}
    }
    await page.close();

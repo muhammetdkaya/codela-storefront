@@ -27,12 +27,15 @@ function wc_get_cart_url() { return home_url('/cart/'); }
 function wc_get_checkout_url() { return home_url('/checkout/'); }
 function rest_url( $s ) { return home_url('/wp-json/'.$s); }
 function wp_interactivity_state( ...$args ) {}
-function get_option( ...$args ) { return ''; }
+function get_option( ...$args ) { return ($args[0]??'') === 'page_for_posts' ? 22 : ''; }
+function get_permalink($id){return home_url('/blog/');}
+function is_singular($type){return $type==='post' && getenv('FIXTURE_POST')==='1';}
+function is_home(){return getenv('FIXTURE_BLOG')==='1';}
 function get_bloginfo( ...$args ) { return 'CODELA'; }
 function has_custom_logo() { return false; }
 function is_product() { return getenv('FIXTURE_PRODUCT') === '1'; }
 function is_checkout() { return getenv('FIXTURE_CHECKOUT') === '1'; }
-function is_front_page() { return getenv('FIXTURE_PAGE') !== '1' && getenv('FIXTURE_ACCOUNT') !== '1' && getenv('FIXTURE_GUEST_ACCOUNT') !== '1'; }
+function is_front_page() { return getenv('FIXTURE_PAGE') !== '1' && getenv('FIXTURE_ACCOUNT') !== '1' && getenv('FIXTURE_GUEST_ACCOUNT') !== '1' && getenv('FIXTURE_PRODUCT') !== '1' && getenv('FIXTURE_POST') !== '1' && getenv('FIXTURE_BLOG') !== '1'; }
 function is_account_page() { return getenv('FIXTURE_ACCOUNT') === '1' || getenv('FIXTURE_GUEST_ACCOUNT') === '1'; }
 function is_user_logged_in() { return getenv('FIXTURE_ACCOUNT') === '1' && getenv('FIXTURE_GUEST_ACCOUNT') !== '1'; }
 function get_privacy_policy_url() { return ''; }

@@ -18,6 +18,7 @@ function codela_sf_document_continuity_allowed(): bool {
             && ! ( function_exists( 'is_wc_endpoint_url' ) && ( is_wc_endpoint_url( 'customer-logout' ) || is_wc_endpoint_url( 'lost-password' ) ) );
     }
     if ( function_exists( 'is_page' ) && is_page() ) { return true; }
+    if ( function_exists( 'is_home' ) && is_home() || function_exists( 'is_singular' ) && is_singular( 'post' ) ) { return true; }
     if ( function_exists( 'codela_sections_validate_root' ) && function_exists( 'codela_sf_sections_capabilities' ) && codela_sf_sections_capabilities()['layout'] ) { return true; }
     if ( function_exists( 'is_product' ) && is_product() ) { return true; }
     if ( function_exists( 'is_shop' ) && is_shop() ) { return true; }

@@ -4,6 +4,22 @@
     let submitting = false;
     // Observe native link activation, never prevent it. The browser still owns
     // redirects, authentication, endpoint scripts, POST and history restoration.
+    // Save only an explicit same-site navigation, scoped to its destination.
+    // Menu entries start a new section; account hierarchy remains server-owned.
+    document.addEventListener('click', event => {
+        const link = event.target.closest?.('a[href]');
+        if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || link.hasAttribute('download') || (link.target && link.target !== '_self') || link.closest('form,[contenteditable]') || link.matches('[data-panel],.ajax_add_to_cart')) return;
+        try {
+            const target = new URL(link.href, location.href), from = new URL(location.href);
+            if (target.origin !== from.origin || !['http:','https:'].includes(target.protocol) || target.href === from.href || target.hash || ['action','add-to-cart','_wpnonce','wc-ajax','remove_item'].some(k => target.searchParams.has(k))) return;
+            const isMenu = !!link.closest('#sf-menu,.sf-desktop-navigation,.sf-mobile-dock');
+            const clean = u => { u.hash = ''; return u.href; };
+            const saved = JSON.parse(sessionStorage.getItem('sf-context-history') || '{}');
+            saved[clean(target)] = { from: clean(from), menu: isMenu };
+            const keys = Object.keys(saved); while (keys.length > 30) delete saved[keys.shift()];
+            sessionStorage.setItem('sf-context-history', JSON.stringify(saved));
+        } catch { /* Server fallback remains usable without storage. */ }
+    }, true);
     document.addEventListener('click', event => {
         const link = event.target.closest?.('a[href]');
         if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey ||
@@ -47,31 +63,22 @@
     function updateBackLink(event) {
         const link = document.querySelector('[data-sf-context-back]');
         if (!link) return;
+        const label = link.parentElement.querySelector('.sf-context-label');
+        // A hidden link denotes a top-level page; visible links have a stable
+        // Woo/blog parent supplied by the server when no in-site path exists.
+        const root = link.dataset.sfContextRoot === 'true' || link.hasAttribute('data-sf-context-root');
         try {
-            const previous = event?.detail?.from || window.navigation?.activation?.from?.url || document.referrer;
-            if (!previous) return;
-            const url = new URL(previous, location.href);
-            const blocked = (config.excluded || []).some(value => {
-                const excluded = new URL(value, location.href);
-                return url.pathname === excluded.pathname && (!excluded.search || url.search === excluded.search);
-            });
-            if (url.origin === location.origin && url.href !== location.href && !blocked &&
-                !url.searchParams.has('_wpnonce') && !url.searchParams.has('action') &&
-                !/\/(wp-admin|wp-login\.php|customer-logout)(\/|$)/.test(url.pathname)) {
-                let title = '';
-                try {
-                    const saved = JSON.parse(sessionStorage.getItem('sf-previous-page') || 'null');
-                    if (saved?.url === url.href && typeof saved.title === 'string') title = saved.title;
-                } catch { /* Storage is optional. */ }
-                // An unknown referrer must not be paired with this page's name.
-                // Keep the truthful server-rendered Home fallback if its title is unknown.
-                if (!title) return;
-                link.href = url.href;
-                const label = link.querySelector('span');
-                if (label) label.textContent = title;
-                link.setAttribute('aria-label', title);
-            }
-        } catch { /* Direct links keep the server-rendered home fallback. */ }
+            const target = new URL(event?.detail?.to || location.href, location.href); target.hash = '';
+            const saved = JSON.parse(sessionStorage.getItem('sf-context-history') || '{}')[target.href];
+            const nav = performance.getEntriesByType('navigation')[0];
+            const source = event?.detail?.from || document.referrer;
+            const sameSource = source && saved && new URL(source, target).href.split('#')[0] === saved.from;
+            let previous = saved && !saved.menu && (sameSource || nav?.type === 'reload') ? new URL(saved.from, target) : null;
+            if (previous && ((config.excluded || []).some(value => { const excluded = new URL(value, target); const path = excluded.pathname.replace(/\/$/, ''); return previous.pathname === path || previous.pathname.startsWith(path + '/'); }) || previous.origin !== target.origin || previous.href === target.href || ['_wpnonce','action','add-to-cart','wc-ajax'].some(k => previous.searchParams.has(k)) || /\/(wp-admin|wp-login\.php|customer-logout|lost-password)(\/|$)/.test(previous.pathname))) previous = null;
+            if (previous) link.href = previous.href;
+            link.hidden = root && !previous;
+            if (label) label.hidden = !link.hidden;
+        } catch { link.hidden = root; if (label) label.hidden = !root; }
     }
     window.addEventListener('pageswap', event => applyTransition(event.viewTransition, event.activation));
     window.addEventListener('pagereveal', event => {

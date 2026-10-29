@@ -261,3 +261,7 @@ body.admin-bar{--sf-header-offset:32px}
 
 .sf-shell .sf-header .sf-context-brand:has([data-sf-context-back],[data-sf-account-back]){padding-inline:0;width:var(--sf-ui-hit);min-width:var(--sf-ui-hit)}
 .sf-shell .sf-header .sf-context-brand :is([data-sf-context-back],[data-sf-account-back]){width:var(--sf-ui-hit)}
+
+.sf-context-brand [hidden]{display:none!important}
+.sf-shell .sf-header .sf-context-brand:has([data-sf-context-back]:not([hidden])){padding-inline:0;width:var(--sf-ui-hit);min-width:var(--sf-ui-hit)}
+.sf-shell .sf-header .sf-context-brand:has([data-sf-context-back][hidden]){width:auto;min-width:0;padding-inline:16px}

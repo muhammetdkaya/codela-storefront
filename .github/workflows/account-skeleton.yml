@@ -1,7 +1,7 @@
 name: Account skeleton and icon back regression
 on:
   push:
-    branches: [fix/safari-skeleton-visible-bottom]
+    branches: [fix/header-routing-product-skeleton]
   workflow_dispatch:
 permissions:
   contents: read
@@ -31,6 +31,8 @@ jobs:
         env:
           TEST_WEBKIT: ${{ matrix.browser == 'webkit' && '1' || '' }}
         run: |
+          node tests/header-routing-browser.cjs
+          node tests/desktop-product-skeleton-browser.cjs
           node tests/account-skeleton-browser.cjs
           node tests/context-header-browser.cjs
           node tests/product-skeleton-geometry-browser.cjs

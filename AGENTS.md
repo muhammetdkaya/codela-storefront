@@ -1,5 +1,11 @@
 # Codela Storefront — güncel çalışma kuralları
 
+## 29 Ekim 2026 — 0.1.188 bağlamsal başlık ve masaüstü ürün skeleton adayı
+
+Tema 0.1.187 → 0.1.188; eklenti değişmedi. Menüden açılan ana sayfalarda isim, içerikten geçişle açılan sayfalarda yalnız geri ikonu kullanılır. Ürün ve blog yazısının güvenli mağaza/blog fallback hedefi vardır. Hesap endpointleri kendi üst sayfasına döner. URL hedefiyle eşleşen ve aynı kaynaklı kayıt filtreleri korur; dış kaynak, checkout ve tehlikeli parametreler geri hedefi olmaz. Desktop ürün skeleton gerçek iki sütunlu ürün yerleşimini izler. Mobil üründe mevcut panel korunur.
+
+Aday doğrulaması ve GitHub-only yayın bekleniyor; kullanıcı tercihine göre masaüstü/mobil mantık aynıdır. Sonraki: iki motorda header/gerçek ürün geometri/geçiş testlerini, paket doğrulamasını ve yayın sonucunu tamamla. Gerçek cihaz ve mağaza kabulü ayrı değerlendirilir.
+
 ## 29 Ekim 2026 — 0.1.187 ürün skeleton panel konumu
 
 Kullanıcının Safari ekranında 0.1.186 skeleton panelinin altı kesiliyor. Önceki 12px ek kaldırıldı; skeleton gerçek panelin `--sf-ui-product-panel-gap` + güvenli alan konumunu ve aynı fixed/transform yaklaşımını kullanır. Preview ayrı body çocuğudur; skeleton yüzeyinin taşma kırpmasına bağlı değildir. İptal ve tamamlanmada preview kaldırılır. Gerçek panel ve normal dock değişmedi.
