@@ -1,5 +1,11 @@
 # Codela Storefront — güncel teknik durum
 
+## 29 Ekim 2026 — 0.1.187 ürün skeleton panel konumu
+
+Kullanıcının Safari ekranında 0.1.186 skeleton panelinin altı kesiliyor. Önceki 12px ek kaldırıldı; skeleton gerçek panelin `--sf-ui-product-panel-gap` + güvenli alan konumunu ve aynı fixed/transform yaklaşımını kullanır. Preview ayrı body çocuğudur; skeleton yüzeyinin taşma kırpmasına bağlı değildir. İptal ve tamamlanmada preview kaldırılır. Gerçek panel ve normal dock değişmedi.
+
+Doğrulama: runtime adayı a50651c, GitHub CI 40928067697 Chromium/WebKit başarılı; gerçek PHP paneli ile dört mobil genişlikte koordinatlar eşleşir; hedef alt alan, hesap, header, iptal ve Chromium belge geçişi geçti. Fiziksel Safari ve gerçek mağaza kurulumu ayrıca doğrulanmalı. Tema 0.1.186 → 0.1.187; eklenti değişmedi. Yayın sonucu daha sonra kaydedilecek.
+
 ## 29 Ekim 2026 — 0.1.186 hesap skeleton ve ikon geri bağlantısı adayı
 
 Tema 0.1.185 → 0.1.186; eklenti değişmedi. Kullanıcı isteğiyle yalnız ürün hedefi skeleton satın alma paneli 12px yukarı taşındı; gerçek ürün paneli/fotoğraf yüksekliği korunur. Hesap skeleton'ı gerçek 220px/32px masaüstü menü/içerik sütunlarını ve 800px mobil kırılımını izler: panoda özet önce, hesap menüsü sonra; alt sayfalarda mobil menü gizli. Misafir için form, hesap/adres düzenleme için alanlar, diğer alt sayfalar için satırlar gösterilir. Pretty/plain URL desteği, inert/cancel/timeout sahipliği korunur. Header, hesap geçiş önizlemesi ve misafir mağazaya dönüş bağlantısı yalnız ikon gösterir; erişilebilir adlar ve native hedefler korunur. Sayfa başlığı history verisi link dataset'inde kalır.
