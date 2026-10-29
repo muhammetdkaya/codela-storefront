@@ -211,11 +211,12 @@ function codela_sf_footer(): string {
     $settings = codela_theme_settings();
     $brand = (string) ( get_bloginfo( 'name' ) );
     $note = sanitize_text_field( (string) ( $settings['footer_text'] ?? '' ) );
+    $hide_on_mobile = in_array( $settings['mobile_footer_hidden'] ?? false, [ true, 1, '1' ], true );
     $privacy_url = get_privacy_policy_url();
     $terms_id = absint( get_option( 'woocommerce_terms_page_id', 0 ) );
     $terms_url = $terms_id && 'publish' === get_post_status( $terms_id ) ? get_permalink( $terms_id ) : '';
 
-    $html = '<footer class="sf-footer"><div class="sf-footer-inner"><div class="sf-footer-copy">';
+    $html = '<footer class="sf-footer' . ( $hide_on_mobile ? ' sf-footer--mobile-hidden' : '' ) . '"><div class="sf-footer-inner"><div class="sf-footer-copy">';
     $html .= '<span class="sf-footer-copyright">© ' . esc_html( wp_date( 'Y' ) ) . '</span>';
     $html .= '<a class="sf-footer-brand" href="' . esc_url( home_url( '/' ) ) . '">' . esc_html( $brand ) . '</a>';
     if ( '' !== $note ) {

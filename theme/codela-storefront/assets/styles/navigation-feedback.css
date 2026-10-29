@@ -86,7 +86,7 @@ html[data-sf-navigation-pending] .sf-shell > .sf-mobile-dock .sf-dock-surface{tr
 }
 
 @media(max-width:700px){
- html[data-sf-navigation-pending][data-sf-navigation-target="home"] .sf-skeleton-layout{max-height:none;gap:12px}
+ html[data-sf-navigation-pending][data-sf-navigation-target="home"] .sf-skeleton-layout{max-height:none;gap:40px}
  .sf-skeleton-hero-caption{gap:8px;padding:18px 20px calc(20px + var(--sf-ui-showcase-bottom-reserve))}
  .sf-skeleton-hero-title{font-size:clamp(28px,7.6vw,38px)}
  .sf-skeleton-hero-bottom{margin-top:0}

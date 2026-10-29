@@ -755,6 +755,8 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   /* The native footer stays in the document, outside the product sheet.
      Reserve only the overlay at its final links so they remain reachable. */
   body.sf-product-sheet-ready .sf-footer{padding-bottom:calc(var(--sf-product-collapsed-height,140px) + var(--sf-ui-bottom-bar-gap) + env(safe-area-inset-bottom,0px) + 16px)}
+  /* A hidden mobile footer cannot provide that clearance for the last card. */
+  body.sf-product-sheet-ready:has(.sf-footer--mobile-hidden){padding-bottom:calc(var(--sf-product-collapsed-height,140px) + var(--sf-ui-bottom-bar-gap) + env(safe-area-inset-bottom,0px) + 16px)}
 }
 
 /* Quantity is still Woo's one input, composed with the existing quiet Button. */

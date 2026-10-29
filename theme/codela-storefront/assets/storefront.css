@@ -23,8 +23,7 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
 .sf-panel-top h2{font-size:20px;margin:0;font-weight:400}
 .sf-panel-body{overflow:auto;overscroll-behavior:contain;flex:1;min-height:0;padding:26px max(5vw,24px) 36px}
 .sf-panel [hidden]{display:none!important}
-/* Center the native menu at every depth. Auto margins collapse for a long
-   menu so its first and last links remain scrollable inside the dialog. */
+/* Center the native menu on desktop; long menus remain scrollable. */
 #sf-menu{display:flex;flex-direction:column;gap:20px;text-align:center}
 #sf-menu > nav{width:100%;max-width:900px;margin:auto;flex:none;padding-block:16px}
 .sf-menu-list,.sf-menu-list ul{list-style:none;margin:0;padding:0;width:100%}
@@ -91,6 +90,8 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
 .woocommerce div.product .product_title{font-weight:400;letter-spacing:-1px}
 .sf-cart-row a:focus-visible{outline-offset:2px}
 @media(max-width:700px){.sf-header{height:68px;padding:0 20px}
+#sf-menu > nav:not(.sf-menu-tools){margin:0 auto}
+.sf-footer.sf-footer--mobile-hidden{display:none}
 .sf-brand{font-size:27px}
 .sf-actions{gap:0}
 .sf-panel-top{min-height:66px;padding-left:24px;padding-right:16px}
