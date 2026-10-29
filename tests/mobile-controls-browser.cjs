@@ -107,11 +107,12 @@ const documentHTML = body => `<!doctype html><html lang="tr"><head><meta charset
    const material=await page.locator('#sf-panel > .sf-menu-trigger').evaluate(el=>{const s=getComputedStyle(el);return {background:s.backgroundColor,shadow:s.boxShadow,radius:s.borderRadius};});
    assert.notEqual(material.shadow,'none','Menu keeps its own soft shadow on initial focus');
    for(const mode of ['search','cart','account','cart','search','account']){
+    await page.keyboard.press('Tab');
     await page.evaluate(mode=>window.sfActions[mode](),mode);
     const close=page.locator(mode==='search'?'#sf-search .sf-search-cancel':'#sf-panel .sf-panel-top .sf-close');
     assert(await close.isVisible(),`${mode} close is visible`);
-    const paint=await close.evaluate(el=>{const s=getComputedStyle(el),r=el.getBoundingClientRect();return {background:s.backgroundColor,shadow:s.boxShadow,radius:s.borderRadius,width:r.width,height:r.height,initial:el.classList.contains('sf-initial-focus'),focused:el===document.activeElement};});
-    assert(paint.initial&&paint.focused,`${mode} keeps actual initial focus after switching`);
+    const paint=await close.evaluate(el=>{const s=getComputedStyle(el),r=el.getBoundingClientRect();return {background:s.backgroundColor,shadow:s.boxShadow,radius:s.borderRadius,width:r.width,height:r.height,initial:el.classList.contains('sf-initial-focus'),focused:el===document.activeElement,focusVisible:el.matches(':focus-visible')};});
+    assert(paint.initial&&paint.focused&&paint.focusVisible,`${mode} keeps keyboard-visible initial focus after switching`);
     assert.equal(paint.background,material.background,`${mode} close has shared surface at ${width}`);
     assert.equal(paint.shadow,material.shadow,`${mode} close keeps the surface shadow at ${width}`);
     assert.equal(paint.radius,material.radius,`${mode} close has shared round shape`);
@@ -143,9 +144,13 @@ const documentHTML = body => `<!doctype html><html lang="tr"><head><meta charset
    await page.setContent(fixture().replace('<footer class="sf-footer">','<footer class="sf-footer sf-footer--mobile-hidden">'));
    await page.evaluate(()=>{const link=document.createElement('a');link.href='/last-related';link.textContent='Last related product';link.id='last-related';link.style.display='block';link.style.marginTop='1000px';document.querySelector('.related').appendChild(link);});
    await page.addScriptTag({content:fs.readFileSync(root+'assets/scripts/product-information.js','utf8')});
+   await page.addScriptTag({content:fs.readFileSync(root+'assets/scripts/gallery-defer.js','utf8')});
    await page.waitForSelector('body.sf-product-sheet-ready');
-   await page.locator('#last-related').scrollIntoViewIfNeeded();
-   await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
+   await page.locator('.woocommerce-product-gallery__wrapper').focus();
+   await page.keyboard.press('End');
+   await page.waitForFunction(()=>document.querySelector('.woocommerce-product-gallery').classList.contains('is-discovering'));
+   await page.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
+   await page.waitForFunction(()=>Math.abs(scrollY-(document.documentElement.scrollHeight-innerHeight))<1);
    await flush();
    const result=await page.evaluate(()=>({footer:getComputedStyle(document.querySelector('.sf-footer')).display,padding:parseFloat(getComputedStyle(document.body).paddingBottom),last:document.querySelector('#last-related').getBoundingClientRect().bottom,panel:document.querySelector('.sf-product-sheet').getBoundingClientRect().top}));
    assert.equal(result.footer,'none','Footer hidden on product');
