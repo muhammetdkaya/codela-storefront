@@ -34,7 +34,7 @@ function codela_sf_header_context(): array {
         return [ 'title' => $label, 'back' => $back, 'history' => false ];
     }
     // Catalog archives are top-level destinations in the shared header.
-    if ( function_exists( 'is_shop' ) && is_shop() ) {
+    if ( function_exists( 'is_shop' ) && is_shop() && ! is_front_page() ) {
         $shop_id = function_exists( 'wc_get_page_id' ) ? (int) wc_get_page_id( 'shop' ) : 0;
         $title = $shop_id > 0 ? get_the_title( $shop_id ) : '';
         return [ 'title' => $title ?: __( 'Shop', 'woocommerce' ), 'back' => '', 'history' => false ];
