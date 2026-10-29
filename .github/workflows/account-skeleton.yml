@@ -1,7 +1,7 @@
 name: Account skeleton and icon back regression
 on:
   push:
-    branches: [fix/account-skeleton-icon-back-20261029]
+    branches: [fix/safari-skeleton-visible-bottom]
   workflow_dispatch:
 permissions:
   contents: read

@@ -34,8 +34,8 @@ html[data-sf-navigation-pending] .sf-shell > .sf-mobile-dock .sf-dock-surface{tr
 @media(max-width:700px){
   html[data-sf-navigation-target="product"] .sf-skeleton{padding:0}
   html[data-sf-navigation-target="product"] .sf-navigation-preview{
-    display:block;position:fixed;inset:auto var(--sf-ui-bottom-bar-inset,16px) calc(var(--sf-ui-product-panel-gap,12px) + 12px + env(safe-area-inset-bottom,0px));
-    max-width:var(--sf-ui-bottom-bar-max-width,430px);margin:0 auto;padding:0;pointer-events:none;
+    display:block;position:fixed;inset:auto var(--sf-ui-bottom-bar-inset,16px) calc(var(--sf-ui-product-panel-gap,12px) + env(safe-area-inset-bottom,0px));
+    max-width:var(--sf-ui-bottom-bar-max-width,430px);margin:0 auto;padding:0;pointer-events:none;z-index:1000;transform:translate3d(0,0,0);isolation:isolate;
   }
   /* Reproduce the real native collapsed Woo sheet, not an isolated CTA strip.
      Only the heading is intentionally blank until the destination HTML arrives. */

@@ -35,7 +35,7 @@ const feedbackCss=fs.readFileSync(root+'styles/navigation-feedback.css','utf8');
       return {panel:box('.sf-navigation-purchase'),photo:box('.sf-skeleton-gallery'),quantity:box('.sf-navigation-quantity'),button:box('.sf-navigation-controls .sf-ui-button')};
      });
      for(const component of ['panel','photo','quantity','button']){
-      for(const key of ['x','y','width','height']) assert(Math.abs(native[component][key]-(key==='y'&&component!=='photo'?12:0)-pending[component][key])<1,`${width}/${short}/${productSource} ${component}.${key}: ${native[component][key]} != ${pending[component][key]}`);
+      for(const key of ['x','y','width','height']) assert(Math.abs(native[component][key]-pending[component][key])<1,`${width}/${short}/${productSource} ${component}.${key}: ${native[component][key]} != ${pending[component][key]}`);
      }
      assert.equal(await page.locator('.sf-navigation-preview form').count(),0);
      assert(await page.locator('.sf-navigation-preview button').isDisabled());

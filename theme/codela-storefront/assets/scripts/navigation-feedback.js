@@ -102,6 +102,7 @@
         state.releaseViewport?.();
         state.releaseSubmit?.();
         state.surface.remove();
+        state.preview?.remove();
         state.snapshots.reverse().forEach(restore);
         if (state.brand?.brand.isConnected) state.brand.brand.replaceChildren(...state.brand.nodes);
         document.documentElement.removeAttribute('data-sf-navigation-pending');
@@ -133,15 +134,16 @@
         shapes.setAttribute('aria-hidden', 'true');
         shapes.innerHTML = layout(type, target);
         surface.append(label, shapes);
+        let statePreview = null;
         if (type === 'product' && config.purchasePreview) {
             const preview = document.createElement('div');
             preview.className = 'sf-navigation-preview';
             preview.setAttribute('aria-hidden', 'true');
             preview.inert = true;
             preview.innerHTML = config.purchasePreview;
-            surface.append(preview);
+            statePreview = preview;
         }
-        const state = pending = { token: ++sequence, surface, snapshots: [], focus: link || document.activeElement };
+        const state = pending = { token: ++sequence, surface, preview: statePreview, snapshots: [], focus: link || document.activeElement };
         const save = (node, names) => { if (node) state.snapshots.push(remember(node, names)); };
         save(main, ['aria-busy']);
         main.setAttribute('aria-busy', 'true');
@@ -179,6 +181,7 @@
         document.documentElement.dataset.sfNavigationBottom = type === 'product' ? 'product' : dock ? 'dock' : 'none';
         // Outside transformed/contained outgoing main, including router regions.
         document.body.append(surface);
+        if (state.preview) document.body.append(state.preview);
         // iOS Safari already anchors fixed elements to its visible viewport.
         // Reapplying (innerHeight - visualViewport.height) moved the native dock
         // upwards, while setting a second viewport top/height clipped the fake
