@@ -50,6 +50,8 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'Categories' => 'Kategoriler',
 'Sort by' => 'Sıralama',
 'Mobile bottom navigation' => 'Mobil alt menü',
+'Hide footer on mobile' => 'Footer’ı mobilde gizle',
+'Hide the footer on screens up to 700px. The desktop footer remains visible.' => 'Footer’ı mobilde gizle. Masaüstünde görünmeye devam eder.',
 'Show the bottom navigation on mobile. When disabled, search, cart and account appear in the header, as on desktop.' => 'Mobilde alt menüyü göster. Kapatıldığında arama, sepet ve hesabım ikonları masaüstündeki gibi üst alanda görünür.',
 'Theme' => 'Tema',
 'Download' => 'İndir',

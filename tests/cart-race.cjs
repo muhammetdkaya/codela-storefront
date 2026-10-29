@@ -54,9 +54,8 @@ if (require.main === module) (async()=>{
  x.answer(0,snapshot(0));await tick();
  const empty=x.nodes['#sf-cart-items'].innerHTML;
  assert.match(empty,/class="sf-empty sf-cart-empty"/,'Empty state uses the cart presentation');
- assert.match(empty,/href="\/shop"/,'Empty cart uses the configured native shop URL');
- assert.match(empty,/sf-ui-button--secondary/,'Continue shopping reuses the shared Button');
- assert.equal((empty.match(/Continue shopping/g)||[]).length,1,'One accessible navigation CTA');
+ assert.match(empty,/Your cart is empty\./,'Empty message remains');
+ assert.doesNotMatch(empty,/<a\b|<button\b|Continue shopping/,'Empty panel has no continue-shopping CTA');
  assert.equal(x.nodes['.sf-cart-bottom'].hidden,true,'Empty cart never shows checkout totals');
  }
  // Closed cart: 20 items keep live state/badge without creating hidden images.

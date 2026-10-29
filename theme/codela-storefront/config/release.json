@@ -6,7 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mağaza ve kategori sayfalarında tekrarlanan başlık görsel olarak kaldırıldı; erişilebilir başlık ve açıklamalar korundu.",
-    "Mobil ürüne geçişte header sepet butonu gerçek ürün sayfasındaki ölçü ve görünüme eşitlendi."
+    "Footer için mobilde gizleme ayarı eklendi; masaüstü görünümü korundu.",
+    "Vitrin sonrası boşluk diğer bölümlerle eşitlendi ve mobil menü içerikleri üstten başladı.",
+    "Boş sepet penceresindeki alışverişe devam düğmesi kaldırıldı; panel kapatma düğmelerinin yüzeyi geçişlerde korundu."
   ]
 }

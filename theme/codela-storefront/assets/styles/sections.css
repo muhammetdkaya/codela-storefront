@@ -58,6 +58,4 @@
  .sf-section--hero .sf-section-copy .sf-ui-button{margin-top:auto;max-width:calc(100vw - 124px);--sf-ui-button-padding-x:12px;gap:8px;font-size:13px}
  .sf-section--hero>.sf-section-gallery-controls{right:16px;bottom:calc(20px + var(--sf-hero-bottom-reserve));grid-template-columns:1fr;gap:2px}
  .sf-section--hero .sf-hero-progress{width:72px}
- /* Preserve existing first-category spacing. */
- .codela-page-layout>.sf-section--hero+.sf-section{margin-top:12px}
 }

@@ -2,7 +2,7 @@
 // A deterministic WordPress/WooCommerce fixture for the real footer renderer.
 define( 'ABSPATH', __DIR__ );
 function codela_sf_ready() { return true; }
-function codela_theme_settings() { return [ 'brand' => 'CODELA', 'footer_text' => getenv('FOOTER_NOTE') ? 'Simple products' : '' ]; }
+function codela_theme_settings() { return [ 'brand' => 'CODELA', 'footer_text' => getenv('FOOTER_NOTE') ? 'Simple products' : '' ] + (getenv('FOOTER_MOBILE_HIDDEN') === false ? [] : ['mobile_footer_hidden' => getenv('FOOTER_MOBILE_HIDDEN')]); }
 function get_bloginfo() { return 'CODELA'; }
 function sanitize_text_field( $text ) { return trim(strip_tags($text)); }
 function absint( $number ) { return abs((int)$number); }

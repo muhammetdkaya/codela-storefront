@@ -11,6 +11,10 @@ assert.match(plain,/<a class="sf-footer-brand" href="https:\/\/store\.test\/">CO
 assert.equal((plain.match(/<footer/g)||[]).length,1,'One semantic footer only');
 assert.equal((plain.match(/<nav/g)||[]).length,0,'No dead legal links when pages are missing');
 assert.equal((plain.match(/<div class="sf-footer-inner"/g)||[]).length,1,'Single row wrapper');
+assert.equal(exec({FOOTER_MOBILE_HIDDEN:'0'}),plain,'Unset and explicitly off retain the current footer');
+const mobileHidden=exec({FOOTER_MOBILE_HIDDEN:'1',FOOTER_PRIVACY:'1'});
+assert.match(mobileHidden,/^<footer class="sf-footer sf-footer--mobile-hidden">/,'The enabled setting marks only the theme footer');
+assert.match(mobileHidden,/href="https:\/\/store\.test\/privacy\/"/,'Desktop still receives the legal links');
 const populated=exec({FOOTER_PRIVACY:'1',FOOTER_TERMS:'1',FOOTER_NOTE:'1'});
 assert.match(populated,/<nav class="sf-footer-links" aria-label="Legal links">/);
 assert.match(populated,/href="https:\/\/store\.test\/privacy\/">Privacy<\/a>/);

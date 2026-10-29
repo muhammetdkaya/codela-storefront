@@ -1,63 +1,61 @@
-name: Account skeleton and icon back regression
+name: Mobile footer, showcase and panel regression
 on:
   push:
-    branches: [fix/catalog-heading-product-cart-20261029]
+    branches: [fix/mobile-controls-20261029]
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
   responsive:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
         browser: [chromium, webkit]
     steps:
       - uses: actions/checkout@v4
-      - name: Source and package checks
+      - name: Source, cart, footer and package checks
         run: |
           php -l theme/codela-storefront/inc/render.php
-          php tests/navigation.php
-          php tests/catalog.php
-          php tests/document-continuity.php
+          php -l theme/codela-storefront/languages/tr_TR.l10n.php
+          php tests/homepage.php
+          node --check tests/mobile-controls-browser.cjs
+          node --input-type=module --check < theme/codela-storefront/assets/scripts/cart-controller.js
+          node tests/cart-race.cjs
+          node tests/cart-sync.cjs
+          node tests/search-panel.cjs
+          node tests/footer.cjs
           node tests/ui-kit.cjs
-          node --check theme/codela-storefront/assets/scripts/navigation-feedback.js
           python3 tests/package.py
       - name: Install browser
         run: |
           npm install --no-save --package-lock=false playwright@1.62.1
           npx playwright install --with-deps ${{ matrix.browser }}
-      - name: Confirm the previous CSS and header fail the new checks
+      - name: Responsive behavior and existing showcase alignment
         env:
           TEST_WEBKIT: ${{ matrix.browser == 'webkit' && '1' || '' }}
         run: |
-          git fetch origin 7abfadd64ece836629351729b13e2b128b037f33 --depth=1
-          git show 7abfadd64ece836629351729b13e2b128b037f33:theme/codela-storefront/assets/scripts/navigation-feedback.js > /tmp/previous-feedback.js
-          git show 7abfadd64ece836629351729b13e2b128b037f33:theme/codela-storefront/assets/styles/catalog.css > /tmp/previous-catalog.css
-          if HEADER_TEST_SCOPE=cart HEADER_FEEDBACK_SCRIPT=/tmp/previous-feedback.js node tests/catalog-header-skeleton-browser.cjs > /tmp/before-cart.log 2>&1; then cat /tmp/before-cart.log; exit 1; fi
-          cat /tmp/before-cart.log
-          grep -q 'cart header .* should match actual product' /tmp/before-cart.log
-          if HEADER_TEST_SCOPE=heading HEADER_CATALOG_CSS=/tmp/previous-catalog.css node tests/catalog-header-skeleton-browser.cjs > /tmp/before-heading.log 2>&1; then cat /tmp/before-heading.log; exit 1; fi
-          cat /tmp/before-heading.log
-          grep -q 'duplicate archive title visually hidden' /tmp/before-heading.log
-      - name: Responsive skeleton and context regression
+          node tests/mobile-controls-browser.cjs
+          SHOWCASE_ALIGNMENT_ONLY=1 node tests/showcase-viewport-browser.cjs
+      - name: Prove 0.1.190 has the short showcase gap and hidden focus surface
         env:
           TEST_WEBKIT: ${{ matrix.browser == 'webkit' && '1' || '' }}
         run: |
-          node tests/catalog-header-skeleton-browser.cjs
-          node tests/context-header-browser.cjs
-          node tests/catalog-context-return-browser.cjs
-          node tests/product-skeleton-geometry-browser.cjs
-          node tests/navigation-feedback-bottom-browser.cjs
-      - name: Catalog filters remain functional
-        if: matrix.browser == 'chromium'
-        run: node tests/catalog-filters-browser.cjs
-      - name: Native cross-document continuity (Chromium API)
-        if: matrix.browser == 'chromium'
-        run: node tests/document-continuity-browser.cjs
+          git fetch origin 87d68846bcc10a58bb00a2c0d0930996fc09fdd8 --depth=1
+          mkdir -p /tmp/old-showcase/assets/styles /tmp/old-focus/assets/styles
+          git show 87d68846bcc10a58bb00a2c0d0930996fc09fdd8:theme/codela-storefront/assets/styles/sections.css > /tmp/old-showcase/assets/styles/sections.css
+          git show 87d68846bcc10a58bb00a2c0d0930996fc09fdd8:theme/codela-storefront/assets/styles/navigation-feedback.css > /tmp/old-showcase/assets/styles/navigation-feedback.css
+          git show 87d68846bcc10a58bb00a2c0d0930996fc09fdd8:theme/codela-storefront/assets/styles/overlay.css > /tmp/old-focus/assets/styles/overlay.css
+          if MOBILE_CONTROLS_SCOPE=showcase MOBILE_CONTROLS_OLD_CSS=/tmp/old-showcase node tests/mobile-controls-browser.cjs > /tmp/showcase-before.log 2>&1; then cat /tmp/showcase-before.log; exit 1; fi
+          cat /tmp/showcase-before.log
+          grep -q 'showcase spacing equals other sections' /tmp/showcase-before.log
+          if MOBILE_CONTROLS_SCOPE=panels MOBILE_CONTROLS_OLD_CSS=/tmp/old-focus node tests/mobile-controls-browser.cjs > /tmp/focus-before.log 2>&1; then cat /tmp/focus-before.log; exit 1; fi
+          cat /tmp/focus-before.log
+          grep -Eq 'Menu keeps its own soft shadow|close keeps the surface shadow' /tmp/focus-before.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: account-skeleton-${{ matrix.browser }}
+          name: mobile-controls-${{ matrix.browser }}
           path: qa/
+          if-no-files-found: ignore

@@ -35,6 +35,13 @@
       "description": "Compact, one-line copyright and legal links.",
       "fields": [
         {
+          "id": "mobile_footer_hidden",
+          "type": "checkbox",
+          "default": false,
+          "label": "Hide footer on mobile",
+          "description": "Hide the footer on screens up to 700px. The desktop footer remains visible."
+        },
+        {
           "id": "footer_text",
           "type": "text",
           "label": "Footer note",
