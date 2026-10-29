@@ -4,7 +4,7 @@
 
 Tema 0.1.188 → 0.1.189; eklenti değişmedi. Mağaza ve ürün kategori/etiket arşivleri header alanında gerçek başlıklarını sunar. Ürün ve içerik geri hedefi, aynı sekmede son tıklanan hedefle eşleşen kısa ömürlü geçiş kaydı sayesinde referrer kısıtlı olsa da kaynak URL ve filtreyi korur. Doğrudan giriş için mağaza/blog fallback, menüden açılan ana sayfada başlık, hesap üst sayfaları ve ödeme/mutasyon dışlamaları korunur; düz permalink dışlamalarında sorgu dikkate alınır. Üründen ilişkili ürüne gidip geri dönerken önceki ürünün kendi hedefi korunur.
 
-Yerel PHP/JS ve 24 paket kontrolü başarılı. Gerçek PHP header ve gerçek link navigasyonu için 320/390/1280 ile no-referrer/origin/normal testleri; 0.1.188 negatif regresyon, mobil panel, hesap ve Chromium/WebKit kontrolü CI bekliyor. Gerçek fiziksel Safari veya mağaza kurulumu henüz doğrulanmadı. Kullanıcının onayıyla GitHub-only kararlı yayın hedeflenir; sürüm/paket sonucu doğrulanınca güncelle.
+Doğrulama: aday ed05486, GitHub CI 40936231305 Chromium ve WebKit başarılı. Gerçek PHP header + gerçek HTTP/link ile 320/390/1280 × no-referrer/origin/normal: ana sayfa→ürün→geri, filtreli kategori, kategori/etiket/mağaza başlıkları, doğrudan giriş, yenileme, ilişkili ürün zinciri, sunucu yönlendirmesi, menü ve sorgulu permalink dışlamaları geçti. Aynı test 0.1.188 koduyla no-referrer ana sayfa dönüşünde beklendiği gibi başarısız oldu. Gerçek mobil panel, hesap, header ve Chromium native continuity regresyonları ve 24 paket testi geçti. WebKit 390px mağaza/kategori/uzun başlık ekranları incelendi; mağaza ana sayfa seçiliyse logo korunur. Gerçek fiziksel Safari ve mağaza kurulumu henüz doğrulanmadı. GitHub-only yayın sonucu bekleniyor.
 
 ## 29 Ekim 2026 — 0.1.188 bağlamsal başlık ve masaüstü ürün skeleton adayı
 
