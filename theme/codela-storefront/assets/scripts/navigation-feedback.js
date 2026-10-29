@@ -42,7 +42,7 @@
             const content = mode === 'guest' ? heading + form : mode === 'dashboard' ? summary : heading + (/edit-account|edit-address/.test(url.href) ? form : '<div class="sf-skeleton-account-table">' + lines.repeat(4) + '</div>');
             return '<div class="sf-skeleton-account sf-skeleton-account--' + mode + '">' + (mode === 'guest' ? '' : menu) + '<div class="sf-skeleton-account-content">' + content + '</div></div>';
         }
-        if (type === 'product') return shape('gallery');
+        if (type === 'product') return '<div class="sf-skeleton-product"><div class="sf-skeleton-product-media">' + shape('gallery') + '<div class="sf-skeleton-product-thumbs">' + shape('product-thumb').repeat(3) + '</div></div><div class="sf-skeleton-product-summary">' + shape('product-title') + shape('product-price') + lines + '<div class="sf-skeleton-product-actions">' + shape('product-quantity') + shape('product-button') + '</div>' + shape('product-detail') + lines + '</div></div>';
         const hero = '<div class="sf-skeleton-hero">' + shape('hero-image') + '<div class="sf-skeleton-hero-caption">' + shape('hero-title') + '<div class="sf-skeleton-hero-bottom">' + shape('hero-button') + shape('hero-count') + '</div></div></div>';
         if (type === 'home' || type === 'catalog') return (type === 'home' ? hero : shape('heading') + shape('filters')) + '<div class="sf-skeleton-cards">' + ('<div>' + shape('card') + lines + '</div>').repeat(4) + '</div>';
         return shape('heading') + '<div class="sf-skeleton-copy">' + (lines + lines + lines).repeat(2) + '</div>';
