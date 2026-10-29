@@ -97,7 +97,15 @@
             const nav = performance.getEntriesByType('navigation')[0];
             const source = event?.detail?.from || document.referrer;
             const sourceUrl = source ? new URL(source, target) : null;
-            const pendingMatches = pending && (pending.to === key || nav?.type === 'navigate' && nav.redirectCount > 0) && Date.now() - pending.time >= 0 && Date.now() - pending.time < 120000 && (!sourceUrl || sourceUrl.origin === target.origin);
+            // Some WebKit builds report redirectCount as zero. When two URLs
+            // share the configured product base, allow a short same-tab hop
+            // to cover canonical redirects even with a suppressed referrer.
+            const age = pending ? Date.now() - pending.time : -1;
+            const productBase = config.productBase ? new URL(config.productBase, target).pathname.replace(/\/$/, '') : '';
+            const pendingUrl = pending ? new URL(pending.to, target) : null;
+            const productRedirect = age >= 0 && age < 10000 && productBase && productBase !== '/' &&
+                pendingUrl?.origin === target.origin && pendingUrl.pathname.startsWith(productBase + '/') && target.pathname.startsWith(productBase + '/');
+            const pendingMatches = pending && (pending.to === key || nav?.type === 'navigate' && (nav.redirectCount > 0 || productRedirect)) && age >= 0 && age < 120000 && (!sourceUrl || sourceUrl.origin === target.origin);
             let record = null;
             if (pendingMatches) {
                 sessionStorage.removeItem(pendingKey);
