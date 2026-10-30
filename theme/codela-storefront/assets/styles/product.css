@@ -471,8 +471,11 @@ body.single-product div.product form.cart .sf-product-purchase .quantity input.q
   body.single-product div.product form.cart .sf-product-purchase .single_add_to_cart_button{
     --sf-ui-button-height:var(--sf-ui-bottom-bar-control-height);
   }
-  body.single-product:has(.sf-product-purchase) .sf-shell > .sf-mobile-dock{display:none}
-  /* The modal receives the existing dock. The document's purchase stays inert. */
+  /* Product pages never display the navigation dock, including in dialogs.
+     A pending non-product destination may still preview its own real dock. */
+  html:not([data-sf-navigation-bottom="dock"]) body.single-product .sf-shell .sf-mobile-dock{display:none!important}
+  body.single-product:not(.sf-product-sheet-ready):has(.sf-mobile-dock){padding-bottom:0}
+  /* The document's purchase stays hidden while a modal is open. */
   body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-purchase{visibility:hidden}
   body.single-product div.product form.cart:has(.sf-product-purchase){
     border:0;padding:0;
@@ -700,10 +703,6 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
   }
   body.sf-product-sheet-ready .sf-product-sheet-header{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:grab}
   body.sf-product-sheet-ready .sf-product-sheet.is-holding .sf-product-sheet-header{cursor:grabbing}
-  body.sf-product-sheet-ready div.product > .sf-product-sheet:not(.has-purchase){
-    bottom:calc(var(--sf-ui-bottom-bar-height) + var(--sf-ui-bottom-bar-gap) + env(safe-area-inset-bottom,0px));
-    max-height:calc(100svh - 84px - var(--sf-header-offset,0px) - var(--sf-ui-bottom-bar-height) - var(--sf-ui-bottom-bar-gap) - env(safe-area-inset-bottom,0px));
-  }
   body.single-product.sf-product-sheet-ready div.product .sf-product-sheet-heading .product_title{
     margin:0;font-size:clamp(16px,4.5vw,20px);line-height:1.25;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;

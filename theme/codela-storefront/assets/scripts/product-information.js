@@ -86,8 +86,7 @@
       var footerHeight = purchase ? purchase.getBoundingClientRect().height : 0;
       sheet.style.setProperty('--sf-product-footer-height', footerHeight + 'px');
       sheet.style.setProperty('--sf-product-closed-height', (sheet.querySelector('.sf-product-sheet-header').getBoundingClientRect().height + footerHeight + 8) + 'px');
-      var dockHeight = !purchase ? (document.querySelector('.sf-mobile-dock')?.getBoundingClientRect().height || 0) : 0;
-      var height = sheet.querySelector('.sf-product-sheet-header').getBoundingClientRect().height + footerHeight + dockHeight + 16;
+      var height = sheet.querySelector('.sf-product-sheet-header').getBoundingClientRect().height + footerHeight + 16;
       // CSS owns photo framing before and after mount. Only cache the sheet
       // height for annotations; never feed measured sheet size into photos.
       if (!expanded && !sheet.classList.contains('is-discovering') && photoWidth !== media.clientWidth) {

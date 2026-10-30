@@ -174,13 +174,14 @@
   .sf-mobile-dock .sf-dock-handle:focus-visible{outline:2px solid #55565c;outline-offset:1px}
   body:has(.sf-mobile-dock){padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
   #sf-panel .sf-mobile-dock{z-index:10}
-  #sf-panel.is-search-panel:has(.sf-mobile-dock) .sf-search-content{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
-  #sf-panel.is-cart-panel:has(.sf-mobile-dock) .sf-cart-bottom:not([hidden]){padding-bottom:calc(82px + env(safe-area-inset-bottom,0px))}
+  body:not(.single-product) #sf-panel.is-search-panel:has(.sf-mobile-dock) .sf-search-content{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
+  body:not(.single-product) #sf-panel.is-cart-panel:has(.sf-mobile-dock) .sf-cart-bottom:not([hidden]){padding-bottom:calc(82px + env(safe-area-inset-bottom,0px))}
   #sf-panel.is-cart-panel #sf-cart{padding-bottom:28px}
 }
 /* Floating material is shared with Header/IconButton in components.css. */
 @media(prefers-reduced-motion:reduce){.sf-mobile-dock.is-pressing{--sf-dock-press-scale:1}}
 @media(min-width:701px){.sf-mobile-dock{display:none!important}}
+@media(min-width:701px){#sf-menu .sf-menu-tools--product-mobile{display:none!important}}
 
 
 /* Header composition only. Surface paint and press feedback are shared UI Kit. */
@@ -228,8 +229,6 @@ body.admin-bar{--sf-header-offset:32px}
   .sf-shell:is(.has-mobile-dock,.has-checkout-header) .sf-header .sf-actions{display:none}
   .sf-shell.has-product-header .sf-header .sf-actions{display:flex}
   .has-product-header .sf-actions > :not(.sf-cart-trigger){display:none}
-  /* Without a purchase form, the existing dock remains the cart entry. */
-  body.single-product:not(:has(.sf-product-purchase)) .has-product-header.has-mobile-dock .sf-header .sf-actions{display:none}
 }
 
 

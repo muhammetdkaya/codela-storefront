@@ -37,7 +37,7 @@ function is_product() { return getenv('FIXTURE_PRODUCT') === '1'; }
 function is_checkout() { return getenv('FIXTURE_CHECKOUT') === '1'; }
 function is_front_page() { return getenv('FIXTURE_CATALOG_FRONT') === '1' || getenv('FIXTURE_PAGE') !== '1' && getenv('FIXTURE_ACCOUNT') !== '1' && getenv('FIXTURE_GUEST_ACCOUNT') !== '1' && getenv('FIXTURE_PRODUCT') !== '1' && getenv('FIXTURE_POST') !== '1' && getenv('FIXTURE_BLOG') !== '1' && !getenv('FIXTURE_CATALOG'); }
 function is_account_page() { return getenv('FIXTURE_ACCOUNT') === '1' || getenv('FIXTURE_GUEST_ACCOUNT') === '1'; }
-function is_user_logged_in() { return getenv('FIXTURE_ACCOUNT') === '1' && getenv('FIXTURE_GUEST_ACCOUNT') !== '1'; }
+function is_user_logged_in() { return getenv('FIXTURE_LOGGED_IN') === '1' || getenv('FIXTURE_ACCOUNT') === '1' && getenv('FIXTURE_GUEST_ACCOUNT') !== '1'; }
 function get_privacy_policy_url() { return ''; }
 function add_query_arg( $args, $url ) { return $url.'?'.http_build_query($args); }
 function get_terms( ...$args ) { return [(object)['parent'=>0,'term_id'=>1,'name'=>'Collection','count'=>3],(object)['parent'=>1,'term_id'=>2,'name'=>'Shoes','count'=>2]]; }

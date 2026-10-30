@@ -143,13 +143,11 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
   assert.equal(await page.locator('form.cart').getAttribute('data-submits'),'1','One click produces one native submit');
   await page.locator('#sf-panel').evaluate(dialog=>{dialog.append(document.querySelector('.sf-mobile-dock'));dialog.showModal()});
   assert.equal(await page.locator('.sf-product-purchase').evaluate(el=>getComputedStyle(el).visibility),'hidden','Purchase hides while dialog owns bottom');
-  assert.equal(await page.locator('#sf-panel .sf-mobile-dock').evaluate(el=>getComputedStyle(el).display),'block','Same dock available in dialog');
-  assert.equal(await page.locator('#sf-panel .sf-mobile-dock').evaluate(el=>el.getBoundingClientRect().height),58,'Navigation and purchase share the same height');
-  assert(await page.evaluate(()=>Math.abs(document.querySelector('#sf-panel .sf-mobile-dock').getBoundingClientRect().bottom-document.querySelector('.sf-product-purchase').getBoundingClientRect().bottom)<1),'Navigation and purchase share the lower baseline');
+  assert.equal(await page.locator('#sf-panel .sf-mobile-dock').evaluate(el=>getComputedStyle(el).display),'none','Product dialogs keep the dock hidden');
   await page.locator('#sf-panel').evaluate(dialog=>{dialog.close();document.querySelector('.sf-shell').append(dialog.querySelector('.sf-mobile-dock'))});
   assert.equal(await page.locator('.sf-product-purchase').evaluate(el=>getComputedStyle(el).visibility),'visible','Purchase restores after dialog');
   await page.locator('.sf-product-purchase').evaluate(el=>el.remove());
-  assert.equal(await page.locator('.sf-shell > .sf-mobile-dock').evaluate(el=>getComputedStyle(el).display),'block','No purchase form retains navigation (out of stock)');
+  assert.equal(await page.locator('.sf-shell > .sf-mobile-dock').evaluate(el=>getComputedStyle(el).display),'none','No purchase form also keeps navigation hidden');
   await page.setViewportSize({width:320,height:900});
   await page.locator('.flex-control-thumbs').evaluate(el=>{el.scrollLeft=el.scrollWidth});
   assert(await page.locator('.flex-control-thumbs').evaluate(el=>el.scrollLeft>0),'Overflowing thumbnails can scroll');
