@@ -6,8 +6,7 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Footer için mobilde gizleme ayarı eklendi; masaüstü görünümü korundu.",
-    "Vitrin sonrası boşluk diğer bölümlerle eşitlendi ve mobil menü içerikleri üstten başladı.",
-    "Boş sepet penceresindeki alışverişe devam düğmesi kaldırıldı; panel kapatma düğmelerinin yüzeyi geçişlerde korundu."
+    "Ürün sayfasında alt gezinme menüsü satın alınabilirlik ve stok durumundan bağımsız olarak gizlendi.",
+    "Satın alma alanı olmayan ürünlerin bilgi paneli alt kenara hizalandı; sepet, arama ve hesap erişimi korundu."
   ]
 }
