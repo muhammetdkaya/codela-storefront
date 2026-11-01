@@ -38,8 +38,8 @@ The capture and screenshots remain outside the GitHub source; `tools/first-load-
 - Old media-loading source fails the new hidden-slide network test by requesting slide 2 before interaction; the candidate passes.
 - PHP lint and relevant catalog/homepage/preview/media/product-media/navigation suites, cart race/synchronization, UI Kit, 24 package tests and three deterministic asset tests passed locally.
 - The old homepage fixture expected a 12px first-category gap despite the already released 0.1.191 40px spacing. Only that stale expectation was updated; current spacing CSS is unchanged.
-- Focused Chromium/WebKit CI and publication are pending at this candidate checkpoint. This document does not assert full live WordPress/Woo integration, physical Safari acceptance or a measured server SQL/wall-time improvement.
+- [Focused CI 41327370251](https://github.com/muhammetdkaya/codela-storefront/actions/runs/41327370251) passed on exact candidate `f5ae5c7d66160d3447128d9e58e4d013749c1111`: Chromium and WebKit media/homepage/product-no-dock suites, Chromium navigation/checkout/native continuity, native WordPress asset dependencies and deterministic source/package checks. This does not assert full live WordPress/Woo integration, physical Safari acceptance or a measured server SQL/wall-time improvement.
 
 Earlier public requests showed cache-miss HTML response waits of approximately 2.7–4.5s and warm repeats around 0.4–0.5s after connection establishment. The isolated replay excludes that origin generation time. The theme now avoids unnecessary PHP work, but the remaining live first-response delay must be remeasured after manual installation; these results do not claim it is eliminated.
 
-Next: validate the exact candidate in focused CI, publish GitHub-only 0.1.193, then remeasure the manually updated AZ Seramik homepage and native product/cart/account flow.
+Next: publish the validated candidate as GitHub-only 0.1.193, then remeasure the manually updated AZ Seramik homepage and native product/cart/account flow.
