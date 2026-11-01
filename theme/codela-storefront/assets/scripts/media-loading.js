@@ -21,8 +21,11 @@
   if(!images.length)return;
   if(!('IntersectionObserver' in window)){images.forEach(promote);return;}
   const observer=new IntersectionObserver(entries=>{
-   for(const entry of entries)if(entry.isIntersecting){observer.unobserve(entry.target);promote(entry.target);}
-  },{rootMargin:'200px'});
+   for(const entry of entries)if(entry.isIntersecting&&entry.intersectionRatio>0){observer.unobserve(entry.target);promote(entry.target);}
+  // Prefetch vertically as the visitor scrolls, not sideways into a hidden
+  // slide. Touch/keyboard selection already promotes its intended neighbour.
+  // A positive threshold also excludes zero-area contact at the track edge.
+  },{rootMargin:'200px 0px',threshold:0.01});
   images.forEach(image=>observer.observe(image));
   // Printing includes all photographs; restore native sources before printing.
   addEventListener('beforeprint',()=>{observer.disconnect();images.filter(image=>image.dataset.sfMediaSrc).forEach(promote);},{once:true});

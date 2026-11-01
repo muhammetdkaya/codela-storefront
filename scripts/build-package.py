@@ -1,9 +1,11 @@
 """Build the standalone theme ZIP and checksum metadata."""
-import hashlib,json,os,re,zipfile
+import hashlib,json,os,re,runpy,zipfile
 from pathlib import Path
 ROOT=Path("theme/codela-storefront")
 PUBLIC="https://github.com/muhammetdkaya/codela-storefront/releases/download/"
 def build():
+    # A stale generated bundle must fail before a release ZIP is created.
+    runpy.run_path(str(Path(__file__).with_name('build-assets.py')))['build'](check=True)
     version=re.search(r"^Version:\s*(\S+)",(ROOT/"style.css").read_text(),re.M).group(1)
     commit=os.environ.get("CODELA_SOURCE_SHA",os.environ.get("GITHUB_SHA",""))
     if not re.fullmatch(r"\d+\.\d+\.\d+",version) or not re.fullmatch(r"[0-9a-f]{40}",commit):

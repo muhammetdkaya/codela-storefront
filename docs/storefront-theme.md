@@ -1,5 +1,13 @@
 # Codela Storefront — güncel teknik durum
 
+## 1 Kasım 2026 — 0.1.193 ilk açılış optimizasyonu (aday)
+
+Kullanıcının yönlendirmesiyle çalışma yalnız bağımsız temadadır; eklenti değişmedi. Tema 0.1.192 → 0.1.193. Beş ortak CSS ve iki gezinme CSS'i sıralarını koruyan iki pakete; iki erken gezinme JS'i tek pakete birleştirildi. WordPress handle/inline/dependency sözleşmesi, erken pagereveal, SCRIPT_DEBUG kaynakları ve editör galeri izolasyonu korunur. Gizli yatay slayt sınırda sıfır alanla kesiştiğinde indirilmez; swipe/klavye, görünürlük, scriptsiz ve baskı yolları çalışır. Ürün blokları native toplu post/meta/term/thumbnail cache priming kullanır; şema JSON'u istek başına bir kez okunur. Paketleme eski üretilmiş dosyayı reddeder; kaynaklardan `python3 scripts/build-assets.py` ile üretin.
+
+Yerel doğrulama: gerçek WP 6.5 asset sınıflarıyla 8 bağlam × debug/production; Chromium gezinme/checkout/native belge geçişi, medya/klavye/swipe/scriptsiz/baskı ve ana sayfa varyantları; ilgili PHP, cart race/sync, UI Kit, 24 paket ve 3 asset testi geçti. Eski medya kodu gizli slayt ağ testinde beklenen şekilde başarısızdır. Önceden yayımlanan 191'in 40px bölüm aralığına karşı hâlâ 12px bekleyen test güncellendi; aralık CSS'i değişmedi. AZ kaynaklarının izole 150ms/1.6Mbps/4× CPU tekrarında mobil istek 53→46, transfer 713331→588837 bayt; 390/1280 ekranları piksel düzeyinde aynı, CLS 0. Canlı TTFB/SQL iyileşmesi veya fiziksel Safari kabulü iddiası yok. [Ölçüm ve kapsam](docs/first-load-performance-2026-11-01.md).
+
+Durum: aday hazır; odaklı Chromium/WebKit CI, main entegrasyonu ve GitHub-only yayın bekliyor. FTP/AZ kurulumu yapılmadı. Sıradaki: kesin aday CI başarılıysa 193'ü yayımla ve tag/stable/ZIP hash doğrula; manuel kurulum sonrası canlı ilk açılış ve Woo akışlarını yeniden ölç.
+
 ## 30 Ekim 2026 — 0.1.192 tüm ürün durumlarında gezinme gizli
 
 Kullanıcı ürün sayfasında alt gezinmenin her koşulda gizlenmesini istedi. Tema 0.1.191 → 0.1.192; eklenti değişmedi. Fiyatsız/stok dışı ürünlerde dock’u geri getiren istisna kaldırıldı. Ürün belgesi ve menü/arama/sepet/hesap pencerelerinde dock gizlidir. Başlıktaki gerçek sepet kontrolü satın alma formu yokken de görünür; arama ve hesap mevcut ürün menüsündedir. Satın alma olmayan bilgi panelinin eski 58px dock rezervi ve JS ölçümü kaldırıldı; panel aynı 12px + güvenli alan alt konumunu kullanır. Üründen diğer sayfaya geçerken hedefin dock önizlemesi korunur; iptal üründe gizliliği geri yükler. Native ürün/fiyat/stok/satın alma verisi değiştirilmedi.

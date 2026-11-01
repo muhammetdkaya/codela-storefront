@@ -1,0 +1,55 @@
+name: First-load performance regression
+on:
+  push:
+    branches: [perf/first-load-0193]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  performance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate sources and deterministic assets
+        run: |
+          find theme -name '*.php' -type f -print0 | xargs -0 -n1 php -l
+          python3 tests/build-assets.py
+          python3 tests/package.py
+          node --check theme/codela-storefront/assets/scripts/document-navigation.js
+          php tests/homepage.php
+          php tests/sections-preview.php
+          php tests/media.php
+          php tests/catalog.php
+          php tests/document-continuity.php
+          node tests/cart-race.cjs
+          node tests/cart-sync.cjs
+      - name: Verify native WordPress asset dependencies
+        run: |
+          mkdir -p "$RUNNER_TEMP/wp-core"
+          for file in class-wp-dependency.php class-wp-dependencies.php class-wp-styles.php class-wp-scripts.php functions.wp-styles.php functions.wp-scripts.php; do
+            curl --fail --silent --show-error --retry 2 "https://raw.githubusercontent.com/WordPress/WordPress/6.5/wp-includes/$file" -o "$RUNNER_TEMP/wp-core/$file"
+          done
+          WP_CORE_INCLUDES="$RUNNER_TEMP/wp-core" node tests/asset-loading.cjs
+      - name: Install focused browsers
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium webkit
+      - name: Media and visual regressions
+        run: |
+          node tests/media-loading-browser.cjs
+          TEST_WEBKIT=1 node tests/media-loading-browser.cjs
+          node tests/homepage-browser.cjs
+          TEST_WEBKIT=1 node tests/homepage-browser.cjs
+          node tests/navigation-browser.cjs
+          node tests/checkout-browser.cjs
+          node tests/document-continuity-browser.cjs
+          node tests/product-no-dock-browser.cjs
+          TEST_WEBKIT=1 node tests/product-no-dock-browser.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: first-load-regression
+          path: qa/
+          if-no-files-found: ignore
+          retention-days: 7

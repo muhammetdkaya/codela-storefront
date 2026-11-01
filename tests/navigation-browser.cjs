@@ -16,7 +16,7 @@ let activeHeader=header;
 const checkout = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8',env:{...process.env,FIXTURE_CHECKOUT:'1'}});
 const footer = execFileSync(php, ['tests/render-footer.php'], {encoding:'utf8',env:{...process.env,FOOTER_PRIVACY:'1',FOOTER_TERMS:'1',FOOTER_NOTE:'1'}});
 assert(!checkout.includes('class="sf-mobile-dock'), 'Checkout omits the dock');
-const css = ['assets/styles/tokens.css','assets/storefront.css','assets/styles/overlay.css','assets/styles/navigation.css','assets/styles/components.css','assets/styles/account-overlay.css','assets/styles/navigation-feedback.css'].map(p=>fs.readFileSync('theme/codela-storefront/'+p,'utf8')).join('\n');
+const css = ['assets/styles/storefront-base.css','assets/styles/account-overlay.css','assets/styles/document-navigation.css'].map(p=>fs.readFileSync('theme/codela-storefront/'+p,'utf8')).join('\n');
 const moduleSource = name => fs.readFileSync(
  'theme/codela-storefront/assets/scripts/'+name+'.js','utf8'
  ).replace(/^import .*;$/gm,'').replace(/^export /gm,'');

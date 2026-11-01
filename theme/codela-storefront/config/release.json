@@ -6,7 +6,9 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Ürün sayfasında alt gezinme menüsü satın alınabilirlik ve stok durumundan bağımsız olarak gizlendi.",
-    "Satın alma alanı olmayan ürünlerin bilgi paneli alt kenara hizalandı; sepet, arama ve hesap erişimi korundu."
+    "Ortak tema stilleri ve erken gezinme kodu birleştirilerek ana sayfada ilk çizimi bekleten beş CSS ve bir JavaScript isteği kaldırıldı.",
+    "Görünmeyen slider görselleri ilk açılışta indirilmez; kaydırma, klavye ve görünürlük ile gerektiğinde yüklenir.",
+    "Ürün blokları WordPress'in toplu yazı, meta, terim ve küçük resim önbelleğini kullanır; bölüm şeması istek başına bir kez okunur.",
+    "Görünüm, skeleton, WooCommerce alışveriş akışları ve geliştirici modunda ayrı kaynak dosyaları korundu."
   ]
 }

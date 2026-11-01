@@ -227,7 +227,11 @@ add_action( 'after_setup_theme', function() {
 add_action( 'init', function() {
     // Standard Gallery blocks can select this style without a new custom block or script.
     if ( ! function_exists( 'register_block_style' ) ) { return; }
-    wp_register_style( 'codela-storefront-tokens', get_template_directory_uri() . '/assets/styles/tokens.css', [], codela_sf_style_version() );
+    // This handle is registered before wp_enqueue_scripts. Use the same public
+    // bundle there; WordPress deliberately does not overwrite registrations.
+    // Editor galleries still need only tokens, never the entire storefront.
+    $tokens_file = ! is_admin() && ! ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? 'styles/storefront-base.css' : 'styles/tokens.css';
+    wp_register_style( 'codela-storefront-tokens', get_template_directory_uri() . '/assets/' . $tokens_file, [], codela_sf_style_version() );
     wp_register_style( 'codela-storefront-gallery', get_template_directory_uri() . '/assets/styles/gallery.css', [ 'codela-storefront-tokens' ], codela_sf_style_version() );
     register_block_style( 'core/gallery', [
         'name' => 'sf-media-slider',

@@ -4,8 +4,8 @@ const {createServer}=require('node:http');
 const assert=require('node:assert/strict');
 const {chromium}=require('playwright');
 const fs=require('node:fs');
-const css=['tokens','components','navigation-feedback','document-continuity'].map(name=>fs.readFileSync('theme/codela-storefront/assets/styles/'+name+'.css','utf8')).join('\n');
-const accountScript=fs.readFileSync('theme/codela-storefront/assets/scripts/navigation-feedback.js','utf8')+fs.readFileSync('theme/codela-storefront/assets/scripts/document-continuity.js','utf8');
+const css=['tokens','components','document-navigation'].map(name=>fs.readFileSync('theme/codela-storefront/assets/styles/'+name+'.css','utf8')).join('\n');
+const accountScript=fs.readFileSync('theme/codela-storefront/assets/scripts/document-navigation.js','utf8');
 const purchasePreview=require('node:child_process').execFileSync(process.env.PHP_BIN||'php',['tests/render-product-sheet.php','navigation'],{encoding:'utf8'});
 const baseCss='body{margin:0;font-family:sans-serif}.sf-header{position:fixed;inset:0 0 auto;z-index:1000;height:72px;display:flex;align-items:center;padding:0 20px;background:#fafafa}.sf-mobile-dock,.sf-product-purchase{z-index:1000;position:fixed;bottom:12px;left:16px;right:16px;height:58px;border-radius:30px;background:#eee}body.single-product .sf-mobile-dock{display:none}main{padding:100px 30px 30px;min-height:1800px}';
 const doc=(path)=>{
@@ -35,7 +35,7 @@ const doc=(path)=>{
  });
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
  const origin='http://127.0.0.1:'+server.address().port;
- const browser=await chromium.launch();
+ const browser=await chromium.launch(process.env.CHROMIUM_BIN?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox']}:{});
  try {
   const context=await browser.newContext({viewport:{width:390,height:850},isMobile:true,hasTouch:true});
   const page=await context.newPage();

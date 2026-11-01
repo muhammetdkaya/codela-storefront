@@ -110,11 +110,23 @@ add_action( 'wp_enqueue_scripts', function() {
     if ( ! codela_sf_ready() ) { return; }
     $root_uri = get_template_directory_uri() . '/assets/';
     $style_version = codela_sf_style_version();
-    wp_enqueue_style( 'codela-storefront-tokens', $root_uri . 'styles/tokens.css', [], $style_version );
-    wp_enqueue_style( 'codela-storefront-theme', $root_uri . 'storefront.css', [ 'codela-storefront-tokens' ], $style_version );
-    wp_enqueue_style( 'codela-storefront-overlay', $root_uri . 'styles/overlay.css', [ 'codela-storefront-theme' ], $style_version );
-    wp_enqueue_style( 'codela-storefront-navigation', $root_uri . 'styles/navigation.css', [ 'codela-storefront-overlay' ], $style_version );
-    wp_enqueue_style( 'codela-storefront-components', $root_uri . 'styles/components.css', [ 'codela-storefront-navigation' ], $style_version );
+    $debug_assets = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG;
+    // One blocking stylesheet in production; original handles remain native
+    // dependency/inline-style anchors. Debug mode serves the editable sources.
+    $shared_styles = [
+        'codela-storefront-tokens' => 'styles/tokens.css',
+        'codela-storefront-theme' => 'storefront.css',
+        'codela-storefront-overlay' => 'styles/overlay.css',
+        'codela-storefront-navigation' => 'styles/navigation.css',
+        'codela-storefront-components' => 'styles/components.css',
+    ];
+    $dependencies = [];
+    foreach ( $shared_styles as $handle => $file ) {
+        $source = $debug_assets ? $root_uri . $file : ( $dependencies ? false : $root_uri . 'styles/storefront-base.css' );
+        wp_register_style( $handle, $source, $dependencies, $style_version );
+        wp_enqueue_style( $handle );
+        $dependencies = [ $handle ];
+    }
     if ( is_home() || is_singular( 'post' ) || ( is_archive() && ! ( function_exists( 'is_woocommerce' ) && is_woocommerce() ) ) ) {
         wp_enqueue_style( 'codela-storefront-journal', $root_uri . 'styles/journal.css', [ 'codela-storefront-components' ], $style_version );
     }
@@ -129,11 +141,15 @@ add_action( 'wp_enqueue_scripts', function() {
     }
     if ( $sections['products'] || is_front_page() || is_search() ) { wp_enqueue_script( 'wc-add-to-cart' ); }
     if ( codela_sf_document_continuity_allowed() ) {
-        wp_enqueue_style( 'codela-storefront-document-continuity', $root_uri . 'styles/document-continuity.css', [ 'codela-storefront-components' ], $style_version );
-        wp_enqueue_style( 'codela-storefront-navigation-feedback', $root_uri . 'styles/navigation-feedback.css', [ 'codela-storefront-components' ], $style_version );
-        wp_enqueue_script( 'codela-storefront-navigation-feedback', $root_uri . 'scripts/navigation-feedback.js', [], codela_sf_script_module_version( 'scripts/navigation-feedback.js' ), false );
-        // Head script registers pagereveal before the first rendering opportunity.
-        wp_enqueue_script( 'codela-storefront-document-continuity', $root_uri . 'scripts/document-continuity.js', [ 'codela-storefront-navigation-feedback' ], codela_sf_script_module_version( 'scripts/document-continuity.js' ), false );
+        wp_enqueue_style( 'codela-storefront-document-continuity', $root_uri . ( $debug_assets ? 'styles/document-continuity.css' : 'styles/document-navigation.css' ), [ 'codela-storefront-components' ], $style_version );
+        wp_register_style( 'codela-storefront-navigation-feedback', $debug_assets ? $root_uri . 'styles/navigation-feedback.css' : false, [ 'codela-storefront-document-continuity' ], $style_version );
+        wp_enqueue_style( 'codela-storefront-navigation-feedback' );
+        $feedback_file = $debug_assets ? 'scripts/navigation-feedback.js' : 'scripts/document-navigation.js';
+        wp_enqueue_script( 'codela-storefront-navigation-feedback', $root_uri . $feedback_file, [], codela_sf_script_module_version( $feedback_file ), false );
+        // The same synchronous head bootstrap still registers pagereveal before
+        // first paint. Bundling removes a blocking fetch, not the early listener.
+        wp_register_script( 'codela-storefront-document-continuity', $debug_assets ? $root_uri . 'scripts/document-continuity.js' : false, [ 'codela-storefront-navigation-feedback' ], codela_sf_script_module_version( 'scripts/document-continuity.js' ), false );
+        wp_enqueue_script( 'codela-storefront-document-continuity' );
         wp_add_inline_script( 'codela-storefront-navigation-feedback', 'window.codelaSFDocument=' . wp_json_encode( [
             'home' => home_url( '/' ),
             'shop' => wc_get_page_permalink( 'shop' ),

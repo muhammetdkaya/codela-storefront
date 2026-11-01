@@ -5,7 +5,9 @@ function __( $s,...$args ){return $s;}function esc_html($s){return htmlspecialch
 function codela_sf_icon($name){return '<img class="sf-icon" src="/theme/assets/icons/'.$name.'.svg" alt="">';}
 function add_filter(...$args){}function is_front_page(){return true;}function codela_theme_settings(){return $GLOBALS['settings']??[];}function get_bloginfo($s){return 'Store';}function wp_attachment_is_image($id){return in_array($id,[10,11,12,13],true);}function wp_get_attachment_image($id,$size,$icon,$attrs){return '<img alt="Stone" src="/image-'.$id.'.svg" width="1200" height="900" '.implode(' ',array_map(fn($k,$v)=>$k.'="'.$v.'"',array_keys($attrs),$attrs)).'>';}function wp_get_attachment_image_url($id,$size){return '/image-'.$id.'.svg';}function wp_get_attachment_image_srcset($id,$size){return '/image-'.$id.'-160.svg 160w, /image-'.$id.'-320.svg 320w, /image-'.$id.'-640.svg 640w, /image-'.$id.'-1200.svg 1200w';}function get_term($id,$taxonomy){return $id===7?(object)['term_id'=>7,'name'=>'Lighting']:null;}function get_term_meta(...$a){return 12;}function get_term_link($term,...$args){return '/category/'.(is_object($term)?$term->term_id:$term).'/';}function is_wp_error($s){return false;}function get_option($key){return $key==='woocommerce_hide_out_of_stock_items'?'yes':'';}function wc_get_product_visibility_term_ids(){return ['exclude-from-catalog'=>2,'outofstock'=>3];}function get_post_field(...$a){return '';}function wc_get_page_permalink($s){return '/shop/';}function add_query_arg($k,$v,$url){return $url.'?'.$k.'='.$v;}function codela_sf_product_grid($products){return '<ul class="products">'.implode('',array_map(fn($p)=>'<li class="product"><a href="/product/'.$p->id.'">Product '.$p->id.'</a></li>',$products)).'</ul>';}
 class WC_Product{function __construct(public $id){}function is_visible(){return $this->id!==99;}function is_in_stock(){return $this->id!==98;}function get_status(){return 'publish';}}
-function wc_get_product($id){return new WC_Product($id);}class WP_Query{public $posts;function __construct($args){$GLOBALS['queries'][]=$args;$this->posts=[1,98,99];}}
+function wc_get_product($id){return new WC_Product($id);}class WP_Query{public $posts;function __construct($args){$GLOBALS['queries'][]=$args;$this->posts=array_map(fn($id)=>(object)['ID'=>$id],[1,98,99]);}}
+function wp_list_pluck($items,$field){return array_map(fn($item)=>$item->$field,$items);}
+function update_post_thumbnail_cache($query){$GLOBALS['thumbnail_batches'][]=wp_list_pluck($query->posts,'ID');}
 
 function codela_sections_contact_rows($data){return empty($data['phone'])?[]:['<div class="codela-contact-row"><dt>Phone</dt><dd><a href="tel:+902125550000">+90 212 555 00 00</a></dd></div>'];}
 function codela_sf_png_webp_sources($id){return $GLOBALS['section_webp'][$id]??[];}
@@ -39,7 +41,10 @@ expect(count($responsive)>0,'Responsive pictures exercised');
 foreach($responsive as $picture){expect($picture[1]===$picture[2],'Mobile source keeps the layout slot width');}
 expect(!str_contains($html,'/product/98')&&!str_contains($html,'/product/99'),'Woo stock and visibility');
 expect($GLOBALS['queries'][0]['tax_query'][1]['include_children']===true,'Category descendants');
+expect(!isset($GLOBALS['queries'][0]['fields'])&&$GLOBALS['queries'][0]['update_post_meta_cache']&&$GLOBALS['queries'][0]['update_post_term_cache'],'Native product query primes full post, meta and term caches');
+expect($GLOBALS['thumbnail_batches']===[[1,98,99]],'Product thumbnails are primed as one batch');
 $before=count($GLOBALS['queries']);codela_sf_section_product_query($row);expect(count($GLOBALS['queries'])===$before,'Identical product query memoized per request');
+expect(count($GLOBALS['thumbnail_batches'])===1,'Repeated product block does not repeat thumbnail priming');
 $row['source']='best_sellers';codela_sf_section_product_query($row);expect($GLOBALS['queries'][1]['meta_key']==='total_sales','Real Woo sales ordering');
 expect(codela_sf_section_product_query(['category_id'=>99])===[],'Deleted category never broadens query');
 expect(codela_sf_render_section(null,'categories',data('categories','grid',[array_merge(item(),['term_id'=>99])]))==='','Missing category omitted');
