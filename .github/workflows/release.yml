@@ -40,6 +40,8 @@ jobs:
           php tests/document-continuity.php
           php tests/product-mobile-media.php
           php tests/homepage.php
+          python3 tests/build-assets.py
+          node --check theme/codela-storefront/assets/scripts/document-navigation.js
           node --check theme/codela-storefront/assets/scripts/gallery-horizontal.js
           node --check tests/homepage-browser.cjs
           node --input-type=module --check < theme/codela-storefront/assets/scripts/navigation-controller.js

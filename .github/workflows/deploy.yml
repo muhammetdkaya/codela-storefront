@@ -30,6 +30,8 @@ jobs:
           node --check theme/codela-storefront/assets/scripts/product-information.js
           node --check theme/codela-storefront/assets/scripts/gallery-horizontal.js
           php tests/homepage.php
+          python3 tests/build-assets.py
+          node --check theme/codela-storefront/assets/scripts/document-navigation.js
           php tests/front-page-source.php
           php tests/sections-preview.php
           node --check theme/codela-storefront/assets/scripts/media-loading.js

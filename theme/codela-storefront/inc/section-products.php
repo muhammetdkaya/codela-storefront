@@ -10,10 +10,16 @@ function codela_sf_section_product_query( array $row ): array {
     $hide_stock = 'yes' === get_option( 'woocommerce_hide_out_of_stock_items' ); if ( $hide_stock ) { $excluded[] = $visibility['outofstock']; }
     $tax = [ [ 'taxonomy' => 'product_visibility', 'field' => 'term_taxonomy_id', 'terms' => $excluded, 'operator' => 'NOT IN' ] ];
     if ( $category ) { $tax[] = [ 'taxonomy' => 'product_cat', 'field' => 'term_id', 'terms' => [ $category ], 'include_children' => true ]; }
-    $args = [ 'post_type' => 'product', 'post_status' => 'publish', 'has_password' => false, 'posts_per_page' => $limit, 'no_found_rows' => true, 'fields' => 'ids', 'tax_query' => $tax, 'orderby' => [ 'date' => 'DESC', 'ID' => 'DESC' ], 'ignore_sticky_posts' => true ];
+    // Full posts let WP prime post/meta/term caches in batches before Woo reads
+    // each product. An IDs-only query bypasses that work and creates N+1 reads.
+    $args = [ 'post_type' => 'product', 'post_status' => 'publish', 'has_password' => false, 'posts_per_page' => $limit, 'no_found_rows' => true, 'update_post_meta_cache' => true, 'update_post_term_cache' => true, 'tax_query' => $tax, 'orderby' => [ 'date' => 'DESC', 'ID' => 'DESC' ], 'ignore_sticky_posts' => true ];
     if ( 'best_sellers' === ( $row['source'] ?? '' ) ) { $args['meta_key'] = 'total_sales'; $args['orderby'] = [ 'meta_value_num' => 'DESC', 'date' => 'DESC', 'ID' => 'DESC' ]; }
     $key = serialize( [ $args, function_exists( 'determine_locale' ) ? determine_locale() : '' ] );
-    if ( ! isset( $queries[ $key ] ) ) { $queries[ $key ] = ( new WP_Query( $args ) )->posts; }
+    if ( ! isset( $queries[ $key ] ) ) {
+        $query = new WP_Query( $args );
+        update_post_thumbnail_cache( $query );
+        $queries[ $key ] = wp_list_pluck( $query->posts, 'ID' );
+    }
     $products = [];
     foreach ( $queries[ $key ] as $id ) {
         $product = wc_get_product( $id );

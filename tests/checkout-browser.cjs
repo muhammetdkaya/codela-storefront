@@ -7,7 +7,7 @@ const homeHeader=execFileSync(php,['tests/render-header.php'],{encoding:'utf8'})
 assert(header.includes('class="sf-header"'));assert(!header.includes('class="sf-mobile-dock'));
 assert(header.includes('has-checkout-header'),'Checkout uses compact shared Header composition');
 assert(homeHeader.includes('has-mobile-dock'),'Home retains the original dock composition');
-const css=['assets/styles/tokens.css','assets/storefront.css','assets/styles/overlay.css','assets/styles/navigation.css','assets/styles/components.css','assets/styles/checkout.css'].map(p=>fs.readFileSync('theme/codela-storefront/'+p,'utf8')).join('\n');
+const css=['assets/styles/storefront-base.css','assets/styles/checkout.css'].map(p=>fs.readFileSync('theme/codela-storefront/'+p,'utf8')).join('\n');
 const fixture=`<main class="wp-block-group sf-content sf-checkout-page" id="sf-content">
 <h1 class="wp-block-post-title">Ödeme</h1><div class="wp-block-post-content"><div class="wp-block-woocommerce-checkout">
 <form class="wc-block-checkout">
