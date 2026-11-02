@@ -610,7 +610,7 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
 @keyframes sf-cart-backdrop-out{from{opacity:1}to{opacity:0}}
 /* Woo price descriptions remain available to assistive technology even when
    a page omits the optional WordPress block stylesheet. */
-#sf-results .screen-reader-text{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);white-space:nowrap;border:0}
+#sf-results .screen-reader-text,#sf-cart-items>.screen-reader-text{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);white-space:nowrap;border:0}
 @media(prefers-reduced-motion:reduce){#sf-panel.is-cart-panel::backdrop{animation:none!important}}
 
 @media(min-width:901px) and (max-width:1099px){

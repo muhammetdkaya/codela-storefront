@@ -36,7 +36,8 @@ async function cartChecks(browser,width){
  `});
  await page.evaluate(()=>overlay.open('cart'));
  await page.evaluate(()=>Promise.all(document.getAnimations().map(a=>a.finished.catch(()=>{}))));
- assert.equal(await page.locator('.sf-cart-skeleton-row').count(),2);assert.equal(await page.locator('#sf-cart').getAttribute('aria-busy'),'true');
+ assert.equal(await page.locator('.sf-cart-skeleton-row').count(),2);
+ const status=await page.locator('#sf-cart-items>.screen-reader-text').boundingBox();assert(status.width<=1&&status.height<=1,'Loading announcement remains accessible without a visible duplicate');assert.equal(await page.locator('#sf-cart').getAttribute('aria-busy'),'true');
  assert.equal(await page.locator('.sf-cart-skeleton [href],.sf-cart-skeleton button,.sf-cart-photo').count(),0,'Loading has no invented commerce action/photo');
  await page.screenshot({path:`qa/interaction/${engine}-cart-loading-${width}.png`});
  await reply(cartData());await page.locator('[data-cart-key="one"]').waitFor();assert.equal(await page.locator('#sf-cart').getAttribute('aria-busy'),'false');
