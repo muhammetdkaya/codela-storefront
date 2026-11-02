@@ -6,9 +6,9 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Arama sonuçlarında yerel WooCommerce fiyatı, indirim ve erişilebilir açıklama korunur; fiyat aralığı görsel olarak tekrarlanmaz.",
-    "Ürün açıklaması masaüstü ve tablette ilk HTML içinde yer alır. Geçici panel yüzeyi ve miktar kontrolü kaynaklı ilk çizim değişimleri giderildi; mobilde aynı açıklama ve form kullanılır.",
-    "Gecikmeli görsellerde sabit boyutlu sakin yer tutucu eklendi. İlk ekran ve önbellekteki görseller bekletilmez; alt görseller gerektiğinde kısa geçişle görünür.",
-    "Arama, menü ve sepet hareketleri ortak açılış/kapanış sürelerini kullanır; azaltılmış hareket, hızlı tekrar ve anında gezinme korunur."
+    "İlk hikâye ve tanıtım görselleri uygun mobil/masaüstü kaynakla öncelikli yüklenir. Sonraki bölümler gecikmeli kalır; ürünsüz Codela sayfa düzenlerinde gereksiz katalog CSS isteği kaldırılır.",
+    "Mobil ürün panelinin sürükleme çizimi ekran yenilemesine toplanır; bırakma, iptal ve ekran boyutu değişiminde son hareket ve yerel Woo formu korunur.",
+    "Mağazada etkin fiyat, nitelik ve puan filtreleri tek tek kaldırılabilir; filtre sayısı başlıkta görünür. Diğer seçimler korunur ve sayfalama başa döner.",
+    "Sepetin ilk yüklemesinde yer tutucu, işlem yapılan üründe bekleme göstergesi sunulur. Değişmeyen sepet yenilemesi satırları ve klavye odağını korur; miktar ve toplamların kaynağı WooCommerce olmaya devam eder."
   ]
 }

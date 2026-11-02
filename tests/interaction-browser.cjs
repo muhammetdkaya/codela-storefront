@@ -79,7 +79,11 @@ async function filterChecks(browser){
   const links=page.locator('.sf-active-filters a');assert.equal(await links.count(),7);
   for(const link of await links.all()){const box=await link.boundingBox();assert(box.height>=44&&box.x>=0&&box.x+box.width<=width+1,'44px chip, no overflow');assert((await link.getAttribute('aria-label')).startsWith('Remove filter:'));}
   assert.equal(await page.locator('.sf-filter-count').textContent(),'7');assert.equal(await page.locator('.sf-filter-count').evaluate(el=>el.closest('[data-panel]').dataset.panel),'filters');
-  await links.first().focus();assert(await links.first().evaluate(el=>el===document.activeElement));await page.screenshot({path:`qa/interaction/${engine}-filters-${width}.png`});await page.close();
+  await links.first().focus();assert(await links.first().evaluate(el=>el===document.activeElement));await page.screenshot({path:`qa/interaction/${engine}-filters-${width}.png`});
+  await page.route('https://store.test/category/7/**',r=>r.fulfill({contentType:'text/html',body:'Category response'}));
+  await Promise.all([page.waitForURL(u=>u.hostname==='store.test'),page.keyboard.press('Enter')]);
+  const target=new URL(page.url());assert(!target.searchParams.has('min_price'));assert.equal(target.searchParams.get('max_price'),'500');
+  assert.equal(target.searchParams.get('extension'),'keep&this');await page.close();
  }
 }
 (async()=>{const browser=await(engine==='webkit'?webkit:chromium).launch(process.env.CHROMIUM_BIN&&!process.env.TEST_WEBKIT?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox']}:{});try{

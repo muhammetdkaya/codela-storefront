@@ -1,6 +1,11 @@
 # Codela Storefront UI Kit — source of truth
 
 
+## Commerce feedback — 0.1.195 candidate
+
+Active filter removal uses real GET links and the existing secondary Button; page CSS owns wrapping and compact sizing only. Filter count reuses glyph badge geometry but never the cart badge selector. Cart skeleton is static; only the affected row shows the existing reduced-motion-aware spinner in its quantity slot without layout shift. Store API mutations remain serialized and server-authoritative. Unchanged accepted refreshes preserve actual rows and focus. Mobile sheet coalesces height writes to one animation frame; release flushes the latest sample and cancellation removes pending work. No new motion library, controller or photo/document scroll owner.
+
+
 ## First-paint presentation — 0.1.194 candidate
 
 Native Woo description renders once in summary before delivery, including tablet. Mobile moves that same node to the original disclosure-order marker and restores its exact open state; no copied content/form. Pending mobile surface paint must never appear on the inline desktop/tablet summary. Quantity geometry is ready before its adapter.
