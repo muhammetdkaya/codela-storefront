@@ -10,6 +10,13 @@ const theme=JSON.parse(fs.readFileSync(root+'theme.json','utf8'));
 const css=fs.readFileSync(root+'assets/styles/storefront-base.css','utf8')+`body{font-family:${theme.settings.typography.fontFamilies[0].fontFamily};line-height:${theme.styles.typography.lineHeight}}a{text-decoration:${theme.styles.elements.link.typography.textDecoration}}.sf-search-toolbar .screen-reader-text{position:absolute!important;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}`;
 const modules=['format','search-controller','cart-controller','overlay-controller','dock-controller'].map(n=>fs.readFileSync(n==='overlay-controller'&&process.env.PANEL_PRESENTATION_SOURCE?process.env.PANEL_PRESENTATION_SOURCE:root+'assets/scripts/'+n+'.js','utf8').replace(/^import .*;$/gm,'').replace(/^export /gm,'')).join('\n');
 const js=fs.readFileSync(root+'assets/storefront.js','utf8').replace(/^import .*from 'codela-storefront\/(?:search|cart|overlay|dock)';$/gm,'').replace("import { store } from '@wordpress/interactivity';",`function store(n,o){window.sfActions=o.actions;return {state:{config:{api:'https://panel.test/api/',search:'https://panel.test/search-api',cart:'/cart/',account:'/account/',labels:{}}}};}`).replace('let menuPath = [];',modules+'\nlet menuPath = [];');
+async function setMotion(page,value){
+ await page.emulateMedia({reducedMotion:value});
+ // WebKit acknowledges emulation before MediaQueryList/style updates settle.
+ // Synchronize the preference before asserting a controller's next animation.
+ await page.waitForFunction(reduce=>matchMedia('(prefers-reduced-motion:reduce)').matches===reduce,value==='reduce');
+ await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+}
 (async()=>{const browser=await(engine==='webkit'?webkit:chromium).launch(process.env.CHROMIUM_BIN&&!process.env.TEST_WEBKIT?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox']}:{});try{
  fs.mkdirSync('qa/first-paint',{recursive:true});
  for(const width of [390,1280]){
@@ -49,10 +56,10 @@ const js=fs.readFileSync(root+'assets/storefront.js','utf8').replace(/^import .*
   await page.evaluate(()=>new Promise(requestAnimationFrame));
   await page.evaluate(()=>window.sfActions.menu());
   assert(await page.locator('#sf-panel').evaluate(el=>el.open),'Reopen cancels pending close');
-  await page.emulateMedia({reducedMotion:'reduce'});
+  await setMotion(page,'reduce');
   await page.waitForFunction(()=>document.querySelector('#sf-menu').getAnimations().length===0);
   await page.evaluate(()=>window.sfActions.close());assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),false,'Reduced motion closes immediately');
-  await page.emulateMedia({reducedMotion:'no-preference'});
+  await setMotion(page,'no-preference');
   if(width===1280){
    const enter=await page.evaluate(()=>{window.sfActions.cart();const a=document.querySelector('#sf-panel').getAnimations().find(a=>a.effect.target===document.querySelector('#sf-panel'));a?.pause();return a?.effect.getTiming().duration;});
    assert.equal(enter,240,'Drawer uses shared enter token');
@@ -60,7 +67,7 @@ const js=fs.readFileSync(root+'assets/storefront.js','utf8').replace(/^import .*
    const close=await page.evaluate(()=>{window.sfActions.close();const a=document.querySelector('#sf-panel').getAnimations().find(a=>a.effect.target===document.querySelector('#sf-panel'));a?.pause();return a?.effect.getTiming().duration;});
    assert.equal(close,180,'Drawer uses shared exit token');
    assert.equal(await page.locator('#sf-panel').evaluate(el=>getComputedStyle(el,'::backdrop').animationDuration),'0.18s','Backdrop shares exit duration');
-   await page.emulateMedia({reducedMotion:'reduce'});
+   await setMotion(page,'reduce');
    await page.waitForFunction(()=>!document.querySelector('#sf-panel').open);
   }
   await page.evaluate(()=>window.sfActions.menu());
