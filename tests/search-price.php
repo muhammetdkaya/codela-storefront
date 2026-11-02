@@ -40,7 +40,7 @@ require $core . '/kses.php';
 require __DIR__ . '/../theme/codela-storefront/inc/search.php';
 $handler = ['callback'=>'codela_theme_search'];
 $request = new WP_REST_Request();
-$range = '<span aria-hidden="true"><span class="woocommerce-Price-amount amount"><bdi>₺1.290,00</bdi></span> – <span class="woocommerce-Price-amount amount"><bdi>₺1.590,00</bdi></span></span><span class="screen-reader-text">Fiyat aralığı: ₺1.290,00 - ₺1.590,00</span>';
+$range = '<span class="woocommerce-Price-amount amount" aria-hidden="true"><bdi><span class="woocommerce-Price-currencySymbol">₺</span>1.290,00</bdi></span> <span aria-hidden="true">&ndash;</span> <span class="woocommerce-Price-amount amount" aria-hidden="true"><bdi><span class="woocommerce-Price-currencySymbol">₺</span>1.590,00</bdi></span><span class="screen-reader-text">Fiyat aralığı: ₺1.290,00 - ₺1.590,00</span>';
 $sale = '<del aria-hidden="true"><bdi>€40,00</bdi></del><span class="screen-reader-text">Original price was: €40,00.</span> <ins aria-hidden="true"><bdi>€30,00</bdi></ins><span class="screen-reader-text">Current price is: €30,00.</span> <small class="woocommerce-price-suffix">incl. VAT</small>';
 $inputs = [$range,$sale,'<bdi>₺200,00</bdi> <small class="woocommerce-price-suffix">KDV dahil</small>','', '<img src=x onerror="alert(1)"><span class="amount" onclick="alert(2)" style="position:fixed">₺15</span>'];
 apply_filters( 'rest_request_before_callbacks', null, $handler, $request );

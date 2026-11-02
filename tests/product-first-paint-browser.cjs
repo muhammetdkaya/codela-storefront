@@ -23,7 +23,10 @@ async function measure(page){return page.evaluate(()=>Object.fromEntries(['.summ
   assert.equal(await page.locator('.summary > #sf-product-section-description').count(),1,'Description is server-rendered in final column');
   await page.evaluate(()=>{window.formBefore=document.querySelector('form.cart');window.descriptionBefore=document.querySelector('#sf-product-section-description');});
   const before=await measure(page);
-  if(width===1280&&!Object.keys(options).length)await page.screenshot({path:`qa/first-paint/${engine}-desktop-before.png`});
+  // WebKit's document.fonts.ready waits for this intentionally blocked async
+  // script. Keep all pre-load geometry/material assertions in both engines;
+  // take its visual capture after release instead of deadlocking screenshot.
+  if(engine==='chromium'&&width===1280&&!Object.keys(options).length)await page.screenshot({path:`qa/first-paint/${engine}-desktop-before.png`});
   await adapter.fulfill({contentType:'text/javascript',body:script});await page.waitForLoadState('load');
   await page.addScriptTag({content:gallery});
   const after=await measure(page),label=width+'/'+JSON.stringify(options);

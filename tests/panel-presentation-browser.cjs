@@ -6,7 +6,7 @@ products.push({name:'Legacy &amp; safe',url:'/legacy/',image:'',price:'&lt;img s
 const header=execFileSync(php,['tests/render-header.php'],{encoding:'utf8'}).replaceAll('https://store.test','https://panel.test');
 const linkDecoration=JSON.parse(fs.readFileSync(root+'theme.json','utf8')).styles.elements.link.typography.textDecoration;
 const css=fs.readFileSync(root+'assets/styles/storefront-base.css','utf8')+`a{text-decoration:${linkDecoration}}`;
-const modules=['format','search-controller','cart-controller','overlay-controller','dock-controller'].map(n=>fs.readFileSync(root+'assets/scripts/'+n+'.js','utf8').replace(/^import .*;$/gm,'').replace(/^export /gm,'')).join('\n');
+const modules=['format','search-controller','cart-controller','overlay-controller','dock-controller'].map(n=>fs.readFileSync(n==='overlay-controller'&&process.env.PANEL_PRESENTATION_SOURCE?process.env.PANEL_PRESENTATION_SOURCE:root+'assets/scripts/'+n+'.js','utf8').replace(/^import .*;$/gm,'').replace(/^export /gm,'')).join('\n');
 const js=fs.readFileSync(root+'assets/storefront.js','utf8').replace(/^import .*from 'codela-storefront\/(?:search|cart|overlay|dock)';$/gm,'').replace("import { store } from '@wordpress/interactivity';",`function store(n,o){window.sfActions=o.actions;return {state:{config:{api:'https://panel.test/api/',search:'https://panel.test/search-api',cart:'/cart/',account:'/account/',labels:{}}}};}`).replace('let menuPath = [];',modules+'\nlet menuPath = [];');
 (async()=>{const browser=await(engine==='webkit'?webkit:chromium).launch(process.env.CHROMIUM_BIN&&!process.env.TEST_WEBKIT?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox']}:{});try{
  fs.mkdirSync('qa/first-paint',{recursive:true});
@@ -35,9 +35,11 @@ const js=fs.readFileSync(root+'assets/storefront.js','utf8').replace(/^import .*
   // Hold animations synchronously so elapsed tool latency cannot hide a timing failure.
   const menu=await page.evaluate(()=>{window.sfActions.menu();const a=document.querySelector('#sf-menu').getAnimations()[0];a?.pause();return a?.effect.getTiming().duration;});
   assert.equal(menu,240,'Menu enters with shared token');
-  await page.evaluate(()=>document.querySelector('#sf-menu').getAnimations()[0].finish());
-  const exit=await page.evaluate(()=>{window.sfActions.close();const a=document.querySelector('#sf-menu').getAnimations()[0];a?.pause();return a?.effect.getTiming().duration;});
+  // Complete entrance and replace it in the same task, then allow the queued
+  // old finish event to run. It must not orphan the paused exit animation.
+  const exit=await page.evaluate(()=>{document.querySelector('#sf-menu').getAnimations()[0].finish();window.sfActions.close();const a=document.querySelector('#sf-menu').getAnimations()[0];a?.pause();return a?.effect.getTiming().duration;});
   assert.equal(exit,180,'Menu closes with shared token');
+  await page.evaluate(()=>new Promise(requestAnimationFrame));
   await page.evaluate(()=>window.sfActions.menu());
   assert(await page.locator('#sf-panel').evaluate(el=>el.open),'Reopen cancels pending close');
   await page.emulateMedia({reducedMotion:'reduce'});

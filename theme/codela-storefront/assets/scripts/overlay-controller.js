@@ -81,11 +81,12 @@ export function createOverlayController({
             const rect = toolbar.getBoundingClientRect();
             const trigger = document.querySelector('.sf-header [data-panel="search"]')?.getBoundingClientRect();
             const offset = trigger ? trigger.right - rect.right : 0;
-            surfaceMotion = toolbar.animate([
+            const motion = toolbar.animate([
                 {clipPath:`inset(0 0 0 ${Math.max(0, rect.width - 44)}px round 24px)`, transform:`translateX(${offset}px)`},
                 {clipPath:'inset(0 0 0 0 round 24px)', transform:'translateX(0)'},
             ], panelTiming(toolbar));
-            surfaceMotion.onfinish = () => { surfaceMotion = null; };
+            surfaceMotion = motion;
+            motion.onfinish = () => { if (surfaceMotion === motion) surfaceMotion = null; };
         }
         searchFeature.start();
         $('#sf-query').focus({preventScroll:true});
@@ -110,13 +111,15 @@ export function createOverlayController({
     function animateDrawer(out = false) {
         if (reducedMotion.matches || !dialog.animate) return false;
         surfaceMotion?.cancel();
-        surfaceMotion = dialog.animate([
+        const motion = dialog.animate([
             {transform:out ? 'translateX(0)' : 'translateX(100%)'},
             {transform:out ? 'translateX(100%)' : 'translateX(0)'},
         ], {...panelTiming(dialog, out),fill:'forwards'});
-        surfaceMotion.onfinish = () => {
+        surfaceMotion = motion;
+        motion.onfinish = () => {
+            if (surfaceMotion !== motion) return;
             if (out) finishClose();
-            else { surfaceMotion.cancel(); surfaceMotion = null; }
+            else { motion.cancel(); surfaceMotion = null; }
         };
         return true;
     }
@@ -264,11 +267,14 @@ export function createOverlayController({
         panelMotion = null;
         if (reducedMotion.matches || !element?.animate) return;
         const menu = element.id === 'sf-menu';
-        panelMotion = element.animate([
+        const motion = element.animate([
             {opacity:0, transform:menu ? 'translate3d(0,-16px,0)' : `translate3d(${direction * 8}px,0,0)`},
             {opacity:1, transform:'translate3d(0,0,0)'},
         ], panelTiming(element));
-        panelMotion.onfinish = () => { panelMotion = null; };
+        panelMotion = motion;
+        // finish events are queued: a completed older entrance must never
+        // clear a replacement/closing animation's cancellation ownership.
+        motion.onfinish = () => { if (panelMotion === motion) panelMotion = null; };
     }
     function close() {
         if (inlineSearch) { closeInlineSearch(); return; }
@@ -286,11 +292,12 @@ export function createOverlayController({
         }
         if (current === 'menu' && !reducedMotion.matches && $('#sf-menu')?.animate) {
             closing = true;
-            panelMotion = $('#sf-menu').animate([
+            const motion = $('#sf-menu').animate([
                 {opacity:1,transform:'translate3d(0,0,0)'},
                 {opacity:0,transform:'translate3d(0,-12px,0)'},
             ], {...panelTiming($('#sf-menu'), true),fill:'forwards'});
-            panelMotion.onfinish = () => finishClose();
+            panelMotion = motion;
+            motion.onfinish = () => { if (panelMotion === motion) finishClose(); };
             return;
         }
         finishClose();
