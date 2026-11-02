@@ -35,8 +35,7 @@ function codela_sf_section_controls( int $count, bool $hero = false ): string {
 function codela_sf_section_heading( array $data ): string {
     return ( $data['title'] ? '<h2>' . esc_html( $data['title'] ) . '</h2>' : '' ) . ( $data['description'] ? '<p class="sf-section-description">' . esc_html( $data['description'] ) . '</p>' : '' );
 }
-function codela_sf_section_media( array $data, string $type ): string {
-    static $priority_used = false;
+function codela_sf_section_media( array $data, string $type, bool $first_section = false ): string {
     $items = array_values( array_filter( $data['items'], static function( $item ) { return $item['enabled'] && wp_attachment_is_image( $item['image_id'] ); } ) );
     if ( ! $items ) { return ''; }
     $hero = 'hero' === $type; $gallery = count( $items ) > 1;
@@ -44,7 +43,7 @@ function codela_sf_section_media( array $data, string $type ): string {
     if ( ! $hero ) { $out .= codela_sf_section_heading( $data ); }
     $out .= '<div class="sf-section-media-track' . ( $gallery ? ' sf-ui-gallery-track" tabindex="0' : '' ) . '">';
     foreach ( $items as $index => $item ) {
-        $priority = $hero && 0 === $index && ! $priority_used; if ( $priority ) { $priority_used = true; }
+        $priority = $first_section && 0 === $index;
         $heading = $hero && 0 === $index && is_front_page() ? 'h1' : 'h2';
         $out .= '<article class="sf-section-slide' . ( $gallery ? ' sf-ui-gallery-slide' : '' ) . '" aria-label="' . esc_attr( ( $index + 1 ) . ' / ' . count( $items ) ) . '">';
         $out .= codela_sf_section_image( $item, $priority, ! $hero && in_array( $data['variant'], [ 'split', 'editorial' ], true ) ? '(max-width:700px) 100vw, 60vw' : '100vw' );

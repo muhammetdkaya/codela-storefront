@@ -8,6 +8,8 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
     let cartNonce = '', cartData = null, cartPending = null, mutating = false, cartRevision = 0;
     let dirty = false, externalRevision = 0, readAbort = null, bound = false, refreshScheduled = false;
     let wooStore = null, wooSnapshot = '', wooRefresh = null, wooRefreshDirty = false;
+    let renderedCart = '', mutationKey = '';
+    const disabledBeforeMutation = new Map();
 
     // Observe only cart contents, not unrelated wp.data updates or customer fields.
     function cartSignature(data) {
@@ -89,16 +91,44 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
         // Keep the live badge immediate; closed-cart photos/rows do no work.
         if (getCurrent() !== 'cart') return;
         const root = $('#sf-cart-items');
-        root.innerHTML = data.items.length ? data.items.map(item => {
+        const signature = cartSignature(data);
+        // An unchanged session refresh preserves rows, decoded photos and focus.
+        if (signature !== renderedCart) root.innerHTML = data.items.length ? data.items.map(item => {
             const limits = item.quantity_limits || {minimum:1,maximum:9999,multiple_of:1,editable:true};
             const subtotal = Number(item.totals.line_subtotal) + (config().taxInclusive ? Number(item.totals.line_subtotal_tax) : 0);
             const variants = (item.variation || []).map(v => `${escape(decode(v.attribute))}: ${escape(decode(v.value))}`).join(' · ');
-            return `<article class="sf-cart-row"><a href="${safeURL(item.permalink)}">${item.images[0] ? `<img class="sf-cart-photo" src="${safeURL(item.images[0].thumbnail || item.images[0].src)}" alt="${escape(decode(item.name))}" width="110" height="140">` : ''}</a><div class="sf-cart-detail"><h3><a href="${safeURL(item.permalink)}">${escape(decode(item.name))}</a></h3>${variants ? `<p class="sf-cart-variation">${variants}</p>` : ''}<p class="sf-cart-price">${escape(money(subtotal,item.totals))}</p><div class="sf-quantity"><div class="sf-stepper"><button class="sf-ui-pressable" data-key="${escape(item.key)}" data-qty="${item.quantity - limits.multiple_of}" aria-label="${escape(t('Decrease quantity'))}" ${!limits.editable || item.quantity - limits.multiple_of < limits.minimum ? 'disabled':''}>−</button><span aria-label="${escape(t('Quantity'))}">${item.quantity}</span><button class="sf-ui-pressable" data-key="${escape(item.key)}" data-qty="${item.quantity + limits.multiple_of}" aria-label="${escape(t('Increase quantity'))}" ${!limits.editable || item.quantity + limits.multiple_of > limits.maximum ? 'disabled':''}>+</button></div><button class="sf-remove sf-ui-pressable" data-remove="${escape(item.key)}">${escape(t('Remove'))}</button></div></div></article>`;
+            return `<article class="sf-cart-row" data-cart-key="${escape(item.key)}"><a href="${safeURL(item.permalink)}">${item.images[0] ? `<img class="sf-cart-photo" src="${safeURL(item.images[0].thumbnail || item.images[0].src)}" alt="${escape(decode(item.name))}" width="110" height="140">` : ''}</a><div class="sf-cart-detail"><h3><a href="${safeURL(item.permalink)}">${escape(decode(item.name))}</a></h3>${variants ? `<p class="sf-cart-variation">${variants}</p>` : ''}<p class="sf-cart-price">${escape(money(subtotal,item.totals))}</p><div class="sf-quantity"><div class="sf-stepper"><i class="sf-cart-busy" hidden aria-hidden="true"><span class="sf-ui-spinner"></span></i><button class="sf-ui-pressable" data-key="${escape(item.key)}" data-qty="${item.quantity - limits.multiple_of}" aria-label="${escape(t('Decrease quantity'))}" ${!limits.editable || item.quantity - limits.multiple_of < limits.minimum ? 'disabled':''}>−</button><span class="sf-cart-quantity-current" aria-label="${escape(t('Quantity'))}">${item.quantity}</span><button class="sf-ui-pressable" data-key="${escape(item.key)}" data-qty="${item.quantity + limits.multiple_of}" aria-label="${escape(t('Increase quantity'))}" ${!limits.editable || item.quantity + limits.multiple_of > limits.maximum ? 'disabled':''}>+</button></div><button class="sf-remove sf-ui-pressable" data-remove="${escape(item.key)}">${escape(t('Remove'))}</button></div></div></article>`;
         }).join('') : `<div class="sf-empty sf-cart-empty"><span class="sf-cart-empty-mark" aria-hidden="true"></span><h3>${escape(t('Your cart is empty.'))}</h3><p>${escape(t('Discover products and add your favorites here.'))}</p></div>`;
+        renderedCart = signature;
+        updateCartBusy();
         $('.sf-cart-bottom').hidden = getCurrent() !== 'cart' || !data.items.length;
         const subtotal = Number(data.totals.total_items) + (config().taxInclusive ? Number(data.totals.total_items_tax) : 0);
         $('#sf-subtotal').textContent = money(subtotal,data.totals);
         if (getCurrent() === 'cart') $('#sf-status').textContent = (data.errors || []).map(e => decode(e.message)).join(' ');
+    }
+    function updateCartBusy() {
+        const root = $('#sf-cart');
+        root.setAttribute('aria-busy', String(mutating || !cartData && !!cartPending));
+        if (!mutating) {
+            disabledBeforeMutation.forEach((disabled, button) => { button.disabled = disabled; });
+            disabledBeforeMutation.clear();
+        } else root.querySelectorAll('button').forEach(button => {
+            if (!disabledBeforeMutation.has(button)) disabledBeforeMutation.set(button, button.disabled);
+            button.disabled = true;
+        });
+        root.querySelectorAll('[data-cart-key]').forEach(row => {
+            const busy = mutating && row.dataset.cartKey === mutationKey;
+            row.setAttribute('aria-busy', String(busy));
+            row.querySelector('.sf-cart-busy').hidden = !busy;
+        });
+        $('.sf-cart-bottom').inert = mutating;
+    }
+    function showCartLoading() {
+        if (cartData || getCurrent() !== 'cart') return;
+        const row = '<div class="sf-cart-skeleton-row"><i></i><span><b></b><b></b><b></b></span></div>';
+        $('#sf-cart-items').innerHTML = '<div class="sf-cart-skeleton" aria-hidden="true">' + row.repeat(2) + '</div>' +
+            '<p class="screen-reader-text">' + escape(t('Loading…')) + '</p>';
+        $('#sf-cart').setAttribute('aria-busy', 'true');
     }
     function scheduleRefresh() {
         if (refreshScheduled || mutating) return;
@@ -111,8 +141,8 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
     async function refreshCart() {
         if (cartData) renderCart(cartData);
         if (mutating) { dirty = true; return; }
+        showCartLoading();
         if (cartPending) return cartPending;
-        if (!cartData) $('#sf-cart-items').textContent = t('Loading…');
         dirty = false;
         const generation = cartRevision;
         const abort = new AbortController();
@@ -142,7 +172,7 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
                 }
             } finally {
                 if (readAbort === abort) readAbort = null;
-                if (cartPending === pending) cartPending = null;
+                if (cartPending === pending) { cartPending = null; updateCartBusy(); }
                 if (dirty && !mutating) scheduleRefresh();
             }
         });
@@ -157,12 +187,11 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
         dirty = false;
         const externalAtStart = externalRevision;
         const key = button.dataset.remove || button.dataset.key;
+        mutationKey = key;
         const isRemove = !!button.dataset.remove;
         const payload = isRemove ? {key} : {key, quantity:Number(button.dataset.qty)};
         const focusQuantity = button.dataset.qty;
-        $('#sf-cart').setAttribute('aria-busy','true');
-        $('#sf-cart').querySelectorAll('button').forEach(b => b.disabled = true);
-        $('.sf-cart-bottom').inert = true;
+        updateCartBusy();
         try {
             // A nonce is read fresh from the session GET, never embedded in cacheable HTML.
             if (!cartNonce) await requestCart('', null, {acceptNonce:() => mutating});
@@ -179,7 +208,7 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
             else { try { paintCart(await requestCart('', null, {acceptNonce:() => mutating})); } catch { if (cartData) paintCart(cartData); } }
             if (getCurrent() === 'cart') $('#sf-status').textContent = error.message;
         } finally {
-            mutating = false; $('#sf-cart').setAttribute('aria-busy','false'); $('.sf-cart-bottom').inert = false;
+            mutating = false; mutationKey = ''; updateCartBusy();
             if (externalRevision !== externalAtStart || dirty) { dirty = true; scheduleRefresh(); }
             if (getCurrent() === 'cart' && getDialog()?.open) {
                 const candidate = [...$('#sf-cart').querySelectorAll('[data-key]')].find(b => b.dataset.key === key && b.dataset.qty === focusQuantity && !b.disabled) || $('#sf-cart button:not(:disabled)') || $('.sf-close');

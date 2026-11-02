@@ -14,6 +14,7 @@ function esc_html__( $s, ...$args ) { return htmlspecialchars($s, ENT_QUOTES); }
 function esc_html_e( $s, ...$args ) { echo esc_html__($s); }
 function esc_attr_e( $s, ...$args ) { echo esc_html__($s); }
 function esc_attr( $s ) { return esc_html__($s); }
+function esc_attr__( $s, ...$args ) { return esc_attr($s); }
 function sanitize_html_class( $value ) { return preg_replace('/[^A-Za-z0-9_-]/', '', (string)$value); }
 function esc_html( $s ) { return esc_html__($s); }
 function esc_url( $s ) { return esc_html__($s); }
@@ -39,7 +40,13 @@ function is_front_page() { return getenv('FIXTURE_CATALOG_FRONT') === '1' || get
 function is_account_page() { return getenv('FIXTURE_ACCOUNT') === '1' || getenv('FIXTURE_GUEST_ACCOUNT') === '1'; }
 function is_user_logged_in() { return getenv('FIXTURE_LOGGED_IN') === '1' || getenv('FIXTURE_ACCOUNT') === '1' && getenv('FIXTURE_GUEST_ACCOUNT') !== '1'; }
 function get_privacy_policy_url() { return ''; }
-function add_query_arg( $args, $url ) { return $url.'?'.http_build_query($args); }
+function add_query_arg($args,$url,$target=null) {
+ if($target!==null){$args=[$args=>$url];$url=$target;}
+ $parts=parse_url($url);$query=[];parse_str($parts['query']??'',$query);
+ foreach($args as $key=>$value){if($value===false)unset($query[$key]);else $query[$key]=$value;}
+ $base=explode('?',explode('#',$url)[0])[0];$encoded=http_build_query($query);
+ return $base.($encoded?'?'.$encoded:'').(isset($parts['fragment'])?'#'.$parts['fragment']:'');
+}
 function get_terms( ...$args ) { return [(object)['parent'=>0,'term_id'=>1,'name'=>'Collection','count'=>3],(object)['parent'=>1,'term_id'=>2,'name'=>'Shoes','count'=>2]]; }
 function get_term_link( $term ) { return home_url('/category/'.$term->term_id.'/'); }
 function is_wp_error( ...$args ) { return false; }

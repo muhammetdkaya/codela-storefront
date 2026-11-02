@@ -18,7 +18,7 @@ function did_action($name){return $GLOBALS['fired'][$name]??0;}
 function current_filter(){return 'wp_enqueue_scripts';}
 function is_admin(){return $GLOBALS['context']==='editor';}
 function is_front_page(){return $GLOBALS['context']==='home';}
-function is_page(){return in_array($GLOBALS['context'],['home','page','account','guest-account','checkout','cart'],true);}
+function is_page(){return in_array($GLOBALS['context'],['home','page','account','guest-account','checkout','cart','page-story','page-products','page-mixed','page-disabled-products','page-loop'],true);}
 function is_singular($type=''){return $type==='page'&&is_page();}
 function is_home(){return false;}
 function is_archive(){return false;}
@@ -56,13 +56,18 @@ function wc_get_permalink_structure(){return ['product_rewrite_slug'=>'product',
 function get_queried_object_id(){return 42;}
 class WP_Post {public $ID=42;public $post_content='layout';}
 function get_queried_object(){return new WP_Post;}
-function has_block($name,$content){return is_front_page();}
+function has_block($name,$content){return is_front_page() || str_starts_with($GLOBALS['context'],'page-');}
 function is_wp_error($v){return false;}
 function codela_sections_validate_root($root){return true;}
-function parse_blocks($content){return [['blockName'=>'codela/page-layout','innerBlocks'=>[
- ['blockName'=>'codela/section-hero','attrs'=>['data'=>['enabled'=>true,'items'=>[[],[]]]]],
- ['blockName'=>'codela/section-products','attrs'=>['data'=>['enabled'=>true]]],
-]]];}
+function parse_blocks($content){
+ $context=$GLOBALS['context'];
+ $children=[['blockName'=>'codela/section-story','attrs'=>['data'=>['enabled'=>true]]]];
+ if($context==='home')$children[]=['blockName'=>'codela/section-hero','attrs'=>['data'=>['enabled'=>true,'items'=>[[],[]]]]];
+ if(in_array($context,['home','page-products','page-disabled-products']))$children[]=['blockName'=>'codela/section-products','attrs'=>['data'=>['enabled'=>$context!=='page-disabled-products']]];
+ $blocks=[['blockName'=>'codela/page-layout','innerBlocks'=>$children]];
+ if($context==='page-mixed')$blocks[]=['blockName'=>'core/shortcode','innerHTML'=>'[products]'];
+ return $blocks;
+}
 function wp_get_script_tag($attrs){return '<script '.implode(' ',array_map(fn($k,$v)=>$k.'="'.esc_attr($v).'"',array_keys($attrs),$attrs)).'></script>' . "\n";}
 function wp_get_inline_script_tag($code,$attrs=[]){return str_replace('</script>',"\n".$code."\n</script>",wp_get_script_tag($attrs));}
 function _doing_it_wrong(...$args){throw new RuntimeException(implode(' ',array_filter($args,'is_string')));}
@@ -73,6 +78,7 @@ require dirname(__DIR__).'/theme/codela-storefront/functions.php';
 do_action('init');
 // Native Woo dependency handles are external to this theme-focused fixture.
 foreach(['wc-add-to-cart','wc-single-product','zoom'] as $handle){wp_register_script($handle,'https://store.test/woo/'.$handle.'.js',[],null,true);}
+if ($context==='page-loop') {do_action('woocommerce_before_shop_loop_item');}
 if (!is_admin()) {do_action('wp_enqueue_scripts');}
 // Downstream integrations may attach inline styles/scripts to aliases.
 wp_add_inline_style('codela-storefront-theme',':root{--fixture-accent:purple;}');

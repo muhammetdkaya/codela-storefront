@@ -303,3 +303,17 @@
   #sf-panel.is-product-cart .sf-cart-bottom{padding:12px 16px 16px}
   #sf-panel.is-product-cart .sf-mobile-dock{display:none!important}
 }
+
+/* First-read placeholders reserve rows without adding entrance animation. */
+.sf-cart-skeleton-row{display:grid;grid-template-columns:80px minmax(0,1fr);gap:16px;padding-block:20px}
+.sf-cart-skeleton-row:first-child{padding-top:0}
+.sf-cart-skeleton-row>i{display:block;min-height:100px}
+.sf-cart-skeleton-row>span{display:flex;flex-direction:column;gap:14px;padding-top:6px}
+.sf-cart-skeleton-row b{display:block;width:75%;height:14px}
+.sf-cart-skeleton-row b:nth-child(2){width:40%}
+.sf-cart-skeleton-row b:last-child{width:100px;height:32px;margin-top:auto}
+.sf-cart-busy[hidden]{display:none}
+.sf-cart-row .sf-stepper{position:relative}
+.sf-cart-busy{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+.sf-cart-busy>.sf-ui-spinner{min-width:0;padding:0;box-sizing:border-box}
+.sf-cart-row[aria-busy="true"] .sf-cart-quantity-current{visibility:hidden}

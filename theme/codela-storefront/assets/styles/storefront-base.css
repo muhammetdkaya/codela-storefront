@@ -640,6 +640,20 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
   #sf-panel.is-product-cart .sf-mobile-dock{display:none!important}
 }
 
+/* First-read placeholders reserve rows without adding entrance animation. */
+.sf-cart-skeleton-row{display:grid;grid-template-columns:80px minmax(0,1fr);gap:16px;padding-block:20px}
+.sf-cart-skeleton-row:first-child{padding-top:0}
+.sf-cart-skeleton-row>i{display:block;min-height:100px}
+.sf-cart-skeleton-row>span{display:flex;flex-direction:column;gap:14px;padding-top:6px}
+.sf-cart-skeleton-row b{display:block;width:75%;height:14px}
+.sf-cart-skeleton-row b:nth-child(2){width:40%}
+.sf-cart-skeleton-row b:last-child{width:100px;height:32px;margin-top:auto}
+.sf-cart-busy[hidden]{display:none}
+.sf-cart-row .sf-stepper{position:relative}
+.sf-cart-busy{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+.sf-cart-busy>.sf-ui-spinner{min-width:0;padding:0;box-sizing:border-box}
+.sf-cart-row[aria-busy="true"] .sf-cart-quantity-current{visibility:hidden}
+
 /* Source: styles/navigation.css */
 /** Shared mobile header, floating dock and touch feedback. Theme-owned. */
 .sf-desktop-navigation{display:none}
@@ -973,7 +987,7 @@ body:not(.codela-my-account-layout) .sf-content .sf-ui-icon-button--soft:is(:act
   display:inline-flex;position:relative;align-items:center;justify-content:center;
   width:var(--sf-ui-icon);height:var(--sf-ui-icon);flex:none;overflow:visible;
 }
-.sf-shell .sf-ui-icon-badged .sf-badge{
+.sf-shell .sf-ui-icon-badged :is(.sf-badge,.sf-filter-count){
   position:absolute;top:-6px;right:-9px;display:grid;place-items:center;
   min-width:16px;height:16px;padding:0 3px;border-radius:var(--sf-ui-pill);
   background:var(--sf-ui-ink);color:#fff;font-size:10px;font-weight:600;
@@ -1530,3 +1544,5 @@ body.woocommerce-account:not(.codela-my-account-layout) .sf-content .wc-block-co
 }
 @media(prefers-reduced-motion:reduce){body.woocommerce-account:not(.codela-my-account-layout) .sf-content .wc-block-components-notice-banner__content .wc-forward{transition:none}}
 @media(forced-colors:active){body.woocommerce-account:not(.codela-my-account-layout) .sf-content .wc-block-components-notice-banner__content .wc-forward{background:ButtonFace!important;color:ButtonText!important;border:1px solid ButtonText}}
+
+.sf-shell .sf-cart-skeleton-row :is(i,b){background:var(--sf-ui-skeleton);border-radius:var(--sf-ui-control-radius)}

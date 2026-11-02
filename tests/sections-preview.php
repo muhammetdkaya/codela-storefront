@@ -21,6 +21,6 @@ function parse_blocks( $content ) {
 }
 require __DIR__ . '/../theme/codela-storefront/inc/sections.php';
 $caps = codela_sf_sections_capabilities();
-if ( [ 'layout' => true, 'gallery' => true, 'products' => true ] !== $caps ) { throw new RuntimeException( 'Preview must load layout, gallery and Woo assets' ); }
+if ( [ 'layout' => true, 'gallery' => true, 'products' => true, 'managed' => true ] !== $caps ) { throw new RuntimeException( 'Preview must load layout, gallery and Woo assets' ); }
 echo "Queried autosave drives section capabilities and preview assets.\n";
 

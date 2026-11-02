@@ -67,6 +67,7 @@
     var mounted = false;
     var expanded = false;
     var drag = null;
+    var dragFrame = 0;
     var settleFrame = 0;
     var suppressClickUntil = 0;
     var photoWidth = 0;
@@ -278,10 +279,17 @@
       event.preventDefault();
       drag.lastY = event.clientY;
       drag.height = Math.max(drag.min, Math.min(drag.max, drag.start - dy));
-      sheet.style.height = drag.height + 'px';
+      // Input state follows every sample; layout paints only once per frame.
+      if (!dragFrame) dragFrame = requestAnimationFrame(paintDrag);
     }, {passive:false});
+    function paintDrag() {
+      dragFrame = 0;
+      if (drag?.active) sheet.style.height = drag.height + 'px';
+    }
     function finishDrag(cancelled) {
       if (!drag) return;
+      cancelAnimationFrame(dragFrame);
+      paintDrag(); // A release may arrive before the queued frame.
       var gesture = drag;
       drag = null;
       if (gesture.capture.hasPointerCapture(gesture.id)) gesture.capture.releasePointerCapture(gesture.id);
