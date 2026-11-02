@@ -1,0 +1,46 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),{execFileSync}=require('node:child_process');
+const {chromium,webkit}=require('playwright');
+const parts=JSON.parse(execFileSync(process.env.PHP_BIN||'php',['tests/media-presentation.php'],{encoding:'utf8'}));
+const engine=process.env.TEST_WEBKIT?'webkit':'chromium';
+const css=fs.readFileSync('theme/codela-storefront/assets/styles/storefront-base.css','utf8');
+const html='<!doctype html><html><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'body{margin:0}img{display:block;width:320px;height:320px;object-fit:contain}.gap{height:2000px}</style>'+parts.bootstrap+'<body>'+parts.native+parts.cached+'<div class="gap"></div>'+parts.deferred+parts.error+'</body></html>';
+const svg='<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900"><rect width="1200" height="900" fill="#b8a189"/></svg>';
+(async()=>{const browser=await(engine==='webkit'?webkit:chromium).launch(process.env.CHROMIUM_BIN&&!process.env.TEST_WEBKIT?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox']}:{});try{
+ for(const reducedMotion of ['no-preference','reduce'])for(const width of [390,1280]){
+  const page=await browser.newPage({viewport:{width,height:844},reducedMotion}),held=new Map(),errors=[];page.setDefaultTimeout(6000);page.on('pageerror',e=>errors.push(e.message));
+  await page.route('https://presentation.test/**',r=>{const p=new URL(r.request().url()).pathname;if(p==='/')return r.fulfill({contentType:'text/html',body:html});held.set(p,r);});
+  await page.goto('https://presentation.test/',{waitUntil:'domcontentloaded'});
+  await page.evaluate(()=>document.addEventListener('load',event=>event.target.getAnimations?.().forEach(a=>a.pause()),true));
+  const native=page.locator('img[alt=Native]'),before=await native.boundingBox();
+  assert.equal(await native.evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(243, 243, 243)','Quiet slot while real image is pending');
+  assert.equal(await native.getAttribute('src'),'/native.svg','No first-screen source postponement');
+  assert(held.has('/native.svg'));
+  await held.get('/native.svg').fulfill({contentType:'image/svg+xml',body:svg});
+  await page.waitForFunction(()=>document.querySelector('img[alt=Native]').dataset.sfMediaState==='ready');
+  assert.deepEqual(await native.boundingBox(),before,'Native image keeps its exact box');
+  assert.equal(await native.evaluate(el=>el.getAnimations().length),0,'First-screen photo never fades');
+  assert.equal(await page.locator('img[alt=Cached]').evaluate(el=>el.getAnimations().length),0,'Same cached source has no artificial replay');
+  const lower=page.locator('img[alt=Deferred]').first();await lower.scrollIntoViewIfNeeded();
+  await page.waitForFunction(()=>!document.querySelector('img[alt=Deferred]').hasAttribute('data-sf-media-src'));
+  const slot=await lower.boundingBox();
+  assert.equal(await lower.getAttribute('data-sf-media-state'),'loading','Transparent deferred SVG does not clear the placeholder');
+  const path=width<701?'/mobile.svg':'/desktop.svg';
+  assert(held.has(path),'Correct responsive source selected');await held.get(path).fulfill({contentType:'image/svg+xml',body:svg});
+  await page.waitForFunction(()=>document.querySelector('img[alt=Deferred]').dataset.sfMediaState==='ready');
+  assert.deepEqual(await lower.boundingBox(),slot,'Deferred promotion keeps exact geometry');
+  assert.deepEqual(await lower.evaluate(el=>el.getAnimations().map(a=>a.effect.getTiming().duration)),reducedMotion==='reduce'?[]:[160],'Only a newly arrived lower photo has the shared short fade');
+  await page.locator('img[alt=Broken]').scrollIntoViewIfNeeded();
+  const broken=page.locator('img[alt=Broken]'),brokenBefore=await broken.boundingBox();
+  assert(held.has('/broken.svg'));await held.get('/broken.svg').fulfill({status:404,body:''});
+  await page.waitForFunction(()=>document.querySelector('img[alt=Broken]').dataset.sfMediaState==='error');
+  assert.deepEqual(await broken.boundingBox(),brokenBefore,'Error keeps reserved space and native fallback');
+  assert.equal(await broken.evaluate(el=>getComputedStyle(el).opacity),'1','Errors never leave invisible images');
+  assert.deepEqual(errors,[]);await page.close();
+ }
+ const context=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}}),page=await context.newPage();
+ await page.route('https://presentation.test/**',r=>r.fulfill({contentType:r.request().url().endsWith('/')?'text/html':'image/svg+xml',body:r.request().url().endsWith('/')?html:svg}));
+ await page.goto('https://presentation.test/');await page.locator('img[alt=Deferred]:visible').scrollIntoViewIfNeeded();
+ assert.equal(await page.locator('img[alt=Deferred]:visible').count(),1,'One native fallback without scripts');
+ assert.equal(await page.locator('img[alt=Native]').evaluate(el=>getComputedStyle(el).backgroundColor),'rgba(0, 0, 0, 0)','No persistent loading presentation without scripts');
+ await context.close();console.log('Media presentation passed: native/deferred/cache/error/no-script, responsive sources, first-screen exclusion, stable geometry and reduced motion ('+engine+').');
+}finally{await browser.close();}})().catch(e=>{console.error(e);process.exit(1);});

@@ -17,6 +17,14 @@ export function createOverlayController({
     let inlineSearch = false, searchHome = null, searchSlot = null, hiddenHeaderControl = null;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
+    function panelTiming(element, out = false) {
+        const style = getComputedStyle(element);
+        const time = style.getPropertyValue('--sf-ui-motion-panel-' + (out ? 'exit' : 'enter')).trim();
+        const duration = parseFloat(time) * (time.endsWith('ms') ? 1 : 1000);
+        return {duration:reducedMotion.matches ? 0 : (Number.isFinite(duration) ? Math.max(0, duration) : 0),
+            easing:style.getPropertyValue('--sf-ui-ease-press').trim() || 'ease-out'};
+    }
+
     function adminOffset() {
         const bar = $('#wpadminbar');
         const rect = bar?.getBoundingClientRect();
@@ -73,11 +81,12 @@ export function createOverlayController({
             const rect = toolbar.getBoundingClientRect();
             const trigger = document.querySelector('.sf-header [data-panel="search"]')?.getBoundingClientRect();
             const offset = trigger ? trigger.right - rect.right : 0;
-            surfaceMotion = toolbar.animate([
+            const motion = toolbar.animate([
                 {clipPath:`inset(0 0 0 ${Math.max(0, rect.width - 44)}px round 24px)`, transform:`translateX(${offset}px)`},
                 {clipPath:'inset(0 0 0 0 round 24px)', transform:'translateX(0)'},
-            ], {duration:320,easing:'cubic-bezier(.2,.8,.2,1)'});
-            surfaceMotion.onfinish = () => { surfaceMotion = null; };
+            ], panelTiming(toolbar));
+            surfaceMotion = motion;
+            motion.onfinish = () => { if (surfaceMotion === motion) surfaceMotion = null; };
         }
         searchFeature.start();
         $('#sf-query').focus({preventScroll:true});
@@ -102,13 +111,15 @@ export function createOverlayController({
     function animateDrawer(out = false) {
         if (reducedMotion.matches || !dialog.animate) return false;
         surfaceMotion?.cancel();
-        surfaceMotion = dialog.animate([
+        const motion = dialog.animate([
             {transform:out ? 'translateX(0)' : 'translateX(100%)'},
             {transform:out ? 'translateX(100%)' : 'translateX(0)'},
-        ], {duration:out ? 220 : 280,easing:'cubic-bezier(.2,.8,.2,1)',fill:'forwards'});
-        surfaceMotion.onfinish = () => {
+        ], {...panelTiming(dialog, out),fill:'forwards'});
+        surfaceMotion = motion;
+        motion.onfinish = () => {
+            if (surfaceMotion !== motion) return;
             if (out) finishClose();
-            else { surfaceMotion.cancel(); surfaceMotion = null; }
+            else { motion.cancel(); surfaceMotion = null; }
         };
         return true;
     }
@@ -256,11 +267,14 @@ export function createOverlayController({
         panelMotion = null;
         if (reducedMotion.matches || !element?.animate) return;
         const menu = element.id === 'sf-menu';
-        panelMotion = element.animate([
+        const motion = element.animate([
             {opacity:0, transform:menu ? 'translate3d(0,-16px,0)' : `translate3d(${direction * 8}px,0,0)`},
             {opacity:1, transform:'translate3d(0,0,0)'},
-        ], {duration:menu ? 260 : 160, easing:'cubic-bezier(.2,.8,.2,1)'});
-        panelMotion.onfinish = () => { panelMotion = null; };
+        ], panelTiming(element));
+        panelMotion = motion;
+        // finish events are queued: a completed older entrance must never
+        // clear a replacement/closing animation's cancellation ownership.
+        motion.onfinish = () => { if (panelMotion === motion) panelMotion = null; };
     }
     function close() {
         if (inlineSearch) { closeInlineSearch(); return; }
@@ -278,11 +292,12 @@ export function createOverlayController({
         }
         if (current === 'menu' && !reducedMotion.matches && $('#sf-menu')?.animate) {
             closing = true;
-            panelMotion = $('#sf-menu').animate([
+            const motion = $('#sf-menu').animate([
                 {opacity:1,transform:'translate3d(0,0,0)'},
                 {opacity:0,transform:'translate3d(0,-12px,0)'},
-            ], {duration:280,easing:'ease-in',fill:'forwards'});
-            panelMotion.onfinish = () => finishClose();
+            ], {...panelTiming($('#sf-menu'), true),fill:'forwards'});
+            panelMotion = motion;
+            motion.onfinish = () => { if (panelMotion === motion) finishClose(); };
             return;
         }
         finishClose();
@@ -318,7 +333,7 @@ export function createOverlayController({
     
     function closeForNavigation() {
         // Closing the menu before a router click must not jump to the old
-        // scroll position, restore focus to stale content, or wait 280ms.
+        // scroll position, restore focus to stale content, or wait for motion.
         if (inlineSearch) { closeInlineSearch(false); return; }
         if (!dialog?.open) return;
         panelMotion?.cancel(); panelMotion = null;
@@ -334,6 +349,12 @@ export function createOverlayController({
         searchHome = document.createComment('Search mobile slot');
         $('#sf-search').before(searchHome);
         searchSemantics();
+        reducedMotion.addEventListener('change', () => {
+            if (!reducedMotion.matches) return;
+            if (closing) { finishClose(); return; }
+            surfaceMotion?.cancel(); surfaceMotion = null;
+            panelMotion?.cancel(); panelMotion = null;
+        });
         desktop.addEventListener('change', () => {
             if (inlineSearch) closeInlineSearch();
             else if (dialog.open && current === 'search') finishClose();

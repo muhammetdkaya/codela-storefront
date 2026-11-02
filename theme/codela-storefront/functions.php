@@ -56,6 +56,7 @@ require_once get_template_directory() . '/inc/document-continuity.php';
 require_once get_template_directory() . '/inc/media-optimization.php';
 require_once get_template_directory() . '/inc/product.php';
 require_once get_template_directory() . '/inc/catalog.php';
+require_once get_template_directory() . '/inc/search.php';
 require_once get_template_directory() . '/inc/sections.php';
 require_once get_template_directory() . '/inc/account.php';
 require_once get_template_directory() . '/inc/google-auth.php';

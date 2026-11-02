@@ -116,6 +116,44 @@ function codela_sf_product_description_heading( string $heading ): string {
 add_filter( 'woocommerce_product_description_heading', 'codela_sf_product_description_heading' );
 add_filter( 'woocommerce_product_additional_information_heading', 'codela_sf_product_description_heading' );
 
+/** Resolve native tabs once for this product, before rendering either region. */
+function &codela_sf_product_information_state(): array {
+    global $product;
+    static $states = [];
+    $key = is_object( $product ) ? spl_object_id( $product ) : 0;
+    if ( ! isset( $states[ $key ] ) ) {
+        $states[ $key ] = [ 'product' => $product, 'tabs' => apply_filters( 'woocommerce_product_tabs', [] ), 'description_rendered' => false ];
+    }
+    return $states[ $key ];
+}
+
+/** One native callback and one ID, whether placed in summary or information. */
+function codela_sf_product_information_section( string $key, array $tab ): void {
+    ?>
+    <details class="sf-product-information-section" id="sf-product-section-<?php echo esc_attr( $key ); ?>" <?php echo 'description' === $key ? 'open' : ''; ?>>
+        <summary><?php echo wp_kses_post( apply_filters( 'woocommerce_product_' . $key . '_tab_title', $tab['title'], $key ) ); ?></summary>
+        <div class="sf-product-information-content" id="tab-<?php echo esc_attr( $key ); ?>">
+            <?php
+            if ( isset( $tab['callback'] ) && is_callable( $tab['callback'] ) ) {
+                $render_tab = static function() use ( $tab, $key ) { call_user_func( $tab['callback'], $key, $tab ); };
+                add_action( 'codela_sf_product_information', $render_tab );
+                do_action( 'codela_sf_product_information' );
+                remove_action( 'codela_sf_product_information', $render_tab );
+            }
+            ?>
+        </div>
+    </details>
+    <?php
+}
+
+function codela_sf_product_summary_description(): void {
+    $state =& codela_sf_product_information_state();
+    if ( ! $state['description_rendered'] && isset( $state['tabs']['description'] ) ) {
+        codela_sf_product_information_section( 'description', $state['tabs']['description'] );
+        $state['description_rendered'] = true;
+    }
+}
+
 add_action( 'wp', function() {
     if ( ! function_exists( 'is_product' ) || ! is_product() ) { return; }
     // Bound desktop sticky media to the overview, before information/recommendations.
@@ -126,6 +164,9 @@ add_action( 'wp', function() {
     add_action( 'woocommerce_after_single_product_summary', function() { echo '</div>'; }, 0 );
     add_action( 'woocommerce_single_product_summary', function() { echo '<div class="sf-product-price-row">'; }, 9 );
     add_action( 'woocommerce_single_product_summary', function() { echo '</div>'; }, 12 );
+    // Desktop/tablet description is already in its final position at first
+    // paint. Only the mobile sheet moves this same node into its disclosures.
+    add_action( 'woocommerce_single_product_summary', 'codela_sf_product_summary_description', 31 );
     remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40 );
     add_filter( 'woocommerce_product_tabs', 'codela_sf_product_information_tabs', 20 );
     add_filter( 'woocommerce_get_stock_html', 'codela_sf_product_stock_placement', 20, 2 );

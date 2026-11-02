@@ -13,7 +13,7 @@ const galleryScript = fs.readFileSync(root + 'assets/scripts/gallery-defer.js', 
 const descriptionId = 'sf-product-section-description';
 const image = n => 'data:image/svg+xml,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="${n === 1 ? 1000 : 700}" height="${n === 1 ? 700 : 1000}"><rect width="100%" height="100%" fill="#c8b49b"/></svg>`);
 function fixture({description = true, eta = true, modules = true, open = true, copy = '<p>Ürün açıklaması</p>'} = {}) {
-  return `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif}.woocommerce div.product .related.products{margin-top:80px;min-height:1400px}${css}</style></head><body class="single-product woocommerce"><main class="sf-content"><div class="product"><div class="sf-product-overview"><div class="sf-product-media"><div class="woocommerce-product-gallery sf-ui-gallery sf-ui-gallery--hero sf-ui-gallery--scroll" style="opacity:0"><div class="woocommerce-product-gallery__wrapper">${[0,1,2,3,4].map(n => `<div class="woocommerce-product-gallery__image" data-thumb="${image(n)}"><a href="${image(n)}"><img width="700" height="1000" src="${image(n)}" alt="Product ${n}"></a></div>`).join('')}</div></div></div><div class="summary"><h1 class="product_title">Kavis Dekoratif Obje</h1><div class="sf-product-price-row"><p class="price">990,00 TL</p></div><p class="woocommerce-product-details__short-description">Kesintisiz kıvrımlı dekoratif obje.</p><form id="original-form" class="cart" method="post"><div class="sf-product-purchase"><div class="quantity">${qty}</div><button type="submit" name="add-to-cart" value="42" class="single_add_to_cart_button button">Sepete Ekle</button></div></form>${eta ? '<div class="cdl-de">Tahmini teslimat: 21–23 Ekim</div>' : ''}${modules ? '<div class="cdl-fsb--product">Ücretsiz kargo<div class="cdl-fsb-track"><span class="cdl-fsb-fill"></span></div></div><div class="cdl-wa"><a class="cdl-wa-button" href="https://wa.me/905000000000"><span class="cdl-wa-ico sf-ui-icon-button sf-ui-icon-button--soft">W</span>WhatsApp’tan sor</a></div><div class="cdl-tb">' + ['Güvenli ödeme','Kapıda ödeme','Koşulsuz iade','Hızlı kargo'].map(s => `<div class="cdl-tb-item"><span class="cdl-tb-label">${s}</span></div>`).join('') + '</div>' : ''}</div></div><div class="sf-product-information">${description ? `<details class="sf-product-information-section" id="${descriptionId}" ${open ? 'open' : ''}><summary>Açıklama</summary><div class="sf-product-information-content" id="tab-description">${copy}</div></details>` : ''}<details class="sf-product-information-section" id="sf-product-section-additional_information"><summary>Ek bilgi</summary><div id="tab-additional_information">Ölçüler</div></details><details class="sf-product-information-section" id="sf-product-section-reviews"><summary>Değerlendirmeler (0)</summary><div id="tab-reviews"><div id="reviews">Yorumlar</div><a id="review_form"></a></div></details></div><section class="related products"><h2>İlgili ürünler</h2></section>${template}</div></main></body></html>`;
+  return `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif}.woocommerce div.product .related.products{margin-top:80px;min-height:1400px}${css}</style></head><body class="single-product woocommerce"><main class="sf-content"><div class="product"><div class="sf-product-overview"><div class="sf-product-media"><div class="woocommerce-product-gallery sf-ui-gallery sf-ui-gallery--hero sf-ui-gallery--scroll" style="opacity:0"><div class="woocommerce-product-gallery__wrapper">${[0,1,2,3,4].map(n => `<div class="woocommerce-product-gallery__image" data-thumb="${image(n)}"><a href="${image(n)}"><img width="700" height="1000" src="${image(n)}" alt="Product ${n}"></a></div>`).join('')}</div></div></div><div class="summary"><h1 class="product_title">Kavis Dekoratif Obje</h1><div class="sf-product-price-row"><p class="price">990,00 TL</p></div><p class="woocommerce-product-details__short-description">Kesintisiz kıvrımlı dekoratif obje.</p><form id="original-form" class="cart" method="post"><div class="sf-product-purchase"><div class="quantity">${qty}</div><button type="submit" name="add-to-cart" value="42" class="single_add_to_cart_button button">Sepete Ekle</button></div></form>${description ? `<details class="sf-product-information-section" id="${descriptionId}" ${open ? 'open' : ''}><summary>Açıklama</summary><div class="sf-product-information-content" id="tab-description">${copy}</div></details>` : ''}${eta ? '<div class="cdl-de">Tahmini teslimat: 21–23 Ekim</div>' : ''}${modules ? '<div class="cdl-fsb--product">Ücretsiz kargo<div class="cdl-fsb-track"><span class="cdl-fsb-fill"></span></div></div><div class="cdl-wa"><a class="cdl-wa-button" href="https://wa.me/905000000000"><span class="cdl-wa-ico sf-ui-icon-button sf-ui-icon-button--soft">W</span>WhatsApp’tan sor</a></div><div class="cdl-tb">' + ['Güvenli ödeme','Kapıda ödeme','Koşulsuz iade','Hızlı kargo'].map(s => `<div class="cdl-tb-item"><span class="cdl-tb-label">${s}</span></div>`).join('') + '</div>' : ''}</div></div><div class="sf-product-information">${description ? '<span hidden data-sf-description-home></span>' : ''}<details class="sf-product-information-section" id="sf-product-section-additional_information"><summary>Ek bilgi</summary><div id="tab-additional_information">Ölçüler</div></details><details class="sf-product-information-section" id="sf-product-section-reviews"><summary>Değerlendirmeler (0)</summary><div id="tab-reviews"><div id="reviews">Yorumlar</div><a id="review_form"></a></div></details></div><section class="related products"><h2>İlgili ürünler</h2></section>${template}</div></main></body></html>`;
 }
 // A long below-fold recommendation area makes wheel assertions independent of
 // whether this fixture's short summary happens to fit a particular viewport.
@@ -49,7 +49,7 @@ async function resizeAndCheck(page, width, {description = true, originalOpen = t
     const sheet = document.querySelector('.sf-product-sheet');
     if ((width <= 700) !== Boolean(sheet)) return false;
     if (!description) return !section;
-    if (width >= 901) return section.parentElement.matches('.sf-product-overview > .summary') && section.open;
+    if (width > 700) return section.parentElement.matches('.sf-product-overview > .summary') && section.open === originalOpen;
     return section.parentElement === document.querySelector('.sf-product-information') && section.open === (width <= 700 ? false : originalOpen);
   }, {width, description, originalOpen});
   await assertIdentity(page, description);
@@ -90,7 +90,7 @@ async function wheelOverPhoto(page, label) {
   await wait(page, () => window.scrollY === 0);
 }
 (async () => {
-  const browser = await (process.env.TEST_WEBKIT ? webkit : chromium).launch({headless:true});
+  const browser = await (process.env.TEST_WEBKIT ? webkit : chromium).launch(process.env.CHROMIUM_BIN&&!process.env.TEST_WEBKIT?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox']}:{headless:true});
   try {
     const page = await browser.newPage({reducedMotion:'reduce'});
     page.setDefaultTimeout(5000);
@@ -99,10 +99,9 @@ async function wheelOverPhoto(page, label) {
     for (const width of [901,1024,1280,1440,1920]) {
       await load(page, width);
       assert.equal(await page.locator('.woocommerce-product-gallery').evaluate(el => getComputedStyle(el).opacity), '1', 'Native first photo is visible before Woo JS');
-      const etaBefore = await page.locator('.cdl-de').boundingBox();
+      const descriptionBefore = await page.locator('#sf-product-section-description').boundingBox();
       await page.addScriptTag({content:informationScript});
-      // Description relocation can legitimately grow summary. Gallery controls
-      // must not add a second layout shift after that intentional composition.
+      // Server-rendered description and gallery controls are stable before hydration.
       const before = await page.locator('.sf-product-information').boundingBox();
       await page.addScriptTag({content:galleryScript});
       const after = await page.locator('.sf-product-information').boundingBox();
@@ -119,7 +118,7 @@ async function wheelOverPhoto(page, label) {
       assert(g.info.width >= g.summary.right - g.gallery.left - 1, 'Remaining information spans both columns');
       assert(g.trust.top >= g.contact.bottom - 1 && g.trust.bottom <= g.summary.bottom + 1);
       assert(g.nav.top >= g.track.bottom, 'Preview rail below photograph');
-      assert(Math.abs(g.description.top - etaBefore.y) < 1, 'Description begins at the original ETA position ' + width);
+      assert(Math.abs(g.description.top - descriptionBefore.y) < 1, 'Description does not move during hydration ' + width);
       assert(Math.abs(g.description.left - g.summary.left) < 1 && g.description.right <= g.summary.right + 1, 'Description belongs to right summary column');
       assert(g.eta.top >= g.description.bottom - 1, 'Delivery follows description');
       assert.equal(await page.locator('.summary > #sf-product-section-description[open]').count(), 1, 'Description starts readable, not as a closed button');
@@ -146,6 +145,8 @@ async function wheelOverPhoto(page, label) {
     await page.addScriptTag({content:informationScript});
     await page.addScriptTag({content:galleryScript});
     await resizeAndCheck(page, 901, {originalOpen:false});
+    await page.locator('#sf-product-section-description > summary').press('Enter');
+    assert.equal(await page.locator('#sf-product-section-description').evaluate(el => el.open), true, 'Native disclosure opens with the keyboard');
     await page.locator('#sf-product-section-description > summary').click();
     assert.equal(await page.locator('#sf-product-section-description').evaluate(el => el.open), false, 'Native desktop disclosure remains keyboard/pointer operable');
     for (const width of [900,701,700,901,390,900]) await resizeAndCheck(page, width, {originalOpen:false});
@@ -166,7 +167,7 @@ async function wheelOverPhoto(page, label) {
         }), 'Optional modules retain their order after description');
       }
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'Empty/missing/long rich text stays inside the desktop viewport');
-      const sections = await page.evaluate(() => Array.from(document.querySelector('.sf-product-information').children).map(el => el.id));
+      const sections = await page.evaluate(() => Array.from(document.querySelector('.sf-product-information').children).filter(el => el.matches('details')).map(el => el.id));
       assert.deepEqual(sections, ['sf-product-section-additional_information','sf-product-section-reviews']);
     }
     assert.deepEqual(errors, []);

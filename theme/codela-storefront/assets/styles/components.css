@@ -115,6 +115,23 @@ html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) d
 }
 /* The named panel variant continues to be available to shared UI Kit users. */
 .sf-ui-surface--glass-panel{background:var(--sf-ui-glass-panel-surface)!important}
+/* The pending summary aliases a mobile panel only. Above that breakpoint it
+   must already look like the final inline summary, even on a slow script load. */
+@media(min-width:701px){
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary{
+    border:0;border-radius:0;background:transparent!important;color:inherit;
+    box-shadow:none!important;-webkit-backdrop-filter:none;backdrop-filter:none;
+  }
+  body.single-product div.product .sf-product-purchase,
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary .quantity{
+    background:transparent!important;box-shadow:none!important;
+    -webkit-backdrop-filter:none;backdrop-filter:none;
+  }
+  body.single-product div.product .sf-product-purchase{border:0}
+}
+@media(min-width:701px) and (max-width:900px){
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary .quantity{border:0;border-radius:0}
+}
 .woocommerce div.product .sf-ui-gallery .woocommerce-product-gallery__trigger .sf-icon,
 :is(.sf-shell,.sf-product-plugin-footer) .sf-ui-icon-button--soft .sf-icon,
 #sf-panel button.sf-ui-icon-button--soft .sf-icon,
@@ -550,12 +567,17 @@ html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) d
    floating material. Mobile retains the original common glass surface. */
 @media(min-width:901px) and (forced-colors:none){
   body.single-product div.product :is(.sf-product-purchase,.sf-ui-gallery-nav,.cdl-wa-button),
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary .quantity,
   body.single-product.woocommerce div.product div.sf-ui-gallery .flex-control-thumbs,
   body.single-product div.product .summary .cdl-wa-ico{
     background:transparent!important;box-shadow:none!important;
     -webkit-backdrop-filter:none;backdrop-filter:none;
   }
 }
+
+/* A quiet, dimension-preserving image slot; the real image is never hidden.
+   Network errors keep the native alt/fallback and the same reserved geometry. */
+img[data-sf-media-state="loading"],img[data-sf-media-state="error"]{background:var(--sf-ui-surface-muted)!important}
 
 .sf-shell .sf-header-search .sf-search-toolbar.sf-ui-surface{background:var(--sf-ui-surface);border-radius:var(--sf-ui-pill);color:var(--sf-ui-ink)}
 
