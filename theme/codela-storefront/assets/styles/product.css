@@ -835,10 +835,10 @@ html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:
   body.single-product div.product form.cart{padding:0 0 20px;margin-bottom:18px;border-top:0}
   body.single-product div.product form.cart .sf-product-purchase{padding:0;gap:12px}
   body.single-product div.product form.cart .sf-product-purchase .quantity{border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-pill);overflow:hidden;align-items:center}
-  body.single-product div.product .sf-product-quantity:not(.is-fixed) .sf-product-quantity-step.sf-ui-button{display:inline-flex;min-width:36px;width:36px;min-height:var(--sf-ui-action-height)}
-  body.single-product div.product form.cart .sf-product-quantity input.qty{width:40px;min-width:0;padding:0;appearance:textfield;-moz-appearance:textfield;text-align:center}
-  body.single-product div.product .sf-product-quantity input.qty::-webkit-inner-spin-button,
-  body.single-product div.product .sf-product-quantity input.qty::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+  body.single-product div.product :is(.sf-product-quantity:not(.is-fixed),html.sf-product-sheet-pending .quantity:has(input.qty[type=number]:not([hidden]))) .sf-product-quantity-step.sf-ui-button{display:inline-flex;min-width:36px;width:36px;min-height:var(--sf-ui-action-height)}
+  body.single-product div.product form.cart :is(.sf-product-quantity,html.sf-product-sheet-pending .quantity) input.qty{width:40px;min-width:0;padding:0;appearance:textfield;-moz-appearance:textfield;text-align:center}
+  body.single-product div.product :is(.sf-product-quantity,html.sf-product-sheet-pending .quantity) input.qty::-webkit-inner-spin-button,
+  body.single-product div.product :is(.sf-product-quantity,html.sf-product-sheet-pending .quantity) input.qty::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
   body.single-product .cdl-de{margin-top:0}
   body.single-product .cdl-wa{margin-top:8px;border-block:1px solid var(--sf-ui-border)}
   body.single-product .cdl-wa-button{min-height:54px;padding:5px 0;border:0;border-radius:0;font-weight:400}

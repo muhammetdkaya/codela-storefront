@@ -1,5 +1,16 @@
 # Codela Storefront — güncel teknik durum
 
+## 2 Kasım 2026 — 0.1.194 ilk çizim ve sunum paketi (aday)
+
+Kullanıcının “Uygulamaya başla” onayıyla yalnız tema 0.1.193 → 0.1.194. Arama sunum adaptörü, eklentinin zaten hesapladığı Woo fiyat HTML’ini istek kapsamında yakalar; dar KSES listesiyle `price_html` ekler. Ek ürün sorgusu/fiyat hesabı yok; mevcut `price`, görünürlük, özel önbellek ve REST sahipliği eklentide kalır. Aralık/indirim ekran okuyucu açıklaması görsel fiyatı tekrarlamaz.
+
+Açıklama yerel tab filtreleri/callback’i bir kez çalıştırılarak summary’de 31 önceliğinde sunucudan gelir; masaüstü ve 701–900px tablet ilk/son yerleşimi aynıdır, teslimat bilgisi açıklamayı izler. Mobil ≤700px aynı düğümü tab sırasındaki gizli işarete taşır, aynı form ve eski sheet geometrisini korur; geri büyütmede tam konum/açıklık geri döner. Scriptsiz açıklama okunur. Mobil bekleme yüzeyi artık masaüstü/tablet summary’sini geçici cam kart gibi boyamaz; masaüstü adet ölçüsü ilk çizimde hazırdır.
+
+Lazy görsellerde gerçek src/srcset ve öncelik korunarak sakin yükleme alanı eklenir. Mevcut erken medya sahibi native/deferred başarı/hata durumunu temizler; ilk ekran, high-priority ve önbellek görselleri animasyonla beklemez. Yalnız alt görünür görsel 160ms opacity geçişi alabilir. No-script/responsive/print yolları korunur. Ortak panel enter=240ms, exit=180ms; CSS backdrop ve JS aynı token’ları okur, hareket tercihi değişince bekleyen kapanış tamamlanır. Yeni kütüphane/controller yok.
+
+Yerel doğrulama: gerçek WP 6.5 KSES/HTML Tag Processor ile fiyat/medya sözleşmeleri; Chromium 15 gecikmeli ürün script senaryosu ve scriptsiz/mobil geri dönüş; aralık/indirim/suffix/kaçış, hızlı panel tekrarları ve reduced-motion; native/deferred/cache/error görselleri; mevcut desktop/product-sheet/media/search/cart ve PHP/paket kontrolleri geçti. Chromium gezinme, 24 üründe dock gizliliği, gerçek/skeleton geometri, ana sayfa ve native belge geçişi regresyonları geçti; 26 PHP lint, UI Kit ve 24 paket testi başarılı. 193 CSS’i yeni ilk-çizim testinde beklenen biçimde başarısız oldu. UTF-8 ürün ilk/son ve arama fixture ekranları incelendi. WebKit CI ve GitHub kararlı yayın henüz bekliyor. Gerçek Woo satış entegrasyonu/fiziksel Safari veya canlı LCP/INP iyileşmesi iddiası yok. Eklenti, içerik, FTP ve AZ kurulumu değişmedi. Sonraki: odaklı iki motorlu CI → kaynak/paket doğrulaması → yalnız GitHub yayını; kullanıcı manuel kurar.
+
+
 ## 1 Kasım 2026 — 0.1.193 ilk açılış optimizasyonu (yayımlandı)
 
 Kullanıcının yönlendirmesiyle çalışma yalnız bağımsız temadadır; eklenti değişmedi. Tema 0.1.192 → 0.1.193. Beş ortak CSS ve iki gezinme CSS'i sıralarını koruyan iki pakete; iki erken gezinme JS'i tek pakete birleştirildi. WordPress handle/inline/dependency sözleşmesi, erken pagereveal, SCRIPT_DEBUG kaynakları ve editör galeri izolasyonu korunur. Gizli yatay slayt sınırda sıfır alanla kesiştiğinde indirilmez; swipe/klavye, görünürlük, scriptsiz ve baskı yolları çalışır. Ürün blokları native toplu post/meta/term/thumbnail cache priming kullanır; şema JSON'u istek başına bir kez okunur. Paketleme eski üretilmiş dosyayı reddeder; kaynaklardan `python3 scripts/build-assets.py` ile üretin.

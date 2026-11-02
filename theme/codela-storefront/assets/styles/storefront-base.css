@@ -77,6 +77,9 @@
   --sf-ui-ease-release:cubic-bezier(.22,1.35,.36,1);
   --sf-ui-motion-selection:220ms;
   --sf-ui-motion-panel:160ms;
+  --sf-ui-motion-panel-enter:240ms;
+  --sf-ui-motion-panel-exit:180ms;
+  --sf-ui-motion-media:160ms;
   --sf-ui-motion-dock:480ms;
   --sf-ui-ease-press:cubic-bezier(.2,.8,.2,1);
   --sf-ui-ease-dock:cubic-bezier(.32,0,.24,1);
@@ -91,6 +94,9 @@
     --sf-ui-scale-dock:1;
     --sf-ui-motion-selection:0ms;
     --sf-ui-motion-panel:0ms;
+    --sf-ui-motion-panel-enter:0ms;
+    --sf-ui-motion-panel-exit:0ms;
+    --sf-ui-motion-media:0ms;
     --sf-ui-motion-dock:0ms;
   }
 }
@@ -489,6 +495,7 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
   background:#f1f1f1;
 }
 #sf-search .sf-result h3{font-size:17px;margin-bottom:6px}
+#sf-search .sf-result p ins{text-decoration:none}
 #sf-search .sf-result p,
 #sf-search .sf-result small,
 #sf-search #sf-results>p{color:#808080}
@@ -595,12 +602,15 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
   .sf-header-search #sf-results{min-height:0}
   .sf-header-search [hidden]{display:none!important}
   #sf-panel.is-cart-panel{left:auto;right:0;width:min(460px,100%);box-shadow:-12px 0 48px rgb(0 0 0 / .12)}
-  #sf-panel.is-cart-panel::backdrop{background:rgb(0 0 0 / .22);animation:sf-cart-backdrop-in 280ms ease both}
-  #sf-panel.is-cart-panel.is-closing::backdrop{animation:sf-cart-backdrop-out 220ms ease both}
+  #sf-panel.is-cart-panel::backdrop{background:rgb(0 0 0 / .22);animation:sf-cart-backdrop-in var(--sf-ui-motion-panel-enter) var(--sf-ui-ease-press) both}
+  #sf-panel.is-cart-panel.is-closing::backdrop{animation:sf-cart-backdrop-out var(--sf-ui-motion-panel-exit) var(--sf-ui-ease-press) both}
   #sf-panel.is-cart-panel .sf-cart-row{grid-template-columns:80px minmax(0,1fr);gap:16px}
 }
 @keyframes sf-cart-backdrop-in{from{opacity:0}to{opacity:1}}
 @keyframes sf-cart-backdrop-out{from{opacity:1}to{opacity:0}}
+/* Woo price descriptions remain available to assistive technology even when
+   a page omits the optional WordPress block stylesheet. */
+#sf-results .screen-reader-text{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);white-space:nowrap;border:0}
 @media(prefers-reduced-motion:reduce){#sf-panel.is-cart-panel::backdrop{animation:none!important}}
 
 @media(min-width:901px) and (max-width:1099px){
@@ -1016,6 +1026,23 @@ html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) d
 }
 /* The named panel variant continues to be available to shared UI Kit users. */
 .sf-ui-surface--glass-panel{background:var(--sf-ui-glass-panel-surface)!important}
+/* The pending summary aliases a mobile panel only. Above that breakpoint it
+   must already look like the final inline summary, even on a slow script load. */
+@media(min-width:701px){
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary{
+    border:0;border-radius:0;background:transparent!important;color:inherit;
+    box-shadow:none!important;-webkit-backdrop-filter:none;backdrop-filter:none;
+  }
+  body.single-product div.product .sf-product-purchase,
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary .quantity{
+    background:transparent!important;box-shadow:none!important;
+    -webkit-backdrop-filter:none;backdrop-filter:none;
+  }
+  body.single-product div.product .sf-product-purchase{border:0}
+}
+@media(min-width:701px) and (max-width:900px){
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary .quantity{border:0;border-radius:0}
+}
 .woocommerce div.product .sf-ui-gallery .woocommerce-product-gallery__trigger .sf-icon,
 :is(.sf-shell,.sf-product-plugin-footer) .sf-ui-icon-button--soft .sf-icon,
 #sf-panel button.sf-ui-icon-button--soft .sf-icon,
@@ -1451,12 +1478,17 @@ html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) d
    floating material. Mobile retains the original common glass surface. */
 @media(min-width:901px) and (forced-colors:none){
   body.single-product div.product :is(.sf-product-purchase,.sf-ui-gallery-nav,.cdl-wa-button),
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary .quantity,
   body.single-product.woocommerce div.product div.sf-ui-gallery .flex-control-thumbs,
   body.single-product div.product .summary .cdl-wa-ico{
     background:transparent!important;box-shadow:none!important;
     -webkit-backdrop-filter:none;backdrop-filter:none;
   }
 }
+
+/* A quiet, dimension-preserving image slot; the real image is never hidden.
+   Network errors keep the native alt/fallback and the same reserved geometry. */
+img[data-sf-media-state="loading"],img[data-sf-media-state="error"]{background:var(--sf-ui-surface-muted)!important}
 
 .sf-shell .sf-header-search .sf-search-toolbar.sf-ui-surface{background:var(--sf-ui-surface);border-radius:var(--sf-ui-pill);color:var(--sf-ui-ink)}
 

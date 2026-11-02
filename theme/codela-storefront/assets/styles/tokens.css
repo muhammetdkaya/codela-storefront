@@ -74,6 +74,9 @@
   --sf-ui-ease-release:cubic-bezier(.22,1.35,.36,1);
   --sf-ui-motion-selection:220ms;
   --sf-ui-motion-panel:160ms;
+  --sf-ui-motion-panel-enter:240ms;
+  --sf-ui-motion-panel-exit:180ms;
+  --sf-ui-motion-media:160ms;
   --sf-ui-motion-dock:480ms;
   --sf-ui-ease-press:cubic-bezier(.2,.8,.2,1);
   --sf-ui-ease-dock:cubic-bezier(.32,0,.24,1);
@@ -88,6 +91,9 @@
     --sf-ui-scale-dock:1;
     --sf-ui-motion-selection:0ms;
     --sf-ui-motion-panel:0ms;
+    --sf-ui-motion-panel-enter:0ms;
+    --sf-ui-motion-panel-exit:0ms;
+    --sf-ui-motion-media:0ms;
     --sf-ui-motion-dock:0ms;
   }
 }

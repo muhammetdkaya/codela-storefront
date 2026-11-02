@@ -6,9 +6,9 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Ortak tema stilleri ve erken gezinme kodu birleştirilerek ana sayfada ilk çizimi bekleten beş CSS ve bir JavaScript isteği kaldırıldı.",
-    "Görünmeyen slider görselleri ilk açılışta indirilmez; kaydırma, klavye ve görünürlük ile gerektiğinde yüklenir.",
-    "Ürün blokları WordPress'in toplu yazı, meta, terim ve küçük resim önbelleğini kullanır; bölüm şeması istek başına bir kez okunur.",
-    "Görünüm, skeleton, WooCommerce alışveriş akışları ve geliştirici modunda ayrı kaynak dosyaları korundu."
+    "Arama sonuçlarında yerel WooCommerce fiyatı, indirim ve erişilebilir açıklama korunur; fiyat aralığı görsel olarak tekrarlanmaz.",
+    "Ürün açıklaması masaüstü ve tablette ilk HTML içinde yer alır. Geçici panel yüzeyi ve miktar kontrolü kaynaklı ilk çizim değişimleri giderildi; mobilde aynı açıklama ve form kullanılır.",
+    "Gecikmeli görsellerde sabit boyutlu sakin yer tutucu eklendi. İlk ekran ve önbellekteki görseller bekletilmez; alt görseller gerektiğinde kısa geçişle görünür.",
+    "Arama, menü ve sepet hareketleri ortak açılış/kapanış sürelerini kullanır; azaltılmış hareket, hızlı tekrar ve anında gezinme korunur."
   ]
 }

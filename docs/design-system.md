@@ -1,5 +1,13 @@
 # Codela Storefront UI Kit — source of truth
 
+
+## First-paint presentation — 0.1.194 candidate
+
+Native Woo description renders once in summary before delivery, including tablet. Mobile moves that same node to the original disclosure-order marker and restores its exact open state; no copied content/form. Pending mobile surface paint must never appear on the inline desktop/tablet summary. Quantity geometry is ready before its adapter.
+
+Panel entrance/exit use shared 240ms/180ms tokens in CSS and WAAPI. Lower, newly loaded images may use the shared 160ms opacity transition; first-screen/high-priority/cached images never wait for it. Loading slots reserve original dimensions and never hide the real image; no-script/error fallbacks remain readable. Reduced-motion and interruption/navigation cancellation apply throughout. Search uses sanitized native Woo range/sale markup and preserves hidden accessible descriptions, with escaped legacy text fallback.
+
+
 ## Showcase bottom alignment — 0.1.185 published
 
 Normal mobile showcase caption, CTA and counter now sit 20px above the frame bottom rather than 82px: the unconditional fixed-dock reservation was inappropriate after the frame became shorter. A shared overlap-only clamp retains only required clearance in short/admin/safe-area cases and aligns the home skeleton to the actual CTA/counter. Desktop 24px padding, 184 frame heights, full cover/focal points and compact 44px button remain unchanged. Exact candidate 4fb7ec0 passed 109 cases per Chromium/WebKit, PHP/homepage, 28 adapter and 24 package checks (40719467892); actual AZ-photo before/after and skeleton fixtures were visually inspected. GitHub v0.1.185 source 7559f9b and stable/downloaded ZIP agree (171118 bytes; SHA256 f86b5bed2bb02417f5b77134b3b931cff5c0cc4acf74feac8a15b0a070a8056a). No plugin/label work or FTP/live installation. Physical Safari acceptance remains separate.

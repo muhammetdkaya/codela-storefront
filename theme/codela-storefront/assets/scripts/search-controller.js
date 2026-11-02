@@ -59,7 +59,10 @@ export function createSearchController({ $, config, t, getCurrent }) {
             if (!response.ok) throw new Error();
             const products = await response.json();
             if (requestId !== sequence || getCurrent() !== 'search') return;
-            results.innerHTML = products.length ? products.map(p => `<a class="sf-result" href="${safeURL(p.url)}"><img src="${safeURL(p.image)}" alt="" width="80" height="100"><div><h3>${escape(decode(p.name))}</h3><p>${escape(decode(p.price))}</p><small>${escape(p.sku)}</small></div></a>`).join('') : `<p>${escape(t('No matching products.'))}</p>`;
+            // price_html is the theme's server-side, price-only KSES allowlist.
+            // Native Woo screen-reader text stays hidden visually and readable
+            // to assistive technology; old API responses retain a text fallback.
+            results.innerHTML = products.length ? products.map(p => `<a class="sf-result" href="${safeURL(p.url)}"><img src="${safeURL(p.image)}" alt="" width="80" height="100"><div><h3>${escape(decode(p.name))}</h3><p>${typeof p.price_html === 'string' ? p.price_html : escape(decode(p.price))}</p><small>${escape(p.sku)}</small></div></a>`).join('') : `<p>${escape(t('No matching products.'))}</p>`;
         } catch (error) {
             if (error.name !== 'AbortError' && requestId === sequence && getCurrent() === 'search') results.innerHTML = `<p>${escape(t('Something went wrong. Please try again.'))}</p><button class="sf-retry-search sf-ui-pressable">${escape(t('Retry'))}</button>`;
         } finally { if (requestId === sequence) results.setAttribute('aria-busy','false'); }

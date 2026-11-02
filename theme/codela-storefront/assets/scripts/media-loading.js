@@ -1,6 +1,22 @@
 // Responsive source promotion only. Native image decoding, srcset selection and
 // scrolling remain browser-owned; product gallery promotion has its own owner.
 (()=>{
+ const finish=(image,animate=false)=>{
+   if(!(image instanceof HTMLImageElement)||!image.dataset.sfMediaState||image.dataset.sfMediaSrc)return;
+   if(!image.complete)return;
+   const wasLoading=image.dataset.sfMediaState==='loading';
+   image.dataset.sfMediaState=image.naturalWidth?'ready':'error';
+   // Never delay first-screen/LCP or already-cached images. Lower, newly
+   // arrived photographs may settle briefly, without changing their geometry.
+   if(!animate||!wasLoading||!image.naturalWidth||!image.animate||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+   const rect=image.getBoundingClientRect();
+   if(rect.top+scrollY<innerHeight||rect.bottom<=0||rect.top>=innerHeight)return;
+   const time=getComputedStyle(image).getPropertyValue('--sf-ui-motion-media').trim();
+   const duration=parseFloat(time)*(time.endsWith('ms')?1:1000);
+   if(duration>0)image.animate([{opacity:.6},{opacity:1}],{duration,easing:'ease-out'});
+ };
+ document.addEventListener('load',event=>finish(event.target,document.readyState!=='loading'),true);
+ document.addEventListener('error',event=>finish(event.target),true);
  const promote=image=>{
    if(!image.dataset.sfMediaSrc)return;
    image.closest('picture')?.querySelectorAll('source[data-sf-media-srcset]').forEach(source=>{
@@ -17,6 +33,7 @@
   event.target.querySelectorAll('img[data-sf-media-src]').forEach(promote);
  });
  const mount=()=>{
+  document.querySelectorAll('img[data-sf-media-state]').forEach(image=>finish(image));
   const images=[...document.querySelectorAll('img[data-sf-media-src]')];
   if(!images.length)return;
   if(!('IntersectionObserver' in window)){images.forEach(promote);return;}

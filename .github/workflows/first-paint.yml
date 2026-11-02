@@ -1,0 +1,78 @@
+name: First-paint and presentation regression
+on:
+  push:
+    branches: [ui/first-paint-0194]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  presentation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate sources and deterministic assets
+        run: |
+          find theme -name '*.php' -type f -print0 | xargs -0 -n1 php -l
+          python3 tests/build-assets.py
+          python3 tests/package.py
+          php tests/catalog.php
+          php tests/product-composition.php
+          php tests/media.php
+          php tests/homepage.php
+          php tests/sections-preview.php
+          php tests/navigation.php
+          php tests/product-mobile-media.php
+          php tests/document-continuity.php
+          php tests/render-product-information.php > /tmp/product-information.json
+          FIXTURE_DESCRIPTION=none php tests/render-product-information.php > /tmp/product-information-none.json
+          node tests/ui-kit.cjs
+          node tests/search-panel.cjs
+          node tests/cart-race.cjs
+          node tests/cart-sync.cjs
+      - name: Fetch pinned WordPress sanitization and HTML parser
+        run: |
+          mkdir -p "$RUNNER_TEMP/wp-core"
+          curl --fail --silent --show-error --max-time 45 --retry 2 https://raw.githubusercontent.com/WordPress/WordPress/6.5/wp-includes/kses.php -o "$RUNNER_TEMP/wp-core/kses.php"
+          for name in attribute-token span text-replacement tag-processor; do
+            curl --fail --silent --show-error --max-time 45 --retry 2 "https://raw.githubusercontent.com/WordPress/WordPress/6.5/wp-includes/html-api/class-wp-html-$name.php" -o "$RUNNER_TEMP/wp-core/class-wp-html-$name.php"
+          done
+          echo "WP_CORE_INCLUDES=$RUNNER_TEMP/wp-core" >> "$GITHUB_ENV"
+      - name: Validate native price sanitization and media markup
+        run: |
+          php tests/search-price.php
+          php tests/media-presentation.php > /tmp/media-presentation.json
+      - name: Install focused browsers
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium webkit
+      - name: Chromium and WebKit presentation
+        run: |
+          node tests/product-first-paint-browser.cjs
+          TEST_WEBKIT=1 node tests/product-first-paint-browser.cjs
+          node tests/panel-presentation-browser.cjs
+          TEST_WEBKIT=1 node tests/panel-presentation-browser.cjs
+          node tests/media-presentation-browser.cjs
+          TEST_WEBKIT=1 node tests/media-presentation-browser.cjs
+          node tests/product-desktop-browser.cjs
+          TEST_WEBKIT=1 node tests/product-desktop-browser.cjs
+          node tests/media-loading-browser.cjs
+          TEST_WEBKIT=1 node tests/media-loading-browser.cjs
+      - name: Existing product, skeleton and navigation contracts
+        run: |
+          node tests/product-sheet-browser.cjs
+          node tests/product-no-dock-browser.cjs
+          TEST_WEBKIT=1 node tests/product-no-dock-browser.cjs
+          node tests/product-skeleton-geometry-browser.cjs
+          TEST_WEBKIT=1 node tests/product-skeleton-geometry-browser.cjs
+          node tests/homepage-browser.cjs
+          TEST_WEBKIT=1 node tests/homepage-browser.cjs
+          node tests/navigation-browser.cjs
+          node tests/document-continuity-browser.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: first-paint-regression
+          path: qa/
+          if-no-files-found: ignore
+          retention-days: 7

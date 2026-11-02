@@ -43,17 +43,23 @@ add_filter( 'wp_preload_resources', static function( $resources ) {
 
 /** Theme-owned below-fold delivery; originals remain the no-script fallback. */
 function codela_sf_defer_media( string $html ): string {
-    if ( ! codela_sf_image_preloads()
-        || ( defined( 'REST_REQUEST' ) && REST_REQUEST )
+    if ( ( defined( 'REST_REQUEST' ) && REST_REQUEST )
         || ( defined( 'WP_CLI' ) && WP_CLI )
         || ( function_exists( 'is_admin' ) && is_admin() ) ) { return $html; }
     $image = new WP_HTML_Tag_Processor( $html );
-    if ( ! $image->next_tag( 'img' ) || 'lazy' !== $image->get_attribute( 'loading' ) ) { return $html; }
+    if ( ! $image->next_tag( 'img' ) || 'lazy' !== $image->get_attribute( 'loading' )
+        || 'high' === $image->get_attribute( 'fetchpriority' ) ) { return $html; }
     $src = $image->get_attribute( 'src' );
     if ( ! is_string( $src ) || ! $src || $image->get_attribute( 'data-sf-gallery-src' ) ) { return $html; }
     $width = (int) $image->get_attribute( 'width' );
     $height = (int) $image->get_attribute( 'height' );
     if ( $width < 1 || $height < 1 ) { return $html; }
+    $image->set_attribute( 'data-sf-media-state', 'loading' );
+    $GLOBALS['codela_sf_deferred_media'] = true;
+    // Native catalog images keep src/srcset and browser loading priority. The
+    // same lightweight owner only clears their temporary loading presentation.
+    $html = $image->get_updated_html();
+    if ( ! codela_sf_image_preloads() ) { return $html; }
     foreach ( [ 'src', 'srcset', 'sizes' ] as $attribute ) {
         $value = $image->get_attribute( $attribute );
         if ( is_string( $value ) && $value ) {
@@ -71,7 +77,6 @@ function codela_sf_defer_media( string $html ): string {
             $deferred->remove_attribute( 'srcset' );
         }
     }
-    $GLOBALS['codela_sf_deferred_media'] = true;
     return $deferred->get_updated_html() . '<noscript>' . $html . '</noscript>';
 }
 add_action( 'wp_head', static function() {
@@ -79,7 +84,7 @@ add_action( 'wp_head', static function() {
     // Inline and dependency-free: lower images never depend on another network
     // request, Woo startup or the theme's interactive shell becoming ready.
     wp_print_inline_script_tag( file_get_contents( __DIR__ . '/../assets/scripts/media-loading.js' ), [ 'id' => 'sf-media-loading' ] );
-    echo '<noscript><style>img[data-sf-media-src]{display:none!important}picture:has(>img[data-sf-media-src]){display:none!important}</style></noscript>';
+    echo '<noscript><style>img[data-sf-media-src]{display:none!important}picture:has(>img[data-sf-media-src]){display:none!important}img[data-sf-media-state]{background:transparent!important}</style></noscript>';
 }, 2 );
 
 function codela_sf_gallery_classes( array $classes ): array {

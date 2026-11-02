@@ -57,8 +57,7 @@
     var price = summary.querySelector('.sf-product-price-row, :scope > .price');
     var purchase = summary.querySelector('.sf-product-purchase');
     var mobile = matchMedia('(max-width:700px)');
-    var desktop = matchMedia('(min-width:901px)');
-    var description = product.querySelector(':scope > .sf-product-information > #sf-product-section-description');
+    var description = summary.querySelector('#sf-product-section-description');
     var descriptionHome = null;
     var descriptionOpen = false;
     var track = media.querySelector('.woocommerce-product-gallery__wrapper');
@@ -222,16 +221,15 @@
       mounted = false;
     }
     function adaptDescription() {
-      if (desktop.matches && description && !descriptionHome) {
-        // Reuse Woo's one rendered description, including its IDs, extension
-        // content and listeners. Optional delivery modules remain native.
+      var home = product.querySelector('[data-sf-description-home]');
+      if (mobile.matches && description && home && !descriptionHome) {
+        // Capture the user's disclosure state before the mobile sheet mounts.
+        // Desktop/tablet need no hydration-time layout change.
         descriptionOpen = description.open;
         descriptionHome = document.createComment('sf-product-description-position');
         description.before(descriptionHome);
-        var next = summary.querySelector(':scope > .cdl-de, :scope > .cdl-fsb-live--product, :scope > .cdl-fsb--product, :scope > .cdl-wa, :scope > .cdl-tb');
-        summary.insertBefore(description, next);
-        description.open = true;
-      } else if (!desktop.matches && descriptionHome) {
+        home.before(description);
+      } else if (!mobile.matches && descriptionHome) {
         descriptionHome.replaceWith(description);
         descriptionHome = null;
         description.open = descriptionOpen;
@@ -342,7 +340,6 @@
       finishDrag(true); measure();
     });
     mobile.addEventListener('change', adapt);
-    desktop.addEventListener('change', adapt);
     sheetState = {open: function () { setOpen(true); }};
     adapt();
   }
