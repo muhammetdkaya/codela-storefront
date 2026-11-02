@@ -4,8 +4,10 @@ const root='theme/codela-storefront/',php=process.env.PHP_BIN||'php',engine=proc
 const products=JSON.parse(execFileSync(php,['tests/search-price.php','--json'],{encoding:'utf8'}));
 products.push({name:'Legacy &amp; safe',url:'/legacy/',image:'',price:'&lt;img src=x onerror=alert(1)&gt;',sku:'OLD'});
 const header=execFileSync(php,['tests/render-header.php'],{encoding:'utf8'}).replaceAll('https://store.test','https://panel.test');
-const linkDecoration=JSON.parse(fs.readFileSync(root+'theme.json','utf8')).styles.elements.link.typography.textDecoration;
-const css=fs.readFileSync(root+'assets/styles/storefront-base.css','utf8')+`a{text-decoration:${linkDecoration}}`;
+const theme=JSON.parse(fs.readFileSync(root+'theme.json','utf8'));
+// Supply WordPress global typography and toolbar accessibility in this isolated
+// fixture. Price accessibility remains exclusively the production theme's rule.
+const css=fs.readFileSync(root+'assets/styles/storefront-base.css','utf8')+`body{font-family:${theme.settings.typography.fontFamilies[0].fontFamily};line-height:${theme.styles.typography.lineHeight}}a{text-decoration:${theme.styles.elements.link.typography.textDecoration}}.sf-search-toolbar .screen-reader-text{position:absolute!important;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}`;
 const modules=['format','search-controller','cart-controller','overlay-controller','dock-controller'].map(n=>fs.readFileSync(n==='overlay-controller'&&process.env.PANEL_PRESENTATION_SOURCE?process.env.PANEL_PRESENTATION_SOURCE:root+'assets/scripts/'+n+'.js','utf8').replace(/^import .*;$/gm,'').replace(/^export /gm,'')).join('\n');
 const js=fs.readFileSync(root+'assets/storefront.js','utf8').replace(/^import .*from 'codela-storefront\/(?:search|cart|overlay|dock)';$/gm,'').replace("import { store } from '@wordpress/interactivity';",`function store(n,o){window.sfActions=o.actions;return {state:{config:{api:'https://panel.test/api/',search:'https://panel.test/search-api',cart:'/cart/',account:'/account/',labels:{}}}};}`).replace('let menuPath = [];',modules+'\nlet menuPath = [];');
 (async()=>{const browser=await(engine==='webkit'?webkit:chromium).launch(process.env.CHROMIUM_BIN&&!process.env.TEST_WEBKIT?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox']}:{});try{
@@ -30,6 +32,11 @@ const js=fs.readFileSync(root+'assets/storefront.js','utf8').replace(/^import .*
   assert.equal(await sale.locator('del').count(),1);assert.equal(await sale.locator('ins').count(),1);
   assert.equal(await page.locator('.sf-result p img').count(),0,'Server allowlist and escaped legacy fallback reject injected images');
   assert.equal(await page.locator('.sf-result').nth(5).locator('p').textContent(),'<img src=x onerror=alert(1)>');
+  // WebKit can resolve the DOM/ARIA checks before the entrance's first paint.
+  // Await the real entrance, then require a visible, fully opaque result region.
+  await page.evaluate(()=>Promise.all(document.getAnimations().map(a=>a.finished.catch(()=>{}))));
+  assert.equal(await page.locator('.sf-search-content').evaluate(el=>getComputedStyle(el).opacity),'1');
+  const box=await range.boundingBox();assert(box&&box.width>0&&box.height>0&&box.y+box.height<900,'First result is visible in the viewport');
   await page.screenshot({path:`qa/first-paint/${engine}-search-${width}.png`});
   await page.evaluate(()=>window.sfActions.close());
   // Hold animations synchronously so elapsed tool latency cannot hide a timing failure.
