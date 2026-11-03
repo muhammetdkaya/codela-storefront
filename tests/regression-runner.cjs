@@ -42,13 +42,27 @@ const {manifest, options, select, environment, runOne} = require('../scripts/run
         const git=args=>execFileSync('git',args,{cwd:isolated,encoding:'utf8',stdio:['ignore','pipe','pipe']}).trim();
         git(['init','-q']);git(['add','.']);git(['-c','user.name=Runner unit test','-c','user.email=runner@example.test','commit','-qm','Temporary inert fixture']);
         const sha=git(['rev-parse','HEAD']);
-        let failed=false;try{execFileSync(process.execPath,['scripts/run-regression-suite.cjs','--engine','chromium','--group','dummy','--expect-sha',sha,'--budget-ms','5000'],{cwd:isolated,timeout:10000,stdio:'pipe'});}catch(error){failed=true;assert.equal(error.status,1);}
+        // The copied CLI resolves packages relative to its temporary tree, not
+        // this checkout. Supply the locked package explicitly; a global NODE_PATH
+        // must not hide a missing fixture dependency (as it did outside CI).
+        const fixtureEnv={...process.env,PLAYWRIGHT_MODULE:path.dirname(require.resolve('playwright/package.json'))};
+        delete fixtureEnv.NODE_PATH;
+        let failed=false;try{execFileSync(process.execPath,['scripts/run-regression-suite.cjs','--engine','chromium','--group','dummy','--expect-sha',sha,'--budget-ms','5000'],{cwd:isolated,env:fixtureEnv,timeout:10000,stdio:'pipe'});}catch(error){failed=true;assert.equal(error.status,1);}
         assert(failed);const engineDir=path.join(isolated,'qa/regression-suite',sha,'chromium');const runDir=fs.readdirSync(engineDir)[0];
         const complete=JSON.parse(fs.readFileSync(path.join(engineDir,runDir,'report.json'),'utf8'));
         assert.deepEqual(complete.results.map(result=>result.status),['failed','timed_out','passed']);assert.equal(complete.status,'incomplete_or_failed');assert.equal(complete.source_integrity,'unchanged');count++;
+        // Preflight must still block all tests when the explicit dependency is
+        // absent. Never weaken the production guard to make the fixture pass.
+        const previousRuns=new Set(fs.readdirSync(engineDir));
+        assert.throws(()=>execFileSync(process.execPath,['scripts/run-regression-suite.cjs','--engine','chromium','--group','dummy','--expect-sha',sha],{cwd:isolated,env:{...fixtureEnv,PLAYWRIGHT_MODULE:path.join(isolated,'missing-playwright')},timeout:5000,stdio:'pipe'}),error=>error.status===1);
+        const blockedRun=fs.readdirSync(engineDir).find(name=>!previousRuns.has(name));
+        const blocked=JSON.parse(fs.readFileSync(path.join(engineDir,blockedRun,'report.json'),'utf8'));
+        assert.deepEqual(blocked.results.map(result=>result.status),['blocked','blocked','blocked']);
+        assert(blocked.results.every(result=>result.reasons.includes('Playwright package unavailable; run locked npm ci')));
+        assert.equal(blocked.status,'incomplete_or_failed');
         // A changed candidate is rejected before launching even the inert scripts.
         fs.appendFileSync(path.join(isolated,'tests/runner-last.cjs'),'\n// dirty');
-        assert.throws(()=>execFileSync(process.execPath,['scripts/run-regression-suite.cjs','--engine','chromium','--group','dummy','--expect-sha',sha],{cwd:isolated,timeout:5000,stdio:'pipe'}),error=>error.status===1&&/not clean/.test(error.stderr.toString()));count++;
+        assert.throws(()=>execFileSync(process.execPath,['scripts/run-regression-suite.cjs','--engine','chromium','--group','dummy','--expect-sha',sha],{cwd:isolated,env:fixtureEnv,timeout:5000,stdio:'pipe'}),error=>error.status===1&&/not clean/.test(error.stderr.toString()));count++;
         console.log(`Regression runner: ${count} unit contracts passed; no browser launched.`);
     } finally { fs.rmSync(directory,{recursive:true,force:true}); }
 })().catch(error => {console.error(error);process.exitCode=1;});

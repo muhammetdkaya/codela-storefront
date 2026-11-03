@@ -27,11 +27,13 @@ async function snapshot(page) {
     const options = {headless: true};
     if (engine === 'chromium' && process.env.CHROMIUM_BIN) options.executablePath = process.env.CHROMIUM_BIN;
     const browser = await playwright[engine].launch(options);
-    const checks = [];
+    const checks = [], fieldMetrics = [];
+    let activePage = null, activeCase = null;
     try {
         for (const width of [320, 390, 700, 1024, 1360]) {
             for (const kind of ['checkout', 'block', 'account', 'account-empty']) {
                 const page = await browser.newPage({viewport: {width, height: 1000}});
+                activePage = page; activeCase = {kind, width};
                 const external = [];
                 await page.route('**/*', route => { external.push(route.request().url()); return route.abort(); });
                 await page.setContent(fixture(kind));
@@ -56,7 +58,27 @@ async function snapshot(page) {
                 const before = await snapshot(page);
                 const accessibleBefore = await input.ariaSnapshot();
                 const beforeData = await page.locator('form').evaluateAll(forms => forms.map(form => [...new FormData(form)]));
-                assert((await input.boundingBox()).height >= 54, 'Current field height is retained: ' + kind);
+                const fieldBox = await input.boundingBox();
+                const field = await input.evaluate(el => {
+                    const style = getComputedStyle(el), rect = el.getBoundingClientRect();
+                    return {id: el.id, token: style.getPropertyValue('--sf-ui-action-height').trim(),
+                        minHeight: style.minHeight, height: style.height, boxSizing: style.boxSizing,
+                        rect: rect.toJSON(), offsetHeight: el.offsetHeight, devicePixelRatio,
+                        ancestors: [...(function* () { for (let node = el; node; node = node.parentElement) yield node; })()].map(node => ({tag: node.tagName, id: node.id, transform: getComputedStyle(node).transform}))};
+                });
+                fieldMetrics.push({kind, width, protocolBox: fieldBox, ...field});
+                fs.writeFileSync(path.join(reportDir, `basecoat-pilot-${engine}-field-metrics.json`), JSON.stringify(fieldMetrics, null, 2));
+                console.log('Basecoat native field geometry', JSON.stringify(fieldMetrics.at(-1)));
+                assert.equal(field.token, '54px', 'Shared action-height token remains 54px');
+                assert.equal(field.minHeight, field.token, 'Native field still consumes the shared minimum-height token');
+                assert.equal(field.boxSizing, 'border-box', 'Height describes the original border box');
+                assert(parseFloat(field.height) >= 54, 'Computed field height cannot shrink below the token');
+                // Match the 0.001px precision used by snapshot(): a protocol/DOM
+                // float representation must not turn 54px into a false failure.
+                // Token/computed minima stay exact; a 0.001px reduction still fails.
+                const normalizedHeight = height => Math.round(height * 1000) / 1000;
+                assert(fieldBox && normalizedHeight(fieldBox.height) >= 54 && normalizedHeight(field.rect.height) >= 54,
+                    'Rendered field height is retained: ' + JSON.stringify(fieldMetrics.at(-1)));
                 const outline = await input.evaluate(el => ({width: getComputedStyle(el).outlineWidth, style: getComputedStyle(el).outlineStyle}));
                 assert.equal(outline.width, '2px', 'Existing focus width ' + kind);
                 assert.equal(outline.style, 'solid', 'Existing focus style ' + kind);
@@ -134,19 +156,29 @@ async function snapshot(page) {
                 assert.deepEqual(external, [], 'Fixture makes no network request');
                 checks.push(kind + '/' + width);
                 await page.close();
+                activePage = null;
             }
         }
         const context = await browser.newContext({javaScriptEnabled: false, viewport: {width: 390, height: 1000}});
         for (const kind of ['checkout', 'block', 'account', 'account-empty']) {
             const page = await context.newPage();
+            activePage = page; activeCase = {kind, width: 390, noScript: true};
             await page.setContent(fixture(kind));
             assert(await page.locator('input[type=email]').isVisible());
             assert(await page.locator('button[type=submit]').first().isVisible());
             assert.equal(await page.locator('.field, .card').count(), 0, 'No enhancement is required without JS');
             await page.close();
+            activePage = null;
         }
         await context.close();
         fs.writeFileSync(path.join(reportDir, `basecoat-pilot-${engine}.json`), JSON.stringify({engine, checks, noScript: 4, interpretation: 'No Basecoat CSS is loaded. This proves node/appearance preservation by inert class mapping, not compatibility of the upstream stylesheet or live Woo checkout.'}, null, 2));
         console.log(`${engine}: ${checks.length} native/mapped parity cases and 4 no-JS cases passed. No library adoption or live payment test.`);
+    } catch (error) {
+        fs.writeFileSync(path.join(reportDir, `basecoat-pilot-${engine}-failure.json`), JSON.stringify({case: activeCase, message: error.message, stack: error.stack, fieldMetrics}, null, 2));
+        if (activePage) {
+            await activePage.screenshot({path: path.join(reportDir, `basecoat-pilot-${engine}-failure.png`), fullPage: true}).catch(() => {});
+            fs.writeFileSync(path.join(reportDir, `basecoat-pilot-${engine}-failure.html`), await activePage.content().catch(() => 'Page content unavailable'));
+        }
+        throw error;
     } finally { await browser.close(); }
 })().catch(error => { console.error(error); process.exitCode = 1; });

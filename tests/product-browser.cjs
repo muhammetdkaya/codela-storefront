@@ -31,7 +31,7 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
   // Match the live block-theme DOM: Woo class is on body, not a descendant wrapper.
   // Include the constrained WordPress block rule that previously masked this bug.
   await page.setContent(documentHtml.replace('</head>', '<style>.sf-content > .alignwide{max-width:1200px;margin-inline:auto}</style></head>'));
-  for(const width of [320,390,700,900,901,1024,1280,1440,1920]){
+  for(const width of [320,390,700,701,900,901,1024,1280,1440,1920]){
    await page.setViewportSize({width,height:900});
    const result=await page.evaluate(()=>{
     const gallery=document.querySelector('.woocommerce-product-gallery').getBoundingClientRect();
@@ -68,8 +68,12 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
     assert.equal(await page.locator('.woocommerce-product-gallery__image img').evaluate(el=>getComputedStyle(el).objectFit),'cover','Mobile hero fills frame');
    }
    assert.equal(result.relatedColumns,width>1024?4:width>700?3:2,'Related product grid at '+width);
-   const purchase=await page.locator('.sf-product-purchase').evaluate(el=>({position:getComputedStyle(el).position,rect:el.getBoundingClientRect().toJSON(),bg:getComputedStyle(el).backgroundColor,image:getComputedStyle(el).backgroundImage}));
-   assert.equal(purchase.bg,width>900?'rgba(0, 0, 0, 0)':'rgba(247, 247, 249, 0.96)','Product purchase uses the one opaque-tinted shared material');
+   const purchase=await page.locator('.sf-product-purchase').evaluate(el=>({position:getComputedStyle(el).position,rect:el.getBoundingClientRect().toJSON(),bg:getComputedStyle(el).backgroundColor,image:getComputedStyle(el).backgroundImage,blur:getComputedStyle(el).backdropFilter,shadow:getComputedStyle(el).boxShadow}));
+   // Since 0.1.194 the native purchase becomes inline/unpainted at 701px.
+   // The separate gallery/summary column breakpoint remains 901px.
+   assert.equal(purchase.bg,width>700?'rgba(0, 0, 0, 0)':'rgba(247, 247, 249, 0.96)','Native purchase material follows the 700px mobile boundary at '+width);
+   if(width>700){assert.equal(purchase.blur,'none','Inline purchase never blurs at '+width);assert.equal(purchase.shadow,'none','Inline purchase has no floating shadow at '+width);}
+   else {assert(purchase.blur.includes('blur(10px)'),'Mobile purchase retains shared blur at '+width);assert.notEqual(purchase.shadow,'none','Mobile purchase retains shared surface shadow at '+width);}
    assert.equal(purchase.image,'none','Product purchase has no stacked white gradient');
    assert.equal(await page.locator('form.cart .single_add_to_cart_button').count(),1,'One native submit control');
    if(width<=700){
@@ -164,6 +168,6 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
   assert(await reusable.evaluate(el=>el.scrollLeft>0),'Reusable native gallery can be keyboard-scrolled');
   assert(await reusable.evaluate(el=>el.scrollWidth>el.clientWidth),'Core Gallery stays one horizontal track');
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Reusable gallery has no page overflow');
-  console.log('Product layout: 9 widths, native cart semantics, UI Kit button, responsive desktop/mobile gallery, reusable core Gallery scroll and related cards passed.');
+  console.log('Product layout: 10 widths, 700/701 native purchase material, native cart semantics, UI Kit button, responsive desktop/mobile gallery, reusable core Gallery scroll and related cards passed.');
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exit(1)});
