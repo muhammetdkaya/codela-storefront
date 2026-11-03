@@ -25,6 +25,7 @@ jobs:
           python3 tests/vendor-build.py
           node tests/library-budget.cjs
           python3 tests/build-assets.py
+          python3 tests/release-workflow.py
           python3 tests/package.py
           python3 tests/review-package.py
           find theme -name '*.php' -type f -print0 | xargs -0 -n1 php -l

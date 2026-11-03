@@ -6,9 +6,9 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "İlk hikâye ve tanıtım görselleri uygun mobil/masaüstü kaynakla öncelikli yüklenir. Sonraki bölümler gecikmeli kalır; ürünsüz Codela sayfa düzenlerinde gereksiz katalog CSS isteği kaldırılır.",
-    "Mobil ürün panelinin sürükleme çizimi ekran yenilemesine toplanır; bırakma, iptal ve ekran boyutu değişiminde son hareket ve yerel Woo formu korunur.",
-    "Mağazada etkin fiyat, nitelik ve puan filtreleri tek tek kaldırılabilir; filtre sayısı başlıkta görünür. Diğer seçimler korunur ve sayfalama başa döner.",
-    "Sepetin ilk yüklemesinde yer tutucu, işlem yapılan üründe bekleme göstergesi sunulur. Değişmeyen sepet yenilemesi satırları ve klavye odağını korur; miktar ve toplamların kaynağı WooCommerce olmaya devam eder."
+    "Sepet paneli hızlı açma/kapatma ve ters yön değişiminde mevcut konumundan kesintisiz devam eder; eski animasyonun tamamlanması yeni işlemi bozamaz.",
+    "Mobil dock hareketleri doğru pointer ile izlenir; ekran boyutu değişimindeki eski zamanlayıcılar ve ürün paneli kapandıktan sonraki bekleyen odak işlemleri temizlenir.",
+    "Native hero galerisi yeniden başlatma ve sayfa geçişlerinde eski dinleyicileri temizler; değişmeyen sayaç gereksiz tekrar duyurulmaz. Mevcut wheel, klavye, odak ve azaltılmış hareket davranışı korunur.",
+    "Motion, Embla ve Basecoat pilotları değerlendirildi; ek fayda veya davranış koruma koşullarını karşılamadıklarından üretime alınmadı. Tema yeni vendor runtime eklemez; WooCommerce fiyat, stok ve sepet otoritesi korunur."
   ]
 }

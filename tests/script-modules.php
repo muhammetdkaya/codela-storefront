@@ -11,7 +11,7 @@ function add_action( $hook, $callback, $priority = 10 ) {
 }
 function add_filter(...$args) {}
 function wp_register_style(...$args) {}
-function wp_get_theme() { return new class { function get($key) { return '0.1.195'; } }; }
+function wp_get_theme() { return new class { function get($key) { return '0.1.196'; } }; }
 function get_template_directory() {
     return getenv( 'SF_TEST_THEME_PATH' ) ?: dirname( __DIR__ ) . '/theme/codela-storefront';
 }
