@@ -57,7 +57,7 @@ const bounded=async(promise,milliseconds,label)=>{
   let pending;
   page.on('pageerror',error=>errors.push(error.message));
   const config=mode==='native'?'':`window.codelaSfVendors={embla:'/vendor.js?ver=fixture-v8'};`;
-  const body=`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>${css} body{margin:0;font-family:Arial,sans-serif}.spacer{height:1200px}</style><script>${media}</script><noscript><style>img[data-sf-media-src]{display:none!important}picture:has(>img[data-sf-media-src]){display:none!important}</style></noscript></head><body class="home"><main class="sf-content">${single?fixture.single:wheel?fixture.wheel:fixture.hero}<div class="spacer"></div>${fixture.promo}${fixture.category}<div class="woocommerce-product-gallery sf-ui-gallery"><div class="woocommerce-product-gallery__wrapper"><a href="#product">Product gallery is not a section gallery</a></div></div></main><script>window.__engines=[];window.__created=0;window.__destroyed=0;window.__intents=[];document.addEventListener('codela:media-intent',e=>window.__intents.push(e.target.getAttribute('aria-label')));${config}</script><script src="/gallery.js"></script></body></html>`;
+  const body=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>${css} body{margin:0;font-family:Arial,sans-serif}.spacer{height:1200px}</style><script>${media}</script><noscript><style>img[data-sf-media-src]{display:none!important}picture:has(>img[data-sf-media-src]){display:none!important}</style></noscript></head><body class="home"><main class="sf-content">${single?fixture.single:wheel?fixture.wheel:fixture.hero}<div class="spacer"></div>${fixture.promo}${fixture.category}<div class="woocommerce-product-gallery sf-ui-gallery"><div class="woocommerce-product-gallery__wrapper"><a href="#product">Product gallery is not a section gallery</a></div></div></main><script>window.__engines=[];window.__created=0;window.__destroyed=0;window.__intents=[];document.addEventListener('codela:media-intent',e=>window.__intents.push(e.target.getAttribute('aria-label')));${config}</script><script src="/gallery.js"></script></body></html>`;
   await page.route('https://showcase.test/**',async route=>{
    const path=new URL(route.request().url()).pathname;requests.push(path);
    if(path==='/')return route.fulfill({contentType:'text/html',body});
@@ -110,6 +110,26 @@ const bounded=async(promise,milliseconds,label)=>{
   const selectors=['','.sf-section-slide','.sf-section-art','.sf-section-art img','.sf-section-copy','.sf-ui-button','[data-gallery-controls]'];
   return selectors.map(selector=>{const element=selector?section.querySelector(selector):section,rect=element.getBoundingClientRect();return {selector,x:rect.x,y:rect.y,width:rect.width,height:rect.height};});
  });
+ const wheelState=page=>page.evaluate(()=>{
+  const track=document.querySelector('.sf-section--hero .sf-ui-gallery-track');
+  return {left:track.scrollLeft,scrollY,scrollX,count:document.querySelector('.sf-section--hero [data-gallery-count]').textContent};
+ });
+ const settledWheel=async(page,before)=>{
+  await page.waitForFunction(before=>{
+   const track=document.querySelector('.sf-section--hero .sf-ui-gallery-track');
+   const left=track.scrollLeft,count=document.querySelector('.sf-section--hero [data-gallery-count]').textContent;
+   const signature=[left,scrollY,scrollX,count].join('|'),now=performance.now();
+   if(window.__stableWheel?.signature!==signature)window.__stableWheel={signature,since:now};
+   const moved=Math.abs(left-before.left)>1||Math.abs(scrollY-before.scrollY)>1||Math.abs(scrollX-before.scrollX)>1;
+   const snapped=Math.abs(left/track.clientWidth-Math.round(left/track.clientWidth))<.005;
+   return moved&&snapped&&now-window.__stableWheel.since>=150;
+  },before,{polling:25,timeout:10000});
+  return wheelState(page);
+ };
+ const sameWheel=(expected,actual,label)=>{
+  assert.equal(actual.count,expected.count,label+' count');
+  for(const key of ['left','scrollY','scrollX'])assert(Math.abs(actual[key]-expected[key])<1,label+' '+key+': '+expected[key]+' / '+actual[key]);
+ };
  const aligned=page=>page.waitForFunction(()=>{
   const section=document.querySelector('.sf-section--hero'),engine=window.__engines.at(-1);
   const selected=section.querySelectorAll('.sf-section-slide')[engine.selectedScrollSnap()].getBoundingClientRect();
@@ -211,7 +231,7 @@ const bounded=async(promise,milliseconds,label)=>{
   // default action, never by approximating a trackpad with discrete JS snaps.
   for(const shifted of [false,true])for(const focus of ['viewport','link']){
    stage('wheel-parity',{shifted,focus});
-   const baseline=await open({mode:'native',wheel:true}),pilot=await open({wheel:true});
+   const baseline=await open({mode:'native',wheel:true}),pilot=await open({wheel:true});let expected;
    for(const test of [baseline,pilot]){
     test.info.phase=`wheel-${shifted?'shift':'horizontal'}-${focus}`;stage('wheel-gesture',{mode:test.info.mode,shifted,focus});
     await track(test.page).focus();await test.page.keyboard.press('ArrowRight');await waitCount(test.page,'02 / 05');
@@ -219,6 +239,7 @@ const bounded=async(promise,milliseconds,label)=>{
     await focusTarget.focus();
     await test.page.evaluate(()=>{
      const section=document.querySelector('.sf-section--hero'),track=section.querySelector('.sf-ui-gallery-track');
+     window.__wheelParent=track.parentElement;
      window.__wantedWheelFocus=document.activeElement.classList.contains('sf-gallery-viewport')?track:document.activeElement;
      window.__wheelEvents=[];
      // Document bubble runs after the adapter's track capture listener, but
@@ -228,30 +249,42 @@ const bounded=async(promise,milliseconds,label)=>{
       const selected=section.querySelectorAll('.sf-section-slide')[index],style=getComputedStyle(track);
       window.__wheelEvents.push({trusted:event.isTrusted,shift:event.shiftKey,prevented:event.defaultPrevented,deltaX:event.deltaX,deltaY:event.deltaY,
        engine:section.dataset.sfGalleryEngine,left:track.scrollLeft,width:track.clientWidth,selectedOffset:selected.getBoundingClientRect().left-track.getBoundingClientRect().left,
-       transform:style.transform,overflow:style.overflowX,snap:style.scrollSnapType,focus:document.activeElement===window.__wantedWheelFocus});
+       transform:style.transform,overflow:style.overflowX,snap:style.scrollSnapType,sameParent:track.parentElement===window.__wheelParent,focus:document.activeElement===window.__wantedWheelFocus});
      },{passive:true});
     });
+    const before=await wheelState(test.page);
     await test.page.mouse.move(200,180);
     if(shifted)await test.page.keyboard.down('Shift');
     await test.page.mouse.wheel(shifted?0:350,shifted?350:0);
     if(shifted)await test.page.keyboard.up('Shift');
-    await waitCount(test.page,'03 / 05');
-    await test.page.waitForFunction(()=>{const track=document.querySelector('.sf-section--hero .sf-ui-gallery-track');return Math.abs(track.scrollLeft-track.clientWidth*2)<1;});
+    const actual=await settledWheel(test.page,before);
+    if(test===baseline){
+     expected=actual;
+     if(!shifted){assert.equal(actual.count,'03 / 05');assert(Math.abs(actual.left-780)<1,'Unmodified native horizontal wheel advances exactly one slide');assert.equal(actual.scrollY,0);}
+     // Shift+wheel is browser-specific: WebKit scrolls the document vertically
+     // here. Preserve its measured native outcome rather than imposing Chrome.
+     console.log('Native wheel oracle',JSON.stringify({browser:browserName,shifted,focus,before,expected}));
+    }else sameWheel(expected,actual,'First genuine native/pilot wheel parity');
     const events=await test.page.evaluate(()=>window.__wheelEvents);assert.equal(events.length,1,'One real first wheel event');
     const event=events[0];assert.equal(Math.abs(event.deltaX)+Math.abs(event.deltaY),350,'The first native delta is neither duplicated nor rescaled');assert.equal(event.trusted,true);assert.equal(event.shift,shifted);assert.equal(event.prevented,false,'Native delta is not intercepted or synthesized');
     assert.equal(event.engine,'native');assert.equal(event.transform,'none');assert.equal(event.overflow,'auto');assert.equal(event.snap,'x mandatory');
     assert(Math.abs(event.left-event.width)<1,'Selected native offset is restored before default scroll');
     assert(Math.abs(event.selectedOffset)<1,'Selected slide is exactly aligned before default scroll');
-    assert.equal(event.focus,true,'Handoff retains viewport or nested CTA keyboard focus');
+    assert.equal(event.sameParent,true,'First wheel keeps the original event ancestry');assert.equal(event.focus,true,'Handoff retains viewport or nested CTA keyboard focus');
     assert(await test.page.evaluate(()=>document.activeElement===window.__wantedWheelFocus),'Focus remains after native wheel settles');
    }
    assert.equal(await hero(pilot.page).getAttribute('data-sf-gallery-engine'),'native');
    assert.equal(await pilot.page.evaluate(()=>window.__destroyed),1,'Wheel destroys the transform owner once');
-   const before=await track(baseline.page).evaluate(el=>el.scrollLeft),after=await track(pilot.page).evaluate(el=>el.scrollLeft);
-   assert(Math.abs(before-after)<1,'First real wheel delta matches native selection away from boundaries');
+   sameWheel(await wheelState(baseline.page),await wheelState(pilot.page),'Settled native/pilot wheel parity');
    await pilot.page.addScriptTag({content:source});await pilot.page.evaluate(()=>dispatchEvent(new Event('codela:route-committed')));
    assert.equal(await pilot.page.evaluate(()=>window.__created),1,'Wheel fallback is permanent until new DOM');
-   await pilot.page.mouse.wheel(-350,0);await waitCount(pilot.page,'02 / 05');
+   const reversed=[];
+   for(const test of [baseline,pilot]){
+    const before=await wheelState(test.page),frame=await hero(test.page).boundingBox();
+    await test.page.mouse.move(200,Math.min(180,frame.y+frame.height-30));
+    await test.page.mouse.wheel(-350,0);reversed.push(await settledWheel(test.page,before));
+   }
+   sameWheel(reversed[0],reversed[1],'Reversed native/pilot wheel parity');
    await baseline.close();await pilot.close();
   }
   {

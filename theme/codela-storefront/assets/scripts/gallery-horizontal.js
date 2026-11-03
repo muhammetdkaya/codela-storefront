@@ -93,12 +93,18 @@
       }else listen(window,'resize',scheduleCaption,{passive:true});
       document.fonts?.ready?.then(scheduleCaption);
     }
-    const restoreNative=()=>{
+    const restoreNative=(keepViewport=false)=>{
       const active=document.activeElement;
       const focusTarget=active===viewport?track:track.contains(active)?active:null;
       if(api){const old=api;api=null;old.destroy();}
       restoreTrack.forEach(restore=>restore());
-      if(viewport){viewport.replaceWith(...viewport.childNodes);viewport=null;}
+      if(viewport&&keepViewport){
+        // Do not reparent the wheel event's target while the browser is still
+        // routing its default action. The inert wrapper stays until disposal.
+        viewport.style.setProperty('overflow','visible');
+        viewport.style.removeProperty('touch-action');
+        ['tabindex','role','aria-label'].forEach(name=>viewport.removeAttribute(name));
+      }else if(viewport){viewport.replaceWith(...viewport.childNodes);viewport=null;}
       if(originalTabIndex===null)track.removeAttribute('tabindex');else track.setAttribute('tabindex',originalTabIndex);
       if(focusTarget&&gallery.isConnected)focusTarget.focus({preventScroll:true});
       delete gallery.dataset.sfGalleryEngine;
@@ -116,7 +122,7 @@
       nativeWheel=true;
       if(!api)return;
       const selected=api.selectedScrollSnap();
-      restoreNative();gallery.dataset.sfGalleryEngine='native';
+      restoreNative(true);gallery.dataset.sfGalleryEngine='native';
       track.scrollTo({left:track.scrollLeft+items[selected].getBoundingClientRect().left-track.getBoundingClientRect().left,behavior:'instant'});
       prepare(selected-1);prepare(selected+1);updateNative();
     },{passive:false,capture:true});
