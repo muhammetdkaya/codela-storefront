@@ -40,9 +40,10 @@ const preference = async (page, value) => {
     await page.waitForFunction(reduced=>matchMedia('(prefers-reduced-motion: reduce)').matches===reduced,value==='reduce');
     await flush(page);
 };
-async function mount(browser, mode) {
+async function mount(browser, mode, onPage = () => {}) {
     const page = await browser.newPage({viewport:{width:1280,height:900}});
     const errors = [];
+    onPage(page,errors);
     let heldRoute, holdReady, vendorRequests = 0;
     const heldRequest = new Promise(resolve => { holdReady=resolve; });
     page.on('pageerror', error=>errors.push(error.message));
@@ -94,12 +95,20 @@ async function geometry(page) {
 }
 (async()=>{
     fs.mkdirSync(output,{recursive:true});
-    const browser = await engines[engine].launch({headless:true,...(engine==='chromium'&&process.env.CHROMIUM_BIN?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-dev-shm-usage']}:{})});
+    let browser;
+    const failures = [];
     const report = {engine,comparison:{primary:['motion','native-only'],historical:'baseline',resilienceOnly:'fallback throws intentionally and is not a corrected-native benchmark',diagnostics:'Five initialized repeats with identical tokens/content. HTTP cache is disabled by routing in every mode. Elapsed includes a deliberate 300ms dwell; scheduling/start-cost samples are diagnostics, not speed or live performance proof.'},fixture:'Production PHP shell and identical empty/stub cart refresh; screenshots compare geometry, not populated commerce.',baselineSource:process.env.PANEL_BASELINE_SOURCE || null,modes:{}};
+    const saveReport = () => fs.writeFileSync(`${output}/${engine}-comparison.json`,JSON.stringify(report,null,2)+'\n');
     try {
+        browser = await engines[engine].launch({headless:true,...(engine==='chromium'&&process.env.CHROMIUM_BIN?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-dev-shm-usage']}:{})});
         for (const mode of modes) {
-            const {page, errors, heldRequest, getVendorRequests, releaseVendor} = await mount(browser,mode);
-            const result = report.modes[mode] = {geometry:{},samples:[]};
+            let page, errors = [], getVendorRequests = () => null;
+            const result = report.modes[mode] = {status:'running',stage:'mount',geometry:{},samples:[]};
+            try {
+            const mounted = await mount(browser,mode,(value,diagnostics)=>{page=value;errors=diagnostics;});
+            ({page,errors,getVendorRequests} = mounted);
+            const {heldRequest,releaseVendor} = mounted;
+            result.stage='optional-vendor';
             if (mode === 'delayed') {
                 await heldRequest;
                 const early=await page.evaluate(()=>{
@@ -133,6 +142,7 @@ async function geometry(page) {
             }
             assert.equal(result.vendorLoaded,!['baseline','native-only','missing','aborted','invalid','bad-export'].includes(mode),'Optional import settles safely: '+mode);
             for (const width of [320,390,700,701,900,901,1280,1440]) {
+                result.stage='geometry-'+width;
                 await page.setViewportSize({width,height:900});await flush(page);
                 const animation = await page.evaluate(()=>{
                     overlay.open('cart',{preventDefault(){},target:document.querySelector('.sf-header [data-panel="cart"]')});
@@ -154,6 +164,7 @@ async function geometry(page) {
             }
             await page.setViewportSize({width:1280,height:900});await flush(page);
             if(mode!=='no-waapi') {
+                result.stage='reversal';
                 result.reversal = await page.evaluate(()=>{
                     const panel=document.querySelector('#sf-panel');
                     const active=()=>panel.getAnimations().find(a=>a.effect?.getKeyframes().some(frame=>frame.transform));
@@ -180,6 +191,7 @@ async function geometry(page) {
                 assert.equal((await geometry(page)).inlineTransform,'');
                 // Same action is idempotent and does not restart cart requests.
                 assert.equal(await page.evaluate(()=>{const before=refreshes;for(let i=0;i<8;i++)overlay.open('cart');return refreshes-before;}),0);
+                result.stage='panel-switches';
                 for(const next of ['menu','account','filters','search']) {
                     await page.evaluate(name=>{overlay.open('cart');overlay.close();overlay.open(name);},next);
                     await flush(page);
@@ -189,6 +201,7 @@ async function geometry(page) {
                 }
                 // Five unpaused repeats capture scheduling/frame overhead, not a
                 // claim about live LCP, INP or a physical device's smoothness.
+                result.stage='scheduling-diagnostics';
                 if(['baseline','motion','native-only'].includes(mode)) result.samples=await page.evaluate(async()=>{
                     const samples=[];let longTasks=0;
                     const observer=typeof PerformanceObserver==='function' && PerformanceObserver.supportedEntryTypes.includes('longtask')
@@ -206,6 +219,7 @@ async function geometry(page) {
                     observer?.disconnect();window.panelLongTasks=longTasks;return samples;
                 });
                 result.longTasks=await page.evaluate(()=>window.panelLongTasks || 0);
+                result.stage='reduced-motion';
                 // Reduced-motion flips during an active exit close synchronously.
                 await page.evaluate(()=>{overlay.open('cart');overlay.close();});
                 await preference(page,'reduce');
@@ -213,6 +227,7 @@ async function geometry(page) {
                 await page.evaluate(()=>{overlay.open('cart');overlay.close();});
                 assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),false);
                 await preference(page,'no-preference');
+                result.stage='breakpoint-changes';
                 // Breakpoint changes preserve the real cart and detach motion.
                 await page.evaluate(()=>overlay.open('cart'));
                 await page.setViewportSize({width:900,height:900});await flush(page);
@@ -225,6 +240,7 @@ async function geometry(page) {
                 assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),false,'Resize during exit finishes close');
                 await page.setViewportSize({width:1280,height:900});await flush(page);
             }
+            result.stage='focus-scroll';
             await page.evaluate(()=>scrollTo(0,500));
             const opener=page.locator('.sf-header [data-panel="cart"]');
             // Programmatic click avoids Playwright scrolling the fixed header.
@@ -232,26 +248,61 @@ async function geometry(page) {
             await settle(page);
             assert.equal(await page.locator('.sf-panel-top .sf-close').evaluate(el=>el===document.activeElement),true,'Native dialog initial focus');
             await page.keyboard.press('Tab');
-            assert.equal(await page.locator('.sf-initial-focus').count(),0,'Keyboard focus indicator is restored');
+            result.remainingInitialFocus=await page.locator('.sf-initial-focus').evaluateAll(elements=>elements.map(el=>({
+                id:el.id,className:el.className,panel:el.dataset.panel,insideDialog:!!el.closest('#sf-panel'),
+            })));
+            // The real menu trigger is returned to the header after the switch
+            // test above. Its marker is harmless there: both the production
+            // focus-suppression CSS and the Tab listener are dialog-scoped.
+            assert.equal(await page.locator('#sf-panel .sf-initial-focus').count(),0,'Keyboard focus indicator is restored within the dialog');
             await page.keyboard.press('Escape');
             await page.waitForFunction(()=>!document.querySelector('#sf-panel').open);await flush(page);
             assert.equal(await opener.evaluate(el=>el===document.activeElement),true,'Escape restores original focus');
             assert.equal(await page.evaluate(()=>scrollY),500,'Original scroll restored');
             assert.equal(await page.evaluate(()=>document.body.style.position),'','Scroll lock cleared');
+            result.stage='navigation';
             await page.evaluate(()=>{overlay.open('cart');overlay.close();overlay.closeForNavigation();});
             await flush(page);
             assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),false,'Navigation never waits for motion');
             assert.equal(await page.locator('#sf-panel').evaluate(el=>el.style.transform),'');
             result.vendorRequests=getVendorRequests();
             assert.equal(result.vendorRequests,['baseline','native-only'].includes(mode)?0:1,'Optional vendor fetch count: '+mode);
-            assert.deepEqual(errors,[]);await page.close();
+            assert.deepEqual(errors,[]);
+            result.status='passed';result.stage='complete';
+            } catch(error) {
+                result.status='failed';result.error={message:error.message,stack:error.stack};
+                failures.push({mode,stage:result.stage,message:error.message});
+                console.error('Panel mode failed:',engine,mode,result.stage,error.message);
+                if(page&&!page.isClosed()) {
+                    try { result.failureState=await page.evaluate(()=>({
+                        dialogOpen:document.querySelector('#sf-panel')?.open,current:window.overlay?.getCurrent(),
+                        focus:{id:document.activeElement?.id,className:document.activeElement?.className},
+                        initialFocus:Array.from(document.querySelectorAll('.sf-initial-focus'),el=>({className:el.className,panel:el.dataset.panel,insideDialog:!!el.closest('#sf-panel')})),
+                        transform:document.querySelector('#sf-panel')?.style.transform,vendorLoaded:window.vendorLoaded,
+                    })); } catch(diagnostic) { result.stateError=diagnostic.message; }
+                    try { await page.screenshot({path:`${output}/${engine}-${mode}-failure.png`,timeout:5000}); }
+                    catch(diagnostic) { result.screenshotError=diagnostic.message; }
+                }
+            } finally {
+                result.vendorRequests=getVendorRequests();result.pageErrors=errors;
+                if(page&&!page.isClosed())await page.close().catch(()=>{});
+                report.failures=failures;saveReport();
+            }
         }
+        report.geometryComparison={checked:0,missing:[]};
         for(const mode of modes.filter(mode=>mode!=='motion'))for(const width of [320,390,700,701,900,901,1280,1440]) {
-            const expected=report.modes.motion.geometry[width],actual=report.modes[mode].geometry[width];
-            for(const dimension of ['x','y','width','height'])assert(Math.abs(actual[dimension]-expected[dimension])<.1,mode+' same '+dimension+' at '+width);
+            const expected=report.modes.motion?.geometry[width],actual=report.modes[mode]?.geometry[width];
+            if(!expected||!actual){report.geometryComparison.missing.push({mode,width});continue;}
+            for(const dimension of ['x','y','width','height']) {
+                report.geometryComparison.checked++;
+                if(Math.abs(actual[dimension]-expected[dimension])>=.1)failures.push({mode,stage:'geometry-comparison',message:mode+' differs in '+dimension+' at '+width});
+            }
         }
-        fs.writeFileSync(`${output}/${engine}-comparison.json`,JSON.stringify(report,null,2)+'\n');
+        report.status=failures.length?'failed':'passed';
+        console.log(JSON.stringify(Object.fromEntries(Object.entries(report.modes).map(([mode,value])=>[mode,{status:value.status,stage:value.stage,vendorRequests:value.vendorRequests,reversal:value.reversal,longTasks:value.longTasks,samples:value.samples}]))));
+        if(failures.length)throw new AggregateError(failures.map(failure=>new Error(`${failure.mode}/${failure.stage}: ${failure.message}`)),'Panel motion modes failed ('+engine+')');
         console.log('Panel motion pilot passed ('+engine+'): '+modes.join(', ')+', 8 widths, interruption/reversal, same-task finish race, switches, focus/scroll, reduced motion, resize and navigation.');
-        console.log(JSON.stringify(Object.fromEntries(Object.entries(report.modes).map(([mode,value])=>[mode,{vendorRequests:value.vendorRequests,reversal:value.reversal,longTasks:value.longTasks,samples:value.samples}]))));
-    } finally {await browser.close();}
+    } catch(error) {
+        report.status='failed';report.error={message:error.message,stack:error.stack};throw error;
+    } finally {report.failures=failures;saveReport();await browser?.close();}
 })().catch(error=>{console.error(error);process.exit(1);});
