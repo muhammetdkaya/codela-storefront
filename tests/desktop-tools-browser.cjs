@@ -3,7 +3,7 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),{execFileSync}=
 const {chromium,webkit}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const root='theme/codela-storefront/';
 const css=['styles/tokens.css','storefront.css','styles/overlay.css','styles/navigation.css','styles/components.css'].map(p=>fs.readFileSync(root+'assets/'+p,'utf8')).join('\n');
-const controllers=['format','search-controller','cart-controller','overlay-controller','dock-controller'].map(name=>fs.readFileSync(root+'assets/scripts/'+name+'.js','utf8').replace(/^import .*;$/gm,'').replace(/^export /gm,'')).join('\n');
+const controllers=['format','search-controller','cart-controller','overlay-controller','dock-controller'].map(name=>require('./helpers/inline-storefront.cjs').moduleSource(name)).join('\n');
 const js=fs.readFileSync(root+'assets/storefront.js','utf8').replace(/^import .*;$/gm,'');
 const config={api:'https://store.test/api/',search:'https://store.test/search-api',cart:'/cart/',account:'/myaccount/',labels:{}};
 const cart={items_count:1,items:[{key:'one',name:'Deneme ürünü',permalink:'/product/',images:[],quantity:1,totals:{line_subtotal:'1000',line_subtotal_tax:'0',currency_code:'TRY',currency_minor_unit:2}}],totals:{total_items:'1000',total_items_tax:'0',currency_code:'TRY',currency_minor_unit:2}};

@@ -6,7 +6,7 @@ const css=fs.readFileSync(root+'assets/styles/storefront-base.css','utf8')+fs.re
 const theme=JSON.parse(fs.readFileSync(root+'theme.json','utf8'));
 const typography=`body{font-family:${theme.settings.typography.fontFamilies[0].fontFamily};line-height:${theme.styles.typography.lineHeight}}`;
 const header=execFileSync(php,['tests/render-header.php'],{encoding:'utf8'});
-const cartSource=['format','cart-controller','overlay-controller'].map(n=>fs.readFileSync(root+'assets/scripts/'+n+'.js','utf8').replace(/^import .*;$/gm,'').replace(/^export /gm,'')).join('\n');
+const cartSource=['format','cart-controller','overlay-controller'].map(name=>require('./helpers/inline-storefront.cjs').moduleSource(name)).join('\n');
 function cartData(quantity=1){
  const data=snapshot(quantity+1),item=data.items[0];
  data.items=[{...item,key:'one',name:'El yapımı seramik vazo',quantity,quantity_limits:{minimum:1,maximum:3,multiple_of:1,editable:true},images:[{thumbnail:'https://interaction.test/photo.svg'}]},

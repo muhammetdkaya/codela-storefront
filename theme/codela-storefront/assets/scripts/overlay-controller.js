@@ -1,3 +1,5 @@
+import { animatePanelTransform } from 'codela-storefront/panel-motion';
+
 /**
  * Single overlay controller. Owns the responsive search slot, native dialog, active view,
  * focus, scroll locking/restoration and content transitions.
@@ -108,13 +110,14 @@ export function createOverlayController({
         if (restoreFocus && opener?.isConnected) opener.focus({preventScroll:true});
         opener = null;
     }
-    function animateDrawer(out = false) {
+    function animateDrawer(out = false, from = null) {
         if (reducedMotion.matches || !dialog.animate) return false;
         surfaceMotion?.cancel();
-        const motion = dialog.animate([
-            {transform:out ? 'translateX(0)' : 'translateX(100%)'},
-            {transform:out ? 'translateX(100%)' : 'translateX(0)'},
-        ], {...panelTiming(dialog, out),fill:'forwards'});
+        surfaceMotion = null;
+        const motion = animatePanelTransform(dialog,
+            from || (out ? 'translateX(0)' : 'translateX(100%)'),
+            out ? 'translateX(100%)' : 'translateX(0)', panelTiming(dialog, out));
+        if (!motion) return false;
         surfaceMotion = motion;
         motion.onfinish = () => {
             if (surfaceMotion !== motion) return;
@@ -173,6 +176,10 @@ export function createOverlayController({
         if (name === 'search' && desktop.matches && searchSlot) { openInlineSearch(event); return; }
         if (inlineSearch) closeInlineSearch(false);
         const wasClosing = closing;
+        // Capture before cancelling so a reversal starts at the rendered position,
+        // not at the other endpoint. Only the desktop cart transforms its dialog.
+        const drawerFrom = closing && current === 'cart' && name === 'cart' && desktop.matches && surfaceMotion
+            ? getComputedStyle(dialog).transform : null;
         if (closing) {
             surfaceMotion?.cancel(); surfaceMotion = null;
             panelMotion?.cancel(); panelMotion = null;
@@ -257,7 +264,7 @@ export function createOverlayController({
                 form.action = config().account;
             });
         }
-        if (name === 'cart' && desktop.matches) animateDrawer();
+        if (name === 'cart' && desktop.matches) animateDrawer(false, drawerFrom);
         else animatePanelContent(name === 'search' ? $('.sf-search-content') : $(`#sf-${name}`), previous === 'cart' && name === 'search' ? -1 : 1);
     }
     // Mobile transitions animate content only: transforming the dialog changes the
@@ -279,13 +286,15 @@ export function createOverlayController({
     function close() {
         if (inlineSearch) { closeInlineSearch(); return; }
         if (!dialog?.open || closing) return;
+        const drawerFrom = current === 'cart' && desktop.matches && surfaceMotion
+            ? getComputedStyle(dialog).transform : null;
         panelMotion?.cancel(); panelMotion = null;
         surfaceMotion?.cancel(); surfaceMotion = null;
         if (current === 'menu') {
             findMenuTrigger()?.setAttribute('aria-expanded', 'false');
             menuTrigger?.setAttribute('aria-label', menuLabel);
         }
-        if (current === 'cart' && desktop.matches && animateDrawer(true)) {
+        if (current === 'cart' && desktop.matches && animateDrawer(true, drawerFrom)) {
             closing = true;
             dialog.classList.add('is-closing');
             return;

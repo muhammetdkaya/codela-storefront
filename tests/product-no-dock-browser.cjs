@@ -3,7 +3,7 @@ const {chromium,webkit}=require('playwright');
 const root='theme/codela-storefront/',php=process.env.PHP_BIN||'php';
 const {fixture}=require('./product-sheet-browser.cjs');
 const css=['overlay','account-overlay','navigation-feedback'].map(n=>fs.readFileSync(root+'assets/styles/'+n+'.css','utf8')).join('\n');
-const modules=['format','search-controller','cart-controller','overlay-controller','dock-controller'].map(n=>fs.readFileSync(root+'assets/scripts/'+n+'.js','utf8').replace(/^import .*;$/gm,'').replace(/^export /gm,'')).join('\n');
+const modules=['format','search-controller','cart-controller','overlay-controller','dock-controller'].map(name=>require('./helpers/inline-storefront.cjs').moduleSource(name)).join('\n');
 const main=fs.readFileSync(root+'assets/storefront.js','utf8').replace(/^import .*from 'codela-storefront\/(?:search|cart|overlay|dock)';$/gm,'').replace("import { store } from '@wordpress/interactivity';",`function store(n,o){window.sfActions=o.actions;return {state:{config:{api:'https://store.test/api/',search:'https://store.test/search-api',cart:'/cart/',account:'/myaccount/',labels:{}}}};}`).replace('let menuPath = [];',modules+'\nlet menuPath = [];');
 const engine=process.env.TEST_WEBKIT?'webkit':'chromium';
 (async()=>{const browser=await(engine==='webkit'?webkit:chromium).launch();try{

@@ -9,7 +9,7 @@ const render = (file, env={}) => execFileSync(php, ['tests/'+file+'.php'], {enco
 const cssPaths = ['assets/styles/tokens.css','assets/storefront.css','assets/styles/overlay.css','assets/styles/navigation.css','assets/styles/components.css','assets/styles/account-overlay.css','assets/styles/gallery.css','assets/styles/sections.css','assets/styles/product.css','assets/styles/navigation-feedback.css'];
 const css = cssPaths.map(path => {const old=process.env.MOBILE_CONTROLS_OLD_CSS && process.env.MOBILE_CONTROLS_OLD_CSS+'/'+path;return fs.readFileSync(old && fs.existsSync(old)?old:root+path,'utf8');}).join('\n');
 const run = name => !process.env.MOBILE_CONTROLS_SCOPE || process.env.MOBILE_CONTROLS_SCOPE===name;
-const moduleSource = name => fs.readFileSync(root+'assets/scripts/'+name+'.js','utf8').replace(/^import .*;$/gm,'').replace(/^export /gm,'');
+const {moduleSource} = require('./helpers/inline-storefront.cjs');
 const controllers = ['format','search-controller','cart-controller','overlay-controller','dock-controller'].map(moduleSource).join('\n');
 const main = fs.readFileSync(root+'assets/storefront.js','utf8').replace(/^import .*from 'codela-storefront\/(?:search|cart|overlay|dock)';$/gm,'').replace("import { store } from '@wordpress/interactivity';",`function store(namespace, options) { window.sfActions = options.actions; return {state:{config:{api:'https://store.test/api/',search:'https://store.test/search-api',cart:'/cart/',shop:'/shop/',account:'https://store.test/myaccount/',labels:{}}}}; }`).replace('let menuPath = [];',controllers+'\nlet menuPath = [];');
 const feedback = fs.readFileSync(root+'assets/scripts/navigation-feedback.js','utf8');

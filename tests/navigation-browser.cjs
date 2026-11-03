@@ -17,9 +17,7 @@ const checkout = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8'
 const footer = execFileSync(php, ['tests/render-footer.php'], {encoding:'utf8',env:{...process.env,FOOTER_PRIVACY:'1',FOOTER_TERMS:'1',FOOTER_NOTE:'1'}});
 assert(!checkout.includes('class="sf-mobile-dock'), 'Checkout omits the dock');
 const css = ['assets/styles/storefront-base.css','assets/styles/account-overlay.css','assets/styles/document-navigation.css'].map(p=>fs.readFileSync('theme/codela-storefront/'+p,'utf8')).join('\n');
-const moduleSource = name => fs.readFileSync(
- 'theme/codela-storefront/assets/scripts/'+name+'.js','utf8'
- ).replace(/^import .*;$/gm,'').replace(/^export /gm,'');
+const {moduleSource} = require('./helpers/inline-storefront.cjs');
 const inlineControllers = ['format','search-controller','cart-controller','overlay-controller','dock-controller']
  .map(moduleSource).join('\n');
 const js = fs.readFileSync('theme/codela-storefront/assets/storefront.js','utf8')

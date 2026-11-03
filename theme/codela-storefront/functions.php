@@ -81,12 +81,14 @@ add_action( 'init', function() {
     // Native loops can request this during block-template rendering before wp_head.
     wp_register_style( 'codela-storefront-catalog', $asset_url . 'styles/catalog.css', [ 'codela-storefront-components' ], codela_sf_style_version() );
     // All statically imported modules are registered in dependency order.
-    // No bundler or script-module args newer than WordPress 6.5 are needed.
+    // Vendor ESM is prebuilt locally; no Node or post-6.5 API is needed at runtime.
     $modules = [
         'codela-storefront/format'  => [ 'scripts/format.js', [] ],
         'codela-storefront/search'  => [ 'scripts/search-controller.js', [ 'codela-storefront/format' ] ],
         'codela-storefront/cart'    => [ 'scripts/cart-controller.js', [ 'codela-storefront/format' ] ],
-        'codela-storefront/overlay' => [ 'scripts/overlay-controller.js', [] ],
+        'codela-storefront/motion-mini' => [ 'vendor/motion-mini.js', [] ],
+        'codela-storefront/panel-motion' => [ 'scripts/panel-motion.js', [ [ 'id' => 'codela-storefront/motion-mini', 'import' => 'dynamic' ] ] ],
+        'codela-storefront/overlay' => [ 'scripts/overlay-controller.js', [ 'codela-storefront/panel-motion' ] ],
         'codela-storefront/dock'    => [ 'scripts/dock-controller.js', [] ],
         'codela-storefront/navigation' => [ 'scripts/navigation-controller.js', [ '@wordpress/interactivity', [ 'id' => '@wordpress/interactivity-router', 'import' => 'dynamic' ] ] ],
         'codela-storefront'         => [ 'storefront.js', [
@@ -145,6 +147,11 @@ add_action( 'wp_enqueue_scripts', function() {
     if ( $sections['gallery'] ) {
         wp_enqueue_style( 'codela-storefront-gallery' );
         wp_enqueue_script( 'codela-storefront-gallery-horizontal', $root_uri . 'scripts/gallery-horizontal.js', [], codela_sf_script_module_version( 'scripts/gallery-horizontal.js' ), true );
+        // Classic gallery loader imports the engine only for eligible multi-slide
+        // showcases. The vendor's own hash prevents stale code after an update.
+        wp_add_inline_script( 'codela-storefront-gallery-horizontal', 'window.codelaSfVendors=' . wp_json_encode( [
+            'embla' => $root_uri . 'vendor/embla-carousel.js?ver=' . codela_sf_script_module_version( 'vendor/embla-carousel.js' ),
+        ] ) . ';', 'before' );
     }
     if ( $sections['products'] || is_front_page() || is_search() ) { wp_enqueue_script( 'wc-add-to-cart' ); }
     if ( codela_sf_document_continuity_allowed() ) {

@@ -9,7 +9,7 @@ Tarih: 3 Kasım 2026. Aşama 0, mevcut temanın envanteri ve kabul sınırları.
 - Deterministik tema ZIP'i **208.367 bayt**; SHA256 **`bfddc47fccaebe2b56fc141b87756ab560206d3d09ed8b074dd1f15d9bd3c41f`**. Depoda kaydedilmiş [v0.1.195](https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.195) paketinin hash'iyle aynıdır. Bu işlem yerel yeniden üretimdir, yayın veya kurulum değildir.
 - **Başarılı:** 27 Python testi; 9 Node sözleşme giriş noktası; ayrıca gerçek WordPress 6.5 bağımlılık sınıflarıyla 13 bağlam × debug/production asset testi; 13 PHP sözleşme/fixture giriş noktası; 26 PHP dosyasında lint; 17 JS dosyasında sözdizimi.
 - **Yerel tarayıcı kabulü çalışmadı:** Chromium işlemi test başlamadan ortamın `socket() failed: Operation not permitted` hatasıyla durdu. Yetkili bir genişletilmiş çalıştırma denemesi de aynı işletim sistemi kısıtına takıldı. Kaynak assertion hatası değildir. Bu çalıştırmada yeni ekran görüntüsü, geometri, odak veya etkileşim başarısı iddia edilmez.
-- **Aşama 0 görsel karşılaştırma kapısı açık:** gerçek tema PHP/CSS/controller'larını kullanan, sabit kaynak hash'ini doğrulayan `capture-cart.cjs` hazırdır; izinli CI/tarayıcı ortamında çalıştırılması gerekir. Test ve hash envanteri tamamlandı, yeni görsel başlangıç kaydı henüz tamamlanmadı.
+- **Aşama 0 görsel karşılaştırma kapısı açık:** gerçek tema PHP/CSS/controller'larını kullanan, sabit kaynak hash'ini doğrulayan `tests/fixtures/library-baseline/capture-cart.cjs` hazırdır; izinli CI/tarayıcı ortamında çalıştırılması gerekir. Test ve hash envanteri tamamlandı, yeni görsel başlangıç kaydı henüz tamamlanmadı.
 
 Ham yerel kanıtlar: `qa/library-migration/baseline-2026-11-03/`. `qa/` çalışma ağacında yok sayılır; CI artefaktı olarak saklanabilir. Kaynak ve test sonuçlarının okunabilir özeti bu belgede kalır. Eski kardeş çalışma kopyaları, runtime dosyaları, diğer PR'lar ve canlı mağaza değiştirilmedi.
 
@@ -94,7 +94,7 @@ Gzip ölçümü her dosyaya ayrı **level 9, mtime=0** uygulanarak yapıldı. Su
 | `sections.css` | 18.477 | 4.122 |
 | Tema ZIP (99 kaynak/asset dosyası) | 208.367 | Uygulanmaz |
 
-Tema klasöründeki tüm dosyalar toplam **718.958 ham bayt**. Bu sayı kaynak + üretilmiş çıktıları birlikte içerir; sayfa yükü olarak sunulmaz. Örneğin üretimde birleşik navigation JS kullanılırken debug kaynaklarının ayrıca toplam içine katılması çift sayım olur. `source-sizes.json` her dosyanın boyutunu ve SHA256'sını verir.
+Tema klasöründeki tüm dosyalar toplam **718.958 ham bayt**. Bu sayı kaynak + üretilmiş çıktıları birlikte içerir; sayfa yükü olarak sunulmaz. Örneğin üretimde birleşik navigation JS kullanılırken debug kaynaklarının ayrıca toplam içine katılması çift sayım olur. `tests/fixtures/library-baseline/source-sizes.json` her dosyanın boyutunu ve SHA256'sını verir.
 
 İlk pilotun plan eşiği **sayfa başına +15 kB gzip yeni runtime JS**. Adayda aynı altı modül ve yeni statik/dinamik import zinciri birlikte karşılaştırılmalı; yalnız vendor dosyasının boyutu yeterli değil. Yalnız gerçekten kaldırılmış native kod tasarruf sayılabilir. Global import varsa mobil veya hiç sepet açmayan sayfa için “sıfır maliyet” denmez. Başlangıçta 240/180ms ve mevcut geometri korunur; motor, görünüm ve süre aynı anda değiştirilmez.
 
@@ -142,8 +142,8 @@ Ortam: Node **24.22.1**, Python **3.12.14**, PHP **8.4.26** (resmî Debian paket
 ## 8. Yeniden üretim ve tamamlanma kapısı
 
 1. Sabit SHA'yı temiz bir geçici dizine `git archive` ile çıkarın. Eski kardeş checkout'ları temizlemeyin veya resetlemeyin.
-2. QA klasöründeki `source-sizes.json` ve `capture-cart.cjs` dosyalarını aynı QA yoluna koyun. Harness kaynak SHA256'larını kontrol eder; değişmiş aday kaynağını yanlışlıkla başlangıç olarak çekmez.
+2. Aday checkout'taki sürüm kontrollü `tests/fixtures/library-baseline/capture-cart.cjs` ve aynı klasördeki `source-sizes.json` dosyalarını kullanın. Harness kaynak SHA256'larını kontrol eder; değişmiş aday kaynağını yanlışlıkla başlangıç olarak çekmez.
 3. Uygun ortamda `PHP_BIN` ve Playwright'i sağlayın. Gerekirse sistem tarayıcısı için `CHROMIUM_BIN` verin. Baseline kökü `CODELA_BASELINE_ROOT`, çıktı yeri `CODELA_BASELINE_OUTPUT` ile seçilebilir.
-4. `node qa/library-migration/baseline-2026-11-03/capture-cart.cjs` 8 genişlik × loading/empty/populated olmak üzere **24** PNG ve `metrics.json` üretmek üzere hazırlandı. Şu anda yalnız sözdizimi kontrolünden geçti; browser çalıştırması bekliyor. Görseller fixture olarak etiketlenir, gerçek mağaza ekranı denmez.
+4. `CODELA_BASELINE_ROOT=/tmp/codela-baseline CODELA_BASELINE_OUTPUT="$PWD/qa/library-baseline" node tests/fixtures/library-baseline/capture-cart.cjs` 8 genişlik × loading/empty/populated olmak üzere **24** PNG ve `metrics.json` üretmek üzere hazırlandı. Şu anda yalnız sözdizimi kontrolünden geçti; browser çalıştırması bekliyor. `.github/workflows/library-migration.yml` bunu sabit SHA arşivinde Chromium ile çalıştıracak şekilde düzenlendi; workflow tanımlanmış olması geçtiği anlamına gelmez. Görseller fixture olarak etiketlenir, gerçek mağaza ekranı denmez.
 5. Adayın pilot testleri ve aynı içerikli karşılaştırması ayrıca çalıştırılır. Yeni Motion davranışı, toplam paket farkı, erişilebilirlik/iptal ve görsel eşleşme kanıtları olmadan pilot “kabul edildi” sayılmaz.
 6. Kütüphane seçimi fayda göstermiyorsa mevcut sağlam davranış korunur. Bu belge tüm 12–20 günlük planın tamamlandığı veya tema/stable/canlı güncellendiği anlamına gelmez.

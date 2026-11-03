@@ -1,0 +1,113 @@
+name: Library migration acceptance (no deployment)
+on:
+  push:
+    branches: [work/library-migration-20261103]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: codela-library-migration-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Deterministic vendors and local contracts
+        run: |
+          npm run check:vendor
+          python3 tests/vendor-build.py
+          node tests/library-budget.cjs
+          python3 tests/build-assets.py
+          python3 tests/package.py
+          find theme -name '*.php' -type f -print0 | xargs -0 -n1 php -l
+          php tests/script-modules.php > /tmp/script-modules.json
+          php tests/homepage.php
+          php tests/navigation.php
+          php tests/catalog.php
+          php tests/product-composition.php
+          php tests/media.php
+          node tests/panel-motion.cjs
+          node tests/panel-motion-runtime.cjs
+          node tests/cart-race.cjs
+          node tests/cart-sync.cjs
+          node tests/search-panel.cjs
+          node tests/dock-gesture.cjs
+          node tests/ui-kit.cjs
+          node --check theme/codela-storefront/assets/scripts/gallery-horizontal.js
+          node --input-type=module --check < theme/codela-storefront/assets/scripts/overlay-controller.js
+  browsers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [chromium, webkit, firefox]
+    env:
+      TEST_WEBKIT: ${{ matrix.engine == 'webkit' && '1' || '' }}
+      TEST_FIREFOX: ${{ matrix.engine == 'firefox' && '1' || '' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Pinned native WordPress fixture and immutable baseline
+        run: |
+          mkdir -p "$RUNNER_TEMP/wp-core"
+          for file in class-wp-dependency.php class-wp-dependencies.php class-wp-styles.php class-wp-scripts.php functions.wp-styles.php functions.wp-scripts.php kses.php; do
+            curl --fail --silent --show-error --max-time 45 --retry 2 "https://raw.githubusercontent.com/WordPress/WordPress/6.5/wp-includes/$file" -o "$RUNNER_TEMP/wp-core/$file"
+          done
+          for name in attribute-token span text-replacement tag-processor; do
+            curl --fail --silent --show-error --max-time 45 --retry 2 "https://raw.githubusercontent.com/WordPress/WordPress/6.5/wp-includes/html-api/class-wp-html-$name.php" -o "$RUNNER_TEMP/wp-core/class-wp-html-$name.php"
+          done
+          echo "WP_CORE_INCLUDES=$RUNNER_TEMP/wp-core" >> "$GITHUB_ENV"
+          git show 687ef83e13621f6117264d04f220fa13c8836bb4:theme/codela-storefront/assets/scripts/overlay-controller.js > "$RUNNER_TEMP/panel-0195.js"
+          echo "PANEL_BASELINE_SOURCE=$RUNNER_TEMP/panel-0195.js" >> "$GITHUB_ENV"
+      - name: Install only the tested browser
+        timeout-minutes: 6
+        run: |
+          for source in /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; do
+            [ -f "$source" ] || continue
+            sudo sed -i 's|https\?://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' "$source"
+          done
+          npx --no-install playwright install --with-deps ${{ matrix.engine }}
+      - name: Motion pilot in real browsers
+        run: node tests/panel-motion-browser.cjs
+      - name: Native WordPress and existing browser contracts
+        if: matrix.engine != 'firefox'
+        run: |
+          node tests/asset-loading.cjs
+          node tests/panel-presentation-browser.cjs
+          node tests/desktop-tools-browser.cjs
+          node tests/mobile-controls-browser.cjs
+          node tests/product-no-dock-browser.cjs
+          node tests/interaction-browser.cjs
+          node tests/product-menu-scroll-browser.cjs
+      - name: Immutable baseline screenshots
+        if: matrix.engine == 'chromium'
+        run: |
+          mkdir -p "$RUNNER_TEMP/codela-baseline"
+          git archive 687ef83e13621f6117264d04f220fa13c8836bb4 | tar -x -C "$RUNNER_TEMP/codela-baseline"
+          CODELA_BASELINE_ROOT="$RUNNER_TEMP/codela-baseline" CODELA_BASELINE_OUTPUT="$PWD/qa/library-baseline" node tests/fixtures/library-baseline/capture-cart.cjs
+      - name: Warm-cache dependency graph
+        if: matrix.engine == 'chromium'
+        run: |
+          node tests/script-module-browser.cjs
+          node tests/catalog-filters-browser.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: library-migration-${{ matrix.engine }}
+          path: qa/
+          if-no-files-found: ignore
+          retention-days: 7
