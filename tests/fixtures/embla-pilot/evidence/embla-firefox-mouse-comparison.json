@@ -1,0 +1,32 @@
+{
+  "browser": "firefox",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "gesture": {
+    "from": [
+      1050,
+      180
+    ],
+    "to": [
+      230,
+      180
+    ],
+    "samples": 15
+  },
+  "measurements": [
+    {
+      "mode": "native",
+      "count": "01 / 03",
+      "nativeOffset": 0,
+      "transform": "none"
+    },
+    {
+      "mode": "embla",
+      "count": "02 / 03",
+      "nativeOffset": 0,
+      "transform": "matrix(1, 0, 0, 1, -1280, 0)"
+    }
+  ]
+}

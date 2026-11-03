@@ -7,6 +7,9 @@ for(const context of ['home','page','product','checkout','cart','guest-account',
  const debug=run(context,true),prod=run(context,false);
  const hrefs=s=>[...s.matchAll(/href='([^']+)'/g)].map(m=>m[1]);
  const sources=s=>[...s.matchAll(/src="([^"]+)"/g)].map(m=>m[1]);
+ for(const assets of [debug,prod]){
+  assert.doesNotMatch(assets.scripts+assets.footer_scripts+JSON.stringify(assets.registered_modules),/codelaSfVendors|embla-carousel|motion-mini|\/vendor\//,context+' has no research config, import or vendor registration');
+ }
  const early=!['checkout','cart','guest-account','editor'].includes(context);
  assert.deepEqual(prod.style_done,debug.style_done,context+' preserves dependency handles');
  assert.deepEqual(prod.modules,debug.modules,context+' preserves the module graph');
@@ -29,6 +32,9 @@ for(const context of ['home','page','product','checkout','cart','guest-account',
  const forbidden=context==='home'?['styles/product.css','styles/checkout.css','styles/account.css']:[];
  for(const file of forbidden)assert(!prod.styles.includes(file),'Home omits '+file);
  assert.equal(prod.styles.includes('styles/catalog.css'), !['editor','page-story','page-disabled-products'].includes(context), context+' catalog dependencies');
+ if(context==='home'){
+  assert.match(prod.footer_scripts,/scripts\/gallery-horizontal\.js/, 'The native home gallery remains registered and printed');
+ }
  cases++;
 }
 // Build artefacts must be exact ordered sources, so debug/production semantics

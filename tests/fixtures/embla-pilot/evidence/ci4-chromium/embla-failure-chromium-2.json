@@ -1,0 +1,169 @@
+{
+  "browser": "chromium",
+  "info": {
+    "width": 390,
+    "mode": "embla",
+    "reducedMotion": "reduce",
+    "single": false,
+    "wheel": true,
+    "javaScriptEnabled": true,
+    "phase": "wheel-horizontal-viewport"
+  },
+  "requests": [
+    "/",
+    "/image-11-640.svg",
+    "/theme/assets/icons/arrow-right.svg",
+    "/gallery.js",
+    "/theme/assets/icons/arrow-left.svg",
+    "/vendor.js",
+    "/vendor-core.js",
+    "/image-12-640.svg",
+    "/image-13-640.svg"
+  ],
+  "errors": [],
+  "state": {
+    "scrollX": 0,
+    "scrollY": 0,
+    "width": 390,
+    "height": 900,
+    "hero": {
+      "x": 0,
+      "y": 0,
+      "width": 390,
+      "height": 624
+    },
+    "track": {
+      "x": 0,
+      "y": 0,
+      "width": 390,
+      "height": 624
+    },
+    "clip": {
+      "x": 0,
+      "y": 0,
+      "width": 390,
+      "height": 624
+    },
+    "slides": [
+      {
+        "x": -390,
+        "y": 0,
+        "width": 390,
+        "height": 624
+      },
+      {
+        "x": 0,
+        "y": 0,
+        "width": 390,
+        "height": 624
+      },
+      {
+        "x": 390,
+        "y": 0,
+        "width": 390,
+        "height": 624
+      },
+      {
+        "x": 780,
+        "y": 0,
+        "width": 390,
+        "height": 624
+      },
+      {
+        "x": 1170,
+        "y": 0,
+        "width": 390,
+        "height": 624
+      }
+    ],
+    "images": [
+      {
+        "src": "https://showcase.test/image-11-640.svg",
+        "complete": true,
+        "naturalWidth": 731,
+        "deferred": false
+      },
+      {
+        "src": "https://showcase.test/image-12-640.svg",
+        "complete": true,
+        "naturalWidth": 731,
+        "deferred": false
+      },
+      {
+        "src": "https://showcase.test/image-13-640.svg",
+        "complete": true,
+        "naturalWidth": 731,
+        "deferred": false
+      },
+      {
+        "src": "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%221200%22%20height=%22900%22/%3E",
+        "complete": true,
+        "naturalWidth": 1200,
+        "deferred": true
+      },
+      {
+        "src": "data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%221200%22%20height=%22900%22/%3E",
+        "complete": true,
+        "naturalWidth": 1200,
+        "deferred": true
+      }
+    ],
+    "trackStyle": {
+      "transform": "none",
+      "overflowX": "auto",
+      "overflowY": "hidden",
+      "snap": "x mandatory",
+      "touchAction": "auto"
+    },
+    "clipStyle": {
+      "transform": "none",
+      "overflowX": "visible",
+      "overflowY": "visible",
+      "snap": "none",
+      "touchAction": "auto"
+    },
+    "nativeOffset": 390,
+    "engineMode": "native",
+    "count": "02 / 05",
+    "focus": "DIV.sf-section-media-track sf-ui-gallery-track",
+    "created": 1,
+    "destroyed": 1,
+    "engine": {
+      "selected": 1,
+      "progress": 0.25,
+      "pointerDown": false
+    },
+    "wheels": [
+      {
+        "trusted": true,
+        "shift": false,
+        "prevented": false,
+        "deltaX": 350,
+        "deltaY": 0,
+        "engine": "native",
+        "left": 390,
+        "width": 390,
+        "selectedOffset": 0,
+        "transform": "none",
+        "overflow": "auto",
+        "snap": "x mandatory",
+        "sameParent": true,
+        "focus": true
+      }
+    ],
+    "input": [
+      {
+        "type": "wheel",
+        "x": 200,
+        "y": 180,
+        "scrollY": 0,
+        "deltaX": 350,
+        "deltaY": 0,
+        "shift": false,
+        "cancelable": true,
+        "prevented": false,
+        "target": "IMG."
+      }
+    ]
+  }
+}

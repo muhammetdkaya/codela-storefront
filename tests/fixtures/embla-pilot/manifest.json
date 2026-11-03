@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "scope": "embla-research",
+  "builder": {
+    "name": "esbuild",
+    "version": "0.28.2"
+  },
+  "lock_sha256": "add6f2704e93bc5d898f8032f896dd0ea47a6a4c40ac16e532901b038eeee6d3",
+  "package_sha256": "e2922a133b042801ebd61b403a2c324a9bc535f7475a52e8e2b4d36e8c88f19c",
+  "bundles": {
+    "embla-carousel": {
+      "file": "embla-carousel.js",
+      "sha256": "5a8118dd4201b28b3be54a815a2476fd65cb09d8051fdf03cf28af70c35226ab",
+      "bytes": 18386,
+      "gzip_bytes": 7686,
+      "source": "https://github.com/davidjerleke/embla-carousel",
+      "dependencies": {
+        "embla-carousel": {
+          "version": "8.6.0",
+          "license": "MIT"
+        }
+      }
+    }
+  },
+  "notices": {
+    "file": "THIRD-PARTY-NOTICES.txt",
+    "sha256": "19dae3e676b59a85192e026744501a28ec6aafee901fb7e5416d8bc89ee6c5b4"
+  }
+}

@@ -1,0 +1,18 @@
+{"browser":"chromium","stage":"geometry-media-keyboard","elapsed_ms":0,"detail":{"width":320},"active":[]}
+{"browser":"chromium","stage":"geometry-media-keyboard","elapsed_ms":696,"detail":{"width":390},"active":[]}
+{"browser":"chromium","stage":"geometry-media-keyboard","elapsed_ms":1246,"detail":{"width":700},"active":[]}
+{"browser":"chromium","stage":"geometry-media-keyboard","elapsed_ms":1803,"detail":{"width":701},"active":[]}
+{"browser":"chromium","stage":"geometry-media-keyboard","elapsed_ms":2383,"detail":{"width":1280},"active":[]}
+{"browser":"chromium","stage":"pointer-reversal-focus-resize","elapsed_ms":2976,"detail":{"reducedMotion":"reduce"},"active":[]}
+{"browser":"chromium","stage":"pointer-reversal-focus-resize","elapsed_ms":3929,"detail":{"reducedMotion":"no-preference"},"active":[]}
+{"browser":"chromium","stage":"desktop-mouse-comparison","elapsed_ms":7345,"detail":{"mode":"native"},"active":[]}
+{"browser":"chromium","stage":"desktop-mouse-comparison","elapsed_ms":7997,"detail":{"mode":"embla"},"active":[]}
+{"browser":"chromium","stage":"touch","elapsed_ms":8936,"detail":{"gesture":"vertical"},"active":[]}
+{"browser":"chromium","stage":"touch","elapsed_ms":9646,"detail":{"gesture":"horizontal"},"active":[]}
+{"browser":"chromium","stage":"native-fallback","elapsed_ms":10562,"detail":{"mode":"native"},"active":[]}
+{"browser":"chromium","stage":"native-fallback","elapsed_ms":10847,"detail":{"mode":"fail"},"active":[]}
+{"browser":"chromium","stage":"native-fallback","elapsed_ms":11130,"detail":{"mode":"constructor-fail"},"active":[]}
+{"browser":"chromium","stage":"wheel-parity","elapsed_ms":11416,"detail":{"shifted":false,"focus":"viewport"},"active":[]}
+{"browser":"chromium","stage":"wheel-gesture","elapsed_ms":11665,"detail":{"mode":"native","shifted":false,"focus":"viewport"},"active":[{"width":390,"mode":"native","reducedMotion":"reduce","single":false,"wheel":true,"javaScriptEnabled":true,"phase":"wheel-horizontal-viewport"},{"width":390,"mode":"embla","reducedMotion":"reduce","single":false,"wheel":true,"javaScriptEnabled":true,"phase":"open"}]}
+{"browser":"chromium","stage":"wheel-gesture","elapsed_ms":12080,"detail":{"mode":"embla","shifted":false,"focus":"viewport"},"active":[{"width":390,"mode":"native","reducedMotion":"reduce","single":false,"wheel":true,"javaScriptEnabled":true,"phase":"wheel-horizontal-viewport"},{"width":390,"mode":"embla","reducedMotion":"reduce","single":false,"wheel":true,"javaScriptEnabled":true,"phase":"wheel-horizontal-viewport"}]}
+{"browser":"chromium","stage":"failed","elapsed_ms":12298,"detail":{"message":"First genuine native/pilot wheel parity count\n+ actual - expected\n\n+ '02 / 05'\n- '03 / 05'\n","interrupted":{"browser":"chromium","stage":"wheel-gesture","elapsed_ms":12080,"detail":{"mode":"embla","shifted":false,"focus":"viewport"},"active":[{"width":390,"mode":"native","reducedMotion":"reduce","single":false,"wheel":true,"javaScriptEnabled":true,"phase":"wheel-horizontal-viewport"},{"width":390,"mode":"embla","reducedMotion":"reduce","single":false,"wheel":true,"javaScriptEnabled":true,"phase":"wheel-horizontal-viewport"}]}},"active":[{"width":390,"mode":"native","reducedMotion":"reduce","single":false,"wheel":true,"javaScriptEnabled":true,"phase":"wheel-horizontal-viewport"},{"width":390,"mode":"embla","reducedMotion":"reduce","single":false,"wheel":true,"javaScriptEnabled":true,"phase":"wheel-horizontal-viewport"}]}

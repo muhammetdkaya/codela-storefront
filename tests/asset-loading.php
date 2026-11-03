@@ -86,4 +86,5 @@ if (!is_admin()) {wp_add_inline_script('codela-storefront-document-continuity','
 if (is_admin()) {wp_enqueue_style('codela-storefront-gallery');}
 ob_start();wp_styles()->do_items();$styles=ob_get_clean();
 ob_start();wp_scripts()->do_head_items();$scripts=ob_get_clean();
-echo json_encode(['context'=>$context,'debug'=>SCRIPT_DEBUG,'styles'=>$styles,'scripts'=>$scripts,'style_queue'=>wp_styles()->queue,'style_done'=>wp_styles()->done,'script_done'=>wp_scripts()->done,'modules'=>$GLOBALS['enqueued_modules']??[]],JSON_THROW_ON_ERROR);
+ob_start();wp_scripts()->do_footer_items();$footer_scripts=ob_get_clean();
+echo json_encode(['context'=>$context,'debug'=>SCRIPT_DEBUG,'styles'=>$styles,'scripts'=>$scripts,'footer_scripts'=>$footer_scripts,'registered_modules'=>$GLOBALS['modules'],'style_queue'=>wp_styles()->queue,'style_done'=>wp_styles()->done,'script_done'=>wp_scripts()->done,'modules'=>$GLOBALS['enqueued_modules']??[]],JSON_THROW_ON_ERROR);

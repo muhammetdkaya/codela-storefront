@@ -44,7 +44,7 @@ jobs:
           node tests/search-panel.cjs
           node tests/dock-gesture.cjs
           node tests/product-focus.cjs
-          node tests/embla-showcase.cjs
+          node tests/native-showcase.cjs
           node tests/ui-kit.cjs
           node tests/basecoat-pilot-source.cjs
           node --check theme/codela-storefront/assets/scripts/gallery-horizontal.js
@@ -91,13 +91,13 @@ jobs:
           npx --no-install playwright install --with-deps ${{ matrix.engine }}
       - name: Motion pilot in real browsers
         run: node tests/panel-motion-browser.cjs
-      - name: Hero-only Embla pilot
+      - name: Native hero acceptance
         timeout-minutes: 5
         if: ${{ !cancelled() && steps.browser_install.outcome == 'success' }}
         env:
           TEST_BROWSER: ${{ matrix.engine }}
           SAVE_SCREENSHOT: '1'
-        run: node tests/embla-showcase-browser.cjs
+        run: node tests/native-showcase-browser.cjs
       - name: Native dock and sheet lifecycle
         if: ${{ !cancelled() && steps.browser_install.outcome == 'success' }}
         run: node tests/dock-sheet-lifecycle-browser.cjs

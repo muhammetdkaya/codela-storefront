@@ -1,4 +1,5 @@
-Codela Storefront research dependencies
+Codela Storefront motion-research dependencies
+Research-only fixtures, excluded from the production theme.
 Built from exact package-lock.json entries; no runtime CDN requests.
 
 framer-motion 14.9.0 (MIT)

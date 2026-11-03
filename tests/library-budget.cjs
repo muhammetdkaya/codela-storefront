@@ -10,8 +10,9 @@ const dockDelta=size('assets/scripts/dock-controller.js')-prior('assets/scripts/
 const productDelta=size('assets/scripts/product-information.js')-prior('assets/scripts/product-information.js');
 const nativeCart=globalDelta-dockDelta+size('assets/scripts/panel-motion.js');
 const lifecycle=dockDelta+productDelta;
-const hero=size('assets/scripts/gallery-horizontal.js')-prior('assets/scripts/gallery-horizontal.js')+size('assets/vendor/embla-carousel.js');
-const report={baseline:baseline.source_sha,method:'Conservative cumulative route graph; sum of individual gzip level9 file sizes',native_cart_delta_bytes:nativeCart,hero_delta_bytes:hero,native_lifecycle_delta_bytes:lifecycle,worst_case_page_delta_bytes:nativeCart+hero+lifecycle,budget_bytes:15000};
+assert(!fs.existsSync(root+'assets/vendor'),'Production graph must contain no vendor runtime');
+const hero=size('assets/scripts/gallery-horizontal.js')-prior('assets/scripts/gallery-horizontal.js');
+const report={baseline:baseline.source_sha,method:'Conservative cumulative route graph; sum of individual gzip level9 file sizes',native_cart_delta_bytes:nativeCart,hero_delta_bytes:hero,production_vendor_bytes:0,native_lifecycle_delta_bytes:lifecycle,worst_case_page_delta_bytes:nativeCart+hero+lifecycle,budget_bytes:15000};
 fs.mkdirSync('qa/library-migration',{recursive:true});fs.writeFileSync('qa/library-migration/page-budget.json',JSON.stringify(report,null,2)+'\n');
 assert(report.worst_case_page_delta_bytes<=report.budget_bytes,'Full affected graph exceeds initial page budget: '+JSON.stringify(report));
 console.log(JSON.stringify(report));

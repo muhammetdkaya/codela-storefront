@@ -17,7 +17,7 @@
         "timeout_ms": 240000
       },
       {
-        "file": "tests/embla-showcase-browser.cjs",
+        "file": "tests/native-showcase-browser.cjs",
         "engines": [
           "chromium",
           "webkit",

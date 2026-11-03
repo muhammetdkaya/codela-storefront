@@ -24,8 +24,12 @@ Sonuç: Motion'a özgü yarar gösterilmedi. Kazanç controller'ın o anda çizi
 - Browser karşılaştırması sürer: native-only doğrudan production helper'ın değişmemiş baytlarını; Motion/fallback deneyleri açıkça araştırma fixture'ını kullanır. Eski 195 referansı korunur.
 - Warm-cache testi artık gerçek native helper'ın tek başına değişmesini, parent URL'leri sabitken yeni hash'in yüklenmesini doğrular.
 
-Bu değişiklikle deneysel adayın konservatif toplam runtime farkı **14.821 → 10.848 gzip bayt** oldu (tek tek gzip level9 çıktılarının toplamı). 15kB eşiği açıkça **15.000 bayt** olarak uygulanır. Bu sayı aynı anda/ardışık route'larda biriken değişmiş grafiği içerir; gerçek HTTP aktarma veya performans ölçümü değildir. Hero hâlâ ayrı Embla kabul kapısındadır.
+Bu değişiklikle deneysel adayın konservatif toplam runtime farkı **14.821 → 10.848 gzip bayt** oldu (tek tek gzip level9 çıktılarının toplamı). 15kB eşiği açıkça **15.000 bayt** olarak uygulanır. Bu sayı aynı anda/ardışık route'larda biriken değişmiş grafiği içerir; gerçek HTTP aktarma veya performans ölçümü değildir. Bu tarihsel ara ölçümde hero ayrı Embla kabul kapısındaydı; sonraki değerlendirme Embla'yı da reddetti. Final native-only bütçe `tests/library-budget.cjs` ile yeniden hesaplanır.
 
 ## Son kabul
 
 Önceki başarılı araştırma adımı, yeni native-only son SHA'nın kabulünün yerine geçmez. Son SHA için tüm yeni sözleşmeler, üç motorlu karşılaştırma, eski regresyon grupları, paket/hash ve görsel kanıt tekrar çalıştırılmalıdır. Fiziksel iPhone Safari, gerçek Woo ödeme/sipariş, canlı kurulum ve kurulu mağaza cache/performance kabulü bu fixture sonuçlarından çıkarılmaz.
+
+## Sonraki native-only kontrol
+
+`65158f74d4b33114b1d16366335bbf7d176bd4b6` kaynağında [CI41648726152](https://github.com/muhammetdkaya/codela-storefront/actions/runs/41648726152) üç motorun Motion/native araştırma karşılaştırmasını, üretim native helper ve warm-cache sözleşmelerini geçti. Embla'nın bağımsız başarısızlığı tüm koşuyu kırmızı tuttu. Araştırma başarısı başka bir final SHA'nın doğrulandığı anlamına gelmez.

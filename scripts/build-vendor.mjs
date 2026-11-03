@@ -1,4 +1,4 @@
-/** Reproducible browser ESM vendor build. No CDN, React, or server-side Node. */
+/** Reproducible browser ESM research fixtures. Nothing is emitted into the theme. */
 import { build, version as esbuildVersion } from 'esbuild';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
@@ -6,19 +6,21 @@ import { gzipSync } from 'node:zlib';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const outputs = {runtime:path.join(root, 'theme/codela-storefront/assets/vendor'),research:path.join(root, 'tests/fixtures/motion-pilot')};
+const outputs = {
+  'motion-research':path.join(root, 'tests/fixtures/motion-pilot'),
+  'embla-research':path.join(root, 'tests/fixtures/embla-pilot'),
+};
 const check = process.argv.includes('--check');
 const sha = data => createHash('sha256').update(data).digest('hex');
 const lock = await readFile(path.join(root, 'package-lock.json'));
-const pkg = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
 const bundles = [
-  { scope:'research', name: 'motion-mini', entry: 'export { animate } from "motion/mini";', source: 'https://github.com/motiondivision/motion', license: 'motion' },
-  { scope:'runtime', name: 'embla-carousel', entry: 'export { default } from "embla-carousel";', source: 'https://github.com/davidjerleke/embla-carousel', license: 'embla-carousel' },
+  { scope:'motion-research', name: 'motion-mini', entry: 'export { animate } from "motion/mini";', source: 'https://github.com/motiondivision/motion', license: 'motion' },
+  { scope:'embla-research', name: 'embla-carousel', entry: 'export { default } from "embla-carousel";', source: 'https://github.com/davidjerleke/embla-carousel', license: 'embla-carousel' },
 ];
 const packageHash=sha(await readFile(path.join(root,'package.json')));
 const newManifest = scope => ({ schema: 1, scope, builder: { name: 'esbuild', version: esbuildVersion }, lock_sha256: sha(lock), package_sha256:packageHash, bundles: {} });
-const manifests = {runtime:newManifest('runtime'),research:newManifest('research')};
-for (const output of Object.values(outputs)) await mkdir(output, {recursive:true});
+const manifests = Object.fromEntries(Object.keys(outputs).map(scope => [scope, newManifest(scope)]));
+if (!check) for (const output of Object.values(outputs)) await mkdir(output, {recursive:true});
 async function emit(output, name, bytes) {
   if (check) {
     const actual = await readFile(path.join(output, name)).catch(() => null);
@@ -50,7 +52,7 @@ for (const bundle of bundles) {
 for (const [scope, manifest] of Object.entries(manifests)) {
 const output=outputs[scope];
 const allDependencies = [...new Set(Object.values(manifest.bundles).flatMap(b => Object.keys(b.dependencies)))].sort();
-let notices = 'Codela Storefront '+scope+' dependencies\nBuilt from exact package-lock.json entries; no runtime CDN requests.\n\n';
+let notices = 'Codela Storefront '+scope+' dependencies\nResearch-only fixtures, excluded from the production theme.\nBuilt from exact package-lock.json entries; no runtime CDN requests.\n\n';
 for (const name of allDependencies) {
   const dependency = JSON.parse(await readFile(path.join(root, 'node_modules', name, 'package.json'), 'utf8'));
   let license;

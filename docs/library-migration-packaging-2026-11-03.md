@@ -2,6 +2,10 @@
 
 3 Kasım 2026. Bu belge yayın veya canlı kurulum talimatı değildir. Adayın son kodu ve CI sonucu sabitlendikten sonra kullanılacak inceleme teslimini tarif eder.
 
+## Güncel karar
+
+Motion üretim için reddedildi; gerçek üretim helper'ı artık yalnız native WAAPI kullanır. Tarihsel pilot `tests/fixtures/motion-pilot/` içinde yeniden üretilebilir. `native-only` kontrol, üretim kaynağını değiştirmeden gerçek helper/controller'ı çalıştırır ve sıfır vendor isteğini doğrular. Aşağıdaki pilot açıklamaları değerlendirme geçmişidir, dağıtılan runtime değildir. Embla da ilk wheel girdisini korumadığı için üretime alınmaz. Final paket ve kaynak bütçesi native-only son SHA'da doğrulanmalıdır.
+
 ## 1. İnceleme paketi stable sürüm değildir
 
 Mevcut `scripts/build-package.py` deterministik ZIP üretir; tema klasöründeki `Version` değerini değiştirmez. Ancak yanında ürettiği `dist/manifest.json` **public stable indirme URL'sini** ve mevcut `config/release.json` değişiklik metnini kullanır. 195 üzerinde yeni kod paketlenirse bu URL hâlâ yayımlanmış 195 ZIP'ini gösterir, yeni adayın baytlarını değil. Bu manifest adayla birlikte gönderilmemeli ve updater/stable kanalına konmamalıdır.
@@ -80,7 +84,7 @@ Mevcut `tests/package.py` deterministik paket, yanlış mapping'de eski temaya d
 | Düzeltilmiş native WAAPI | Aynı örneklenmiş başlangıç, cancellation/restore ve aynı CSS süreleriyle kütüphanesiz kontrol |
 | Motion | Aynı controller/token/içerik üzerinde yalnız animasyon aracını değiştirmek |
 
-`fallback` fixture'ı her animasyonda bilerek exception fırlatan vendor kullandığı için **adil native performans kontrolü değildir**; throw/catch maliyeti sadece bu kola yüklenir. Bu inceleme üzerine eklenen `native-only` fixture'ı yalnız optional import ifadesini `Promise.resolve({})` ile değiştirir; aynı controller, helper, süre, örnekleme ve cancellation davranışını Motion yüklemeden çalıştırır. Sıfır vendor isteğini ayrıca doğrular. Bu kontrol doğru karşılaştırma temelidir; fixture'ın yazılmış olması CI/gerçek cihaz sonucunun geçtiği anlamına gelmez.
+`fallback` fixture'ı her animasyonda bilerek exception fırlatan vendor kullandığı için **adil native performans kontrolü değildir**; throw/catch maliyeti sadece bu kola yüklenir. Son `native-only` fixture üretim kaynaklarını değiştirmeden, vendor içermeyen gerçek native helper/controller ile aynı süre, örnekleme ve cancellation davranışını çalıştırır. Sıfır vendor isteğini ayrıca doğrular. Bu kontrol doğru karşılaştırma temelidir; fixture'ın yazılmış olması CI/gerçek cihaz sonucunun geçtiği anlamına gelmez.
 
 ### Kabul için gerekli kanıt
 

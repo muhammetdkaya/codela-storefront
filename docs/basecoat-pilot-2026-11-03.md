@@ -6,7 +6,7 @@ Date: 3 November 2026. Codela baseline: `687ef83e13621f6117264d04f220fa13c8836bb
 
 **Reject Basecoat production adoption for these two components.** Keep Codela's current shared tokens, Button/field/notice styling, native Woo forms and order-summary markup. Basecoat supplies useful semantic examples, but no missing form or card behavior here. Preserving the existing appearance leaves no production implementation that can be removed in exchange for its added classes, style mapping and maintenance.
 
-This completes the conditional source-level component evaluation, not browser acceptance for this fixture or the rest of the migration. The rejection is supported by the inspected ownership and source differences below; its prepared parity claims must be confirmed by exact CI evidence. No Basecoat/Tailwind dependency, runtime, stylesheet, reset, PHP override, theme version change or production adapter was added by this pilot. The comparison artifacts live under `tests/basecoat-pilot*` and this document only.
+The conditional evaluation is complete. At exact source `65158f74d4b33114b1d16366335bbf7d176bd4b6`, [run41648726152](https://github.com/muhammetdkaya/codela-storefront/actions/runs/41648726152) passed this fixture in Chromium, WebKit and Firefox:20 document/width cases plus4 no-JavaScript cases per engine. The complete workflow was not green because the independent, rejected Embla Chromium pilot failed. Later source changes still require exact-final-SHA checks. No Basecoat/Tailwind dependency, runtime, stylesheet, reset, PHP override, theme version change or production adapter was added by this pilot. The comparison artifacts live under `tests/basecoat-pilot*` and this document only.
 
 ## Precisely what was evaluated
 
@@ -98,3 +98,9 @@ These checks validate the fixture's accessible naming/state boundaries and keybo
 Revisit only for a concrete missing component or semantic defect that cannot be fixed more simply in the existing native/shared component. Require the proposed adapter to demonstrate removable Codela code or a user-visible improvement, bounded additional bytes, preserved appearance, upstream/license tracking and native Woo lifecycle tests. General interest in using a library is not sufficient reason to adopt another stylesheet.
 
 If a later accessibility audit finds an unassociated native error, fix that relationship at its real owner and test it. Do not infer from this fixture that every live plugin-generated field already has complete error semantics, or that importing Basecoat would repair one.
+
+## Recorded visual/geometry review
+
+The same run supplied24 paired native/mapped screenshots across the three engines.23 pairs were RGB-identical; one Chromium account pair differed at10 pixels within the field area, so exact pixel equality is not claimed for that pair. Firefox390 checkout and WebKit1360 account screenshots were visually inspected: labels, error/focus indications, inputs and card content remained contained. These inert-class comparisons do not test the upstream Basecoat stylesheet.
+
+Firefox's earlier54px assertion failure was protocol rounding: captured `getBoundingClientRect().height` and CSS height/min-height were exactly54, while Playwright's protocol bounding box reported53.999969482421875. The final test still requires the54px token/min-height/border-box contract and allows only0.001px protocol precision difference; it does not reduce the design target.
