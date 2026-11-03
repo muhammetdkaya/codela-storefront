@@ -5,6 +5,8 @@ const fs = require('node:fs');
 const {execFileSync} = require('node:child_process');
 const {chromium, webkit, firefox} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const root = 'theme/codela-storefront/';
+const research = 'tests/fixtures/motion-pilot/';
+const usesResearch = mode => !['baseline','native-only','no-waapi'].includes(mode);
 const header = execFileSync(process.env.PHP_BIN || 'php', ['tests/render-header.php'], {encoding:'utf8'}).replaceAll('https://store.test','https://motion.test');
 const css = fs.readFileSync(root + 'assets/styles/storefront-base.css', 'utf8');
 const baseline = process.env.PANEL_BASELINE_SOURCE && fs.readFileSync(process.env.PANEL_BASELINE_SOURCE, 'utf8');
@@ -15,7 +17,6 @@ const modes = [...(baseline ? ['baseline'] : []), 'motion', 'native-only', 'fall
 const imports = {
     'codela-storefront/overlay':'/assets/scripts/overlay-controller.js',
     'codela-storefront/panel-motion':'/assets/scripts/panel-motion.js',
-    'codela-storefront/motion-mini':'/assets/vendor/motion-mini.js',
 };
 const setup = `
 import {createOverlayController} from 'codela-storefront/overlay';
@@ -41,6 +42,8 @@ const preference = async (page, value) => {
     await flush(page);
 };
 async function mount(browser, mode, onPage = () => {}) {
+    const modeImports={...imports};
+    if(usesResearch(mode))modeImports['codela-storefront/motion-mini']='/research/motion-mini.js';
     const page = await browser.newPage({viewport:{width:1280,height:900}});
     const errors = [];
     onPage(page,errors);
@@ -51,16 +54,12 @@ async function mount(browser, mode, onPage = () => {}) {
         const path = new URL(route.request().url()).pathname;
         if (path === '/assets/scripts/overlay-controller.js' && mode === 'baseline')
             return route.fulfill({contentType:'application/javascript',body:baseline});
-        if (path === '/assets/scripts/panel-motion.js' && mode === 'native-only') {
-            // Benchmark the corrected production native branch without importing
-            // or invoking Motion. Only the optional import expression changes;
-            // controller, timing, sampling and cancellation stay identical.
-            const helper=fs.readFileSync(root+'assets/scripts/panel-motion.js','utf8');
-            const optionalImport="import('codela-storefront/motion-mini')";
-            assert(helper.includes(optionalImport),'Expected one optional enhancement boundary');
-            return route.fulfill({contentType:'application/javascript',body:helper.replace(optionalImport,'Promise.resolve({})')});
+        if (path === '/assets/scripts/panel-motion.js' && usesResearch(mode)) {
+            // Only explicit research modes substitute the archived enhancement.
+            // native-only/no-WAAPI use the unmodified production file below.
+            return route.fulfill({contentType:'application/javascript',body:fs.readFileSync(research+'panel-motion.js')});
         }
-        if (path === '/assets/vendor/motion-mini.js') {
+        if (path === '/research/motion-mini.js') {
             vendorRequests++;
             if (mode === 'fallback') return route.fulfill({contentType:'application/javascript',body:'export function animate(){throw new Error("Fixture unsupported Motion runtime")}'});
             if (mode === 'missing') return route.fulfill({status:404,contentType:'text/plain',body:'Fixture missing optional vendor'});
@@ -68,17 +67,18 @@ async function mount(browser, mode, onPage = () => {}) {
             if (mode === 'invalid') return route.fulfill({contentType:'application/javascript',body:'export function animate( INVALID MODULE'});
             if (mode === 'bad-export') return route.fulfill({contentType:'application/javascript',body:'export const animate = null;'});
             if (mode === 'delayed') { heldRoute=route;holdReady();return; }
+            return route.fulfill({contentType:'application/javascript',body:fs.readFileSync(research+'motion-mini.js')});
         }
         if (path.includes('/assets/icons/')) return route.fulfill({contentType:'image/svg+xml',body:fs.readFileSync(root+'assets/icons/'+path.split('/').at(-1))});
         if (path.startsWith('/assets/')) {
             const file = root + path.slice(1);
             return route.fulfill({contentType:path.endsWith('.js')?'application/javascript':'image/svg+xml',body:fs.readFileSync(file)});
         }
-        return route.fulfill({contentType:'text/html; charset=utf-8',body:`<!doctype html><html lang="tr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>${css}</style><script type="importmap">${JSON.stringify({imports})}</script><body>${header}<main style="height:3000px">Store</main>${mode==='no-waapi'?'<script>Element.prototype.animate=undefined</script>':''}<script type="module">${mode==='baseline'?setup.replace("import {panelMotionReady} from 'codela-storefront/panel-motion';", "const panelMotionReady = Promise.resolve(false);"):setup}</script></body></html>`});
+        return route.fulfill({contentType:'text/html; charset=utf-8',body:`<!doctype html><html lang="tr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>${css}</style><script type="importmap">${JSON.stringify({imports:modeImports})}</script><body>${header}<main style="height:3000px">Store</main>${mode==='no-waapi'?'<script>Element.prototype.animate=undefined</script>':''}<script type="module">${!usesResearch(mode)?setup.replace("import {panelMotionReady} from 'codela-storefront/panel-motion';\npanelMotionReady.then(ready => { window.vendorLoaded = ready; });", "window.vendorLoaded = false;"):setup}</script></body></html>`});
     });
     await page.goto('https://motion.test/',{waitUntil:'domcontentloaded'});
     await page.waitForFunction(()=>window.ready);
-    return {page, errors, heldRequest, getVendorRequests:()=>vendorRequests, releaseVendor:()=>heldRoute.fulfill({contentType:'application/javascript',body:fs.readFileSync(root+'assets/vendor/motion-mini.js')})};
+    return {page, errors, heldRequest, getVendorRequests:()=>vendorRequests, releaseVendor:()=>heldRoute.fulfill({contentType:'application/javascript',body:fs.readFileSync(research+'motion-mini.js')})};
 }
 async function settle(page) {
     await page.waitForFunction(()=>!document.querySelector('#sf-panel').getAnimations({subtree:true}).some(animation=>
@@ -97,7 +97,7 @@ async function geometry(page) {
     fs.mkdirSync(output,{recursive:true});
     let browser;
     const failures = [];
-    const report = {engine,comparison:{primary:['motion','native-only'],historical:'baseline',resilienceOnly:'fallback throws intentionally and is not a corrected-native benchmark',diagnostics:'Five initialized repeats with identical tokens/content. HTTP cache is disabled by routing in every mode. Elapsed includes a deliberate 300ms dwell; scheduling/start-cost/frame samples are diagnostics, not proof of speed, performance equivalence or live performance.'},fixture:'Production PHP shell and identical empty/stub cart refresh; screenshots compare geometry, not populated commerce.',baselineSource:process.env.PANEL_BASELINE_SOURCE || null,modes:{}};
+    const report = {engine,deployment:{production:'native-only helper with no vendor or readiness export',motion:'Rejected for production; research-only helper and vendor outside theme'},comparison:{primary:['motion','native-only'],historical:'baseline',resilienceOnly:'fallback throws intentionally and is not a corrected-native benchmark',diagnostics:'Five initialized repeats with identical tokens/content. HTTP cache is disabled by routing in every mode. Elapsed includes a deliberate 300ms dwell; scheduling/start-cost/frame samples are diagnostics, not proof of speed, performance equivalence or live performance.'},fixture:'Production PHP shell and identical empty/stub cart refresh; screenshots compare geometry, not populated commerce.',baselineSource:process.env.PANEL_BASELINE_SOURCE || null,modes:{}};
     const saveReport = () => fs.writeFileSync(`${output}/${engine}-comparison.json`,JSON.stringify(report,null,2)+'\n');
     try {
         browser = await engines[engine].launch({headless:true,...(engine==='chromium'&&process.env.CHROMIUM_BIN?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-dev-shm-usage']}:{})});
@@ -140,7 +140,7 @@ async function geometry(page) {
                 assert(result.upgrade.jump<.1,'Native-to-Motion handover retains current position');
                 assert.equal(result.upgrade.fill,'both');assert.equal(result.upgrade.oldState,'idle');
             }
-            assert.equal(result.vendorLoaded,!['baseline','native-only','missing','aborted','invalid','bad-export'].includes(mode),'Optional import settles safely: '+mode);
+            assert.equal(result.vendorLoaded,!['baseline','native-only','no-waapi','missing','aborted','invalid','bad-export'].includes(mode),'Optional import settles safely: '+mode);
             for (const width of [320,390,700,701,900,901,1280,1440]) {
                 result.stage='geometry-'+width;
                 await page.setViewportSize({width,height:900});await flush(page);
@@ -270,7 +270,7 @@ async function geometry(page) {
             assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),false,'Navigation never waits for motion');
             assert.equal(await page.locator('#sf-panel').evaluate(el=>el.style.transform),'');
             result.vendorRequests=getVendorRequests();
-            assert.equal(result.vendorRequests,['baseline','native-only'].includes(mode)?0:1,'Optional vendor fetch count: '+mode);
+            assert.equal(result.vendorRequests,usesResearch(mode)?1:0,'Optional vendor fetch count: '+mode);
             assert.deepEqual(errors,[]);
             result.status='passed';result.stage='complete';
             } catch(error) {

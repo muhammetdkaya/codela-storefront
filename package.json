@@ -8,11 +8,11 @@
     "check:vendor": "node scripts/build-vendor.mjs --check"
   },
   "dependencies": {
-    "embla-carousel": "8.6.0",
-    "motion": "14.9.0"
+    "embla-carousel": "8.6.0"
   },
   "devDependencies": {
     "esbuild": "0.28.2",
-    "playwright": "1.62.1"
+    "playwright": "1.62.1",
+    "motion": "14.9.0"
   }
 }

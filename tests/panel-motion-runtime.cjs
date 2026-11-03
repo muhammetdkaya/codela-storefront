@@ -1,10 +1,10 @@
-// Execute the pinned, distributed Motion build, not a substitute engine. The
+// Execute the pinned research-only Motion build, not a substitute engine. The
 // small WAAPI boundary here tests callback/style ownership; browser fixtures
 // separately validate native rendering, focus, geometry and interruption.
 const assert = require('node:assert/strict');
 const vm = require('node:vm');
 const fs = require('node:fs');
-const {panelMotionSource} = require('./helpers/inline-storefront.cjs');
+const {researchMotionSource} = require('./helpers/inline-motion-pilot.cjs');
 const tasks=[];
 class Surface extends EventTarget {
     constructor(){
@@ -27,7 +27,7 @@ class Surface extends EventTarget {
 }
 (async()=>{
 const context=vm.createContext({EventTarget,performance,queueMicrotask});
-vm.runInContext(panelMotionSource()+'\nthis.animatePanel=animatePanelTransform;this.vendor=__codelaMotionMini.animate;this.ready=panelMotionReady;',context);
+vm.runInContext(researchMotionSource()+'\nthis.animatePanel=animatePanelTransform;this.vendor=__codelaMotionMini.animate;this.ready=panelMotionReady;',context);
 await context.ready;
 const options={duration:240,easing:'cubic-bezier(.2,.8,.2,1)'};
 let completes=0;
@@ -50,14 +50,13 @@ tasks.shift()();
 assert.equal(completes,1);assert.equal(element.style.transform,'','Queued old finish cannot contaminate inline transform');
 assert.equal(element.animations.at(-1).playState,'running');
 element.animations.at(-1).finish();tasks.shift()();assert.equal(completes,2);assert.equal(element.style.transform,'');
-// The corrected-native comparator uses this exact production helper with only
-// its optional import skipped. No vendor code is loaded and no exception cost
-// is added to the measured animation path.
+// The corrected-native comparator is the exact shipped helper. No import
+// expression is rewritten and no vendor is loaded into this context.
 const nativeContext=vm.createContext({EventTarget});
 const nativeSource=fs.readFileSync('theme/codela-storefront/assets/scripts/panel-motion.js','utf8')
-    .replace(/^export /gm,'').replace("import('codela-storefront/motion-mini')",'Promise.resolve({})');
-vm.runInContext(nativeSource+'\nthis.animatePanel=animatePanelTransform;this.ready=panelMotionReady;',nativeContext);
-assert.equal(await nativeContext.ready,false);
+    .replace(/^export /gm,'');
+vm.runInContext(nativeSource+'\nthis.animatePanel=animatePanelTransform;',nativeContext);
+assert.equal(nativeContext.panelMotionReady,undefined,'Production exports no readiness promise');
 assert.equal(nativeContext.__codelaMotionMini,undefined,'Native comparator loads no Motion build');
 const nativeElement=new Surface();
 const nativeMotion=nativeContext.animatePanel(nativeElement,'translateX(100%)','translateX(0)',options);

@@ -1,7 +1,8 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
-const source = fs.readFileSync('theme/codela-storefront/assets/scripts/panel-motion.js', 'utf8')
+// Retain the rejected library's reproducible research contract separately.
+const source = fs.readFileSync('tests/fixtures/motion-pilot/panel-motion.js', 'utf8')
     .replace(/^export /gm, '').replace("import('codela-storefront/motion-mini')",'loadPanelFixture()');
 const fixture = (vendor, native = () => ({cancel(){}}), loading = Promise.resolve({animate:vendor})) => {
     const styles = new Map();
@@ -15,6 +16,30 @@ const fixture = (vendor, native = () => ({cancel(){}}), loading = Promise.resolv
     vm.runInContext(source + '\nthis.run=animatePanelTransform;this.ready=panelMotionReady;', context);
     return {element, ready:context.ready, run:options=>context.run(element, 'translateX(100%)', 'translateX(0)', options)};
 };
+// The shipped helper is exercised without rewriting any imports or injecting
+// a library: only its ESM export keyword is removed for the VM test.
+const production=fs.readFileSync('theme/codela-storefront/assets/scripts/panel-motion.js','utf8');
+assert.doesNotMatch(production,/^\s*import\b|\bimport\s*\(/m,'Production helper has no dependency import');
+assert.doesNotMatch(production,/\bpanelMotionReady\b/,'Production has no vendor readiness contract');
+assert.deepEqual(Array.from(production.matchAll(/^export\s+(?:const|function)\s+(\w+)/gm),match=>match[1]),['animatePanelTransform']);
+const nativeContext=vm.createContext({});
+vm.runInContext(production.replace(/^export /gm,'')+'\nthis.run=animatePanelTransform;',nativeContext);
+let nativeAnimation,nativeOptions,nativeFrames,nativeCancelled=0,nativeFinished=0;
+const nativeStyles=new Map([['transform',['translateX(2px)','important']]]);
+const nativeElement={style:{getPropertyValue:key=>nativeStyles.get(key)?.[0]||'',getPropertyPriority:key=>nativeStyles.get(key)?.[1]||'',
+    setProperty:(key,value,priority='')=>nativeStyles.set(key,[value,priority]),removeProperty:key=>nativeStyles.delete(key)},
+    animate:(frames,options)=>{nativeFrames=frames;nativeOptions=options;return nativeAnimation={cancel(){nativeCancelled++;}};}};
+const direct=nativeContext.run(nativeElement,'matrix(1, 0, 0, 1, 120, 0)','translateX(0)',{duration:240,easing:'cubic-bezier(.2,.8,.2,1)'});
+direct.onfinish=()=>nativeFinished++;
+assert.equal(nativeFrames[0].transform,'matrix(1, 0, 0, 1, 120, 0)');
+assert.equal(nativeOptions.duration,240);assert.equal(nativeOptions.easing,'cubic-bezier(.2,.8,.2,1)');assert.equal(nativeOptions.fill,'forwards');
+const nativeQueued=nativeAnimation.onfinish;nativeQueued();assert.equal(nativeFinished,1);
+direct.cancel();direct.cancel();nativeQueued();
+assert.equal(nativeFinished,1);assert.equal(nativeCancelled,1);assert.equal(nativeAnimation.onfinish,null);
+assert.deepEqual(nativeStyles.get('transform'),['translateX(2px)','important']);
+assert.equal(nativeContext.run({...nativeElement,animate:undefined},'none','none',{duration:240,easing:'linear'}),null);
+assert.equal(nativeContext.run(nativeElement,'none','none',{duration:0,easing:'linear'}),null);
+assert.equal(nativeContext.run({...nativeElement,animate(){throw new Error('WAAPI unavailable');}},'none','none',{duration:240,easing:'linear'}),null);
 (async()=>{
 let settings, cancelled = 0, completed = 0;
 const sample = fixture((element, frames, options) => {
@@ -60,5 +85,5 @@ for(const loading of [Promise.reject(new Error('404 or blocked import')),Promise
     let calls=0;const unavailable=fixture(null,()=>{calls++;return {cancel(){}};},loading);
     assert.equal(await unavailable.ready,false);assert(unavailable.run({duration:240,easing:'ease-out'}));assert.equal(calls,1);
 }
-console.log('Panel motion adapter: units/easing, cancellation identity, inline restoration, native/no-animation fallback passed.');
+console.log('Production native + archived Motion research contracts: units/easing, cancellation identity, inline restoration, native/no-animation fallback passed.');
 })().catch(error=>{console.error(error);process.exit(1)});

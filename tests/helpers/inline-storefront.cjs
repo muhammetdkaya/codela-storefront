@@ -1,22 +1,15 @@
-// Keep legacy script-tag fixtures on the actual production dependency graph.
-// Only the prebuilt ESM vendor export is wrapped for these non-module fixtures.
+// Keep legacy script-tag fixtures on the actual vendor-free production graph.
 const fs = require('node:fs');
-const {transformSync} = require('esbuild');
 const root = 'theme/codela-storefront/assets/';
 const strip = source => source.replace(/^import .*;$/gm, '').replace(/^export /gm, '');
-let motion;
 function panelMotionSource() {
-    if (!motion) {
-        const vendor = transformSync(fs.readFileSync(root + 'vendor/motion-mini.js', 'utf8'), {
-            format:'iife', globalName:'__codelaMotionMini',
-        }).code;
-        motion = vendor + '\n' + strip(fs.readFileSync(root + 'scripts/panel-motion.js', 'utf8'))
-            .replace("import('codela-storefront/motion-mini')", 'Promise.resolve(__codelaMotionMini)');
-    }
-    return motion;
+    return strip(fs.readFileSync(root + 'scripts/panel-motion.js', 'utf8'));
 }
 function moduleSource(name, sourcePath) {
+    // Array.map supplies its numeric index as argument two. Only an explicit
+    // string is a source override; never pass that index to fs as a file fd.
+    const source = typeof sourcePath === 'string' && sourcePath ? sourcePath : root + 'scripts/' + name + '.js';
     return (name === 'overlay-controller' ? panelMotionSource() + '\n' : '')
-        + strip(fs.readFileSync(sourcePath || root + 'scripts/' + name + '.js', 'utf8'));
+        + strip(fs.readFileSync(source, 'utf8'));
 }
 module.exports = {moduleSource, panelMotionSource};
