@@ -171,6 +171,10 @@ function codela_sf_is_catalog_archive(): bool {
     return ( function_exists( 'is_shop' ) && is_shop() )
         || ( function_exists( 'is_product_taxonomy' ) && is_product_taxonomy() );
 }
+// Template/widget native cards outside the page content still need their style.
+add_action( 'woocommerce_before_shop_loop_item', static function() {
+    wp_enqueue_style( 'codela-storefront-catalog' );
+} );
 function codela_sf_catalog_archive_layout(): void {
     if ( ! codela_sf_is_catalog_archive() ) { return; }
     remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20 );
@@ -179,12 +183,66 @@ function codela_sf_catalog_archive_layout(): void {
 }
 add_action( 'wp', 'codela_sf_catalog_archive_layout' );
 
+function codela_sf_catalog_filter_base(): string {
+    $shop = wc_get_page_permalink( 'shop' );
+    $term = is_product_taxonomy() ? get_queried_object() : null;
+    $base = $term instanceof WP_Term ? get_term_link( $term ) : $shop;
+    return is_wp_error( $base ) ? $shop : $base;
+}
+
+/** Woo filter state; removal links preserve unrelated query vars and reset pagination. */
+function codela_sf_catalog_active_filters(): array {
+    static $filters = null;
+    if ( null !== $filters ) { return $filters; }
+    $filters = [];
+    if ( ! codela_sf_is_catalog_archive() || ! $_GET ) { return $filters; }
+    $url = remove_query_arg( [ 'paged', 'product-page', 'add-to-cart' ], add_query_arg( wc_clean( wp_unslash( $_GET ) ), codela_sf_catalog_filter_base() ) );
+    foreach ( [ 'min_price' => 'Minimum price', 'max_price' => 'Maximum price' ] as $key => $label ) {
+        if ( ! isset( $_GET[ $key ] ) || ! is_scalar( $_GET[ $key ] ) ) { continue; }
+        $value = wc_format_decimal( wp_unslash( $_GET[ $key ] ) );
+        if ( '' === $value || ! is_numeric( $value ) || (float) $value < 0 ) { continue; }
+        $filters[] = [ 'label' => __( $label, 'codela-storefront' ) . ': ' . html_entity_decode( wp_strip_all_tags( wc_price( $value ) ), ENT_QUOTES, 'UTF-8' ), 'url' => remove_query_arg( $key, $url ) ];
+    }
+    if ( class_exists( 'WC_Query' ) ) {
+        foreach ( WC_Query::get_layered_nav_chosen_attributes() as $taxonomy => $chosen ) {
+            $attribute = wc_attribute_taxonomy_slug( $taxonomy );
+            foreach ( array_unique( $chosen['terms'] ) as $slug ) {
+                $term = get_term_by( 'slug', $slug, $taxonomy );
+                if ( ! $term || is_wp_error( $term ) ) { continue; }
+                $remaining = array_diff( $chosen['terms'], [ $slug ] );
+                $target = $remaining ? add_query_arg( 'filter_' . $attribute, implode( ',', $remaining ), $url )
+                    : remove_query_arg( [ 'filter_' . $attribute, 'query_type_' . $attribute ], $url );
+                $filters[] = [ 'label' => wc_attribute_label( $taxonomy ) . ': ' . $term->name, 'url' => $target ];
+            }
+        }
+    }
+    if ( isset( $_GET['rating_filter'] ) && is_string( $_GET['rating_filter'] ) ) {
+        $ratings = array_values( array_intersect( array_unique( explode( ',', wp_unslash( $_GET['rating_filter'] ) ) ), [ '1', '2', '3', '4', '5' ] ) );
+        foreach ( $ratings as $rating ) {
+            $remaining = array_diff( $ratings, [ $rating ] );
+            $filters[] = [ 'label' => sprintf( __( 'Rating: %s', 'codela-storefront' ), $rating ), 'url' => $remaining ? add_query_arg( 'rating_filter', implode( ',', $remaining ), $url ) : remove_query_arg( 'rating_filter', $url ) ];
+        }
+    }
+    return $filters;
+}
+
+function codela_sf_catalog_filter_chips(): void {
+    $filters = codela_sf_catalog_active_filters();
+    if ( ! $filters ) { return; }
+    echo '<nav class="sf-active-filters" aria-label="' . esc_attr__( 'Active filters', 'codela-storefront' ) . '">';
+    foreach ( $filters as $filter ) {
+        echo codela_sf_ui_button( $filter['label'], [ 'href' => $filter['url'], 'variant' => 'secondary', 'icon' => 'x', 'attributes' => [ 'aria-label' => sprintf( __( 'Remove filter: %s', 'codela-storefront' ), $filter['label'] ) ] ] );
+    }
+    echo '</nav>';
+}
+add_action( 'woocommerce_before_shop_loop', 'codela_sf_catalog_filter_chips', 25 );
+add_action( 'woocommerce_no_products_found', 'codela_sf_catalog_filter_chips', 5 );
+
 /** A normal GET form: Woo owns price filtering, ordering and pagination. */
 function codela_sf_catalog_filters(): string {
     $shop = wc_get_page_permalink( 'shop' );
     $term = is_product_taxonomy() ? get_queried_object() : null;
-    $base = $term instanceof WP_Term ? get_term_link( $term ) : $shop;
-    if ( is_wp_error( $base ) ) { $base = $shop; }
+    $base = codela_sf_catalog_filter_base();
     $order = isset( $_GET['orderby'] ) && is_scalar( $_GET['orderby'] )
         ? wc_clean( wp_unslash( $_GET['orderby'] ) ) : get_option( 'woocommerce_default_catalog_orderby', 'menu_order' );
     $options = apply_filters( 'woocommerce_catalog_orderby', [

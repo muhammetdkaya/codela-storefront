@@ -1,7 +1,7 @@
 <?php
 /** Content sections reuse the shared attachment, heading and Button contracts. */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
-function codela_sf_section_content( array $data, string $type ): string {
+function codela_sf_section_content( array $data, string $type, bool $first_section = false ): string {
     $body = '';
     if ( 'contact' === $type ) {
         $rows = codela_sections_contact_rows( $data );
@@ -10,7 +10,7 @@ function codela_sf_section_content( array $data, string $type ): string {
     } else {
         foreach ( $data['items'] as $item ) {
             if ( ! $item['enabled'] || ! $item['title'] && ! $item['body'] ) { continue; }
-            $image = 'story' === $type ? codela_sf_section_image( $item, false, '(max-width:700px) 100vw, 50vw' ) : '';
+            $image = 'story' === $type ? codela_sf_section_image( $item, $first_section && '' === $body, '(max-width:700px) 100vw, 50vw' ) : '';
             $body .= '<article class="sf-content-card' . ( $image ? ' has-image' : '' ) . '">' . $image . '<div class="sf-content-copy">';
             $body .= ( $item['title'] ? '<h3>' . esc_html( $item['title'] ) . '</h3>' : '' ) . ( $item['body'] ? '<p>' . esc_html( $item['body'] ) . '</p>' : '' );
             if ( 'story' === $type && $item['button_url'] && $item['button_label'] ) { $body .= codela_sf_ui_primary_link( $item['button_url'], $item['button_label'] ); }

@@ -22,7 +22,7 @@ require_once __DIR__ . '/section-content.php';
 function codela_sf_sections_capabilities(): array {
     static $caps = null;
     if ( null !== $caps ) { return $caps; }
-    $caps = [ 'layout' => false, 'gallery' => false, 'products' => false ];
+    $caps = [ 'layout' => false, 'gallery' => false, 'products' => false, 'managed' => false ];
     if ( ! function_exists( 'codela_sections_validate_root' ) ) { return $caps; }
     if ( ! is_singular( 'page' ) && ! is_front_page() ) { return $caps; }
     // The queried post contains native preview/autosave content; get_post(ID) can read the published original.
@@ -31,8 +31,13 @@ function codela_sf_sections_capabilities(): array {
     $content = $post ? ( function_exists( 'codela_sections_page_content' ) ? codela_sections_page_content( $post ) : $post->post_content ) : '';
     if ( $post && has_block( 'codela/page-layout', $content ) ) {
         $blocks = parse_blocks( $content );
+        $managed = true;
         foreach ( $blocks as $root ) {
-            if ( 'codela/page-layout' !== ( $root['blockName'] ?? '' ) || is_wp_error( codela_sections_validate_root( $root ) ) ) { continue; }
+            if ( 'codela/page-layout' !== ( $root['blockName'] ?? '' ) || is_wp_error( codela_sections_validate_root( $root ) ) ) {
+                // Unknown blocks, shortcodes and synced patterns may render products.
+                if ( ! empty( $root['blockName'] ) || '' !== trim( $root['innerHTML'] ?? '' ) ) { $managed = false; }
+                continue;
+            }
             $caps['layout'] = true;
             foreach ( $root['innerBlocks'] as $child ) {
                 $data = $child['attrs']['data'] ?? []; if ( isset( $data['enabled'] ) && ! $data['enabled'] ) { continue; }
@@ -41,14 +46,23 @@ function codela_sf_sections_capabilities(): array {
                 if ( in_array( $type, [ 'hero', 'promo' ], true ) && count( $data['items'] ?? [] ) > 1 || 'categories' === $type && 'carousel' === ( $data['variant'] ?? '' ) ) { $caps['gallery'] = true; }
             }
         }
+        $caps['managed'] = $caps['layout'] && $managed;
     }
     return $caps;
 }
 
 function codela_sf_render_section( $html, string $type, array $data, int $post_id = 0 ): string {
+    static $content_rendered = false;
     if ( ! $data['enabled'] ) { return ''; }
     $renderers = [ 'hero' => 'codela_sf_section_media', 'promo' => 'codela_sf_section_media', 'categories' => 'codela_sf_section_categories', 'products' => 'codela_sf_section_products', 'story' => 'codela_sf_section_content', 'info' => 'codela_sf_section_content', 'contact' => 'codela_sf_section_content' ];
-    return isset( $renderers[ $type ] ) ? $renderers[ $type ]( $data, $type ) : '';
+    if ( ! isset( $renderers[ $type ] ) ) { return ''; }
+    // Reserve priority for the first rendered section, never a later image after
+    // text/products. Mixed native content is deliberately left to normal loading.
+    $priority = ! $content_rendered && ( ! $post_id || codela_sf_sections_capabilities()['managed'] );
+    $output = in_array( $type, [ 'hero', 'promo', 'story' ], true )
+        ? $renderers[ $type ]( $data, $type, $priority ) : $renderers[ $type ]( $data, $type );
+    if ( '' !== $output ) { $content_rendered = true; }
+    return $output;
 }
 add_filter( 'codela_render_page_section', 'codela_sf_render_section', 10, 4 );
 

@@ -78,6 +78,8 @@ function codela_sf_script_module_version( string $relative_file ): string {
 add_action( 'init', function() {
     if ( ! codela_sf_ready() ) { return; }
     $asset_url = get_template_directory_uri() . '/assets/';
+    // Native loops can request this during block-template rendering before wp_head.
+    wp_register_style( 'codela-storefront-catalog', $asset_url . 'styles/catalog.css', [ 'codela-storefront-components' ], codela_sf_style_version() );
     // All statically imported modules are registered in dependency order.
     // No bundler or script-module args newer than WordPress 6.5 are needed.
     $modules = [
@@ -131,10 +133,14 @@ add_action( 'wp_enqueue_scripts', function() {
     if ( is_home() || is_singular( 'post' ) || ( is_archive() && ! ( function_exists( 'is_woocommerce' ) && is_woocommerce() ) ) ) {
         wp_enqueue_style( 'codela-storefront-journal', $root_uri . 'styles/journal.css', [ 'codela-storefront-components' ], $style_version );
     }
-    wp_enqueue_style( 'codela-storefront-catalog', $root_uri . 'styles/catalog.css', [ 'codela-storefront-components' ], $style_version );
-    $sections = function_exists( 'codela_sections_validate_root' ) ? codela_sf_sections_capabilities() : [ 'layout' => false, 'gallery' => false, 'products' => false ];
+    $sections = codela_sf_sections_capabilities();
+    if ( ! $sections['managed'] || $sections['products'] || is_search()
+        || ( function_exists( 'is_woocommerce' ) && is_woocommerce() )
+        || is_cart() || is_checkout() || is_account_page() ) {
+        wp_enqueue_style( 'codela-storefront-catalog' );
+    }
     if ( $sections['layout'] ) {
-        wp_enqueue_style( 'codela-storefront-sections', $root_uri . 'styles/sections.css', [ 'codela-storefront-components', 'codela-storefront-catalog' ], $style_version );
+        wp_enqueue_style( 'codela-storefront-sections', $root_uri . 'styles/sections.css', [ 'codela-storefront-components' ], $style_version );
     }
     if ( $sections['gallery'] ) {
         wp_enqueue_style( 'codela-storefront-gallery' );

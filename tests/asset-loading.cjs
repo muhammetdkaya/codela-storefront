@@ -3,7 +3,7 @@ const {execFileSync}=require('node:child_process');
 const php=process.env.PHP_BIN||'php';
 const run=(context,debug)=>JSON.parse(execFileSync(php,['tests/asset-loading.php'],{encoding:'utf8',env:{...process.env,SF_ASSET_CONTEXT:context,SF_ASSET_DEBUG:debug?'1':'0'}}));
 let cases=0;
-for(const context of ['home','page','product','checkout','cart','guest-account','account','editor']){
+for(const context of ['home','page','product','checkout','cart','guest-account','account','editor','page-story','page-products','page-mixed','page-disabled-products','page-loop']){
  const debug=run(context,true),prod=run(context,false);
  const hrefs=s=>[...s.matchAll(/href='([^']+)'/g)].map(m=>m[1]);
  const sources=s=>[...s.matchAll(/src="([^"]+)"/g)].map(m=>m[1]);
@@ -28,6 +28,7 @@ for(const context of ['home','page','product','checkout','cart','guest-account',
  }
  const forbidden=context==='home'?['styles/product.css','styles/checkout.css','styles/account.css']:[];
  for(const file of forbidden)assert(!prod.styles.includes(file),'Home omits '+file);
+ assert.equal(prod.styles.includes('styles/catalog.css'), !['editor','page-story','page-disabled-products'].includes(context), context+' catalog dependencies');
  cases++;
 }
 // Build artefacts must be exact ordered sources, so debug/production semantics

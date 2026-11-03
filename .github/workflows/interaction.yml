@@ -1,0 +1,76 @@
+name: Managed-page performance and commerce interactions
+on:
+  push:
+    branches: [perf/interaction-0195]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  interaction:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Source and package contracts
+        run: |
+          find theme -name '*.php' -type f -print0 | xargs -0 -n1 php -l
+          python3 tests/build-assets.py
+          python3 tests/package.py
+          php tests/homepage.php
+          php tests/sections-preview.php
+          php tests/catalog.php
+          php tests/media.php
+          php tests/product-composition.php
+          php tests/navigation.php
+          php tests/document-continuity.php
+          node tests/cart-race.cjs
+          node tests/cart-sync.cjs
+          node tests/ui-kit.cjs
+          node tests/search-panel.cjs
+      - name: Pinned native WordPress fixtures
+        run: |
+          mkdir -p "$RUNNER_TEMP/wp-core"
+          for file in class-wp-dependency.php class-wp-dependencies.php class-wp-styles.php class-wp-scripts.php functions.wp-styles.php functions.wp-scripts.php kses.php; do
+            curl --fail --silent --show-error --max-time 45 --retry 2 "https://raw.githubusercontent.com/WordPress/WordPress/6.5/wp-includes/$file" -o "$RUNNER_TEMP/wp-core/$file"
+          done
+          for name in attribute-token span text-replacement tag-processor; do
+            curl --fail --silent --show-error --max-time 45 --retry 2 "https://raw.githubusercontent.com/WordPress/WordPress/6.5/wp-includes/html-api/class-wp-html-$name.php" -o "$RUNNER_TEMP/wp-core/class-wp-html-$name.php"
+          done
+          echo "WP_CORE_INCLUDES=$RUNNER_TEMP/wp-core" >> "$GITHUB_ENV"
+          WP_CORE_INCLUDES="$RUNNER_TEMP/wp-core" node tests/asset-loading.cjs
+      - name: Install focused browsers
+        timeout-minutes: 5
+        run: |
+          for task_source in /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; do
+            [ -f "$task_source" ] || continue
+            sudo sed -i 's|https\?://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' "$task_source"
+          done
+          npm install --no-save --package-lock=false --fetch-retries=1 --fetch-timeout=30000 playwright@1.62.1
+          npx --no-install playwright install --with-deps chromium webkit
+      - name: Chromium and WebKit new behavior
+        run: |
+          node tests/section-priority-browser.cjs
+          TEST_WEBKIT=1 node tests/section-priority-browser.cjs
+          node tests/product-drag-frame-browser.cjs
+          TEST_WEBKIT=1 node tests/product-drag-frame-browser.cjs
+          node tests/interaction-browser.cjs
+          TEST_WEBKIT=1 node tests/interaction-browser.cjs
+      - name: Existing product, media and commerce contracts
+        run: |
+          node tests/product-sheet-browser.cjs
+          node tests/catalog-filters-browser.cjs
+          node tests/product-no-dock-browser.cjs
+          TEST_WEBKIT=1 node tests/product-no-dock-browser.cjs
+          node tests/homepage-browser.cjs
+          TEST_WEBKIT=1 node tests/homepage-browser.cjs
+          node tests/media-loading-browser.cjs
+          TEST_WEBKIT=1 node tests/media-loading-browser.cjs
+          node tests/panel-presentation-browser.cjs
+          TEST_WEBKIT=1 node tests/panel-presentation-browser.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: interaction-regression
+          path: qa/
+          if-no-files-found: ignore
+          retention-days: 7

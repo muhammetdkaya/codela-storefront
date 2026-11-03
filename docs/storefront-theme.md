@@ -1,4 +1,19 @@
+# 3 Kasım 2026 — 0.1.195 doğrulanmış yayın adayı
+
+Son kaynak `6d542f34f6363910d4d5e823c921df1670a1100f`; [CI 41517302057](https://github.com/muhammetdkaya/codela-storefront/actions/runs/41517302057) tamamen başarılı. Chromium/WebKit yeni görsel önceliği, sürükleme, sepet/filtre; mevcut ürün, dock gizliliği, medya, ana sayfa ve panel regresyonları geçti. İlk CI 41516633878 de başarılıydı; son düzeltme skeleton yükleme açıklamasını erişilebilir fakat görsel olarak gizli tutar. Yerel 194 negatif kontrolünde 30 pointer örneği 28 senkron yükseklik yazımı üretirken aday bir frame yazımı yapar. Fiziksel Safari ve canlı 195 kurulumu yapılmadı. GitHub-only yayın sıradaki adımdır; eklenti/FTP/içerik değişmedi.
+
 # Codela Storefront — güncel teknik durum
+
+## 2 Kasım 2026 — 0.1.195 sayfa yükleme ve etkileşim adayı
+
+Kullanıcının “Tamam devam et / Devam” onayıyla yalnız tema 0.1.194 → 0.1.195. İlk dolu Codela bölümünün ilk hikâye/hero/promo görseli mevcut responsive preload yolunu kullanır; önceki metin, karışık native içerik ve sonraki görseller öncelik almaz. Yalnız doğrulanmış, tamamı Codela düzeni olan ürünsüz sayfalarda katalog CSS'i atlanır; bilinmeyen blok/shortcode, Woo sayfaları ve dış native ürün döngüsü güvenli fallback'i korur. Mobil sheet pointer örnekleri bir çizim karesine toplanır; bırakmadan önce son örnek yazılır, iptal/resize kuyruğu temizler.
+
+Sepet ilk veri beklerken statik skeleton; işlem satırında ortak spinner gösterir. Değişmeyen GET satır/odak/fotoğrafı yeniden yaratmaz. Tek mutasyon kilidi, sunucu fiyat/miktar/stok otoritesi ve hata sonrası eski disabled sınırları korunur. Native fiyat/nitelik/puan filtrelerinin tek tek kaldırma bağlantıları ve ayrı filtre rozeti eklendi; bilinmeyen eklenti parametreleri korunur, sayfalama ve add-to-cart kaldırılır. Yeni sepet motoru/router/animasyon bağımlılığı yok.
+
+Canlı 0.1.194 kurulu olduğu görüldü. 17:52–17:53 TR anonim ölçümünde ana sayfa cache miss yanıt beklemesi 3382ms, sonraki hit 475/517ms; Hakkımızda gerçek mobil LCP görseli lazy/low idi ve katalog CSS'i yükleniyordu. Proxy/TLS etkileri, yerel düzeltme ile canlı sunucu sonucu ayrıdır: [ölçüm ve kapsam](first-load-and-interactions-2026-11-02.md). Sunucu/PHP/SQL iyileşmesi veya canlı 195 kurulumu iddiası yok.
+
+Doğrulama: Chromium yeni görsel, sepet/filtre ve 12 yüksek frekanslı sürükleme senaryosu geçti. Gerçek WP6.5 dependency sınıflarında 13 bağlam × debug/production; PHP bölüm/katalog, cart race/sync, UI Kit ve 24 paket testi geçti. Mevcut Chromium ürün sheet ve 56 katalog filtre senaryosu geçti. WebKit ve odaklı GitHub CI henüz bekliyor; aday GitHub dalı `perf/interaction-0195`, ilk kod kaydı `c11bce954626a79b18eb77eceb0faa17041ad6ee` (sürüm henüz o kayıtta 194). Yayın yapılmadı; eklenti/içerik/FTP değişmedi. Sıradaki: aynı sürüm adayında CI'ı tamamla, sonra GitHub-only stable 195 yayımla ve tag/ZIP/stable hash eşleşmesini kaydet. Fiziksel Safari, gerçek Woo satış akışı ve kurulum sonrası canlı ölçüm ayrı kabul işidir.
+
 
 ## 2 Kasım 2026 — 0.1.194 ilk çizim ve sunum paketi (yayımlandı)
 
