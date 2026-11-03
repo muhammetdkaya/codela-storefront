@@ -17,11 +17,43 @@ export default function(root,options){
  api.destroy=()=>{window.__destroyed++;return destroy();};return api;
 }`;
 const svg='<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900"><rect width="1200" height="900" fill="#cbbdad"/><circle cx="620" cy="440" r="230" fill="#e8dfcf"/></svg>';
+const bounded=async(promise,milliseconds,label)=>{
+ let timer;
+ try{return await Promise.race([promise,new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error(label+' timed out after '+milliseconds+'ms')),milliseconds);})]);}
+ finally{clearTimeout(timer);}
+};
 (async()=>{
- const browser=await({chromium,firefox,webkit}[browserName]).launch(process.env.CHROMIUM_BIN&&browserName==='chromium'?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-dev-shm-usage']}:{});
+ const browser=await({chromium,firefox,webkit}[browserName]).launch(process.env.CHROMIUM_BIN&&browserName==='chromium'?{timeout:15000,executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-dev-shm-usage']}:{timeout:15000});
+ const active=new Set(),started=Date.now();let lastStage=null;
+ const stage=(name,detail={})=>{
+  const record={browser:browserName,stage:name,elapsed_ms:Date.now()-started,detail,active:[...active].map(entry=>entry.info)};
+  lastStage=record;fs.mkdirSync('qa',{recursive:true});
+  fs.writeFileSync(`qa/embla-${browserName}-progress.json`,JSON.stringify(record,null,2));
+  fs.appendFileSync(`qa/embla-${browserName}-progress.ndjson`,JSON.stringify(record)+'\n');
+  console.log('Embla stage',browserName,name,JSON.stringify(detail));
+ };
+ const watchdog=setTimeout(()=>{
+  const interrupted=lastStage;stage('suite-timeout',{interrupted});
+  const exit=setTimeout(()=>process.exit(1),8000);exit.unref();
+  void(async()=>{try{let index=0;for(const entry of active)await diagnose(entry,++index);await bounded(browser.close(),3000,'Watchdog browser close');}catch(error){console.error(error);}finally{process.exit(1);}})();
+ },Number(process.env.EMBLA_TEST_TIMEOUT_MS||240000));
  const open=async({width=390,mode='embla',reducedMotion='reduce',single=false,wheel=false,javaScriptEnabled=true}={})=>{
-  const context=await browser.newContext({viewport:{width,height:900},hasTouch:true,reducedMotion,javaScriptEnabled});
+  const context=await bounded(browser.newContext({viewport:{width,height:900},hasTouch:true,reducedMotion,javaScriptEnabled}),15000,'Create browser context');
+  context.setDefaultTimeout(10000);context.setDefaultNavigationTimeout(15000);
   const page=await context.newPage(),requests=[],errors=[];
+  const info={width,mode,reducedMotion,single,wheel,javaScriptEnabled,phase:'open'},entry={page,info,requests,errors};active.add(entry);
+  await page.addInitScript(()=>{
+   window.__inputLog=[];
+   for(const type of ['pointerdown','pointerup','pointercancel','touchstart','touchmove','touchend','wheel'])document.addEventListener(type,event=>{
+    const point=event.touches?.[0]||event.changedTouches?.[0]||event;
+    window.__inputLog.push({type,x:point.clientX,y:point.clientY,scrollY,deltaX:event.deltaX,deltaY:event.deltaY,shift:event.shiftKey,cancelable:event.cancelable,prevented:event.defaultPrevented,target:event.target.tagName+'.'+event.target.className});
+    if(window.__inputLog.length>100)window.__inputLog.shift();
+   },{passive:true,capture:true});
+   document.addEventListener('touchmove',event=>{
+    const point=event.touches[0];window.__inputLog.push({type:'touchmove:after',x:point?.clientX,y:point?.clientY,scrollY,cancelable:event.cancelable,prevented:event.defaultPrevented});
+    if(window.__inputLog.length>100)window.__inputLog.shift();
+   },{passive:true});
+  });
   let pending;
   page.on('pageerror',error=>errors.push(error.message));
   const config=mode==='native'?'':`window.codelaSfVendors={embla:'/vendor.js?ver=fixture-v8'};`;
@@ -43,14 +75,37 @@ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900"><re
    await page.waitForSelector('.sf-section--hero[data-sf-gallery-ready="1"]');
    if(mode==='embla')await page.waitForSelector('.sf-section--hero[data-sf-gallery-engine="embla"]');
   }
-  await page.locator('.sf-section--hero picture img').first().evaluate(image=>image.decode());
+  const firstImage=await page.locator('.sf-section--hero picture img').first().elementHandle();
+  // decode() can remain pending in a failing browser. A finite load/dimension
+  // check is sufficient here; screenshot/geometry checks remain independent.
+  await page.waitForFunction(image=>image.complete&&image.naturalWidth>0,firstImage,{timeout:10000});
   const release=async({fail=false}={})=>{assert(pending,'Deferred import request was made');const route=pending;pending=null;await route.fulfill({contentType:'text/javascript',body:fail?'export default function(){window.__constructorAttempted=true;throw new Error("fixture constructor failure");}':wrapVendor});};
-  return{page,context,requests,errors,release,close:async()=>{assert.deepEqual(errors,[]);await context.close();}};
+  return{page,context,info,requests,errors,release,close:async()=>{assert.deepEqual(errors,[]);await bounded(context.close(),8000,'Close '+browserName+' '+info.phase+' context');active.delete(entry);}};
+ };
+ const diagnose=async({page,info,requests,errors},index)=>{
+  try{
+   const state=await bounded(page.evaluate(()=>{
+    const section=document.querySelector('.sf-section--hero'),track=section?.querySelector('.sf-ui-gallery-track'),clip=section?.querySelector('.sf-gallery-viewport');
+    const rect=element=>{if(!element)return null;const r=element.getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height};};
+    const style=element=>{if(!element)return null;const s=getComputedStyle(element);return {transform:s.transform,overflowX:s.overflowX,overflowY:s.overflowY,snap:s.scrollSnapType,touchAction:s.touchAction};};
+    let engine=null;try{const api=window.__engines?.at(-1);if(api)engine={selected:api.selectedScrollSnap(),progress:api.scrollProgress(),pointerDown:api.internalEngine().dragHandler.pointerDown()};}catch{}
+    return {scrollX,scrollY,width:innerWidth,height:innerHeight,hero:rect(section),track:rect(track),clip:rect(clip),slides:[...section?.querySelectorAll('.sf-section-slide')||[]].map(rect),
+     images:[...section?.querySelectorAll('picture img')||[]].map(image=>({src:image.currentSrc||image.src,complete:image.complete,naturalWidth:image.naturalWidth,deferred:!!image.dataset.sfMediaSrc})),trackStyle:style(track),clipStyle:style(clip),nativeOffset:track?.scrollLeft,engineMode:section?.dataset.sfGalleryEngine,count:section?.querySelector('[data-gallery-count]')?.textContent,
+     focus:document.activeElement?.tagName+'.'+document.activeElement?.className,created:window.__created,destroyed:window.__destroyed,engine,wheels:window.__wheelEvents||[],input:window.__inputLog||[]};
+   }),5000,'Failure snapshot');
+   fs.mkdirSync('qa',{recursive:true});const path=`qa/embla-failure-${browserName}-${index}`;
+   fs.writeFileSync(path+'.json',JSON.stringify({browser:browserName,info,requests,errors,state},null,2));
+   await page.screenshot({path:path+'.png',timeout:5000});
+   console.error('Embla failure context',JSON.stringify({browser:browserName,info,errors,state:{...state,input:state.input.slice(-20)}}));
+  }catch(error){console.error('Embla diagnostic capture failed',error.message);}
  };
  const hero=page=>page.locator('.sf-section--hero').first();
  const track=page=>hero(page).locator('.sf-ui-gallery-track');
  const waitCount=(page,value)=>page.waitForFunction(value=>document.querySelector('.sf-section--hero [data-gallery-count]').textContent===value,value);
- const flush=page=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ const flush=async page=>{
+  await page.evaluate(()=>{window.__emblaFramesReady=false;requestAnimationFrame(()=>requestAnimationFrame(()=>{window.__emblaFramesReady=true;}));});
+  await page.waitForFunction(()=>window.__emblaFramesReady,null,{timeout:5000});
+ };
  const geometry=page=>hero(page).evaluate(section=>{
   const selectors=['','.sf-section-slide','.sf-section-art','.sf-section-art img','.sf-section-copy','.sf-ui-button','[data-gallery-controls]'];
   return selectors.map(selector=>{const element=selector?section.querySelector(selector):section,rect=element.getBoundingClientRect();return {selector,x:rect.x,y:rect.y,width:rect.width,height:rect.height};});
@@ -62,6 +117,7 @@ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900"><re
  });
  try{
   for(const width of [320,390,700,701,1280]){
+   stage('geometry-media-keyboard',{width});
    const native=await open({width,mode:'native'}),pilot=await open({width});
    await flush(native.page);await flush(pilot.page);
    const before=await geometry(native.page),after=await geometry(pilot.page);
@@ -89,6 +145,7 @@ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900"><re
    await native.close();await pilot.close();
   }
   for(const reducedMotion of ['reduce','no-preference']){
+   stage('pointer-reversal-focus-resize',{reducedMotion});
    const test=await open({reducedMotion}),{page}=test;
    await track(page).focus();await page.keyboard.press('ArrowRight');await page.keyboard.press('Home');await waitCount(page,'01 / 03');await aligned(page);
    // Real mouse drag, interrupted direction, and a second drag use Embla v8.
@@ -105,18 +162,43 @@ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900"><re
    await page.waitForTimeout(200);assert.equal(await hero(page).locator('[data-gallery-count]').textContent(),'03 / 03','No autoplay or looping');
    await test.close();
   }
-  if(browserName==='chromium'){
-   const test=await open(),{page}=test,cdp=await page.context().newCDPSession(page);
-   const swipe=async(x,y,dx,dy)=>{
+  {
+   const measurements=[];
+   for(const mode of ['native','embla']){
+    stage('desktop-mouse-comparison',{mode});
+    const test=await open({width:1280,mode}),{page}=test;test.info.phase='desktop-mouse-comparison';
+    await page.mouse.move(1050,180);await page.mouse.down();
+    for(let i=1;i<=15;i++){await page.mouse.move(1050-820*i/15,180);await page.waitForTimeout(15);}
+    await page.mouse.up();await flush(page);await page.waitForTimeout(250);
+    if(mode==='embla'){await waitCount(page,'02 / 03');await aligned(page);}
+    measurements.push(await hero(page).evaluate((section,mode)=>{
+     const track=section.querySelector('.sf-ui-gallery-track');return {mode,count:section.querySelector('[data-gallery-count]').textContent,nativeOffset:track.scrollLeft,transform:getComputedStyle(track).transform};
+    },mode));
+    await test.close();
+   }
+   fs.mkdirSync('qa',{recursive:true});fs.writeFileSync(`qa/embla-${browserName}-mouse-comparison.json`,JSON.stringify({browser:browserName,viewport:{width:1280,height:900},gesture:{from:[1050,180],to:[230,180],samples:15},measurements},null,2));
+   console.log('Desktop mouse comparison (one fixture, not adoption/performance evidence)',JSON.stringify({browser:browserName,measurements}));
+  }
+  if(browserName==='chromium')for(const gesture of ['vertical','horizontal']){
+   stage('touch',{gesture});
+   // Each genuine touch gesture starts in a fresh viewport. Momentum from a
+   // completed vertical document swipe must not mask the next horizontal test.
+   const test=await open(),{page}=test,cdp=await page.context().newCDPSession(page);test.info.phase='touch-'+gesture;
+   const frame=await hero(page).boundingBox();assert(frame&&Math.abs(frame.y)<1,'Touch fixture starts at its actual hero frame');
+   const x=gesture==='vertical'?frame.x+frame.width/2:frame.x+frame.width-60;
+   const y=frame.y+(gesture==='vertical'?Math.min(380,frame.height*.65):Math.min(180,frame.height*.4));
+   assert(await page.evaluate(({x,y})=>!!document.elementFromPoint(x,y)?.closest('.sf-section--hero'),{x,y}),'Touch begins on the rendered hero, not a stale page coordinate');
+   const swipe=async(dx,dy)=>{
     await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y}]});
     for(let i=1;i<=15;i++){await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x+dx*i/15,y:y+dy*i/15}]});await page.waitForTimeout(15);}
     await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
    };
-   await swipe(195,380,0,-260);await page.waitForFunction(()=>scrollY>60);
-   await page.evaluate(()=>scrollTo(0,0));await swipe(330,180,-270,0);await waitCount(page,'02 / 03');await aligned(page);
+   if(gesture==='vertical'){await swipe(0,-260);await page.waitForFunction(()=>scrollY>60);}
+   else{await swipe(-(frame.width-120),0);await waitCount(page,'02 / 03');await aligned(page);}
    await cdp.detach();await test.close();
   }
   for(const mode of ['native','fail','constructor-fail']){
+   stage('native-fallback',{mode});
    const test=await open({mode}),{page}=test;
    await page.waitForTimeout(120);
    assert.equal(await hero(page).locator('.sf-gallery-viewport').count(),0,mode+' restores original DOM');
@@ -128,8 +210,10 @@ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900"><re
   // Native horizontal wheel is preserved by handing off before the first
   // default action, never by approximating a trackpad with discrete JS snaps.
   for(const shifted of [false,true])for(const focus of ['viewport','link']){
+   stage('wheel-parity',{shifted,focus});
    const baseline=await open({mode:'native',wheel:true}),pilot=await open({wheel:true});
    for(const test of [baseline,pilot]){
+    test.info.phase=`wheel-${shifted?'shift':'horizontal'}-${focus}`;stage('wheel-gesture',{mode:test.info.mode,shifted,focus});
     await track(test.page).focus();await test.page.keyboard.press('ArrowRight');await waitCount(test.page,'02 / 05');
     const focusTarget=focus==='link'?hero(test.page).locator('.sf-section-slide .sf-ui-button').nth(1):test===pilot?hero(test.page).locator('.sf-gallery-viewport'):track(test.page);
     await focusTarget.focus();
@@ -171,13 +255,13 @@ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900"><re
    await baseline.close();await pilot.close();
   }
   {
-   const test=await open();await test.page.mouse.move(200,180);await test.page.mouse.wheel(0,260);await test.page.waitForFunction(()=>scrollY>60);
+   stage('vertical-wheel');const test=await open();await test.page.mouse.move(200,180);await test.page.mouse.wheel(0,260);await test.page.waitForFunction(()=>scrollY>60);
    assert.equal(await hero(test.page).getAttribute('data-sf-gallery-engine'),'embla','Vertical wheel scrolls page without destroying pointer engine');await test.close();
   }
-  const single=await open({single:true});assert(!single.requests.includes('/vendor.js'),'Single-slide hero never imports engine');assert.equal(await single.page.locator('.sf-section--hero [data-gallery-controls]').count(),0);await single.close();
-  const noScript=await open({javaScriptEnabled:false});assert(!noScript.requests.includes('/vendor.js'));assert.equal(await track(noScript.page).evaluate(el=>getComputedStyle(el).overflowX),'auto');assert.equal(await hero(noScript.page).locator('.sf-section-slide').count(),3);await noScript.close();
+  stage('single-slide');const single=await open({single:true});assert(!single.requests.includes('/vendor.js'),'Single-slide hero never imports engine');assert.equal(await single.page.locator('.sf-section--hero [data-gallery-controls]').count(),0);await single.close();
+  stage('no-script');const noScript=await open({javaScriptEnabled:false});assert(!noScript.requests.includes('/vendor.js'));assert.equal(await track(noScript.page).evaluate(el=>getComputedStyle(el).overflowX),'auto');assert.equal(await hero(noScript.page).locator('.sf-section-slide').count(),3);await noScript.close();
   {
-   const test=await open(),{page}=test;
+   stage('router-disposal');const test=await open(),{page}=test;
    await page.evaluate(()=>{window.__oldHero=document.querySelector('.sf-section--hero');window.__oldTrack=window.__oldHero.querySelector('.sf-ui-gallery-track');});
    await page.locator('main').evaluate((main,html)=>{main.innerHTML=html;dispatchEvent(new Event('codela:route-committed'));},fixture.hero);
    await page.waitForFunction(()=>window.__created===2&&window.__destroyed===1);
@@ -192,6 +276,7 @@ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900"><re
    await test.close();
   }
   for(const focus of ['viewport','link'])for(const fail of [false,true]){
+   stage('deferred-focus',{focus,fail});
    const test=await open({mode:'deferred'}),{page}=test;
    await track(page).focus();await page.keyboard.press('End');await waitCount(page,'03 / 03');
    if(focus==='link')await hero(page).locator('.sf-section-slide .sf-ui-button').nth(2).focus();
@@ -206,7 +291,7 @@ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900"><re
    await test.close();
   }
   {
-   const test=await open({mode:'deferred'}),{page}=test;
+   stage('deferred-wheel');const test=await open({mode:'deferred'}),{page}=test;
    await track(page).focus();await page.keyboard.press('ArrowRight');await waitCount(page,'02 / 03');
    await page.mouse.move(200,180);await page.mouse.wheel(350,0);await waitCount(page,'03 / 03');
    await test.release();await page.waitForTimeout(120);
@@ -214,13 +299,18 @@ const svg='<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="900"><re
    assert.equal(await hero(page).getAttribute('data-sf-gallery-engine'),'native');await test.close();
   }
   {
-   const test=await open({mode:'deferred'}),{page}=test;
+   stage('stale-import');const test=await open({mode:'deferred'}),{page}=test;
    await page.locator('main').evaluate((main,html)=>main.innerHTML=html,fixture.single);await flush(page);await test.release();await page.waitForTimeout(100);
    assert.equal(await page.evaluate(()=>window.__created),0,'Stale import cannot mount a removed gallery');
    await page.locator('main').evaluate((main,html)=>main.innerHTML=html,fixture.hero);await page.waitForSelector('[data-sf-gallery-engine="embla"]');
    assert.equal(await page.evaluate(()=>window.__created),1,'Fresh router content mounts once after delayed import');
    await test.close();
   }
-  console.log(browserName+' Embla hero: geometry/media isolation, real pointer/reversal, keyboard/focus, reduced-motion, resize, wheel/Shift+wheel/native/no-script/single fallback and router disposal passed.');
- }finally{await browser.close();}
+  stage('passed');console.log(browserName+' Embla hero: geometry/media isolation, real pointer/reversal, keyboard/focus, reduced-motion, resize, wheel/Shift+wheel/native/no-script/single fallback and router disposal passed.');
+ }catch(error){const interrupted=lastStage;stage('failed',{message:error.message,interrupted});let index=0;for(const entry of active)await diagnose(entry,++index);throw error;}
+ finally{
+  try{await bounded(browser.close(),10000,'Close '+browserName+' browser');}
+  catch(error){stage('browser-close-failed',{message:error.message});console.error(error);process.exit(1);}
+  finally{clearTimeout(watchdog);}
+ }
 })().catch(error=>{console.error(error);process.exitCode=1;});

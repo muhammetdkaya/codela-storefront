@@ -35,6 +35,9 @@ jobs:
           php tests/product-composition.php
           php tests/media.php
           node tests/panel-motion.cjs
+          node tests/inline-storefront.cjs
+          node tests/regression-runner.cjs
+          node tests/showcase-caption.cjs
           node tests/panel-motion-runtime.cjs
           node tests/cart-race.cjs
           node tests/cart-sync.cjs
@@ -89,9 +92,11 @@ jobs:
       - name: Motion pilot in real browsers
         run: node tests/panel-motion-browser.cjs
       - name: Hero-only Embla pilot
+        timeout-minutes: 5
         if: ${{ !cancelled() && steps.browser_install.outcome == 'success' }}
         env:
           TEST_BROWSER: ${{ matrix.engine }}
+          SAVE_SCREENSHOT: '1'
         run: node tests/embla-showcase-browser.cjs
       - name: Native dock and sheet lifecycle
         if: ${{ !cancelled() && steps.browser_install.outcome == 'success' }}
@@ -101,31 +106,92 @@ jobs:
         env:
           SF_ENGINE: ${{ matrix.engine }}
         run: node tests/basecoat-pilot-browser.cjs
-      - name: Native WordPress and existing browser contracts
+      - name: Native WordPress dependency contracts
         if: ${{ !cancelled() && steps.browser_install.outcome == 'success' && matrix.engine != 'firefox' }}
-        run: |
-          node tests/asset-loading.cjs
-          node tests/panel-presentation-browser.cjs
-          node tests/desktop-tools-browser.cjs
-          node tests/mobile-controls-browser.cjs
-          node tests/product-no-dock-browser.cjs
-          node tests/interaction-browser.cjs
-          node tests/product-menu-scroll-browser.cjs
+        run: node tests/asset-loading.cjs
       - name: Immutable baseline screenshots
         if: ${{ !cancelled() && steps.browser_install.outcome == 'success' && matrix.engine == 'chromium' }}
         run: |
           mkdir -p "$RUNNER_TEMP/codela-baseline"
           git archive 687ef83e13621f6117264d04f220fa13c8836bb4 | tar -x -C "$RUNNER_TEMP/codela-baseline"
           CODELA_BASELINE_ROOT="$RUNNER_TEMP/codela-baseline" CODELA_BASELINE_OUTPUT="$PWD/qa/library-baseline" node tests/fixtures/library-baseline/capture-cart.cjs
-      - name: Warm-cache dependency graph
-        if: ${{ !cancelled() && steps.browser_install.outcome == 'success' && matrix.engine == 'chromium' }}
-        run: |
-          node tests/script-module-browser.cjs
-          node tests/catalog-filters-browser.cjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: library-migration-${{ matrix.engine }}
           path: qa/
           if-no-files-found: ignore
+          retention-days: 7
+  regressions:
+    name: Regression ${{ matrix.engine }} / ${{ matrix.group }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 23
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - engine: chromium
+            group: "panels,ui,cache"
+          - engine: chromium
+            group: "product"
+          - engine: chromium
+            group: "media"
+          - engine: chromium
+            group: "navigation"
+          - engine: chromium
+            group: "header"
+          - engine: chromium
+            group: "commerce"
+          - engine: chromium
+            group: "content"
+          - engine: webkit
+            group: "panels,header"
+          - engine: webkit
+            group: "product"
+          - engine: webkit
+            group: "media"
+          - engine: webkit
+            group: "navigation"
+          - engine: webkit
+            group: "commerce"
+          - engine: webkit
+            group: "content"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Pinned native WordPress fixture and immutable baseline
+        run: |
+          mkdir -p "$RUNNER_TEMP/wp-core"
+          for file in class-wp-dependency.php class-wp-dependencies.php class-wp-styles.php class-wp-scripts.php functions.wp-styles.php functions.wp-scripts.php kses.php; do
+            curl --fail --silent --show-error --max-time 45 --retry 2 "https://raw.githubusercontent.com/WordPress/WordPress/6.5/wp-includes/$file" -o "$RUNNER_TEMP/wp-core/$file"
+          done
+          for name in attribute-token span text-replacement tag-processor; do
+            curl --fail --silent --show-error --max-time 45 --retry 2 "https://raw.githubusercontent.com/WordPress/WordPress/6.5/wp-includes/html-api/class-wp-html-$name.php" -o "$RUNNER_TEMP/wp-core/class-wp-html-$name.php"
+          done
+          echo "WP_CORE_INCLUDES=$RUNNER_TEMP/wp-core" >> "$GITHUB_ENV"
+          git show 687ef83e13621f6117264d04f220fa13c8836bb4:theme/codela-storefront/assets/scripts/overlay-controller.js > "$RUNNER_TEMP/panel-0195.js"
+          echo "PANEL_BASELINE_SOURCE=$RUNNER_TEMP/panel-0195.js" >> "$GITHUB_ENV"
+      - name: Install only the tested browser
+        id: browser_install
+        timeout-minutes: 6
+        run: |
+          for source in /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; do
+            [ -f "$source" ] || continue
+            sudo sed -i 's|https\?://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' "$source"
+          done
+          npx --no-install playwright install --with-deps ${{ matrix.engine }}
+      - name: Run bounded isolated regression group
+        run: node scripts/run-regression-suite.cjs --engine "${{ matrix.engine }}" --group "${{ matrix.group }}" --expect-sha "$GITHUB_SHA" --budget-ms 900000
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: regression-${{ matrix.engine }}-${{ strategy.job-index }}
+          path: qa/
+          if-no-files-found: error
           retention-days: 7
