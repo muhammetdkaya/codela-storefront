@@ -69,6 +69,8 @@
     var drag = null;
     var dragFrame = 0;
     var settleFrame = 0;
+    var focusFrame = 0;
+    var focusGeneration = 0;
     var suppressClickUntil = 0;
     var photoWidth = 0;
     var discoveryFrame = 0;
@@ -96,7 +98,13 @@
       media.style.setProperty('--sf-product-collapsed-height', height + 'px');
       document.body.style.setProperty('--sf-product-collapsed-height', height + 'px');
     }
+    function cancelPendingFocus() {
+      if (focusFrame) cancelAnimationFrame(focusFrame);
+      focusFrame = 0;
+      focusGeneration++;
+    }
     function setOpen(open, focusTarget, preservePhoto) {
+      cancelPendingFocus();
       if (!mounted) return;
       expanded = open;
       if (open && !preservePhoto && !sheet.classList.contains('is-discovering')) {
@@ -110,10 +118,16 @@
       media.inert = open;
       sheet.classList.toggle('is-discovering', !open && isDiscovering());
       if (!open && content.contains(document.activeElement) && !purchase?.contains(document.activeElement)) toggle.focus({preventScroll:true});
-      if (open && focusTarget) requestAnimationFrame(function () {
-        focusTarget.scrollIntoView({block:'nearest'});
-        focusTarget.focus({preventScroll:true});
-      });
+      if (open && focusTarget) {
+        var generation = focusGeneration;
+        focusFrame = requestAnimationFrame(function () {
+          if (generation !== focusGeneration) return;
+          focusFrame = 0;
+          if (!mounted || !expanded || !focusTarget.isConnected || !sheet.contains(focusTarget)) return;
+          focusTarget.scrollIntoView({block:'nearest'});
+          focusTarget.focus({preventScroll:true});
+        });
+      }
       measure();
     }
     function isDiscovering() {
@@ -196,6 +210,7 @@
       sheet.classList.remove('is-mounting');
     }
     function unmount() {
+      cancelPendingFocus();
       if (!mounted) return;
       finishDrag(true);
       cancelAnimationFrame(settleFrame);

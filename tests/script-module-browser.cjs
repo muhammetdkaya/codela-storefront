@@ -18,6 +18,10 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
   const original = fs.readFileSync(formatFile, 'utf8');
   const cartFile = path.join(assets, 'scripts/cart-controller.js');
   const originalCart = fs.readFileSync(cartFile, 'utf8');
+  const helperFile = path.join(assets, 'scripts/panel-motion.js');
+  const originalHelper = fs.readFileSync(helperFile, 'utf8');
+  const helperRevision = v => originalHelper + '\nwindow.__sfPanelRevision = ' + JSON.stringify(v) + ';\n';
+  fs.writeFileSync(helperFile, helperRevision('A'));
   const cartRevision = v => originalCart + '\nwindow.__sfCartRevision = ' + JSON.stringify(v) + ';\n';
   fs.writeFileSync(cartFile, cartRevision('A'));
   const revision = v => original + '\nwindow.__sfFormatRevision = ' + JSON.stringify(v) + ';\n';
@@ -26,7 +30,7 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
   const requests = new Map();
   const server = http.createServer((req, res) => {
     const pathname = new URL(req.url, 'http://localhost').pathname;
-    if (pathname === '/a' || pathname === '/b' || pathname === '/c') {
+    if (pathname === '/a' || pathname === '/b' || pathname === '/c' || pathname === '/d') {
       res.writeHead(200, {'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-cache'});
       res.end(html);return;
     }
@@ -65,13 +69,13 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
     };
     const a = readRegistration();
     html = buildHtml(a);
-    browser = await chromium.launch({headless:true});
+    browser = await chromium.launch({headless:true, ...(process.env.CHROMIUM_BIN ? {executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox']} : {})});
     const context = await browser.newContext();
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(origin + '/a');
-    await page.waitForFunction(() => window.__sfFormatRevision === 'A' && window.__sfCartRevision === 'A');
+    await page.waitForFunction(() => window.__sfFormatRevision === 'A' && window.__sfCartRevision === 'A' && window.__sfPanelRevision === 'A');
 
     // Change ONLY cart-controller; the entry and formatter remain byte-for-byte stable.
     fs.writeFileSync(cartFile, cartRevision('B'));
@@ -108,6 +112,18 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
       const newUrl = '/assets/scripts/' + resource + '?ver=' + entryB.version;
       assert.equal(requests.get(oldUrl),1,'Old '+id+' resource requested once');
       assert.equal(requests.get(newUrl),1,'Updated '+id+' resource loaded without clearing cache');
+    }
+    // Native-helper-only updates must invalidate independently of helper/controller URLs.
+    fs.writeFileSync(helperFile, helperRevision('B'));
+    const d = readRegistration();
+    for (const id of Object.keys(c)) {
+      if (id === 'codela-storefront/panel-motion') assert.notEqual(c[id].version,d[id].version);
+      else assert.equal(c[id].version,d[id].version,id+' remains cached for helper-only update');
+    }
+    html=buildHtml(d);await page.goto(origin+'/d');
+    await page.waitForFunction(()=>window.__sfPanelRevision==='B'&&window.__sfCartRevision==='B');
+    for(const entry of [a['codela-storefront/panel-motion'],d['codela-storefront/panel-motion']]){
+      assert.equal(requests.get('/assets/scripts/panel-motion.js?ver='+entry.version),1,'Each native helper revision fetched exactly once');
     }
     assert.deepEqual(errors,[],'All bare imports resolve without runtime errors');
     await context.close();

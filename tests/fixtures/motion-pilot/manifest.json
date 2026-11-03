@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "scope": "motion-research",
+  "builder": {
+    "name": "esbuild",
+    "version": "0.28.2"
+  },
+  "lock_sha256": "add6f2704e93bc5d898f8032f896dd0ea47a6a4c40ac16e532901b038eeee6d3",
+  "package_sha256": "e2922a133b042801ebd61b403a2c324a9bc535f7475a52e8e2b4d36e8c88f19c",
+  "bundles": {
+    "motion-mini": {
+      "file": "motion-mini.js",
+      "sha256": "aba0e671321c32ac8f5422e0353dee7a2693dad17a2baa181d70afc0e41b9158",
+      "bytes": 8370,
+      "gzip_bytes": 3328,
+      "source": "https://github.com/motiondivision/motion",
+      "dependencies": {
+        "framer-motion": {
+          "version": "14.9.0",
+          "license": "MIT"
+        },
+        "motion": {
+          "version": "14.9.0",
+          "license": "MIT"
+        },
+        "motion-dom": {
+          "version": "14.9.0",
+          "license": "MIT"
+        },
+        "motion-utils": {
+          "version": "14.7.0",
+          "license": "MIT"
+        }
+      }
+    }
+  },
+  "notices": {
+    "file": "THIRD-PARTY-NOTICES.txt",
+    "sha256": "b71465fbc8e305830cf917534cd6218c2d022a3ef8455e3a7084cecc4e63c945"
+  }
+}

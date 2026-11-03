@@ -3,7 +3,7 @@ const fs=require('node:fs'),assert=require('node:assert/strict'),{execFileSync}=
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const root='theme/codela-storefront/';
 const styles=['assets/styles/tokens.css','assets/storefront.css','assets/styles/overlay.css','assets/styles/navigation.css','assets/styles/components.css','assets/styles/catalog.css'].map(p=>fs.readFileSync(root+p,'utf8')).join('\n');
-const overlay=fs.readFileSync(root+'assets/scripts/overlay-controller.js','utf8').replace('export function','function');
+const overlay=require('./helpers/inline-storefront.cjs').moduleSource('overlay-controller');
 (async()=>{
  const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_BIN?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-dev-shm-usage']}:{})});
  try {

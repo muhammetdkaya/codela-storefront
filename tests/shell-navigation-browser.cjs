@@ -1,5 +1,6 @@
 // The real core router is tested post-deploy. This checks controller ownership,
 // immediate feedback, navigation guards and the visual placeholder in an isolated browser.
+// Destination main/brand replacement and popstate are supplied at the core boundary.
 const {chromium}=require('playwright');
 const fs=require('node:fs');
 const assert=require('node:assert/strict');
@@ -8,17 +9,38 @@ let script=fs.readFileSync('theme/codela-storefront/assets/scripts/navigation-co
  .replace("import('@wordpress/interactivity-router')","Promise.resolve({actions:{navigate:window.__routeNavigate}})");
 const documentScript=fs.readFileSync('theme/codela-storefront/assets/scripts/navigation-feedback.js','utf8')+fs.readFileSync('theme/codela-storefront/assets/scripts/document-continuity.js','utf8');
 const css=['tokens','navigation-feedback'].map(name=>fs.readFileSync('theme/codela-storefront/assets/styles/'+name+'.css','utf8')).join('\n');
+const brand=title=>'<div class="sf-brand sf-context-brand" data-wp-router-region="codela/storefront/brand">'+(title==='Home'?'<a href="https://store.test/">CODELA</a>':'<a data-sf-context-back data-sf-context-root data-sf-page-title="'+title+'" hidden href="https://store.test/" aria-label="Back"><svg aria-hidden="true"></svg></a><span class="sf-context-label">'+title+'</span>')+'</div>';
 const main=(type='home')=>'<main id="sf-content" class="sf-content" data-wp-router-region="codela/storefront/main" data-sf-route-type="'+type+'"><h1>Example</h1><p>Page content</p></main>';
 (async()=>{
  const browser=await chromium.launch();
  try{
   const page=await browser.newPage();
   const html = '<!doctype html><html><head><title>Home</title><style>'+css+'</style></head><body>'+
-   '<header id="persistent-header"><a data-sf-context-back href="https://store.test/"><span>Home</span></a></header><div class="sf-shell has-mobile-dock">'+
+   '<header id="persistent-header">'+brand('Home')+'</header><div class="sf-shell has-mobile-dock">'+
    '<a id="to-content" data-sf-route="content" href="https://store.test/about/">About</a>'+
    '<a id="to-checkout" href="https://store.test/checkout/">Checkout</a>'+
    '<nav class="sf-mobile-dock has-selection"><a class="sf-dock-item" data-dock-view="home" aria-current="page" data-sf-route="home" href="https://store.test/">Home</a></nav></div>'+
-   main()+'<script>window.__routeState={url:"https://store.test/",};window.__watchers=[];window.store=()=>({state:window.__routeState});window.watch=fn=>{window.__watchers.push(fn);fn()};window.__duration=350;window.__routeCalls=0;window.__routeNavigate=(url)=>new Promise(resolve=>{window.__routeCalls++;window.__watchers.forEach(fn=>fn());setTimeout(()=>{document.querySelector("#sf-content").outerHTML='+JSON.stringify(main('page'))+';history.pushState({},"",new URL(url).pathname);document.title=new URL(url).pathname==="/about/"?"About":"Home";window.__routeState.url=url;window.__watchers.forEach(fn=>fn());resolve()},window.__duration)});</script></body></html>';
+   main()+'<script>'+`
+    window.__routeState={url:location.href};window.__watchers=[];
+    window.store=()=>({state:window.__routeState});window.watch=fn=>{window.__watchers.push(fn);fn()};
+    window.__duration=350;window.__routeCalls=0;
+    const routeDocuments=${JSON.stringify(Object.fromEntries([['/','Home'],['/about/','About'],['/details/','Details'],['/new-home/','New home']].map(([path,title])=>[path,{title,main:main(path==='/'?'home':'page'),brand:brand(title)}])))};
+    window.__commitFixtureRoute=url=>{
+      const destination=routeDocuments[new URL(url).pathname]||routeDocuments['/details/'];
+      document.querySelector('#sf-content').outerHTML=destination.main;
+      document.querySelector('[data-wp-router-region="codela/storefront/brand"]').outerHTML=destination.brand;
+      document.title=destination.title;window.__routeState.url=url;window.__watchers.forEach(fn=>fn());
+    };
+    window.__routeNavigate=url=>{
+      window.__lastRoute=new Promise(resolve=>{
+        window.__routeCalls++;window.__watchers.forEach(fn=>fn());setTimeout(()=>{
+          history.pushState({},'',url);window.__commitFixtureRoute(url);resolve();
+        },window.__duration);
+      });
+      return window.__lastRoute;
+    };
+    window.addEventListener('popstate',()=>window.__commitFixtureRoute(location.href));
+   `+'</script></body></html>';
   await page.route('https://store.test/**',route=>route.fulfill({status:200,contentType:'text/html',body:html}));
   await page.goto('https://store.test/');
   await page.addScriptTag({content:documentScript});
@@ -30,36 +52,62 @@ const main=(type='home')=>'<main id="sf-content" class="sf-content" data-wp-rout
   assert.equal(await page.locator('.sf-skeleton-lines i').first().evaluate(el=>getComputedStyle(el).animationName),'sf-skeleton-pulse','Core router shares loading motion');
   assert.equal(await page.locator('#persistent-header').getAttribute('data-original'),'yes','Header stays in DOM');
   assert.equal(await page.locator('.sf-mobile-dock').count(),1,'One dock retained during navigation');
-  await page.waitForTimeout(400);
+  await page.waitForFunction(()=>window.__routeState.url==='https://store.test/about/'&&!document.querySelector('.sf-skeleton'));
   assert.equal(await page.locator('.sf-skeleton').count(),0,'Skeleton removed after new page');
   assert.equal(await page.locator('.sf-dock-item').getAttribute('aria-current'),null,'Home no longer active after page');
   assert.equal(await page.locator('main').getAttribute('tabindex'),'-1','New main focusable');
   assert.equal(await page.locator('main').evaluate(el=>document.activeElement===el),true,'Focus moves to new content');
   assert.equal(await page.locator('[data-sf-context-back]').getAttribute('href'),'https://store.test/','First route knows the previous home address');
-  assert.equal(await page.locator('[data-sf-context-back] span').innerText(),'Home','Back label names previous home page');
+  assert.equal(await page.locator('[data-sf-context-back]').getAttribute('aria-label'),'Back','Return control has an accessible action name');
+  assert.equal((await page.locator('[data-sf-context-back]').innerText()).trim(),'','Current return control is icon-only');
+  assert.equal(await page.locator('.sf-context-label').isVisible(),false,'Content route shows the return icon instead of the root title');
   // Cached responses replace feedback immediately without a minimum dwell time.
-  await page.evaluate(()=>{window.__duration=30});
-  await page.locator('.sf-dock-item').click();
-  await page.waitForTimeout(70);
+  const quick=await page.evaluate(async()=>{
+    window.__duration=30;const before=window.__routeCalls;document.querySelector('.sf-dock-item').click();
+    await Promise.resolve();await Promise.resolve();
+    if(window.__routeCalls!==before+1)throw new Error('Expected one new core navigation');
+    await window.__lastRoute;await new Promise(requestAnimationFrame);
+    return {url:window.__routeState.url,skeletons:document.querySelectorAll('.sf-skeleton').length};
+  });
+  assert.deepEqual(quick,{url:'https://store.test/',skeletons:0},'Ready cached content is visible on the next frame without an artificial dwell');
   assert.equal(await page.locator('.sf-skeleton').count(),0,'Quick navigation removes placeholder without a minimum delay');
   assert.equal(await page.locator('.sf-dock-item').getAttribute('aria-current'),'page','Home active again');
-  assert.equal(await page.locator('[data-sf-context-back]').getAttribute('href'),'https://store.test/about/','Subsequent same-document route retains the real previous address');
-  assert.equal(await page.locator('[data-sf-context-back] span').innerText(),'About','Back label and URL both name the previous page');
-  // A history URL update does not force scroll/focus as an explicit click does.
+  // Since 0.1.188, menu/dock roots use their destination title/logo rather than
+  // inventing a previous-page back link. The core router also replaces brand.
+  assert.equal(await page.locator('[data-sf-context-back]').count(),0,'Dock Home route restores its real logo rather than an About return control');
+  assert.equal(await page.locator('.sf-brand').innerText(),'CODELA','Destination Home brand is installed');
+  assert.equal(await page.locator('#persistent-header').getAttribute('data-original'),'yes','Header owner remains the same while brand region changes');
+  // Keep meaningful same-document return coverage using actual content routes.
+  await page.locator('#to-content').click();
+  await page.waitForFunction(()=>window.__routeState.url==='https://store.test/about/'&&!document.querySelector('.sf-skeleton'));
+  await page.evaluate(()=>{const link=document.createElement('a');link.id='to-details';link.dataset.sfRoute='content';link.href='https://store.test/details/';link.textContent='Details';document.querySelector('main').append(link);});
+  await page.locator('#to-details').click();
+  await page.waitForFunction(()=>window.__routeState.url==='https://store.test/details/'&&!document.querySelector('.sf-skeleton'));
+  assert.equal(await page.locator('[data-sf-context-back]').getAttribute('href'),'https://store.test/about/','Content-to-content return keeps its actual previous address');
+  assert(await page.locator('[data-sf-context-back]').isVisible(),'Content return icon is usable');
+  assert.equal((await page.locator('[data-sf-context-back]').innerText()).trim(),'','Content return is icon-only, not an obsolete previous-page text label');
+  // Real browser history changes the URL. The fixture supplies only the core
+  // popstate region/state update, leaving scroll/focus ownership to the browser.
   await page.evaluate(()=>{
-    window.__historyScrollCalls=0;
-    const original=window.scrollTo;
+    window.__historyScrollCalls=0;window.__historyFocusCalls=0;
+    window.__originalScroll=window.scrollTo;window.__originalFocus=HTMLElement.prototype.focus;
     window.scrollTo=()=>{window.__historyScrollCalls++};
-    window.__routeState.url='https://store.test/about/';
-    window.__watchers.forEach(fn=>fn());
-    window.scrollTo=original;
+    HTMLElement.prototype.focus=function(...args){window.__historyFocusCalls++;return window.__originalFocus.apply(this,args);};
   });
-  assert.equal(await page.evaluate(()=>window.__historyScrollCalls),0,'History traversal retains browser/core scroll ownership');
+  await page.goBack();
+  await page.waitForFunction(()=>location.href==='https://store.test/about/'&&window.__routeState.url===location.href);
+  const historyCalls=await page.evaluate(()=>{
+    window.scrollTo=window.__originalScroll;HTMLElement.prototype.focus=window.__originalFocus;
+    return {scroll:window.__historyScrollCalls,focus:window.__historyFocusCalls};
+  });
+  assert.deepEqual(historyCalls,{scroll:0,focus:0},'History traversal retains browser/core scroll and focus ownership');
   assert.equal(await page.locator('.sf-dock-item').getAttribute('aria-current'),null,'History updates dock selection');
+  assert.equal(await page.locator('.sf-skeleton').count(),0,'History state change creates no click-owned feedback');
   // An old router promise must not clear or focus a newer navigation.
   await page.evaluate(async()=>{
    window.__originalNavigate=window.__routeNavigate;window.__pendingRoutes=[];
    window.__routeNavigate=url=>new Promise(resolve=>window.__pendingRoutes.push({url,resolve}));
+   document.querySelector('#to-content').href='https://store.test/details/';
    document.querySelector('#to-content').click();await Promise.resolve();await Promise.resolve();
    const a=document.createElement('a');a.dataset.sfRoute='home';a.href='https://store.test/new-home/';document.body.append(a);a.click();
   });
@@ -108,7 +156,7 @@ const main=(type='home')=>'<main id="sf-content" class="sf-content" data-wp-rout
   });
   await page.waitForURL('**/fallback/');
   assert.equal(await page.evaluate(()=>sessionStorage.getItem('fallback-pending')),'1','Fallback keeps feedback until the real document replaces it');
-  console.log('Shell navigation: persistent header/dock, immediate skeleton, ready-content replacement, focus and native fallback passed.');
+  console.log('Shell navigation: persistent header/dock, destination brand, content return, real history ownership, immediate skeleton, stale completion, focus and native fallback passed.');
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exit(1)});
 

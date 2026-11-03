@@ -1,0 +1,536 @@
+{
+  "schema": 1,
+  "scope": "Allowlisted isolated browser fixtures only. Excludes live tools and WordPress seed/install/account/commerce mutation scripts.",
+  "groups": {
+    "pilots": [
+      {
+        "file": "tests/panel-motion-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit",
+          "firefox"
+        ],
+        "dependencies": [
+          "php",
+          "immutable-panel-baseline"
+        ],
+        "timeout_ms": 240000
+      },
+      {
+        "file": "tests/native-showcase-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit",
+          "firefox"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 240000
+      },
+      {
+        "file": "tests/dock-sheet-lifecycle-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit",
+          "firefox"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 180000
+      },
+      {
+        "file": "tests/basecoat-pilot-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit",
+          "firefox"
+        ],
+        "dependencies": [],
+        "timeout_ms": 180000
+      }
+    ],
+    "panels": [
+      {
+        "file": "tests/panel-presentation-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [
+          "php",
+          "wp-core"
+        ],
+        "timeout_ms": 180000
+      },
+      {
+        "file": "tests/desktop-tools-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 180000
+      },
+      {
+        "file": "tests/mobile-controls-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 240000
+      },
+      {
+        "file": "tests/interaction-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 180000
+      }
+    ],
+    "product": [
+      {
+        "file": "tests/product-sheet-browser.cjs",
+        "engines": [
+          "chromium"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 300000
+      },
+      {
+        "file": "tests/product-desktop-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 240000
+      },
+      {
+        "file": "tests/product-drag-frame-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 180000
+      },
+      {
+        "file": "tests/product-first-paint-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 240000
+      },
+      {
+        "file": "tests/product-menu-scroll-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 180000
+      },
+      {
+        "file": "tests/product-no-dock-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 240000
+      },
+      {
+        "file": "tests/product-modules-browser.cjs",
+        "engines": [
+          "chromium"
+        ],
+        "dependencies": [],
+        "timeout_ms": 180000
+      },
+      {
+        "file": "tests/product-browser.cjs",
+        "engines": [
+          "chromium"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 180000
+      },
+      {
+        "file": "tests/product-skeleton-geometry-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 240000
+      }
+    ],
+    "media": [
+      {
+        "file": "tests/media-loading-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [],
+        "timeout_ms": 180000
+      },
+      {
+        "file": "tests/media-presentation-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [
+          "php",
+          "wp-core"
+        ],
+        "timeout_ms": 180000
+      },
+      {
+        "file": "tests/gallery-defer-browser.cjs",
+        "engines": [
+          "chromium"
+        ],
+        "dependencies": [],
+        "timeout_ms": 180000
+      },
+      {
+        "file": "tests/product-mobile-media-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [],
+        "timeout_ms": 180000
+      },
+      {
+        "file": "tests/product-mobile-media-admin-browser.cjs",
+        "engines": [
+          "chromium"
+        ],
+        "dependencies": [],
+        "timeout_ms": 120000
+      }
+    ],
+    "navigation": [
+      {
+        "file": "tests/navigation-browser.cjs",
+        "engines": [
+          "chromium"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 240000
+      },
+      {
+        "file": "tests/shell-navigation-browser.cjs",
+        "engines": [
+          "chromium"
+        ],
+        "dependencies": [],
+        "timeout_ms": 180000
+      },
+      {
+        "file": "tests/document-continuity-browser.cjs",
+        "engines": [
+          "chromium"
+        ],
+        "dependencies": [
+          "php",
+          "localhost-http"
+        ],
+        "timeout_ms": 240000
+      },
+      {
+        "file": "tests/navigation-viewport-browser.cjs",
+        "engines": [
+          "chromium"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 180000
+      },
+      {
+        "file": "tests/navigation-feedback-bottom-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 240000
+      },
+      {
+        "file": "tests/catalog-context-return-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [
+          "php-path",
+          "localhost-http"
+        ],
+        "timeout_ms": 240000
+      }
+    ],
+    "header": [
+      {
+        "file": "tests/desktop-header-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 180000
+      },
+      {
+        "file": "tests/context-header-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [
+          "php-path"
+        ],
+        "timeout_ms": 180000
+      },
+      {
+        "file": "tests/header-routing-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [],
+        "timeout_ms": 180000
+      },
+      {
+        "file": "tests/desktop-product-skeleton-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [],
+        "timeout_ms": 120000
+      },
+      {
+        "file": "tests/catalog-header-skeleton-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [
+          "php-path"
+        ],
+        "timeout_ms": 240000
+      }
+    ],
+    "commerce": [
+      {
+        "file": "tests/catalog-browser.cjs",
+        "engines": [
+          "chromium"
+        ],
+        "dependencies": [
+          "php-path"
+        ],
+        "timeout_ms": 240000
+      },
+      {
+        "file": "tests/catalog-filters-browser.cjs",
+        "engines": [
+          "chromium"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 240000
+      },
+      {
+        "file": "tests/checkout-browser.cjs",
+        "engines": [
+          "chromium"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 180000
+      },
+      {
+        "file": "tests/account-browser.cjs",
+        "engines": [
+          "chromium"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 180000
+      },
+      {
+        "file": "tests/account-dashboard-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 240000
+      },
+      {
+        "file": "tests/account-skeleton-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [],
+        "timeout_ms": 240000
+      }
+    ],
+    "content": [
+      {
+        "file": "tests/homepage-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 240000
+      },
+      {
+        "file": "tests/showcase-viewport-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 300000
+      },
+      {
+        "file": "tests/section-priority-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [
+          "php",
+          "wp-core"
+        ],
+        "timeout_ms": 180000
+      },
+      {
+        "file": "tests/journal-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [],
+        "timeout_ms": 180000
+      }
+    ],
+    "ui": [
+      {
+        "file": "tests/ui-kit-browser.cjs",
+        "engines": [
+          "chromium"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 180000
+      },
+      {
+        "file": "tests/native-woo-buttons.cjs",
+        "engines": [
+          "chromium"
+        ],
+        "dependencies": [],
+        "timeout_ms": 180000
+      },
+      {
+        "file": "tests/ui-kit-preview.cjs",
+        "engines": [
+          "chromium"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 180000,
+        "purpose": "Reference screenshots, not full commerce acceptance"
+      }
+    ],
+    "cache": [
+      {
+        "file": "tests/script-module-browser.cjs",
+        "engines": [
+          "chromium"
+        ],
+        "dependencies": [
+          "php",
+          "localhost-http"
+        ],
+        "timeout_ms": 180000
+      }
+    ]
+  },
+  "excluded": [
+    {
+      "file": "tests/wordpress-layout.php",
+      "reason": "Creates disposable WordPress/Woo data, users and settings. Requires separately provisioned throwaway http://127.0.0.1:8888 site; never a read-only fixture."
+    },
+    {
+      "file": "tests/wordpress-layout.cjs",
+      "reason": "Requires seeded real WordPress/Woo/Codela localhost site and SF_REPORT_DIR; excluded from isolated-fixture runner."
+    },
+    {
+      "file": "tests/wordpress-commerce.cjs",
+      "reason": "Performs commerce against a separately seeded throwaway WordPress/Woo localhost site; excluded from isolated-fixture runner."
+    },
+    {
+      "file": "tests/fixtures/library-baseline/capture-cart.cjs",
+      "reason": "Immutable historical SHA capture is a separate baseline operation, not final candidate acceptance."
+    },
+    {
+      "file": "tools/*live*.cjs",
+      "reason": "Live-site scripts are not permitted in this no-deploy acceptance suite."
+    }
+  ]
+}

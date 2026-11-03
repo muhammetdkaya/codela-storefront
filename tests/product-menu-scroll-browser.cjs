@@ -3,7 +3,7 @@ const fs=require('node:fs'),assert=require('node:assert/strict'),{execFileSync}=
 const {chromium,webkit}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const {fixture,load}=require('./product-sheet-browser.cjs');
 const header=execFileSync(process.env.PHP_BIN||'php',['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_PRODUCT:'1'}});
-const overlay=fs.readFileSync('theme/codela-storefront/assets/scripts/overlay-controller.js','utf8').replace('export function','function');
+const overlay=require('./helpers/inline-storefront.cjs').moduleSource('overlay-controller');
 (async()=>{const browser=await(process.env.TEST_WEBKIT?webkit:chromium).launch(process.env.CHROMIUM_BIN?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-dev-shm-usage']}:{});try{
 for(const width of [320,390,700]){
  const page=await browser.newPage({viewport:{width,height:844},hasTouch:true});

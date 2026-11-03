@@ -6,6 +6,7 @@ Sources remain the editable source of truth. Commit generated files, and run
 import argparse
 from pathlib import Path
 import re
+import runpy
 
 ROOT = Path(__file__).resolve().parents[1] / "theme/codela-storefront/assets"
 BUNDLES = {
@@ -42,6 +43,8 @@ def render(target, sources):
 
 
 def build(check=False):
+    # Validate checked-in dependencies even when packaging without Node.
+    runpy.run_path(str(Path(__file__).with_name('check-vendor.py')))['check']()
     stale = []
     for target, sources in BUNDLES.items():
         expected = render(target, sources)

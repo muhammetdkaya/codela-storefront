@@ -1,0 +1,26 @@
+{
+  "status": "rejected",
+  "reason": "Chromium first trusted horizontal wheel delta is lost after native handoff; CI4 retained target ancestry still fails.",
+  "source_sha": "65158f74d4b33114b1d16366335bbf7d176bd4b6",
+  "ci3_run": "https://github.com/muhammetdkaya/codela-storefront/actions/runs/41646668363",
+  "evidence": "evidence/ci4-chromium",
+  "files": {
+    "gallery-horizontal.js": {
+      "sha256": "b270352b58cf80e630dc87fdc80e1540cd6cbcc72b149119826afb93dab71501",
+      "bytes": 12378
+    },
+    "archive/embla-showcase-browser.cjs": {
+      "sha256": "d19dff0a9115cbf21f3704c1a41c63ed94f7b1718f16791a46c8cb8f905314ab",
+      "bytes": 31875
+    },
+    "archive/embla-showcase.cjs": {
+      "sha256": "dcf8b6d862693d99479576c83eea3d8d48618c1fd629305af876aaf09fc30f0c",
+      "bytes": 13904
+    },
+    "archive/embla-showcase-fixture.php": {
+      "sha256": "bbb9ab022d46406cf66634d48ce6afce5bba397e20d0208027b231fe79877420",
+      "bytes": 1346
+    }
+  },
+  "ci4_run": "https://github.com/muhammetdkaya/codela-storefront/actions/runs/41648726152"
+}

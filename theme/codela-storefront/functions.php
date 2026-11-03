@@ -81,12 +81,13 @@ add_action( 'init', function() {
     // Native loops can request this during block-template rendering before wp_head.
     wp_register_style( 'codela-storefront-catalog', $asset_url . 'styles/catalog.css', [ 'codela-storefront-components' ], codela_sf_style_version() );
     // All statically imported modules are registered in dependency order.
-    // No bundler or script-module args newer than WordPress 6.5 are needed.
+    // Native modules only; no vendor runtime, Node or post-6.5 API is needed.
     $modules = [
         'codela-storefront/format'  => [ 'scripts/format.js', [] ],
         'codela-storefront/search'  => [ 'scripts/search-controller.js', [ 'codela-storefront/format' ] ],
         'codela-storefront/cart'    => [ 'scripts/cart-controller.js', [ 'codela-storefront/format' ] ],
-        'codela-storefront/overlay' => [ 'scripts/overlay-controller.js', [] ],
+        'codela-storefront/panel-motion' => [ 'scripts/panel-motion.js', [] ],
+        'codela-storefront/overlay' => [ 'scripts/overlay-controller.js', [ 'codela-storefront/panel-motion' ] ],
         'codela-storefront/dock'    => [ 'scripts/dock-controller.js', [] ],
         'codela-storefront/navigation' => [ 'scripts/navigation-controller.js', [ '@wordpress/interactivity', [ 'id' => '@wordpress/interactivity-router', 'import' => 'dynamic' ] ] ],
         'codela-storefront'         => [ 'storefront.js', [

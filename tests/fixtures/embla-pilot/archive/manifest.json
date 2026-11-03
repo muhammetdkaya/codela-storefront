@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "scope": "runtime",
+  "builder": {
+    "name": "esbuild",
+    "version": "0.28.2"
+  },
+  "lock_sha256": "2b788ca826e5c49f1d2c3ee397465a80b5805a29b17a2d4587775dedf4bc891a",
+  "package_sha256": "989446c26c1aebd70079de62c4d3a3d1463b22fb0d12b063342d934d8fd31dec",
+  "bundles": {
+    "embla-carousel": {
+      "file": "embla-carousel.js",
+      "sha256": "5a8118dd4201b28b3be54a815a2476fd65cb09d8051fdf03cf28af70c35226ab",
+      "bytes": 18386,
+      "gzip_bytes": 7686,
+      "source": "https://github.com/davidjerleke/embla-carousel",
+      "dependencies": {
+        "embla-carousel": {
+          "version": "8.6.0",
+          "license": "MIT"
+        }
+      }
+    }
+  },
+  "notices": {
+    "file": "THIRD-PARTY-NOTICES.txt",
+    "sha256": "89b57ae3787dca3c95b2bded1249d6814c0c2491b745f5911120b4b273bb5c90"
+  }
+}

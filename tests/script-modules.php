@@ -9,6 +9,9 @@ $GLOBALS['sf_modules'] = [];
 function add_action( $hook, $callback, $priority = 10 ) {
     $GLOBALS['sf_hooks'][ $hook ][] = $callback;
 }
+function add_filter(...$args) {}
+function wp_register_style(...$args) {}
+function wp_get_theme() { return new class { function get($key) { return '0.1.196'; } }; }
 function get_template_directory() {
     return getenv( 'SF_TEST_THEME_PATH' ) ?: dirname( __DIR__ ) . '/theme/codela-storefront';
 }
@@ -29,8 +32,10 @@ $expected = [
     'codela-storefront/format'  => [ 'scripts/format.js', [] ],
     'codela-storefront/search'  => [ 'scripts/search-controller.js', [ 'codela-storefront/format' ] ],
     'codela-storefront/cart'    => [ 'scripts/cart-controller.js', [ 'codela-storefront/format' ] ],
-    'codela-storefront/overlay' => [ 'scripts/overlay-controller.js', [] ],
+    'codela-storefront/panel-motion' => [ 'scripts/panel-motion.js', [] ],
+    'codela-storefront/overlay' => [ 'scripts/overlay-controller.js', [ 'codela-storefront/panel-motion' ] ],
     'codela-storefront/dock'    => [ 'scripts/dock-controller.js', [] ],
+    'codela-storefront/navigation' => [ 'scripts/navigation-controller.js', [ '@wordpress/interactivity', [ 'id' => '@wordpress/interactivity-router', 'import' => 'dynamic' ] ] ],
     'codela-storefront'         => [ 'storefront.js', [ '@wordpress/interactivity', 'codela-storefront/search', 'codela-storefront/cart', 'codela-storefront/overlay', 'codela-storefront/dock' ] ],
 ];
 if ( count( $GLOBALS['sf_modules'] ) !== count( $expected ) ) {

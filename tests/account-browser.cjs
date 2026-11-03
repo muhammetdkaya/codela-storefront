@@ -12,7 +12,12 @@ const unconfiguredGoogle=nativeGoogleInfo.disabled_button;
 const guestHeader=execFileSync(process.env.PHP_BIN||'php',['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_GUEST_ACCOUNT:'1'}});
 assert(guestHeader.includes('sf-auth-site-header') && guestHeader.includes('Back to store'),'Guest header returns to store');
 assert(!guestHeader.includes('sf-mobile-dock') && !guestHeader.includes('sf-panel'),'Guest header has no normal store dock or overlays');
-assert(guestHeader.includes('arrow-right.svg'),'Back to store reuses the standard icon SVG');
+// Baseline 687ef83 already uses the shared left-arrow image for back navigation.
+// Check its real link/name/decorative-icon contract, not the obsolete right arrow.
+const backLinkHTML=guestHeader.match(/<a\b[^>]*class="[^"]*\bsf-auth-store-link\b[^"]*"[^>]*>[\s\S]*?<\/a>/)?.[0];
+assert(backLinkHTML,'Guest header has its native back link');
+assert(backLinkHTML.includes('aria-label="Back to store"')&&backLinkHTML.includes('href="https://store.test/"'),'Back link names and targets the store home');
+assert.match(backLinkHTML,/<img\b[^>]*class="sf-icon"[^>]*alt=""[^>]*src="https:\/\/store\.test\/theme\/assets\/icons\/arrow-left\.svg(?:\?[^\"]*)?"/,'Back link uses the shared local, decorative left-arrow SVG image');
 assert(!guestHeader.includes('↗'),'No Apple emoji-rendered arrow glyph');
 assert(intro.includes('My account'));
 assert(intro.includes('sf-auth-tabs'),'Guest intro offers progressive tabs');
@@ -32,6 +37,10 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
  try {
   for(const width of [390,1280]){
    const page=await browser.newPage({viewport:{width,height:850},isMobile:width===390,hasTouch:width===390});
+   await page.route('**/assets/icons/*.svg*',route=>{
+    const file=new URL(route.request().url()).pathname.split('/').at(-1);
+    return route.fulfill({contentType:'image/svg+xml',body:fs.readFileSync('theme/codela-storefront/assets/icons/'+file,'utf8')});
+   });
    for(const [type,markup] of [['login',login],['register',register],['logged',logged]]){
     const html='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body class="woocommerce-account">'+(type==='logged'?'':guestHeader)+'<main class="sf-content"><h1 class="wp-block-post-title">My Account</h1>'+markup+'</main></body></html>';
     await page.setContent(html);
@@ -43,6 +52,16 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
     assert(!info.overflows,type+' must not overflow viewport '+width);
     assert.equal(info.titleVisible,type==='logged', 'WP title shown only in vanilla Woo fallback; guest intro has own heading');
     if(type==='login'||type==='register'){
+      const back=page.getByRole('link',{name:'Back to store',exact:true});
+      assert.equal(await back.count(),1,'Exactly one accessible back navigation link');
+      assert.equal(await back.getAttribute('href'),'https://store.test/','Back remains a real home navigation link');
+      const backIcon=back.locator('img.sf-icon');
+      assert.equal(await backIcon.count(),1,'Back uses one shared SVG image, not duplicated text/emoji');
+      assert.equal(await backIcon.getAttribute('alt'),'','Decorative icon does not duplicate the accessible link name');
+      assert.equal(new URL(await backIcon.getAttribute('src')).pathname,'/theme/assets/icons/arrow-left.svg','Current shared back direction is left');
+      assert(await backIcon.evaluate(el=>el.complete&&el.naturalWidth>0),'Local SVG is actually loaded');
+      const backBox=await back.boundingBox();
+      assert(backBox.width>=44&&backBox.height>=44,'Back link retains the shared accessible hit target');
       const layout=await page.evaluate(()=>{
        const wrap=document.querySelector('#customer_login');
        if(!wrap)return {single:true};

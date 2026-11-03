@@ -1,0 +1,58 @@
+{
+  "browser": "chromium",
+  "stage": "failed",
+  "elapsed_ms": 12298,
+  "detail": {
+    "message": "First genuine native/pilot wheel parity count\n+ actual - expected\n\n+ '02 / 05'\n- '03 / 05'\n",
+    "interrupted": {
+      "browser": "chromium",
+      "stage": "wheel-gesture",
+      "elapsed_ms": 12080,
+      "detail": {
+        "mode": "embla",
+        "shifted": false,
+        "focus": "viewport"
+      },
+      "active": [
+        {
+          "width": 390,
+          "mode": "native",
+          "reducedMotion": "reduce",
+          "single": false,
+          "wheel": true,
+          "javaScriptEnabled": true,
+          "phase": "wheel-horizontal-viewport"
+        },
+        {
+          "width": 390,
+          "mode": "embla",
+          "reducedMotion": "reduce",
+          "single": false,
+          "wheel": true,
+          "javaScriptEnabled": true,
+          "phase": "wheel-horizontal-viewport"
+        }
+      ]
+    }
+  },
+  "active": [
+    {
+      "width": 390,
+      "mode": "native",
+      "reducedMotion": "reduce",
+      "single": false,
+      "wheel": true,
+      "javaScriptEnabled": true,
+      "phase": "wheel-horizontal-viewport"
+    },
+    {
+      "width": 390,
+      "mode": "embla",
+      "reducedMotion": "reduce",
+      "single": false,
+      "wheel": true,
+      "javaScriptEnabled": true,
+      "phase": "wheel-horizontal-viewport"
+    }
+  ]
+}
