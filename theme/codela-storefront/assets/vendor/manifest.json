@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "builder": {
+    "name": "esbuild",
+    "version": "0.28.2"
+  },
+  "lock_sha256": "26207238c9e372890c2566e69c833e72d327c288f347ec3341e512cf54f74c9d",
+  "package_sha256": "f03a9fec325ee7e2d186ee053b0653373f37aaaba8c731d3966a851e28ebb099",
+  "bundles": {
+    "motion-mini": {
+      "file": "motion-mini.js",
+      "sha256": "aba0e671321c32ac8f5422e0353dee7a2693dad17a2baa181d70afc0e41b9158",
+      "bytes": 8370,
+      "gzip_bytes": 3328,
+      "source": "https://github.com/motiondivision/motion",
+      "dependencies": {
+        "framer-motion": {
+          "version": "14.9.0",
+          "license": "MIT"
+        },
+        "motion": {
+          "version": "14.9.0",
+          "license": "MIT"
+        },
+        "motion-dom": {
+          "version": "14.9.0",
+          "license": "MIT"
+        },
+        "motion-utils": {
+          "version": "14.7.0",
+          "license": "MIT"
+        }
+      }
+    },
+    "embla-carousel": {
+      "file": "embla-carousel.js",
+      "sha256": "5a8118dd4201b28b3be54a815a2476fd65cb09d8051fdf03cf28af70c35226ab",
+      "bytes": 18386,
+      "gzip_bytes": 7686,
+      "source": "https://github.com/davidjerleke/embla-carousel",
+      "dependencies": {
+        "embla-carousel": {
+          "version": "8.6.0",
+          "license": "MIT"
+        }
+      }
+    }
+  },
+  "notices": {
+    "file": "THIRD-PARTY-NOTICES.txt",
+    "sha256": "d5f9446e504fb9425db30ed73659d0dbf64cb44e4dfa73244c90f7f77f907fcb"
+  }
+}
