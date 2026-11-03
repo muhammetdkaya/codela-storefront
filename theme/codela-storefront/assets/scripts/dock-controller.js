@@ -50,7 +50,7 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
             if (pendingDockTransition !== pending) return;
             pendingDockTransition = null;
             const currentDock = mobileDock();
-            if (currentDock && !currentDock.hidden && !currentDock.classList.contains('is-pressing') && !currentDock.classList.contains('is-scrubbing')) {
+            if (window.innerWidth <= 700 && currentDock && !currentDock.hidden && !currentDock.classList.contains('is-pressing') && !currentDock.classList.contains('is-scrubbing')) {
                 setDockCollapsed(collapsed);
             }
         }, remaining);
@@ -282,8 +282,11 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
         dock.addEventListener('pointerup',event => {
             if (event.pointerType !== 'touch') finish(event,event.clientX,event.clientY,event.pointerId);
         });
-        dock.addEventListener('pointercancel',event => { if (event.pointerType !== 'touch') stop(); });
-        dock.addEventListener('lostpointercapture',event => { if (event.pointerType !== 'touch') stop(); });
+        const cancelPointer = event => {
+            if (event.pointerType !== 'touch' && press?.pointer && event.pointerId === press.id) stop();
+        };
+        dock.addEventListener('pointercancel',cancelPointer);
+        dock.addEventListener('lostpointercapture',cancelPointer);
         window.addEventListener('blur',stop);
         window.addEventListener('resize',stop);
         dock.addEventListener('contextmenu',event => { if (press) event.preventDefault(); });
@@ -325,8 +328,22 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
                 menu.style.setProperty('--sf-submenu-left', `${Math.max(16, Math.min(rect.left, innerWidth - 296))}px`);
             });
         });
+        let wasMobile = window.innerWidth <= 700;
         window.addEventListener('resize', () => {
             document.querySelectorAll('.sf-desktop-submenu:popover-open').forEach(menu => menu.hidePopover());
+            const isMobile = window.innerWidth <= 700;
+            if (isMobile === wasMobile) return;
+            wasMobile = isMobile;
+            // A deferred mobile scroll intention must not survive a desktop
+            // visit and collapse the dock when the user returns to mobile.
+            cancelPendingDockTransition();
+            if (dockScrollFrame) cancelAnimationFrame(dockScrollFrame);
+            dockScrollFrame = 0;
+            if (dockScrollTarget && dockScrollTarget !== window) {
+                dockScrollPositions.set(dockScrollTarget, {position:dockScrollTarget.scrollTop, distance:0});
+            }
+            dockScrollTarget = null;
+            dockScrollPositions.set(window, {position:window.scrollY, distance:0});
         });
         installDockGestures(mobileDock());
         markDockActive(null);

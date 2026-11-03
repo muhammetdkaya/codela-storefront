@@ -3,7 +3,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
 const entry=fs.readFileSync('theme/codela-storefront/assets/storefront.js','utf8');
-const src=fs.readFileSync('theme/codela-storefront/assets/scripts/dock-controller.js','utf8');
+const src=fs.readFileSync(process.env.DOCK_SOURCE||'theme/codela-storefront/assets/scripts/dock-controller.js','utf8');
 const classList=()=>{
  const set=new Set();
  return {add:k=>set.add(k),remove:(...ks)=>ks.forEach(k=>set.delete(k)),contains:k=>set.has(k),
@@ -41,8 +41,8 @@ const document={
  addEventListener:(k,fn)=>{docHandlers[k]=fn},
  removeEventListener:()=>{},activeElement:null
 };
-const windowHandlers={};let scrollListeners=0;
-const win={innerWidth:390,addEventListener(k,fn){windowHandlers[k]=fn;if(k==='scroll')scrollListeners++},scrollY:0,location:{assign:url=>{assigned=url}}};
+const windowHandlers={},windowListeners={};let scrollListeners=0;
+const win={innerWidth:390,addEventListener(k,fn){(windowListeners[k]||=[]).push(fn);windowHandlers[k]=event=>windowListeners[k].forEach(listener=>listener(event));if(k==='scroll')scrollListeners++},scrollY:0,location:{assign:url=>{assigned=url}}};
 let assigned='',opened=[],closed=0,seq=0,raf=null,now=0;
 const timers=new Map();
 const setTimeoutFake=fn=>{const id=++seq;timers.set(id,fn);return id};
@@ -50,6 +50,7 @@ const fireTimers=()=>{for(const [id,fn] of [...timers]){timers.delete(id);fn();}
 const context={
  document,window:win,
  requestAnimationFrame:fn=>{raf=fn;return 1},
+ cancelAnimationFrame:()=>{raf=null},
  Element:class Element{},
  clearTimeout:id=>timers.delete(id),setTimeout:setTimeoutFake,Date:{now:()=>now},Math,Number
 };
@@ -182,5 +183,43 @@ const overlaySource=fs.readFileSync('theme/codela-storefront/assets/scripts/over
 assert.ok(overlaySource.includes("name === 'search' ? $('.sf-search-cancel')"),'Search opens without auto focusing text input');
 assert.ok(fs.readFileSync('theme/codela-storefront/assets/scripts/auth.js','utf8').includes('preventInitialAccountAutoFocus()'),'Account autofocus guard is installed');
 assert.ok(src.includes("dock.addEventListener('touchmove'"),'Native touch support for mobil tarayıcı');
-console.log('Dock modal, scrolling, touch scrubbing, hold and focus tests passed.');
+// An unrelated pen/mouse cancellation cannot end the active captured gesture.
+const pointer=(id,x=40)=>({pointerType:'pen',button:0,pointerId:id,clientX:x,clientY:55,target:{closest:()=>items[0]},cancelable:true,preventDefault(){}});
+helpers.setDockCollapsed(false);
+for(const kind of ['pointercancel','lostpointercapture']){
+ handlers.pointerdown(pointer(101));handlers.pointermove(pointer(101,170));
+ assert.equal(dock.classList.contains('is-scrubbing'),true,kind+' fixture starts a real scrub');
+ handlers[kind](pointer(102));
+ assert.equal(dock.classList.contains('is-scrubbing'),true,kind+' ignores another pointer id');
+ handlers[kind](pointer(101));
+ assert.equal(dock.classList.contains('is-scrubbing'),false,kind+' cancels the matching pointer');
+ handlers.pointerdown(pointer(103));handlers.pointermove(pointer(103,170));
+ assert.equal(dock.classList.contains('is-scrubbing'),true,'A new scrub works after '+kind);
+ handlers.pointercancel(pointer(103));
+}
+handlers.touchstart(ev(items[0],touch(40,55,104),'start'));
+handlers.pointercancel(pointer(104));
+assert.equal(dock.classList.contains('is-pressing'),true,'Pen cancellation cannot own the touch path even with the same id');
+handlers.touchcancel();
+// Crossing the mobile boundary retires pending scroll work, not settled state.
+now=5000;helpers.setDockCollapsed(true);helpers.setDockCollapsed(false);
+win.scrollY=0;windowHandlers.pageshow();
+now=5001;win.scrollY=80;windowHandlers.scroll({target:document});raf();
+assert(timers.size>0,'Mobile hide is pending during the 650ms dwell');
+win.innerWidth=900;windowHandlers.resize();
+assert.equal(timers.size,0,'Leaving mobile cancels the queued hide timer');
+now=5700;fireTimers();assert.equal(dock.classList.contains('is-collapsed'),false,'Desktop timer cannot collapse the dock');
+win.innerWidth=390;windowHandlers.resize();
+win.scrollY=82;windowHandlers.scroll({target:document});raf();
+assert.equal(dock.classList.contains('is-collapsed'),false,'Returning to mobile starts a new scroll sample, not an old delta');
+win.scrollY=160;windowHandlers.scroll({target:document});
+assert.equal(typeof raf,'function','Scroll paint can be pending at resize');
+win.innerWidth=701;windowHandlers.resize();
+assert.equal(raf,null,'Breakpoint crossing also cancels the pending scroll frame');
+win.innerWidth=700;windowHandlers.resize();
+win.scrollY=162;windowHandlers.scroll({target:document});raf();
+assert.equal(dock.classList.contains('is-collapsed'),false,'A retired frame cannot hide the returned mobile dock');
+win.scrollY=220;windowHandlers.scroll({target:document});raf();
+assert.equal(dock.classList.contains('is-collapsed'),true,'Fresh sufficient mobile travel still hides the dock');
+console.log('Dock modal, scrolling, touch scrubbing, hold, focus, pointer identity and responsive cancellation tests passed.');
 
