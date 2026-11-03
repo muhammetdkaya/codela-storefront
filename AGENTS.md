@@ -1,3 +1,7 @@
+# 3 Kasım 2026 — 0.1.195 doğrulanmış yayın adayı
+
+Son kaynak `6d542f34f6363910d4d5e823c921df1670a1100f`; [CI 41517302057](https://github.com/muhammetdkaya/codela-storefront/actions/runs/41517302057) tamamen başarılı. Chromium/WebKit yeni görsel önceliği, sürükleme, sepet/filtre; mevcut ürün, dock gizliliği, medya, ana sayfa ve panel regresyonları geçti. İlk CI 41516633878 de başarılıydı; son düzeltme skeleton yükleme açıklamasını erişilebilir fakat görsel olarak gizli tutar. Yerel 194 negatif kontrolünde 30 pointer örneği 28 senkron yükseklik yazımı üretirken aday bir frame yazımı yapar. Fiziksel Safari ve canlı 195 kurulumu yapılmadı. GitHub-only yayın sıradaki adımdır; eklenti/FTP/içerik değişmedi.
+
 # Codela Storefront — güncel çalışma kuralları
 
 ## 2 Kasım 2026 — 0.1.195 sayfa yükleme ve etkileşim adayı
