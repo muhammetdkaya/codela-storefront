@@ -3,6 +3,7 @@
 // separately validate native rendering, focus, geometry and interruption.
 const assert = require('node:assert/strict');
 const vm = require('node:vm');
+const fs = require('node:fs');
 const {panelMotionSource} = require('./helpers/inline-storefront.cjs');
 const tasks=[];
 class Surface extends EventTarget {
@@ -49,9 +50,24 @@ tasks.shift()();
 assert.equal(completes,1);assert.equal(element.style.transform,'','Queued old finish cannot contaminate inline transform');
 assert.equal(element.animations.at(-1).playState,'running');
 element.animations.at(-1).finish();tasks.shift()();assert.equal(completes,2);assert.equal(element.style.transform,'');
+// The corrected-native comparator uses this exact production helper with only
+// its optional import skipped. No vendor code is loaded and no exception cost
+// is added to the measured animation path.
+const nativeContext=vm.createContext({EventTarget});
+const nativeSource=fs.readFileSync('theme/codela-storefront/assets/scripts/panel-motion.js','utf8')
+    .replace(/^export /gm,'').replace("import('codela-storefront/motion-mini')",'Promise.resolve({})');
+vm.runInContext(nativeSource+'\nthis.animatePanel=animatePanelTransform;this.ready=panelMotionReady;',nativeContext);
+assert.equal(await nativeContext.ready,false);
+assert.equal(nativeContext.__codelaMotionMini,undefined,'Native comparator loads no Motion build');
+const nativeElement=new Surface();
+const nativeMotion=nativeContext.animatePanel(nativeElement,'translateX(100%)','translateX(0)',options);
+assert.equal(nativeElement.animations[0].options.fill,'forwards');
+assert.equal(nativeElement.animations[0].options.duration,240);
+nativeElement.animations[0].finish();nativeMotion.cancel();tasks.shift()();
+assert.equal(nativeElement.animations[0].onfinish,null);assert.equal(nativeElement.style.transform,'');
 // Negative control proves why the adapter cannot just use Motion.cancel().
 const raw=new Surface(),controls=context.vendor(raw,{transform:['translateX(0)','translateX(100%)']},{duration:.18});
 raw.animations[0].finish();controls.cancel();tasks.shift()();
 assert.equal(raw.style.transform,'translateX(100%)','Pinned Motion cancel alone still commits a queued endpoint');
-console.log('Pinned Motion runtime passed: native options, finish cleanup, stop/reverse queued callback isolation; cancel-only negative control reproduced.');
+console.log('Pinned Motion and vendor-free corrected-native runtime passed: native options, finish cleanup, stop/reverse queued callback isolation; cancel-only negative control reproduced.');
 })().catch(error=>{console.error(error);process.exit(1)});

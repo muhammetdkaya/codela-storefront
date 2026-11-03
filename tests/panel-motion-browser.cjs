@@ -11,7 +11,7 @@ const baseline = process.env.PANEL_BASELINE_SOURCE && fs.readFileSync(process.en
 const engine = process.env.TEST_WEBKIT ? 'webkit' : process.env.TEST_FIREFOX ? 'firefox' : 'chromium';
 const engines = {chromium, webkit, firefox};
 const output = 'qa/panel-motion';
-const modes = [...(baseline ? ['baseline'] : []), 'motion', 'fallback', 'missing', 'aborted', 'invalid', 'bad-export', 'delayed', 'no-waapi'];
+const modes = [...(baseline ? ['baseline'] : []), 'motion', 'native-only', 'fallback', 'missing', 'aborted', 'invalid', 'bad-export', 'delayed', 'no-waapi'];
 const imports = {
     'codela-storefront/overlay':'/assets/scripts/overlay-controller.js',
     'codela-storefront/panel-motion':'/assets/scripts/panel-motion.js',
@@ -43,14 +43,24 @@ const preference = async (page, value) => {
 async function mount(browser, mode) {
     const page = await browser.newPage({viewport:{width:1280,height:900}});
     const errors = [];
-    let heldRoute, holdReady;
+    let heldRoute, holdReady, vendorRequests = 0;
     const heldRequest = new Promise(resolve => { holdReady=resolve; });
     page.on('pageerror', error=>errors.push(error.message));
     await page.route('https://motion.test/**', route=>{
         const path = new URL(route.request().url()).pathname;
         if (path === '/assets/scripts/overlay-controller.js' && mode === 'baseline')
             return route.fulfill({contentType:'application/javascript',body:baseline});
+        if (path === '/assets/scripts/panel-motion.js' && mode === 'native-only') {
+            // Benchmark the corrected production native branch without importing
+            // or invoking Motion. Only the optional import expression changes;
+            // controller, timing, sampling and cancellation stay identical.
+            const helper=fs.readFileSync(root+'assets/scripts/panel-motion.js','utf8');
+            const optionalImport="import('codela-storefront/motion-mini')";
+            assert(helper.includes(optionalImport),'Expected one optional enhancement boundary');
+            return route.fulfill({contentType:'application/javascript',body:helper.replace(optionalImport,'Promise.resolve({})')});
+        }
         if (path === '/assets/vendor/motion-mini.js') {
+            vendorRequests++;
             if (mode === 'fallback') return route.fulfill({contentType:'application/javascript',body:'export function animate(){throw new Error("Fixture unsupported Motion runtime")}'});
             if (mode === 'missing') return route.fulfill({status:404,contentType:'text/plain',body:'Fixture missing optional vendor'});
             if (mode === 'aborted') return route.abort('failed');
@@ -67,7 +77,7 @@ async function mount(browser, mode) {
     });
     await page.goto('https://motion.test/',{waitUntil:'domcontentloaded'});
     await page.waitForFunction(()=>window.ready);
-    return {page, errors, heldRequest, releaseVendor:()=>heldRoute.fulfill({contentType:'application/javascript',body:fs.readFileSync(root+'assets/vendor/motion-mini.js')})};
+    return {page, errors, heldRequest, getVendorRequests:()=>vendorRequests, releaseVendor:()=>heldRoute.fulfill({contentType:'application/javascript',body:fs.readFileSync(root+'assets/vendor/motion-mini.js')})};
 }
 async function settle(page) {
     await page.waitForFunction(()=>!document.querySelector('#sf-panel').getAnimations({subtree:true}).some(animation=>
@@ -85,10 +95,10 @@ async function geometry(page) {
 (async()=>{
     fs.mkdirSync(output,{recursive:true});
     const browser = await engines[engine].launch({headless:true,...(engine==='chromium'&&process.env.CHROMIUM_BIN?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-dev-shm-usage']}:{})});
-    const report = {engine,fixture:'Production PHP shell and identical empty/stub cart refresh; screenshots compare geometry, not populated commerce.',baselineSource:process.env.PANEL_BASELINE_SOURCE || null,modes:{}};
+    const report = {engine,comparison:{primary:['motion','native-only'],historical:'baseline',resilienceOnly:'fallback throws intentionally and is not a corrected-native benchmark',diagnostics:'Five initialized repeats with identical tokens/content. HTTP cache is disabled by routing in every mode. Elapsed includes a deliberate 300ms dwell; scheduling/start-cost samples are diagnostics, not speed or live performance proof.'},fixture:'Production PHP shell and identical empty/stub cart refresh; screenshots compare geometry, not populated commerce.',baselineSource:process.env.PANEL_BASELINE_SOURCE || null,modes:{}};
     try {
         for (const mode of modes) {
-            const {page, errors, heldRequest, releaseVendor} = await mount(browser,mode);
+            const {page, errors, heldRequest, getVendorRequests, releaseVendor} = await mount(browser,mode);
             const result = report.modes[mode] = {geometry:{},samples:[]};
             if (mode === 'delayed') {
                 await heldRequest;
@@ -121,7 +131,7 @@ async function geometry(page) {
                 assert(result.upgrade.jump<.1,'Native-to-Motion handover retains current position');
                 assert.equal(result.upgrade.fill,'both');assert.equal(result.upgrade.oldState,'idle');
             }
-            assert.equal(result.vendorLoaded,!['baseline','missing','aborted','invalid','bad-export'].includes(mode),'Optional import settles safely: '+mode);
+            assert.equal(result.vendorLoaded,!['baseline','native-only','missing','aborted','invalid','bad-export'].includes(mode),'Optional import settles safely: '+mode);
             for (const width of [320,390,700,701,900,901,1280,1440]) {
                 await page.setViewportSize({width,height:900});await flush(page);
                 const animation = await page.evaluate(()=>{
@@ -138,7 +148,7 @@ async function geometry(page) {
                 assert.equal(actual.dialogs,1);assert.equal(actual.cart,1);assert.equal(actual.inlineTransform,'');
                 assert.equal(actual.transform,'none',mode+' never leaves an inline containing block');
                 if(width>=901){assert(actual.width<=460);assert(Math.abs(actual.x+actual.width-width)<1);}
-                if(['baseline','motion','fallback'].includes(mode) && [390,1280].includes(width))await page.screenshot({path:`${output}/${engine}-${mode}-${width}.png`});
+                if(['baseline','motion','native-only','fallback'].includes(mode) && [390,1280].includes(width))await page.screenshot({path:`${output}/${engine}-${mode}-${width}.png`});
                 await page.evaluate(()=>overlay.closeForNavigation());
                 assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),false);
             }
@@ -179,7 +189,7 @@ async function geometry(page) {
                 }
                 // Five unpaused repeats capture scheduling/frame overhead, not a
                 // claim about live LCP, INP or a physical device's smoothness.
-                if(['baseline','motion','fallback'].includes(mode)) result.samples=await page.evaluate(async()=>{
+                if(['baseline','motion','native-only'].includes(mode)) result.samples=await page.evaluate(async()=>{
                     const samples=[];let longTasks=0;
                     const observer=typeof PerformanceObserver==='function' && PerformanceObserver.supportedEntryTypes.includes('longtask')
                         ? new PerformanceObserver(list=>longTasks+=list.getEntries().length):null;
@@ -232,6 +242,8 @@ async function geometry(page) {
             await flush(page);
             assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),false,'Navigation never waits for motion');
             assert.equal(await page.locator('#sf-panel').evaluate(el=>el.style.transform),'');
+            result.vendorRequests=getVendorRequests();
+            assert.equal(result.vendorRequests,['baseline','native-only'].includes(mode)?0:1,'Optional vendor fetch count: '+mode);
             assert.deepEqual(errors,[]);await page.close();
         }
         for(const mode of modes.filter(mode=>mode!=='motion'))for(const width of [320,390,700,701,900,901,1280,1440]) {
@@ -240,6 +252,6 @@ async function geometry(page) {
         }
         fs.writeFileSync(`${output}/${engine}-comparison.json`,JSON.stringify(report,null,2)+'\n');
         console.log('Panel motion pilot passed ('+engine+'): '+modes.join(', ')+', 8 widths, interruption/reversal, same-task finish race, switches, focus/scroll, reduced motion, resize and navigation.');
-        console.log(JSON.stringify(Object.fromEntries(Object.entries(report.modes).map(([mode,value])=>[mode,{reversal:value.reversal,longTasks:value.longTasks,samples:value.samples}]))));
+        console.log(JSON.stringify(Object.fromEntries(Object.entries(report.modes).map(([mode,value])=>[mode,{vendorRequests:value.vendorRequests,reversal:value.reversal,longTasks:value.longTasks,samples:value.samples}]))));
     } finally {await browser.close();}
 })().catch(error=>{console.error(error);process.exit(1);});
