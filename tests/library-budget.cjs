@@ -5,10 +5,13 @@ const root='theme/codela-storefront/';
 const size=path=>gzipSync(fs.readFileSync(root+path),{level:9}).length;
 const prior=path=>baseline.assets.find(item=>item.path===path).gzip_bytes;
 const graph=baseline.global_storefront_modules.paths;
-const motion=graph.reduce((sum,path)=>sum+size(path)-prior(path),0)
- +size('assets/scripts/panel-motion.js')+size('assets/vendor/motion-mini.js');
+const globalDelta=graph.reduce((sum,path)=>sum+size(path)-prior(path),0);
+const dockDelta=size('assets/scripts/dock-controller.js')-prior('assets/scripts/dock-controller.js');
+const productDelta=size('assets/scripts/product-information.js')-prior('assets/scripts/product-information.js');
+const motion=globalDelta-dockDelta+size('assets/scripts/panel-motion.js')+size('assets/vendor/motion-mini.js');
+const lifecycle=dockDelta+productDelta;
 const hero=size('assets/scripts/gallery-horizontal.js')-prior('assets/scripts/gallery-horizontal.js')+size('assets/vendor/embla-carousel.js');
-const report={baseline:baseline.source_sha,method:'Sum of individual gzip level9 file sizes',motion_delta_bytes:motion,hero_delta_bytes:hero,worst_case_page_delta_bytes:motion+hero,budget_bytes:15*1024};
+const report={baseline:baseline.source_sha,method:'Conservative cumulative route graph; sum of individual gzip level9 file sizes',motion_delta_bytes:motion,hero_delta_bytes:hero,native_lifecycle_delta_bytes:lifecycle,worst_case_page_delta_bytes:motion+hero+lifecycle,budget_bytes:15*1024};
 fs.mkdirSync('qa/library-migration',{recursive:true});fs.writeFileSync('qa/library-migration/page-budget.json',JSON.stringify(report,null,2)+'\n');
-assert(motion+hero<=report.budget_bytes,'Full affected graph exceeds initial page budget: '+JSON.stringify(report));
+assert(report.worst_case_page_delta_bytes<=report.budget_bytes,'Full affected graph exceeds initial page budget: '+JSON.stringify(report));
 console.log(JSON.stringify(report));

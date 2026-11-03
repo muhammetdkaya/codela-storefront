@@ -97,13 +97,13 @@ async function geometry(page) {
     fs.mkdirSync(output,{recursive:true});
     let browser;
     const failures = [];
-    const report = {engine,comparison:{primary:['motion','native-only'],historical:'baseline',resilienceOnly:'fallback throws intentionally and is not a corrected-native benchmark',diagnostics:'Five initialized repeats with identical tokens/content. HTTP cache is disabled by routing in every mode. Elapsed includes a deliberate 300ms dwell; scheduling/start-cost samples are diagnostics, not speed or live performance proof.'},fixture:'Production PHP shell and identical empty/stub cart refresh; screenshots compare geometry, not populated commerce.',baselineSource:process.env.PANEL_BASELINE_SOURCE || null,modes:{}};
+    const report = {engine,comparison:{primary:['motion','native-only'],historical:'baseline',resilienceOnly:'fallback throws intentionally and is not a corrected-native benchmark',diagnostics:'Five initialized repeats with identical tokens/content. HTTP cache is disabled by routing in every mode. Elapsed includes a deliberate 300ms dwell; scheduling/start-cost/frame samples are diagnostics, not proof of speed, performance equivalence or live performance.'},fixture:'Production PHP shell and identical empty/stub cart refresh; screenshots compare geometry, not populated commerce.',baselineSource:process.env.PANEL_BASELINE_SOURCE || null,modes:{}};
     const saveReport = () => fs.writeFileSync(`${output}/${engine}-comparison.json`,JSON.stringify(report,null,2)+'\n');
     try {
         browser = await engines[engine].launch({headless:true,...(engine==='chromium'&&process.env.CHROMIUM_BIN?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-dev-shm-usage']}:{})});
         for (const mode of modes) {
             let page, errors = [], getVendorRequests = () => null;
-            const result = report.modes[mode] = {status:'running',stage:'mount',geometry:{},samples:[]};
+            const result = report.modes[mode] = {status:'running',stage:'mount',geometry:{},samples:[],longTasks:{supported:null,observed:false,count:null}};
             try {
             const mounted = await mount(browser,mode,(value,diagnostics)=>{page=value;errors=diagnostics;});
             ({page,errors,getVendorRequests} = mounted);
@@ -204,8 +204,8 @@ async function geometry(page) {
                 result.stage='scheduling-diagnostics';
                 if(['baseline','motion','native-only'].includes(mode)) result.samples=await page.evaluate(async()=>{
                     const samples=[];let longTasks=0;
-                    const observer=typeof PerformanceObserver==='function' && PerformanceObserver.supportedEntryTypes.includes('longtask')
-                        ? new PerformanceObserver(list=>longTasks+=list.getEntries().length):null;
+                    const supported=Boolean(typeof PerformanceObserver==='function' && PerformanceObserver.supportedEntryTypes?.includes('longtask'));
+                    const observer=supported?new PerformanceObserver(list=>longTasks+=list.getEntries().length):null;
                     observer?.observe({type:'longtask'});
                     for(let i=0;i<5;i++){
                         let running=true,last=performance.now(),maxFrame=0,frames=0;
@@ -216,9 +216,13 @@ async function geometry(page) {
                         running=false;await new Promise(requestAnimationFrame);
                         samples.push({startCost,elapsed:performance.now()-started,maxFrame,frames});
                     }
-                    observer?.disconnect();window.panelLongTasks=longTasks;return samples;
+                    if(observer)longTasks+=observer.takeRecords().length;
+                    observer?.disconnect();window.panelLongTasks={supported,observed:!!observer,count:observer?longTasks:null};return samples;
                 });
-                result.longTasks=await page.evaluate(()=>window.panelLongTasks || 0);
+                result.longTasks=await page.evaluate(()=>window.panelLongTasks || {
+                    supported:Boolean(typeof PerformanceObserver==='function' && PerformanceObserver.supportedEntryTypes?.includes('longtask')),
+                    observed:false,count:null,
+                });
                 result.stage='reduced-motion';
                 // Reduced-motion flips during an active exit close synchronously.
                 await page.evaluate(()=>{overlay.open('cart');overlay.close();});

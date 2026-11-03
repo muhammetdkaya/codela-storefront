@@ -80,7 +80,7 @@ Mevcut `tests/package.py` deterministik paket, yanlış mapping'de eski temaya d
 | Düzeltilmiş native WAAPI | Aynı örneklenmiş başlangıç, cancellation/restore ve aynı CSS süreleriyle kütüphanesiz kontrol |
 | Motion | Aynı controller/token/içerik üzerinde yalnız animasyon aracını değiştirmek |
 
-`fallback` fixture'ı her animasyonda bilerek exception fırlatan vendor kullanıyorsa **adil native performans kontrolü değildir**; throw/catch maliyeti sadece bu kola yüklenir. Native-only kontrol, Motion yüklemeden aynı native animasyon yolunu kullanmalı. Mevcut `bad-export`/vendor-yok yolu, exception-per-animation olmadan bu davranışı test etmeye temel olabilir; adı ve ölçüm kapsamı açıkça yazılmalıdır.
+`fallback` fixture'ı her animasyonda bilerek exception fırlatan vendor kullandığı için **adil native performans kontrolü değildir**; throw/catch maliyeti sadece bu kola yüklenir. Bu inceleme üzerine eklenen `native-only` fixture'ı yalnız optional import ifadesini `Promise.resolve({})` ile değiştirir; aynı controller, helper, süre, örnekleme ve cancellation davranışını Motion yüklemeden çalıştırır. Sıfır vendor isteğini ayrıca doğrular. Bu kontrol doğru karşılaştırma temelidir; fixture'ın yazılmış olması CI/gerçek cihaz sonucunun geçtiği anlamına gelmez.
 
 ### Kabul için gerekli kanıt
 

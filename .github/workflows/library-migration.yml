@@ -26,6 +26,7 @@ jobs:
           node tests/library-budget.cjs
           python3 tests/build-assets.py
           python3 tests/package.py
+          python3 tests/review-package.py
           find theme -name '*.php' -type f -print0 | xargs -0 -n1 php -l
           php tests/script-modules.php > /tmp/script-modules.json
           php tests/homepage.php
@@ -39,7 +40,10 @@ jobs:
           node tests/cart-sync.cjs
           node tests/search-panel.cjs
           node tests/dock-gesture.cjs
+          node tests/product-focus.cjs
+          node tests/embla-showcase.cjs
           node tests/ui-kit.cjs
+          node tests/basecoat-pilot-source.cjs
           node --check theme/codela-storefront/assets/scripts/gallery-horizontal.js
           node --input-type=module --check < theme/codela-storefront/assets/scripts/overlay-controller.js
   browsers:
@@ -74,6 +78,7 @@ jobs:
           git show 687ef83e13621f6117264d04f220fa13c8836bb4:theme/codela-storefront/assets/scripts/overlay-controller.js > "$RUNNER_TEMP/panel-0195.js"
           echo "PANEL_BASELINE_SOURCE=$RUNNER_TEMP/panel-0195.js" >> "$GITHUB_ENV"
       - name: Install only the tested browser
+        id: browser_install
         timeout-minutes: 6
         run: |
           for source in /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; do
@@ -83,8 +88,21 @@ jobs:
           npx --no-install playwright install --with-deps ${{ matrix.engine }}
       - name: Motion pilot in real browsers
         run: node tests/panel-motion-browser.cjs
+      - name: Hero-only Embla pilot
+        if: ${{ !cancelled() && steps.browser_install.outcome == 'success' }}
+        env:
+          TEST_BROWSER: ${{ matrix.engine }}
+        run: node tests/embla-showcase-browser.cjs
+      - name: Native dock and sheet lifecycle
+        if: ${{ !cancelled() && steps.browser_install.outcome == 'success' }}
+        run: node tests/dock-sheet-lifecycle-browser.cjs
+      - name: Basecoat adoption comparison
+        if: ${{ !cancelled() && steps.browser_install.outcome == 'success' }}
+        env:
+          SF_ENGINE: ${{ matrix.engine }}
+        run: node tests/basecoat-pilot-browser.cjs
       - name: Native WordPress and existing browser contracts
-        if: matrix.engine != 'firefox'
+        if: ${{ !cancelled() && steps.browser_install.outcome == 'success' && matrix.engine != 'firefox' }}
         run: |
           node tests/asset-loading.cjs
           node tests/panel-presentation-browser.cjs
@@ -94,13 +112,13 @@ jobs:
           node tests/interaction-browser.cjs
           node tests/product-menu-scroll-browser.cjs
       - name: Immutable baseline screenshots
-        if: matrix.engine == 'chromium'
+        if: ${{ !cancelled() && steps.browser_install.outcome == 'success' && matrix.engine == 'chromium' }}
         run: |
           mkdir -p "$RUNNER_TEMP/codela-baseline"
           git archive 687ef83e13621f6117264d04f220fa13c8836bb4 | tar -x -C "$RUNNER_TEMP/codela-baseline"
           CODELA_BASELINE_ROOT="$RUNNER_TEMP/codela-baseline" CODELA_BASELINE_OUTPUT="$PWD/qa/library-baseline" node tests/fixtures/library-baseline/capture-cart.cjs
       - name: Warm-cache dependency graph
-        if: matrix.engine == 'chromium'
+        if: ${{ !cancelled() && steps.browser_install.outcome == 'success' && matrix.engine == 'chromium' }}
         run: |
           node tests/script-module-browser.cjs
           node tests/catalog-filters-browser.cjs
