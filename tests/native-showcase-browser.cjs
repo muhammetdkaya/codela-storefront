@@ -24,6 +24,13 @@ const bounded=async(promise,milliseconds,label)=>{
 // independently bounded; animation/load waits use finite waitForFunction calls.
 const read=(target,fn,arg)=>bounded(target.evaluate(fn,arg),5000,'Browser state evaluation');
 const pause=(page,ms)=>bounded(page.waitForTimeout(ms),ms+3000,'Browser settling pause');
+// Script-disabled pages can suppress page rAF/timers. Poll synchronous browser
+// observations from Node instead; a timeout remains a failure, never a skip.
+const pollNode=async(observe,accept,label,timeout=10000)=>{
+ const deadline=Date.now()+timeout;let state;
+ do{state=await observe();if(accept(state))return state;await new Promise(resolve=>setTimeout(resolve,50));}while(Date.now()<deadline);
+ throw new Error(label+' timed out; last state '+JSON.stringify(state));
+};
 const hero=page=>page.locator('.sf-section--hero').first();
 const track=page=>hero(page).locator('.sf-ui-gallery-track');
 const waitCount=(page,value)=>page.waitForFunction(value=>document.querySelector('.sf-section--hero [data-gallery-count]')?.textContent===value,value,{timeout:10000});
@@ -86,7 +93,7 @@ const settleScroll=async page=>{
     return {scrollX,scrollY,width:innerWidth,height:innerHeight,hero:rect(section),track:rect(track),slides:[...track?.children||[]].map(rect),trackStyle:style(track),nativeOffset:track?.scrollLeft,
      engineMode:section?.dataset.sfGalleryEngine,wrapperCount:document.querySelectorAll('.sf-gallery-viewport').length,count:section?.querySelector('[data-gallery-count]')?.textContent,
      images:[...section?.querySelectorAll('picture img')||[]].map(image=>({src:image.currentSrc||image.src,complete:image.complete,naturalWidth:image.naturalWidth,deferred:!!image.dataset.sfMediaSrc})),
-     focus:document.activeElement?.tagName+'.'+document.activeElement?.className,vendorConfigReads:window.__vendorConfigReads,wheels:window.__wheelEvents||[],input:window.__inputLog||[],countChanges:window.__countChanges,routeScrollCalls:window.__routeScrollCalls};
+     focus:document.activeElement?.tagName+'.'+document.activeElement?.className,vendorConfigReads:window.__vendorConfigReads,wheelBefore:window.__wheelBefore,wheels:window.__wheelEvents||[],input:window.__inputLog||[],countChanges:window.__countChanges,routeScrollCalls:window.__routeScrollCalls};
    });
    const path=prefix+'-failure-'+index;
    fs.writeFileSync(path+'.json',JSON.stringify({browser:browserName,provenance,info,requests,errors,state},null,2));
@@ -134,8 +141,10 @@ const settleScroll=async page=>{
   await page.goto('https://showcase.test/',{waitUntil:'domcontentloaded'});
   if(javaScriptEnabled&&!single)await page.waitForSelector('.sf-section--hero[data-sf-gallery-ready="1"]');
   const firstImage=await hero(page).locator('picture img').first().elementHandle();
-  await page.waitForFunction(image=>image.complete&&image.naturalWidth>0,firstImage,{timeout:10000});
-  await flush(page);
+  if(javaScriptEnabled){
+   await page.waitForFunction(image=>image.complete&&image.naturalWidth>0,firstImage,{timeout:10000});
+   await flush(page);
+  }else await pollNode(()=>read(firstImage,image=>({complete:image.complete,width:image.naturalWidth})),state=>state.complete&&state.width>0,'No-JS priority image');
   const test={...entry,page,close:async()=>{
    noVendor(test);assert.deepEqual(errors,[],info.phase+' has no page error');
    if(javaScriptEnabled)assert.equal(await read(page,()=>window.__vendorConfigReads),0,'Obsolete vendor configuration is not read');
@@ -209,11 +218,18 @@ const settleScroll=async page=>{
      window.__wheelParent=track.parentElement;window.__wantedWheelFocus=document.activeElement;window.__wheelEvents=[];
      document.addEventListener('wheel',event=>{
       const index=Number(section.querySelector('[data-gallery-count]').textContent.split('/')[0])-1,selected=track.children[index],style=getComputedStyle(track);
-      window.__wheelEvents.push({trusted:event.isTrusted,shift:event.shiftKey,prevented:event.defaultPrevented,deltaX:event.deltaX,deltaY:event.deltaY,left:track.scrollLeft,width:track.clientWidth,selectedOffset:selected.getBoundingClientRect().left-track.getBoundingClientRect().left,transform:style.transform,overflow:style.overflowX,snap:style.scrollSnapType,sameParent:track.parentElement===window.__wheelParent,focus:document.activeElement===window.__wantedWheelFocus});
+      window.__wheelEvents.push({phase:'passive-document-bubble',cancelable:event.cancelable,trusted:event.isTrusted,shift:event.shiftKey,prevented:event.defaultPrevented,deltaX:event.deltaX,deltaY:event.deltaY,left:track.scrollLeft,width:track.clientWidth,selectedOffset:selected.getBoundingClientRect().left-track.getBoundingClientRect().left,transform:style.transform,overflow:style.overflowX,snap:style.scrollSnapType,sameParent:track.parentElement===window.__wheelParent,focus:document.activeElement===window.__wantedWheelFocus});
      },{passive:true});
     });
-    const before=await scrollState(page);await page.mouse.move(200,180);
+    await page.mouse.move(200,180);
     if(shifted)await page.keyboard.down('Shift');
+    const preInput=await read(page,()=>{
+     const section=document.querySelector('.sf-section--hero'),track=section.querySelector('.sf-ui-gallery-track'),selected=track.children[1];
+     return window.__wheelBefore={left:track.scrollLeft,width:track.clientWidth,selectedOffset:selected.getBoundingClientRect().left-track.getBoundingClientRect().left,scrollY,scrollX,count:section.querySelector('[data-gallery-count]').textContent,focus:document.activeElement===window.__wantedWheelFocus,sameParent:track.parentElement===window.__wheelParent};
+    });
+    assert.equal(preInput.count,'02 / 05');assert(Math.abs(preInput.left-preInput.width)<1,'Before input, native offset is exactly the second slide');
+    assert(Math.abs(preInput.selectedOffset)<1,'Before input, selected slide is aligned');assert.equal(preInput.scrollY,0);assert.equal(preInput.scrollX,0);assert(preInput.focus&&preInput.sameParent);
+    const before=await scrollState(page);
     await page.mouse.wheel(shifted?0:350,shifted?350:0);
     if(shifted)await page.keyboard.up('Shift');
     const first=await settleScroll(page),events=await read(page,()=>window.__wheelEvents);
@@ -221,8 +237,9 @@ const settleScroll=async page=>{
     assert.equal(event.trusted,true);assert.equal(event.shift,shifted);assert.equal(event.prevented,false,'Native wheel delta is not intercepted');
     assert.equal(Math.abs(event.deltaX)+Math.abs(event.deltaY),350,'Native delta is not duplicated or rescaled');
     assert.equal(event.transform,'none');assert.equal(event.overflow,'auto');assert.equal(event.snap,'x mandatory');
-    assert(Math.abs(event.left-event.width)<1,'First default action starts at the original native offset');
-    assert(Math.abs(event.selectedOffset)<1,'Selected slide is aligned before the first default action');
+    // A passive event may arrive after compositor scrolling (CI5 baseline:
+    // left=741 at bubble, then780 settled). Offset/alignment are asserted above
+    // before input; bubble geometry is diagnostic, not a pre-default barrier.
     assert.equal(event.sameParent,true);assert.equal(event.focus,true);
     assert(await read(page,()=>document.activeElement===window.__wantedWheelFocus),'Exact track/CTA focus survives first wheel');
     if(!shifted&&mode==='baseline')assert(first.left>before.left+50,'The real native horizontal baseline visibly consumes its first wheel delta');
@@ -230,7 +247,7 @@ const settleScroll=async page=>{
     assert(y>0&&y<900,'Hero remains visible for reverse wheel');await page.mouse.move(200,y);await page.mouse.wheel(-350,0);
     const reverse=await settleScroll(page);
     assert(await read(page,()=>document.activeElement===window.__wantedWheelFocus),'Exact focus survives reverse wheel');
-    await assertNative(page);measurements.push({mode,before,first,reverse,events:await read(page,()=>window.__wheelEvents)});await test.close();
+    await assertNative(page);measurements.push({mode,preInput,before,first,reverse,events:await read(page,()=>window.__wheelEvents)});await test.close();
    }
    sameScroll(measurements[0].first,measurements[1].first,'First native/candidate wheel parity');
    sameScroll(measurements[0].reverse,measurements[1].reverse,'Reverse native/candidate wheel parity');
@@ -292,9 +309,29 @@ const settleScroll=async page=>{
    assert.equal(await hero(test.page).getAttribute('data-sf-gallery-ready'),null);
    assert.equal(await read(track(test.page),element=>getComputedStyle(element).overflowX),'auto');
    assert.equal(await hero(test.page).locator('.sf-section-slide').count(),3);
-   // Playwright evaluation remains available to inspect a JS-disabled page.
-   await read(track(test.page),element=>element.scrollLeft=element.clientWidth);
-   await test.page.waitForFunction(()=>{const track=document.querySelector('.sf-section--hero .sf-ui-gallery-track');return Math.abs(track.scrollLeft-track.clientWidth)<1;},null,{timeout:5000});
+   // Inspect real no-script layout, then use actual wheel input. No assigned
+   // scrollLeft or page scheduling can manufacture a passing movement result.
+   const layout=await read(hero(test.page),section=>{
+    const image=section.querySelector('picture img'),heading=section.querySelector('h1'),imageRect=image.getBoundingClientRect(),headingRect=heading.getBoundingClientRect();
+    return {image:{width:imageRect.width,height:imageRect.height,complete:image.complete,naturalWidth:image.naturalWidth},heading:{text:heading.textContent,width:headingRect.width,height:headingRect.height},overflow:document.documentElement.scrollWidth-innerWidth};
+   });
+   assert(layout.image.complete&&layout.image.naturalWidth>0&&layout.image.width>0&&layout.image.height>0,'No-JS priority image is loaded and laid out');
+   assert(layout.heading.text.trim()&&layout.heading.width>0&&layout.heading.height>0,'No-JS caption remains readable');assert(layout.overflow<=1);
+   const position=()=>read(track(test.page),element=>({left:element.scrollLeft,width:element.clientWidth,scrollY,scrollX,secondOffset:element.children[1].getBoundingClientRect().left-element.getBoundingClientRect().left}));
+   const initial=await position();assert.equal(initial.left,0);assert.equal(initial.scrollY,0);
+   const settleNoScript=async(target,label)=>{
+    const started=Date.now();let signature,since=started;
+    return pollNode(position,state=>{
+     const next=JSON.stringify(state),now=Date.now();if(next!==signature){signature=next;since=now;}
+     return Math.abs(state.left-target*state.width)<1&&now-started>=400&&now-since>=180;
+    },label);
+   };
+   await test.page.mouse.move(200,180);await test.page.mouse.wheel(350,0);
+   const moved=await settleNoScript(1,'No-JS native first wheel');assert(Math.abs(moved.secondOffset)<1);
+   assert.equal(moved.scrollY,0);assert.equal(moved.scrollX,0);
+   const revealed=await pollNode(()=>read(track(test.page),element=>[...element.children[1].querySelectorAll('picture img:not([data-sf-media-src])')].map(image=>{const rect=image.getBoundingClientRect();return {src:image.currentSrc||image.src,complete:image.complete,naturalWidth:image.naturalWidth,width:rect.width,height:rect.height};}).find(image=>image.width>0&&image.height>0&&!image.src.startsWith('data:'))),image=>image?.complete&&image.naturalWidth>0,'No-JS revealed real image');
+   await test.page.mouse.wheel(-350,0);await settleNoScript(0,'No-JS native reverse wheel');
+   fs.writeFileSync(prefix+'-no-javascript.json',JSON.stringify({browser:browserName,provenance,layout,initial,moved,revealed,restored:await position()},null,2));
    assert.equal(await hero(test.page).locator('[data-gallery-controls]:visible').count(),0,'No-JS controls stay hidden');await test.close();
   }
   {
