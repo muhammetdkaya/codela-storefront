@@ -43,7 +43,8 @@ const out=`qa/framework7/${engine}`;fs.mkdirSync(out,{recursive:true});
   assert.equal(await dock.isVisible(),width<=700,'Existing dock breakpoint');
   if(width<=700){
    const b=await dock.boundingBox();
-   await page.mouse.move(b.x+b.width/8,b.y+24);await page.mouse.down();await page.waitForTimeout(300);
+   // Read the pressed paint before the 240ms hold timer switches to scrubbing.
+    await page.mouse.move(b.x+b.width/8,b.y+24);await page.mouse.down();await page.waitForTimeout(160);
    const material=await dock.locator('.sf-dock-surface').evaluate(el=>{const a=getComputedStyle(el,'::before'),b=getComputedStyle(el,'::after');return{normal:a.opacity,pressed:b.opacity,shadow:b.boxShadow,position:a.transform,thumbPosition:b.transform}});
    if(!baseline){assert.equal(material.pressed,'1');assert.equal(material.normal,'0');assert.notEqual(material.shadow,'none');assert.equal(material.position,material.thumbPosition,'Paints share relocation geometry');}
    await snap('dock-pressed');await page.mouse.up();
