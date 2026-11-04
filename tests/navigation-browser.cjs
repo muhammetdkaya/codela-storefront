@@ -258,6 +258,11 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
     assert(Math.abs(layout.photo.height-layout.detail.height)<1,'Desktop cart photo geometry unchanged at '+width);
   }
   assert(!layout.overflow,'Long cart title does not cause horizontal scrolling at '+width);
+  if(width<=700){
+    const reduce=await page.locator('.sf-remove').evaluate(el=>({background:getComputedStyle(el).backgroundImage,shadow:getComputedStyle(el).boxShadow,rect:el.getBoundingClientRect().toJSON()}));
+    assert.equal(reduce.shadow,'none','Removal action is visually light at '+width);
+    assert(reduce.rect.height>=44&&reduce.rect.width>=44,'Removal keeps 44px touch target at '+width);
+  }
   assert(Math.abs(layout.row.x-layout.summary.x)<1,'List and summary share left edge at '+width);
   assert(Math.abs(layout.row.x-layout.cta.x)<1,'Checkout is centered on list axis at '+width);
   assert(Math.abs(layout.row.width-layout.cta.width)<1,'Checkout and list share width at '+width);
