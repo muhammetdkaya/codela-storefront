@@ -11,7 +11,7 @@ const paint=selector=>page.locator(selector).evaluate(el=>{const c=getComputedSt
 assert.deepEqual(await paint('#native'),await paint('#reference'),'Native Woo uses the same complete Button primitive');
 assert((await paint('#native')).height>=54);
 await page.locator('#native').hover();await page.mouse.down();await page.waitForTimeout(150);
-assert(await page.locator('#native').evaluate(e=>new DOMMatrix(getComputedStyle(e).transform).a>1.02),'Native action shares press feedback');await page.mouse.up();
+assert(await page.locator('#native').evaluate(e=>Math.abs(new DOMMatrix(getComputedStyle(e).transform).a - parseFloat(getComputedStyle(e).getPropertyValue('--sf-ui-scale-action'))) < 0.005),'Native action shares press feedback');await page.mouse.up();
 assert.equal(await page.locator('button.button').evaluate(e=>getComputedStyle(e).pointerEvents),'none','Disabled native control cannot activate');
 await page.locator('body').evaluate(e=>e.classList.add('logged-in','woocommerce-account','codela-my-account-layout'));
 const plugin=await paint('#native');

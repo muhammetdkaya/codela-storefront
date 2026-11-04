@@ -1,0 +1,50 @@
+name: Shared UI adoption (no deployment)
+on:
+  push:
+    branches: [work/framework7-ui-20261104]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: shared-ui-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  acceptance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [chromium, webkit, firefox]
+    env:
+      TEST_WEBKIT: ${{ matrix.engine == 'webkit' && '1' || '' }}
+      TEST_FIREFOX: ${{ matrix.engine == 'firefox' && '1' || '' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npx playwright install --with-deps ${{ matrix.engine }}
+      - name: Sources, payload and browser acceptance
+        run: |
+          python3 scripts/build-assets.py --check
+          python3 scripts/check-ui-upstream.py
+          node tests/framework7-ui-browser.cjs
+          node tests/dock-sheet-lifecycle-browser.cjs
+      - name: Product and header continuity
+        if: matrix.engine != 'firefox'
+        run: |
+          node tests/product-no-dock-browser.cjs
+          node tests/product-first-paint-browser.cjs
+          node tests/catalog-header-skeleton-browser.cjs
+          node tests/desktop-tools-browser.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: shared-ui-${{ matrix.engine }}
+          path: qa/
+          retention-days: 7

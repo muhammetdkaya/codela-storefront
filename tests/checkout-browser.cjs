@@ -44,7 +44,8 @@ assert(!actual.overflow,'No horizontal overflow '+width+': '+JSON.stringify(actu
 assert.equal(actual.header,1);assert.equal(actual.dock,0);
 assert(actual.inputHeight>=54,'Shared input height');
 assert(actual.buttonHeight>=54,'Shared button action height');
-assert.equal(actual.inputRadius,actual.buttonRadius,'Shared radius');
+assert.equal(actual.inputRadius,'12px','Inputs retain the field radius');
+assert.equal(actual.buttonRadius,'999px','Submit uses the shared capsule Button radius');
 assert.equal(actual.buttonBackground,'color(srgb 0.133333 0.137255 0.121569 / 0.9)','Shared primary color');
 assert.equal(actual.summaryBackground,'rgba(0, 0, 0, 0)','Summary is transparent inside its one shared sidebar surface');
 assert.equal(actual.submit,'submit','Native submit semantics');

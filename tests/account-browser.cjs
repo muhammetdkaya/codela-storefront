@@ -169,8 +169,8 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
         const parent=await page.locator('.sf-auth-social').boundingBox();
         assert(social.width>=parent.width-2,'Google Button fills same form width');
         assert(social.height>=52&&social.height<=54,'Google Button reuses compact UI Kit action height');
-        assert.equal(social.background,'color(srgb 1 1 1 / 0.78)','Google Button is neutral white, not a custom orange CTA');
-        assert.equal(social.radius,'12px','Google Button uses the shared control radius');
+        assert.equal(social.background,'rgb(237, 237, 237)','Google Button uses the shared neutral tonal variant');
+        assert.equal(social.radius,'999px','Google Button uses the shared capsule Button radius');
         if(social.border!=='1px')console.error('Secondary Button computed styles',social,await page.locator('.sf-auth-google').evaluate(el=>({
          classes:el.className, borderStyle:getComputedStyle(el).borderTopStyle,
          borderToken:getComputedStyle(el).getPropertyValue('--sf-ui-border'),

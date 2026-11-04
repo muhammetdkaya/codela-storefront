@@ -1,4 +1,4 @@
-/* Native Woo Button adapters apply only to theme content; Codela account paint stays plugin-owned. */
+/* Native Woo Button adapters apply only to theme content, including account=theme. */
 /* Woo guest submit controls consume this same Button primitive without template overrides.
    Native Woo POST, nonce, validation and registered third-party hooks remain intact. */
 /**
@@ -93,9 +93,16 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product a.sf-ui
   /* A single tinted layer, never a stacked white overlay/gradient. */
   background:var(--sf-ui-glass-surface)!important;
   color:var(--sf-ui-glass-ink);
-  box-shadow:var(--sf-ui-glass-shadow)!important;
+  box-shadow:var(--sf-ui-surface-shadow,var(--sf-ui-glass-shadow))!important;
   -webkit-backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation)) contrast(var(--sf-ui-glass-contrast)) brightness(var(--sf-ui-glass-brightness));
   backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation)) contrast(var(--sf-ui-glass-contrast)) brightness(var(--sf-ui-glass-brightness));
+}
+/* Adapt the same glass edge to compact controls; avoid a second painted layer. */
+.woocommerce div.product .sf-ui-gallery .woocommerce-product-gallery__trigger,
+:is(.sf-shell,.sf-product-plugin-footer) .sf-ui-icon-button--soft,
+#sf-panel button.sf-ui-icon-button--soft,
+body:not(.codela-my-account-layout) .sf-content .sf-ui-icon-button--soft{
+  --sf-ui-surface-shadow:var(--sf-ui-glass-control-shadow);
 }
 /* One product-panel surface. The real Woo summary at first paint and the
    progressively enhanced sheet use the exact same material and corner shape.
@@ -203,7 +210,7 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
   min-height:var(--sf-ui-button-height,var(--sf-ui-action-height));
   padding:var(--sf-ui-button-padding-y,17px) var(--sf-ui-button-padding-x,24px);
   border:0;
-  border-radius:var(--sf-ui-control-radius);
+  border-radius:var(--sf-ui-button-radius);
   font:inherit;
   font-size:var(--sf-ui-button-font-size,inherit);
   font-weight:inherit;
@@ -234,14 +241,11 @@ body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button--primary,.code
 body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button--secondary,.codela-maa-btn--ghost),
 .sf-shell .sf-ui-button--secondary,
 .woocommerce .sf-shell .sf-ui-button--secondary{
-  background:var(--sf-ui-surface);
-  background:color-mix(in srgb,var(--sf-ui-surface) 78%,transparent);
-  background-image:var(--sf-ui-glass-highlight);
+  /* Framework7 tonal variant, adapted to the neutral store palette. */
+  background:var(--sf-ui-button-tonal);
   color:var(--sf-ui-control-ink);
-  border:1px solid var(--sf-ui-border);
-  box-shadow:var(--sf-ui-action-shadow);
-  -webkit-backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation));
-  backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation));
+  border:1px solid transparent;
+  box-shadow:none;
 }
 body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button--quiet,.codela-maa-btn--danger),
 .sf-shell .sf-ui-button--quiet{
@@ -357,8 +361,10 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
 }
 body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button--secondary,.codela-maa-btn--ghost):active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]),
 .sf-shell .sf-ui-button--secondary:active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]){
-  background-image:var(--sf-ui-glass-highlight-pressed);
+  background-color:var(--sf-ui-button-tonal-pressed);
 }
+body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button--quiet,.codela-maa-btn--danger):active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]),
+.sf-shell .sf-ui-button--quiet:active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]){background-color:var(--sf-ui-button-tonal)}
 .sf-shell :is(.sf-ui-icon-button,.sf-ui-pressable):is(:disabled,[aria-disabled="true"],[aria-busy="true"]),
 body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-icon-button,.sf-ui-pressable):is(:disabled,[aria-disabled="true"],[aria-busy="true"]){
   transform:none;

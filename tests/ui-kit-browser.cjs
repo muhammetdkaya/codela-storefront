@@ -15,7 +15,7 @@ const sample=execFileSync(process.env.PHP_BIN||'php',['tests/render-ui.php'],{en
    const rect=await soft.boundingBox();
    assert(rect.width>=44&&rect.height>=44,'IconButton touch target stays 44px');
    const properties=await soft.evaluate(el=>({radius:getComputedStyle(el).borderRadius,bg:getComputedStyle(el).backgroundColor}));
-   assert.equal(properties.bg,'rgba(247, 247, 249, 0.96)','Soft icon button uses shared floating surface token');
+   assert.equal(properties.bg,'rgba(255, 255, 255, 0.75)','Soft icon button uses shared floating surface token');
    assert.equal(properties.radius,'999px','Icon button has shared circular shape');
    assert.equal(await soft.evaluate(el=>getComputedStyle(el).borderTopColor),'rgba(0, 0, 0, 0)','Floating control has no solid perimeter stroke');
    const secondary=page.locator('button.sf-ui-button--secondary');
@@ -35,7 +35,7 @@ const sample=execFileSync(process.env.PHP_BIN||'php',['tests/render-ui.php'],{en
     document.querySelector('.ui-submit').addEventListener('click',()=>window.clicks++);
    });
    const scale=el=>new DOMMatrixReadOnly(getComputedStyle(el).transform).a;
-   for(const [control,target] of [[submit,1.025],[soft,1.08]]){
+   for(const [control,target] of [[submit,1.02],[soft,1.04]]){
     const before=await control.evaluate(el=>({width:el.offsetWidth,height:el.offsetHeight}));
     const box=await control.boundingBox();
     await page.mouse.move(box.x+box.width/2,box.y+box.height/2);
@@ -52,12 +52,12 @@ const sample=execFileSync(process.env.PHP_BIN||'php',['tests/render-ui.php'],{en
    await submit.focus();
    await page.keyboard.down('Space');
    await page.waitForTimeout(150);
-   assert(await submit.evaluate(scale)>1.02,'Keyboard press has the same feedback');
+   assert(await submit.evaluate(scale)>1.019,'Keyboard press has the same feedback');
    await page.keyboard.up('Space');
    assert.equal(await page.evaluate(()=>window.clicks),2,'Keyboard activates exactly once');
    await page.waitForTimeout(440);
    assert.equal(await submit.evaluate(el=>getComputedStyle(el).outlineStyle),'solid','Keyboard focus remains visible');
-   assert((await soft.evaluate(el=>getComputedStyle(el).backdropFilter)).includes('blur(10px)'),'Material samples the backdrop');
+   assert((await soft.evaluate(el=>getComputedStyle(el).backdropFilter)).includes('blur(16px)'),'Material samples the backdrop');
    assert.notEqual(await submit.evaluate(el=>getComputedStyle(el).backgroundImage),'none','Surface has a light layer');
    await soft.evaluate(el=>{el.disabled=true;el.classList.add('is-pressed')});
    await page.waitForTimeout(440);

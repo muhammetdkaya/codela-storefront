@@ -6,9 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Sepet paneli hızlı açma/kapatma ve ters yön değişiminde mevcut konumundan kesintisiz devam eder; eski animasyonun tamamlanması yeni işlemi bozamaz.",
-    "Mobil dock hareketleri doğru pointer ile izlenir; ekran boyutu değişimindeki eski zamanlayıcılar ve ürün paneli kapandıktan sonraki bekleyen odak işlemleri temizlenir.",
-    "Native hero galerisi yeniden başlatma ve sayfa geçişlerinde eski dinleyicileri temizler; değişmeyen sayaç gereksiz tekrar duyurulmaz. Mevcut wheel, klavye, odak ve azaltılmış hareket davranışı korunur.",
-    "Motion, Embla ve Basecoat pilotları değerlendirildi; ek fayda veya davranış koruma koşullarını karşılamadıklarından üretime alınmadı. Tema yeni vendor runtime eklemez; WooCommerce fiyat, stok ve sepet otoritesi korunur."
+    "Framework7 9.3.0 kaynaklarından uyarlanan cam yüzeyler, kapsül biçimli butonlar ve ortak seçili sekme göstergesi header, mobil dock, sepet, hesap ve satın alma bileşenlerinde kullanılır.",
+    "15 yerel Framework7 SVG ikonu ile tutarlı 24px ikon boyutları sağlanır; ayrı framework runtime, router, ikon fontu veya CDN yüklenmez.",
+    "WebKit basılı dock göstergesi anında doğru katmana geçer; mevcut WooCommerce formu, Store API, 44/54px dokunma hedefleri ve reduced-motion davranışı korunur."
   ]
 }

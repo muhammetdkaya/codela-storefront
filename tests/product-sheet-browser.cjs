@@ -54,8 +54,8 @@ for(const width of [320,390,700]){
  });
  assert(material,'Large panel keeps shared dock filter, border and shadow');
  const panelTint=await page.locator('.sf-product-sheet').evaluate(e=>getComputedStyle(e).backgroundColor);
- assert.equal(panelTint,'rgba(247, 247, 249, 0.78)','Whole panel has a visibly translucent tint instead of almost opaque white');
- assert.equal(await page.locator('.sf-product-quantity').evaluate(e=>getComputedStyle(e).backgroundColor),'rgba(247, 247, 249, 0.96)','Compact quantity keeps header tint independent of the large panel');
+ assert.equal(panelTint,'rgba(255, 255, 255, 0.85)','Whole panel has a visibly translucent tint instead of almost opaque white');
+ assert.equal(await page.locator('.sf-product-quantity').evaluate(e=>getComputedStyle(e).backgroundColor),'rgba(255, 255, 255, 0.75)','Compact quantity keeps header tint independent of the large panel');
  const panelBox=await page.locator('.sf-product-sheet').boundingBox();
  assert(Math.abs(panelBox.width-Math.min(width-32,430))<1,'Panel uses the same inset and max width as the site dock');
  assert(Math.abs(panelBox.x-(width-panelBox.width)/2)<1,'Panel is centered like the dock');
@@ -217,7 +217,7 @@ const surfaceStyle=selector=>page.locator(selector).evaluate(e=>{
 });
 const nativeSurface=await surfaceStyle('div.product .sf-product-overview > .summary');
 assert.equal(nativeSurface.borderRadius,'28px','Native first paint keeps the more oval 28px product-panel corners');
-assert.equal(nativeSurface.background,'rgba(247, 247, 249, 0.78)','Native panel uses shared translucent glass token');
+assert.equal(nativeSurface.background,'rgba(255, 255, 255, 0.85)','Native panel uses shared translucent glass token');
 assert.equal(nativeSurface.footerBackground,'rgba(0, 0, 0, 0)','Native purchase footer has no extra white pill');
 assert.equal(nativeSurface.footerShadow,'none','Native purchase footer has no independent shadow');
 assert.equal(nativeSurface.footerBorder,'0px','Native purchase footer has no second surface border');

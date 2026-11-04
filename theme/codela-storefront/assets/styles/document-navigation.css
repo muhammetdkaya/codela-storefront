@@ -138,7 +138,7 @@ html[data-sf-navigation-target="account"] .sf-skeleton-layout{padding-inline:cla
 .sf-skeleton-account{display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;align-items:start}
 .sf-skeleton-account-menu,.sf-skeleton-account-content{min-width:0}
 .sf-skeleton-account-link{display:flex;align-items:center;gap:16px;min-height:56px;padding:12px 4px;box-sizing:border-box;border-bottom:1px solid var(--sf-ui-border)}
-.sf-skeleton-account-icon{width:22px;height:22px;flex:none;border-radius:5px}
+.sf-skeleton-account-icon{width:var(--sf-ui-icon);height:var(--sf-ui-icon);flex:none;border-radius:5px}
 .sf-skeleton-account-label{width:60%;height:14px}
 .sf-skeleton-account-content{display:grid;gap:24px}
 .sf-skeleton-account-summary{display:grid;gap:24px;padding:clamp(20px,3vw,32px);border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius,12px)}

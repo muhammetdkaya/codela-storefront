@@ -5,7 +5,7 @@ function codela_sf_icon( string $name ): string {
     if ( ! in_array( $name, [ 'download', 'sliders-horizontal', 'search', 'shopping-bag', 'menu', 'x', 'arrow-left', 'arrow-right', 'plus', 'minus', 'house', 'user-round', 'map-pin', 'log-out' ], true ) ) { return ''; }
     static $versions = [];
     $versions[ $name ] ??= hash_file( 'crc32b', __DIR__ . '/../assets/icons/' . $name . '.svg' );
-    return '<img class="sf-icon" width="22" height="22" alt="" src="' . esc_url( get_template_directory_uri() . '/assets/icons/' . $name . '.svg?ver=' . $versions[ $name ] ) . '">';
+    return '<img class="sf-icon" width="24" height="24" alt="" src="' . esc_url( get_template_directory_uri() . '/assets/icons/' . $name . '.svg?ver=' . $versions[ $name ] ) . '">';
 }
 function codela_sf_menu( bool $desktop = false ): string {
     if ( ! has_nav_menu( 'primary' ) ) { return ''; }

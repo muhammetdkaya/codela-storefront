@@ -17,7 +17,7 @@ function apply_filters($name,$value){return $value;}
 function is_account_page() { return true; }
 function is_wc_endpoint_url() { return false; }
 function sanitize_html_class( $s ) { return preg_replace('/[^a-zA-Z0-9_-]/', '', $s); }
-function codela_sf_icon( $name ) { return str_replace(['<svg', 'class="lucide'], ['<svg aria-hidden="true"', 'class="sf-icon lucide'], file_get_contents(__DIR__.'/../theme/codela-storefront/assets/icons/'.$name.'.svg')); }
+function codela_sf_icon( $name ) { return '<img class="sf-icon" width="24" height="24" alt="" src="data:image/svg+xml;base64,' . base64_encode( file_get_contents( __DIR__ . '/../theme/codela-storefront/assets/icons/' . $name . '.svg' ) ) . '">'; }
 function get_current_user_id() { return 42; }
 function do_action( $name ) { echo '<!-- hook:'.esc_html($name).' -->'; }
 function wc_get_account_menu_items() { return ['dashboard'=>'Overview','orders'=>'Orders','edit-address'=>'Addresses','edit-account'=>'Account details','privacy'=>'Privacy choices','customer-logout'=>'Log out']; }

@@ -71,9 +71,9 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
    const purchase=await page.locator('.sf-product-purchase').evaluate(el=>({position:getComputedStyle(el).position,rect:el.getBoundingClientRect().toJSON(),bg:getComputedStyle(el).backgroundColor,image:getComputedStyle(el).backgroundImage,blur:getComputedStyle(el).backdropFilter,shadow:getComputedStyle(el).boxShadow}));
    // Since 0.1.194 the native purchase becomes inline/unpainted at 701px.
    // The separate gallery/summary column breakpoint remains 901px.
-   assert.equal(purchase.bg,width>700?'rgba(0, 0, 0, 0)':'rgba(247, 247, 249, 0.96)','Native purchase material follows the 700px mobile boundary at '+width);
+   assert.equal(purchase.bg,width>700?'rgba(0, 0, 0, 0)':'rgba(255, 255, 255, 0.75)','Native purchase material follows the 700px mobile boundary at '+width);
    if(width>700){assert.equal(purchase.blur,'none','Inline purchase never blurs at '+width);assert.equal(purchase.shadow,'none','Inline purchase has no floating shadow at '+width);}
-   else {assert(purchase.blur.includes('blur(10px)'),'Mobile purchase retains shared blur at '+width);assert.notEqual(purchase.shadow,'none','Mobile purchase retains shared surface shadow at '+width);}
+   else {assert(purchase.blur.includes('blur(16px)'),'Mobile purchase retains shared blur at '+width);assert.notEqual(purchase.shadow,'none','Mobile purchase retains shared surface shadow at '+width);}
    assert.equal(purchase.image,'none','Product purchase has no stacked white gradient');
    assert.equal(await page.locator('form.cart .single_add_to_cart_button').count(),1,'One native submit control');
    if(width<=700){
@@ -99,8 +99,8 @@ const documentHtml=`<!doctype html><html lang="tr"><head><meta name="viewport" c
    assert.equal(await page.locator('.flex-control-thumbs img').nth(1).evaluate(el=>getComputedStyle(el).opacity),'1','Native Woo opacity cannot fade other previews');
    assert(rail.thumbWidth>=44&&rail.thumbHeight>=44,'Native thumbnail click target remains at least 44px');
    assert.equal(rail.padding,width>900?'4px':'6px','Native Woo rule cannot erase rail spacing');
-   assert.equal(rail.background,width>900?'rgba(0, 0, 0, 0)':'rgba(247, 247, 249, 0.96)','Rail reuses floating glass surface');
-   assert(width>900?rail.blur==='none':rail.blur.includes('blur(10px)'),'Rail uses the appropriate shared inline/floating variant');
+   assert.equal(rail.background,width>900?'rgba(0, 0, 0, 0)':'rgba(255, 255, 255, 0.75)','Rail reuses floating glass surface');
+   assert(width>900?rail.blur==='none':rail.blur.includes('blur(16px)'),'Rail uses the appropriate shared inline/floating variant');
    if(width<=900)assert.notEqual(rail.border,'rgba(0, 0, 0, 0)','Mobile native active selection edge preserved');
    if(width<=390)assert(rail.scrollable,'Long gallery rail scrolls on narrow screens');
    if([390,1280].includes(width)){
