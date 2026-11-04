@@ -18,7 +18,10 @@ const cart={items_count:1,items:[{key:'one',name:'Doğal taş dekoratif obje',pe
 const out=`qa/framework7/${engine}`;fs.mkdirSync(out,{recursive:true});
 (async()=>{const browser=await pw[engine].launch();const results=[];try{
  for(const width of [320,390,430,700,701,900,901,1100,1280]){
-  const page=await browser.newPage({viewport:{width,height:900},hasTouch:true}),errors=[];
+  // Mouse press/drag below must use a mouse-enabled context. WebKit touch emulation
+   // does not guarantee pointer-mouse events from Playwright's mouse API; touch
+   // lifecycle is covered separately by the dedicated dock gesture suite.
+   const page=await browser.newPage({viewport:{width,height:900},hasTouch:false}),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.route('**/*',r=>{
    const u=new URL(r.request().url());
