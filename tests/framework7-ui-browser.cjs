@@ -51,8 +51,14 @@ const out=`qa/framework7/${engine}`;fs.mkdirSync(out,{recursive:true});
    await dock.evaluate(el=>{el.classList.add('has-selection','is-pressing');el.style.setProperty('--sf-dock-index','0');});
    await page.waitForTimeout(160);
    const material=await dock.locator('.sf-dock-surface').evaluate(el=>{const a=getComputedStyle(el,'::before'),b=getComputedStyle(el,'::after');return{normal:a.opacity,pressed:b.opacity,shadow:b.boxShadow,position:a.transform,thumbPosition:b.transform}});
-   if(!baseline){assert.equal(material.pressed,'1',`Pressed thumb opacity on ${engine} ${width}px`);assert.equal(material.normal,'0');assert.notEqual(material.shadow,'none');assert.equal(material.position,material.thumbPosition,'Paints share relocation geometry');}
    await snap('dock-pressed');
+   if(!baseline){
+    if(material.pressed!=='1'){
+     const diagnostic=await dock.evaluate(d=>({classes:d.className,selected:d.matches('.sf-mobile-dock.has-selection.is-pressing'),surface:d.querySelector('.sf-dock-surface')?.className,before:getComputedStyle(d.querySelector('.sf-dock-surface'),'::before').cssText,after:getComputedStyle(d.querySelector('.sf-dock-surface'),'::after').cssText,afterOpacity:getComputedStyle(d.querySelector('.sf-dock-surface'),'::after').opacity,reducedMotion:matchMedia('(prefers-reduced-motion:reduce)').matches,forcedColors:matchMedia('(forced-colors:active)').matches}));
+     console.error('Pressed paint diagnostics:',JSON.stringify({engine,width,material,diagnostic}));
+    }
+    assert.equal(material.pressed,'1',`Pressed thumb opacity on ${engine} ${width}px`);assert.equal(material.normal,'0');assert.notEqual(material.shadow,'none');assert.equal(material.position,material.thumbPosition,'Paints share relocation geometry');
+   }
    await dock.evaluate((el,state)=>{el.classList.toggle('has-selection',state.selected);el.classList.toggle('is-pressing',state.pressed);if(state.index)el.style.setProperty('--sf-dock-index',state.index);else el.style.removeProperty('--sf-dock-index');},prior);
   }
   for(const panel of ['search','cart','account']){
