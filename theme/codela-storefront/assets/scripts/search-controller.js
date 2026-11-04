@@ -14,7 +14,7 @@ export function createSearchController({ $, config, t, getCurrent }) {
     function renderDiscovery() {
         const terms = Array.isArray(discoveryTerms) ? discoveryTerms : [];
         $('#sf-popular-list').innerHTML = terms.map(query =>
-            '<button type="button" class="sf-popular-term sf-ui-pressable" data-search-term="' +
+            '<button type="button" class="sf-popular-term sf-ui-surface sf-ui-pressable" data-search-term="' +
             escape(query) + '">' + escape(query) + '</button>'
         ).join('');
         $('#sf-popular-section').hidden = !terms.length;
@@ -78,7 +78,7 @@ export function createSearchController({ $, config, t, getCurrent }) {
             categories.forEach(category => addTerm(category?.name));
             if (terms.length < 4) products.forEach(product => (product?.categories || []).forEach(category => addTerm(category?.name)));
             if (terms.length < 4) products.forEach(product => (product?.tags || []).forEach(tag => addTerm(tag?.name)));
-            discoveryTerms = terms.slice(0, 5);
+            discoveryTerms = terms.slice(0, 4);
             discoveryProducts = products;
             if (getCurrent() === 'search' && mobileDiscovery() && !$('#sf-query').value.trim()) renderDiscovery();
         } catch { /* Optional discovery must never block normal search. */ }

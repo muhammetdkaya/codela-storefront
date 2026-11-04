@@ -99,6 +99,8 @@ jobs:
           node tests/product-mobile-media-browser.cjs
           TEST_WEBKIT=1 node tests/product-mobile-media-browser.cjs
           node tests/ui-kit-browser.cjs
+          node tests/search-discovery-browser.cjs
+          TEST_WEBKIT=1 node tests/search-discovery-browser.cjs
           node tests/native-woo-buttons.cjs
           node tests/context-header-browser.cjs
           TEST_WEBKIT=1 node tests/context-header-browser.cjs
