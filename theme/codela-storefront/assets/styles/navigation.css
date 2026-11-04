@@ -92,8 +92,10 @@
   }
   /* WebKit can retain the previous cross-faded pseudo paint at the 700px edge.
      A press selects a single thumb immediately; release keeps the regular motion. */
-  .sf-mobile-dock.has-selection.is-pressing .sf-dock-surface::before{opacity:0!important;transition:none!important}
-  .sf-mobile-dock.has-selection.is-pressing .sf-dock-surface::after{opacity:1!important;transition:none!important}
+  /* The opacity swap is instant; tapped tabs keep the shared horizontal thumb
+     glide. The separate scrub rule tracks the finger without interpolation. */
+  .sf-mobile-dock.has-selection.is-pressing:not(.is-scrubbing) .sf-dock-surface::before{opacity:0!important;transition:transform var(--sf-ui-motion-selection) var(--sf-ui-ease-press),opacity 0ms linear!important}
+  .sf-mobile-dock.has-selection.is-pressing:not(.is-scrubbing) .sf-dock-surface::after{opacity:1!important;transition:transform var(--sf-ui-motion-selection) var(--sf-ui-ease-press),opacity 0ms linear!important}
   .sf-mobile-dock.is-pressing{--sf-dock-press-scale:1.04}
   .sf-mobile-dock:not(.is-collapsed):is(.is-pressing,:has(.sf-dock-item:active)) .sf-dock-surface{
     scale:var(--sf-ui-scale-dock);

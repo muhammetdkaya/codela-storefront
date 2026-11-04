@@ -39,6 +39,7 @@ const feedbackCss=fs.readFileSync(root+'styles/navigation-feedback.css','utf8');
      }
      assert.equal(await page.locator('.sf-navigation-preview form').count(),0);
      assert(await page.locator('.sf-navigation-preview button').isDisabled());
+     assert.equal(await page.locator('.sf-skeleton-gallery').evaluate(el=>getComputedStyle(el).animationName),'sf-skeleton-product-pulse','Product photo uses the slightly stronger pulse');
      if(width===390&&!short&&productSource){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:'qa/storefront-ui-kit-product-skeleton-geometry.png'});}
      await page.evaluate(()=>codelaSFFeedback.end());
     }

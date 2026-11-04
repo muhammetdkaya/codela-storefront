@@ -177,12 +177,13 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  await page.waitForTimeout(140);
  const pressed=await page.locator('.sf-dock-surface').evaluate(el=>{
   const dock=el.closest('.sf-mobile-dock'),s=getComputedStyle(el,'::before');
-  return {scale:new DOMMatrix(s.transform).a,wholeScale:parseFloat(getComputedStyle(el).scale),index:dock.style.getPropertyValue('--sf-dock-index'),blur:getComputedStyle(el).backdropFilter,bg:getComputedStyle(el).backgroundColor};
+  return {scale:new DOMMatrix(s.transform).a,wholeScale:parseFloat(getComputedStyle(el).scale),index:dock.style.getPropertyValue('--sf-dock-index'),blur:getComputedStyle(el).backdropFilter,bg:getComputedStyle(el).backgroundColor,thumbTravel:new DOMMatrix(getComputedStyle(el,'::after').transform).e/parseFloat(getComputedStyle(el,'::after').width)};
  });
  assert(pressed.scale>1.02 && pressed.scale<1.08,'Touch expands the background capsule');
  assert(Math.abs(pressed.wholeScale-1.018)<.001,'Touch also expands the whole floating surface');
  assert.equal(pressed.bg,surfaces.menuBg,'Dock shares the transparent Header material');
  assert.equal(pressed.index,'1','Touch previews the touched tab before navigation');
+ assert(pressed.thumbTravel>.03&&pressed.thumbTravel<.99,'Pressed tab background glides toward its target instead of teleporting');
  assert.equal(await page.locator('#sf-panel').getAttribute('open'),null,'Press alone never opens a panel');
  assert(pressed.blur.includes('blur('),'Glass surface uses one backdrop blur layer');
  if(process.env.DOCK_QA)await page.screenshot({path:process.env.DOCK_QA});
