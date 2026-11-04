@@ -5,17 +5,29 @@ Migrated unchanged at version 0.1.1 from [codela@c4be5baf419b3385a20df4ba898b03d
 
 The theme requires the Codela plugin. Settings stay under Codela > Ayarlar > Tema, with separate Header/Footer sections as those settings are implemented. Plugin bridge changes belong in the codela repository; ordinary theme edits belong here.
 
-## Deployment
+## Deployment and updates
 
-Push theme/scripts/tests changes to main to validate, build a standalone ZIP and deploy only codela-storefront to codela.dev. Plugin releases and codela-site marketing theme deployments are independent.
+The canonical theme source is `theme/codela-storefront/`. Source deployment to `codela.dev` and **WordPress updates distributed to customer sites** are separate operations.
 
-Add repository Actions secrets `FTP_PASSWORD` and `FTP_USERNAME` for the **theme FTP account**. The deployment uses server38.shared.spaceship.host, the same verified endpoint as codela-site's successful workflow. An existing FTP_SERVER secret can stay, but is not read. Explicit verified FTPS, port 21. Account must expose wp-content/themes, or codela-storefront itself.
+### GitHub release and WordPress update channel (current)
 
-After setting the secret, use Actions > Deploy Codela Storefront > Run workflow on main. Older runs may be skipped after documentation commits move main. Never paste passwords into issues or chats.
+- **Release metadata:** [`stable/manifest.json`](https://raw.githubusercontent.com/muhammetdkaya/codela-storefront/stable/manifest.json) in this GitHub repository.
+- **Theme ZIP:** versioned assets attached to [GitHub Releases](https://github.com/muhammetdkaya/codela-storefront/releases), e.g. `https://github.com/muhammetdkaya/codela-storefront/releases/download/v0.1.201/codela-storefront-0.1.201.zip`.
+- **Consumer:** the Codela Commerce Toolkit plugin's [`includes/theme-updates.php`](https://github.com/muhammetdkaya/codela/blob/main/codela-commerce-toolkit/includes/theme-updates.php), not a manifest hosted on `codela.dev`.
+- **WordPress registration:** the installed theme's `Update URI: https://codela.dev/codela-storefront` selects the `update_themes_codela.dev` filter. This is a provider identifier; **it is not the URL from which the manifest is downloaded**.
+- **Requirements and verification:** the plugin validates the manifest's theme identity, semantic version, package URL, requirements, and SHA-256, and verifies the ZIP contents before installation. It does **not** fall back to the old 0.1.1 bootstrap ZIP if metadata cannot be retrieved.
 
-Deployment checks theme identity and a random public mapping probe before writing source, stages and reads back all files, publishes style/version and update manifest last, checks public source and store health, and restores changed files on failure. Existing custom files are preserved. Backup artifacts contain original theme files, not credentials. No theme activation occurs.
+The plugin caches a successful manifest fetch in the site transient `codela_storefront_release` for **12 hours** (failed/invalid response: **15 minutes**). From the WordPress admin, use **Codela → Tema → Şimdi kontrol et**: this specific action deletes the cached transient, clears the theme cache, and calls `wp_update_themes()`. The generic WordPress Updates screen does not necessarily invalidate this plugin-specific cache. If a newly published version is still not offered, confirm the installed theme's version, plugin activation/requirements, and the GitHub URL's accessibility from WordPress before assuming the release is missing.
 
-Public distribution: `https://codela.dev/wp-content/themes/codela-storefront/support/packages/manifest.json` and its versioned ZIP. The plugin loads this fixed manifest with a short cache, validates package URL and SHA-256, and uses the local frozen 0.1.1 bootstrap copy only if remote metadata is unavailable. Future versions must be incremented in style.css (asset versions derive from it). codela.dev gets edits directly through this workflow; other installations use Codela's Update action.
+The explicit release request is `.releases/storefront.json`; the `Publish Storefront GitHub release` workflow builds the immutable-version package from its `source_sha`. Publishing a release and advancing the WordPress update feed are **separate**: `publish_feed: true` advances `stable/manifest.json`, while `publish_feed: false` publishes only the downloadable GitHub release. **As verified on 4 November 2026, the stable feed advertises 0.1.201.** Advancing the feed does not itself install the update on a site or upload the theme by FTP.
+
+### FTP deployment (separate from the GitHub update feed)
+
+Theme/scripts/tests changes on `main` trigger `Deploy Codela Storefront` validation and normally FTP deployment to `codela.dev`. The `deploy` job is skipped on pull requests, and for a main-branch merge whose commit message includes the explicit `[github-only]` marker. The workflow can also be manually dispatched on `main`. This is **not** the WordPress theme update channel.
+
+The FTP workflow uses repository Actions secrets `FTP_PASSWORD` and `FTP_USERNAME` for the theme account on `server38.shared.spaceship.host` (FTPS, port 21). A pre-existing `FTP_SERVER` secret is not used. The account must reach `wp-content/themes` or `codela-storefront`. Never paste credentials into commits, issues, or chats.
+
+Deployment validates the theme destination, stages/uploads only the intended theme, checks readback and site health, and provides rollback artifacts. It does not activate the theme, deploy the Codela plugin, or confirm installation on a separate customer site such as `azseramik.com`. Documentation-only commits do not match the FTP workflow's tracked paths.
 
 ## Checks
 
