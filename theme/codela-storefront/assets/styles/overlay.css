@@ -266,7 +266,7 @@
   mask:url('../icons/trash-2.svg') center/contain no-repeat;
 }
 @media(max-width:700px){
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-panel-top{border-bottom:0}
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-panel-top{border-bottom:0;justify-content:flex-end}
   #sf-panel.is-cart-panel:not(.is-product-cart) #sf-panel-title{
     position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
     clip-path:inset(50%);white-space:nowrap;border:0;
@@ -275,6 +275,7 @@
   #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-row{
     grid-template-columns:86px minmax(0,1fr);gap:14px;align-items:start;padding:16px 0;
   }
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-count + .sf-cart-row{padding-top:0}
   #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-row>a{
     align-self:start;min-height:0;width:100%;height:auto;aspect-ratio:1;
   }

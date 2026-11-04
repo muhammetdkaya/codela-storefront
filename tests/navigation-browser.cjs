@@ -270,7 +270,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  if(process.env.QA_CART)await page.screenshot({path:process.env.QA_CART});
  // A long list scrolls behind neither the summary nor the dock, even on short screens.
  await page.evaluate(()=>{
-  const root=document.querySelector('#sf-cart-items'),row=root.firstElementChild;
+  const root=document.querySelector('#sf-cart-items'),row=root.querySelector('.sf-cart-row');
   for(let i=0;i<8;i++)root.append(row.cloneNode(true));
  });
  await page.setViewportSize({width:390,height:568});
@@ -287,7 +287,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  assert(scrolling.scrollable,'Long cart retains an independent scroll area');
  assert(scrolling.lastBottom<=scrolling.bodyBottom+1&&scrolling.bodyBottom<=scrolling.summaryTop+1,'Last item remains reachable above summary');
  assert(scrolling.ctaBottom<scrolling.dockTop,'Dock does not cover checkout');
- await page.evaluate(()=>{const root=document.querySelector('#sf-cart-items');while(root.children.length>1)root.lastElementChild.remove();});
+ await page.evaluate(()=>{const root=document.querySelector('#sf-cart-items');while(root.querySelectorAll('.sf-cart-row').length>1)root.lastElementChild.remove();});
  await page.setViewportSize({width:390,height:844});
  const fetched=cartRequests;
  await click('cart');
