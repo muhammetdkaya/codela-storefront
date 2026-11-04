@@ -755,8 +755,10 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
     background:var(--sf-ui-nav-selection-pressed);
     box-shadow:var(--sf-ui-glass-thumb-shadow);
   }
-  .sf-mobile-dock.has-selection.is-pressing .sf-dock-surface::before{opacity:0}
-  .sf-mobile-dock.has-selection.is-pressing .sf-dock-surface::after{opacity:1}
+  /* WebKit can retain the previous cross-faded pseudo paint at the 700px edge.
+     A press selects a single thumb immediately; release keeps the regular motion. */
+  .sf-mobile-dock.has-selection.is-pressing .sf-dock-surface::before{opacity:0!important;transition:none!important}
+  .sf-mobile-dock.has-selection.is-pressing .sf-dock-surface::after{opacity:1!important;transition:none!important}
   .sf-mobile-dock.is-pressing{--sf-dock-press-scale:1.04}
   .sf-mobile-dock:not(.is-collapsed):is(.is-pressing,:has(.sf-dock-item:active)) .sf-dock-surface{
     scale:var(--sf-ui-scale-dock);
