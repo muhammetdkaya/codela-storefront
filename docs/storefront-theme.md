@@ -1,8 +1,10 @@
-# 4 Kasım 2026 — ortak arayüz uygulama adayı
+# 4 Kasım 2026 — 0.1.197 GitHub-only sürümü
 
-Kullanıcının “Sen başla yapmaya / Devam” talebiyle Framework7 9.3.0 seçili CSS kaynakları ve 15 Framework7 Icons SVG'si mevcut ortak UI'ya uyarlandı. Çalışma dalı `work/framework7-ui-20261104`; temel `214e94c`, tema 0.1.196. Butonlar kapsül, cam yüzey/alt menü basılı seçim görünümü ve ikonlar güncellendi. Tam framework runtime/router eklenmedi; mevcut tek store/dialog/dock ve native Woo sahipliği korunur. Eklenti, sürüm, stable veya canlı kurulum değişmedi.
+[PR #88](https://github.com/muhammetdkaya/codela-storefront/pull/88) ile Framework7 9.3.0 kaynaklı cam yüzey, kapsül Button, alt dock seçimi ve 15 yerel SVG ikon mevcut WordPress/Woo tasarım sistemine katıldı. WebKit'te 700px basılı sekme opaklığı düzeltildi. Runtime, router, yeni store/dialog veya Codela eklentisi eklenmedi.
 
-[Kaynak eşleme, doğrulama ve açık kabul işleri](framework7-ui-adoption.md). Kaynak/lisans doğrulaması, deterministik paket ve 24 paket testi geçti; muhafazakâr gzip artışı 3.516 bayt. Önceki yerel Chromium işlev testleri belgede listeli; dokuz genişlikte yeni Chromium kabulü, temel sürüm karşılaştırmalı ekran üretimi, katalog/header ve ürün sheet regresyonları da geçti. Son kaynakta üç tarayıcı CI henüz tamamlanmadı. Sonraki iş: bu adayın yeni görsel kabulünü ve kalan regresyonlarını tamamla, kanıtları güncelle; test edilmemiş adayı yayımlama.
+[Üç tarayıcı arayüz kabulü](https://github.com/muhammetdkaya/codela-storefront/actions/runs/41825158082) ve [Chromium/WebKit vitrin regresyonu](https://github.com/muhammetdkaya/codela-storefront/actions/runs/41825165090) başarılı. Aynı UI kodunun önceki commitinde [genel tema regresyonu](https://github.com/muhammetdkaya/codela-storefront/actions/runs/41824254347) geçti; [197 genel kontrolü](https://github.com/muhammetdkaya/codela-storefront/actions/runs/41825164822) ayrıca takip ediliyor. Muhafazakâr CSS/JS/SVG ek yük +3.516 gzip bayt, canlı ölçüm değil.
+
+[GitHub v0.1.197](https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.197) [yayın CI 41826002816](https://github.com/muhammetdkaya/codela-storefront/actions/runs/41826002816) ile başarılı; kaynak `dff4f9286ad818591b34ac49f649192b82e1c7d4`. ZIP 215.679 bayt; SHA256 `e5aae1cb1b55256da8b324da776ea004dc0444fe6bfea3931921708bd4be8868`. `publish_feed:false`: stable güncelleme 0.1.196'dadır; FTP, AZ mağazası ve eklenti değiştirilmedi. Fiziksel Safari, gerçek satış/ödeme, canlı önbellek ve performans kabulü ayrıdır. [Kaynak ve doğrulama ayrıntıları](framework7-ui-adoption.md).
 
 # 3 Kasım 2026 — 0.1.196 GitHub yayını doğrulandı
 

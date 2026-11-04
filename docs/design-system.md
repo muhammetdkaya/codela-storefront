@@ -1,8 +1,8 @@
 # Codela Storefront UI Kit — source of truth
 
-## Shared UI adoption — November 2026 candidate
+## Shared UI adoption — GitHub v0.1.197 (November 2026)
 
-Selected pinned Framework7 sources now supply glass/pressed-thumb paint and rounded/tonal Button variants. Fifteen original Framework7 Icons use 24px rendered boxes; preserve their native viewBoxes. The two-line Menu/X morph is retained. `--sf-ui-button-radius:999px` does not change the 12px field/card radius. Glass uses 75% white (85% panels), 16px blur / 180% saturation, with a reduced shadow for small controls. Engagement/release are 100/220ms; selection is 240ms. Native Woo semantics and one dock/dialog/store remain. See [source mapping and acceptance](framework7-ui-adoption.md); this is not a release record.
+Selected pinned Framework7 sources now supply glass/pressed-thumb paint and rounded/tonal Button variants. Fifteen original Framework7 Icons use 24px rendered boxes; preserve their native viewBoxes. The two-line Menu/X morph is retained. `--sf-ui-button-radius:999px` does not change the 12px field/card radius. Glass uses 75% white (85% panels), 16px blur / 180% saturation, with a reduced shadow for small controls. Engagement/release are 100/220ms; selection is 240ms. Native Woo semantics and one dock/dialog/store remain. See [source mapping, verified GitHub release and remaining live acceptance](framework7-ui-adoption.md).
 
 
 ## Commerce feedback — 0.1.195 candidate

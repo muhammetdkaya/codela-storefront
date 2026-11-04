@@ -1,8 +1,12 @@
-# 4 Kasım 2026 — ortak arayüz uygulama adayı
+# 4 Kasım 2026 — Codela Storefront 0.1.197 GitHub-only yayımlandı
 
-Kullanıcının “Sen başla yapmaya / Devam” talebiyle Framework7 9.3.0 seçili CSS kaynakları ve 15 Framework7 Icons SVG'si mevcut ortak UI'ya uyarlandı. Çalışma dalı `work/framework7-ui-20261104`; temel `214e94c`, tema 0.1.196. Butonlar kapsül, cam yüzey/alt menü basılı seçim görünümü ve ikonlar güncellendi. Tam framework runtime/router eklenmedi; mevcut tek store/dialog/dock ve native Woo sahipliği korunur. Eklenti, sürüm, stable veya canlı kurulum değişmedi.
+Framework7 9.3.0 seçili glass, Button ve toolbar uyarlamaları ile 15 yerel Framework7 SVG ikonu tema 0.1.197 sürümüne alındı. Başlık/alt dock, popup ve satın alma bileşenlerinde tek tasarım dili korunur; Framework7 runtime/router veya eklenti değişikliği yoktur. WebKit'te alt menünün basılı seçimi eski opaklıkta takılmasın diye yalnız basılı görsel katmanlar anlık boyanır. Native Woo ve tek store/dialog/dock korunur.
 
-[Kaynak eşleme, doğrulama ve açık kabul işleri](docs/framework7-ui-adoption.md). Kaynak/lisans doğrulaması, deterministik paket ve 24 paket testi geçti; muhafazakâr gzip artışı 3.516 bayt. Önceki yerel Chromium işlev testleri belgede listeli; dokuz genişlikte yeni Chromium kabulü, temel sürüm karşılaştırmalı ekran üretimi, katalog/header ve ürün sheet regresyonları da geçti. Son kaynakta üç tarayıcı CI henüz tamamlanmadı. Sonraki iş: bu adayın yeni görsel kabulünü ve kalan regresyonlarını tamamla, kanıtları güncelle; test edilmemiş adayı yayımlama.
+[PR #88](https://github.com/muhammetdkaya/codela-storefront/pull/88) ana dala `dff4f9286ad818591b34ac49f649192b82e1c7d4` ile birleşti. [Framework7 üç tarayıcı CI](https://github.com/muhammetdkaya/codela-storefront/actions/runs/41825158082), [showcase Chromium/WebKit](https://github.com/muhammetdkaya/codela-storefront/actions/runs/41825165090) ve aynı üretim arayüzü için [genel tema CI](https://github.com/muhammetdkaya/codela-storefront/actions/runs/41824254347) başarılı. Tam 0.1.197 genel tema çalışması [41825164822](https://github.com/muhammetdkaya/codela-storefront/actions/runs/41825164822) ayrıca takip edilir; GitHub release doğrulaması başarılıdır. Korumacı birleşik varlık bütçesi +3.516 gzip bayt; bu canlı performans ölçümü değildir.
+
+[GitHub sürümü v0.1.197](https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.197) [release CI 41826002816](https://github.com/muhammetdkaya/codela-storefront/actions/runs/41826002816) ile yayımlandı. ZIP 215.679 bayt, SHA256 `e5aae1cb1b55256da8b324da776ea004dc0444fe6bfea3931921708bd4be8868`. Tag kaynak commitini gösterir, `publish_feed:false`; stable besleme 0.1.196'da kaldı. FTP/AZ mağazası, canlı tema ve Codela eklentisi değiştirilmedi. Fiziksel iPhone Safari, gerçek canlı Woo ödeme/kargo/e-posta, canlı kontrast/zoom ve saha hız ölçümü bu GitHub yayınının kapsamı dışındadır.
+
+[Kaynak eşleme ve kapsam](docs/framework7-ui-adoption.md).
 
 # 3 Kasım 2026 — 0.1.196 GitHub yayını doğrulandı
 

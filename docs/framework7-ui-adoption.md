@@ -1,8 +1,6 @@
 # Shared UI adoption — 4 November 2026
 
-Status: implementation candidate on `work/framework7-ui-20261104`, based on
-`214e94ced9165473a80b392d5fa972ad6296f7fa` (theme 0.1.196). No version bump,
-release, stable-feed change, plugin change or live deployment.
+Status: **published GitHub-only** as Codela Storefront **v0.1.197**. Merged [PR #88](https://github.com/muhammetdkaya/codela-storefront/pull/88), source/tag commit `dff4f9286ad818591b34ac49f649192b82e1c7d4`. Release verified in [Actions 41826002816](https://github.com/muhammetdkaya/codela-storefront/actions/runs/41826002816); 215,679-byte ZIP with SHA256 `e5aae1cb1b55256da8b324da776ea004dc0444fe6bfea3931921708bd4be8868`. No FTP, stable-feed advancement, plugin change, or live deployment.
 
 ## What changes
 
@@ -65,10 +63,7 @@ catalog/header parity and the complete product-sheet regression. Paired mobile
 home, search, cart and product captures were generated and visually reviewed. The initial translucent tonal CTA lost contrast over the
 dark hero; the shared tonal fill is now opaque #ededed (pressed #dedede), with a
 regression assertion on the actual hero control.
-Still pending: Chromium/WebKit/Firefox CI on the final commit. Local WebKit startup failed in this runtime; no WebKit pass is claimed.
-Five-repeat performance traces, complete contrast/zoom checks, physical iPhone
-Safari and real WordPress/Woo checkout remain separate acceptance work. Do not
-describe this candidate as release-ready until the outstanding checks are closed.
+Final three-engine [0.1.197 acceptance CI](https://github.com/muhammetdkaya/codela-storefront/actions/runs/41825158082) passed in Chromium, WebKit and Firefox. [Chromium/WebKit showcase CI](https://github.com/muhammetdkaya/codela-storefront/actions/runs/41825165090) and earlier [full theme CI](https://github.com/muhammetdkaya/codela-storefront/actions/runs/41824254347) on identical production UI passed. Generic tests on the version-only 0.1.197 candidate are tracked at [Actions 41825164822](https://github.com/muhammetdkaya/codela-storefront/actions/runs/41825164822). The WebKit stuck pressed thumb was corrected via scoped instant pressed-layer paint; source and deterministic joined CSS match. Release-only PHP/package CI passed separately. Five-repeat live performance traces, complete physical contrast/zoom, iPhone Safari and real WordPress/Woo checkout remain independent acceptance work and are not claimed completed. This is a tested GitHub-only artifact, not a live-site acceptance.
 
 The dedicated `Shared UI adoption (no deployment)` workflow runs on the work
-branch and uploads evidence. It does not deploy. Merge/release is a later action.
+branch and uploads evidence. It does not deploy. Merge and GitHub-only release were completed; this workflow did not deploy.
