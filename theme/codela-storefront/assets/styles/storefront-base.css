@@ -594,6 +594,81 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
 /* Reset initial pointer focus after the search control rule; Tab removes this class. */
 #sf-panel .sf-close.sf-initial-focus:focus-visible{outline:none!important}
 
+/* Full-screen mobile cart reuses the native Woo Store API and existing UI Kit. */
+#sf-panel.is-cart-panel .sf-cart-count{
+  max-width:780px;margin:0 auto 8px;color:var(--sf-muted,#77776d);
+  font-size:12px;line-height:1.5;font-weight:400;
+}
+#sf-panel.is-product-cart .sf-cart-count{display:none}
+#sf-panel.is-cart-panel .sf-stepper.sf-ui-surface{
+  border-color:transparent;border-radius:var(--sf-ui-pill);
+  --sf-ui-surface-shadow:var(--sf-ui-glass-thumb-shadow);
+}
+#sf-panel.is-cart-panel .sf-remove.sf-ui-icon-button{
+  flex:none;text-decoration:none!important;--sf-ui-surface-shadow:var(--sf-ui-glass-thumb-shadow);
+}
+#sf-panel.is-cart-panel .sf-remove-icon{
+  display:block;width:18px;height:18px;background:currentColor;
+  -webkit-mask:url('../icons/trash-2.svg') center/contain no-repeat;
+  mask:url('../icons/trash-2.svg') center/contain no-repeat;
+}
+@media(max-width:700px){
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-panel-top{border-bottom:0;justify-content:flex-end}
+  #sf-panel.is-cart-panel:not(.is-product-cart) #sf-panel-title{
+    position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
+    clip-path:inset(50%);white-space:nowrap;border:0;
+  }
+  #sf-panel.is-cart-panel:not(.is-product-cart) #sf-cart{padding:10px var(--sf-overlay-gutter) 24px}
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-row{
+    grid-template-columns:86px minmax(0,1fr);gap:14px;align-items:start;padding:16px 0;
+  }
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-count + .sf-cart-row{padding-top:0}
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-row>a{
+    align-self:start;min-height:0;width:100%;height:auto;aspect-ratio:1;
+  }
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-photo{
+    width:100%;height:100%;object-fit:cover;
+  }
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-detail{min-height:0}
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-row h3{
+    display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+    overflow:hidden;min-width:0;margin:0 0 5px;
+    font-size:14px;line-height:1.4;font-weight:500;letter-spacing:-.01em;
+  }
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-price{
+    font-size:15px;line-height:1.4;font-weight:500;
+  }
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-quantity{
+    margin-top:0;padding-top:9px;gap:6px 8px;flex-wrap:nowrap;
+  }
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-stepper{min-height:44px;border-radius:var(--sf-ui-pill)}
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-stepper button{width:44px;height:44px}
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-stepper span{min-width:23px;padding:0 1px;font-size:13px}
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-bottom{
+    padding-top:14px;border-top-color:color-mix(in srgb,var(--sf-ui-border) 60%,transparent);
+  }
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-subtotal{font-size:14px}
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-subtotal strong{font-size:18px;font-weight:600}
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-bottom p{margin:7px auto 13px}
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-empty{
+    min-height:min(43vh,315px);padding:20px 16px;transform:translateY(-8px);
+  }
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-empty-mark{
+    width:58px;height:58px;margin-bottom:14px;background-size:24px 24px;
+  }
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-empty h3{
+    font-size:clamp(18px,4.8vw,21px);font-weight:550;
+  }
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-empty p{
+    max-width:285px;margin-top:8px;font-size:13px;
+  }
+}
+@media(max-width:360px){
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-row{
+    grid-template-columns:72px minmax(0,1fr);gap:12px;
+  }
+}
+
 /* Cart uses the toolbar gutter for its list, feedback and summary.
    Keep the scrollable list independent of the checkout/dock area. */
 #sf-panel.is-cart-panel #sf-cart{

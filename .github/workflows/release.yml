@@ -52,6 +52,7 @@ jobs:
           node --check tests/document-continuity-browser.cjs
           node tests/cart-race.cjs
           node tests/cart-sync.cjs
+          node tests/cart-design.cjs
           # Full browser navigation regressions passed earlier in CI run
           # 40329604002; that run separately failed an unchanged WebKit media
           # fixture. Browser installation took ~25 minutes on GitHub runners,

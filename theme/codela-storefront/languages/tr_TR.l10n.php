@@ -5,6 +5,7 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'Mobile gallery' => 'Mobil galeri',
 'Select images' => 'Görsel seç',
 'Remove' => 'Kaldır',
+'Items in cart: %d' => 'Sepetinizde %d ürün',
 'Only shown in the mobile product gallery (up to 900px). Catalog cards always use WooCommerce images. Empty fields use the standard images.' => 'Yalnızca mobil ürün detay galerisinde (900px ve altı) gösterilir. Ürün kartlarında WooCommerce görselleri kullanılır. Boş bırakılan alanlar standart görselleri kullanır.',
 'Reopen the gallery to reorder images by dragging them.' => 'Sıralamayı sürükleyerek değiştirmek için galeriyi yeniden açın.',
 

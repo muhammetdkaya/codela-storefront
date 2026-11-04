@@ -52,6 +52,7 @@ jobs:
           node --check theme/codela-storefront/assets/scripts/product-mobile-media-admin.js
           node tests/cart-race.cjs
           node tests/cart-sync.cjs
+          node tests/cart-design.cjs
           node tests/search-panel.cjs
           node tests/format.cjs
           node tests/ui-kit.cjs

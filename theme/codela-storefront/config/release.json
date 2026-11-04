@@ -6,9 +6,10 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mobil aramada üç popüler sorgu varsayılan; yalnız çok yüksek ekranda dördüncü sorgu gösterilir. Keşfet'in alt menü üstünde kalması için dinamik sığdırma devam eder.",
-    "Arama cam kapsülünün gölgesi mevcut Codela cam seçim gölgesiyle daha hafif ve dengeli hale getirildi.",
-    "Popüler arama butonlarının dikey boşluğu azaltıldı; Keşfet ürün adları daha sakin gri tonda, fiyatlar okunaklı koyu renkte bırakıldı.",
-    "Arama girişi ve X, yatay ürün vitrini, ortak alt menü, WooCommerce arama ve diğer ekranlar korunur."
+    "Mobil tam ekran sepette üst başlık görsel olarak gizlendi; erişilebilir diyalog başlığı ve X butonu korundu.",
+    "Ürün satırları kare görsel ve iki satırlık adla sadeleştirildi, adet kontrolleri mevcut Codela cam kapsüle alındı.",
+    "Kaldır kontrolü, lisanslı Lucide çöp kutusu ikonu ve 44px dokunma alanını kullanır.",
+    "Boş sepet konumu ve tipografisi hafifletildi; sepet ürün adedi, mevcut ödeme CTA, WooCommerce sepet işlemleri ve dock korundu.",
+    "Ürün sayfasındaki kompakt sepet penceresi ve diğer ekranlar değiştirilmedi."
   ]
 }

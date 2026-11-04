@@ -250,7 +250,13 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
     buttons:[...document.querySelectorAll('.sf-stepper button,.sf-remove')].map(el=>el.getBoundingClientRect().toJSON()),
     overflow:body.scrollWidth>body.clientWidth};
   });
-  assert(Math.abs(layout.photo.y-layout.detail.y)<1&&Math.abs(layout.photo.height-layout.detail.height)<1,'Product image and content share top and bottom at '+width);
+  assert(Math.abs(layout.photo.y-layout.detail.y)<1,'Image and detail top alignment at '+width);
+  if(width<=700){
+    assert(Math.abs(layout.photo.width-layout.photo.height)<1,'Mobile product images are square at '+width);
+    assert(layout.photo.height<=layout.detail.height+1,'Photo does not stretch with actions at '+width);
+  }else{
+    assert(Math.abs(layout.photo.height-layout.detail.height)<1,'Desktop cart photo geometry unchanged at '+width);
+  }
   assert(!layout.overflow,'Long cart title does not cause horizontal scrolling at '+width);
   assert(Math.abs(layout.row.x-layout.summary.x)<1,'List and summary share left edge at '+width);
   assert(Math.abs(layout.row.x-layout.cta.x)<1,'Checkout is centered on list axis at '+width);
@@ -264,7 +270,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  if(process.env.QA_CART)await page.screenshot({path:process.env.QA_CART});
  // A long list scrolls behind neither the summary nor the dock, even on short screens.
  await page.evaluate(()=>{
-  const root=document.querySelector('#sf-cart-items'),row=root.firstElementChild;
+  const root=document.querySelector('#sf-cart-items'),row=root.querySelector('.sf-cart-row');
   for(let i=0;i<8;i++)root.append(row.cloneNode(true));
  });
  await page.setViewportSize({width:390,height:568});
@@ -281,7 +287,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  assert(scrolling.scrollable,'Long cart retains an independent scroll area');
  assert(scrolling.lastBottom<=scrolling.bodyBottom+1&&scrolling.bodyBottom<=scrolling.summaryTop+1,'Last item remains reachable above summary');
  assert(scrolling.ctaBottom<scrolling.dockTop,'Dock does not cover checkout');
- await page.evaluate(()=>{const root=document.querySelector('#sf-cart-items');while(root.children.length>1)root.lastElementChild.remove();});
+ await page.evaluate(()=>{const root=document.querySelector('#sf-cart-items');while(root.querySelectorAll('.sf-cart-row').length>1)root.lastElementChild.remove();});
  await page.setViewportSize({width:390,height:844});
  const fetched=cartRequests;
  await click('cart');

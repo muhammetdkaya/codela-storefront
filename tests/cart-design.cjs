@@ -1,0 +1,23 @@
+// Mobile cart UI contract: native Woo Store API and shared UI Kit remain authoritative.
+const assert=require('node:assert/strict'),fs=require('node:fs');
+const dir='theme/codela-storefront/';
+const js=fs.readFileSync(dir+'assets/scripts/cart-controller.js','utf8');
+const css=fs.readFileSync(dir+'assets/styles/overlay.css','utf8');
+const html=fs.readFileSync(dir+'inc/render.php','utf8');
+const icon=fs.readFileSync(dir+'assets/icons/trash-2.svg','utf8');
+assert(js.includes("t('Items in cart: %d')"),'Localized item count');
+assert(js.includes('sf-stepper sf-ui-surface'),'Native glass quantity');
+assert(js.includes('sf-remove sf-ui-icon-button sf-ui-icon-button--soft'),'Shared removal icon button');
+assert(js.includes('sf-remove-icon" aria-hidden="true"'),'Decorative removal icon');
+assert(js.includes("escape(t('Remove'))"),'Accessible label');
+assert(js.includes("'/remove-item'")&&js.includes("'/update-item'"),'Woo API mutations');
+assert(css.includes('#sf-panel.is-cart-panel:not(.is-product-cart) #sf-panel-title'),'Heading hidden visually');
+assert(css.includes('.sf-panel-top{border-bottom:0;justify-content:flex-end}'),'Only close stays aligned right');
+assert(css.includes('.sf-cart-count + .sf-cart-row{padding-top:0}'),'First row keeps compact top spacing');
+assert(css.includes('-webkit-line-clamp:2'),'Two-row item title');
+assert(css.includes('aspect-ratio:1'),'Square photos');
+assert(css.includes("mask:url('../icons/trash-2.svg')"),'Shared licensed icon');
+assert(icon.includes('xmlns="http://www.w3.org/2000/svg"'),'Icon is SVG');
+assert(html.includes('aria-labelledby="sf-panel-title"'),'Accessible native dialog');
+assert(!js.includes("t('Continue shopping')"),'No empty-state CTA');
+console.log('Mobile cart layout contract: passed');
