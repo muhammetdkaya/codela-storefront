@@ -121,8 +121,12 @@ html[data-sf-navigation-pending] .sf-shell > .sf-mobile-dock .sf-dock-surface{tr
 .sf-skeleton-copy .sf-skeleton-lines{width:100%;max-width:none}
 .sf-skeleton-copy .sf-skeleton-lines:nth-child(3n){width:78%;margin-bottom:16px}
 @keyframes sf-skeleton-pulse{0%,100%{opacity:1}50%{opacity:.55}}
+/* Product photo feedback is slightly more visible; its real-sized sheet preview
+   and the rest of the shared skeleton geometry remain unchanged. */
+@keyframes sf-skeleton-product-pulse{0%,100%{opacity:1}50%{opacity:.42}}
 @media(prefers-reduced-motion:no-preference){
   .sf-skeleton :is(.sf-skeleton-shape,.sf-skeleton-media,.sf-skeleton-lines i){animation:sf-skeleton-pulse var(--sf-ui-skeleton-duration,1.4s) ease-in-out infinite}
+  html[data-sf-navigation-target="product"] .sf-skeleton .sf-skeleton-gallery{animation-name:sf-skeleton-product-pulse}
 }
 
 @media(max-width:700px){

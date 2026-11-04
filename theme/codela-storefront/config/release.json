@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Framework7 9.3.0 kaynaklarından uyarlanan cam yüzeyler, kapsül biçimli butonlar ve ortak seçili sekme göstergesi header, mobil dock, sepet, hesap ve satın alma bileşenlerinde kullanılır.",
-    "15 yerel Framework7 SVG ikonu ile tutarlı 24px ikon boyutları sağlanır; ayrı framework runtime, router, ikon fontu veya CDN yüklenmez.",
-    "WebKit basılı dock göstergesi anında doğru katmana geçer; mevcut WooCommerce formu, Store API, 44/54px dokunma hedefleri ve reduced-motion davranışı korunur."
+    "Mobil alt menüde seçili sekmenin cam arka planı tıklamada anında sıçramak yerine 240 ms yatay kayar; parmakla sürükleme ve azaltılmış hareket tercihi korunur.",
+    "Ürün sayfasının skeleton görselindeki yüklenme animasyonu biraz belirginleştirilmiştir; gerçek ürün görseli, panel, buton ve ölçüler değişmez.",
+    "Header, menü, buton ve ikonların ortak Framework7 uyarlamasıyla gelen tasarım dili korunur; yeni framework veya ek JavaScript yüklenmez."
   ]
 }
