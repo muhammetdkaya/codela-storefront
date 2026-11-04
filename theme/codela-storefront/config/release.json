@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mobil arama çubuğu ve X konumu korundu; boş sorguda en fazla üç son arama ile üç görselli popüler arama gösterilir.",
-    "Mevcut WooCommerce Store API ve ortak Codela/Framework7 tasarım bileşenleri kullanılır; yeni backend, ikinci panel veya harici runtime eklenmez.",
-    "Son aramalar yalnızca cihazda saklanır ve silinebilir; arama sonuçları, alt dock, sepet ve hesap davranışları korunur."
+    "Mobil aramada son aramalar kaldırıldı; WooCommerce kategorilerinden çerçevesiz hazır arama kelimeleri sunuluyor.",
+    "Keşfet vitrini altı popüler ürünü yaklaşık ikili büyük görsellerle yatay kaydırmalı gösterir; isim, fiyat ve ürün bağlantısı korunur.",
+    "Mevcut arama kutusu/X, Store API, Framework7 cam tasarım sistemi, alt menü, normal sonuçlar, sepet ve hesap değişmedi."
   ]
 }

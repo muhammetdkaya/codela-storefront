@@ -43,9 +43,10 @@ assert.ok(css.includes('color-scheme:light'), 'Search uses light input/color con
 assert.ok(!css.includes('background:#0b0d12'), 'Dark search background must be removed');
 assert.ok(css.includes('#sf-panel.is-search-panel .sf-panel-top{display:none!important}'),'Only the inline X appears in search');
 assert.ok(markup.includes("placeholder=\"<?php esc_attr_e( 'Search', 'codela-storefront' ); ?>\""),'Search placeholder is Ara in Turkish');
-assert.ok(markup.includes('id="sf-discovery"') && markup.includes('id="sf-popular-section"'), 'Native panel owns discovery');
-assert.ok(search.includes("new URL('products', api)") && search.includes("'popularity'"), 'Reuse Woo Store API');
-assert.ok(search.includes('localStorage.removeItem(recentKey)') && search.includes('.slice(0, 3)'), 'Recent history is capped and clearable');
-assert.ok(search.includes('safeURL(photo)') && search.includes('escape(query)'), 'Safe recommendation markup');
-assert.ok(css.includes('.sf-popular-photo') && css.includes('.sf-recent-query'), 'Existing overlay style owns discovery');
+assert.ok(markup.includes('id="sf-discovery"') && markup.includes('id="sf-popular-section"') && markup.includes('id="sf-explore-section"'), 'Native panel owns searches and discover shelf');
+assert.ok(!markup.includes('sf-recent-section') && !search.includes('localStorage'), 'Local history and divider rows are removed');
+assert.ok(search.includes("new URL('products', api)") && search.includes("new URL('products/categories', api)") && search.includes("'popularity'"), 'Existing Woo Store API supplies categories and products');
+assert.ok(search.includes('safeURL(photo)') && search.includes('safeURL(product?.permalink)') && search.includes('escape(query)'), 'Discovery links and text are escaped');
+assert.ok(css.includes('grid-auto-flow:column') && css.includes('scroll-snap-type:x proximity'), 'Two-up horizontal discover shelf is scrollable');
+assert.ok(css.includes('.sf-popular-term') && css.includes('font-size:17px'), 'Borderless terms and stronger headings use existing style layer');
 console.log('Search controls and mobile discovery contracts: passed.');
