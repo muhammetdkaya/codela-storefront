@@ -11,10 +11,31 @@ export function createSearchController({ $, config, t, getCurrent }) {
     let discoveryProducts = null, discoveryTerms = null, discoveryRequest = null;
     const mobileDiscovery = () => window.matchMedia('(max-width:900px)').matches;
 
+    // Fit as many stacked suggestions as the viewport permits while keeping
+    // the complete Discover card (image, title and price) above the floating dock.
+    function fitDiscoveryTerms() {
+        if ($('#sf-discovery').hidden || getCurrent() !== 'search' || !mobileDiscovery()) return;
+        const buttons = Array.from($('#sf-popular-list').children);
+        const shelf = $('#sf-explore-section');
+        if (shelf.hidden || !buttons.length) return;
+        buttons.forEach(button => { button.hidden = false; });
+        const viewportBottom = window.visualViewport
+            ? window.visualViewport.offsetTop + window.visualViewport.height
+            : window.innerHeight;
+        const dock = document.querySelector('#sf-panel .sf-mobile-dock:not([hidden])');
+        const dockTop = dock && getComputedStyle(dock).display !== 'none'
+            ? dock.getBoundingClientRect().top : viewportBottom;
+        const bottom = Math.min(viewportBottom, dockTop) - 14;
+        // Never hide the discovery shelf: reduce suggestions, not product visibility.
+        for (let visible = buttons.length; visible > 1 && shelf.getBoundingClientRect().bottom > bottom; visible--) {
+            buttons[visible - 1].hidden = true;
+        }
+    }
+
     function renderDiscovery() {
         const terms = Array.isArray(discoveryTerms) ? discoveryTerms : [];
-        $('#sf-popular-list').innerHTML = terms.map(query =>
-            '<button type="button" class="sf-popular-term sf-ui-pressable" data-search-term="' +
+        $('#sf-popular-list').innerHTML = terms.slice(0, 4).map(query =>
+            '<button type="button" class="sf-popular-term sf-ui-surface sf-ui-pressable" data-search-term="' +
             escape(query) + '">' + escape(query) + '</button>'
         ).join('');
         $('#sf-popular-section').hidden = !terms.length;
@@ -36,6 +57,7 @@ export function createSearchController({ $, config, t, getCurrent }) {
         }).filter(Boolean).slice(0, 6);
         $('#sf-explore-list').innerHTML = cards.join('');
         $('#sf-explore-section').hidden = !cards.length;
+        fitDiscoveryTerms();
     }
 
     async function loadDiscovery() {
@@ -129,6 +151,8 @@ export function createSearchController({ $, config, t, getCurrent }) {
             syncDiscovery();
             search();
         });
+        window.addEventListener('resize', fitDiscoveryTerms, {passive:true});
+        window.visualViewport?.addEventListener('resize', fitDiscoveryTerms, {passive:true});
     }
 
     function syncSearchControls() {

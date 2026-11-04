@@ -564,24 +564,29 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
 
 
 
-/* Mobile search discovery uses the shared Codela UI tokens and existing panel. */
+/* Mobile search discovery reuses the shared glass surface and home catalog typography. */
 #sf-search .sf-discovery[hidden],
-#sf-search .sf-discovery-section[hidden]{display:none!important}
-#sf-search .sf-discovery{max-width:950px;margin:0 auto;padding:2px 0 0}
-#sf-search .sf-discovery-section{margin:0 0 25px}
-#sf-search .sf-discovery h3{font-size:17px;font-weight:650;letter-spacing:-.025em;line-height:1.32;color:var(--sf-ui-ink);margin:16px 0 12px}
-#sf-search .sf-popular-list{display:flex;flex-wrap:wrap;gap:0 18px;align-items:center}
-#sf-search .sf-popular-term{display:inline-flex;align-items:center;min-height:44px;max-width:100%;padding:8px 0;text-align:left;border:0;background:transparent;color:var(--sf-ui-ink);font-size:14px;font-weight:550;line-height:1.45;letter-spacing:-.005em;overflow-wrap:anywhere}
+#sf-search .sf-discovery-section[hidden],
+#sf-search .sf-popular-term[hidden]{display:none!important}
+#sf-search .sf-discovery{max-width:950px;margin:0 auto;padding:0}
+#sf-search .sf-discovery-section{margin:0 0 14px}
+#sf-search .sf-discovery h3{font-size:17px;font-weight:650;letter-spacing:-.025em;line-height:1.3;color:var(--sf-ui-ink);margin:12px 0 9px}
+#sf-search .sf-popular-list{display:grid;grid-template-columns:minmax(0,1fr);justify-items:start;align-content:start;gap:6px}
+#sf-search .sf-popular-term.sf-ui-surface{box-sizing:border-box;display:flex;align-items:center;justify-content:flex-start;width:max-content;max-width:100%;min-height:var(--sf-ui-hit);padding:8px 15px;text-align:left;border-radius:var(--sf-ui-pill);color:var(--sf-ui-ink);font-size:13px;font-weight:400;line-height:1.35;letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:clip}
 #sf-search .sf-popular-term:focus-visible,
-#sf-search .sf-explore-card:focus-visible{outline:2px solid var(--sf-accent,#656e52);outline-offset:3px;border-radius:4px}
+#sf-search .sf-explore-card:focus-visible{outline:2px solid var(--sf-accent,#656e52);outline-offset:3px}
 #sf-search .sf-explore-list{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 12px)/2.14);gap:12px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scroll-padding-inline:0;padding:0 12px 8px 0;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 #sf-search .sf-explore-list::-webkit-scrollbar{display:none}
 #sf-search .sf-explore-card{display:flex;flex-direction:column;min-width:0;gap:0;scroll-snap-align:start;text-decoration:none;color:var(--sf-ui-ink)}
 #sf-search .sf-explore-photo{display:block;width:100%;aspect-ratio:1;overflow:hidden;border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface-muted)}
 #sf-search .sf-explore-photo img{display:block;width:100%;height:100%;object-fit:cover}
-#sf-search .sf-explore-name{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2;margin-top:10px;font-size:14px;line-height:1.42;font-weight:550;letter-spacing:-.012em;overflow-wrap:anywhere}
-#sf-search .sf-explore-price{display:block;margin-top:4px;font-size:15px;line-height:1.4;font-weight:650;letter-spacing:-.014em}
+#sf-search .sf-explore-name{display:block;min-width:0;width:100%;margin-top:9px;font-family:var(--wp--preset--font-family--system,Arial,Helvetica,sans-serif);font-size:13px;line-height:1.45;font-weight:500;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:clip;color:var(--sf-ui-control-ink)}
+#sf-search .sf-explore-price{display:block;min-width:0;margin-top:3px;font-family:var(--wp--preset--font-family--system,Arial,Helvetica,sans-serif);font-size:16px;line-height:1.5;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:0;color:var(--sf-ui-control-ink)}
 #sf-search #sf-results:empty{min-height:0}
+@media(max-width:700px){
+ #sf-search .sf-discovery h3{margin:10px 0 8px}
+ #sf-search .sf-discovery-section{margin-bottom:12px}
+}
 @media(min-width:901px){#sf-search .sf-discovery{display:none!important}}
 
 /* Reset initial pointer focus after the search control rule; Tab removes this class. */
