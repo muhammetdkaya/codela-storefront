@@ -49,28 +49,15 @@ const out=`qa/framework7/${engine}`;fs.mkdirSync(out,{recursive:true});
    // and touch lifecycle are covered by dock-sheet-lifecycle-browser.cjs.
    const prior=await dock.evaluate(el=>({selected:el.classList.contains('has-selection'),pressed:el.classList.contains('is-pressing'),index:el.style.getPropertyValue('--sf-dock-index')}));
    await dock.evaluate(el=>{el.classList.add('has-selection','is-pressing');el.style.setProperty('--sf-dock-index','0');});
-   await page.waitForTimeout(160);
+   // WebKit may defer its first pseudo-element paint at the 700px boundary.
+   // Wait for the actual computed end state instead of assuming a 160ms clock.
+   if(!baseline)await page.waitForFunction(()=>{
+    const el=document.querySelector('.sf-mobile-dock .sf-dock-surface');
+    return el&&getComputedStyle(el,'::before').opacity==='0'&&getComputedStyle(el,'::after').opacity==='1';
+   },null,{timeout:2500});
    const material=await dock.locator('.sf-dock-surface').evaluate(el=>{const a=getComputedStyle(el,'::before'),b=getComputedStyle(el,'::after');return{normal:a.opacity,pressed:b.opacity,shadow:b.boxShadow,position:a.transform,thumbPosition:b.transform}});
+   if(!baseline){assert.equal(material.pressed,'1',`Pressed thumb opacity on ${engine} ${width}px`);assert.equal(material.normal,'0');assert.notEqual(material.shadow,'none');assert.equal(material.position,material.thumbPosition,'Paints share relocation geometry');}
    await snap('dock-pressed');
-   if(!baseline){
-    if(material.pressed!=='1'){
-     const diagnostic=await dock.evaluate(d=>({classes:d.className,selected:d.matches('.sf-mobile-dock.has-selection.is-pressing'),surface:d.querySelector('.sf-dock-surface')?.className,before:getComputedStyle(d.querySelector('.sf-dock-surface'),'::before').cssText,after:getComputedStyle(d.querySelector('.sf-dock-surface'),'::after').cssText,afterOpacity:getComputedStyle(d.querySelector('.sf-dock-surface'),'::after').opacity,reducedMotion:matchMedia('(prefers-reduced-motion:reduce)').matches,forcedColors:matchMedia('(forced-colors:active)').matches}));
-     const probe=await dock.evaluate(d=>{
-      const surface=d.querySelector('.sf-dock-surface');
-      const rules=[];
-      const visit=group=>{for(const rule of group){if(rule.cssText?.includes('has-selection.is-pressing')&&rule.cssText?.includes('sf-dock-surface::'))rules.push(rule.cssText.slice(0,500));if(rule.cssRules)visit(rule.cssRules)}};
-      for(const sheet of document.styleSheets){try{visit(sheet.cssRules)}catch(e){}}
-      const style=document.createElement('style');
-      style.textContent='.sf-mobile-dock.has-selection.is-pressing .sf-dock-surface::before{opacity:0!important;transition:none!important}.sf-mobile-dock.has-selection.is-pressing .sf-dock-surface::after{opacity:1!important;transition:none!important}';
-      document.head.appendChild(style);
-      const forced={before:getComputedStyle(surface,'::before').opacity,after:getComputedStyle(surface,'::after').opacity};
-      style.remove();
-      return{rules,forced};
-     });
-     console.error('Pressed paint diagnostics:',JSON.stringify({engine,width,material,diagnostic,probe}));
-    }
-    assert.equal(material.pressed,'1',`Pressed thumb opacity on ${engine} ${width}px`);assert.equal(material.normal,'0');assert.notEqual(material.shadow,'none');assert.equal(material.position,material.thumbPosition,'Paints share relocation geometry');
-   }
    await dock.evaluate((el,state)=>{el.classList.toggle('has-selection',state.selected);el.classList.toggle('is-pressing',state.pressed);if(state.index)el.style.setProperty('--sf-dock-index',state.index);else el.style.removeProperty('--sf-dock-index');},prior);
   }
   for(const panel of ['search','cart','account']){
