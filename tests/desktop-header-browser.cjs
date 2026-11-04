@@ -39,7 +39,7 @@ styles.splice(1,0,fs.readFileSync('theme/codela-storefront/assets/storefront.css
       assert(Math.abs(nav.x+nav.width/2-width/2)<1,'Menu capsule is centered on the viewport');
       assert.equal(await page.locator('.sf-desktop-menu .sub-menu').count(),1,'Desktop contains nested destinations');
       const active=await page.locator('.sf-desktop-menu>.current-menu-item').evaluate(el=>({background:getComputedStyle(el).backgroundColor,radius:getComputedStyle(el).borderRadius,decoration:getComputedStyle(el.querySelector('a')).textDecorationLine}));
-      const selection=await page.locator('.sf-desktop-menu>.current-menu-item').boundingBox();assert(Math.abs(selection.y-nav.y)<1&&Math.abs(selection.y+selection.height-nav.y-nav.height)<1,'Active selection touches both vertical edges');assert.equal(active.radius,'999px');assert.equal(active.background,'rgba(118, 118, 128, 0.16)');assert.equal(active.decoration,'none');
+      const selection=await page.locator('.sf-desktop-menu>.current-menu-item').boundingBox();assert(Math.abs(selection.y-nav.y)<1&&Math.abs(selection.y+selection.height-nav.y-nav.height)<1,'Active selection touches both vertical edges');assert.equal(active.radius,'999px');assert.equal(active.background,'rgba(0, 0, 0, 0.1)','Active desktop menu uses the shared selection token');assert.equal(active.decoration,'none');
       const parent=page.locator('.sf-desktop-menu>.menu-item-has-children');
       const link=await parent.locator(':scope>a').boundingBox(),toggle=await parent.locator(':scope>button').boundingBox();
       assert(Math.abs(link.x+link.width-toggle.x)<1,'Label and arrow form one adjacent control group');assert(toggle.width>=44&&toggle.height>=44,'Disclosure keeps accessible hit target');
