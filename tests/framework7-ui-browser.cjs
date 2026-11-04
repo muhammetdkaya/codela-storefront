@@ -55,7 +55,19 @@ const out=`qa/framework7/${engine}`;fs.mkdirSync(out,{recursive:true});
    if(!baseline){
     if(material.pressed!=='1'){
      const diagnostic=await dock.evaluate(d=>({classes:d.className,selected:d.matches('.sf-mobile-dock.has-selection.is-pressing'),surface:d.querySelector('.sf-dock-surface')?.className,before:getComputedStyle(d.querySelector('.sf-dock-surface'),'::before').cssText,after:getComputedStyle(d.querySelector('.sf-dock-surface'),'::after').cssText,afterOpacity:getComputedStyle(d.querySelector('.sf-dock-surface'),'::after').opacity,reducedMotion:matchMedia('(prefers-reduced-motion:reduce)').matches,forcedColors:matchMedia('(forced-colors:active)').matches}));
-     console.error('Pressed paint diagnostics:',JSON.stringify({engine,width,material,diagnostic}));
+     const probe=await dock.evaluate(d=>{
+      const surface=d.querySelector('.sf-dock-surface');
+      const rules=[];
+      const visit=group=>{for(const rule of group){if(rule.cssText?.includes('has-selection.is-pressing')&&rule.cssText?.includes('sf-dock-surface::'))rules.push(rule.cssText.slice(0,500));if(rule.cssRules)visit(rule.cssRules)}};
+      for(const sheet of document.styleSheets){try{visit(sheet.cssRules)}catch(e){}}
+      const style=document.createElement('style');
+      style.textContent='.sf-mobile-dock.has-selection.is-pressing .sf-dock-surface::before{opacity:0!important;transition:none!important}.sf-mobile-dock.has-selection.is-pressing .sf-dock-surface::after{opacity:1!important;transition:none!important}';
+      document.head.appendChild(style);
+      const forced={before:getComputedStyle(surface,'::before').opacity,after:getComputedStyle(surface,'::after').opacity};
+      style.remove();
+      return{rules,forced};
+     });
+     console.error('Pressed paint diagnostics:',JSON.stringify({engine,width,material,diagnostic,probe}));
     }
     assert.equal(material.pressed,'1',`Pressed thumb opacity on ${engine} ${width}px`);assert.equal(material.normal,'0');assert.notEqual(material.shadow,'none');assert.equal(material.position,material.thumbPosition,'Paints share relocation geometry');
    }
