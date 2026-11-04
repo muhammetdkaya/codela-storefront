@@ -2,80 +2,99 @@
  * Product search controller: request cancellation, busy state and field events.
  * One instance is created by the storefront entry module.
  */
-import { escape, decode, safeURL } from 'codela-storefront/format';
+import { escape, decode, safeURL, money } from 'codela-storefront/format';
 
 export function createSearchController({ $, config, t, getCurrent }) {
     let timer = null, controller = null, sequence = 0;
 
-    // Mobile discovery is an extension of the existing search panel.
-    const recentKey = 'codela-sf-recent-searches-v1';
-    let popularProducts = null, popularRequest = null;
+    // Discovery extends the existing mobile search panel; no search backend or header is added.
+    let discoveryProducts = null, discoveryTerms = null, discoveryRequest = null;
     const mobileDiscovery = () => window.matchMedia('(max-width:900px)').matches;
 
-    function recentItems() {
-        try {
-            const data = JSON.parse(localStorage.getItem(recentKey) || '[]');
-            return Array.isArray(data) ? data.filter(q => typeof q === 'string' && q.trim().length > 1).slice(0, 3) : [];
-        } catch { return []; }
+    function renderDiscovery() {
+        const terms = Array.isArray(discoveryTerms) ? discoveryTerms : [];
+        $('#sf-popular-list').innerHTML = terms.map(query =>
+            '<button type="button" class="sf-popular-term sf-ui-pressable" data-search-term="' +
+            escape(query) + '">' + escape(query) + '</button>'
+        ).join('');
+        $('#sf-popular-section').hidden = !terms.length;
+
+        const cards = (Array.isArray(discoveryProducts) ? discoveryProducts : []).map(product => {
+            const photo = product?.images?.[0]?.src || product?.images?.[0]?.thumbnail;
+            const href = safeURL(product?.permalink);
+            const name = decode(product?.name || '').trim();
+            if (!photo || !href || !name) return '';
+            let price = '';
+            try {
+                if (product?.prices?.price != null) price = money(product.prices.price, product.prices);
+            } catch { /* An invalid currency must not break discovery. */ }
+            return '<a class="sf-explore-card sf-ui-pressable" href="' + href +
+                '"><span class="sf-explore-photo"><img src="' + safeURL(photo) +
+                '" alt="" loading="lazy" decoding="async" width="320" height="320"></span>' +
+                '<span class="sf-explore-name">' + escape(name) + '</span>' +
+                (price ? '<strong class="sf-explore-price">' + escape(price) + '</strong>' : '') + '</a>';
+        }).filter(Boolean).slice(0, 6);
+        $('#sf-explore-list').innerHTML = cards.join('');
+        $('#sf-explore-section').hidden = !cards.length;
     }
-    function renderRecent() {
-        const items = recentItems();
-        $('#sf-recent-section').hidden = !items.length;
-        $('#sf-recent-list').innerHTML = items.map(q => '<button type="button" class="sf-recent-query sf-ui-pressable" data-search-term="' +
-            escape(q) + '">' + escape(q) + '</button>').join('');
-    }
-    function saveRecent(query) {
-        const q = query.trim().slice(0, 80);
-        if (q.length < 2) return;
-        const items = [q, ...recentItems().filter(item => item.toLocaleLowerCase() !== q.toLocaleLowerCase())].slice(0, 3);
-        try { localStorage.setItem(recentKey, JSON.stringify(items)); } catch { /* Storage can be denied in private mode. */ }
-        renderRecent();
-    }
-    function renderPopular() {
-        const products = Array.isArray(popularProducts) ? popularProducts : [];
-        const cards = products.map(product => {
-            const query = decode(product?.name || '').trim().slice(0, 80);
-            const photo = product?.images?.[0]?.thumbnail || product?.images?.[0]?.src;
-            if (!query || !photo) return '';
-            return '<button type="button" class="sf-popular-query sf-ui-pressable" data-search-term="' + escape(query) +
-                '"><span class="sf-popular-photo"><img src="' + safeURL(photo) +
-                '" alt="" loading="lazy" decoding="async" width="110" height="110"></span><span class="sf-popular-name">' +
-                escape(query) + '</span></button>';
-        }).filter(Boolean).slice(0, 3);
-        $('#sf-popular-list').innerHTML = cards.join('');
-        $('#sf-popular-section').hidden = !cards.length;
-    }
-    async function loadPopular() {
-        if (popularProducts !== null) { renderPopular(); return; }
-        if (popularRequest) return;
+
+    async function loadDiscovery() {
+        if (discoveryProducts !== null && discoveryTerms !== null) { renderDiscovery(); return; }
+        if (discoveryRequest) return;
         const api = config()?.api;
         if (!api) return;
-        popularRequest = new AbortController();
-        const signal = popularRequest.signal;
+        discoveryRequest = new AbortController();
+        const signal = discoveryRequest.signal;
         try {
-            // WooCommerce Store API is already used elsewhere in this theme.
-            const url = new URL('products', api);
-            url.searchParams.set('orderby', 'popularity');
-            url.searchParams.set('per_page', '3');
-            const response = await fetch(url, {credentials:'same-origin', signal});
-            if (!response.ok) throw new Error('Popular products unavailable');
-            const data = await response.json();
+            // Reuse WooCommerce Store API; fetch only when the empty mobile search opens.
+            const productsURL = new URL('products', api);
+            productsURL.searchParams.set('orderby', 'popularity');
+            productsURL.searchParams.set('per_page', '6');
+            const categoriesURL = new URL('products/categories', api);
+            categoriesURL.searchParams.set('orderby', 'count');
+            categoriesURL.searchParams.set('order', 'desc');
+            categoriesURL.searchParams.set('per_page', '8');
+            const fetchJSON = url => fetch(url, {credentials:'same-origin', signal})
+                .then(response => {
+                    if (!response.ok) throw new Error('Discovery unavailable');
+                    return response.json();
+                });
+            const [productsResult, categoriesResult] = await Promise.allSettled([
+                fetchJSON(productsURL), fetchJSON(categoriesURL),
+            ]);
             if (signal.aborted) return;
-            popularProducts = Array.isArray(data) ? data : [];
-            if (getCurrent() === 'search' && mobileDiscovery() && !$('#sf-query').value.trim()) renderPopular();
-        } catch { /* Discovery is optional; never block search. */ }
-        finally { if (popularRequest?.signal === signal) popularRequest = null; }
+            const products = productsResult.status === 'fulfilled' && Array.isArray(productsResult.value)
+                ? productsResult.value : [];
+            const categories = categoriesResult.status === 'fulfilled' && Array.isArray(categoriesResult.value)
+                ? categoriesResult.value : [];
+            const terms = [], seen = new Set();
+            const addTerm = raw => {
+                const value = decode(raw || '').trim();
+                const key = value.toLocaleLowerCase();
+                if (value.length < 2 || value.length > 32 || /^(uncategorized|kategorisiz|genel)$/i.test(value) || seen.has(key)) return;
+                seen.add(key);
+                terms.push(value);
+            };
+            categories.forEach(category => addTerm(category?.name));
+            if (terms.length < 4) products.forEach(product => (product?.categories || []).forEach(category => addTerm(category?.name)));
+            if (terms.length < 4) products.forEach(product => (product?.tags || []).forEach(tag => addTerm(tag?.name)));
+            discoveryTerms = terms.slice(0, 5);
+            discoveryProducts = products;
+            if (getCurrent() === 'search' && mobileDiscovery() && !$('#sf-query').value.trim()) renderDiscovery();
+        } catch { /* Optional discovery must never block normal search. */ }
+        finally { if (discoveryRequest?.signal === signal) discoveryRequest = null; }
     }
+
     function syncDiscovery() {
         const visible = mobileDiscovery() && getCurrent() === 'search' && !$('#sf-query').value.trim();
         $('#sf-discovery').hidden = !visible;
-        if (visible) { renderRecent(); loadPopular(); }
+        if (visible) loadDiscovery();
     }
 
     function cancel() {
         clearTimeout(timer);
         controller?.abort();
-        popularRequest?.abort(); popularRequest = null;
+        discoveryRequest?.abort(); discoveryRequest = null;
         ++sequence;
         $('#sf-results')?.setAttribute('aria-busy','false');
     }
@@ -91,7 +110,6 @@ export function createSearchController({ $, config, t, getCurrent }) {
         $('#sf-search form').addEventListener('submit',event => {
             event.preventDefault();
             clearTimeout(timer);
-            saveRecent($('#sf-query').value);
             search();
         });
         $('.sf-search-clear').addEventListener('click', () => {
@@ -103,23 +121,13 @@ export function createSearchController({ $, config, t, getCurrent }) {
             $('#sf-query').focus({preventScroll:true});
         });
         $('#sf-discovery').addEventListener('click', event => {
-            if (event.target.closest('.sf-recent-clear')) {
-                try { localStorage.removeItem(recentKey); } catch {}
-                renderRecent();
-                return;
-            }
-            const button = event.target.closest('[data-search-term]');
+            const button = event.target.closest('button[data-search-term]');
             if (!button) return;
-            const query = button.dataset.searchTerm || '';
-            $('#sf-query').value = query;
-            saveRecent(query);
+            $('#sf-query').value = button.dataset.searchTerm || '';
             cancel();
             syncSearchControls();
             syncDiscovery();
             search();
-        });
-        $('#sf-results').addEventListener('click', event => {
-            if (event.target.closest('a.sf-result')) saveRecent($('#sf-query').value);
         });
     }
 
