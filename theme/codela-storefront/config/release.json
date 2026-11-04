@@ -6,9 +6,9 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mobil arama kutusu, mevcut Codela Framework7 cam yüzeyini alt menü ve X butonuyla aynı tasarım dilinde kullanır; masaüstü arama yerleşimi korunur.",
-    "Popüler arama cam butonlarının gölgeleri inceltildi, yatay/dikey boşluklar sıkılaştırıldı ve dokunma alanları korundu.",
-    "Keşfet uzun ürün adlarını üç noktasız hafifçe soldurarak keser ve eksik başlıklı/sıfır fiyatlı test ürünlerini vitrinden çıkarır.",
-    "Dinamik öneri sayısı, WooCommerce Store API, yatay ürün vitrini, sepet ve hesap işlevleri değişmez."
+    "Mobil aramada üç popüler sorgu varsayılan; yalnız çok yüksek ekranda dördüncü sorgu gösterilir. Keşfet'in alt menü üstünde kalması için dinamik sığdırma devam eder.",
+    "Arama cam kapsülünün gölgesi mevcut Codela cam seçim gölgesiyle daha hafif ve dengeli hale getirildi.",
+    "Popüler arama butonlarının dikey boşluğu azaltıldı; Keşfet ürün adları daha sakin gri tonda, fiyatlar okunaklı koyu renkte bırakıldı.",
+    "Arama girişi ve X, yatay ürün vitrini, ortak alt menü, WooCommerce arama ve diğer ekranlar korunur."
   ]
 }
