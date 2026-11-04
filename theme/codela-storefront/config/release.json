@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Framework7 iOS ortak cam yüzeyindeki geniş gri iç kabartma azaltıldı; ince yansıma, kenar çizgisi ve doğal gölge korunarak beyaz zemindeki header, alt menü ve ikon butonları tutarlılaştırıldı.",
-    "Framework7 %75 cam yüzeyi, 16 px blur ve %180 doygunluk; %85 okunabilir ürün paneli, aynı ikonlar ve erişilebilir opak alternatifler korundu.",
-    "Alt menünün 240 ms sekme kayması, basılı/sürüklenen sekme davranışı, WooCommerce formları, skeleton animasyonu ve ürün paneli ölçüleri değişmedi."
+    "Mobil arama çubuğu ve X konumu korundu; boş sorguda en fazla üç son arama ile üç görselli popüler arama gösterilir.",
+    "Mevcut WooCommerce Store API ve ortak Codela/Framework7 tasarım bileşenleri kullanılır; yeni backend, ikinci panel veya harici runtime eklenmez.",
+    "Son aramalar yalnızca cihazda saklanır ve silinebilir; arama sonuçları, alt dock, sepet ve hesap davranışları korunur."
   ]
 }

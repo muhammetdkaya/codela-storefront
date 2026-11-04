@@ -216,6 +216,25 @@
 }
 
 
+
+/* Mobile discovery inherits the shared UI-kit; the search input is unchanged. */
+#sf-search .sf-discovery[hidden],
+#sf-search .sf-discovery-section[hidden]{display:none!important}
+#sf-search .sf-discovery{max-width:950px;margin:0 auto;padding:2px 0 0}
+#sf-search .sf-discovery-section{margin:0 0 22px}
+#sf-search .sf-discovery-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#sf-search .sf-discovery h3{font-size:13px;font-weight:650;letter-spacing:.01em;color:var(--sf-ui-ink);margin:12px 0}
+#sf-search .sf-recent-clear{border:0;background:transparent;color:#777;min-height:44px;padding:0 4px;font-size:12px}
+#sf-search .sf-recent-list{display:grid;gap:0}
+#sf-search .sf-recent-query{display:flex;align-items:center;width:100%;min-height:44px;padding:9px 0;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--sf-ui-border);color:var(--sf-ui-ink);font-size:14px;overflow-wrap:anywhere}
+#sf-search .sf-popular-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+#sf-search .sf-popular-query{display:flex;flex-direction:column;min-width:0;min-height:44px;gap:8px;padding:0;text-align:left;border:0;background:transparent;color:var(--sf-ui-ink)}
+#sf-search .sf-popular-photo{display:block;overflow:hidden;width:100%;aspect-ratio:1;border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface-muted)}
+#sf-search .sf-popular-photo img{display:block;width:100%;height:100%;object-fit:cover}
+#sf-search .sf-popular-name{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2;font-size:12px;line-height:1.45;font-weight:500;overflow-wrap:anywhere}
+#sf-search #sf-results:empty{min-height:0}
+@media(min-width:901px){#sf-search .sf-discovery{display:none!important}}
+
 /* Reset initial pointer focus after the search control rule; Tab removes this class. */
 #sf-panel .sf-close.sf-initial-focus:focus-visible{outline:none!important}
 

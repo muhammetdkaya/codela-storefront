@@ -7,9 +7,75 @@ import { escape, decode, safeURL } from 'codela-storefront/format';
 export function createSearchController({ $, config, t, getCurrent }) {
     let timer = null, controller = null, sequence = 0;
 
+    // Mobile discovery is an extension of the existing search panel.
+    const recentKey = 'codela-sf-recent-searches-v1';
+    let popularProducts = null, popularRequest = null;
+    const mobileDiscovery = () => window.matchMedia('(max-width:900px)').matches;
+
+    function recentItems() {
+        try {
+            const data = JSON.parse(localStorage.getItem(recentKey) || '[]');
+            return Array.isArray(data) ? data.filter(q => typeof q === 'string' && q.trim().length > 1).slice(0, 3) : [];
+        } catch { return []; }
+    }
+    function renderRecent() {
+        const items = recentItems();
+        $('#sf-recent-section').hidden = !items.length;
+        $('#sf-recent-list').innerHTML = items.map(q => '<button type="button" class="sf-recent-query sf-ui-pressable" data-search-term="' +
+            escape(q) + '">' + escape(q) + '</button>').join('');
+    }
+    function saveRecent(query) {
+        const q = query.trim().slice(0, 80);
+        if (q.length < 2) return;
+        const items = [q, ...recentItems().filter(item => item.toLocaleLowerCase() !== q.toLocaleLowerCase())].slice(0, 3);
+        try { localStorage.setItem(recentKey, JSON.stringify(items)); } catch { /* Storage can be denied in private mode. */ }
+        renderRecent();
+    }
+    function renderPopular() {
+        const products = Array.isArray(popularProducts) ? popularProducts : [];
+        const cards = products.map(product => {
+            const query = decode(product?.name || '').trim().slice(0, 80);
+            const photo = product?.images?.[0]?.thumbnail || product?.images?.[0]?.src;
+            if (!query || !photo) return '';
+            return '<button type="button" class="sf-popular-query sf-ui-pressable" data-search-term="' + escape(query) +
+                '"><span class="sf-popular-photo"><img src="' + safeURL(photo) +
+                '" alt="" loading="lazy" decoding="async" width="110" height="110"></span><span class="sf-popular-name">' +
+                escape(query) + '</span></button>';
+        }).filter(Boolean).slice(0, 3);
+        $('#sf-popular-list').innerHTML = cards.join('');
+        $('#sf-popular-section').hidden = !cards.length;
+    }
+    async function loadPopular() {
+        if (popularProducts !== null) { renderPopular(); return; }
+        if (popularRequest) return;
+        const api = config()?.api;
+        if (!api) return;
+        popularRequest = new AbortController();
+        const signal = popularRequest.signal;
+        try {
+            // WooCommerce Store API is already used elsewhere in this theme.
+            const url = new URL('products', api);
+            url.searchParams.set('orderby', 'popularity');
+            url.searchParams.set('per_page', '3');
+            const response = await fetch(url, {credentials:'same-origin', signal});
+            if (!response.ok) throw new Error('Popular products unavailable');
+            const data = await response.json();
+            if (signal.aborted) return;
+            popularProducts = Array.isArray(data) ? data : [];
+            if (getCurrent() === 'search' && mobileDiscovery() && !$('#sf-query').value.trim()) renderPopular();
+        } catch { /* Discovery is optional; never block search. */ }
+        finally { if (popularRequest?.signal === signal) popularRequest = null; }
+    }
+    function syncDiscovery() {
+        const visible = mobileDiscovery() && getCurrent() === 'search' && !$('#sf-query').value.trim();
+        $('#sf-discovery').hidden = !visible;
+        if (visible) { renderRecent(); loadPopular(); }
+    }
+
     function cancel() {
         clearTimeout(timer);
         controller?.abort();
+        popularRequest?.abort(); popularRequest = null;
         ++sequence;
         $('#sf-results')?.setAttribute('aria-busy','false');
     }
@@ -19,11 +85,13 @@ export function createSearchController({ $, config, t, getCurrent }) {
             cancel();
             $('#sf-results').textContent = '';
             syncSearchControls();
+            syncDiscovery();
             timer = setTimeout(search,180);
         });
         $('#sf-search form').addEventListener('submit',event => {
             event.preventDefault();
             clearTimeout(timer);
+            saveRecent($('#sf-query').value);
             search();
         });
         $('.sf-search-clear').addEventListener('click', () => {
@@ -31,7 +99,27 @@ export function createSearchController({ $, config, t, getCurrent }) {
             cancel();
             $('#sf-results').textContent = '';
             syncSearchControls();
+            syncDiscovery();
             $('#sf-query').focus({preventScroll:true});
+        });
+        $('#sf-discovery').addEventListener('click', event => {
+            if (event.target.closest('.sf-recent-clear')) {
+                try { localStorage.removeItem(recentKey); } catch {}
+                renderRecent();
+                return;
+            }
+            const button = event.target.closest('[data-search-term]');
+            if (!button) return;
+            const query = button.dataset.searchTerm || '';
+            $('#sf-query').value = query;
+            saveRecent(query);
+            cancel();
+            syncSearchControls();
+            syncDiscovery();
+            search();
+        });
+        $('#sf-results').addEventListener('click', event => {
+            if (event.target.closest('a.sf-result')) saveRecent($('#sf-query').value);
         });
     }
 
@@ -71,7 +159,7 @@ export function createSearchController({ $, config, t, getCurrent }) {
     return {
         bind,
         cancel,
-        start() { syncSearchControls(); return search(); },
+        start() { syncSearchControls(); syncDiscovery(); return search(); },
         retry: search,
         syncControls: syncSearchControls,
     };

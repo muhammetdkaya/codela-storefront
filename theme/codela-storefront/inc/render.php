@@ -182,6 +182,19 @@ function codela_sf_header(): string {
                     <?php echo codela_sf_ui_icon_button( 'x', __( 'Close', 'codela-storefront' ), [ 'variant' => 'soft', 'class' => 'sf-search-cancel sf-close', 'attributes' => [ 'data-wp-on--click' => 'actions.close' ] ] ); ?>
                 </div>
                 <div class="sf-search-content">
+                    <div id="sf-discovery" class="sf-discovery" hidden>
+                        <section id="sf-recent-section" class="sf-discovery-section" aria-labelledby="sf-recent-heading" hidden>
+                            <div class="sf-discovery-heading">
+                                <h3 id="sf-recent-heading"><?php esc_html_e( 'Recent searches', 'codela-storefront' ); ?></h3>
+                                <button type="button" class="sf-recent-clear sf-ui-pressable" aria-label="<?php esc_attr_e( 'Clear recent searches', 'codela-storefront' ); ?>"><?php esc_html_e( 'Clear', 'codela-storefront' ); ?></button>
+                            </div>
+                            <div id="sf-recent-list" class="sf-recent-list"></div>
+                        </section>
+                        <section id="sf-popular-section" class="sf-discovery-section" aria-labelledby="sf-popular-heading" hidden>
+                            <h3 id="sf-popular-heading"><?php esc_html_e( 'Popular searches', 'codela-storefront' ); ?></h3>
+                            <div id="sf-popular-list" class="sf-popular-list"></div>
+                        </section>
+                    </div>
                     <div id="sf-results" aria-live="polite"></div>
                 </div>
             </section>
