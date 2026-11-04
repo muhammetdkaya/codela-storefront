@@ -36,7 +36,12 @@ assert.ok(css.includes('--sf-overlay-control-size:44px'), 'All overlay X control
 assert.ok(css.includes('--sf-overlay-toolbar-height:68px'), 'All panel headers share the same height');
 assert.ok(css.includes('#sf-panel .sf-panel-top{'), 'Menu and cart have a shared toolbar');
 assert.ok(css.includes('#sf-search .sf-search-toolbar{'), 'Search uses matching toolbar tokens');
-assert.ok(css.includes('height:46px'), 'Search field is reduced from 52px to 46px');
+assert.ok(css.includes('height:48px'), 'Search input glass capsule retains compact 48px geometry');
+assert.ok(markup.includes('class="sf-search-form sf-ui-surface"'), 'Search uses the existing shared glass surface rather than a new component');
+assert.ok(css.includes('.sf-search-form.sf-ui-surface:focus-within'), 'Input focus ring stays on the capsule');
+assert.ok(css.includes('--sf-ui-surface-shadow:var(--sf-ui-glass-thumb-shadow)'), 'Popular suggestions use subtle existing thumb material');
+assert.ok(css.includes('.sf-explore-name.is-clipped') && search.includes("label.scrollWidth > label.clientWidth + 1"), 'Long titles softly fade only when clipped');
+assert.ok(search.includes('!Number.isFinite(amount) || amount <= 0') && search.includes('name.length < 3'), 'Incomplete/test products are excluded from discovery');
 assert.ok(fs.readFileSync('theme/codela-storefront/assets/styles/tokens.css','utf8').includes('--sf-ui-icon-close:24px'), 'X glyph token matches shared icon sizing');
 assert.ok(css.includes('background:var(--sf-ui-page)'), 'Panels inherit the common page canvas');
 assert.ok(css.includes('color-scheme:light'), 'Search uses light input/color controls');

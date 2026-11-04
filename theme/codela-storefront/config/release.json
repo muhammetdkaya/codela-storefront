@@ -6,8 +6,9 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mobil Popüler Aramalar önerileri mevcut Codela/Framework7 cam yüzeyinde, ince yazılı ve tek sütunda gösterilir; sığan öneri sayısı ekran yüksekliğine göre azaltılır.",
-    "Keşfet yatay vitrini ve iki büyük görsel korunur; ürün adı ana sayfanın 13px/500 stiliyle tek satır ve üç noktasız kesilir, fiyat ana sayfanın 16px/500 tipografisini paylaşır.",
-    "Mevcut arama/X, Store API, alt menü, sepet, hesap ve sonuç araması değişmez."
+    "Mobil arama kutusu, mevcut Codela Framework7 cam yüzeyini alt menü ve X butonuyla aynı tasarım dilinde kullanır; masaüstü arama yerleşimi korunur.",
+    "Popüler arama cam butonlarının gölgeleri inceltildi, yatay/dikey boşluklar sıkılaştırıldı ve dokunma alanları korundu.",
+    "Keşfet uzun ürün adlarını üç noktasız hafifçe soldurarak keser ve eksik başlıklı/sıfır fiyatlı test ürünlerini vitrinden çıkarır.",
+    "Dinamik öneri sayısı, WooCommerce Store API, yatay ürün vitrini, sepet ve hesap işlevleri değişmez."
   ]
 }
