@@ -24,7 +24,11 @@ export function createSearchController({ $, config, t, getCurrent }) {
             });
         }
         if (shelf.hidden || !buttons.length) return;
-        buttons.forEach(button => { button.hidden = false; });
+        // Three suggestions by default; a fourth is only useful on genuinely tall screens.
+        // Responsive fitting below may still hide more to keep Discover above the dock.
+        const viewportHeight = window.visualViewport?.height || window.innerHeight;
+        const visibleLimit = viewportHeight >= 880 ? 4 : 3;
+        buttons.forEach((button, index) => { button.hidden = index >= visibleLimit; });
         const viewportBottom = window.visualViewport
             ? window.visualViewport.offsetTop + window.visualViewport.height
             : window.innerHeight;
@@ -33,7 +37,7 @@ export function createSearchController({ $, config, t, getCurrent }) {
             ? dock.getBoundingClientRect().top : viewportBottom;
         const bottom = Math.min(viewportBottom, dockTop) - 14;
         // Never hide the discovery shelf: reduce suggestions, not product visibility.
-        for (let visible = buttons.length; visible > 1 && shelf.getBoundingClientRect().bottom > bottom; visible--) {
+        for (let visible = Math.min(buttons.length, visibleLimit); visible > 1 && shelf.getBoundingClientRect().bottom > bottom; visible--) {
             buttons[visible - 1].hidden = true;
         }
     }

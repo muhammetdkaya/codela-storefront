@@ -39,6 +39,7 @@ assert.ok(css.includes('#sf-search .sf-search-toolbar{'), 'Search uses matching 
 assert.ok(css.includes('height:48px'), 'Search input glass capsule retains compact 48px geometry');
 assert.ok(markup.includes('class="sf-search-form sf-ui-surface"'), 'Search uses the existing shared glass surface rather than a new component');
 assert.ok(css.includes('.sf-search-form.sf-ui-surface:focus-within'), 'Input focus ring stays on the capsule');
+assert.ok(css.includes('--sf-ui-surface-shadow:var(--sf-ui-glass-thumb-shadow)'), 'Search glass capsule uses existing restrained shadow material');
 assert.ok(css.includes('--sf-ui-surface-shadow:var(--sf-ui-glass-thumb-shadow)'), 'Popular suggestions use subtle existing thumb material');
 assert.ok(css.includes('.sf-explore-name.is-clipped') && search.includes("label.scrollWidth > label.clientWidth + 1"), 'Long titles softly fade only when clipped');
 assert.ok(search.includes('!Number.isFinite(amount) || amount <= 0') && search.includes('name.length < 3'), 'Incomplete/test products are excluded from discovery');
@@ -57,6 +58,10 @@ assert.ok(search.includes("sf-popular-term sf-ui-surface sf-ui-pressable"), 'Pop
 assert.ok(search.includes('fitDiscoveryTerms()') && search.includes('getBoundingClientRect().top'), 'Suggestion count adapts to viewport and dock');
 assert.ok(css.includes('grid-template-columns:minmax(0,1fr);justify-items:start'), 'Suggestions form one vertical column');
 assert.ok(css.includes('.sf-popular-term.sf-ui-surface') && css.includes('font-weight:400'), 'Glass pill labels are lighter than headings');
+assert.ok(search.includes('viewportHeight >= 880 ? 4 : 3'), 'Only tall viewports show the optional fourth keyword');
+assert.ok(search.includes('index >= visibleLimit') && search.includes('Math.min(buttons.length, visibleLimit)'), 'Term fitting cannot reintroduce hidden keywords');
+assert.ok(css.includes('gap:3px') && css.includes('color:var(--sf-muted,#77776d)'), 'Compact chips and muted product names retain visual hierarchy');
+assert.ok(css.includes('min-width:0;margin-top:4px') && css.includes('color:var(--sf-ui-control-ink)'), 'Product price stays clear and dark');
 assert.ok(css.includes('white-space:nowrap;overflow:hidden;text-overflow:clip'), 'Full product name stays accessible, but only one visible line shows with no ellipsis');
 assert.ok(css.includes('font-size:13px;line-height:1.45;font-weight:500') && css.includes('font-size:16px;line-height:1.5;font-weight:500'), 'Discovery uses the same product typography as mobile catalog');
 console.log('Search controls and mobile discovery contracts: passed.');

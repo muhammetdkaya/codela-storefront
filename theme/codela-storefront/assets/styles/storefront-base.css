@@ -434,7 +434,7 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
   border:0;
   border-radius:var(--sf-ui-pill);
   /* Shared sf-ui-surface owns the glass paint and blur, as it does for the dock. */
-  --sf-ui-surface-shadow:var(--sf-ui-glass-control-shadow);
+  --sf-ui-surface-shadow:var(--sf-ui-glass-thumb-shadow);
 }
 #sf-search .sf-search-leading{
   display:grid;
@@ -572,7 +572,7 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
 #sf-search .sf-discovery{max-width:950px;margin:0 auto;padding:0}
 #sf-search .sf-discovery-section{margin:0 0 11px}
 #sf-search .sf-discovery h3{font-size:17px;font-weight:600;letter-spacing:-.02em;line-height:1.3;color:var(--sf-ui-ink);margin:10px 0 8px}
-#sf-search .sf-popular-list{display:grid;grid-template-columns:minmax(0,1fr);justify-items:start;align-content:start;gap:4px}
+#sf-search .sf-popular-list{display:grid;grid-template-columns:minmax(0,1fr);justify-items:start;align-content:start;gap:3px}
 #sf-search .sf-popular-term.sf-ui-surface{box-sizing:border-box;display:flex;align-items:center;justify-content:flex-start;width:max-content;max-width:100%;min-height:var(--sf-ui-hit);padding:7px 13px;text-align:left;border-radius:var(--sf-ui-pill);color:var(--sf-ui-ink);font-size:13px;font-weight:400;line-height:1.35;letter-spacing:0;white-space:nowrap;overflow:hidden;text-overflow:clip;--sf-ui-surface-shadow:var(--sf-ui-glass-thumb-shadow)}
 #sf-search .sf-popular-term:focus-visible,
 #sf-search .sf-explore-card:focus-visible{outline:2px solid var(--sf-accent,#656e52);outline-offset:3px}
@@ -581,9 +581,9 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
 #sf-search .sf-explore-card{display:flex;flex-direction:column;min-width:0;gap:0;scroll-snap-align:start;text-decoration:none;color:var(--sf-ui-ink)}
 #sf-search .sf-explore-photo{display:block;width:100%;aspect-ratio:1;overflow:hidden;border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface-muted)}
 #sf-search .sf-explore-photo img{display:block;width:100%;height:100%;object-fit:cover}
-#sf-search .sf-explore-name{display:block;min-width:0;width:100%;margin-top:9px;font-family:var(--wp--preset--font-family--system,Arial,Helvetica,sans-serif);font-size:13px;line-height:1.45;font-weight:500;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:clip;color:var(--sf-ui-control-ink)}
+#sf-search .sf-explore-name{display:block;min-width:0;width:100%;margin-top:9px;font-family:var(--wp--preset--font-family--system,Arial,Helvetica,sans-serif);font-size:13px;line-height:1.45;font-weight:500;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:clip;color:var(--sf-muted,#77776d)}
 #sf-search .sf-explore-name.is-clipped{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 18px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 18px),transparent)}
-#sf-search .sf-explore-price{display:block;min-width:0;margin-top:3px;font-family:var(--wp--preset--font-family--system,Arial,Helvetica,sans-serif);font-size:16px;line-height:1.5;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:0;color:var(--sf-ui-control-ink)}
+#sf-search .sf-explore-price{display:block;min-width:0;margin-top:4px;font-family:var(--wp--preset--font-family--system,Arial,Helvetica,sans-serif);font-size:16px;line-height:1.5;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:0;color:var(--sf-ui-control-ink)}
 #sf-search #sf-results:empty{min-height:0}
 @media(max-width:700px){
  #sf-search .sf-discovery h3{margin:9px 0 7px}
