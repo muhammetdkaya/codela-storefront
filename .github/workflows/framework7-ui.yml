@@ -1,7 +1,7 @@
 name: Shared UI adoption (no deployment)
 on:
   push:
-    branches: [work/framework7-ui-20261104]
+    branches: [work/framework7-ui-20261104, work/framework7-safari-glass-surface-20261104]
   workflow_dispatch:
 permissions:
   contents: read

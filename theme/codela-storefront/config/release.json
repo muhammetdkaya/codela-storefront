@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mobil alt menüde seçili sekmenin cam arka planı tıklamada anında sıçramak yerine 240 ms yatay kayar; parmakla sürükleme ve azaltılmış hareket tercihi korunur.",
-    "Ürün sayfasının skeleton görselindeki yüklenme animasyonu biraz belirginleştirilmiştir; gerçek ürün görseli, panel, buton ve ölçüler değişmez.",
-    "Header, menü, buton ve ikonların ortak Framework7 uyarlamasıyla gelen tasarım dili korunur; yeni framework veya ek JavaScript yüklenmez."
+    "Framework7 iOS ortak cam yüzeyindeki geniş gri iç kabartma azaltıldı; ince yansıma, kenar çizgisi ve doğal gölge korunarak beyaz zemindeki header, alt menü ve ikon butonları tutarlılaştırıldı.",
+    "Framework7 %75 cam yüzeyi, 16 px blur ve %180 doygunluk; %85 okunabilir ürün paneli, aynı ikonlar ve erişilebilir opak alternatifler korundu.",
+    "Alt menünün 240 ms sekme kayması, basılı/sürüklenen sekme davranışı, WooCommerce formları, skeleton animasyonu ve ürün paneli ölçüleri değişmedi."
   ]
 }

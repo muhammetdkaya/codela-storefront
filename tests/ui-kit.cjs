@@ -33,6 +33,15 @@ const navigation=fs.readFileSync('theme/codela-storefront/assets/styles/navigati
 assert(navigation.includes('.sf-shell .sf-header .sf-brand'));
 assert(cssUI.includes('.sf-shell .sf-ui-surface'));
 assert(tokens.includes('--sf-ui-glass-surface'));
+for(const key of ['glass-shadow','glass-control-shadow','glass-thumb-shadow']){
+ const shadow=tokens.match(new RegExp('--sf-ui-'+key+':([^;]+);'))?.[1];
+ assert(shadow && shadow.includes('inset -1px -1px') && shadow.includes('inset 1px 1px'),'Pinned Framework7 directional glass rim retained in '+key);
+ assert(!shadow.includes('#ddd') && !shadow.includes('#eee') && !shadow.includes('inset 0 0 24px'),'Embossed inner glow not allowed in shared '+key);
+}
+assert(tokens.includes('--sf-ui-glass-surface:rgba(255,255,255,.75)') &&
+ tokens.includes('--sf-ui-glass-panel-surface:rgba(255,255,255,.85)') &&
+ tokens.includes('--sf-ui-glass-blur:16px') && tokens.includes('--sf-ui-glass-saturation:180%'),
+ 'Framework7 glass translucency, blur/saturation and readable product panel remain');
 assert(cssUI.includes('prefers-reduced-transparency:reduce'));
 assert(cssUI.includes('.sf-ui-button--primary'));
 assert(cssUI.includes('.sf-ui-button--secondary'));

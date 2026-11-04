@@ -38,6 +38,21 @@ const out=`qa/framework7/${engine}`;fs.mkdirSync(out,{recursive:true});
   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal overflow '+width);
   const snap=async name=>{if([390,1280].includes(width))await page.screenshot({path:`${out}/${name}-${width}.png`,animations:'disabled'});};
   await snap('home');
+  if(!baseline && width===390){
+   const paint=await page.evaluate(()=>{
+    const read=el=>{const s=getComputedStyle(el);return{bg:s.backgroundColor,shadow:s.boxShadow,blur:s.backdropFilter||s.webkitBackdropFilter,image:s.backgroundImage};};
+    return{header:read(document.querySelector('.sf-header .sf-brand')),menu:read(document.querySelector('.sf-header .sf-menu-trigger')),dock:read(document.querySelector('.sf-dock-surface'))};
+   });
+   assert.equal(paint.header.bg,'rgba(255, 255, 255, 0.75)','Pinned iOS glass remains translucent on white');
+   assert.equal(paint.dock.bg,paint.header.bg,'Dock and header retain one Framework7 tint');
+   assert.equal(paint.header.shadow,paint.dock.shadow,'Header and dock use the same glass elevation');
+   assert.equal(paint.menu.bg,paint.header.bg,'Menu IconButton shares the Framework7 tint');
+   for(const [name,s] of Object.entries(paint)){
+    assert(s.blur.includes('blur(16px)')&&s.blur.includes('saturate(1.8)'),name+' retains optical glass');
+    assert.equal(s.image,'none',name+' has no extra white gradient');
+    assert(s.shadow.includes('inset')&&!s.shadow.includes('24px'),name+' retains a thin rim, not an embossed glow');
+   }
+  }
   if(!baseline){
    const cta=page.locator('.sf-section--hero .sf-ui-button--secondary').first();
    assert.equal(await cta.evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(237, 237, 237)','Tonal CTA remains opaque over dark photography');
