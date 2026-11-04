@@ -250,7 +250,13 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
     buttons:[...document.querySelectorAll('.sf-stepper button,.sf-remove')].map(el=>el.getBoundingClientRect().toJSON()),
     overflow:body.scrollWidth>body.clientWidth};
   });
-  assert(Math.abs(layout.photo.y-layout.detail.y)<1&&Math.abs(layout.photo.height-layout.detail.height)<1,'Product image and content share top and bottom at '+width);
+  assert(Math.abs(layout.photo.y-layout.detail.y)<1,'Image and detail top alignment at '+width);
+  if(width<=700){
+    assert(Math.abs(layout.photo.width-layout.photo.height)<1,'Mobile product images are square at '+width);
+    assert(layout.photo.height<=layout.detail.height+1,'Photo does not stretch with actions at '+width);
+  }else{
+    assert(Math.abs(layout.photo.height-layout.detail.height)<1,'Desktop cart photo geometry unchanged at '+width);
+  }
   assert(!layout.overflow,'Long cart title does not cause horizontal scrolling at '+width);
   assert(Math.abs(layout.row.x-layout.summary.x)<1,'List and summary share left edge at '+width);
   assert(Math.abs(layout.row.x-layout.cta.x)<1,'Checkout is centered on list axis at '+width);
