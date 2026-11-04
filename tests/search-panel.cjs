@@ -48,5 +48,10 @@ assert.ok(!markup.includes('sf-recent-section') && !search.includes('localStorag
 assert.ok(search.includes("new URL('products', api)") && search.includes("new URL('products/categories', api)") && search.includes("'popularity'"), 'Existing Woo Store API supplies categories and products');
 assert.ok(search.includes('safeURL(photo)') && search.includes('safeURL(product?.permalink)') && search.includes('escape(query)'), 'Discovery links and text are escaped');
 assert.ok(css.includes('grid-auto-flow:column') && css.includes('scroll-snap-type:x proximity'), 'Two-up horizontal discover shelf is scrollable');
-assert.ok(css.includes('.sf-popular-term') && css.includes('font-size:17px'), 'Borderless terms and stronger headings use existing style layer');
+assert.ok(search.includes("sf-popular-term sf-ui-surface sf-ui-pressable"), 'Popular terms reuse shared glass surface');
+assert.ok(search.includes('fitDiscoveryTerms()') && search.includes('getBoundingClientRect().top'), 'Suggestion count adapts to viewport and dock');
+assert.ok(css.includes('grid-template-columns:minmax(0,1fr);justify-items:start'), 'Suggestions form one vertical column');
+assert.ok(css.includes('.sf-popular-term.sf-ui-surface') && css.includes('font-weight:400'), 'Glass pill labels are lighter than headings');
+assert.ok(css.includes('white-space:nowrap;overflow:hidden;text-overflow:clip'), 'Full product name stays accessible, but only one visible line shows with no ellipsis');
+assert.ok(css.includes('font-size:13px;line-height:1.45;font-weight:500') && css.includes('font-size:16px;line-height:1.5;font-weight:500'), 'Discovery uses the same product typography as mobile catalog');
 console.log('Search controls and mobile discovery contracts: passed.');

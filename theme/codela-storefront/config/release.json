@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mobil aramada son aramalar kaldırıldı; WooCommerce kategorilerinden çerçevesiz hazır arama kelimeleri sunuluyor.",
-    "Keşfet vitrini altı popüler ürünü yaklaşık ikili büyük görsellerle yatay kaydırmalı gösterir; isim, fiyat ve ürün bağlantısı korunur.",
-    "Mevcut arama kutusu/X, Store API, Framework7 cam tasarım sistemi, alt menü, normal sonuçlar, sepet ve hesap değişmedi."
+    "Mobil Popüler Aramalar önerileri mevcut Codela/Framework7 cam yüzeyinde, ince yazılı ve tek sütunda gösterilir; sığan öneri sayısı ekran yüksekliğine göre azaltılır.",
+    "Keşfet yatay vitrini ve iki büyük görsel korunur; ürün adı ana sayfanın 13px/500 stiliyle tek satır ve üç noktasız kesilir, fiyat ana sayfanın 16px/500 tipografisini paylaşır.",
+    "Mevcut arama/X, Store API, alt menü, sepet, hesap ve sonuç araması değişmez."
   ]
 }
