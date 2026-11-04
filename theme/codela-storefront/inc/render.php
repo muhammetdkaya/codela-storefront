@@ -172,7 +172,7 @@ function codela_sf_header(): string {
             <?php endif; ?>
             <section class="sf-panel-body sf-search-body" id="sf-search" hidden>
                 <div class="sf-search-toolbar">
-                    <form class="sf-search-form" action="<?php echo esc_url( home_url( '/' ) ); ?>" method="get" role="search">
+                    <form class="sf-search-form sf-ui-surface" action="<?php echo esc_url( home_url( '/' ) ); ?>" method="get" role="search">
                         <input type="hidden" name="post_type" value="product">
                         <span class="sf-search-leading" aria-hidden="true"><?php echo codela_sf_icon( 'search' ); ?></span>
                         <label class="screen-reader-text" for="sf-query"><?php esc_html_e( 'Search products', 'codela-storefront' ); ?></label>

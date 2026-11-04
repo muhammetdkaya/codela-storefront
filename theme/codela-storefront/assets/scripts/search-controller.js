@@ -17,6 +17,12 @@ export function createSearchController({ $, config, t, getCurrent }) {
         if ($('#sf-discovery').hidden || getCurrent() !== 'search' || !mobileDiscovery()) return;
         const buttons = Array.from($('#sf-popular-list').children);
         const shelf = $('#sf-explore-section');
+        if (!shelf.hidden) {
+            // Fade only genuinely clipped product titles; short names remain crisp.
+            $('#sf-explore-list').querySelectorAll('.sf-explore-name').forEach(label => {
+                label.classList.toggle('is-clipped', label.scrollWidth > label.clientWidth + 1);
+            });
+        }
         if (shelf.hidden || !buttons.length) return;
         buttons.forEach(button => { button.hidden = false; });
         const viewportBottom = window.visualViewport
@@ -44,7 +50,9 @@ export function createSearchController({ $, config, t, getCurrent }) {
             const photo = product?.images?.[0]?.src || product?.images?.[0]?.thumbnail;
             const href = safeURL(product?.permalink);
             const name = decode(product?.name || '').trim();
-            if (!photo || !href || !name) return '';
+            // A discovery shelf must not advertise placeholder titles or zero-price test items.
+            const amount = Number(product?.prices?.price);
+            if (!photo || !href || name.length < 3 || !Number.isFinite(amount) || amount <= 0) return '';
             let price = '';
             try {
                 if (product?.prices?.price != null) price = money(product.prices.price, product.prices);
@@ -71,7 +79,7 @@ export function createSearchController({ $, config, t, getCurrent }) {
             // Reuse WooCommerce Store API; fetch only when the empty mobile search opens.
             const productsURL = new URL('products', api);
             productsURL.searchParams.set('orderby', 'popularity');
-            productsURL.searchParams.set('per_page', '6');
+            productsURL.searchParams.set('per_page', '8');
             const categoriesURL = new URL('products/categories', api);
             categoriesURL.searchParams.set('orderby', 'count');
             categoriesURL.searchParams.set('order', 'desc');
