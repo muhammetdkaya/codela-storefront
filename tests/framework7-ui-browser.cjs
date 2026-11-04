@@ -45,12 +45,15 @@ const out=`qa/framework7/${engine}`;fs.mkdirSync(out,{recursive:true});
   const dock=page.locator('.sf-mobile-dock');
   assert.equal(await dock.isVisible(),width<=700,'Existing dock breakpoint');
   if(width<=700){
-   const b=await dock.boundingBox();
-   // Read the pressed paint before the 240ms hold timer switches to scrubbing.
-    await page.mouse.move(b.x+b.width/8,b.y+24);await page.mouse.down();await page.waitForTimeout(160);
+   // Paint acceptance controls visual state deterministically. Native pointer
+   // and touch lifecycle are covered by dock-sheet-lifecycle-browser.cjs.
+   const prior=await dock.evaluate(el=>({selected:el.classList.contains('has-selection'),pressed:el.classList.contains('is-pressing'),index:el.style.getPropertyValue('--sf-dock-index')}));
+   await dock.evaluate(el=>{el.classList.add('has-selection','is-pressing');el.style.setProperty('--sf-dock-index','0');});
+   await page.waitForTimeout(160);
    const material=await dock.locator('.sf-dock-surface').evaluate(el=>{const a=getComputedStyle(el,'::before'),b=getComputedStyle(el,'::after');return{normal:a.opacity,pressed:b.opacity,shadow:b.boxShadow,position:a.transform,thumbPosition:b.transform}});
-   if(!baseline){assert.equal(material.pressed,'1');assert.equal(material.normal,'0');assert.notEqual(material.shadow,'none');assert.equal(material.position,material.thumbPosition,'Paints share relocation geometry');}
-   await snap('dock-pressed');await page.mouse.up();
+   if(!baseline){assert.equal(material.pressed,'1',`Pressed thumb opacity on ${engine} ${width}px`);assert.equal(material.normal,'0');assert.notEqual(material.shadow,'none');assert.equal(material.position,material.thumbPosition,'Paints share relocation geometry');}
+   await snap('dock-pressed');
+   await dock.evaluate((el,state)=>{el.classList.toggle('has-selection',state.selected);el.classList.toggle('is-pressing',state.pressed);if(state.index)el.style.setProperty('--sf-dock-index',state.index);else el.style.removeProperty('--sf-dock-index');},prior);
   }
   for(const panel of ['search','cart','account']){
    if(panel==='account'&&width>700)continue;
