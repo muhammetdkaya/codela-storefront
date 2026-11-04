@@ -13,7 +13,7 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
 .sf-brand .custom-logo{max-height:42px;width:auto;max-width:180px;object-fit:contain}
 .sf-actions{display:flex;gap:6px;flex-shrink:0}
 /* Icon control base and pressed feedback are defined in styles/components.css. */
-.sf-icon{width:22px;height:22px;display:block}
+.sf-icon{width:var(--sf-ui-icon,24px);height:var(--sf-ui-icon,24px);display:block}
 .sf-skip{position:fixed;top:-100px;left:20px;padding:12px;background:white;z-index:100}
 .sf-skip:focus{top:10px}
 .sf-panel{position:fixed;inset:var(--sf-admin-offset,0px) 0 0;margin:0;width:100%;height:calc(100dvh - var(--sf-admin-offset,0px));max-width:none;max-height:none;border:0;border-radius:0;padding:0;background:var(--sf-bg);color:var(--sf-ink);transform:none;transition:none;overflow:hidden}

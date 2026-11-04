@@ -13,14 +13,18 @@
   --sf-ui-ink:var(--sf-ink,#22231f);
   --sf-ui-surface:#ffffff;
   --sf-ui-surface-muted:#f3f3f3;
-  --sf-ui-nav-selection:rgba(118,118,128,.16);
+  --sf-ui-nav-selection:rgba(0,0,0,.10);
+  --sf-ui-nav-selection-pressed:rgba(0,0,0,.05);
   /* One legible floating material for header, dock, purchase bar and soft controls. */
-  --sf-ui-glass-surface:rgba(247,247,249,.96);
-  --sf-ui-glass-panel-surface:rgba(247,247,249,.78);
+  /* Adapted from the pinned Framework7 glass material; see THIRD-PARTY-NOTICES.txt. */
+  --sf-ui-glass-surface:rgba(255,255,255,.75);
+  --sf-ui-glass-panel-surface:rgba(255,255,255,.85);
   --sf-ui-glass-opaque:#f7f7f9;
   --sf-ui-glass-border:transparent;
-  /* One diffuse outer shadow separates the single surface on light backdrops. */
-  --sf-ui-glass-shadow:0 3px 12px rgba(0,0,0,.10);
+  --sf-ui-glass-shadow:inset -1px -1px 0 -.5px #fff,inset 1px 1px 0 -.5px #fff,inset 3px 3px 10px -3px #ddd,inset -3px -3px 10px -3px #ddd,inset 0 0 5px 1px #fff,inset 0 0 0 .5px rgba(0,0,0,.25),inset 0 0 24px rgba(0,0,0,.1),0 4px 20px rgba(0,0,0,.12);
+  /* Small controls retain the light edge without a broad inner glow. */
+  --sf-ui-glass-control-shadow:inset -1px -1px 0 -.5px #fff,inset 1px 1px 0 -.5px #fff,inset 0 0 0 .5px rgba(0,0,0,.20),inset 0 0 5px 1px rgba(255,255,255,.8),0 3px 12px rgba(0,0,0,.10);
+  --sf-ui-glass-thumb-shadow:inset -3px -3px 0 -3.5px #fff,inset 3px 3px 0 -3.5px #fff,inset 0 0 0 .5px rgba(255,255,255,.5),inset 3px 3px 10px -2px #eee,inset -3px -3px 10px -2px #eee,inset 0 0 5px 1px #fff;
   --sf-ui-glass-ink:#1c1c1e;
   --sf-ui-control-soft:var(--sf-ui-glass-surface);
   --sf-ui-header-surface:var(--sf-ui-glass-surface);
@@ -35,10 +39,10 @@
   --sf-ui-success-surface:#f3f7f2;
   --sf-ui-border:var(--sf-line,#deded5);
   --sf-ui-hit:44px;
-  --sf-ui-icon:22px;
+  --sf-ui-icon:24px;
   --sf-ui-nav-label-size:11px;
   --sf-ui-nav-label-weight:600;
-  --sf-ui-icon-close:22px;
+  --sf-ui-icon-close:24px;
   --sf-ui-icon-clear:12px;
   --sf-ui-action-height:54px;
   /* One mobile bottom-bar geometry for navigation and product purchase. */
@@ -56,11 +60,15 @@
   --sf-ui-product-photo-urgency-inset:140px;
   --sf-ui-product-heading-height:max(28px,calc(clamp(16px,4.5vw,20px) * 2.5));
   --sf-ui-control-radius:var(--cdl-ct-radius,12px);
+  --sf-ui-button-radius:999px;
+  /* Opaque tonal fill keeps dark labels legible over hero photography too. */
+  --sf-ui-button-tonal:#ededed;
+  --sf-ui-button-tonal-pressed:#dedede;
   --sf-ui-pill:999px;
   /* Shared control material: tint preserves contrast over changing content. */
-  --sf-ui-glass-blur:10px;
-  --sf-ui-glass-saturation:115%;
-  /* Keep the real backdrop contrast; an opaque tint hides overlapping text. */
+  --sf-ui-glass-blur:16px;
+  --sf-ui-glass-saturation:180%;
+  /* Keep backdrop contrast; the tint and blur separate foreground labels. */
   --sf-ui-glass-contrast:1;
   --sf-ui-glass-brightness:1;
   --sf-ui-glass-highlight:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,0) 48%,rgba(255,255,255,.02));
@@ -69,13 +77,13 @@
   --sf-ui-action-highlight-pressed:linear-gradient(160deg,rgba(255,255,255,.18),rgba(255,255,255,.015) 52%,rgba(255,255,255,.06));
   --sf-ui-action-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(0,0,0,.10),0 3px 9px rgba(0,0,0,.06);
   --sf-ui-motion-press:140ms;
-  --sf-ui-motion-engage:110ms;
-  --sf-ui-motion-release:360ms;
-  --sf-ui-scale-action:1.025;
-  --sf-ui-scale-icon:1.08;
+  --sf-ui-motion-engage:100ms;
+  --sf-ui-motion-release:220ms;
+  --sf-ui-scale-action:1.02;
+  --sf-ui-scale-icon:1.04;
   --sf-ui-scale-dock:1.018;
   --sf-ui-ease-release:cubic-bezier(.22,1.35,.36,1);
-  --sf-ui-motion-selection:220ms;
+  --sf-ui-motion-selection:240ms;
   --sf-ui-motion-panel:160ms;
   --sf-ui-motion-panel-enter:240ms;
   --sf-ui-motion-panel-exit:180ms;
@@ -136,7 +144,7 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
 .sf-brand .custom-logo{max-height:42px;width:auto;max-width:180px;object-fit:contain}
 .sf-actions{display:flex;gap:6px;flex-shrink:0}
 /* Icon control base and pressed feedback are defined in styles/components.css. */
-.sf-icon{width:22px;height:22px;display:block}
+.sf-icon{width:var(--sf-ui-icon,24px);height:var(--sf-ui-icon,24px);display:block}
 .sf-skip{position:fixed;top:-100px;left:20px;padding:12px;background:white;z-index:100}
 .sf-skip:focus{top:10px}
 .sf-panel{position:fixed;inset:var(--sf-admin-offset,0px) 0 0;margin:0;width:100%;height:calc(100dvh - var(--sf-admin-offset,0px));max-width:none;max-height:none;border:0;border-radius:0;padding:0;background:var(--sf-bg);color:var(--sf-ink);transform:none;transition:none;overflow:hidden}
@@ -724,7 +732,10 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
     transition:transform var(--sf-ui-motion-dock) var(--sf-ui-ease-dock),
       scale var(--sf-ui-motion-release) var(--sf-ui-ease-release),opacity 100ms ease;
   }
-  .sf-dock-surface::before{
+  /* Adapted from the pinned toolbar highlight. Both paints share geometry;
+     ::before remains the position source during dialog relocation. */
+  .sf-dock-surface::before,
+  .sf-dock-surface::after{
     content:'';
     position:absolute;
     left:4px;
@@ -736,18 +747,25 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
     opacity:0;
     z-index:-1;
     transform:translate3d(calc(var(--sf-dock-position,var(--sf-dock-index))*100%),0,0) scale(var(--sf-dock-press-scale,1));
-    transition:transform var(--sf-ui-motion-selection) var(--sf-ui-ease-press),opacity 140ms ease;
+    transition:transform var(--sf-ui-motion-selection) var(--sf-ui-ease-press),opacity var(--sf-ui-motion-engage) ease;
     pointer-events:none;
   }
   .sf-mobile-dock.has-selection .sf-dock-surface::before{opacity:1}
-  .sf-mobile-dock.is-pressing{--sf-dock-press-scale:1.06}
+  .sf-dock-surface::after{
+    background:var(--sf-ui-nav-selection-pressed);
+    box-shadow:var(--sf-ui-glass-thumb-shadow);
+  }
+  .sf-mobile-dock.has-selection.is-pressing .sf-dock-surface::before{opacity:0}
+  .sf-mobile-dock.has-selection.is-pressing .sf-dock-surface::after{opacity:1}
+  .sf-mobile-dock.is-pressing{--sf-dock-press-scale:1.04}
   .sf-mobile-dock:not(.is-collapsed):is(.is-pressing,:has(.sf-dock-item:active)) .sf-dock-surface{
     scale:var(--sf-ui-scale-dock);
     transition:transform var(--sf-ui-motion-dock) var(--sf-ui-ease-dock),
       scale var(--sf-ui-motion-engage) var(--sf-ui-ease-press),opacity 100ms ease;
   }
   /* Finger tracking is continuous; release/taps use the normal slide above. */
-  .sf-mobile-dock.is-scrubbing .sf-dock-surface::before{transition:opacity 140ms ease}
+  .sf-mobile-dock.is-scrubbing .sf-dock-surface::before,
+  .sf-mobile-dock.is-scrubbing .sf-dock-surface::after{transition:opacity var(--sf-ui-motion-engage) ease}
   .sf-mobile-dock .sf-dock-item{
     display:flex;
     flex-direction:column;
@@ -767,14 +785,14 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
   }
   .sf-mobile-dock .sf-dock-item .sf-icon{
     display:block;
-    width:22px;
-    height:22px;
+    width:var(--sf-ui-icon);
+    height:var(--sf-ui-icon);
     filter:brightness(0);
     transition:transform var(--sf-ui-motion-press) var(--sf-ui-ease-press);
   }
   .sf-mobile-dock .sf-dock-item.is-pressed .sf-icon,
-  .sf-mobile-dock .sf-dock-item:active .sf-icon{transform:scale(1.06)}
-  .sf-mobile-dock.is-scrubbing .sf-dock-item.is-preview .sf-icon{transform:translateY(-1px) scale(1.08)}
+  .sf-mobile-dock .sf-dock-item:active .sf-icon{transform:scale(var(--sf-ui-scale-icon))}
+  .sf-mobile-dock.is-scrubbing .sf-dock-item.is-preview .sf-icon{transform:scale(var(--sf-ui-scale-icon))}
   .sf-mobile-dock .sf-dock-item>span:last-child{
     font-size:var(--sf-ui-nav-label-size);
     font-weight:var(--sf-ui-nav-label-weight);
@@ -837,6 +855,10 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
 }
 /* Floating material is shared with Header/IconButton in components.css. */
 @media(prefers-reduced-motion:reduce){.sf-mobile-dock.is-pressing{--sf-dock-press-scale:1}}
+@media(forced-colors:active){
+  .sf-dock-surface::before,.sf-dock-surface::after{background:transparent;box-shadow:none;border:2px solid Highlight}
+  .sf-mobile-dock .sf-dock-item:focus-visible{outline-color:Highlight}
+}
 @media(min-width:701px){.sf-mobile-dock{display:none!important}}
 @media(min-width:701px){#sf-menu .sf-menu-tools--product-mobile{display:none!important}}
 
@@ -923,7 +945,7 @@ body.admin-bar{--sf-header-offset:32px}
 .sf-shell .sf-header .sf-context-brand:has([data-sf-context-back][hidden]){width:auto;min-width:0;padding-inline:16px}
 
 /* Source: styles/components.css */
-/* Native Woo Button adapters apply only to theme content; Codela account paint stays plugin-owned. */
+/* Native Woo Button adapters apply only to theme content, including account=theme. */
 /* Woo guest submit controls consume this same Button primitive without template overrides.
    Native Woo POST, nonce, validation and registered third-party hooks remain intact. */
 /**
@@ -1018,9 +1040,16 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product a.sf-ui
   /* A single tinted layer, never a stacked white overlay/gradient. */
   background:var(--sf-ui-glass-surface)!important;
   color:var(--sf-ui-glass-ink);
-  box-shadow:var(--sf-ui-glass-shadow)!important;
+  box-shadow:var(--sf-ui-surface-shadow,var(--sf-ui-glass-shadow))!important;
   -webkit-backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation)) contrast(var(--sf-ui-glass-contrast)) brightness(var(--sf-ui-glass-brightness));
   backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation)) contrast(var(--sf-ui-glass-contrast)) brightness(var(--sf-ui-glass-brightness));
+}
+/* Adapt the same glass edge to compact controls; avoid a second painted layer. */
+.woocommerce div.product .sf-ui-gallery .woocommerce-product-gallery__trigger,
+:is(.sf-shell,.sf-product-plugin-footer) .sf-ui-icon-button--soft,
+#sf-panel button.sf-ui-icon-button--soft,
+body:not(.codela-my-account-layout) .sf-content .sf-ui-icon-button--soft{
+  --sf-ui-surface-shadow:var(--sf-ui-glass-control-shadow);
 }
 /* One product-panel surface. The real Woo summary at first paint and the
    progressively enhanced sheet use the exact same material and corner shape.
@@ -1128,7 +1157,7 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
   min-height:var(--sf-ui-button-height,var(--sf-ui-action-height));
   padding:var(--sf-ui-button-padding-y,17px) var(--sf-ui-button-padding-x,24px);
   border:0;
-  border-radius:var(--sf-ui-control-radius);
+  border-radius:var(--sf-ui-button-radius);
   font:inherit;
   font-size:var(--sf-ui-button-font-size,inherit);
   font-weight:inherit;
@@ -1159,14 +1188,11 @@ body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button--primary,.code
 body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button--secondary,.codela-maa-btn--ghost),
 .sf-shell .sf-ui-button--secondary,
 .woocommerce .sf-shell .sf-ui-button--secondary{
-  background:var(--sf-ui-surface);
-  background:color-mix(in srgb,var(--sf-ui-surface) 78%,transparent);
-  background-image:var(--sf-ui-glass-highlight);
+  /* Framework7 tonal variant, adapted to the neutral store palette. */
+  background:var(--sf-ui-button-tonal);
   color:var(--sf-ui-control-ink);
-  border:1px solid var(--sf-ui-border);
-  box-shadow:var(--sf-ui-action-shadow);
-  -webkit-backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation));
-  backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation));
+  border:1px solid transparent;
+  box-shadow:none;
 }
 body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button--quiet,.codela-maa-btn--danger),
 .sf-shell .sf-ui-button--quiet{
@@ -1282,8 +1308,10 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
 }
 body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button--secondary,.codela-maa-btn--ghost):active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]),
 .sf-shell .sf-ui-button--secondary:active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]){
-  background-image:var(--sf-ui-glass-highlight-pressed);
+  background-color:var(--sf-ui-button-tonal-pressed);
 }
+body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button--quiet,.codela-maa-btn--danger):active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]),
+.sf-shell .sf-ui-button--quiet:active:not(:disabled,[aria-disabled="true"],[aria-busy="true"]){background-color:var(--sf-ui-button-tonal)}
 .sf-shell :is(.sf-ui-icon-button,.sf-ui-pressable):is(:disabled,[aria-disabled="true"],[aria-busy="true"]),
 body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-icon-button,.sf-ui-pressable):is(:disabled,[aria-disabled="true"],[aria-busy="true"]){
   transform:none;

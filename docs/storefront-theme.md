@@ -1,3 +1,9 @@
+# 4 Kasım 2026 — ortak arayüz uygulama adayı
+
+Kullanıcının “Sen başla yapmaya / Devam” talebiyle Framework7 9.3.0 seçili CSS kaynakları ve 15 Framework7 Icons SVG'si mevcut ortak UI'ya uyarlandı. Çalışma dalı `work/framework7-ui-20261104`; temel `214e94c`, tema 0.1.196. Butonlar kapsül, cam yüzey/alt menü basılı seçim görünümü ve ikonlar güncellendi. Tam framework runtime/router eklenmedi; mevcut tek store/dialog/dock ve native Woo sahipliği korunur. Eklenti, sürüm, stable veya canlı kurulum değişmedi.
+
+[Kaynak eşleme, doğrulama ve açık kabul işleri](framework7-ui-adoption.md). Kaynak/lisans doğrulaması, deterministik paket ve 24 paket testi geçti; muhafazakâr gzip artışı 3.516 bayt. Önceki yerel Chromium işlev testleri belgede listeli; dokuz genişlikte yeni Chromium kabulü, temel sürüm karşılaştırmalı ekran üretimi, katalog/header ve ürün sheet regresyonları da geçti. Son kaynakta üç tarayıcı CI henüz tamamlanmadı. Sonraki iş: bu adayın yeni görsel kabulünü ve kalan regresyonlarını tamamla, kanıtları güncelle; test edilmemiş adayı yayımlama.
+
 # 3 Kasım 2026 — 0.1.196 GitHub yayını doğrulandı
 
 Tema 0.1.195 → 0.1.196 tamamlandı. [Test edilen kaynak 5332ac8](https://github.com/muhammetdkaya/codela-storefront/commit/5332ac861b820b054ad55d03e05356b6c3450324), [ana dal birleşmesi 15e8a76](https://github.com/muhammetdkaya/codela-storefront/commit/15e8a7674e5e587bd0052bc6da2ea83ea5962668), [GitHub sürümü v0.1.196](https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.196). Codela eklentisi 1.2.5 ve eklenti üretim kaynağı değişmedi. Eski çalışma ağaçları ve diğer açık işler korundu.

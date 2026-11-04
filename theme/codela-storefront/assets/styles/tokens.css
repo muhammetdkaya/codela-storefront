@@ -10,14 +10,18 @@
   --sf-ui-ink:var(--sf-ink,#22231f);
   --sf-ui-surface:#ffffff;
   --sf-ui-surface-muted:#f3f3f3;
-  --sf-ui-nav-selection:rgba(118,118,128,.16);
+  --sf-ui-nav-selection:rgba(0,0,0,.10);
+  --sf-ui-nav-selection-pressed:rgba(0,0,0,.05);
   /* One legible floating material for header, dock, purchase bar and soft controls. */
-  --sf-ui-glass-surface:rgba(247,247,249,.96);
-  --sf-ui-glass-panel-surface:rgba(247,247,249,.78);
+  /* Adapted from the pinned Framework7 glass material; see THIRD-PARTY-NOTICES.txt. */
+  --sf-ui-glass-surface:rgba(255,255,255,.75);
+  --sf-ui-glass-panel-surface:rgba(255,255,255,.85);
   --sf-ui-glass-opaque:#f7f7f9;
   --sf-ui-glass-border:transparent;
-  /* One diffuse outer shadow separates the single surface on light backdrops. */
-  --sf-ui-glass-shadow:0 3px 12px rgba(0,0,0,.10);
+  --sf-ui-glass-shadow:inset -1px -1px 0 -.5px #fff,inset 1px 1px 0 -.5px #fff,inset 3px 3px 10px -3px #ddd,inset -3px -3px 10px -3px #ddd,inset 0 0 5px 1px #fff,inset 0 0 0 .5px rgba(0,0,0,.25),inset 0 0 24px rgba(0,0,0,.1),0 4px 20px rgba(0,0,0,.12);
+  /* Small controls retain the light edge without a broad inner glow. */
+  --sf-ui-glass-control-shadow:inset -1px -1px 0 -.5px #fff,inset 1px 1px 0 -.5px #fff,inset 0 0 0 .5px rgba(0,0,0,.20),inset 0 0 5px 1px rgba(255,255,255,.8),0 3px 12px rgba(0,0,0,.10);
+  --sf-ui-glass-thumb-shadow:inset -3px -3px 0 -3.5px #fff,inset 3px 3px 0 -3.5px #fff,inset 0 0 0 .5px rgba(255,255,255,.5),inset 3px 3px 10px -2px #eee,inset -3px -3px 10px -2px #eee,inset 0 0 5px 1px #fff;
   --sf-ui-glass-ink:#1c1c1e;
   --sf-ui-control-soft:var(--sf-ui-glass-surface);
   --sf-ui-header-surface:var(--sf-ui-glass-surface);
@@ -32,10 +36,10 @@
   --sf-ui-success-surface:#f3f7f2;
   --sf-ui-border:var(--sf-line,#deded5);
   --sf-ui-hit:44px;
-  --sf-ui-icon:22px;
+  --sf-ui-icon:24px;
   --sf-ui-nav-label-size:11px;
   --sf-ui-nav-label-weight:600;
-  --sf-ui-icon-close:22px;
+  --sf-ui-icon-close:24px;
   --sf-ui-icon-clear:12px;
   --sf-ui-action-height:54px;
   /* One mobile bottom-bar geometry for navigation and product purchase. */
@@ -53,11 +57,15 @@
   --sf-ui-product-photo-urgency-inset:140px;
   --sf-ui-product-heading-height:max(28px,calc(clamp(16px,4.5vw,20px) * 2.5));
   --sf-ui-control-radius:var(--cdl-ct-radius,12px);
+  --sf-ui-button-radius:999px;
+  /* Opaque tonal fill keeps dark labels legible over hero photography too. */
+  --sf-ui-button-tonal:#ededed;
+  --sf-ui-button-tonal-pressed:#dedede;
   --sf-ui-pill:999px;
   /* Shared control material: tint preserves contrast over changing content. */
-  --sf-ui-glass-blur:10px;
-  --sf-ui-glass-saturation:115%;
-  /* Keep the real backdrop contrast; an opaque tint hides overlapping text. */
+  --sf-ui-glass-blur:16px;
+  --sf-ui-glass-saturation:180%;
+  /* Keep backdrop contrast; the tint and blur separate foreground labels. */
   --sf-ui-glass-contrast:1;
   --sf-ui-glass-brightness:1;
   --sf-ui-glass-highlight:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,0) 48%,rgba(255,255,255,.02));
@@ -66,13 +74,13 @@
   --sf-ui-action-highlight-pressed:linear-gradient(160deg,rgba(255,255,255,.18),rgba(255,255,255,.015) 52%,rgba(255,255,255,.06));
   --sf-ui-action-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(0,0,0,.10),0 3px 9px rgba(0,0,0,.06);
   --sf-ui-motion-press:140ms;
-  --sf-ui-motion-engage:110ms;
-  --sf-ui-motion-release:360ms;
-  --sf-ui-scale-action:1.025;
-  --sf-ui-scale-icon:1.08;
+  --sf-ui-motion-engage:100ms;
+  --sf-ui-motion-release:220ms;
+  --sf-ui-scale-action:1.02;
+  --sf-ui-scale-icon:1.04;
   --sf-ui-scale-dock:1.018;
   --sf-ui-ease-release:cubic-bezier(.22,1.35,.36,1);
-  --sf-ui-motion-selection:220ms;
+  --sf-ui-motion-selection:240ms;
   --sf-ui-motion-panel:160ms;
   --sf-ui-motion-panel-enter:240ms;
   --sf-ui-motion-panel-exit:180ms;

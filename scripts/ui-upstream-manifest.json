@@ -1,0 +1,288 @@
+{
+  "schema": 1,
+  "framework7_version": "9.3.0",
+  "icons_version": "5.0.5",
+  "baseline": "214e94ced9165473a80b392d5fa972ad6296f7fa",
+  "sources": [
+    {
+      "repository": "https://github.com/framework7io/framework7",
+      "commit": "9bf974836cc797b226487e9974ab308f25315e8c",
+      "source_path": "LICENSE",
+      "original_sha256": "1c115994b4470862e1fa6d694a326f5d745dd8e77027a5ab18e7c285b05fa59e",
+      "local_source": "third-party/framework7/LICENSE",
+      "targets": [
+        "theme/codela-storefront/THIRD-PARTY-NOTICES.txt"
+      ],
+      "adaptation": "Full MIT notice distributed in the theme package."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7",
+      "commit": "9bf974836cc797b226487e9974ab308f25315e8c",
+      "source_path": "src/core/components/app/app-vars.less",
+      "original_sha256": "68d8078894e8ea56cab447161ef8615fe99f64fc1e7d32565609c3dbe2945987",
+      "local_source": "third-party/framework7/src/core/components/app/app-vars.less",
+      "targets": [
+        "theme/codela-storefront/assets/styles/tokens.css",
+        "theme/codela-storefront/assets/styles/components.css"
+      ],
+      "adaptation": "Light glass and thumb shadows adapted; outer shadow reduced, compact-control variant and legible panel tint added."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7",
+      "commit": "9bf974836cc797b226487e9974ab308f25315e8c",
+      "source_path": "src/core/less/mixins.less",
+      "original_sha256": "6ce44e4ac05782ffce9ff6c2280045c3d3c726c318ef9a90714b9007edb97e31",
+      "local_source": "third-party/framework7/src/core/less/mixins.less",
+      "targets": [
+        "theme/codela-storefront/assets/styles/tokens.css",
+        "theme/codela-storefront/assets/styles/components.css"
+      ],
+      "adaptation": "Glass backdrop saturation 180% / blur 16px and material composition, scoped to existing shared surfaces."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7",
+      "commit": "9bf974836cc797b226487e9974ab308f25315e8c",
+      "source_path": "src/core/components/button/button.less",
+      "original_sha256": "0b20f315a84ef74089c0b0ea8c712a189656a653471cd6c3ff2c8b5951e167d1",
+      "local_source": "third-party/framework7/src/core/components/button/button.less",
+      "targets": [
+        "theme/codela-storefront/assets/styles/tokens.css",
+        "theme/codela-storefront/assets/styles/components.css"
+      ],
+      "adaptation": "Rounded, filled and tonal variants mapped into existing Button primitive; native semantics and focus retained."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7",
+      "commit": "9bf974836cc797b226487e9974ab308f25315e8c",
+      "source_path": "src/core/components/button/button-vars.less",
+      "original_sha256": "4a2f1e3ab82f7de2600663a4d3bf5c8f96985fd1e0c879b155929ddf79b44129",
+      "local_source": "third-party/framework7/src/core/components/button/button-vars.less",
+      "targets": [
+        "theme/codela-storefront/assets/styles/tokens.css",
+        "theme/codela-storefront/assets/styles/components.css"
+      ],
+      "adaptation": "Tonal/pressed state model adapted to the neutral palette; existing 44px/54px targets retained."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7",
+      "commit": "9bf974836cc797b226487e9974ab308f25315e8c",
+      "source_path": "src/core/components/button/button-ios.less",
+      "original_sha256": "6ecba409966636d737f2dead72662744a05f36be847c67802d58be4806e73eb8",
+      "local_source": "third-party/framework7/src/core/components/button/button-ios.less",
+      "targets": [
+        "theme/codela-storefront/assets/styles/tokens.css",
+        "theme/codela-storefront/assets/styles/components.css"
+      ],
+      "adaptation": "100ms engagement and CSS-only pressed-state feedback; native :active replaces runtime active-state."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7",
+      "commit": "9bf974836cc797b226487e9974ab308f25315e8c",
+      "source_path": "src/core/components/toolbar/toolbar-ios.less",
+      "original_sha256": "dfcb632cfa5497bc8d0b70411a149961b6f3437f29fc23c4898c7d50e7dfd77d",
+      "local_source": "third-party/framework7/src/core/components/toolbar/toolbar-ios.less",
+      "targets": [
+        "theme/codela-storefront/assets/styles/tokens.css",
+        "theme/codela-storefront/assets/styles/navigation.css"
+      ],
+      "adaptation": "Two-paint normal/pressed highlight with shared 4px inset. Codela geometry, reduced scale and pointer controller retained."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7",
+      "commit": "9bf974836cc797b226487e9974ab308f25315e8c",
+      "source_path": "src/core/components/toolbar/toolbar-vars.less",
+      "original_sha256": "2e446149d504631541bdcd4da6eb3979b259006d37c6544370cb5cca505acd1e",
+      "local_source": "third-party/framework7/src/core/components/toolbar/toolbar-vars.less",
+      "targets": [
+        "theme/codela-storefront/assets/styles/tokens.css",
+        "theme/codela-storefront/assets/styles/navigation.css"
+      ],
+      "adaptation": "Normal/pressed selection tints; Codela breakpoints and safe-area geometry retained."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7",
+      "commit": "9bf974836cc797b226487e9974ab308f25315e8c",
+      "source_path": "src/core/components/toolbar/tabbar-highlight.js",
+      "original_sha256": "69a437fd63c263c2ab7b3a0bc99aa019f2026674432bd96061d4e4a1564298dd",
+      "local_source": "third-party/framework7/src/core/components/toolbar/tabbar-highlight.js",
+      "targets": [],
+      "adaptation": "Reference only. No JavaScript copied or loaded: existing singleton dock already owns pointer tracking, cancellation and dialog relocation."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7-icons",
+      "commit": "7fb38494ba82cbef74d4f7e725431544c8ea1ee5",
+      "source_path": "LICENSE",
+      "original_sha256": "61afeee2f1d59f21412901a0015ccbec0315ae4806e3f4fbd167201ebb17b2f8",
+      "local_source": "third-party/framework7-icons/LICENSE",
+      "targets": [
+        "theme/codela-storefront/THIRD-PARTY-NOTICES.txt"
+      ],
+      "adaptation": "Full MIT notice distributed in the theme package."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7-icons",
+      "commit": "7fb38494ba82cbef74d4f7e725431544c8ea1ee5",
+      "source_path": "package/svg/house.svg",
+      "original_sha256": "b5f88270fcd95cce8fb30df838f708014d3537af727ad63536fb3a331dfe418c",
+      "local_source": "third-party/framework7-icons/package/svg/house.svg",
+      "targets": [
+        "theme/codela-storefront/assets/icons/house.svg"
+      ],
+      "adaptation": "Unmodified SVG bytes; original viewBox retained. Neutral alias and 24px HTML/CSS box belong to Codela."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7-icons",
+      "commit": "7fb38494ba82cbef74d4f7e725431544c8ea1ee5",
+      "source_path": "package/svg/search.svg",
+      "original_sha256": "e531f563da0020e1fb0e5c724db491f0e94de3e8fec95b46683ccfd1c701f41d",
+      "local_source": "third-party/framework7-icons/package/svg/search.svg",
+      "targets": [
+        "theme/codela-storefront/assets/icons/search.svg"
+      ],
+      "adaptation": "Unmodified SVG bytes; original viewBox retained. Neutral alias and 24px HTML/CSS box belong to Codela."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7-icons",
+      "commit": "7fb38494ba82cbef74d4f7e725431544c8ea1ee5",
+      "source_path": "package/svg/bag.svg",
+      "original_sha256": "eb314256383b19348689a11831f0ea3e5d71c5be8b9ab7e35558d916eb2bc58f",
+      "local_source": "third-party/framework7-icons/package/svg/bag.svg",
+      "targets": [
+        "theme/codela-storefront/assets/icons/shopping-bag.svg"
+      ],
+      "adaptation": "Unmodified SVG bytes; original viewBox retained. Neutral alias and 24px HTML/CSS box belong to Codela."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7-icons",
+      "commit": "7fb38494ba82cbef74d4f7e725431544c8ea1ee5",
+      "source_path": "package/svg/person.svg",
+      "original_sha256": "327b5dbddac3999794fc067ebe47bd6d63c53772e08a97a3f3ade9b97eeb14cb",
+      "local_source": "third-party/framework7-icons/package/svg/person.svg",
+      "targets": [
+        "theme/codela-storefront/assets/icons/user-round.svg"
+      ],
+      "adaptation": "Unmodified SVG bytes; original viewBox retained. Neutral alias and 24px HTML/CSS box belong to Codela."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7-icons",
+      "commit": "7fb38494ba82cbef74d4f7e725431544c8ea1ee5",
+      "source_path": "package/svg/xmark.svg",
+      "original_sha256": "1ba304f3d611e7362cf39fa26e1df5a89a3967274a9d20b549adc5202ab92967",
+      "local_source": "third-party/framework7-icons/package/svg/xmark.svg",
+      "targets": [
+        "theme/codela-storefront/assets/icons/x.svg"
+      ],
+      "adaptation": "Unmodified SVG bytes; original viewBox retained. Neutral alias and 24px HTML/CSS box belong to Codela."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7-icons",
+      "commit": "7fb38494ba82cbef74d4f7e725431544c8ea1ee5",
+      "source_path": "package/svg/slider_horizontal_3.svg",
+      "original_sha256": "77c30326265074a43994769e9aa977facd5e2308101e3256817981732cf0f92c",
+      "local_source": "third-party/framework7-icons/package/svg/slider_horizontal_3.svg",
+      "targets": [
+        "theme/codela-storefront/assets/icons/sliders-horizontal.svg"
+      ],
+      "adaptation": "Unmodified SVG bytes; original viewBox retained. Neutral alias and 24px HTML/CSS box belong to Codela."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7-icons",
+      "commit": "7fb38494ba82cbef74d4f7e725431544c8ea1ee5",
+      "source_path": "package/svg/arrow_left.svg",
+      "original_sha256": "72e41b39a0439154624ef8fe3fc4a18324fb52e47140125362abd776ba48a321",
+      "local_source": "third-party/framework7-icons/package/svg/arrow_left.svg",
+      "targets": [
+        "theme/codela-storefront/assets/icons/arrow-left.svg"
+      ],
+      "adaptation": "Unmodified SVG bytes; original viewBox retained. Neutral alias and 24px HTML/CSS box belong to Codela."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7-icons",
+      "commit": "7fb38494ba82cbef74d4f7e725431544c8ea1ee5",
+      "source_path": "package/svg/arrow_right.svg",
+      "original_sha256": "ccef74a168b351eb017a175cb52ccb8fc21ac0ca133fb8e10ac40dd2f810f014",
+      "local_source": "third-party/framework7-icons/package/svg/arrow_right.svg",
+      "targets": [
+        "theme/codela-storefront/assets/icons/arrow-right.svg"
+      ],
+      "adaptation": "Unmodified SVG bytes; original viewBox retained. Neutral alias and 24px HTML/CSS box belong to Codela."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7-icons",
+      "commit": "7fb38494ba82cbef74d4f7e725431544c8ea1ee5",
+      "source_path": "package/svg/plus.svg",
+      "original_sha256": "ef702447327536d2e3246dc918a48f9e9d4b3608ee72df7b5767781e962c8419",
+      "local_source": "third-party/framework7-icons/package/svg/plus.svg",
+      "targets": [
+        "theme/codela-storefront/assets/icons/plus.svg"
+      ],
+      "adaptation": "Unmodified SVG bytes; original viewBox retained. Neutral alias and 24px HTML/CSS box belong to Codela."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7-icons",
+      "commit": "7fb38494ba82cbef74d4f7e725431544c8ea1ee5",
+      "source_path": "package/svg/minus.svg",
+      "original_sha256": "6037325106f0264f01bf41de482f8d31e6f1beac1fea19d8f19d6686eb2a6585",
+      "local_source": "third-party/framework7-icons/package/svg/minus.svg",
+      "targets": [
+        "theme/codela-storefront/assets/icons/minus.svg"
+      ],
+      "adaptation": "Unmodified SVG bytes; original viewBox retained. Neutral alias and 24px HTML/CSS box belong to Codela."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7-icons",
+      "commit": "7fb38494ba82cbef74d4f7e725431544c8ea1ee5",
+      "source_path": "package/svg/map_pin.svg",
+      "original_sha256": "d3f7a5e9e0d7f0b0d24cfc5e720a75fe6a2b03927cedbb401ee7867dae7a83cf",
+      "local_source": "third-party/framework7-icons/package/svg/map_pin.svg",
+      "targets": [
+        "theme/codela-storefront/assets/icons/map-pin.svg"
+      ],
+      "adaptation": "Unmodified SVG bytes; original viewBox retained. Neutral alias and 24px HTML/CSS box belong to Codela."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7-icons",
+      "commit": "7fb38494ba82cbef74d4f7e725431544c8ea1ee5",
+      "source_path": "package/svg/square_arrow_right.svg",
+      "original_sha256": "fde5f620589dded0f88e5a7a4cedd1b775b5b8869ea56b2725d7b4e887e66551",
+      "local_source": "third-party/framework7-icons/package/svg/square_arrow_right.svg",
+      "targets": [
+        "theme/codela-storefront/assets/icons/log-out.svg"
+      ],
+      "adaptation": "Unmodified SVG bytes; original viewBox retained. Neutral alias and 24px HTML/CSS box belong to Codela."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7-icons",
+      "commit": "7fb38494ba82cbef74d4f7e725431544c8ea1ee5",
+      "source_path": "package/svg/arrow_down_to_line.svg",
+      "original_sha256": "5bd3aa6c666f75506cb9dce0148d3d24fb046cde88f4e4001c5d621ef43f2850",
+      "local_source": "third-party/framework7-icons/package/svg/arrow_down_to_line.svg",
+      "targets": [
+        "theme/codela-storefront/assets/icons/download.svg"
+      ],
+      "adaptation": "Unmodified SVG bytes; original viewBox retained. Neutral alias and 24px HTML/CSS box belong to Codela."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7-icons",
+      "commit": "7fb38494ba82cbef74d4f7e725431544c8ea1ee5",
+      "source_path": "package/svg/chevron_down.svg",
+      "original_sha256": "616960b0b35a56b2243fb37032c92d8c7e446d808cac61853a89f0720a115ac8",
+      "local_source": "third-party/framework7-icons/package/svg/chevron_down.svg",
+      "targets": [
+        "theme/codela-storefront/assets/icons/chevron-down.svg"
+      ],
+      "adaptation": "Unmodified SVG bytes; original viewBox retained. Neutral alias and 24px HTML/CSS box belong to Codela."
+    },
+    {
+      "repository": "https://github.com/framework7io/framework7-icons",
+      "commit": "7fb38494ba82cbef74d4f7e725431544c8ea1ee5",
+      "source_path": "package/svg/eye.svg",
+      "original_sha256": "93decdeb007d36f2c2778df75c0dde7bf3f330e850d4aacad95f28467b2a2e16",
+      "local_source": "third-party/framework7-icons/package/svg/eye.svg",
+      "targets": [
+        "theme/codela-storefront/assets/icons/eye.svg"
+      ],
+      "adaptation": "Unmodified SVG bytes; original viewBox retained. Neutral alias and 24px HTML/CSS box belong to Codela."
+    }
+  ]
+}

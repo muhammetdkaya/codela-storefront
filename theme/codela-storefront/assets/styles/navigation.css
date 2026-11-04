@@ -67,7 +67,10 @@
     transition:transform var(--sf-ui-motion-dock) var(--sf-ui-ease-dock),
       scale var(--sf-ui-motion-release) var(--sf-ui-ease-release),opacity 100ms ease;
   }
-  .sf-dock-surface::before{
+  /* Adapted from the pinned toolbar highlight. Both paints share geometry;
+     ::before remains the position source during dialog relocation. */
+  .sf-dock-surface::before,
+  .sf-dock-surface::after{
     content:'';
     position:absolute;
     left:4px;
@@ -79,18 +82,25 @@
     opacity:0;
     z-index:-1;
     transform:translate3d(calc(var(--sf-dock-position,var(--sf-dock-index))*100%),0,0) scale(var(--sf-dock-press-scale,1));
-    transition:transform var(--sf-ui-motion-selection) var(--sf-ui-ease-press),opacity 140ms ease;
+    transition:transform var(--sf-ui-motion-selection) var(--sf-ui-ease-press),opacity var(--sf-ui-motion-engage) ease;
     pointer-events:none;
   }
   .sf-mobile-dock.has-selection .sf-dock-surface::before{opacity:1}
-  .sf-mobile-dock.is-pressing{--sf-dock-press-scale:1.06}
+  .sf-dock-surface::after{
+    background:var(--sf-ui-nav-selection-pressed);
+    box-shadow:var(--sf-ui-glass-thumb-shadow);
+  }
+  .sf-mobile-dock.has-selection.is-pressing .sf-dock-surface::before{opacity:0}
+  .sf-mobile-dock.has-selection.is-pressing .sf-dock-surface::after{opacity:1}
+  .sf-mobile-dock.is-pressing{--sf-dock-press-scale:1.04}
   .sf-mobile-dock:not(.is-collapsed):is(.is-pressing,:has(.sf-dock-item:active)) .sf-dock-surface{
     scale:var(--sf-ui-scale-dock);
     transition:transform var(--sf-ui-motion-dock) var(--sf-ui-ease-dock),
       scale var(--sf-ui-motion-engage) var(--sf-ui-ease-press),opacity 100ms ease;
   }
   /* Finger tracking is continuous; release/taps use the normal slide above. */
-  .sf-mobile-dock.is-scrubbing .sf-dock-surface::before{transition:opacity 140ms ease}
+  .sf-mobile-dock.is-scrubbing .sf-dock-surface::before,
+  .sf-mobile-dock.is-scrubbing .sf-dock-surface::after{transition:opacity var(--sf-ui-motion-engage) ease}
   .sf-mobile-dock .sf-dock-item{
     display:flex;
     flex-direction:column;
@@ -110,14 +120,14 @@
   }
   .sf-mobile-dock .sf-dock-item .sf-icon{
     display:block;
-    width:22px;
-    height:22px;
+    width:var(--sf-ui-icon);
+    height:var(--sf-ui-icon);
     filter:brightness(0);
     transition:transform var(--sf-ui-motion-press) var(--sf-ui-ease-press);
   }
   .sf-mobile-dock .sf-dock-item.is-pressed .sf-icon,
-  .sf-mobile-dock .sf-dock-item:active .sf-icon{transform:scale(1.06)}
-  .sf-mobile-dock.is-scrubbing .sf-dock-item.is-preview .sf-icon{transform:translateY(-1px) scale(1.08)}
+  .sf-mobile-dock .sf-dock-item:active .sf-icon{transform:scale(var(--sf-ui-scale-icon))}
+  .sf-mobile-dock.is-scrubbing .sf-dock-item.is-preview .sf-icon{transform:scale(var(--sf-ui-scale-icon))}
   .sf-mobile-dock .sf-dock-item>span:last-child{
     font-size:var(--sf-ui-nav-label-size);
     font-weight:var(--sf-ui-nav-label-weight);
@@ -180,6 +190,10 @@
 }
 /* Floating material is shared with Header/IconButton in components.css. */
 @media(prefers-reduced-motion:reduce){.sf-mobile-dock.is-pressing{--sf-dock-press-scale:1}}
+@media(forced-colors:active){
+  .sf-dock-surface::before,.sf-dock-surface::after{background:transparent;box-shadow:none;border:2px solid Highlight}
+  .sf-mobile-dock .sf-dock-item:focus-visible{outline-color:Highlight}
+}
 @media(min-width:701px){.sf-mobile-dock{display:none!important}}
 @media(min-width:701px){#sf-menu .sf-menu-tools--product-mobile{display:none!important}}
 

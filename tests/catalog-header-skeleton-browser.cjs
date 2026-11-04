@@ -50,7 +50,7 @@ const headerBox=()=>{
     await page.setViewportSize({width,height:850});
     await load({FIXTURE_PRODUCT:'1',FIXTURE_DOCK:dock},'single-product woocommerce',nativeContent);
     const actual=await page.evaluate(headerBox);
-    assert.equal(Math.round(actual.cart.width),44);assert.equal(Math.round(actual.cart.height),44);assert.equal(Math.round(actual.icon.width),22);
+    assert.equal(Math.round(actual.cart.width),44);assert.equal(Math.round(actual.cart.height),44);assert.equal(Math.round(actual.icon.width),24);
     for(const [source,env,body] of [
      ['home',{FIXTURE_DOCK:dock},'home'],
      ['page',{FIXTURE_PAGE:'1',FIXTURE_DOCK:dock},'page'],

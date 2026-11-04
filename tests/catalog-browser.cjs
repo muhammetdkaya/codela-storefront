@@ -9,7 +9,7 @@ const wooButtonCss='.woocommerce ul.products li.product a.button{display:inline-
 const header=mode=>execFileSync('php',['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_PRODUCT:mode==='product'?'1':'0',FIXTURE_CHECKOUT:mode==='checkout'?'1':'0',...(mode==='no-dock'?{FIXTURE_DOCK:'0'}:{})}});
 const headers=Object.fromEntries(['home','product','checkout','no-dock'].map(m=>[m,header(m)]));
 const image='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22500%22%3E%3Crect width=%22400%22 height=%22500%22 fill=%22%23dfebe9%22/%3E%3C/svg%3E';
-const card=(i)=>'<li class="product '+(i===3?'outofstock':'instock')+'"><a class="woocommerce-LoopProduct-link woocommerce-loop-product__link" href="/product/">'+(i===3?'<span class="sf-product-stock">Stokta yok</span>':'')+'<img width="400" height="500" src="'+image+'" alt="Ürün"><h2 class="woocommerce-loop-product__title">'+(i?'Kısa ürün':'İki satırı aşan çok uzun ürün başlığı taşma ve hizalama kontrolü')+'</h2></a><div class="sf-product-card-footer"><span class="price">'+(i===0?'<del>₺1.000</del><ins>₺850</ins>':'₺850')+'</span>'+(i===3?'':'<a class="button sf-ui-icon-button sf-ui-icon-button--soft sf-icon-button '+(i===2?'product_type_variable':'product_type_simple add_to_cart_button ajax_add_to_cart')+'" href="/?add-to-cart=1" data-product_id="1">'+'<img class="sf-icon" width="22" height="22" alt="" src="https://fixture.test/assets/icons/'+(i===2?'arrow-right':'shopping-bag')+'.svg"><span class="screen-reader-text">'+(i===2?'Seçenekler':'Ekle')+'</span></a>')+'</div></li>';
+const card=(i)=>'<li class="product '+(i===3?'outofstock':'instock')+'"><a class="woocommerce-LoopProduct-link woocommerce-loop-product__link" href="/product/">'+(i===3?'<span class="sf-product-stock">Stokta yok</span>':'')+'<img width="400" height="500" src="'+image+'" alt="Ürün"><h2 class="woocommerce-loop-product__title">'+(i?'Kısa ürün':'İki satırı aşan çok uzun ürün başlığı taşma ve hizalama kontrolü')+'</h2></a><div class="sf-product-card-footer"><span class="price">'+(i===0?'<del>₺1.000</del><ins>₺850</ins>':'₺850')+'</span>'+(i===3?'':'<a class="button sf-ui-icon-button sf-ui-icon-button--soft sf-icon-button '+(i===2?'product_type_variable':'product_type_simple add_to_cart_button ajax_add_to_cart')+'" href="/?add-to-cart=1" data-product_id="1">'+'<img class="sf-icon" width="24" height="24" alt="" src="https://fixture.test/assets/icons/'+(i===2?'arrow-right':'shopping-bag')+'.svg"><span class="screen-reader-text">'+(i===2?'Seçenekler':'Ekle')+'</span></a>')+'</div></li>';
 const cards='<ul class="products columns-4">'+[0,1,2,3].map(card).join('')+'</ul>';
 
 // Verify actual pointer/touch hit testing rather than counting link markup.
@@ -86,11 +86,11 @@ for(const width of [320,390,700,900,1280]){
   assert.equal(detail.priceWeight,'500','Price hierarchy without heavy bold');
   assert.equal(detail.dividerColor,'rgb(243, 243, 243)','Quiet divider');
   assert.equal(detail.buttonBorder,'rgba(0, 0, 0, 0)','Shared floating surface has no raised ring');
-  assert(!detail.buttonShadow.includes('inset'),'No second button rim');
+  assert(detail.buttonShadow.includes('inset'),'Compact control uses the shared glass light edge');
   assert.equal(detail.divider,'1px','A subtle divider precedes the price/action row');
   assert.equal(detail.titleColor,'rgb(32, 32, 32)','Readable dark product names');
   assert(detail.icon.includes('shopping-bag.svg'),'Use the existing shopping-bag icon rather than a plus glyph');
-  assert.equal(detail.iconWidth,'22px','Uniform shared icon sizing');
+  assert.equal(detail.iconWidth,'24px','Uniform shared icon sizing');
   assert.equal(detail.iconMargin,'0px','Native Woo a img margin cannot shift the shared glyph');
   assert(!await page.locator('.product_type_simple.add_to_cart_button').first().evaluate(e=>e.textContent.trim()===''),
     'Keep the Woo native accessible link name');
@@ -111,12 +111,12 @@ for(const width of [320,390,700,900,1280]){
   return{header:read(a),card:read(b),glyph:{w:g.width,h:g.height,x:g.x+g.width/2-r.x-r.width/2,y:g.y+g.height/2-r.y-r.height/2}};
  });
  assert.deepEqual(parity.card,parity.header,'Catalog and Header share one soft IconButton');
- assert.equal(parity.glyph.w,22);assert.equal(parity.glyph.h,22);
+ assert.equal(parity.glyph.w,24);assert.equal(parity.glyph.h,24);
  assert(Math.abs(parity.glyph.x)<.5 && Math.abs(parity.glyph.y)<.5,'Native glyph is centered in its shared target');
  await page.locator('.sf-menu-trigger,.sf-product-card-footer .sf-ui-icon-button').evaluateAll(els=>els.forEach(e=>e.classList.add('is-pressed')));
  await page.waitForTimeout(180);
  const pressScales=await Promise.all(['.sf-menu-trigger','.sf-product-card-footer .sf-ui-icon-button'].map(selector=>page.locator(selector).first().evaluate(e=>{const m=new DOMMatrixReadOnly(getComputedStyle(e).transform);return m.a;})));
- assert(pressScales.every(s=>s>1.06&&s<1.10)&&Math.abs(pressScales[0]-pressScales[1])<.012,'Same shared icon press scale after animation settle: '+pressScales.join('/'));
+ assert(pressScales.every(s=>s>1.035&&s<1.045)&&Math.abs(pressScales[0]-pressScales[1])<.012,'Same shared icon press scale after animation settle: '+pressScales.join('/'));
  let anchor;
  for(const mode of ['home','product','checkout','no-dock']){
   const purchase=mode==='product'?'<main class="sf-content"><div class="product"><form class="cart"><div class="sf-product-purchase"><button class="button" type="submit">Sepete Ekle</button></div></form></div></main>':'<main class="sf-content"></main>';
