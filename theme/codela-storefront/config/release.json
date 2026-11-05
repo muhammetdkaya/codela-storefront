@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mobil misafir Hesabım sayfasında geniş telefonların dikey boşluğu daha dengeli kullanılır; karşılama ve form 760px üzerindeki ekranlarda aşağı alınır, küçük ekranlarda ve klavyede kaydırılabilir yerleşim korunur.",
-    "Mobil kullanıcı adı/parola cam alanları 54px yerine 50px olarak çizilir; yüzen etiket ve ikon konumları yeni yüksekliğe göre hizalanır, yazı 16px ve şifre görünürlük dokunma hedefi 44px kalır.",
-    "Sepet ile ortak karşılama ikonu/başlık ölçüleri, alt dock, kapatma butonu, WooCommerce giriş-kayıt ve şifre işlemleri korunur. Gezinti regresyonu mobil alan ölçüsü ve dikey ritmi denetler."
+    "Mobil Arama, Sepet ve misafir Hesabım tam ekranlarında şeffaf header; solda mevcut logo cam yüzeyiyle aynı sayfa başlığı veya arama kapsülü, sağda tek gerçek Menü kontrolü.",
+    "Arama/Sepet/Hesabım için ayrı X kontrolleri mobilde gizlendi. Header menü düğmesi aynı DOM elemanı olarak dialog içine taşınıyor; Menü açılınca X'e dönüşüyor ve kapatılınca önceki uygulama paneline dönüyor.",
+    "Alt sekmeler, WooCommerce giriş ve sepet işlemleri, arama API, masaüstü dialoglar ve ürün sayfası kompakt sepeti korunuyor."
   ]
 }
