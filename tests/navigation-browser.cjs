@@ -45,7 +45,6 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
   return route.fulfill({contentType:'text/html',body:`<!doctype html><html lang="en"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>.screen-reader-text{position:absolute!important;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}${css}</style></head><body>${activeHeader}<main style="height:3200px;padding:30px">Store content</main>${footer}</body></html>`});
  });
  await page.goto('https://store.test/');
- await page.addScriptTag({content:fs.readFileSync('theme/codela-storefront/assets/scripts/auth.js','utf8')});
  const surfaces=await page.locator('.sf-header').evaluate(header=>{
    const brand=header.querySelector('.sf-brand');
    const menu=header.querySelector('.sf-header-menu .sf-ui-icon-button');
@@ -365,6 +364,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  assert(!(await page.evaluate(()=>window.focusLog)).includes('sf-query'),'Reopening must never briefly focus query');
  await page.evaluate(()=>window.sfActions.close());
  // Guest Account shares Search/Cart's native modal and Woo form.
+ await page.addScriptTag({content:fs.readFileSync('theme/codela-storefront/assets/scripts/auth.js','utf8')});
  await click('account');
  assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),true,'Guest Account opens dialog');
  assert.equal(await page.locator('#sf-account').isVisible(),true,'WooCommerce login is the active section');
