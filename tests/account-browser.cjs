@@ -141,7 +141,8 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
       assert.equal(fieldAlignment.placeholder,'Email or username');
       assert.equal(fieldAlignment.password,'Password');
       assert.equal(fieldAlignment.placeholderOpacity,'1','Placeholder stays readable');
-      await input.focus();
+      // Real touch/click releases the intentional initial-autofocus guard.
+      await input.click();
       const ring=await input.evaluate(el=>{
         const css=getComputedStyle(el);
         return {width:css.outlineWidth,offset:css.outlineOffset,color:css.outlineColor,borderColor:css.borderTopColor};
