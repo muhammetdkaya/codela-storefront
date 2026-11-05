@@ -109,8 +109,8 @@ const documentHTML = body => `<!doctype html><html lang="tr"><head><meta charset
    for(const mode of ['search','cart','account','cart','search','account']){
     await page.keyboard.press('Tab');
     await page.evaluate(mode=>window.sfActions[mode](),mode);
-    const close=page.locator(mode==='search'?'#sf-search .sf-search-cancel':'#sf-panel .sf-panel-top .sf-close');
-    assert(await close.isVisible(),`${mode} close is visible`);
+    const close=page.locator(width<=700?'#sf-panel > .sf-menu-trigger':mode==='search'?'#sf-search .sf-search-cancel':'#sf-panel .sf-panel-top .sf-close');
+    assert(await close.isVisible(),`${mode} uses a visible shared header control`);
     const paint=await close.evaluate(el=>{const s=getComputedStyle(el),r=el.getBoundingClientRect();return {background:s.backgroundColor,shadow:s.boxShadow,radius:s.borderRadius,width:r.width,height:r.height,initial:el.classList.contains('sf-initial-focus'),focused:el===document.activeElement,focusVisible:el.matches(':focus-visible')};});
     assert(paint.initial&&paint.focused&&paint.focusVisible,`${mode} keeps keyboard-visible initial focus after switching`);
     assert.equal(paint.background,material.background,`${mode} close has shared surface at ${width}`);
