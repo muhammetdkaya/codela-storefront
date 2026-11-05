@@ -354,7 +354,8 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form .form-row.sf-auth-placeholder-ready .password-input input.input-text{padding-right:54px}
 /* The standalone Woo fallback uses the same single ring as Search and overlay Account. */
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form .form-row.sf-auth-placeholder-ready input.input-text:focus{
-  border-color:transparent;
+  /* Override Woo's border reset only in the focused native guest field. */
+  border-color:transparent!important;
   outline:2px solid var(--sf-ui-glass-ink);
   outline-offset:2px;
   background:#fff;
