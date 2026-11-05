@@ -21,7 +21,7 @@ assert.match(backLinkHTML,/<img\b[^>]*class="sf-icon"[^>]*alt=""[^>]*src="https:
 assert(!guestHeader.includes('↗'),'No Apple emoji-rendered arrow glyph');
 assert(intro.includes('Welcome back'),'Guest account hero has app greeting');
 const locale=fs.readFileSync('theme/codela-storefront/languages/tr_TR.l10n.php','utf8');
-assert.equal((locale.match(/'Welcome back'\\s*=>/g)||[]).length,1,'Turkish welcome copy has one translation (no overwritten duplicate)');
+assert.equal((locale.match(/'Welcome back'\s*=>/g)||[]).length,1,'Turkish welcome copy has one translation (no overwritten duplicate)');
 assert(locale.includes("'Welcome back' => 'Hoş geldiniz'"),'Account title is the short welcome copy');
 assert(!intro.includes('sf-auth-mark sf-ui-surface'),'Guest hero uses the same muted circular surface as empty Cart');
 assert(intro.includes('Sign in to your account.'),'Guest account hero includes short subtitle');
