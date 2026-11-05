@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mobil Arama, Sepet ve misafir Hesabım tam ekranlarında şeffaf header; solda mevcut logo cam yüzeyiyle aynı sayfa başlığı veya arama kapsülü, sağda tek gerçek Menü kontrolü.",
-    "Arama/Sepet/Hesabım için ayrı X kontrolleri mobilde gizlendi. Header menü düğmesi aynı DOM elemanı olarak dialog içine taşınıyor; Menü açılınca X'e dönüşüyor ve kapatılınca önceki uygulama paneline dönüyor.",
-    "Alt sekmeler, WooCommerce giriş ve sepet işlemleri, arama API, masaüstü dialoglar ve ürün sayfası kompakt sepeti korunuyor."
+    "Mobil misafir Hesabım ekranı sadeleştirildi: büyük kullanıcı ikonu kaldırıldı; 'Hoş geldiniz' ve kısa açıklama sola hizalandı, içerik aralığı dengelendi.",
+    "Orijinal WooCommerce giriş/kayıt alanlarında görünen yüzen etiketler yerine 50px yükseklikte sade Türkçe placeholder kullanılır. Parola görünürlüğü, hatırla, şifre sıfırla ve kayıt işlemleri aynen korunur.",
+    "Görsel olarak gizlenen etiketler erişilebilir kalır; JavaScript devre dışıyken doğal WooCommerce etiketli form görünmeye devam eder. Bağımsız Hesabım sayfası da aynı sadeliğe geçer; mevcut şeffaf header ve alt dock korunur."
   ]
 }
