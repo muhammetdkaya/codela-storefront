@@ -50,7 +50,7 @@ function preventInitialAccountAutoFocus() {
                     if (kind === 'password' || name.includes('password')) placeholder = copy.authPasswordPlaceholder;
                     else if (kind === 'email' || name.includes('email')) placeholder = registering ? copy.authEmailPlaceholder : copy.authLoginPlaceholder;
                     else if (name.includes('username')) placeholder = registering ? copy.authUsernamePlaceholder : copy.authLoginPlaceholder;
-                    else placeholder = label.textContent.replace(/\\*/g, '').trim();
+                    else placeholder = label.textContent.replaceAll('*', '').trim();
                     if (!placeholder) return;
                     if (!input.placeholder) input.placeholder = placeholder;
                     input.closest('.form-row')?.classList.add('sf-auth-placeholder-ready');
