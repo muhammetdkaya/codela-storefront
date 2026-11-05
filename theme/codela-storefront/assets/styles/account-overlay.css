@@ -178,7 +178,8 @@
   font-size:16px;line-height:1.25;
 }
 #sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text):not(.sf-auth-placeholder-ready) .password-input input.input-text{padding-right:52px}
-#sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text):focus-within input.input-text{
+/* Keep the legacy floating-label fallback separate from placeholder mode. */
+#sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text):not(.sf-auth-placeholder-ready):focus-within input.input-text{
   border-color:var(--sf-ui-accent);outline:1px solid var(--sf-ui-accent);
   outline-offset:1px;box-shadow:var(--sf-ui-glass-control-shadow);
 }
@@ -250,12 +251,21 @@
   font-size:16px;line-height:1.35;
 }
 #sf-panel.is-account-panel .woocommerce form .form-row.sf-auth-placeholder-ready .password-input input.input-text{padding-right:54px}
+/* Exactly one 2px focus outline, 2px outside the field, like Search.
+   Neutralize the native border to avoid the extra dark inner rim on iOS. */
+#sf-panel.is-account-panel .woocommerce form .form-row.sf-auth-placeholder-ready input.input-text:focus{
+  border-color:transparent;
+  outline:2px solid var(--sf-ui-glass-ink);
+  outline-offset:2px;
+  background:var(--sf-ui-glass-surface);
+  box-shadow:var(--sf-ui-glass-thumb-shadow);
+}
 #sf-panel.is-account-panel .woocommerce form .form-row.sf-auth-placeholder-ready input.input-text::placeholder{
   color:#8a8e96;opacity:1;
 }
 #sf-panel.is-account-panel .sf-account-intro,
 #sf-panel.is-account-panel .sf-account-intro:has(.sf-auth-tabs[hidden]){
-  align-items:flex-start;text-align:left;margin-bottom:25px;
+  align-items:flex-start;text-align:left;margin-bottom:22px;
 }
 #sf-panel.is-account-panel .sf-account-intro h1{
   font-size:clamp(24px,5.7vw,28px);line-height:1.2;
@@ -268,7 +278,7 @@
   #sf-panel.is-account-panel .sf-account-body{padding-top:clamp(24px,5dvh,48px)}
 }
 @media(max-width:700px) and (min-height:760px){
-  #sf-panel.is-account-panel .sf-account-body{padding-top:clamp(32px,6dvh,58px)}
+  #sf-panel.is-account-panel .sf-account-body{padding-top:clamp(26px,4.5dvh,42px)}
 }
 @media(max-height:650px){
   #sf-panel.is-account-panel .sf-account-body{padding-top:12px}
