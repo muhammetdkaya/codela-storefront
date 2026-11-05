@@ -657,15 +657,20 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
   #sf-panel.is-cart-panel:not(.is-product-cart) .sf-quantity{
     margin-top:0;padding-top:4px;gap:4px 8px;flex-wrap:nowrap;
   }
+  /* Separate the 30px glass capsule from the 44px native touch targets.
+     Previously min-height:44px (and overflow:hidden in storefront.css) kept
+     the visible capsule too tall even when its width had been reduced. */
   #sf-panel.is-cart-panel:not(.is-product-cart) .sf-stepper{
-    display:inline-flex;align-items:center;min-height:44px;
+    display:inline-flex;align-items:center;
+    height:30px;min-height:30px;overflow:visible;
     border-radius:var(--sf-ui-pill);
     --sf-ui-glass-surface:rgba(255,255,255,.55);
     --sf-ui-surface-shadow:var(--sf-ui-glass-thumb-shadow);
   }
   #sf-panel.is-cart-panel:not(.is-product-cart) .sf-stepper button{
-    flex:0 0 44px;width:44px;height:44px;font-size:16px;font-weight:400;
-    padding:0;line-height:1;
+    flex:0 0 44px;width:44px;height:44px;min-height:44px;
+    font-size:16px;font-weight:400;padding:0;line-height:1;
+    /* Buttons extend 7px above/below the capsule and remain fully clickable. */
   }
   /* Target only the quantity text. Targeting every span stretches the nested
      shared 16px spinner into an ellipse and causes malformed loading arcs. */
