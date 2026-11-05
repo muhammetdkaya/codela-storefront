@@ -6,10 +6,10 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mobil sepet üst boşluğu azaltıldı: başlık gizli kalırken sağ X için 56 px araç çubuğu ve içerikte daha erken başlangıç kullanılıyor.",
-    "Ürün satırları sıkıştırıldı; kare ürün görselleri, iki satırlık isimler, fiyatlar ve 44 px erişilebilir dokunma hedefleri korundu.",
-    "Adet kontrolü daha hafif yarı saydam cam yüzeye, kaldırma kontrolü mevcut Codela şeffaf icon-button varyantına geçti; ikincisinin ikon ölçüsü 16 px.",
-    "Boş sepet ikonu, başlığı ve açıklaması daha hafif ve yukarıda; Türkçe metin sadeleşti ve kötü satır kırılması önlendi.",
-    "Sabit ödeme alanı ve alt menü, WooCommerce sepet işlemleri, ürün sayfasındaki küçük sepet ve diğer sayfalar değiştirilmedi."
+    "Mobil Sepet ekranındaki X kapatma butonu Arama'nın ortak 68px üst şeridi ve 10px kenar dolgusuyla eşleşecek şekilde hizalandı.",
+    "Adet kapsülündeki sayı alanı 23px yerine 14px asgari genişlikte; iki adet butonu 44x44 dokunma hedefini koruyor, cam kapsül daha dar.",
+    "Silme kontrolü Codela cam yüzeyinin 32px hafif iç halkasını, 44px dokunma alanını ve diğer iOS tarzı dolu ikonlarla uyumlu çöp kutusu simgesini kullanıyor.",
+    "WooCommerce sepet güncelleme sırasındaki ovalleşen spinner hatası giderildi: 16x16 yuvarlak spinner artık miktar metni span stilinden etkilenmiyor.",
+    "Woo Store API mutasyonları, alttaki ödeme/dock, diğer ekranlar ve ürün sayfasının kompakt sepeti değişmedi."
   ]
 }

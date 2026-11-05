@@ -257,17 +257,30 @@
   border-color:transparent;border-radius:var(--sf-ui-pill);
   --sf-ui-surface-shadow:var(--sf-ui-glass-thumb-shadow);
 }
+/* A 32px subtle glass disc within the accessible 44px remove target.
+   The shared clear IconButton still owns native focus and pressed feedback. */
 #sf-panel.is-cart-panel .sf-remove.sf-ui-icon-button{
-  flex:none;min-width:44px;min-height:44px;text-decoration:none!important;
+  position:relative;flex:none;width:44px;height:44px;min-width:44px;min-height:44px;
+  display:grid;place-items:center;text-decoration:none!important;
+  background:transparent!important;box-shadow:none!important;color:var(--sf-ui-glass-ink);
+}
+#sf-panel.is-cart-panel .sf-remove.sf-ui-icon-button::before{
+  content:'';position:absolute;top:50%;left:50%;width:32px;height:32px;
+  transform:translate(-50%,-50%);border-radius:var(--sf-ui-pill);
+  border:1px solid var(--sf-ui-glass-border);
+  background:var(--sf-ui-glass-surface);
+  box-shadow:var(--sf-ui-glass-thumb-shadow);
+  pointer-events:none;
 }
 #sf-panel.is-cart-panel .sf-remove-icon{
-  display:block;width:16px;height:16px;background:currentColor;opacity:.8;
+  display:block;position:relative;z-index:1;width:17px;height:17px;
+  background:currentColor;opacity:.87;
   -webkit-mask:url('../icons/trash-2.svg') center/contain no-repeat;
   mask:url('../icons/trash-2.svg') center/contain no-repeat;
 }
 @media(max-width:700px){
   #sf-panel.is-cart-panel:not(.is-product-cart) .sf-panel-top{
-    min-height:56px;padding:6px var(--sf-overlay-gutter);
+    min-height:var(--sf-overlay-toolbar-height);padding:10px var(--sf-overlay-gutter);
     border-bottom:0;justify-content:flex-end;
   }
   #sf-panel.is-cart-panel:not(.is-product-cart) #sf-panel-title{
@@ -298,14 +311,24 @@
     margin-top:0;padding-top:4px;gap:4px 8px;flex-wrap:nowrap;
   }
   #sf-panel.is-cart-panel:not(.is-product-cart) .sf-stepper{
-    min-height:44px;border-radius:var(--sf-ui-pill);
+    display:inline-flex;align-items:center;min-height:44px;
+    border-radius:var(--sf-ui-pill);
     --sf-ui-glass-surface:rgba(255,255,255,.55);
     --sf-ui-surface-shadow:var(--sf-ui-glass-thumb-shadow);
   }
   #sf-panel.is-cart-panel:not(.is-product-cart) .sf-stepper button{
-    width:44px;height:44px;font-size:17px;font-weight:400;
+    flex:0 0 44px;width:44px;height:44px;font-size:16px;font-weight:400;
+    padding:0;line-height:1;
   }
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-stepper span{min-width:23px;padding:0 1px;font-size:13px}
+  /* Target only the quantity text. Targeting every span stretches the nested
+     shared 16px spinner into an ellipse and causes malformed loading arcs. */
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-stepper .sf-cart-quantity-current{
+    flex:0 0 auto;min-width:14px;padding:0;font-size:13px;line-height:1;
+  }
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-busy>.sf-ui-spinner{
+    display:block;flex:none;width:16px;height:16px;min-width:0;min-height:0;
+    padding:0;aspect-ratio:1;border-radius:50%;
+  }
   #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-bottom{
     padding-top:14px;border-top-color:color-mix(in srgb,var(--sf-ui-border) 60%,transparent);
   }
@@ -428,6 +451,6 @@
 .sf-cart-skeleton-row b:last-child{width:100px;height:32px;margin-top:auto}
 .sf-cart-busy[hidden]{display:none}
 .sf-cart-row .sf-stepper{position:relative}
-.sf-cart-busy{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
-.sf-cart-busy>.sf-ui-spinner{min-width:0;padding:0;box-sizing:border-box}
+.sf-cart-busy{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:2}
+.sf-cart-busy>.sf-ui-spinner{width:16px;height:16px;min-width:0;padding:0;box-sizing:border-box}
 .sf-cart-row[aria-busy="true"] .sf-cart-quantity-current{visibility:hidden}

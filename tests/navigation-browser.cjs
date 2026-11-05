@@ -226,6 +226,22 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  assert.equal(await page.locator('.sf-cart-bottom').isVisible(),true);
  assert.equal(await page.locator('.sf-cart-row .sf-cart-price').count(),1,'Cart price has a layout hook');
  assert.equal(await page.locator('.sf-cart-bottom .sf-ui-button--primary').count(),1,'Checkout uses shared Button');
+ // The cart close must share the search close icon's toolbar geometry.
+ const cartClose=await page.locator('#sf-panel .sf-panel-top .sf-close').boundingBox();
+ assert(cartClose && cartClose.width>=44,'Cart close retains shared IconButton hit target');
+ // Show busy state without posting to Woo: inspect the exact production spinner.
+ const pendingSpinner=await page.locator('.sf-cart-row').first().evaluate(row=>{
+  const spinner=row.querySelector('.sf-cart-busy'),circle=spinner.querySelector('.sf-ui-spinner');
+  row.setAttribute('aria-busy','true');spinner.hidden=false;
+  const box=circle.getBoundingClientRect(),outer=row.querySelector('.sf-stepper').getBoundingClientRect();
+  const s=getComputedStyle(circle);
+  spinner.hidden=true;row.setAttribute('aria-busy','false');
+  return {width:box.width,height:box.height,animation:s.animationName,centerX:box.left+box.width/2,centerY:box.top+box.height/2,outerX:outer.left+outer.width/2,outerY:outer.top+outer.height/2};
+ });
+ assert(Math.abs(pendingSpinner.width-16)<1&&Math.abs(pendingSpinner.height-16)<1,'Loading spinner is 16px circular, not stretched');
+ assert(Math.abs(pendingSpinner.centerX-pendingSpinner.outerX)<1&&Math.abs(pendingSpinner.centerY-pendingSpinner.outerY)<1,'Spinner is centred on quantity capsule');
+ assert(pendingSpinner.animation.includes('sf-ui-spin'),'Busy spinner retains shared animation');
+
  const checkoutWidth=await page.locator('.sf-cart-bottom .sf-ui-button').evaluate(el=>{
   const parent=el.parentElement,style=getComputedStyle(parent);
   return {
@@ -260,7 +276,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
   assert(!layout.overflow,'Long cart title does not cause horizontal scrolling at '+width);
   if(width<=700){
     const reduce=await page.locator('.sf-remove').evaluate(el=>({background:getComputedStyle(el).backgroundImage,shadow:getComputedStyle(el).boxShadow,rect:el.getBoundingClientRect().toJSON()}));
-    assert.equal(reduce.shadow,'none','Removal action is visually light at '+width);
+    assert.equal(reduce.shadow,'none','Removal hit target stays unpainted behind smaller glass disc at '+width);
     assert(reduce.rect.height>=44&&reduce.rect.width>=44,'Removal keeps 44px touch target at '+width);
   }
   assert(Math.abs(layout.row.x-layout.summary.x)<1,'List and summary share left edge at '+width);
@@ -298,6 +314,10 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  await click('cart');
  assert.equal(cartRequests,fetched,'Current tab is a no-op');
  await click('search');
+ const searchClose=await page.locator('#sf-search .sf-search-cancel').boundingBox();
+ if(searchClose && cartClose){
+   assert(Math.abs(searchClose.x-cartClose.x)<1.5&&Math.abs(searchClose.y-cartClose.y)<1.5,'Cart X aligns with search X on mobile');
+ }
  await page.locator('#sf-query').focus();
  await page.locator('.sf-search-cancel').click();
  await page.evaluate(()=>{window.focusLog=[]});
