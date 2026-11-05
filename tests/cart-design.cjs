@@ -23,8 +23,8 @@ assert(css.includes('width:44px;height:44px;min-height:44px'),'Quantity buttons 
 assert(css.includes('min-width:14px;padding:0;font-size:13px'),'Quantity capsule is slimmer');
 assert(css.includes('.sf-stepper .sf-cart-quantity-current'),'Stepper text styles do not reach the spinner');
 assert(css.includes('.sf-cart-busy>.sf-ui-spinner') && css.includes('width:16px;height:16px;min-width:0;min-height:0'),'Spinner is explicitly square');
-assert(css.includes('width:52px;height:52px;margin-bottom:12px'),'Empty cart icon and spacing are compact');
-assert(css.includes('font-size:19px;font-weight:500'),'Empty cart headline is quieter');
+assert(css.includes('--sf-state-mark-size:52px') && css.includes('--sf-state-mark-gap:12px') && css.includes('width:var(--sf-state-mark-size);height:var(--sf-state-mark-size)'),'Empty cart uses shared 52px icon and 12px spacing');
+assert(css.includes('--sf-state-heading-size:19px') && css.includes('--sf-state-heading-weight:500') && css.includes('font-size:var(--sf-state-heading-size);font-weight:var(--sf-state-heading-weight)'),'Cart and account use one heading scale');
 assert(css.includes('min-width:44px;min-height:44px'),'Remove retains minimum touch target');
 assert(css.includes('width:32px;height:32px'),'Glass removal visual is smaller than its touch target');
 assert(css.includes('rgba(255,255,255,.55)'),'Quantity glass material is less dominant');
