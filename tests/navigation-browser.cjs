@@ -442,7 +442,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  assert.equal(await page.locator('#sf-panel > .sf-menu-trigger').getAttribute('aria-expanded'),'true','Menu morphs into X');
  await page.locator('#sf-panel > .sf-menu-trigger').click();
  assert.equal(await page.locator('#sf-account').isVisible(),true,'Menu X returns to Account');
- assert(compactAuth.bodyPaddingTop>=70&&compactAuth.bodyPaddingTop<=90,'Tall-phone welcome block uses available vertical space without moving the dock');
+ assert(compactAuth.bodyPaddingTop>=30&&compactAuth.bodyPaddingTop<=65,'Welcome block starts near header without excessive top whitespace');
  assert(compactAuth.formTop-compactAuth.toolbarBottom<300,'Native form follows compact welcome hero');
  assert.equal(compactAuth.subtitle,false,'Account popup has no descriptive subtitle');
  assert.equal(await page.locator('#sf-account form.woocommerce-form-login').getAttribute('action'),'https://store.test/myaccount/','Login submits to genuine Account URL');
