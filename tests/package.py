@@ -260,7 +260,8 @@ class Tests(unittest.TestCase):
         self.assertIn('woocommerce-MyAccount-content',css)
         self.assertIn('woocommerce-MyAccount-navigation',css)
         self.assertIn('autocomplete', (build.ROOT/'inc/render.php').read_text())
-        self.assertIn("'Welcome back' => 'Tekrar hoş geldiniz'",locale)
+        self.assertIn("'Welcome back' => 'Hoş geldiniz'",locale)
+        self.assertEqual(locale.count("'Welcome back' =>"),1)
         self.assertIn("Version: 0.1.210",(build.ROOT/'style.css').read_text())
     def test_shared_ui_kit_and_theme_boundary(self):
         ui=(build.ROOT/'inc/ui.php').read_text()
