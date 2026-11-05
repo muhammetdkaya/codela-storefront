@@ -10,6 +10,7 @@ function __( $text, $domain = '' ) { return $text; }
 function esc_html_e( $text, $domain = '' ) { echo esc_html( $text ); }
 function esc_attr_e( $text, $domain = '' ) { echo esc_html( $text ); }
 function esc_html( $text ) { return htmlspecialchars((string)$text, ENT_QUOTES, 'UTF-8'); }
+function codela_sf_icon( $name ) { return '<span class="sf-icon" data-icon="' . htmlspecialchars((string)$name, ENT_QUOTES, 'UTF-8') . '"></span>'; }
 require __DIR__ . '/../theme/codela-storefront/inc/account.php';
 $hook = getenv( 'ACCOUNT_SIGNED_IN' ) === '1' ? 'woocommerce_before_account_navigation' : 'woocommerce_before_customer_login_form';
 if ( isset( $GLOBALS['hooks'][ $hook ] ) ) {

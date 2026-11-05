@@ -346,7 +346,9 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
    fieldBackground:getComputedStyle(root.querySelector('#test-login-username')).backgroundColor,
    submitHeight:submit.getBoundingClientRect().height,
    submitMinHeight:getComputedStyle(submit).minHeight,
-   toolbarTitleSize:getComputedStyle(document.querySelector('#sf-panel-title')).fontSize,
+   toolbarTitleHidden:getComputedStyle(document.querySelector('#sf-panel-title')).clipPath==='inset(50%)',
+   heroVisible:getComputedStyle(root.querySelector('.sf-account-intro h1')).display!=='none',
+   hintVisible:getComputedStyle(root.querySelector('.sf-account-intro p')).display!=='none',
    bodyPaddingTop:parseFloat(getComputedStyle(root).paddingTop),
    toolbarBottom:document.querySelector('#sf-panel .sf-panel-top').getBoundingClientRect().bottom,
    formTop:root.querySelector('form.woocommerce-form-login').getBoundingClientRect().top,
@@ -356,12 +358,13 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  assert(compactAuth.sameLine,'Modal remember and password recovery share a row');
  assert.equal(compactAuth.submitBg,'color(srgb 0.145098 0.152941 0.164706 / 0.9)','Native modal submit uses shared primary Button');
  assert(compactAuth.fieldHeight>=54&&compactAuth.fieldHeight<=56,'Popup fields preserve the shared 54px input height');
- assert.equal(compactAuth.fieldBackground,'rgb(255, 255, 255)','Actual guest modal fields are clean and white');
+ assert.equal(compactAuth.fieldBackground,'rgba(255, 255, 255, 0.75)','Guest fields use Codela glass material');
+ assert(compactAuth.heroVisible&&compactAuth.hintVisible,'App welcome hero is visible');
  assert.equal(compactAuth.submitMinHeight,'52px','Popup submit uses shared compact 52px Button token');
  assert(compactAuth.submitHeight>=52&&compactAuth.submitHeight<=54,'Popup submit keeps accessible compact touch target');
- assert.equal(compactAuth.toolbarTitleSize,'23px','Existing popup title uses the agreed 23px type');
- assert(compactAuth.bodyPaddingTop<=20,'Login form stays close to the shared dialog toolbar');
- assert(compactAuth.formTop-compactAuth.toolbarBottom<70,'Popup form avoids oversized blank space below toolbar');
+ assert(compactAuth.toolbarTitleHidden,'Account header only shows X; title remains accessible');
+ assert(compactAuth.bodyPaddingTop<=42,'Welcome hero begins in the upper part of the dialog');
+ assert(compactAuth.formTop-compactAuth.toolbarBottom<300,'Native form follows compact welcome hero');
  assert.equal(compactAuth.subtitle,false,'Account popup has no descriptive subtitle');
  assert.equal(await page.locator('#sf-account form.woocommerce-form-login').getAttribute('action'),'https://store.test/myaccount/','Login submits to genuine Account URL');
  assert.equal(page.url(),'https://store.test/','Guest Account does not reload');

@@ -105,3 +105,112 @@
  #sf-panel.is-account-panel .sf-account-body{padding-top:16px;padding-inline:26px}
  #sf-panel.is-account-panel #customer_login:not(.sf-auth-ready){grid-template-columns:minmax(0,1fr)}
 }
+
+/* App-like guest sign-in reuses native Woo form and shared Codela UI tokens.
+   No separate popup card, no alternate login API, no signed-in dashboard rules. */
+#sf-panel.is-account-panel .sf-panel-top{
+  min-height:var(--sf-overlay-toolbar-height);padding:10px var(--sf-overlay-gutter);
+  border-bottom:0;justify-content:flex-end;
+}
+#sf-panel.is-account-panel #sf-panel-title{
+  position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
+  clip-path:inset(50%);white-space:nowrap;border:0;
+}
+#sf-panel.is-account-panel .sf-account-body{
+  padding:clamp(18px,4dvh,38px) max(var(--sf-overlay-gutter),22px) calc(120px + env(safe-area-inset-bottom,0px));
+  overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+}
+#sf-panel.is-account-panel .sf-overlay-auth{max-width:420px}
+#sf-panel.is-account-panel .sf-account-intro,
+#sf-panel.is-account-panel .sf-account-intro:has(.sf-auth-tabs[hidden]){
+  display:flex;flex-direction:column;align-items:center;margin:0 auto 26px;text-align:center;
+}
+#sf-panel.is-account-panel .sf-account-intro .sf-auth-mark{
+  display:grid;place-items:center;width:62px;height:62px;margin:0 0 14px;
+  border-radius:21px;color:var(--sf-ui-ink);
+  --sf-ui-surface-shadow:var(--sf-ui-glass-thumb-shadow);
+}
+#sf-panel.is-account-panel .sf-account-intro .sf-auth-mark .sf-icon{
+  display:block;width:29px;height:29px;object-fit:contain;
+}
+#sf-panel.is-account-panel .sf-account-intro h1{
+  display:block;margin:0;color:var(--sf-ui-ink);font-size:clamp(25px,7vw,29px);
+  font-weight:600;line-height:1.2;letter-spacing:-.035em;
+}
+#sf-panel.is-account-panel .sf-account-intro p{
+  margin:8px 0 0;color:var(--sf-muted,#77776d);
+  font-size:13px;line-height:1.5;font-weight:400;
+}
+#sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text){
+  position:relative;
+}
+#sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text)>label[for]{
+  top:7px;left:50px;right:48px;margin:0;
+  font-size:12px;font-weight:400;line-height:17px;color:var(--sf-muted,#77776d);
+}
+#sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text)::before{
+  content:'';position:absolute;z-index:2;top:18px;left:18px;width:19px;height:19px;
+  pointer-events:none;background:var(--sf-muted,#77776d);
+  -webkit-mask:url('../icons/user-round.svg') center/contain no-repeat;
+  mask:url('../icons/user-round.svg') center/contain no-repeat;
+}
+#sf-panel.is-account-panel .woocommerce form .form-row:has(input[type=password])::before{
+  -webkit-mask:url('../icons/lock-keyhole.svg') center/contain no-repeat;
+  mask:url('../icons/lock-keyhole.svg') center/contain no-repeat;
+}
+#sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text) input.input-text{
+  display:block;box-sizing:border-box;height:54px;min-height:54px;width:100%;
+  padding:25px 16px 6px 50px;
+  border:1px solid rgba(90,92,96,.12);border-radius:var(--sf-ui-control-radius);
+  background:var(--sf-ui-glass-surface);color:var(--sf-ui-ink);
+  box-shadow:var(--sf-ui-glass-thumb-shadow);
+  -webkit-backdrop-filter:blur(var(--sf-ui-glass-blur));
+  backdrop-filter:blur(var(--sf-ui-glass-blur));
+  font-size:16px;line-height:1.25;
+}
+#sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text) .password-input input.input-text{padding-right:52px}
+#sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text):focus-within input.input-text{
+  border-color:var(--sf-ui-accent);outline:1px solid var(--sf-ui-accent);
+  outline-offset:1px;box-shadow:var(--sf-ui-glass-control-shadow);
+}
+#sf-panel.is-account-panel .woocommerce form .show-password-input{
+  min-width:44px;min-height:44px;right:4px;border-radius:var(--sf-ui-pill);
+}
+#sf-panel.is-account-panel .woocommerce form .show-password-input::after{content:none!important}
+#sf-panel.is-account-panel .woocommerce form .show-password-input::before{
+  content:'';width:20px;height:20px;background:var(--sf-ui-ink);
+  -webkit-mask:url('../icons/eye.svg') center/contain no-repeat;
+  mask:url('../icons/eye.svg') center/contain no-repeat;
+}
+#sf-panel.is-account-panel .woocommerce form :is(.form-row,.woocommerce-form-row){margin-bottom:11px}
+#sf-panel.is-account-panel .woocommerce form .woocommerce-form-login__rememberme{gap:9px;font-size:12px;color:var(--sf-muted,#77776d)}
+#sf-panel.is-account-panel .woocommerce form .woocommerce-form-login__rememberme input{width:17px;height:17px;accent-color:var(--sf-ui-ink)}
+#sf-panel.is-account-panel .woocommerce form :is(.lost_password,.woocommerce-LostPassword) a{
+  font-size:12px;font-weight:500;color:var(--sf-ui-ink);text-decoration:none;
+}
+#sf-panel.is-account-panel .woocommerce form.woocommerce-form-login button[type=submit]{margin-top:14px}
+#sf-panel.is-account-panel .sf-auth-tabs--footer{
+  display:flex;justify-content:center;align-items:center;gap:9px;flex-wrap:wrap;
+  padding:0;margin:19px auto 0;background:transparent;border:0;border-radius:0;
+}
+#sf-panel.is-account-panel .sf-auth-tabs--footer[hidden]{display:none!important}
+#sf-panel.is-account-panel .sf-auth-switch-prompt{font-size:13px;color:var(--sf-muted,#77776d)}
+#sf-panel.is-account-panel .sf-auth-tabs--footer .sf-auth-tab{
+  display:inline-flex;width:auto;min-height:44px;align-items:center;justify-content:center;
+  background:transparent!important;box-shadow:none!important;padding:4px;
+  color:var(--sf-ui-ink);font-size:13px;font-weight:600;
+}
+#sf-panel.is-account-panel .sf-auth-tabs--footer .sf-auth-tab[hidden]{display:none!important}
+#sf-panel.is-account-panel .woocommerce .sf-auth-social{margin-top:20px}
+@media(max-width:700px){
+  #sf-panel.is-account-panel .sf-account-body{padding-inline:24px;padding-top:clamp(18px,4dvh,34px)}
+}
+@media(max-height:650px){
+  #sf-panel.is-account-panel .sf-account-body{padding-top:12px}
+  #sf-panel.is-account-panel .sf-account-intro,
+  #sf-panel.is-account-panel .sf-account-intro:has(.sf-auth-tabs[hidden]){margin-bottom:16px}
+  #sf-panel.is-account-panel .sf-account-intro .sf-auth-mark{
+    width:48px;height:48px;margin-bottom:8px;border-radius:16px;
+  }
+  #sf-panel.is-account-panel .sf-account-intro h1{font-size:24px}
+}

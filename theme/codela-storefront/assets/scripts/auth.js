@@ -43,6 +43,21 @@ function preventInitialAccountAutoFocus() {
 
         const buttons = [...tabs.querySelectorAll('[data-auth-tab]')];
         const panels = {login, register};
+        // Native WooCommerce login/register remain in place. Only relocate
+        // the selector below the form when presented inside the guest dialog.
+        const modal = !!tabs.closest('.sf-overlay-auth');
+        let prompt = null;
+        if (modal) {
+            prompt = document.createElement('span');
+            prompt.className = 'sf-auth-switch-prompt';
+            tabs.prepend(prompt);
+            container.after(tabs);
+            tabs.classList.add('sf-auth-tabs--footer');
+            // One alternate action is an ordinary button, not a two-tab
+            // keyboard widget with its selected tab hidden visually.
+            tabs.setAttribute('role', 'group');
+            buttons.forEach(button => button.removeAttribute('role'));
+        }
         login.id = 'sf-auth-login';
         register.id = 'sf-auth-register';
 
@@ -50,10 +65,18 @@ function preventInitialAccountAutoFocus() {
             const active = view === 'register' ? 'register' : 'login';
             for (const button of buttons) {
                 const selected = button.dataset.authTab === active;
-                button.setAttribute('aria-selected', String(selected));
-                button.tabIndex = selected ? 0 : -1;
-                if (selected && focus) button.focus({preventScroll:true});
+                if (modal) {
+                    button.hidden = selected;
+                    button.removeAttribute('aria-selected');
+                    button.tabIndex = selected ? -1 : 0;
+                } else {
+                    button.setAttribute('aria-selected', String(selected));
+                    button.tabIndex = selected ? 0 : -1;
+                    if (selected && focus) button.focus({preventScroll:true});
+                }
             }
+            if (prompt) prompt.textContent = active === 'login'
+                ? tabs.dataset.registerPrompt : tabs.dataset.loginPrompt;
             for (const [key, panel] of Object.entries(panels)) {
                 panel.hidden = key !== active;
                 panel.setAttribute('aria-labelledby', 'sf-auth-tab-' + key);
@@ -66,7 +89,7 @@ function preventInitialAccountAutoFocus() {
             button.setAttribute('aria-controls', panels[view].id);
             button.addEventListener('click', () => select(view, false));
             button.addEventListener('keydown', event => {
-                if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
+                if (modal || !['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
                 event.preventDefault();
                 select(event.key === 'Home' ? 'login'
                     : event.key === 'End' ? 'register'
