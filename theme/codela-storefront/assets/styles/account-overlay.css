@@ -242,6 +242,11 @@
 }
 #sf-panel.is-account-panel .woocommerce form .form-row.sf-auth-placeholder-ready input.input-text{
   height:50px;min-height:50px;padding:0 16px;
+  border:1px solid rgba(90,92,96,.12);border-radius:var(--sf-ui-control-radius);
+  background:var(--sf-ui-glass-surface);color:var(--sf-ui-ink);
+  box-shadow:var(--sf-ui-glass-thumb-shadow);
+  -webkit-backdrop-filter:blur(var(--sf-ui-glass-blur));
+  backdrop-filter:blur(var(--sf-ui-glass-blur));
   font-size:16px;line-height:1.35;
 }
 #sf-panel.is-account-panel .woocommerce form .form-row.sf-auth-placeholder-ready .password-input input.input-text{padding-right:54px}
