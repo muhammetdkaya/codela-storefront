@@ -473,3 +473,27 @@
 .sf-cart-busy{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:2}
 .sf-cart-busy>.sf-ui-spinner{width:16px;height:16px;min-width:0;padding:0;box-sizing:border-box}
 .sf-cart-row[aria-busy="true"] .sf-cart-quantity-current{visibility:hidden}
+
+/* App panels: transparent header canvas, existing logo glass material for
+   titles, and the ONE real header Menu control reparented into the dialog.
+   The product's compact cart and all desktop dialogs keep their own controls. */
+#sf-panel .sf-panel-app-title{display:none}
+@media(max-width:700px){
+  #sf-panel:is(.is-account-panel,.is-cart-panel:not(.is-product-cart)) .sf-panel-top{
+    justify-content:flex-start;background:transparent;border-bottom:0;
+  }
+  #sf-panel.is-account-panel .sf-panel-app-title--account,
+  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-panel-app-title--cart{
+    display:flex;align-items:center;justify-content:center;
+    min-height:var(--sf-ui-hit);height:var(--sf-ui-hit);
+    padding:0 16px;border-radius:var(--sf-ui-pill);
+    font-size:16px;font-weight:500;letter-spacing:-.02em;
+    color:var(--sf-ui-glass-ink);white-space:nowrap;
+  }
+  #sf-panel:is(.is-account-panel,.is-cart-panel:not(.is-product-cart)) .sf-panel-top .sf-close,
+  #sf-panel.is-search-panel .sf-search-cancel{display:none!important}
+  #sf-panel.is-search-panel .sf-search-toolbar{
+    background:transparent;border-bottom:0;
+    padding-right:calc(var(--sf-overlay-gutter) + var(--sf-overlay-control-size) + 8px);
+  }
+}

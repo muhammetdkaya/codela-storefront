@@ -208,11 +208,11 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
   await page.locator(`[data-dock-view="${view}"]`).evaluate(el=>el.click());
   assert.equal(await dock.evaluate(el=>el.style.getPropertyValue('--sf-dock-index')),index,'Panel opens without bouncing the capsule back');
  }
- await page.locator('.sf-search-cancel').click();
+ await page.evaluate(()=>window.sfActions.close());
 
 
  await click('search');
- assert.equal(await page.evaluate(()=>document.activeElement.classList.contains('sf-search-cancel')),true);
+ assert.equal(await page.evaluate(()=>document.activeElement.classList.contains('sf-menu-trigger')),true);
  assert.equal(await page.locator('#sf-panel .sf-mobile-dock').count(),1);
  assert.equal(await page.locator('.sf-dock-item.is-active').getAttribute('data-dock-view'),'search');
  await page.locator('#sf-query').fill('old');
@@ -226,8 +226,19 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  assert.equal(await page.locator('.sf-cart-bottom').isVisible(),true);
  assert.equal(await page.locator('.sf-cart-row .sf-cart-price').count(),1,'Cart price has a layout hook');
  assert.equal(await page.locator('.sf-cart-bottom .sf-ui-button--primary').count(),1,'Checkout uses shared Button');
- // The cart close must share the search close icon's toolbar geometry.
- const cartClose=await page.locator('#sf-panel .sf-panel-top .sf-close').boundingBox();
+ // The ONE original Menu control occupies the common right slot in every app panel.
+ const cartClose=await page.locator('#sf-panel > .sf-menu-trigger').boundingBox();
+ const cartHeader=await page.locator('#sf-panel').evaluate(el=>{
+  const title=el.querySelector('.sf-panel-app-title--cart'),bar=el.querySelector('.sf-panel-top');
+  return {title:title.textContent.trim(),visible:title.getBoundingClientRect().width>0,
+    surface:getComputedStyle(title).backgroundColor,bar:getComputedStyle(bar).backgroundColor,
+    legacyClose:getComputedStyle(bar.querySelector('.sf-close')).display};
+ });
+ const logoSurface=await page.locator('.sf-header .sf-brand').evaluate(el=>getComputedStyle(el).backgroundColor);
+ assert(cartHeader.visible && cartHeader.title==='Cart','Cart title is rendered in the glass capsule');
+ assert.equal(cartHeader.surface,logoSurface,'Cart title reuses the logo glass material');
+ assert.equal(cartHeader.bar,'rgba(0, 0, 0, 0)','Cart toolbar has transparent background');
+ assert.equal(cartHeader.legacyClose,'none','Cart has no second X');
  // Compute the real empty-cart design in the native Cart dialog, even though
  // this fixture has items; never substitute a separately-styled mock page.
  const emptyCartStyle=await page.locator('#sf-cart-items').evaluate(root=>{
@@ -246,7 +257,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
      copyColor:computed(copy).color,copyGap:computed(copy).marginTop};
    mock.remove();return css;
  });
- assert(cartClose && cartClose.width>=44,'Cart close retains shared IconButton hit target');
+ assert(cartClose && cartClose.width>=44,'Cart keeps the original 44px Menu target');
  // Show busy state without posting to Woo: inspect the exact production spinner.
  const pendingSpinner=await page.locator('.sf-cart-row').first().evaluate(row=>{
   const spinner=row.querySelector('.sf-cart-busy'),circle=spinner.querySelector('.sf-ui-spinner');
@@ -336,16 +347,22 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  await click('cart');
  assert.equal(cartRequests,fetched,'Current tab is a no-op');
  await click('search');
- const searchClose=await page.locator('#sf-search .sf-search-cancel').boundingBox();
- if(searchClose && cartClose){
-   assert(Math.abs(searchClose.x-cartClose.x)<1.5&&Math.abs(searchClose.y-cartClose.y)<1.5,'Cart X aligns with search X on mobile');
- }
+ const searchClose=await page.locator('#sf-panel > .sf-menu-trigger').boundingBox();
+ assert(searchClose && cartClose && Math.abs(searchClose.x-cartClose.x)<1.5 && Math.abs(searchClose.y-cartClose.y)<1.5,'Menu keeps its position in Cart and Search');
+ const searchGlass=await page.locator('#sf-search').evaluate(el=>{
+  const bar=el.querySelector('.sf-search-toolbar'),input=el.querySelector('.sf-search-form'),x=el.querySelector('.sf-search-cancel');
+  return {background:getComputedStyle(bar).backgroundColor,hideClose:getComputedStyle(x).display,
+    inputRight:input.getBoundingClientRect().right};
+ });
+ assert.equal(searchGlass.background,'rgba(0, 0, 0, 0)','Search header is transparent');
+ assert.equal(searchGlass.hideClose,'none','Search has no separate X');
+ assert(searchGlass.inputRight<=searchClose.x-5,'Search capsule leaves room for Menu');
  await page.locator('#sf-query').focus();
- await page.locator('.sf-search-cancel').click();
+ await page.evaluate(()=>window.sfActions.close());
  await page.evaluate(()=>{window.focusLog=[]});
  await click('search');
  assert(!(await page.evaluate(()=>window.focusLog)).includes('sf-query'),'Reopening must never briefly focus query');
- await page.locator('.sf-search-cancel').click();
+ await page.evaluate(()=>window.sfActions.close());
  // Guest Account shares Search/Cart's native modal and Woo form.
  await click('account');
  assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),true,'Guest Account opens dialog');
@@ -403,7 +420,17 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  assert(compactAuth.heroVisible&&compactAuth.hintVisible,'App welcome hero is visible');
  assert.equal(compactAuth.submitMinHeight,'52px','Popup submit uses shared compact 52px Button token');
  assert(compactAuth.submitHeight>=52&&compactAuth.submitHeight<=54,'Popup submit keeps accessible compact touch target');
- assert(compactAuth.toolbarTitleHidden,'Account header only shows X; title remains accessible');
+ assert(compactAuth.toolbarTitleHidden,'Account semantic title stays screen-reader accessible');
+ const accountTitle=await page.locator('#sf-panel .sf-panel-app-title--account').evaluate(el=>({label:el.textContent.trim(),display:getComputedStyle(el).display,background:getComputedStyle(el).backgroundColor}));
+ assert.equal(accountTitle.label,'My account');
+ assert.notEqual(accountTitle.display,'none');
+ assert.equal(accountTitle.background,logoSurface,'Account title uses the same logo glass surface');
+ assert.equal(await page.locator('#sf-panel .sf-panel-top .sf-close').isVisible(),false,'Account has no duplicate X');
+ await page.locator('#sf-panel > .sf-menu-trigger').click();
+ assert.equal(await page.locator('#sf-menu').isVisible(),true,'Menu opens from Account');
+ assert.equal(await page.locator('#sf-panel > .sf-menu-trigger').getAttribute('aria-expanded'),'true','Menu morphs into X');
+ await page.locator('#sf-panel > .sf-menu-trigger').click();
+ assert.equal(await page.locator('#sf-account').isVisible(),true,'Menu X returns to Account');
  assert(compactAuth.bodyPaddingTop>=70&&compactAuth.bodyPaddingTop<=90,'Tall-phone welcome block uses available vertical space without moving the dock');
  assert(compactAuth.formTop-compactAuth.toolbarBottom<300,'Native form follows compact welcome hero');
  assert.equal(compactAuth.subtitle,false,'Account popup has no descriptive subtitle');
@@ -461,7 +488,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  assert.equal(await page.locator('.sf-dock-item.is-active').getAttribute('data-dock-view'),'search');
  await scrub(1,2,true);
  assert.equal(await page.locator('.sf-dock-item.is-active').getAttribute('data-dock-view'),'search','Outside release cancels');
- await page.locator('.sf-search-cancel').click();
+ await page.evaluate(()=>window.sfActions.close());
  await click('search');
  await scrub(1,0);
  assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),false,'Scrubbing to current Home closes popup');
@@ -504,7 +531,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  await page.locator('.sf-dock-handle').click();
  assert(!(await dock.evaluate(el=>el.classList.contains('is-collapsed'))));
  await click('search');
- await page.locator('.sf-search-cancel').click();
+ await page.evaluate(()=>window.sfActions.close());
  assert.equal(await page.evaluate(()=>scrollY),190,'Close restores exact scroll');
  await page.evaluate(()=>window.scrollTo(0,0));
  // The same button is reparented at an identical viewport position while it morphs.
@@ -527,7 +554,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
   await page.locator('#sf-panel').waitFor({state:'hidden'});
   assert.equal(await trigger.count(),1,'The node returns to the header');
   assert.equal(await page.locator('.sf-menu-trigger').count(),1,'Never duplicate the menu button');
-  if(width<=700){await click('search');const searchX=await page.locator('.sf-search-cancel').boundingBox();assert(Math.abs(box.x-searchX.x)<1);assert(Math.abs(box.y-searchX.y)<1);await page.locator('.sf-search-cancel').click();}
+  if(width<=700){await click('search');const searchMenu=await page.locator('#sf-panel > .sf-menu-trigger').boundingBox();assert(Math.abs(box.x-searchMenu.x)<1);assert(Math.abs(box.y-searchMenu.y)<1);await page.evaluate(()=>window.sfActions.close());}
   assert.equal(await page.evaluate(()=>scrollY),0);
  }
  await page.setViewportSize({width:390,height:844});
@@ -559,7 +586,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  await page.emulateMedia({reducedMotion:'reduce'});
  await click('search');
  assert.equal(await page.locator('.sf-search-content').evaluate(el=>el.getAnimations().length),0);
- await page.locator('.sf-search-cancel').click();
+ await page.evaluate(()=>window.sfActions.close());
  // Simulate WordPress mobile admin toolbar and verify lock/restore at a scrolled offset.
  await page.emulateMedia({reducedMotion:'no-preference'});
  await page.evaluate(()=>{
@@ -582,7 +609,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  await page.waitForTimeout(760);
  assert(!(await dock.evaluate(el=>el.classList.contains('is-collapsed'))));
  if(process.env.QA_SCREENSHOT) await page.screenshot({path:process.env.QA_SCREENSHOT});
- await page.locator('.sf-search-cancel').click();
+ await page.evaluate(()=>window.sfActions.close());
  assert.equal(await page.evaluate(()=>scrollY),20);
  assert.equal(await page.locator('#wpadminbar').evaluate(el=>el.style.position),'absolute');
  // Disabled mobile dock uses the very same three header tools as desktop.
@@ -636,7 +663,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
    if(mode==='cart')await page.waitForTimeout(40);
    assert.equal(await page.locator('.sf-mobile-dock').count(),0);
    if(mode==='cart') assert(parseFloat(await page.locator('.sf-cart-bottom').evaluate(el=>getComputedStyle(el).paddingBottom))<80,'No phantom dock clearance');
-   await page.locator(mode==='search'?'.sf-search-cancel':'.sf-panel-top .sf-close').click();
+   await page.evaluate(()=>window.sfActions.close());
    if(mode==='cart'&&width>=901)await page.locator('#sf-panel').waitFor({state:'hidden'});
   }
  }

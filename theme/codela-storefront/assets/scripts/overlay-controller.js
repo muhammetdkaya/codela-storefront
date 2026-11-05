@@ -16,6 +16,8 @@ export function createOverlayController({
     let menuTrigger = null, menuHome = null, menuLabel = '';
     const desktop = window.matchMedia('(min-width:901px)');
     const desktopMenu = window.matchMedia('(min-width:1100px)');
+    const mobileHeader = window.matchMedia('(max-width:700px)');
+    let returnToPanel = null;
     let inlineSearch = false, searchHome = null, searchSlot = null, hiddenHeaderControl = null;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -165,7 +167,11 @@ export function createOverlayController({
     function toggleMenu(event) {
         if (dialog?.open && current === 'menu' && !closing) {
             event?.preventDefault();
-            close();
+            if (mobileHeader.matches && returnToPanel) {
+                const destination = returnToPanel;
+                returnToPanel = null;
+                open(destination, event);
+            } else close();
         } else open('menu', event);
     }
     function open(name, event) {
@@ -190,6 +196,11 @@ export function createOverlayController({
         if (!opening && current === name && !wasClosing) return;
         surfaceMotion?.cancel(); surfaceMotion = null;
         const previous = current;
+        const appPanel = mobileHeader.matches && (name === 'search' || name === 'account' ||
+            (name === 'cart' && !document.body.classList.contains('single-product')));
+        if (name === 'menu' && mobileHeader.matches && ['search','cart','account'].includes(previous)
+            && !dialog.classList.contains('is-product-cart')) returnToPanel = previous;
+        else if (name !== 'menu') returnToPanel = null;
         if (opening) {
             cancelAnimationFrame(restoreScrollFrame);
             document.documentElement.classList.add('sf-overlay-scroll-locked');
@@ -213,8 +224,13 @@ export function createOverlayController({
         }
         if (current === 'search' && name !== 'search') searchFeature.cancel();
         current = name;
-        if (name === 'menu') mountMenuTrigger();
+        if (name === 'menu' || appPanel) mountMenuTrigger();
         else restoreMenuTrigger();
+        if (appPanel) {
+            const trigger = findMenuTrigger();
+            trigger?.setAttribute('aria-label', menuLabel);
+            trigger?.setAttribute('aria-expanded', 'false');
+        }
         setDockCollapsed(false);
         dialog.classList.toggle('is-menu-panel', name === 'menu');
         dialog.classList.toggle('is-search-panel', name === 'search');
@@ -241,7 +257,8 @@ export function createOverlayController({
         // Automatically focused controls should not display a giant focus ring
         // when opening a panel; keyboard navigation must still show its indicator.
         dialog.querySelectorAll('.sf-initial-focus').forEach(el => el.classList.remove('sf-initial-focus'));
-        const initialFocus = name === 'menu' ? (menuTrigger || $('.sf-close')) : name === 'search' ? $('.sf-search-cancel') : $('.sf-panel-top .sf-close');
+        const initialFocus = (name === 'menu' || appPanel) ? (menuTrigger || $('.sf-close'))
+            : name === 'search' ? $('.sf-search-cancel') : $('.sf-panel-top .sf-close');
         initialFocus.classList.add('sf-initial-focus');
         // Native dialog focuses this button even when a previous session focused the query.
         dialog.querySelectorAll('[autofocus]').forEach(el => el.removeAttribute('autofocus'));
@@ -286,6 +303,12 @@ export function createOverlayController({
     function close() {
         if (inlineSearch) { closeInlineSearch(); return; }
         if (!dialog?.open || closing) return;
+        if (current === 'menu' && mobileHeader.matches && returnToPanel) {
+            const destination = returnToPanel;
+            returnToPanel = null;
+            open(destination);
+            return;
+        }
         const drawerFrom = current === 'cart' && desktop.matches && surfaceMotion
             ? getComputedStyle(dialog).transform : null;
         panelMotion?.cancel(); panelMotion = null;
@@ -319,6 +342,7 @@ export function createOverlayController({
         document.querySelectorAll('[data-panel]').forEach(el => el.setAttribute('aria-expanded','false'));
         searchFeature.cancel();
         dialog.close(); restoreMenuTrigger(); current = null;
+        returnToPanel = null;
         restoreDock();
         restoreStyle(document.body, savedBodyStyle); savedBodyStyle = null;
         const bar = $('#wpadminbar'); if (bar) restoreStyle(bar, savedAdminStyle);

@@ -47,7 +47,9 @@ assert.ok(fs.readFileSync('theme/codela-storefront/assets/styles/tokens.css','ut
 assert.ok(css.includes('background:var(--sf-ui-page)'), 'Panels inherit the common page canvas');
 assert.ok(css.includes('color-scheme:light'), 'Search uses light input/color controls');
 assert.ok(!css.includes('background:#0b0d12'), 'Dark search background must be removed');
-assert.ok(css.includes('#sf-panel.is-search-panel .sf-panel-top{display:none!important}'),'Only the inline X appears in search');
+assert.ok(css.includes('#sf-panel.is-search-panel .sf-panel-top{display:none!important}'),'Search excludes duplicate toolbar');
+assert.ok(css.includes('#sf-panel.is-search-panel .sf-search-cancel{display:none!important}'),'Mobile Search hides separate X');
+assert.ok(css.includes('padding-right:calc(var(--sf-overlay-gutter) + var(--sf-overlay-control-size) + 8px)'),'Search reserves room for Menu');
 assert.ok(markup.includes("placeholder=\"<?php esc_attr_e( 'Search', 'codela-storefront' ); ?>\""),'Search placeholder is Ara in Turkish');
 assert.ok(markup.includes('id="sf-discovery"') && markup.includes('id="sf-popular-section"') && markup.includes('id="sf-explore-section"'), 'Native panel owns searches and discover shelf');
 assert.ok(!markup.includes('sf-recent-section') && !search.includes('localStorage'), 'Local history and divider rows are removed');
