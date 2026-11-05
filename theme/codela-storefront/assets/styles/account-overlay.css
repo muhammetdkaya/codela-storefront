@@ -232,3 +232,8 @@
   /* Keep the common Cart/Account mark and heading sizes even on short phones. */
   #sf-panel.is-account-panel .sf-account-intro .sf-auth-mark{margin-bottom:var(--sf-state-mark-gap)}
 }
+
+/* Account title occupies the original logo slot, not the close-button slot. */
+@media(max-width:700px){
+  #sf-panel.is-account-panel .sf-panel-top{justify-content:flex-start}
+}
