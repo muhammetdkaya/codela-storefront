@@ -358,6 +358,12 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  assert.equal(searchGlass.hideClose,'none','Search has no separate X');
  assert(searchGlass.inputRight<=searchClose.x-5,'Search capsule leaves room for Menu');
  await page.locator('#sf-query').focus();
+ const searchFocus=await page.locator('#sf-search .sf-search-form').evaluate(el=>{
+   const css=getComputedStyle(el);
+   return {width:css.outlineWidth,offset:css.outlineOffset,color:css.outlineColor};
+ });
+ assert.equal(searchFocus.width,'2px','Search retains one visible 2px focus ring');
+ assert.equal(searchFocus.offset,'2px','Search ring is spaced outside its capsule');
  await page.evaluate(()=>window.sfActions.close());
  await page.evaluate(()=>{window.focusLog=[]});
  await click('search');
@@ -402,6 +408,15 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  assert.equal(placeholderMode.placeholderOpacity,'1','Native placeholder is visible');
  assert(placeholderMode.height>=49&&placeholderMode.height<=51,'Input keeps 50px geometry');
  assert(parseFloat(placeholderMode.paddingTop)<18,'No floating-label inset remains');
+ await page.locator('#test-login-username').focus();
+ const accountFocus=await page.locator('#test-login-username').evaluate(input=>{
+   const css=getComputedStyle(input);
+   return {width:css.outlineWidth,offset:css.outlineOffset,color:css.outlineColor,borderColor:css.borderTopColor};
+ });
+ for(const key of ['width','offset','color']){
+   assert.equal(accountFocus[key],searchFocus[key], 'Account and Search share the same '+key+' focus treatment');
+ }
+ assert.equal(accountFocus.borderColor,'rgba(0, 0, 0, 0)','Focused account field has no extra inner border');
  const compactAuth=await page.locator('#sf-account').evaluate(root=>{
   const input=root.querySelector('#test-login-username').getBoundingClientRect();
   const label=root.querySelector('label[for="test-login-username"]').getBoundingClientRect();
@@ -442,7 +457,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  assert.equal(await page.locator('#sf-panel > .sf-menu-trigger').getAttribute('aria-expanded'),'true','Menu morphs into X');
  await page.locator('#sf-panel > .sf-menu-trigger').click();
  assert.equal(await page.locator('#sf-account').isVisible(),true,'Menu X returns to Account');
- assert(compactAuth.bodyPaddingTop>=30&&compactAuth.bodyPaddingTop<=65,'Welcome block starts near header without excessive top whitespace');
+ assert(compactAuth.bodyPaddingTop>=26&&compactAuth.bodyPaddingTop<=44,'Tall-phone greeting starts near header without wasted space');
  assert(compactAuth.formTop-compactAuth.toolbarBottom<300,'Native form follows compact welcome hero');
  assert.equal(compactAuth.subtitle,false,'Account popup has no descriptive subtitle');
  assert.equal(await page.locator('#sf-account form.woocommerce-form-login').getAttribute('action'),'https://store.test/myaccount/','Login submits to genuine Account URL');
