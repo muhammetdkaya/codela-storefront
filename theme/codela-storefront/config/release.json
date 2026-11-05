@@ -6,9 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Misafir Hesabım karşılama ikonu, boyutu (52px), yuvarlak arka planı, simge boyutu (23px), tipografisi ve açıklama aralıkları boş Sepet ekranının ortak tasarım ölçülerine bağlandı.",
-    "Hoş geldiniz başlığı 19px/500 ağırlığa indirildi; kısa ekranlarda da sepetle aynı ölçü korunur. Türkçe çeviride tekrarlanan anahtar kaldırılarak Tekrar hoş geldiniz yerine Hoş geldiniz gösterilir.",
-    "Parola satırındaki yanlış kullanıcı ikonu, şifre görünürken de geçerli olan özgül kilit ikonu seçicisiyle düzeltildi.",
-    "WooCommerce gerçek giriş/kayıt formları, şifre yenileme, Google giriş, alt menü, sepet ve kullanıcı panosu korunur. Tarayıcı testi iki ekranın ölçülerini ve parola ikonunu karşılaştırır."
+    "Mobil misafir Hesabım sayfasında geniş telefonların dikey boşluğu daha dengeli kullanılır; karşılama ve form 760px üzerindeki ekranlarda aşağı alınır, küçük ekranlarda ve klavyede kaydırılabilir yerleşim korunur.",
+    "Mobil kullanıcı adı/parola cam alanları 54px yerine 50px olarak çizilir; yüzen etiket ve ikon konumları yeni yüksekliğe göre hizalanır, yazı 16px ve şifre görünürlük dokunma hedefi 44px kalır.",
+    "Sepet ile ortak karşılama ikonu/başlık ölçüleri, alt dock, kapatma butonu, WooCommerce giriş-kayıt ve şifre işlemleri korunur. Gezinti regresyonu mobil alan ölçüsü ve dikey ritmi denetler."
   ]
 }

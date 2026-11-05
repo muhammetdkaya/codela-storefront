@@ -398,13 +398,13 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  assert(compactAuth.inlineLabel,'Modal native field label stays inside input');
  assert(compactAuth.sameLine,'Modal remember and password recovery share a row');
  assert.equal(compactAuth.submitBg,'color(srgb 0.145098 0.152941 0.164706 / 0.9)','Native modal submit uses shared primary Button');
- assert(compactAuth.fieldHeight>=54&&compactAuth.fieldHeight<=56,'Popup fields preserve the shared 54px input height');
+ assert(compactAuth.fieldHeight>=49&&compactAuth.fieldHeight<=51,'Mobile login fields use the compact 50px glass height');
  assert.equal(compactAuth.fieldBackground,'rgba(255, 255, 255, 0.75)','Guest fields use Codela glass material');
  assert(compactAuth.heroVisible&&compactAuth.hintVisible,'App welcome hero is visible');
  assert.equal(compactAuth.submitMinHeight,'52px','Popup submit uses shared compact 52px Button token');
  assert(compactAuth.submitHeight>=52&&compactAuth.submitHeight<=54,'Popup submit keeps accessible compact touch target');
  assert(compactAuth.toolbarTitleHidden,'Account header only shows X; title remains accessible');
- assert(compactAuth.bodyPaddingTop<=42,'Welcome hero begins in the upper part of the dialog');
+ assert(compactAuth.bodyPaddingTop>=70&&compactAuth.bodyPaddingTop<=90,'Tall-phone welcome block uses available vertical space without moving the dock');
  assert(compactAuth.formTop-compactAuth.toolbarBottom<300,'Native form follows compact welcome hero');
  assert.equal(compactAuth.subtitle,false,'Account popup has no descriptive subtitle');
  assert.equal(await page.locator('#sf-account form.woocommerce-form-login').getAttribute('action'),'https://store.test/myaccount/','Login submits to genuine Account URL');
