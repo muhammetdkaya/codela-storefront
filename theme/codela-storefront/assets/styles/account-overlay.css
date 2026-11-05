@@ -211,8 +211,19 @@
 }
 #sf-panel.is-account-panel .sf-auth-tabs--footer .sf-auth-tab[hidden]{display:none!important}
 #sf-panel.is-account-panel .woocommerce .sf-auth-social{margin-top:20px}
+/* Tall phone screens have room to center the welcome/form composition better;
+   compact screens and keyboard-constrained viewports keep the original top flow.
+   Touch targets and real WooCommerce inputs are preserved. */
 @media(max-width:700px){
   #sf-panel.is-account-panel .sf-account-body{padding-inline:24px;padding-top:clamp(18px,4dvh,34px)}
+  #sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text)>label[for]{top:6px}
+  #sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text)::before{top:16px}
+  #sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text) input.input-text{
+    height:50px;min-height:50px;padding-top:23px;padding-bottom:5px;
+  }
+}
+@media(max-width:700px) and (min-height:760px){
+  #sf-panel.is-account-panel .sf-account-body{padding-top:clamp(54px,10dvh,88px)}
 }
 @media(max-height:650px){
   #sf-panel.is-account-panel .sf-account-body{padding-top:12px}
