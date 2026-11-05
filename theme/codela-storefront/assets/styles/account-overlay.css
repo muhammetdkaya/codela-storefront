@@ -240,9 +240,6 @@
   padding:0;margin:0;border:0;overflow:hidden;white-space:nowrap;
   clip-path:inset(50%);pointer-events:none;
 }
-#sf-panel.is-account-panel .woocommerce form .form-row.sf-auth-placeholder-ready:has(input.input-text):not(.sf-auth-placeholder-ready)::before{
-  content:none!important;
-}
 #sf-panel.is-account-panel .woocommerce form .form-row.sf-auth-placeholder-ready input.input-text{
   height:50px;min-height:50px;padding:0 16px;
   font-size:16px;line-height:1.35;
