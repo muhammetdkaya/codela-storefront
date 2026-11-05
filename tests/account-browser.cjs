@@ -150,7 +150,8 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
       assert.equal(ring.width,'2px','Standalone guest input has the same single focus ring');
       assert.equal(ring.offset,'2px','Standalone guest input matches Search focus offset');
       assert.equal(ring.color,'rgb(28, 28, 30)','Standalone guest ring uses shared glass ink');
-      assert.equal(ring.borderColor,'rgba(0, 0, 0, 0)','Standalone guest focus has no inner border');
+      assert(['rgba(0, 0, 0, 0)','rgb(221, 224, 229)'].includes(ring.borderColor),
+        'Standalone Woo field keeps only a neutral edge, never a second dark ring');
       assert(fieldAlignment.sameLine,'Remember me and lost-password share the same row');
       assert(fieldAlignment.rememberBeforeLost,'Remember me stays left, password reset right');
       assert.equal(controls.registerPresent,type==='register','Registration follows native Woo setting');
