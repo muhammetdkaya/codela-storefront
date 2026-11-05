@@ -16,9 +16,11 @@ function codela_sf_account_intro(): void {
     }
     ?>
     <header class="sf-account-intro">
-        <h1><?php esc_html_e( 'My account', 'codela-storefront' ); ?></h1>
-        <!-- Only shown by auth.js if WooCommerce has rendered BOTH native forms. -->
-        <div class="sf-auth-tabs" role="tablist" aria-label="<?php esc_attr_e( 'Account access', 'codela-storefront' ); ?>" hidden>
+        <span class="sf-auth-mark sf-ui-surface" aria-hidden="true"><?php echo codela_sf_icon( 'user-round' ); ?></span>
+        <h1><?php esc_html_e( 'Welcome back', 'codela-storefront' ); ?></h1>
+        <p><?php esc_html_e( 'Sign in to your account.', 'codela-storefront' ); ?></p>
+        <!-- Registration switch appears only if WooCommerce renders both native forms. -->
+        <div class="sf-auth-tabs" role="tablist" aria-label="<?php esc_attr_e( 'Account access', 'codela-storefront' ); ?>" data-register-prompt="<?php esc_attr_e( 'New here?', 'codela-storefront' ); ?>" data-login-prompt="<?php esc_attr_e( 'Already registered?', 'codela-storefront' ); ?>" hidden>
             <button type="button" class="sf-auth-tab sf-ui-nav-tab sf-ui-pressable" role="tab" data-auth-tab="login" aria-selected="true"><?php esc_html_e( 'Log in', 'codela-storefront' ); ?></button>
             <button type="button" class="sf-auth-tab sf-ui-nav-tab sf-ui-pressable" role="tab" data-auth-tab="register" aria-selected="false"><?php esc_html_e( 'Register', 'codela-storefront' ); ?></button>
         </div>

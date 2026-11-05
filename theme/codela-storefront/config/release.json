@@ -6,8 +6,9 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mobil tam ekran Sepet'te adet kontrolünün cam kapsül yüksekliği gerçekten 44px'ten 30px'e indirildi (%32 azalma); önceki sürümlerde yalnızca yatay genişlik azaltılıyordu.",
-    "Artı/eksi düğmeleri 44x44px gerçek dokunma alanıyla korunurken kapsülün üstüne/altına taşabiliyor; kart içi tıklanabilir alan kırpılmıyor.",
-    "Ürün satırları, spinner, kaldırma ikonu, üst X, ödeme alanı ve alt menü değişmedi. Ürün sayfasındaki küçük sepet ve masaüstü kontrolleri etkilenmiyor."
+    "Mobil misafir Hesabım ekranı uygulama giriş görünümüne kavuştu: yalnız sağ X, Hoş geldiniz karşılaması ve kısa açıklama.",
+    "Gerçek WooCommerce giriş alanları 54px cam yüzeye, mevcut Codela ikon diline, odaklandığında belirgin sınıra ve kompakt parola kontrolüne uyarlandı.",
+    "Yalnız WooCommerce kayıt açıksa giriş/kayıt seçimi form altına taşındı. Giriş, nonce, kayıt, şifre yenileme ve etkin Google girişi korunur.",
+    "Alt menü ve oturum açmış kullanıcı panosu değiştirilmedi."
   ]
 }
