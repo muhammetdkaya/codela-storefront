@@ -233,6 +233,45 @@
   #sf-panel.is-account-panel .sf-account-intro .sf-auth-mark{margin-bottom:var(--sf-state-mark-gap)}
 }
 
+/* Placeholder mode enhances the *native* Woo fields. Invisible labels retain
+   their for/id relationship for screen readers; without JS, labels stay visible. */
+#sf-panel.is-account-panel .woocommerce form .form-row.sf-auth-placeholder-ready > label[for]{
+  position:absolute;top:0;left:0;width:1px;height:1px;right:auto;
+  padding:0;margin:0;border:0;overflow:hidden;white-space:nowrap;
+  clip-path:inset(50%);pointer-events:none;
+}
+#sf-panel.is-account-panel .woocommerce form .form-row.sf-auth-placeholder-ready:has(input.input-text)::before{
+  content:none!important;
+}
+#sf-panel.is-account-panel .woocommerce form .form-row.sf-auth-placeholder-ready input.input-text{
+  height:50px;min-height:50px;padding:0 16px;
+  font-size:16px;line-height:1.35;
+}
+#sf-panel.is-account-panel .woocommerce form .form-row.sf-auth-placeholder-ready .password-input input.input-text{padding-right:54px}
+#sf-panel.is-account-panel .woocommerce form .form-row.sf-auth-placeholder-ready input.input-text::placeholder{
+  color:#8a8e96;opacity:1;
+}
+#sf-panel.is-account-panel .sf-account-intro,
+#sf-panel.is-account-panel .sf-account-intro:has(.sf-auth-tabs[hidden]){
+  align-items:flex-start;text-align:left;margin-bottom:25px;
+}
+#sf-panel.is-account-panel .sf-account-intro h1{
+  font-size:clamp(24px,5.7vw,28px);line-height:1.2;
+  font-weight:600;letter-spacing:-.035em;
+}
+#sf-panel.is-account-panel .sf-account-intro p{
+  margin:8px 0 0;text-align:left;font-size:13px;line-height:1.5;
+}
+@media(max-width:700px){
+  #sf-panel.is-account-panel .sf-account-body{padding-top:clamp(24px,5dvh,48px)}
+}
+@media(max-width:700px) and (min-height:760px){
+  #sf-panel.is-account-panel .sf-account-body{padding-top:clamp(32px,6dvh,58px)}
+}
+@media(max-height:650px){
+  #sf-panel.is-account-panel .sf-account-body{padding-top:12px}
+}
+
 /* Account title occupies the original logo slot, not the close-button slot. */
 @media(max-width:700px){
   #sf-panel.is-account-panel .sf-panel-top{justify-content:flex-start}
