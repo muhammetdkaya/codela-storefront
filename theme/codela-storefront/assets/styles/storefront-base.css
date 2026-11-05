@@ -1621,20 +1621,20 @@ body:not(.codela-my-account-layout) .sf-content .sf-ui-icon-button--soft{
 :is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
   form .form-row:has(> label[for]):has(input.input-text){position:relative}
 :is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
-  form .form-row:has(> label[for]):has(input.input-text) > label[for]{
+  form .form-row:has(> label[for]):has(input.input-text):not(.sf-auth-placeholder-ready) > label[for]{
     position:absolute;z-index:1;top:7px;left:16px;right:16px;
     margin:0;padding:0;pointer-events:none;
     color:#777b82;font-size:12px;font-weight:400;line-height:17px;
 }
 :is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
-  form .form-row:has(> label[for]):has(input.input-text) input.input-text{
+  form .form-row:has(> label[for]):has(input.input-text):not(.sf-auth-placeholder-ready) input.input-text{
     min-height:var(--sf-ui-action-height);
     padding:25px 16px 6px;
 }
 :is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
-  form .form-row:has(> label[for]):has(input.input-text) .password-input input.input-text{padding-right:54px}
+  form .form-row:has(> label[for]):has(input.input-text):not(.sf-auth-placeholder-ready) .password-input input.input-text{padding-right:54px}
 :is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce, #sf-panel.is-account-panel .woocommerce)
-  form .form-row:has(> label[for]):has(input.input-text) input::placeholder{opacity:0}
+  form .form-row:has(> label[for]):has(input.input-text):not(.sf-auth-placeholder-ready) input::placeholder{opacity:0}
 
 /* Native form row contains remember + submit; display:contents puts the
    existing label, forgot-password link and shared submit in one CSS grid. */

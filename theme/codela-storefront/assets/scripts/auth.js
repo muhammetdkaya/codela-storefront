@@ -31,8 +31,35 @@ function preventInitialAccountAutoFocus() {
     dismiss(document.activeElement);
     setTimeout(release,1600);
 }
+    // Enhance genuine Woo fields; never replace their labels, nonces or handlers.
+    // A placeholder is visual help, not the accessible field name.
+    function applyAuthPlaceholders() {
+        const intro = document.querySelector('.sf-account-intro');
+        if (!intro) return;
+        const copy = intro.dataset;
+        document.querySelectorAll('.woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register)')
+            .forEach(form => {
+                const registering = form.classList.contains('woocommerce-form-register');
+                form.querySelectorAll('input.input-text').forEach(input => {
+                    const label = [...form.querySelectorAll('label[for]')]
+                        .find(item => item.htmlFor === input.id);
+                    if (!label) return;
+                    const name = (input.name || '').toLowerCase();
+                    const kind = (input.type || '').toLowerCase();
+                    let placeholder = '';
+                    if (kind === 'password' || name.includes('password')) placeholder = copy.authPasswordPlaceholder;
+                    else if (kind === 'email' || name.includes('email')) placeholder = registering ? copy.authEmailPlaceholder : copy.authLoginPlaceholder;
+                    else if (name.includes('username')) placeholder = registering ? copy.authUsernamePlaceholder : copy.authLoginPlaceholder;
+                    else placeholder = label.textContent.replaceAll('*', '').trim();
+                    if (!placeholder) return;
+                    if (!input.placeholder) input.placeholder = placeholder;
+                    input.closest('.form-row')?.classList.add('sf-auth-placeholder-ready');
+                });
+            });
+    }
     function init() {
         preventInitialAccountAutoFocus();
+        applyAuthPlaceholders();
         const tabs = document.querySelector('.sf-account-intro .sf-auth-tabs');
         const container = document.querySelector('#customer_login');
         if (!tabs || !container) return;

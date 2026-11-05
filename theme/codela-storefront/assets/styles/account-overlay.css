@@ -151,11 +151,11 @@
 #sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text){
   position:relative;
 }
-#sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text)>label[for]{
+#sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text):not(.sf-auth-placeholder-ready)>label[for]{
   top:7px;left:50px;right:48px;margin:0;
   font-size:12px;font-weight:400;line-height:17px;color:var(--sf-muted,#77776d);
 }
-#sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text)::before{
+#sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text):not(.sf-auth-placeholder-ready)::before{
   content:'';position:absolute;z-index:2;top:18px;left:18px;width:19px;height:19px;
   pointer-events:none;background:var(--sf-muted,#77776d);
   -webkit-mask:url('../icons/user-round.svg') center/contain no-repeat;
@@ -163,11 +163,11 @@
 }
 /* Match the native password field even after the show/hide toggle changes type.
    Extra [name] specificity overrides the generic user glyph above. */
-#sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text[name="password"])::before{
+#sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text[name="password"]):not(.sf-auth-placeholder-ready)::before{
   -webkit-mask:url('../icons/lock-keyhole.svg') center/contain no-repeat;
   mask:url('../icons/lock-keyhole.svg') center/contain no-repeat;
 }
-#sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text) input.input-text{
+#sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text):not(.sf-auth-placeholder-ready) input.input-text{
   display:block;box-sizing:border-box;height:54px;min-height:54px;width:100%;
   padding:25px 16px 6px 50px;
   border:1px solid rgba(90,92,96,.12);border-radius:var(--sf-ui-control-radius);
@@ -177,7 +177,7 @@
   backdrop-filter:blur(var(--sf-ui-glass-blur));
   font-size:16px;line-height:1.25;
 }
-#sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text) .password-input input.input-text{padding-right:52px}
+#sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text):not(.sf-auth-placeholder-ready) .password-input input.input-text{padding-right:52px}
 #sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text):focus-within input.input-text{
   border-color:var(--sf-ui-accent);outline:1px solid var(--sf-ui-accent);
   outline-offset:1px;box-shadow:var(--sf-ui-glass-control-shadow);
@@ -216,9 +216,9 @@
    Touch targets and real WooCommerce inputs are preserved. */
 @media(max-width:700px){
   #sf-panel.is-account-panel .sf-account-body{padding-inline:24px;padding-top:clamp(18px,4dvh,34px)}
-  #sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text)>label[for]{top:6px}
-  #sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text)::before{top:16px}
-  #sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text) input.input-text{
+  #sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text):not(.sf-auth-placeholder-ready)>label[for]{top:6px}
+  #sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text):not(.sf-auth-placeholder-ready)::before{top:16px}
+  #sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text):not(.sf-auth-placeholder-ready) input.input-text{
     height:50px;min-height:50px;padding-top:23px;padding-bottom:5px;
   }
 }
@@ -231,6 +231,47 @@
   #sf-panel.is-account-panel .sf-account-intro:has(.sf-auth-tabs[hidden]){margin-bottom:16px}
   /* Keep the common Cart/Account mark and heading sizes even on short phones. */
   #sf-panel.is-account-panel .sf-account-intro .sf-auth-mark{margin-bottom:var(--sf-state-mark-gap)}
+}
+
+/* Placeholder mode enhances the *native* Woo fields. Invisible labels retain
+   their for/id relationship for screen readers; without JS, labels stay visible. */
+#sf-panel.is-account-panel .woocommerce form .form-row.sf-auth-placeholder-ready > label[for]{
+  position:absolute;top:0;left:0;width:1px;height:1px;right:auto;
+  padding:0;margin:0;border:0;overflow:hidden;white-space:nowrap;
+  clip-path:inset(50%);pointer-events:none;
+}
+#sf-panel.is-account-panel .woocommerce form .form-row.sf-auth-placeholder-ready input.input-text{
+  height:50px;min-height:50px;padding:0 16px;
+  border:1px solid rgba(90,92,96,.12);border-radius:var(--sf-ui-control-radius);
+  background:var(--sf-ui-glass-surface);color:var(--sf-ui-ink);
+  box-shadow:var(--sf-ui-glass-thumb-shadow);
+  -webkit-backdrop-filter:blur(var(--sf-ui-glass-blur));
+  backdrop-filter:blur(var(--sf-ui-glass-blur));
+  font-size:16px;line-height:1.35;
+}
+#sf-panel.is-account-panel .woocommerce form .form-row.sf-auth-placeholder-ready .password-input input.input-text{padding-right:54px}
+#sf-panel.is-account-panel .woocommerce form .form-row.sf-auth-placeholder-ready input.input-text::placeholder{
+  color:#8a8e96;opacity:1;
+}
+#sf-panel.is-account-panel .sf-account-intro,
+#sf-panel.is-account-panel .sf-account-intro:has(.sf-auth-tabs[hidden]){
+  align-items:flex-start;text-align:left;margin-bottom:25px;
+}
+#sf-panel.is-account-panel .sf-account-intro h1{
+  font-size:clamp(24px,5.7vw,28px);line-height:1.2;
+  font-weight:600;letter-spacing:-.035em;
+}
+#sf-panel.is-account-panel .sf-account-intro p{
+  margin:8px 0 0;text-align:left;font-size:13px;line-height:1.5;
+}
+@media(max-width:700px){
+  #sf-panel.is-account-panel .sf-account-body{padding-top:clamp(24px,5dvh,48px)}
+}
+@media(max-width:700px) and (min-height:760px){
+  #sf-panel.is-account-panel .sf-account-body{padding-top:clamp(32px,6dvh,58px)}
+}
+@media(max-height:650px){
+  #sf-panel.is-account-panel .sf-account-body{padding-top:12px}
 }
 
 /* Account title occupies the original logo slot, not the close-button slot. */

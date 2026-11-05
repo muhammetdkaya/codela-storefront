@@ -15,8 +15,11 @@ function codela_sf_account_intro(): void {
         return;
     }
     ?>
-    <header class="sf-account-intro">
-        <span class="sf-auth-mark" aria-hidden="true"><?php echo codela_sf_icon( 'user-round' ); ?></span>
+    <header class="sf-account-intro"
+        data-auth-login-placeholder="<?php esc_attr_e( 'Email or username', 'codela-storefront' ); ?>"
+        data-auth-username-placeholder="<?php esc_attr_e( 'Username', 'codela-storefront' ); ?>"
+        data-auth-email-placeholder="<?php esc_attr_e( 'Email address', 'codela-storefront' ); ?>"
+        data-auth-password-placeholder="<?php esc_attr_e( 'Password', 'codela-storefront' ); ?>">
         <h1><?php esc_html_e( 'Welcome back', 'codela-storefront' ); ?></h1>
         <p><?php esc_html_e( 'Sign in to your account.', 'codela-storefront' ); ?></p>
         <!-- Registration switch appears only if WooCommerce renders both native forms. -->

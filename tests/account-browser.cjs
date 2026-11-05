@@ -23,7 +23,8 @@ assert(intro.includes('Welcome back'),'Guest account hero has app greeting');
 const locale=fs.readFileSync('theme/codela-storefront/languages/tr_TR.l10n.php','utf8');
 assert.equal((locale.match(/'Welcome back'\s*=>/g)||[]).length,1,'Turkish welcome copy has one translation (no overwritten duplicate)');
 assert(locale.includes("'Welcome back' => 'Hoş geldiniz'"),'Account title is the short welcome copy');
-assert(!intro.includes('sf-auth-mark sf-ui-surface'),'Guest hero uses the same muted circular surface as empty Cart');
+assert(!intro.includes('sf-auth-mark'),'Guest hero does not repeat the account icon');
+assert(intro.includes('data-auth-login-placeholder="Email or username"'),'Login placeholder metadata comes from localized theme');
 assert(intro.includes('Sign in to your account.'),'Guest account hero includes short subtitle');
 assert(intro.includes('sf-auth-tabs'),'Guest intro offers progressive tabs');
 assert(!intro.includes('Manage your orders and account details.'),'Unnecessary account subtitle removed');
@@ -80,6 +81,7 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
       assert.equal(await input.evaluate(el=>getComputedStyle(el).fontSize),'16px','Avoid mobile keyboard zoom');
       assert((await input.boundingBox()).height>=46,'Text input is touch accessible');
       assert((await page.locator('.woocommerce-form-login__submit').boundingBox()).height>=52,'Guest submit uses compact UI Kit action height');
+      await page.addScriptTag({content:authJS});
       const controls=await page.evaluate(()=>{
        const shell=document.createElement('div');
        shell.className='sf-shell';
@@ -119,20 +121,26 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
       assert.equal(controls.fieldRadius,'12px','Inputs follow the same UI Kit control radius');
       assert.equal(await page.locator('#username').evaluate(el=>getComputedStyle(el).backgroundColor),
         'rgb(255, 255, 255)','Guest input is a clean outlined white field, not a bulky gray surface');
-      assert(controls.fieldHeight>=54&&controls.fieldHeight<=56,'Guest input uses 54px shared action height');
+      assert(controls.fieldHeight>=49&&controls.fieldHeight<=51,'Guest input uses approved 50px geometry');
       const fieldAlignment=await page.evaluate(()=>{
        const input=document.querySelector('#username');
        const label=document.querySelector('label[for="username"]');
        const a=input.getBoundingClientRect(),b=label.getBoundingClientRect();
        const remember=document.querySelector('.woocommerce-form-login__rememberme').getBoundingClientRect();
        const lost=document.querySelector('.woocommerce-LostPassword').getBoundingClientRect();
-       return {labelInside:b.top>=a.top && b.bottom<a.bottom-15, textPadding:parseFloat(getComputedStyle(input).paddingTop),
+       return {labelHidden:b.width<=1&&b.height<=1, textPadding:parseFloat(getComputedStyle(input).paddingTop),
+        placeholder:input.placeholder,placeholderOpacity:getComputedStyle(input,'::placeholder').opacity,
+        password:document.querySelector('#password').placeholder,
+        ready:input.closest('.form-row').classList.contains('sf-auth-placeholder-ready'),
         sameLine:Math.abs(remember.top+remember.height/2-lost.top-lost.height/2)<10,
         rememberBeforeLost:remember.right<lost.left+5,
         hasInputName:input.name||''};
       });
-      assert(fieldAlignment.labelInside,'Woo label is rendered inside its actual field');
-      assert(fieldAlignment.textPadding>=25,'Typed value follows the inset label within compact 56px field');
+      assert(fieldAlignment.labelHidden&&fieldAlignment.ready,'Original label remains accessible without visual duplication');
+      assert(fieldAlignment.textPadding<18,'Text has no floating-label padding');
+      assert.equal(fieldAlignment.placeholder,'Email or username');
+      assert.equal(fieldAlignment.password,'Password');
+      assert.equal(fieldAlignment.placeholderOpacity,'1','Placeholder stays readable');
       assert(fieldAlignment.sameLine,'Remember me and lost-password share the same row');
       assert(fieldAlignment.rememberBeforeLost,'Remember me stays left, password reset right');
       assert.equal(controls.registerPresent,type==='register','Registration follows native Woo setting');
@@ -196,7 +204,6 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
 
       }
       if(type==='register'){
-        await page.addScriptTag({content:authJS});
         assert.equal(await page.locator('.sf-auth-tabs').isVisible(),true,'Tabs appear when Woo renders registration');
         const tabs=await page.locator('.sf-auth-tabs').evaluate(el=>{
          const selected=el.querySelector('[aria-selected="true"]');
@@ -207,6 +214,7 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
 
         assert.equal(await page.locator('#customer_login .u-column2').isVisible(),false,'Login selected by default');
         await page.locator('[data-auth-tab="register"]').click();
+        assert.equal(await page.locator('#reg_email').getAttribute('placeholder'),'Email address','Registration uses its own email placeholder');
         assert.equal(await page.locator('#customer_login .u-column2').isVisible(),true,'Registration tab shows the native register form');
         assert.equal(await page.locator('#customer_login .u-column1').isVisible(),false,'Login form hidden while Register is selected');
         assert.equal(await page.locator('[data-auth-tab="register"]').getAttribute('aria-selected'),'true');
@@ -216,7 +224,6 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
         assert.equal(await page.locator('#customer_login .u-column1').isVisible(),true,'Login form restored without re-creating form');
         assert.equal(await page.locator('form.woocommerce-form').count(),2,'Both native Woo forms remain in DOM');
       }else{
-        await page.addScriptTag({content:authJS});
         assert.equal(await page.locator('.sf-auth-tabs').isVisible(),false,'No fake Register tab if Woo registration is disabled');
       }
     } else {
