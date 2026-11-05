@@ -148,7 +148,6 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'Save settings' => 'Ayarları kaydet',
 'Settings saved.' => 'Ayarlar kaydedildi.',
 'YOUR ACCOUNT' => 'HESABINIZ',
-'Welcome back' => 'Tekrar hoş geldiniz',
 'Sign in to follow your orders and manage your details.' => 'Siparişlerinizi takip etmek ve bilgilerinizi yönetmek için giriş yapın.',
 'View your orders, addresses and account details.' => 'Siparişlerinizi, adreslerinizi ve hesap bilgilerinizi yönetin.',
 'Privacy' => 'Gizlilik',

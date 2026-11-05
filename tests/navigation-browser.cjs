@@ -228,6 +228,24 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  assert.equal(await page.locator('.sf-cart-bottom .sf-ui-button--primary').count(),1,'Checkout uses shared Button');
  // The cart close must share the search close icon's toolbar geometry.
  const cartClose=await page.locator('#sf-panel .sf-panel-top .sf-close').boundingBox();
+ // Compute the real empty-cart design in the native Cart dialog, even though
+ // this fixture has items; never substitute a separately-styled mock page.
+ const emptyCartStyle=await page.locator('#sf-cart-items').evaluate(root=>{
+   const mock=document.createElement('div');
+   mock.className='sf-empty sf-cart-empty';
+   mock.innerHTML='<span class="sf-cart-empty-mark" aria-hidden="true"></span><h3>Empty cart</h3><p>Cart caption</p>';
+   root.append(mock);
+   const mark=mock.querySelector('.sf-cart-empty-mark'),title=mock.querySelector('h3'),copy=mock.querySelector('p');
+   const computed=el=>getComputedStyle(el);
+   const css={markSize:mark.getBoundingClientRect().width,markRadius:computed(mark).borderRadius,
+     markBackground:computed(mark).backgroundColor,markGap:computed(mark).marginBottom,
+     glyphSize:computed(mark).backgroundSize,
+     titleSize:computed(title).fontSize,titleWeight:computed(title).fontWeight,
+     titleTracking:computed(title).letterSpacing,titleLeading:computed(title).lineHeight,
+     copySize:computed(copy).fontSize,copyLeading:computed(copy).lineHeight,
+     copyColor:computed(copy).color,copyGap:computed(copy).marginTop};
+   mock.remove();return css;
+ });
  assert(cartClose && cartClose.width>=44,'Cart close retains shared IconButton hit target');
  // Show busy state without posting to Woo: inspect the exact production spinner.
  const pendingSpinner=await page.locator('.sf-cart-row').first().evaluate(row=>{
@@ -333,6 +351,29 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),true,'Guest Account opens dialog');
  assert.equal(await page.locator('#sf-account').isVisible(),true,'WooCommerce login is the active section');
  assert.equal(await page.locator('#sf-account form.woocommerce-form-login').count(),1,'Native login form retained');
+ const accountVisual=await page.locator('#sf-account .sf-account-intro').evaluate(root=>{
+   const mark=root.querySelector('.sf-auth-mark'),glyph=mark.querySelector('.sf-icon'),title=root.querySelector('h1'),copy=root.querySelector('p');
+   const computed=el=>getComputedStyle(el);
+   return {markSize:mark.getBoundingClientRect().width,markRadius:computed(mark).borderRadius,
+     markBackground:computed(mark).backgroundColor,markGap:computed(mark).marginBottom,
+     glyphSize:glyph.getBoundingClientRect().width,
+     titleSize:computed(title).fontSize,titleWeight:computed(title).fontWeight,
+     titleTracking:computed(title).letterSpacing,titleLeading:computed(title).lineHeight,
+     copySize:computed(copy).fontSize,copyLeading:computed(copy).lineHeight,
+     copyColor:computed(copy).color,copyGap:computed(copy).marginTop};
+ });
+ for(const key of ['markSize','markRadius','markBackground','markGap','titleSize','titleWeight','titleTracking','titleLeading','copySize','copyLeading','copyColor','copyGap']){
+   assert.equal(accountVisual[key],emptyCartStyle[key], 'Guest Account and empty Cart share '+key);
+ }
+ assert.equal(accountVisual.glyphSize,parseFloat(emptyCartStyle.glyphSize),'Account glyph matches the Cart icon size');
+ const passwordGlyph=await page.locator('#sf-account').evaluate(root=>{
+   const row=root.querySelector('.form-row:has(input[name="password"])');
+   const userRow=root.querySelector('.form-row:has(input[name="username"])');
+   return {password:getComputedStyle(row,'::before').webkitMaskImage||getComputedStyle(row,'::before').maskImage,
+     username:getComputedStyle(userRow,'::before').webkitMaskImage||getComputedStyle(userRow,'::before').maskImage};
+ });
+ assert(passwordGlyph.password.includes('lock-keyhole.svg'),'Password has lock icon (not user icon)');
+ assert(passwordGlyph.username.includes('user-round.svg'),'Username has user icon');
  const compactAuth=await page.locator('#sf-account').evaluate(root=>{
   const input=root.querySelector('#test-login-username').getBoundingClientRect();
   const label=root.querySelector('label[for="test-login-username"]').getBoundingClientRect();

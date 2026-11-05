@@ -54,7 +54,8 @@ function add_action(...$args) {}
 function add_filter(...$args) {}
 function wc_get_template( $name ) {
     if ( $name !== 'myaccount/form-login.php' ) { throw new RuntimeException('Unexpected template'); }
-    echo '<div class="sf-account-intro"><h1>My account</h1><div class="sf-auth-tabs" hidden></div></div>';
+    // Render the real theme greeting so browser checks cover its icon and typography.
+    codela_sf_account_intro();
     echo '<div class="woocommerce"><form class="woocommerce-form woocommerce-form-login" method="post">'
         . '<p class="woocommerce-form-row form-row"><label for="test-login-username">Email address</label><input id="test-login-username" class="input-text" type="email" name="username"></p>'
         . '<p class="woocommerce-form-row form-row"><label for="test-login-password">Password</label><span class="password-input"><input id="test-login-password" class="input-text" type="password" name="password"></span></p>'
