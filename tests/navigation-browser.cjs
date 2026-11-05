@@ -283,6 +283,10 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
   assert(Math.abs(layout.row.x-layout.cta.x)<1,'Checkout is centered on list axis at '+width);
   assert(Math.abs(layout.row.width-layout.cta.width)<1,'Checkout and list share width at '+width);
   assert(Math.abs(layout.stepper.y+layout.stepper.height/2-layout.remove.y-layout.remove.height/2)<1,'Quantity and removal share baseline at '+width);
+  if(width<=700){
+    assert(layout.stepper.height>=29&&layout.stepper.height<=31,'Mobile quantity pill must visibly be 30px high, not 44px at '+width);
+    assert(layout.buttons.slice(0,2).every(button=>button.height>=44),'Plus/minus must keep 44px effective touch targets beyond the capsule at '+width);
+  }
   for(const button of layout.buttons)assert(button.width>=43.99&&button.height>=43.99,'Cart touch targets remain at least 44px');
   assert(layout.remove.x+layout.remove.width<=layout.detail.x+layout.detail.width+1,'Actions stay inside item');
  }

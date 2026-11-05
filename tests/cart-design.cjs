@@ -18,7 +18,8 @@ assert(css.includes('.sf-cart-count + .sf-cart-row{padding-top:0}'),'First row k
 assert(css.includes('-webkit-line-clamp:2'),'Two-row item title');
 assert(css.includes('aspect-ratio:1'),'Square photos');
 assert(css.includes('gap:12px;align-items:start;padding:12px 0'),'Compact mobile rows');
-assert(css.includes('width:44px;height:44px;font-size:16px'),'Quantity buttons retain 44px touch targets');
+assert(css.includes('height:30px;min-height:30px;overflow:visible'),'Visible quantity pill is actually 30px tall, not 44px');
+assert(css.includes('width:44px;height:44px;min-height:44px'),'Quantity buttons retain 44px touch targets despite smaller pill');
 assert(css.includes('min-width:14px;padding:0;font-size:13px'),'Quantity capsule is slimmer');
 assert(css.includes('.sf-stepper .sf-cart-quantity-current'),'Stepper text styles do not reach the spinner');
 assert(css.includes('.sf-cart-busy>.sf-ui-spinner') && css.includes('width:16px;height:16px;min-width:0;min-height:0'),'Spinner is explicitly square');
