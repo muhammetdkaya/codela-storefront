@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mobil misafir Hesabım ekranı sadeleştirildi: büyük kullanıcı ikonu kaldırıldı; 'Hoş geldiniz' ve kısa açıklama sola hizalandı, içerik aralığı dengelendi.",
-    "Orijinal WooCommerce giriş/kayıt alanlarında görünen yüzen etiketler yerine 50px yükseklikte sade Türkçe placeholder kullanılır. Parola görünürlüğü, hatırla, şifre sıfırla ve kayıt işlemleri aynen korunur.",
-    "Görsel olarak gizlenen etiketler erişilebilir kalır; JavaScript devre dışıyken doğal WooCommerce etiketli form görünmeye devam eder. Bağımsız Hesabım sayfası da aynı sadeliğe geçer; mevcut şeffaf header ve alt dock korunur."
+    "Mobil Arama ve misafir Hesabım odak çerçevesi aynı tasarıma bağlandı: tek 2px koyu vurgu ve 2px dış mesafe, iOS'taki çift çerçeve kaldırıldı.",
+    "Hesabım giriş ve kayıt alanlarının 50px boyutu, placeholder sadeliği, cam yüzeyi, şifre görünürlük ve WooCommerce işlevleri korundu.",
+    "Mobil Hesabım karşılama bölümündeki üst boşluk ve form öncesindeki mesafe hafifçe azaltıldı; header, dock ve diğer ekranlar değişmedi."
   ]
 }
