@@ -45,6 +45,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
   return route.fulfill({contentType:'text/html',body:`<!doctype html><html lang="en"><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>.screen-reader-text{position:absolute!important;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}${css}</style></head><body>${activeHeader}<main style="height:3200px;padding:30px">Store content</main>${footer}</body></html>`});
  });
  await page.goto('https://store.test/');
+ await page.addScriptTag({content:fs.readFileSync('theme/codela-storefront/assets/scripts/auth.js','utf8')});
  const surfaces=await page.locator('.sf-header').evaluate(header=>{
    const brand=header.querySelector('.sf-brand');
    const menu=header.querySelector('.sf-header-menu .sf-ui-icon-button');
@@ -369,35 +370,45 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  assert.equal(await page.locator('#sf-account').isVisible(),true,'WooCommerce login is the active section');
  assert.equal(await page.locator('#sf-account form.woocommerce-form-login').count(),1,'Native login form retained');
  const accountVisual=await page.locator('#sf-account .sf-account-intro').evaluate(root=>{
-   const mark=root.querySelector('.sf-auth-mark'),glyph=mark.querySelector('.sf-icon'),title=root.querySelector('h1'),copy=root.querySelector('p');
-   const computed=el=>getComputedStyle(el);
-   return {markSize:mark.getBoundingClientRect().width,markRadius:computed(mark).borderRadius,
-     markBackground:computed(mark).backgroundColor,markGap:computed(mark).marginBottom,
-     glyphSize:glyph.getBoundingClientRect().width,
-     titleSize:computed(title).fontSize,titleWeight:computed(title).fontWeight,
-     titleTracking:computed(title).letterSpacing,titleLeading:computed(title).lineHeight,
-     copySize:computed(copy).fontSize,copyLeading:computed(copy).lineHeight,
-     copyColor:computed(copy).color,copyGap:computed(copy).marginTop};
+  const box=root.getBoundingClientRect(),title=root.querySelector('h1'),copy=root.querySelector('p');
+  const t=getComputedStyle(title);
+  return {iconCount:root.querySelectorAll('.sf-auth-mark').length,
+    align:getComputedStyle(root).alignItems,headingSize:parseFloat(t.fontSize),
+    headingWeight:t.fontWeight,titleLeft:title.getBoundingClientRect().left,
+    heroLeft:box.left,copySize:getComputedStyle(copy).fontSize};
  });
- for(const key of ['markSize','markRadius','markBackground','markGap','titleSize','titleWeight','titleTracking','titleLeading','copySize','copyLeading','copyColor','copyGap']){
-   assert.equal(accountVisual[key],emptyCartStyle[key], 'Guest Account and empty Cart share '+key);
- }
- assert.equal(accountVisual.glyphSize,parseFloat(emptyCartStyle.glyphSize),'Account glyph matches the Cart icon size');
- const passwordGlyph=await page.locator('#sf-account').evaluate(root=>{
-   const row=root.querySelector('.form-row:has(input[name="password"])');
-   const userRow=root.querySelector('.form-row:has(input[name="username"])');
-   return {password:getComputedStyle(row,'::before').webkitMaskImage||getComputedStyle(row,'::before').maskImage,
-     username:getComputedStyle(userRow,'::before').webkitMaskImage||getComputedStyle(userRow,'::before').maskImage};
+ assert.equal(accountVisual.iconCount,0,'No extra user mark above native login');
+ assert.equal(accountVisual.align,'flex-start','Welcome content is left aligned');
+ assert(accountVisual.titleLeft-accountVisual.heroLeft<2,'Welcome heading aligns with form');
+ assert(accountVisual.headingSize>=24&&accountVisual.headingSize<=29,'Welcome typography is restrained');
+ assert.equal(accountVisual.headingWeight,'600');
+ assert.equal(accountVisual.copySize,'13px');
+ const placeholderMode=await page.locator('#sf-account').evaluate(root=>{
+  const username=root.querySelector('#test-login-username'),password=root.querySelector('#test-login-password');
+  const label=root.querySelector('label[for="test-login-username"]');
+  const row=username.closest('.form-row');
+  return {username:username.placeholder,password:password.placeholder,
+    ready:row.classList.contains('sf-auth-placeholder-ready'),
+    labelWidth:label.getBoundingClientRect().width,
+    height:username.getBoundingClientRect().height,
+    paddingTop:getComputedStyle(username).paddingTop,
+    placeholderOpacity:getComputedStyle(username,'::placeholder').opacity,
+    pseudoContent:getComputedStyle(row,'::before').content};
  });
- assert(passwordGlyph.password.includes('lock-keyhole.svg'),'Password has lock icon (not user icon)');
- assert(passwordGlyph.username.includes('user-round.svg'),'Username has user icon');
+ assert.equal(placeholderMode.username,'Email or username');
+ assert.equal(placeholderMode.password,'Password');
+ assert(placeholderMode.ready&&placeholderMode.labelWidth<=1,'Native label stays accessible and visually hidden');
+ assert.equal(placeholderMode.pseudoContent,'none','No redundant leading user icon');
+ assert.equal(placeholderMode.placeholderOpacity,'1','Native placeholder is visible');
+ assert(placeholderMode.height>=49&&placeholderMode.height<=51,'Input keeps 50px geometry');
+ assert(parseFloat(placeholderMode.paddingTop)<18,'No floating-label inset remains');
  const compactAuth=await page.locator('#sf-account').evaluate(root=>{
   const input=root.querySelector('#test-login-username').getBoundingClientRect();
   const label=root.querySelector('label[for="test-login-username"]').getBoundingClientRect();
   const remember=root.querySelector('.woocommerce-form-login__rememberme').getBoundingClientRect();
   const forgot=root.querySelector('.lost_password').getBoundingClientRect();
   const submit=root.querySelector('button[type=submit]');
-  return {inlineLabel:label.top>=input.top && label.bottom<input.bottom-12,
+  return {hiddenLabel:label.width<=1 && label.height<=1,
    sameLine:Math.abs(remember.top+remember.height/2-forgot.top-forgot.height/2)<10,
    submitBg:getComputedStyle(submit).backgroundColor,
    fieldHeight:input.height,
@@ -412,7 +423,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
    formTop:root.querySelector('form.woocommerce-form-login').getBoundingClientRect().top,
    subtitle:root.textContent.includes('Manage your orders and account details.')};
  });
- assert(compactAuth.inlineLabel,'Modal native field label stays inside input');
+ assert(compactAuth.hiddenLabel,'Native field label is visually hidden after enhancement');
  assert(compactAuth.sameLine,'Modal remember and password recovery share a row');
  assert.equal(compactAuth.submitBg,'color(srgb 0.145098 0.152941 0.164706 / 0.9)','Native modal submit uses shared primary Button');
  assert(compactAuth.fieldHeight>=49&&compactAuth.fieldHeight<=51,'Mobile login fields use the compact 50px glass height');
