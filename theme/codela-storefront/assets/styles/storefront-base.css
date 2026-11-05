@@ -361,8 +361,9 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
   outline:none!important;
 }
 #sf-search .sf-search-form:focus-within{outline:none}
+/* The single search ring is the source of truth for the native Account fields. */
 #sf-search .sf-search-form.sf-ui-surface:focus-within{
-  outline:2px solid var(--sf-ui-accent);
+  outline:2px solid var(--sf-ui-glass-ink);
   outline-offset:2px;
 }
 #sf-panel .sf-initial-focus:focus-visible {
