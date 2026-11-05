@@ -200,7 +200,7 @@
   background:transparent!important;box-shadow:none!important;padding:4px;
   color:var(--sf-ui-ink);font-size:13px;font-weight:600;
 }
-#sf-panel.is-account-panel .sf-auth-tabs--footer .sf-auth-tab[aria-selected='true']{display:none}
+#sf-panel.is-account-panel .sf-auth-tabs--footer .sf-auth-tab[hidden]{display:none!important}
 #sf-panel.is-account-panel .woocommerce .sf-auth-social{margin-top:20px}
 @media(max-width:700px){
   #sf-panel.is-account-panel .sf-account-body{padding-inline:24px;padding-top:clamp(18px,4dvh,34px)}
