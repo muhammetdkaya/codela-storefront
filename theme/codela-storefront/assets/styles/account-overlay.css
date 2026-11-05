@@ -123,23 +123,30 @@
 #sf-panel.is-account-panel .sf-overlay-auth{max-width:420px}
 #sf-panel.is-account-panel .sf-account-intro,
 #sf-panel.is-account-panel .sf-account-intro:has(.sf-auth-tabs[hidden]){
-  display:flex;flex-direction:column;align-items:center;margin:0 auto 26px;text-align:center;
+  display:flex;flex-direction:column;align-items:center;margin:0 auto 20px;text-align:center;
 }
 #sf-panel.is-account-panel .sf-account-intro .sf-auth-mark{
-  display:grid;place-items:center;width:62px;height:62px;margin:0 0 14px;
-  border-radius:21px;color:var(--sf-ui-ink);
-  --sf-ui-surface-shadow:var(--sf-ui-glass-thumb-shadow);
+  display:grid;place-items:center;
+  width:var(--sf-state-mark-size);height:var(--sf-state-mark-size);
+  flex:none;margin:0 0 var(--sf-state-mark-gap);
+  border:0;border-radius:var(--sf-ui-pill);
+  background:var(--sf-ui-surface-muted);box-shadow:none;
+  color:var(--sf-ui-ink);
 }
 #sf-panel.is-account-panel .sf-account-intro .sf-auth-mark .sf-icon{
-  display:block;width:29px;height:29px;object-fit:contain;
+  display:block;width:var(--sf-state-glyph-size);height:var(--sf-state-glyph-size);
+  object-fit:contain;
 }
 #sf-panel.is-account-panel .sf-account-intro h1{
-  display:block;margin:0;color:var(--sf-ui-ink);font-size:clamp(25px,7vw,29px);
-  font-weight:600;line-height:1.2;letter-spacing:-.035em;
+  display:block;margin:0;color:var(--sf-ui-ink);
+  font:inherit;font-size:var(--sf-state-heading-size);
+  font-weight:var(--sf-state-heading-weight);line-height:var(--sf-state-heading-leading);
+  letter-spacing:var(--sf-state-heading-tracking);
 }
 #sf-panel.is-account-panel .sf-account-intro p{
-  margin:8px 0 0;color:var(--sf-muted,#77776d);
-  font-size:13px;line-height:1.5;font-weight:400;
+  max-width:min(330px,100%);margin:var(--sf-state-copy-gap) 0 0;
+  color:var(--sf-muted,#73746d);
+  font-size:var(--sf-state-copy-size);line-height:var(--sf-state-copy-leading);font-weight:400;
 }
 #sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text){
   position:relative;
@@ -154,7 +161,9 @@
   -webkit-mask:url('../icons/user-round.svg') center/contain no-repeat;
   mask:url('../icons/user-round.svg') center/contain no-repeat;
 }
-#sf-panel.is-account-panel .woocommerce form .form-row:has(input[type=password])::before{
+/* Match the native password field even after the show/hide toggle changes type.
+   Extra [name] specificity overrides the generic user glyph above. */
+#sf-panel.is-account-panel .woocommerce form .form-row:has(>label[for]):has(input.input-text[name="password"])::before{
   -webkit-mask:url('../icons/lock-keyhole.svg') center/contain no-repeat;
   mask:url('../icons/lock-keyhole.svg') center/contain no-repeat;
 }
@@ -209,8 +218,6 @@
   #sf-panel.is-account-panel .sf-account-body{padding-top:12px}
   #sf-panel.is-account-panel .sf-account-intro,
   #sf-panel.is-account-panel .sf-account-intro:has(.sf-auth-tabs[hidden]){margin-bottom:16px}
-  #sf-panel.is-account-panel .sf-account-intro .sf-auth-mark{
-    width:48px;height:48px;margin-bottom:8px;border-radius:16px;
-  }
-  #sf-panel.is-account-panel .sf-account-intro h1{font-size:24px}
+  /* Keep the common Cart/Account mark and heading sizes even on short phones. */
+  #sf-panel.is-account-panel .sf-account-intro .sf-auth-mark{margin-bottom:var(--sf-state-mark-gap)}
 }

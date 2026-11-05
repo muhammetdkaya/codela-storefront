@@ -691,13 +691,13 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
     min-height:min(39dvh,275px);padding:16px 12px;transform:translateY(-19px);
   }
   #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-empty-mark{
-    width:52px;height:52px;margin-bottom:12px;background-size:23px 23px;
+    width:var(--sf-state-mark-size);height:var(--sf-state-mark-size);margin-bottom:var(--sf-state-mark-gap);background-size:var(--sf-state-glyph-size) var(--sf-state-glyph-size);
   }
   #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-empty h3{
-    font-size:19px;font-weight:500;letter-spacing:-.02em;line-height:1.3;
+    font-size:var(--sf-state-heading-size);font-weight:var(--sf-state-heading-weight);letter-spacing:var(--sf-state-heading-tracking);line-height:var(--sf-state-heading-leading);
   }
   #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-empty p{
-    max-width:min(330px,100%);margin-top:7px;font-size:13px;line-height:1.5;
+    max-width:min(330px,100%);margin-top:var(--sf-state-copy-gap);font-size:var(--sf-state-copy-size);line-height:var(--sf-state-copy-leading);
   }
 }
 @media(max-width:360px){
@@ -719,6 +719,20 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
 #sf-panel.is-cart-panel .sf-cart-bottom .sf-ui-button{display:flex}
 #sf-panel.is-cart-panel .sf-status{padding-inline:var(--sf-overlay-gutter)}
 #sf-panel.is-cart-panel #sf-cart-items{max-width:780px;margin-inline:auto}
+/* Shared empty-state design measurements for Cart and guest Account:
+   one token set prevents divergent icon, heading and supporting-copy sizes. */
+#sf-panel{
+  --sf-state-mark-size:52px;
+  --sf-state-glyph-size:23px;
+  --sf-state-mark-gap:12px;
+  --sf-state-heading-size:19px;
+  --sf-state-heading-weight:500;
+  --sf-state-heading-tracking:-.02em;
+  --sf-state-heading-leading:1.3;
+  --sf-state-copy-size:13px;
+  --sf-state-copy-leading:1.5;
+  --sf-state-copy-gap:7px;
+}
 /* Empty cart is a composed state, not a second cart or button component. */
 #sf-panel.is-cart-panel .sf-cart-empty{min-height:min(50vh,360px);display:flex;flex-direction:column;align-items:center;justify-content:center;box-sizing:border-box;padding:32px 20px;text-align:center}
 #sf-panel.is-cart-panel .sf-cart-empty-mark{display:block;width:64px;height:64px;flex:none;margin-bottom:20px;border-radius:var(--sf-ui-pill);background:var(--sf-ui-surface-muted) url('../icons/shopping-bag.svg') center/27px 27px no-repeat}

@@ -6,9 +6,9 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mobil misafir Hesabım ekranı uygulama giriş görünümüne kavuştu: yalnız sağ X, Hoş geldiniz karşılaması ve kısa açıklama.",
-    "Gerçek WooCommerce giriş alanları 54px cam yüzeye, mevcut Codela ikon diline, odaklandığında belirgin sınıra ve kompakt parola kontrolüne uyarlandı.",
-    "Yalnız WooCommerce kayıt açıksa giriş/kayıt seçimi form altına taşındı. Giriş, nonce, kayıt, şifre yenileme ve etkin Google girişi korunur.",
-    "Alt menü ve oturum açmış kullanıcı panosu değiştirilmedi."
+    "Misafir Hesabım karşılama ikonu, boyutu (52px), yuvarlak arka planı, simge boyutu (23px), tipografisi ve açıklama aralıkları boş Sepet ekranının ortak tasarım ölçülerine bağlandı.",
+    "Hoş geldiniz başlığı 19px/500 ağırlığa indirildi; kısa ekranlarda da sepetle aynı ölçü korunur. Türkçe çeviride tekrarlanan anahtar kaldırılarak Tekrar hoş geldiniz yerine Hoş geldiniz gösterilir.",
+    "Parola satırındaki yanlış kullanıcı ikonu, şifre görünürken de geçerli olan özgül kilit ikonu seçicisiyle düzeltildi.",
+    "WooCommerce gerçek giriş/kayıt formları, şifre yenileme, Google giriş, alt menü, sepet ve kullanıcı panosu korunur. Tarayıcı testi iki ekranın ölçülerini ve parola ikonunu karşılaştırır."
   ]
 }

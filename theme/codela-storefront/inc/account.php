@@ -16,7 +16,7 @@ function codela_sf_account_intro(): void {
     }
     ?>
     <header class="sf-account-intro">
-        <span class="sf-auth-mark sf-ui-surface" aria-hidden="true"><?php echo codela_sf_icon( 'user-round' ); ?></span>
+        <span class="sf-auth-mark" aria-hidden="true"><?php echo codela_sf_icon( 'user-round' ); ?></span>
         <h1><?php esc_html_e( 'Welcome back', 'codela-storefront' ); ?></h1>
         <p><?php esc_html_e( 'Sign in to your account.', 'codela-storefront' ); ?></p>
         <!-- Registration switch appears only if WooCommerce renders both native forms. -->
