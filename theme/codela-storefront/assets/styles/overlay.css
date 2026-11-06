@@ -488,8 +488,12 @@
     display:flex;align-items:center;justify-content:center;
     min-height:var(--sf-ui-hit);height:var(--sf-ui-hit);
     padding:0 16px;border-radius:var(--sf-ui-pill);
-    font-size:16px;font-weight:500;letter-spacing:-.02em;
+    gap:8px;font-size:16px;font-weight:500;letter-spacing:-.02em;
     color:var(--sf-ui-glass-ink);white-space:nowrap;
+  }
+  #sf-panel .sf-panel-app-title .sf-icon{
+    width:18px;height:18px;flex:none;
+    filter:brightness(0);object-fit:contain;
   }
   #sf-panel:is(.is-account-panel,.is-cart-panel:not(.is-product-cart)) .sf-panel-top .sf-close,
   #sf-panel.is-search-panel .sf-search-cancel{display:none!important}

@@ -2,7 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 require_once __DIR__ . '/ui.php';
 function codela_sf_icon( string $name ): string {
-    if ( ! in_array( $name, [ 'download', 'sliders-horizontal', 'search', 'shopping-bag', 'menu', 'x', 'arrow-left', 'arrow-right', 'plus', 'minus', 'house', 'user-round', 'map-pin', 'log-out' ], true ) ) { return ''; }
+    if ( ! in_array( $name, [ 'download', 'sliders-horizontal', 'search', 'shopping-bag', 'shopping-cart-plus', 'menu', 'x', 'arrow-left', 'arrow-right', 'plus', 'minus', 'house', 'user-round', 'map-pin', 'log-out' ], true ) ) { return ''; }
     static $versions = [];
     $versions[ $name ] ??= hash_file( 'crc32b', __DIR__ . '/../assets/icons/' . $name . '.svg' );
     return '<img class="sf-icon" width="24" height="24" alt="" src="' . esc_url( get_template_directory_uri() . '/assets/icons/' . $name . '.svg?ver=' . $versions[ $name ] ) . '">';
@@ -160,7 +160,7 @@ function codela_sf_header(): string {
         </nav>
         <?php endif; ?>
         <dialog class="sf-panel" id="sf-panel" aria-labelledby="sf-panel-title">
-            <div class="sf-panel-top"><h2 id="sf-panel-title" tabindex="-1"></h2><span class="sf-panel-app-title sf-panel-app-title--account sf-ui-surface" aria-hidden="true"><?php esc_html_e( 'My account', 'codela-storefront' ); ?></span><span class="sf-panel-app-title sf-panel-app-title--cart sf-ui-surface" aria-hidden="true"><?php esc_html_e( 'Cart', 'codela-storefront' ); ?></span><?php echo codela_sf_ui_icon_button( 'x', __( 'Close', 'codela-storefront' ), [ 'variant' => 'soft', 'class' => 'sf-close', 'attributes' => [ 'data-wp-on--click' => 'actions.close' ] ] ); ?></div>
+            <div class="sf-panel-top"><h2 id="sf-panel-title" tabindex="-1"></h2><span class="sf-panel-app-title sf-panel-app-title--account sf-ui-surface" aria-hidden="true"><?php echo codela_sf_icon( 'user-round' ); ?><?php esc_html_e( 'My account', 'codela-storefront' ); ?></span><span class="sf-panel-app-title sf-panel-app-title--cart sf-ui-surface" aria-hidden="true"><?php echo codela_sf_icon( 'shopping-bag' ); ?><?php esc_html_e( 'Cart', 'codela-storefront' ); ?></span><?php echo codela_sf_ui_icon_button( 'x', __( 'Close', 'codela-storefront' ), [ 'variant' => 'soft', 'class' => 'sf-close', 'attributes' => [ 'data-wp-on--click' => 'actions.close' ] ] ); ?></div>
             <section class="sf-panel-body" id="sf-menu" hidden><?php if ( ! $show_mobile_dock || $product_page ) : ?><nav class="sf-menu-tools<?php echo $product_page && $show_mobile_dock ? ' sf-menu-tools--product-mobile' : ''; ?>" aria-label="<?php esc_attr_e( 'Store tools', 'codela-storefront' ); ?>">
                 <?php echo codela_sf_ui_icon_button( 'search', __( 'Search', 'codela-storefront' ), [ 'variant' => 'soft', 'href' => add_query_arg( [ 's' => '', 'post_type' => 'product' ], home_url( '/' ) ), 'attributes' => [ 'data-wp-on--click' => 'actions.search', 'data-panel' => 'search', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] ] ); ?>
                 <?php echo codela_sf_ui_icon_button( 'user-round', __( 'My account', 'codela-storefront' ), [ 'variant' => 'soft', 'href' => wc_get_page_permalink( 'myaccount' ), 'attributes' => $guest_account ? [ 'data-wp-on--click' => 'actions.account', 'data-panel' => 'account', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] : [] ] ); ?>

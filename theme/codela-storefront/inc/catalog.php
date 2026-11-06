@@ -134,7 +134,7 @@ function codela_sf_catalog_footer_close(): void { echo '</div>'; }
 function codela_sf_catalog_action_icon( $item ): string {
     if ( ! $item instanceof WC_Product || ! $item->is_in_stock() ) { return ''; }
     if ( $item->is_type( 'variable' ) ) { return 'arrow-right'; }
-    return $item->is_type( 'simple' ) && $item->is_purchasable() ? 'shopping-bag' : '';
+    return $item->is_type( 'simple' ) && $item->is_purchasable() ? 'shopping-cart-plus' : '';
 }
 /** Add only shared Button classes; Woo retains URL, AJAX classes and all data/ARIA. */
 function codela_sf_catalog_button_args( array $args, $item ): array {

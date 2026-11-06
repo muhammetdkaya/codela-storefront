@@ -93,7 +93,7 @@ ob_start();$product=new WC_Product(1,true,'simple',false);codela_sf_catalog_stoc
 check( str_contains($stock,'sf-product-stock') && str_contains($stock,'Out of stock'), 'Out-of-stock badge retained' );
 $native='<a class="button ajax_add_to_cart" href="/?add-to-cart=42" data-product_id="42" aria-label="Add product">Add</a><span>Extension</span>';
 $adapted_html=codela_sf_catalog_button_visibility($native,new WC_Product(42));
-check(str_contains($adapted_html,codela_sf_ui_icon_button_content('shopping-bag')) && str_contains($adapted_html,'<span class="screen-reader-text">Add</span>') && str_contains($adapted_html,'data-product_id="42" aria-label="Add product"') && str_ends_with($adapted_html,'<span>Extension</span>'),'Native anchor attributes, accessible name and extensions preserved');
+check(str_contains($adapted_html,codela_sf_ui_icon_button_content('shopping-cart-plus')) && str_contains($adapted_html,'<span class="screen-reader-text">Add</span>') && str_contains($adapted_html,'data-product_id="42" aria-label="Add product"') && str_ends_with($adapted_html,'<span>Extension</span>'),'Native anchor attributes, accessible name and extensions preserved');
 check(str_contains(codela_sf_catalog_button_args($args,new WC_Product(42,true,'external'))['class'],'sf-ui-button--secondary'),'External action stays a text Button');
 $account=true;$signed_in=true;$before=count($actions);codela_sf_catalog_layout();
 check(count($actions)===$before && codela_sf_catalog_button_args($args,new WC_Product(42))===$args && codela_sf_catalog_button_text('Native',new WC_Product(1))==='Native' && codela_sf_catalog_button_visibility('Original',new WC_Product(1,true,'simple',false))==='Original', 'Plugin-owned signed-in account remains untouched' );
