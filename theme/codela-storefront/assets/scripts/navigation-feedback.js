@@ -201,6 +201,7 @@
         };
         document.addEventListener('submit', blockOldSubmit, true);
         state.releaseSubmit = () => document.removeEventListener('submit', blockOldSubmit, true);
+        if (type === 'account' && document.body.matches('.logged-in')) previewAccountHeader(target);
         previewDestinationHeader(type, target, link);
         if (type === 'product') {
             // The destination uses the same single soft cart control as the
