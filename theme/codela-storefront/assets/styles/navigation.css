@@ -257,6 +257,27 @@ body.admin-bar{--sf-header-offset:32px}
 }
 
 
+/* A separate Home shortcut belongs only to the mobile product header.
+   Keep the existing back capsule and the Cart/Menu islands untouched.
+   It navigates directly home; the back link retains its history behavior. */
+.sf-shell .sf-header .sf-product-home{display:none}
+@media(max-width:700px){
+  .sf-shell.has-product-header .sf-header .sf-product-home{
+    display:inline-flex;
+    position:absolute;
+    left:calc(20px + var(--sf-ui-hit) + 10px);
+    top:12px;
+    width:var(--sf-ui-hit);
+    height:var(--sf-ui-hit);
+    z-index:1;
+    --sf-ui-icon:20px;
+    --sf-ui-glass-surface:rgba(255,255,255,.91);
+  }
+  .sf-shell.has-product-header .sf-header .sf-product-home .sf-icon{
+    width:20px;height:20px;
+  }
+}
+
 /* Single menu control morphs in place while reparented to modal top layer. */
 .sf-shell .sf-menu-trigger.is-in-panel{position:fixed;left:var(--sf-menu-control-x);top:var(--sf-menu-control-y);z-index:30}
 .sf-shell .sf-menu-trigger .sf-menu-mark{display:block;position:relative;width:20px;height:20px;flex:none}
