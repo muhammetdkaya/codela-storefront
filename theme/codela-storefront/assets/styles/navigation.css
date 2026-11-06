@@ -250,7 +250,8 @@ body.admin-bar{--sf-header-offset:32px}
   /* The whole header stays transparent; only its existing floating controls
      get a slightly stronger local glass tint over product imagery on scroll. */
   .sf-shell .sf-header .sf-brand.sf-ui-surface,
-  .sf-shell .sf-header .sf-header-menu .sf-ui-icon-button--soft{
+  .sf-shell .sf-header .sf-actions.sf-ui-surface,
+  .sf-shell .sf-header :is(.sf-header-menu,.sf-actions) .sf-ui-icon-button--soft{
     --sf-ui-glass-surface:rgba(255,255,255,.91);
   }
   .sf-shell .sf-header .sf-header-menu{
