@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mobil alt gezinmedeki Ana Sayfa simgesi daha hafif, modern çizgili Lucide ev ikonuna dönüştürüldü.",
-    "Ürün kartlarında gerçek 'Sepete ekle' işlemi, Sepet sekmesinin çantası yerine artı işaretli alışveriş arabasıyla gösteriliyor. Değişken ürünlerin seçenek oku ve WooCommerce'in gerçek eylem/erişilebilirlik verileri korunuyor.",
-    "Mobil Sepet ve Hesabım header kapsüllerine 18px boyutlu ilgili simge yazının soluna eklendi; şeffaf header ve ortak menü ikonu korunuyor."
+    "Ürün kutularında basit ürünlerin sepete ekleme simgesi 24px'ten 18px'e, görünen cam yuvarlağı 44px'ten 36px'e indirildi; 44px dokunma alanı, AJAX bağlantısı, erişilebilir etiket ve değişken ürünlerin seçenek ikonu korundu.",
+    "iPhone Safari'de hareketli cam alt menünün dışına taşabilen dikdörtgen blur/arka plan katmanı oval bir kesimle sınırlandırıldı; kayan aktif sekme ve dokunma alanları korunuyor.",
+    "Şeffaf mobil header değişmedi; yalnızca logo/menü ve varsa header araçları üzerindeki cam kapsüller ürün görselleri kaydırıldığında daha okunur olacak şekilde aynı hafif opaklıkta tutarlılaştırıldı."
   ]
 }
