@@ -69,18 +69,21 @@ const headers={home:render({}),shop:render({FIXTURE_CATALOG:'shop'}),category:re
   // shelf scroll to the original document without storing a stale result HTML.
   await page.goto(origin+'/');
   await page.evaluate(()=>{
-    const panel=document.createElement('section');
-    panel.id='sf-panel';
-    panel.className='is-search-panel';
+    // Use the one real PHP-rendered dialog/search input, never duplicate IDs.
+    const panel=document.querySelector('#sf-panel');
+    panel.classList.add('is-search-panel');
     panel.setAttribute('open','');
     panel.style.setProperty('position','static','important');
     panel.style.setProperty('display','block','important');
-    panel.innerHTML='<section id="sf-search"><input id="sf-query" value="Seramik vazo">' +
-      '<div class="sf-search-content" style="height:110px;overflow-y:auto">' +
-      '<a id="search-product" href="/product/item/">Open searched product</a>' +
-      '<div style="height:700px"></div></div></section>';
-    document.querySelector('main').append(panel);
-    panel.querySelector('.sf-search-content').scrollTop=35;
+    const search=panel.querySelector('#sf-search');
+    search.hidden=false;
+    panel.querySelector('#sf-query').value='Seramik vazo';
+    const content=search.querySelector('.sf-search-content');
+    content.style.cssText='height:110px;overflow-y:auto;display:block';
+    const results=search.querySelector('#sf-results');
+    results.innerHTML='<a id="search-product" href="/product/item/">Open searched product</a>' +
+      '<div style="height:700px"></div>';
+    content.scrollTop=35;
   });
   await page.locator('#search-product').click();
   assert(await back().isVisible(),'Search -> product retains meaningful Back');
