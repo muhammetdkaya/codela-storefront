@@ -239,6 +239,7 @@
     window.addEventListener('pageshow', () => end());
     window.codelaSFFeedback = Object.freeze({ begin, end, active, accountDepth });
 })();
+;
 
 /* Source: scripts/document-continuity.js */
 /** Observe native navigation; feedback belongs to navigation-feedback.js. */
@@ -440,3 +441,4 @@
     window.addEventListener('pageshow', restoreListScroll);
     window.addEventListener('codela:route-committed', updateBackLink);
 })();
+;
