@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mobil Arama ve misafir Hesabım odak çerçevesi aynı tasarıma bağlandı: tek 2px koyu vurgu ve 2px dış mesafe, iOS'taki çift çerçeve kaldırıldı.",
-    "Hesabım giriş ve kayıt alanlarının 50px boyutu, placeholder sadeliği, cam yüzeyi, şifre görünürlük ve WooCommerce işlevleri korundu.",
-    "Mobil Hesabım karşılama bölümündeki üst boşluk ve form öncesindeki mesafe hafifçe azaltıldı; header, dock ve diğer ekranlar değişmedi."
+    "Mobil alt gezinmedeki Ana Sayfa simgesi daha hafif, modern çizgili Lucide ev ikonuna dönüştürüldü.",
+    "Ürün kartlarında gerçek 'Sepete ekle' işlemi, Sepet sekmesinin çantası yerine artı işaretli alışveriş arabasıyla gösteriliyor. Değişken ürünlerin seçenek oku ve WooCommerce'in gerçek eylem/erişilebilirlik verileri korunuyor.",
+    "Mobil Sepet ve Hesabım header kapsüllerine 18px boyutlu ilgili simge yazının soluna eklendi; şeffaf header ve ortak menü ikonu korunuyor."
   ]
 }
