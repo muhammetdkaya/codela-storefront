@@ -73,7 +73,7 @@ function init() {
         const canonical = value => {
             const url = new URL(value, location.href);
             url.hash = '';
-            if (url.pathname !== '/') url.pathname = url.pathname.replace(/\\/+$/, '');
+            if (url.pathname !== '/') url.pathname = url.pathname.replace(/\/+$/, '');
             return url.origin + url.pathname + url.search;
         };
         if (canonical(saved.url) !== canonical(location.href)) return;
