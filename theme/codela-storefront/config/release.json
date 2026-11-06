@@ -6,8 +6,9 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Mobil ürün sayfasındaki geri butonunda kalın ok yerine Lucide chevron-left kullanıldı; mevcut geçmişe dönme davranışı korundu.",
-    "Ürün sayfasında geri butonunun yanında aynı cam yüzeyli, 44px dokunma alanlı Ana Sayfa ikonu eklendi; ana sayfaya doğrudan gider.",
-    "Kısayol yalnız mobil ürün sayfasında görünür; ürün sayfasının alt satın alma paneli, sepet/menü konumu ve diğer sayfalardaki header değişmedi."
+    "Gezinme kökleri ve detay ekranları ayrıldı: Ana Sayfa, Mağaza, ana kategoriler ve menüden açılan sayfalarda gereksiz Geri gösterilmez; içerik/kategori/ürün detayına gerçek site içi geçişte Geri görünür.",
+    "Mobil ürün sayfasında Ana Sayfa’dan gelindiğinde yalnız Geri, kategori/arama/ilgili üründen gelindiğinde Geri ve Ana Sayfa, doğrudan bağlantıyla açıldığında yalnız Ana Sayfa görünür. Ürün sayfasının geri düşüşü artık sahte Mağaza bağlantısı değildir.",
+    "Arama içinden ürüne gidilip Geri ile dönüldüğünde aynı arama paneli sorgusuyla yeniden açılır, gerçek ürünler güncel API’den getirilir ve panel kaydırması geri yüklenir. Filtreli katalogların URL ve sayfa kaydırması da saklanır.",
+    "Alt kategori üst kategoriye, Hesabım alt ekranları gerçek WooCommerce ebeveynlerine ve Ödeme ekranı Sepet’e geri dönebilir. Contextual oklar ortak chevron-left simgesini kullanır; dört sekmeli alt menüye hiç dokunulmadı."
   ]
 }
