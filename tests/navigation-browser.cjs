@@ -73,6 +73,18 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
 
  // Fixed header leaves text clearance, while the home hero begins at the top.
  assert.equal(await page.locator('.sf-header').evaluate(el=>getComputedStyle(el).position),'fixed');
+ // Product-only home shortcut and modern back icon use independent islands.
+ const source=fs.readFileSync('theme/codela-storefront/inc/render.php','utf8');
+ assert(source.includes("codela_sf_icon( $product_page ? 'chevron-left' : 'arrow-left' )"),
+   'Product Back uses the modern chevron without changing back history behavior');
+ assert(source.includes("'class' => 'sf-product-home'") && source.includes("'data-sf-route' => 'home'"),
+   'Product Home is a direct, router-aware home link, not another back action');
+ const homeStyle=fs.readFileSync('theme/codela-storefront/assets/styles/navigation.css','utf8');
+ assert(homeStyle.includes('.sf-shell .sf-header .sf-product-home{display:none}'),
+   'Product Home is not added to the desktop toolbar');
+ assert(homeStyle.includes('.sf-shell.has-product-header .sf-header .sf-product-home'),
+   'Only mobile product pages show the extra Home island');
+
  assert.equal(surfaces.menuBg,'rgba(255, 255, 255, 0.91)','Floating header controls now stay legible over scrolling product images');
  const materials=await page.locator('.sf-brand,.sf-header-menu .sf-ui-icon-button,.sf-header .sf-actions,.sf-dock-surface').evaluateAll(nodes=>nodes.map(el=>({name:el.className,bg:getComputedStyle(el).backgroundColor,image:getComputedStyle(el).backgroundImage,blur:getComputedStyle(el).backdropFilter,shadow:getComputedStyle(el).boxShadow})));
  for(const material of materials){

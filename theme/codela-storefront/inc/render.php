@@ -2,7 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 require_once __DIR__ . '/ui.php';
 function codela_sf_icon( string $name ): string {
-    if ( ! in_array( $name, [ 'download', 'sliders-horizontal', 'search', 'shopping-bag', 'shopping-cart-plus', 'menu', 'x', 'arrow-left', 'arrow-right', 'plus', 'minus', 'house', 'user-round', 'map-pin', 'log-out' ], true ) ) { return ''; }
+    if ( ! in_array( $name, [ 'download', 'sliders-horizontal', 'search', 'shopping-bag', 'shopping-cart-plus', 'menu', 'x', 'arrow-left', 'chevron-left', 'arrow-right', 'plus', 'minus', 'house', 'user-round', 'map-pin', 'log-out' ], true ) ) { return ''; }
     static $versions = [];
     $versions[ $name ] ??= hash_file( 'crc32b', __DIR__ . '/../assets/icons/' . $name . '.svg' );
     return '<img class="sf-icon" width="24" height="24" alt="" src="' . esc_url( get_template_directory_uri() . '/assets/icons/' . $name . '.svg?ver=' . $versions[ $name ] ) . '">';
@@ -121,13 +121,16 @@ function codela_sf_header(): string {
             <div class="sf-brand sf-ui-surface<?php echo $context ? ' sf-context-brand' : ''; ?>" data-wp-router-region="codela/storefront/brand">
                 <?php if ( $context ) : ?>
                     <?php if ( $context['history'] ) : ?>
-                    <a class="sf-ui-pressable" data-sf-context-back <?php echo ! empty( $context['root'] ) ? 'data-sf-context-root' : ''; ?> data-sf-page-title="<?php echo esc_attr( get_the_title( get_queried_object_id() ) ); ?>" href="<?php echo esc_url( $context['back'] ?: home_url( '/' ) ); ?>" aria-label="<?php esc_attr_e( 'Back', 'codela-storefront' ); ?>" <?php echo ! empty( $context['root'] ) ? 'hidden' : ''; ?>><?php echo codela_sf_icon( 'arrow-left' ); ?></a>
+                    <a class="sf-ui-pressable" data-sf-context-back <?php echo ! empty( $context['root'] ) ? 'data-sf-context-root' : ''; ?> data-sf-page-title="<?php echo esc_attr( get_the_title( get_queried_object_id() ) ); ?>" href="<?php echo esc_url( $context['back'] ?: home_url( '/' ) ); ?>" aria-label="<?php esc_attr_e( 'Back', 'codela-storefront' ); ?>" <?php echo ! empty( $context['root'] ) ? 'hidden' : ''; ?>><?php echo codela_sf_icon( $product_page ? 'chevron-left' : 'arrow-left' ); ?></a>
                     <span class="sf-context-label" <?php echo empty( $context['root'] ) ? 'hidden' : ''; ?>><?php echo esc_html( $context['title'] ); ?></span>
                     <?php elseif ( $context['back'] ) : ?><a class="sf-ui-pressable" data-sf-page-title="<?php echo esc_attr( get_the_title( get_queried_object_id() ) ); ?>" href="<?php echo esc_url( $context['back'] ); ?>" data-sf-account-back aria-label="<?php echo esc_attr( __( 'Back', 'codela-storefront' ) . ': ' . $context['title'] ); ?>"><?php echo codela_sf_icon( 'arrow-left' ); ?></a>
                     <?php else : ?><span class="sf-context-label"><?php echo esc_html( $context['title'] ); ?></span><?php endif; ?>
 
                 <?php elseif ( has_custom_logo() ) : the_custom_logo(); else : ?><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></a><?php endif; ?>
             </div>
+            <?php if ( $product_page ) : ?>
+                <?php echo codela_sf_ui_icon_button( 'house', __( 'Home', 'codela-storefront' ), [ 'variant' => 'soft', 'class' => 'sf-product-home', 'href' => home_url( '/' ), 'attributes' => [ 'data-sf-route' => 'home', 'data-sf-skeleton' => 'home' ] ] ); ?>
+            <?php endif; ?>
             <?php if ( $desktop_menu ) : ?><nav class="sf-desktop-navigation sf-ui-surface" aria-label="<?php esc_attr_e( 'Main menu', 'codela-storefront' ); ?>"><?php echo $desktop_menu; ?></nav><?php endif; ?>
             <div class="sf-header-search sf-ui-surface" hidden></div>
             <nav class="sf-actions sf-ui-surface<?php echo $product_page || ( $catalog_page && $show_mobile_dock ) ? ' sf-ui-icon-group--single-mobile' : ''; ?>" aria-label="<?php esc_attr_e( 'Store tools', 'codela-storefront' ); ?>">
