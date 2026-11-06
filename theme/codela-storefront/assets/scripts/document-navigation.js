@@ -253,6 +253,8 @@
     // Accepted return paths are kept separately for reload and history visits.
     const contextKey = 'sf-context-history';
     const pendingKey = 'sf-context-pending';
+    const searchRestoreKey = 'sf-search-return-state';
+    const scrollRestoreKey = 'sf-context-return-scroll';
     const normalise = value => {
         const url = new URL(value, location.href);
         url.hash = '';
@@ -282,7 +284,34 @@
         try {
             const target = new URL(link.href, location.href), from = new URL(location.href);
             if (target.origin !== from.origin || !['http:','https:'].includes(target.protocol) || normalise(target.href) === normalise(from.href) || target.hash || ['action','add-to-cart','_wpnonce','wc-ajax','remove_item','download_file'].some(k => target.searchParams.has(k))) return;
-            sessionStorage.setItem(pendingKey, JSON.stringify({ to: normalise(target.href), from: from.href.split('#')[0], menu: !!link.closest('#sf-menu,.sf-desktop-navigation,.sf-mobile-dock'), returning: link.hasAttribute('data-sf-context-back'), time: Date.now() }));
+            const searchPanel = link.closest('#sf-search');
+            const searchVisible = searchPanel && !searchPanel.hidden &&
+                !!document.querySelector('#sf-panel.is-search-panel[open]');
+            const search = searchVisible ? {
+                query: document.querySelector('#sf-query')?.value || '',
+                scrollTop: searchPanel.querySelector('.sf-search-content')?.scrollTop || 0,
+            } : null;
+            const saved = JSON.parse(sessionStorage.getItem(contextKey) || '{}');
+            const returnRecord = saved[normalise(from.href)];
+            if (link.hasAttribute('data-sf-return-search') && returnRecord?.search) {
+                // One-shot return intent is consumed only on the exact source URL.
+                sessionStorage.setItem(searchRestoreKey, JSON.stringify({
+                    url: normalise(target.href), query: returnRecord.search.query,
+                    scrollTop: returnRecord.search.scrollTop,
+                    pageScroll: returnRecord.scrollY || 0, time: Date.now(),
+                }));
+            } else if (link.hasAttribute('data-sf-context-back') && returnRecord &&
+                Number.isFinite(returnRecord.scrollY)) {
+                sessionStorage.setItem(scrollRestoreKey, JSON.stringify({
+                    url: normalise(target.href), scrollY: returnRecord.scrollY, time: Date.now(),
+                }));
+            }
+            sessionStorage.setItem(pendingKey, JSON.stringify({
+                to: normalise(target.href), from: from.href.split('#')[0],
+                menu: !!link.closest('#sf-menu,.sf-desktop-navigation,.sf-mobile-dock'),
+                returning: link.hasAttribute('data-sf-context-back'),
+                search, scrollY: window.scrollY, time: Date.now(),
+            }));
         } catch { /* Server fallback remains usable without storage. */ }
     }, true);
     document.addEventListener('click', event => {
@@ -356,7 +385,8 @@
                 // A back action must not overwrite that page's original parent.
                 record = pending.returning ? saved[key] : pending;
                 if (!pending.returning) {
-                    saved[key] = { from: pending.from, menu: pending.menu };
+                    saved[key] = { from: pending.from, menu: pending.menu, search: pending.search || null,
+                        scrollY: Number.isFinite(pending.scrollY) ? pending.scrollY : 0 };
                     const keys = Object.keys(saved); while (keys.length > 30) delete saved[keys.shift()];
                     sessionStorage.setItem(contextKey, JSON.stringify(saved));
                 }
@@ -364,10 +394,27 @@
                 record = saved[key];
             }
             const previous = record && !record.menu ? new URL(record.from, target) : null;
-            const usable = previous && safePrevious(previous, target);
+            const usable = !!(previous && safePrevious(previous, target));
+            const hierarchy = link.dataset.sfHierarchyParent && !record?.menu
+                ? new URL(link.dataset.sfHierarchyParent, target) : null;
+            const structural = !usable && hierarchy && safePrevious(hierarchy, target);
             if (usable) link.href = previous.href;
-            link.hidden = root && !usable;
-            if (label) label.hidden = !link.hidden;
+            else if (structural) link.href = hierarchy.href;
+            const showingBack = usable || !!structural;
+            link.hidden = root && !showingBack;
+            // Product media sits directly under the floating controls: a direct
+            // product never paints an empty logo capsule or a long title there.
+            const shell = link.closest('.sf-shell');
+            const product = !!shell?.classList.contains('has-product-header');
+            if (label) label.hidden = product || !link.hidden;
+            const homeShortcut = shell?.querySelector('.sf-header .sf-product-home');
+            if (homeShortcut) {
+                // Home -> product needs only Back; all other entries get Home too.
+                const home = new URL(config.home || '/', target);
+                homeShortcut.hidden = showingBack && usable && normalise(previous.href) === normalise(home.href);
+            }
+            if (record?.search && usable && product) link.dataset.sfReturnSearch = '1';
+            else delete link.dataset.sfReturnSearch;
         } catch { link.hidden = root; if (label) label.hidden = !root; }
     }
     window.addEventListener('pageswap', event => applyTransition(event.viewTransition, event.activation));
@@ -375,7 +422,23 @@
         applyTransition(event.viewTransition, window.navigation?.activation);
         updateBackLink();
     });
+    function restoreListScroll() {
+        try {
+            const raw = sessionStorage.getItem(scrollRestoreKey);
+            if (!raw) return;
+            const saved = JSON.parse(raw);
+            if (!saved || saved.url !== normalise(location.href) ||
+                Date.now() - saved.time > 120000) {
+                sessionStorage.removeItem(scrollRestoreKey); return;
+            }
+            sessionStorage.removeItem(scrollRestoreKey);
+            if (Number.isFinite(saved.scrollY) && saved.scrollY >= 0) {
+                requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, saved.scrollY)));
+            }
+        } catch { sessionStorage.removeItem(scrollRestoreKey); }
+    }
     document.addEventListener('DOMContentLoaded', updateBackLink);
+    window.addEventListener('pageshow', restoreListScroll);
     window.addEventListener('codela:route-committed', updateBackLink);
 })();
 ;

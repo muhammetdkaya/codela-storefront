@@ -7,15 +7,15 @@ const root='theme/codela-storefront/assets/';
 const css=['storefront.css','styles/tokens.css','styles/overlay.css','styles/navigation.css','styles/components.css','styles/catalog.css'].map(p=>fs.readFileSync(root+p,'utf8')).join('\n');
 const script=fs.readFileSync(process.env.CONTEXT_SCRIPT||root+'scripts/document-continuity.js','utf8');
 const render=env=>execFileSync('php',['tests/render-header.php'],{encoding:'utf8',env:{...process.env,...env}});
-const headers={home:render({}),shop:render({FIXTURE_CATALOG:'shop'}),category:render({FIXTURE_CATALOG:'category'}),tag:render({FIXTURE_CATALOG:'tag'}),product:render({FIXTURE_PRODUCT:'1'}),page:render({FIXTURE_PAGE:'1'})};
+const headers={home:render({}),shop:render({FIXTURE_CATALOG:'shop'}),category:render({FIXTURE_CATALOG:'category'}),tag:render({FIXTURE_CATALOG:'tag'}),child:render({FIXTURE_CATALOG:'category',FIXTURE_CATEGORY_PARENT:'1'}),product:render({FIXTURE_PRODUCT:'1'}),page:render({FIXTURE_PAGE:'1'})};
 (async()=>{
  let policy='no-referrer', origin='';
  const server=createServer((req,res)=>{
   const url=new URL(req.url,origin);
   if(url.pathname.startsWith('/theme/assets/icons/')){res.writeHead(200,{'content-type':'image/svg+xml'});return res.end(fs.readFileSync(root+'icons/'+url.pathname.split('/').pop()));}
   if(url.pathname==='/product/redirect'){res.writeHead(302,{location:'/product/item/'});return res.end();}
-  const kind=url.pathname==='/shop/'?'shop':url.pathname==='/category/'?'category':url.pathname==='/tag/'?'tag':url.pathname.startsWith('/product/')?'product':url.pathname==='/about/'?'page':'home';
-  const body=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="${policy}"><style>${css}</style><script>window.codelaSFDocument={productBase:location.origin+'/product/',excluded:[location.origin+'/?page_id=7',location.origin+'/checkout/']};</script><script>${script}</script></head><body>${headers[kind].replaceAll('https://store.test',origin)}<main id="sf-content"><nav class="sf-desktop-navigation" style="display:block!important"><a id="menu-shop" href="/shop/">Shop</a><a id="menu-category" href="/category/">Category</a><a id="menu-about" href="/about/">About</a></nav><ul class="products"><li class="product"><a class="woocommerce-LoopProduct-link woocommerce-loop-product__link" id="product" href="/product/item/"><img alt="Product" width="100" height="100" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E"><h2>Product</h2></a></li></ul><a id="related" href="/product/next/">Related product</a><a id="redirect" href="/product/redirect">Redirected product</a><a id="about" href="/about/">About</a></main></body></html>`;
+  const kind=url.pathname==='/shop/'?'shop':url.pathname==='/category/'?'category':url.pathname==='/tag/'?'tag':url.pathname==='/nested/'?'child':url.pathname.startsWith('/product/')?'product':url.pathname==='/about/'?'page':'home';
+  const body=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="${policy}"><style>${css}</style><script>window.codelaSFDocument={productBase:location.origin+'/product/',excluded:[location.origin+'/?page_id=7',location.origin+'/checkout/']};</script><script>${script}</script></head><body>${headers[kind].replaceAll('https://store.test',origin)}<main id="sf-content"><nav class="sf-desktop-navigation" style="display:block!important"><a id="menu-shop" href="/shop/">Shop</a><a id="menu-category" href="/category/">Category</a><a id="menu-about" href="/about/">About</a></nav><ul class="products"><li class="product"><a class="woocommerce-LoopProduct-link woocommerce-loop-product__link" id="product" href="/product/item/"><img alt="Product" width="100" height="100" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E"><h2>Product</h2></a></li></ul><a id="category-card" href="/category/">Category card</a><a id="nested-link" href="/nested/">Child category</a><a id="related" href="/product/next/">Related product</a><a id="redirect" href="/product/redirect">Redirected product</a><a id="about" href="/about/">About</a></main></body></html>`;
   res.writeHead(200,{'content-type':'text/html; charset=utf-8','cache-control':'no-store'});res.end(body);
  });
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));origin='http://127.0.0.1:'+server.address().port;
@@ -25,11 +25,14 @@ const headers={home:render({}),shop:render({FIXTURE_CATALOG:'shop'}),category:re
  for(const width of [320,390,1280])for(const currentPolicy of ['no-referrer','origin','strict-origin-when-cross-origin']){
   policy=currentPolicy;const context=await browser.newContext({viewport:{width,height:850}});const page=await context.newPage();
   const back=()=>page.locator('.sf-header [data-sf-context-back]');
+  const home=()=>page.locator('.sf-header .sf-product-home');
   const title=()=>page.locator('.sf-header .sf-context-label');
   // User's exact report: a real Woo product card on the home page.
   await page.goto(origin+'/');await page.evaluate(()=>sessionStorage.clear());
   await page.locator('#product').click();
   assert.equal(await back().getAttribute('href'),origin+'/',`${width}/${policy} home to product must return home`);
+  assert(await back().isVisible(),'Real home -> product shows Back');
+  assert.equal(await home().isVisible(),false,'Home is suppressed when Back already reaches home');
   assert.equal((await back().innerText()).trim(),'');
   await page.reload();assert.equal(await back().getAttribute('href'),origin+'/','Reload retains home parent');
   await back().click();assert.equal(new URL(page.url()).pathname,'/','Back action actually opens home');
@@ -40,7 +43,21 @@ const headers={home:render({}),shop:render({FIXTURE_CATALOG:'shop'}),category:re
   // Product returns to the exact filtered archive, including its query.
   await page.goto(origin+'/category/?orderby=price&filter_color=blue');await page.locator('#product').click();
   assert.equal(await back().getAttribute('href'),origin+'/category/?orderby=price&filter_color=blue');
+  assert.equal(await home().getAttribute('hidden'),null,'Category -> product keeps direct Home shortcut');
   await back().click();assert.equal(new URL(page.url()).search,'?orderby=price&filter_color=blue');
+  // An archive card is a contextual detail transition; the menu remains a root.
+  await page.goto(origin+'/');await page.locator('#category-card').click();
+  assert(await back().isVisible(),'Home -> category shows Back');
+  assert.equal(await back().getAttribute('href'),origin+'/');
+  await back().click();assert.equal(new URL(page.url()).pathname,'/');
+  await page.goto(origin+'/category/');await page.locator('#nested-link').click();
+  assert(await back().isVisible(),'Parent -> child category uses Back');
+  assert.equal(await back().getAttribute('href'),origin+'/category/');
+  // A direct child category can still return to its structural parent.
+  await page.evaluate(()=>sessionStorage.clear());
+  await page.goto(origin+'/nested/');
+  assert.equal(await back().getAttribute('href'),origin+'/category/2/');
+  assert(await back().isVisible(),'Direct nested category has a meaningful parent');
   // Returning through a related product must preserve the first product's own parent.
   await page.goto(origin+'/');await page.locator('#product').click();await page.locator('#related').click();
   assert.equal(await back().getAttribute('href'),origin+'/product/item/');await back().click();
@@ -48,12 +65,46 @@ const headers={home:render({}),shop:render({FIXTURE_CATALOG:'shop'}),category:re
   // Canonical redirect to a slash URL must keep the clicked source.
   await page.goto(origin+'/category/?filter=blue');await page.locator('#redirect').click();
   assert.equal(await back().getAttribute('href'),origin+'/category/?filter=blue','Canonical product redirect');
+  // Search is an overlay, not a URL. Product Back must carry its query and
+  // shelf scroll to the original document without storing a stale result HTML.
+  await page.goto(origin+'/');
+  await page.evaluate(()=>{
+    // Use the one real PHP-rendered dialog/search input, never duplicate IDs.
+    const panel=document.querySelector('#sf-panel');
+    panel.classList.add('is-search-panel');
+    panel.setAttribute('open','');
+    panel.style.setProperty('position','static','important');
+    panel.style.setProperty('display','block','important');
+    const search=panel.querySelector('#sf-search');
+    search.hidden=false;
+    panel.querySelector('#sf-query').value='Seramik vazo';
+    const content=search.querySelector('.sf-search-content');
+    content.style.cssText='height:110px;overflow-y:auto;display:block';
+    const results=search.querySelector('#sf-results');
+    results.innerHTML='<a id="search-product" href="/product/item/">Open searched product</a>' +
+      '<div style="height:700px"></div>';
+    content.scrollTop=35;
+  });
+  await page.locator('#search-product').click();
+  assert(await back().isVisible(),'Search -> product retains meaningful Back');
+  assert.equal(await back().getAttribute('href'),origin+'/','Search results return to their host page');
+  assert.equal(await back().getAttribute('data-sf-return-search'),'1','Back carries Search overlay return intent');
+  await back().click();
+  const savedSearch=await page.evaluate(()=>JSON.parse(sessionStorage.getItem('sf-search-return-state')));
+  assert.equal(savedSearch.url,origin+'/');
+  assert.equal(savedSearch.query,'Seramik vazo','Search query survives the product document');
+  assert(savedSearch.scrollTop>=0,'Search shelf position is recorded for restoration');
+  // Reusing a retained URL must not leak the Search overlay into a new visit.
+  await page.evaluate(()=>sessionStorage.clear());
   // Menu entries start a top-level page, not a back chain.
   await page.goto(origin+'/');await page.locator('#menu-about').click();assert(!await back().isVisible());assert.equal(await title().innerText(),'Hakkımızda');
-  // A direct visit has the server fallback even if an older record exists.
+  // No fake Shop history for direct product entries or excluded checkout.
   await page.goto(origin+'/');await page.evaluate(()=>sessionStorage.removeItem('sf-context-pending'));
-  await page.goto(origin+'/product/item/');assert.equal(await back().getAttribute('href'),origin+'/shop/','Direct entry uses shop fallback');
-  await page.goto(origin+'/?page_id=7');await page.locator('#product').click();assert.equal(await back().getAttribute('href'),origin+'/shop/','Plain permalink checkout does not become a back target');
+  await page.goto(origin+'/product/item/');assert.equal(await back().isVisible(),false,'Direct product never displays Back');
+  assert.equal(await home().getAttribute('href'),origin+'/','Direct product retains Home');
+  if(width<=700)assert(await home().isVisible(),'Home occupies the primary product navigation slot');
+  await page.goto(origin+'/?page_id=7');await page.locator('#product').click();
+  assert.equal(await back().isVisible(),false,'Excluded page never becomes a Back destination');
   await page.goto(origin+'/');await page.locator('#product').click();assert.equal(await back().getAttribute('href'),origin+'/','Plain permalink exclusion does not block home');
   await context.close();
  }

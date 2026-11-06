@@ -57,6 +57,40 @@ function init() {
     dock.init(dialog);
     searchFeature.bind();
     cartFeature.bind();
+    // The Back link from a product entered through Search navigates to the
+    // original document and carries a one-shot Search return intent.
+    // Apply only on that exact same-tab, same-origin source, never on arbitrary
+    // page visits or browser history from an external website.
+    function restoreSearchReturn() {
+        const key = 'sf-search-return-state';
+        let saved;
+        try { saved = JSON.parse(sessionStorage.getItem(key) || 'null'); }
+        catch { sessionStorage.removeItem(key); return; }
+        if (!saved || !saved.url || Date.now() - saved.time > 120000) {
+            if (saved) sessionStorage.removeItem(key);
+            return;
+        }
+        const canonical = value => {
+            const url = new URL(value, location.href);
+            url.hash = '';
+            if (url.pathname !== '/') url.pathname = url.pathname.replace(/\/+$/, '');
+            for (const key of [...url.searchParams.keys()]) {
+                if (/^(utm_.+|gclid|fbclid)$/i.test(key)) url.searchParams.delete(key);
+            }
+            url.searchParams.sort();
+            return url.origin + url.pathname + url.search;
+        };
+        if (canonical(saved.url) !== canonical(location.href)) return;
+        sessionStorage.removeItem(key);
+        if (!window.matchMedia('(max-width:700px)').matches) return;
+        if (Number.isFinite(saved.pageScroll)) window.scrollTo(0, Math.max(0, saved.pageScroll));
+        overlay.open('search');
+        searchFeature.restore(saved);
+    }
+    restoreSearchReturn();
+    window.addEventListener('pageshow', event => {
+        if (event.persisted) restoreSearchReturn();
+    });
     // Core Router navigation keeps the one real header/dialog/dock mounted.
     // Never create a second navigation controller or dock instance.
     window.addEventListener('codela:before-route', () => overlay.closeForNavigation());

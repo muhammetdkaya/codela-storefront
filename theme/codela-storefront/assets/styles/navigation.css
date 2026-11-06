@@ -278,6 +278,15 @@ body.admin-bar{--sf-header-offset:32px}
   }
 }
 
+/* Product Back is contextual. On a direct entry there is no imaginary
+   parent, so the branded Back capsule disappears and Home occupies its slot.
+   A real Home -> Product hop needs only Back (no duplicate Home shortcut). */
+.sf-shell.has-product-header .sf-header .sf-context-brand:has([data-sf-context-back][hidden]){display:none}
+@media(max-width:700px){
+  .sf-shell.has-product-header .sf-header .sf-product-home[hidden]{display:none!important}
+  .sf-shell.has-product-header .sf-header:has([data-sf-context-back][hidden]) .sf-product-home{left:20px}
+}
+
 /* Single menu control morphs in place while reparented to modal top layer. */
 .sf-shell .sf-menu-trigger.is-in-panel{position:fixed;left:var(--sf-menu-control-x);top:var(--sf-menu-control-y);z-index:30}
 .sf-shell .sf-menu-trigger .sf-menu-mark{display:block;position:relative;width:20px;height:20px;flex:none}

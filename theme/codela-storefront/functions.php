@@ -170,7 +170,7 @@ add_action( 'wp_enqueue_scripts', function() {
             'purchasePreview' => codela_sf_navigation_purchase_preview(),
             'accountLabel' => __( 'My account', 'codela-storefront' ),
             // Trusted bundled SVG is available before the navigation response or icon request.
-            'backIcon' => str_replace( [ '<svg ', 'width="56"', 'height="56"' ], [ '<svg class="sf-icon" aria-hidden="true" focusable="false" ', 'width="24"', 'height="24"' ], file_get_contents( __DIR__ . '/assets/icons/arrow-left.svg' ) ),
+            'backIcon' => str_replace( [ '<svg ', 'width="56"', 'height="56"' ], [ '<svg class="sf-icon" aria-hidden="true" focusable="false" ', 'width="24"', 'height="24"' ], file_get_contents( __DIR__ . '/assets/icons/chevron-left.svg' ) ),
             'accountParents' => [
                 [ 'url' => wc_get_account_endpoint_url( 'view-order' ), 'back' => wc_get_account_endpoint_url( 'orders' ), 'label' => wc_get_account_menu_items()['orders'] ?? __( 'My account', 'codela-storefront' ) ],
                 [ 'url' => wc_get_account_endpoint_url( 'edit-address' ), 'back' => wc_get_account_endpoint_url( 'edit-address' ), 'label' => wc_get_account_menu_items()['edit-address'] ?? __( 'My account', 'codela-storefront' ), 'childOnly' => true ],

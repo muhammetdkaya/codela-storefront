@@ -75,7 +75,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  assert.equal(await page.locator('.sf-header').evaluate(el=>getComputedStyle(el).position),'fixed');
  // Product-only home shortcut and modern back icon use independent islands.
  const source=fs.readFileSync('theme/codela-storefront/inc/render.php','utf8');
- assert(source.includes("codela_sf_icon( $product_page ? 'chevron-left' : 'arrow-left' )"),
+ assert(source.includes("codela_sf_icon( 'chevron-left' )"),
    'Product Back uses the modern chevron without changing back history behavior');
  assert(source.includes("'class' => 'sf-product-home'") && source.includes("'data-sf-route' => 'home'"),
    'Product Home is a direct, router-aware home link, not another back action');

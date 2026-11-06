@@ -42,14 +42,26 @@ function codela_sf_header_context(): array {
     if ( ( function_exists( 'is_product_category' ) && is_product_category() ) || ( function_exists( 'is_product_tag' ) && is_product_tag() ) ) {
         $term = get_queried_object();
         $title = is_object( $term ) && isset( $term->name ) ? (string) $term->name : '';
-        return [ 'title' => $title ?: __( 'Shop', 'woocommerce' ), 'back' => '', 'history' => false ];
+        // Catalogs act as top-level destinations unless a real same-tab entry
+        // exists. Child categories additionally know their structural parent.
+        $parent = '';
+        if ( function_exists( 'is_product_category' ) && is_product_category() && is_object( $term ) && ! empty( $term->parent )
+            && function_exists( 'get_term' ) && function_exists( 'get_term_link' ) ) {
+            $ancestor = get_term( (int) $term->parent, $term->taxonomy ?? 'product_cat' );
+            if ( $ancestor && ! is_wp_error( $ancestor ) ) {
+                $candidate = get_term_link( $ancestor );
+                if ( ! is_wp_error( $candidate ) ) { $parent = (string) $candidate; }
+            }
+        }
+        return [ 'title' => $title ?: __( 'Shop', 'woocommerce' ), 'back' => '', 'history' => true, 'root' => true, 'parent' => $parent ];
     }
     if ( function_exists( 'is_product' ) && is_product() ) {
-        return [ 'title' => get_the_title( get_queried_object_id() ), 'back' => wc_get_page_permalink( 'shop' ), 'history' => true, 'root' => false ];
+        // A direct product entry must not masquerade as a Shop-to-product hop.
+        return [ 'title' => get_the_title( get_queried_object_id() ), 'back' => home_url( '/' ), 'history' => true, 'root' => true ];
     }
     if ( function_exists( 'is_singular' ) && is_singular( 'post' ) ) {
         $blog_id = (int) get_option( 'page_for_posts' );
-        return [ 'title' => get_the_title( get_queried_object_id() ), 'back' => $blog_id ? get_permalink( $blog_id ) : home_url( '/' ), 'history' => true, 'root' => false ];
+        return [ 'title' => get_the_title( get_queried_object_id() ), 'back' => $blog_id ? get_permalink( $blog_id ) : home_url( '/' ), 'history' => true, 'root' => true ];
     }
     if ( function_exists( 'is_home' ) && is_home() && ! is_front_page() ) {
         $blog_id = (int) get_option( 'page_for_posts' );
@@ -59,6 +71,12 @@ function codela_sf_header_context(): array {
         && ! is_checkout() && ! ( function_exists( 'is_cart' ) && is_cart() )
         && ! ( function_exists( 'is_shop' ) && is_shop() ) ) {
         return [ 'title' => get_the_title( get_queried_object_id() ), 'back' => '', 'history' => true, 'root' => true ];
+    }
+    if ( function_exists( 'is_checkout' ) && is_checkout() ) {
+        return [ 'title' => __( 'Checkout', 'woocommerce' ), 'back' => wc_get_cart_url(), 'history' => false ];
+    }
+    if ( function_exists( 'is_cart' ) && is_cart() ) {
+        return [ 'title' => __( 'Your cart', 'codela-storefront' ), 'back' => '', 'history' => false ];
     }
     return [];
 }
@@ -121,9 +139,9 @@ function codela_sf_header(): string {
             <div class="sf-brand sf-ui-surface<?php echo $context ? ' sf-context-brand' : ''; ?>" data-wp-router-region="codela/storefront/brand">
                 <?php if ( $context ) : ?>
                     <?php if ( $context['history'] ) : ?>
-                    <a class="sf-ui-pressable" data-sf-context-back <?php echo ! empty( $context['root'] ) ? 'data-sf-context-root' : ''; ?> data-sf-page-title="<?php echo esc_attr( get_the_title( get_queried_object_id() ) ); ?>" href="<?php echo esc_url( $context['back'] ?: home_url( '/' ) ); ?>" aria-label="<?php esc_attr_e( 'Back', 'codela-storefront' ); ?>" <?php echo ! empty( $context['root'] ) ? 'hidden' : ''; ?>><?php echo codela_sf_icon( $product_page ? 'chevron-left' : 'arrow-left' ); ?></a>
-                    <span class="sf-context-label" <?php echo empty( $context['root'] ) ? 'hidden' : ''; ?>><?php echo esc_html( $context['title'] ); ?></span>
-                    <?php elseif ( $context['back'] ) : ?><a class="sf-ui-pressable" data-sf-page-title="<?php echo esc_attr( get_the_title( get_queried_object_id() ) ); ?>" href="<?php echo esc_url( $context['back'] ); ?>" data-sf-account-back aria-label="<?php echo esc_attr( __( 'Back', 'codela-storefront' ) . ': ' . $context['title'] ); ?>"><?php echo codela_sf_icon( 'arrow-left' ); ?></a>
+                    <a class="sf-ui-pressable" data-sf-context-back <?php echo ! empty( $context['root'] ) ? 'data-sf-context-root' : ''; ?> <?php echo ! empty( $context['parent'] ) ? 'data-sf-hierarchy-parent="' . esc_url( $context['parent'] ) . '"' : ''; ?> data-sf-page-title="<?php echo esc_attr( get_the_title( get_queried_object_id() ) ); ?>" href="<?php echo esc_url( $context['back'] ?: home_url( '/' ) ); ?>" aria-label="<?php esc_attr_e( 'Back', 'codela-storefront' ); ?>" <?php echo ! empty( $context['root'] ) ? 'hidden' : ''; ?>><?php echo codela_sf_icon( 'chevron-left' ); ?></a>
+                    <span class="sf-context-label" <?php echo empty( $context['root'] ) || $product_page ? 'hidden' : ''; ?>><?php echo esc_html( $context['title'] ); ?></span>
+                    <?php elseif ( $context['back'] ) : ?><a class="sf-ui-pressable" data-sf-page-title="<?php echo esc_attr( get_the_title( get_queried_object_id() ) ); ?>" href="<?php echo esc_url( $context['back'] ); ?>" data-sf-account-back aria-label="<?php echo esc_attr( __( 'Back', 'codela-storefront' ) . ': ' . ( $checkout_page ? __( 'Your cart', 'codela-storefront' ) : $context['title'] ) ); ?>"><?php echo codela_sf_icon( 'chevron-left' ); ?></a>
                     <?php else : ?><span class="sf-context-label"><?php echo esc_html( $context['title'] ); ?></span><?php endif; ?>
 
                 <?php elseif ( has_custom_logo() ) : the_custom_logo(); else : ?><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></a><?php endif; ?>
