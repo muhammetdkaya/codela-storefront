@@ -193,3 +193,58 @@ html[data-sf-navigation-target="account"] .sf-skeleton-layout{padding-inline:cla
  .sf-skeleton-product-actions{display:flex;gap:12px}.sf-skeleton-product-quantity{width:122px;height:48px}.sf-skeleton-product-button{width:200px;height:48px}
  .sf-skeleton-product-detail{width:40%;height:18px}
 }
+
+/* Destination-aware header anticipation: the old page's logo and icons must
+   not linger through skeleton loading then jump when the new document arrives.
+   Draw only inert loading surfaces, retaining the fixed transparent header.
+   Exact clickable controls always belong to the destination document. */
+html[data-sf-navigation-pending] .sf-shell .sf-header > :not(.sf-header-destination){
+  visibility:hidden!important;
+}
+.sf-shell .sf-header .sf-header-destination{
+  position:absolute;inset:0;z-index:1;pointer-events:none!important;
+  display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  align-items:center;gap:8px;padding:0 5vw;box-sizing:border-box;
+}
+.sf-header-destination-left,.sf-header-destination-centre,.sf-header-destination-right{
+  display:flex;align-items:center;gap:10px;min-width:0;
+}
+.sf-header-destination-centre{justify-content:center}
+.sf-header-destination-right{justify-content:flex-end}
+.sf-header-destination-capsule{
+  display:flex;align-items:center;justify-content:center;flex:none;
+  height:var(--sf-ui-hit,44px);min-width:var(--sf-ui-hit,44px);
+  padding:0;box-sizing:border-box;border-radius:var(--sf-ui-pill,999px);
+  border:1px solid var(--sf-ui-glass-border,rgba(255,255,255,.55));
+  background:var(--sf-ui-glass-surface,rgba(255,255,255,.88));
+  box-shadow:var(--sf-ui-glass-control-shadow,0 2px 10px rgba(0,0,0,.07));
+  -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+}
+.sf-header-destination-capsule--logo{min-width:96px}
+.sf-header-destination-capsule--title{min-width:116px}
+.sf-header-destination-capsule--navigation{min-width:172px}
+.sf-header-destination-shape{
+  display:block;width:18px;height:18px;border-radius:6px;
+  background:var(--sf-ui-skeleton,#dfe1e5);
+  animation:sf-header-awaiting 1.35s ease-in-out infinite;
+}
+.sf-header-destination-capsule--logo .sf-header-destination-shape{width:69px;height:13px;border-radius:5px}
+.sf-header-destination-capsule--title .sf-header-destination-shape{width:77px;height:12px;border-radius:5px}
+.sf-header-destination-capsule--navigation .sf-header-destination-shape{width:122px;height:12px;border-radius:5px}
+.sf-header-destination-capsule--catalog .sf-header-destination-shape{width:18px;height:14px;border-radius:4px}
+@keyframes sf-header-awaiting{0%,100%{opacity:.48}50%{opacity:.95}}
+@media(max-width:700px){
+  .sf-shell .sf-header .sf-header-destination{
+    grid-template-columns:minmax(0,1fr) auto;
+    padding-inline:20px;
+  }
+  .sf-header-destination-centre{display:none}
+  .sf-header-destination-capsule--title{min-width:108px}
+}
+@media(prefers-reduced-motion:reduce){
+  .sf-header-destination-shape{animation:none}
+}
+@media(forced-colors:active){
+  .sf-header-destination-capsule{border:1px solid CanvasText}
+  .sf-header-destination-shape{background:CanvasText}
+}
