@@ -161,7 +161,7 @@ class Tests(unittest.TestCase):
         self.assertIn("sf-search-return-state",continuity)
         self.assertIn("sf-context-return-scroll",continuity)
         self.assertIn("data-sf-return-search",continuity)
-        self.assertIn("data-sf-hierarchy-parent",continuity.replace("sfHierarchyParent","data-sf-hierarchy-parent") if "sfHierarchyParent" in continuity else continuity)
+        self.assertIn("sfHierarchyParent",continuity)
         self.assertIn("function restore(state)",(build.ROOT/'assets/scripts/search-controller.js').read_text())
         self.assertIn("restoreSearchReturn()", (build.ROOT/'assets/storefront.js').read_text())
         self.assertIn("'class' => 'sf-product-home'",render)
