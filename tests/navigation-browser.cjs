@@ -230,12 +230,16 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  const cartClose=await page.locator('#sf-panel > .sf-menu-trigger').boundingBox();
  const cartHeader=await page.locator('#sf-panel').evaluate(el=>{
   const title=el.querySelector('.sf-panel-app-title--cart'),bar=el.querySelector('.sf-panel-top');
+  const glyph=title.querySelector('.sf-icon');
   return {title:title.textContent.trim(),visible:title.getBoundingClientRect().width>0,
+    iconSrc:glyph?.getAttribute('src'),iconWidth:glyph?.getBoundingClientRect().width,
     surface:getComputedStyle(title).backgroundColor,bar:getComputedStyle(bar).backgroundColor,
     legacyClose:getComputedStyle(bar.querySelector('.sf-close')).display};
  });
  const logoSurface=await page.locator('.sf-header .sf-brand').evaluate(el=>getComputedStyle(el).backgroundColor);
  assert(cartHeader.visible && cartHeader.title==='Cart','Cart title is rendered in the glass capsule');
+ assert(cartHeader.iconSrc?.includes('/shopping-bag.svg'),'Cart header displays its own bag icon with the label');
+ assert.equal(cartHeader.iconWidth,18,'Header icon is compact and does not enlarge the 44px title pill');
  assert.equal(cartHeader.surface,logoSurface,'Cart title reuses the logo glass material');
  assert.equal(cartHeader.bar,'rgba(0, 0, 0, 0)','Cart toolbar has transparent background');
  assert.equal(cartHeader.legacyClose,'none','Cart has no second X');
@@ -447,8 +451,10 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  assert.equal(compactAuth.submitMinHeight,'52px','Popup submit uses shared compact 52px Button token');
  assert(compactAuth.submitHeight>=52&&compactAuth.submitHeight<=54,'Popup submit keeps accessible compact touch target');
  assert(compactAuth.toolbarTitleHidden,'Account semantic title stays screen-reader accessible');
- const accountTitle=await page.locator('#sf-panel .sf-panel-app-title--account').evaluate(el=>({label:el.textContent.trim(),display:getComputedStyle(el).display,background:getComputedStyle(el).backgroundColor}));
+ const accountTitle=await page.locator('#sf-panel .sf-panel-app-title--account').evaluate(el=>({label:el.textContent.trim(),display:getComputedStyle(el).display,background:getComputedStyle(el).backgroundColor,icon:el.querySelector('.sf-icon')?.getAttribute('src'),iconWidth:el.querySelector('.sf-icon')?.getBoundingClientRect().width}));
  assert.equal(accountTitle.label,'My account');
+ assert(accountTitle.icon?.includes('/user-round.svg'),'Account header uses the same user glyph as the dock');
+ assert.equal(accountTitle.iconWidth,18,'Account header icon matches Cart geometry');
  assert.notEqual(accountTitle.display,'none');
  assert.equal(accountTitle.background,logoSurface,'Account title uses the same logo glass surface');
  assert.equal(await page.locator('#sf-panel .sf-panel-top .sf-close').isVisible(),false,'Account has no duplicate X');
