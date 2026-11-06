@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Alt gezinme çubuğunun 0.1.216'da eklenen overflow:hidden ve clip-path kırpması geri alındı; beyaz zeminlerde eski cam yüzey, gölge ve aktif sekme görünümü geri döndü.",
-    "Mobil Arama açılır açılmaz Popüler aramalar için üç oval skeleton, Keşfet ürünleri için kare görsel ve başlık/fiyat iskeletleri görüntülenir. WooCommerce Store API yanıtlarıyla içerik yer değiştirir.",
-    "Discovery placeholderları yumuşak hareketle yüklenir (azaltılmış hareket tercihinde animasyon yoktur); arama yazılırken, istek iptalinde veya API hatasında takılı kalmaz. İlk iki gerçek Keşfet görseli gecikmeyi azaltmak için eager yüklenir."
+    "Mobil ürün sayfasındaki geri butonunda kalın ok yerine Lucide chevron-left kullanıldı; mevcut geçmişe dönme davranışı korundu.",
+    "Ürün sayfasında geri butonunun yanında aynı cam yüzeyli, 44px dokunma alanlı Ana Sayfa ikonu eklendi; ana sayfaya doğrudan gider.",
+    "Kısayol yalnız mobil ürün sayfasında görünür; ürün sayfasının alt satın alma paneli, sepet/menü konumu ve diğer sayfalardaki header değişmedi."
   ]
 }
