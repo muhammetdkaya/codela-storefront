@@ -76,6 +76,48 @@
         const icon = document.createElement('template'); icon.innerHTML = config.backIcon || '';
         link.append(icon.content.cloneNode(true)); brand.replaceChildren(link);
     }
+    /** Project the destination's header islands when feedback begins.
+     * The outgoing page's logo/tools are hidden only while the transition is
+     * pending; the target document/router stays authoritative for real controls.
+     * This is intentionally inert UI, not another header/menu controller.
+     */
+    function previewDestinationHeader(type, url, link) {
+        const header = document.querySelector('.sf-shell .sf-header');
+        if (!header) return;
+        const preview = document.createElement('div');
+        preview.className = 'sf-header-destination sf-header-destination--' + type;
+        preview.setAttribute('aria-hidden', 'true');
+        preview.inert = true;
+        const left = document.createElement('div');
+        const centre = document.createElement('div');
+        const right = document.createElement('div');
+        left.className = 'sf-header-destination-left';
+        centre.className = 'sf-header-destination-centre';
+        right.className = 'sf-header-destination-right';
+        function capsule(where, kind) {
+            const el = document.createElement('span');
+            el.className = 'sf-header-destination-capsule sf-header-destination-capsule--' + kind;
+            const shimmer = document.createElement('span');
+            shimmer.className = 'sf-header-destination-shape';
+            el.append(shimmer);
+            where.append(el);
+        }
+        const cameFromHome = type === 'product' && config.home &&
+            new URL(location.href).pathname.replace(/\/$/, '') === new URL(config.home, location.href).pathname.replace(/\/$/, '');
+        if (type === 'home') capsule(left, 'logo');
+        else if (type === 'product') {
+            capsule(left, 'icon'); // Back
+            if (!cameFromHome) capsule(left, 'icon'); // Home shortcut
+        } else if (type === 'account') capsule(left, accountDepth(url.href) > 0 ? 'icon' : 'title');
+        else capsule(left, 'title');
+        if (type !== 'product' && type !== 'account') capsule(centre, 'navigation');
+        if (type === 'product') capsule(right, 'icon'); // Cart
+        if (type === 'catalog') capsule(right, 'catalog'); // Filter
+        capsule(right, 'icon'); // Menu
+        preview.append(left, centre, right);
+        header.append(preview);
+        pending.headerPreview = preview;
+    }
     function accountDepth(value) {
         if (!value || !config.account) return -1;
         const url = new URL(value, location.href), root = new URL(config.account, location.href);
@@ -107,6 +149,7 @@
         state.surface.remove();
         state.preview?.remove();
         state.snapshots.reverse().forEach(restore);
+        state.headerPreview?.remove();
         if (state.brand?.brand.isConnected) state.brand.brand.replaceChildren(...state.brand.nodes);
         document.documentElement.removeAttribute('data-sf-navigation-pending');
         document.documentElement.removeAttribute('data-sf-navigation-target');
@@ -162,6 +205,7 @@
         document.addEventListener('submit', blockOldSubmit, true);
         state.releaseSubmit = () => document.removeEventListener('submit', blockOldSubmit, true);
         if (type === 'account' && document.body.matches('.logged-in')) previewAccountHeader(target);
+        previewDestinationHeader(type, target, link);
         if (type === 'product') {
             // The destination uses the same single soft cart control as the
             // real product header. Keep the original nodes and restore their
