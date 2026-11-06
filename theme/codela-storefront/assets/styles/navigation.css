@@ -59,13 +59,6 @@
     padding:var(--sf-ui-bottom-bar-padding);
     border:1px solid transparent;
     border-radius:999px;
-    /* iOS Safari sometimes paints the backdrop-blur as a square behind the
-       floating pill when the dock is transformed over a scrolling catalog.
-       Clip the composited backdrop and moving highlight to ONE rounded layer. */
-    overflow:hidden;
-    -webkit-clip-path:inset(0 round 999px);
-    clip-path:inset(0 round 999px);
-    background-clip:padding-box;
     transform-origin:50% 100%;
     transform:translate3d(0,var(--sf-dock-travel),0) scale(var(--sf-dock-scale));
     opacity:1;
