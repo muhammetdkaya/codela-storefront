@@ -21,14 +21,22 @@ const css=['storefront.css','styles/tokens.css','styles/overlay.css','styles/nav
     ['category',{FIXTURE_CATALOG:'category'},'Bags & more',null],
     ['tag',{FIXTURE_CATALOG:'tag'},'Bags & more',null],
     ['category-long',{FIXTURE_CATALOG:'category',FIXTURE_CATEGORY_TITLE:'Çok uzun bir ürün kategorisi adının ekranda taşmaması'},'Çok uzun bir ürün kategorisi adının ekranda taşmaması',null],
-    ['product',{FIXTURE_PRODUCT:'1'},'Back','https://store.test/shop/'],
-    ['post',{FIXTURE_POST:'1'},'Back','https://store.test/blog/'],
+    ['product',{FIXTURE_PRODUCT:'1'},'','direct-product'],
+    ['post',{FIXTURE_POST:'1'},'Hakkımızda',null],
+    ['checkout',{FIXTURE_CHECKOUT:'1'},'Your cart','https://store.test/cart/'],
     ['home',{},'CODELA','https://store.test/'],
     ['shopfront',{FIXTURE_CATALOG:'shop',FIXTURE_CATALOG_FRONT:'1'},'CODELA','https://store.test/'],
    ]){
     const html=execFileSync('php',['tests/render-header.php'],{encoding:'utf8',env:{...process.env,...env}});
     await page.setContent('<html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif}'+css+'</style></head><body>'+html+'</body></html>');
     const brand=page.locator('.sf-header .sf-brand'), menu=page.locator('.sf-menu-trigger');
+    if (name === 'product') {
+     assert.equal(await brand.locator('a[data-sf-context-back][hidden]').count(),1,'Direct product back starts hidden');
+     assert.equal(await brand.isVisible(),false,'Direct product has no empty glass Back island');
+     assert.equal(await page.locator('.sf-header .sf-product-home').getAttribute('href'),'https://store.test/','Home is the direct-product fallback');
+     assert.equal(await page.locator('.sf-header .sf-product-home').isVisible(),width<=700,'Home shortcut is mobile-only');
+     continue;
+    }
     if (back && name !== 'home' && name !== 'shopfront') {
      assert.equal((await brand.innerText()).trim(),'','Back is icon-only');
      assert((await brand.locator('a').getAttribute('aria-label')).includes(title));
