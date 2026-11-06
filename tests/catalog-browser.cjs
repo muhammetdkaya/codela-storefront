@@ -77,8 +77,11 @@ for(const width of [320,390,700,900,1280]){
    const title=el.querySelector('h2'),footer=el.querySelector('.sf-product-card-footer'),price=footer.querySelector('.price'),button=footer.querySelector('.button');
    const p=price.getBoundingClientRect(),b=button.getBoundingClientRect();
    const footerStyle=getComputedStyle(footer),badge=getComputedStyle(button.querySelector('.sf-icon')),titleStyle=getComputedStyle(title);
+   const actionStyle=getComputedStyle(button),disc=getComputedStyle(button,'::before');
    return{weight:getComputedStyle(title).fontWeight,buttonWidth:b.width,cardWidth:el.getBoundingClientRect().width,priceX:p.x,buttonX:b.x,footerChildren:footer.children.length,divider:footerStyle.borderTopWidth,dividerColor:footerStyle.borderTopColor,
-     icon:button.querySelector('.sf-icon').src,iconWidth:badge.width,iconMargin:badge.margin,titleColor:titleStyle.color,titleFont:titleStyle.fontFamily,priceWeight:getComputedStyle(price).fontWeight,buttonBorder:getComputedStyle(button).borderTopColor,buttonShadow:getComputedStyle(button).boxShadow};
+     icon:button.querySelector('.sf-icon').src,iconWidth:badge.width,iconMargin:badge.margin,titleColor:titleStyle.color,titleFont:titleStyle.fontFamily,priceWeight:getComputedStyle(price).fontWeight,buttonBorder:getComputedStyle(button).borderTopColor,buttonShadow:actionStyle.boxShadow,buttonFill:actionStyle.backgroundColor,
+     discSize:parseFloat(disc.width)+2*parseFloat(disc.borderLeftWidth),
+     discShadow:disc.boxShadow,discRadius:disc.borderRadius};
   });
   assert.equal(detail.weight,'500');assert(detail.buttonWidth<detail.cardWidth*.7,'Action does not dominate card');
   assert(detail.priceX<detail.buttonX,'Price left, shared action right');assert.equal(detail.footerChildren,2);
@@ -86,11 +89,15 @@ for(const width of [320,390,700,900,1280]){
   assert.equal(detail.priceWeight,'500','Price hierarchy without heavy bold');
   assert.equal(detail.dividerColor,'rgb(243, 243, 243)','Quiet divider');
   assert.equal(detail.buttonBorder,'rgba(0, 0, 0, 0)','Shared floating surface has no raised ring');
-  assert(detail.buttonShadow.includes('inset'),'Compact control uses the shared glass light edge');
+  assert.equal(detail.buttonShadow,'none','Full 44px hit target has no oversized glass paint');
+  assert.equal(detail.buttonFill,'rgba(0, 0, 0, 0)','Clickable area remains transparent');
+  assert(detail.discSize>=35&&detail.discSize<=37,'Only the inner 36px circle is painted');
+  assert(detail.discShadow.includes('inset'),'Inner circle preserves the Codela glass light edge');
+  assert.equal(detail.discRadius,'999px','Inner add control remains a true circular capsule');
   assert.equal(detail.divider,'1px','A subtle divider precedes the price/action row');
   assert.equal(detail.titleColor,'rgb(32, 32, 32)','Readable dark product names');
   assert(detail.icon.includes('shopping-cart-plus.svg'),'Product purchase uses its own add-to-cart glyph, never the Cart tab bag');
-  assert.equal(detail.iconWidth,'24px','Uniform shared icon sizing');
+  assert.equal(detail.iconWidth,'18px','Add glyph is 18px, smaller than the separate 24px Cart navigation icon');
   assert.equal(detail.iconMargin,'0px','Native Woo a img margin cannot shift the shared glyph');
   assert(!await page.locator('.product_type_simple.add_to_cart_button').first().evaluate(e=>e.textContent.trim()===''),
     'Keep the Woo native accessible link name');

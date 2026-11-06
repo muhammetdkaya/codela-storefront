@@ -65,15 +65,23 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
 
  // Fixed header leaves text clearance, while the home hero begins at the top.
  assert.equal(await page.locator('.sf-header').evaluate(el=>getComputedStyle(el).position),'fixed');
- assert.equal(surfaces.menuBg,'rgba(255, 255, 255, 0.75)','Header material must obscure text beneath');
+ assert.equal(surfaces.menuBg,'rgba(255, 255, 255, 0.91)','Floating header controls now stay legible over scrolling product images');
  const materials=await page.locator('.sf-brand,.sf-header-menu .sf-ui-icon-button,.sf-header .sf-actions,.sf-dock-surface').evaluateAll(nodes=>nodes.map(el=>({name:el.className,bg:getComputedStyle(el).backgroundColor,image:getComputedStyle(el).backgroundImage,blur:getComputedStyle(el).backdropFilter,shadow:getComputedStyle(el).boxShadow})));
  for(const material of materials){
-   assert.equal(material.bg,surfaces.brandBg,'Floating surfaces must share one tint: '+material.name);
+   assert.equal(material.bg,material.name.includes('sf-dock-surface')?'rgba(255, 255, 255, 0.75)':surfaces.brandBg,
+     'Floating header controls share their stronger tint while the dock retains its glass material: '+material.name);
    assert.equal(material.image,'none','No stacked white gradient on '+material.name);
    assert(material.blur.includes('blur(16px)'),'Shared subtle blur survives on '+material.name);
    assert.notEqual(material.shadow,'none','Shadow separates surface from white content: '+material.name);
  }
  assert.equal(await page.locator('.sf-dock-surface').evaluate(el=>getComputedStyle(el).borderTopColor),'rgba(0, 0, 0, 0)','Dock has no solid perimeter stroke');
+ const dockClip=await page.locator('.sf-dock-surface').evaluate(el=>{
+   const css=getComputedStyle(el);
+   return {clip:css.clipPath,overflow:css.overflow,shape:css.borderRadius};
+ });
+ assert(dockClip.clip.startsWith('inset('),'Dock blur compositor is clipped to the oval rather than a rectangular layer');
+ assert.equal(dockClip.overflow,'hidden','Safari floating dock selection cannot paint outside its pill');
+ assert.equal(dockClip.shape,'999px','Glass dock silhouette remains fully pill shaped');
  const dockLabels=await page.locator('.sf-dock-item>span:last-child').evaluateAll(xs=>xs.map(el=>({font:getComputedStyle(el).fontSize,weight:getComputedStyle(el).fontWeight,color:getComputedStyle(el).color,clipped:el.scrollWidth>el.clientWidth})));
  for(const label of dockLabels){
   assert.equal(label.font,'11px','Dock label is readable');
@@ -181,7 +189,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  });
  assert(pressed.scale>1.02 && pressed.scale<1.08,'Touch expands the background capsule');
  assert(Math.abs(pressed.wholeScale-1.018)<.001,'Touch also expands the whole floating surface');
- assert.equal(pressed.bg,surfaces.menuBg,'Dock shares the transparent Header material');
+ assert.equal(pressed.bg,'rgba(255, 255, 255, 0.75)','Dock retains the lighter glass tint while the transparent Header controls use stronger local glass');
  assert.equal(pressed.index,'1','Touch previews the touched tab before navigation');
  assert(pressed.thumbTravel>.03&&pressed.thumbTravel<.99,'Pressed tab background glides toward its target instead of teleporting');
  assert.equal(await page.locator('#sf-panel').getAttribute('open'),null,'Press alone never opens a panel');

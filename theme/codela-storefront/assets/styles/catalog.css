@@ -71,6 +71,38 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-pro
   --sf-ui-button-height:var(--sf-ui-hit);--sf-ui-button-font-size:12px;
   --sf-ui-button-padding-y:8px;--sf-ui-button-padding-x:12px;
 }
+/* The icon on a product card is a small action indicator, not another cart
+   navigation badge. Keep Woo's native 44px hit target, but paint only a
+   36px glass disc and an 18px glyph. This is scoped to purchasable simple
+   products; variable-product Options and other Woo buttons are unchanged. */
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer > a.product_type_simple.sf-ui-icon-button--soft{
+  --sf-ui-icon:18px;
+  isolation:isolate;
+  background:transparent!important;
+  box-shadow:none!important;
+  border:0!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer > a.product_type_simple.sf-ui-icon-button--soft::before{
+  content:"";
+  position:absolute;
+  inset:4px;
+  z-index:0;
+  border:1px solid var(--sf-ui-glass-border);
+  border-radius:var(--sf-ui-pill);
+  background:var(--sf-ui-glass-surface);
+  box-shadow:var(--sf-ui-glass-control-shadow);
+  pointer-events:none;
+}
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-card-footer > a.product_type_simple.sf-ui-icon-button--soft .sf-icon{
+  position:relative;
+  z-index:1;
+  width:18px;
+  height:18px;
+}
+/* Each card action remains keyboard-focusable with the original 44px outline. */
+
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product .added_to_cart{
   grid-column:1 / -1;display:flex;align-items:center;justify-content:flex-end;
   min-height:var(--sf-ui-hit);color:var(--sf-ui-control-ink);
