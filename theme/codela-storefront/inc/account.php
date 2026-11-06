@@ -32,6 +32,40 @@ function codela_sf_account_intro(): void {
 }
 
 add_action( 'woocommerce_before_customer_login_form', 'codela_sf_account_intro', 5 );
+
+/** Storefront authentication lives on WooCommerce My Account, not wp-login.php.
+ * Keep WordPress's administrative login, reauthentication, password recovery,
+ * logout and external identity callbacks fully operational.
+ */
+function codela_sf_public_login_destination( array $query, string $method = 'GET' ): string {
+    if ( 'GET' !== strtoupper( $method ) || ! function_exists( 'wc_get_page_permalink' ) ) { return ''; }
+    $action = $query['action'] ?? 'login';
+    if ( ! is_string( $action ) || ! in_array( $action, [ '', 'login', 'register' ], true ) ) { return ''; }
+    foreach ( [ 'redirect_to', 'reauth', 'interim-login', 'checkemail', 'key', 'login', 'action' ] as $param ) {
+        if ( in_array( $param, [ 'action' ], true ) ) { continue; }
+        if ( isset( $query[ $param ] ) ) { return ''; }
+    }
+    return (string) wc_get_page_permalink( 'myaccount' );
+}
+add_action( 'login_init', static function(): void {
+    $method = isset( $_SERVER['REQUEST_METHOD'] ) && is_string( $_SERVER['REQUEST_METHOD'] )
+        ? $_SERVER['REQUEST_METHOD'] : 'GET';
+    $destination = codela_sf_public_login_destination( $_GET, $method );
+    if ( ! $destination ) { return; }
+    nocache_headers();
+    wp_safe_redirect( $destination, 302, 'Codela Storefront' );
+    exit;
+}, 5 );
+
+/** Native front-end login/register links resolve to My Account. Admin login
+ * URLs are deliberately left alone, including WP-CLI and password reset flows.
+ */
+add_filter( 'login_url', static function( $url, $redirect, $force_reauth ) {
+    if ( is_admin() || $force_reauth || $redirect ) { return $url; }
+    $account = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'myaccount' ) : '';
+    return $account ?: $url;
+}, 20, 3 );
+
 // Keep WooCommerce endpoint navigation and all registered plugin destinations.
 
 /**
