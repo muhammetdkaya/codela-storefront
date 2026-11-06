@@ -14,7 +14,7 @@ export function createSearchController({ $, config, t, getCurrent }) {
     // Fit as many stacked suggestions as the viewport permits while keeping
     // the complete Discover card (image, title and price) above the floating dock.
     function fitDiscoveryTerms() {
-        if ($('#sf-discovery').hidden || getCurrent() !== 'search' || !mobileDiscovery()) return;
+        if ($('#sf-discovery').hidden || getCurrent() !== 'search' || !mobileDiscovery() || $('#sf-discovery').classList.contains('is-loading')) return;
         const buttons = Array.from($('#sf-popular-list').children);
         const shelf = $('#sf-explore-section');
         if (!shelf.hidden) {
@@ -42,7 +42,40 @@ export function createSearchController({ $, config, t, getCurrent }) {
         }
     }
 
+    // Reserve real discovery geometry immediately, while both Woo Store API
+    // requests are pending. No invented suggestions or products are displayed.
+    function showDiscoverySkeleton() {
+        const discovery = $('#sf-discovery');
+        if (discovery.hidden || getCurrent() !== 'search' || !mobileDiscovery()) return;
+        discovery.classList.add('is-loading');
+        discovery.setAttribute('aria-busy', 'true');
+        $('#sf-popular-section').hidden = false;
+        $('#sf-explore-section').hidden = false;
+        $('#sf-popular-list').innerHTML = [136, 88, 112].map(width =>
+            '<span class="sf-discovery-term-skeleton sf-discovery-shimmer" style="width:' + width +
+            'px" aria-hidden="true"></span>'
+        ).join('') + '<span class="screen-reader-text" role="status">' + escape(t('Loading…')) + '</span>';
+        const card = '<div class="sf-explore-card sf-discovery-card-skeleton" aria-hidden="true">' +
+            '<span class="sf-explore-photo sf-discovery-shimmer"></span>' +
+            '<span class="sf-explore-name sf-discovery-shimmer"></span>' +
+            '<span class="sf-explore-price sf-discovery-shimmer"></span></div>';
+        $('#sf-explore-list').innerHTML = card.repeat(3);
+    }
+
+    function clearDiscoverySkeleton() {
+        const discovery = $('#sf-discovery');
+        if (!discovery.classList.contains('is-loading')) return;
+        discovery.classList.remove('is-loading');
+        discovery.setAttribute('aria-busy', 'false');
+        $('#sf-popular-list').textContent = '';
+        $('#sf-explore-list').textContent = '';
+        $('#sf-popular-section').hidden = true;
+        $('#sf-explore-section').hidden = true;
+    }
+
     function renderDiscovery() {
+        $('#sf-discovery').classList.remove('is-loading');
+        $('#sf-discovery').setAttribute('aria-busy', 'false');
         const terms = Array.isArray(discoveryTerms) ? discoveryTerms : [];
         $('#sf-popular-list').innerHTML = terms.slice(0, 4).map(query =>
             '<button type="button" class="sf-popular-term sf-ui-surface sf-ui-pressable" data-search-term="' +
@@ -50,7 +83,7 @@ export function createSearchController({ $, config, t, getCurrent }) {
         ).join('');
         $('#sf-popular-section').hidden = !terms.length;
 
-        const cards = (Array.isArray(discoveryProducts) ? discoveryProducts : []).map(product => {
+        const cards = (Array.isArray(discoveryProducts) ? discoveryProducts : []).map((product, index) => {
             const photo = product?.images?.[0]?.src || product?.images?.[0]?.thumbnail;
             const href = safeURL(product?.permalink);
             const name = decode(product?.name || '').trim();
@@ -63,7 +96,7 @@ export function createSearchController({ $, config, t, getCurrent }) {
             } catch { /* An invalid currency must not break discovery. */ }
             return '<a class="sf-explore-card sf-ui-pressable" href="' + href +
                 '"><span class="sf-explore-photo"><img src="' + safeURL(photo) +
-                '" alt="" loading="lazy" decoding="async" width="320" height="320"></span>' +
+                '" alt="" loading="' + (index < 2 ? 'eager' : 'lazy') + '" decoding="async" width="320" height="320"></span>' +
                 '<span class="sf-explore-name">' + escape(name) + '</span>' +
                 (price ? '<strong class="sf-explore-price">' + escape(price) + '</strong>' : '') + '</a>';
         }).filter(Boolean).slice(0, 6);
@@ -79,6 +112,7 @@ export function createSearchController({ $, config, t, getCurrent }) {
         if (!api) return;
         discoveryRequest = new AbortController();
         const signal = discoveryRequest.signal;
+        showDiscoverySkeleton();
         try {
             // Reuse WooCommerce Store API; fetch only when the empty mobile search opens.
             const productsURL = new URL('products', api);
@@ -115,20 +149,24 @@ export function createSearchController({ $, config, t, getCurrent }) {
             discoveryTerms = terms.slice(0, 5);
             discoveryProducts = products;
             if (getCurrent() === 'search' && mobileDiscovery() && !$('#sf-query').value.trim()) renderDiscovery();
-        } catch { /* Optional discovery must never block normal search. */ }
-        finally { if (discoveryRequest?.signal === signal) discoveryRequest = null; }
+        } catch {
+            // An unavailable discovery API must not leave permanent placeholders.
+            if (!signal.aborted) clearDiscoverySkeleton();
+        } finally { if (discoveryRequest?.signal === signal) discoveryRequest = null; }
     }
 
     function syncDiscovery() {
         const visible = mobileDiscovery() && getCurrent() === 'search' && !$('#sf-query').value.trim();
         $('#sf-discovery').hidden = !visible;
         if (visible) loadDiscovery();
+        else clearDiscoverySkeleton();
     }
 
     function cancel() {
         clearTimeout(timer);
         controller?.abort();
         discoveryRequest?.abort(); discoveryRequest = null;
+        clearDiscoverySkeleton();
         ++sequence;
         $('#sf-results')?.setAttribute('aria-busy','false');
     }

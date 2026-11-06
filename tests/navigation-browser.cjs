@@ -38,6 +38,14 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  let cartRequests=0, searchRequests=0;
  await page.route('**/*', async route=>{
   const url=route.request().url();
+  if(url.includes('/api/products/categories')) {
+    await new Promise(resolve=>setTimeout(resolve,300));
+    return route.fulfill({json:[{name:'Decorative Objects'},{name:'Vases'},{name:'Ceramics'}]});
+  }
+  if(url.includes('/api/products?')) {
+    await new Promise(resolve=>setTimeout(resolve,300));
+    return route.fulfill({json:[{name:'Demo Ceramic Vase',permalink:'https://store.test/product/vase/',images:[{src:'https://store.test/fixture-product.svg'}],prices:{price:'75000',currency_code:'TRY',currency_minor_unit:2},categories:[]}]});
+  }
   if(url.includes('/api/cart')) {cartRequests++;return route.fulfill({json:cart,headers:{Nonce:'test'}});}
   if(url.endsWith('/fixture-product.svg'))return route.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="100"><rect width="80" height="100" fill="#eeeae4"/></svg>'});
   if(url.includes('/search-api')) {searchRequests++;const q=new URL(url).searchParams.get('q');await new Promise(r=>setTimeout(r,q==='old'?180:10));return route.fulfill({json:[{name:q,url:'/product/',image:'',price:'10',sku:q}]});}
@@ -75,13 +83,14 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
    assert.notEqual(material.shadow,'none','Shadow separates surface from white content: '+material.name);
  }
  assert.equal(await page.locator('.sf-dock-surface').evaluate(el=>getComputedStyle(el).borderTopColor),'rgba(0, 0, 0, 0)','Dock has no solid perimeter stroke');
- const dockClip=await page.locator('.sf-dock-surface').evaluate(el=>{
+ const dockMaterial=await page.locator('.sf-dock-surface').evaluate(el=>{
    const css=getComputedStyle(el);
-   return {clip:css.clipPath,overflow:css.overflow,shape:css.borderRadius};
+   return {clip:css.clipPath,overflow:css.overflow,shape:css.borderRadius,blur:css.backdropFilter};
  });
- assert(dockClip.clip.startsWith('inset('),'Dock blur compositor is clipped to the oval rather than a rectangular layer');
- assert.equal(dockClip.overflow,'hidden','Safari floating dock selection cannot paint outside its pill');
- assert.equal(dockClip.shape,'999px','Glass dock silhouette remains fully pill shaped');
+ assert.equal(dockMaterial.clip,'none','Restore the original glass dock compositor without inset clipping');
+ assert.equal(dockMaterial.overflow,'visible','Restore the dock material and selection from before 0.1.216');
+ assert.equal(dockMaterial.shape,'999px','Dock keeps its original pill shape');
+ assert(dockMaterial.blur.includes('blur('),'Native dock material still has the glass blur');
  const dockLabels=await page.locator('.sf-dock-item>span:last-child').evaluateAll(xs=>xs.map(el=>({font:getComputedStyle(el).fontSize,weight:getComputedStyle(el).fontWeight,color:getComputedStyle(el).color,clipped:el.scrollWidth>el.clientWidth})));
  for(const label of dockLabels){
   assert.equal(label.font,'11px','Dock label is readable');
@@ -220,6 +229,23 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
 
 
  await click('search');
+ await page.waitForSelector('#sf-popular-list .sf-discovery-term-skeleton');
+ const discoveryLoading=await page.locator('#sf-discovery').evaluate(el=>({
+   visible:!el.hidden,loading:el.classList.contains('is-loading'),
+   busy:el.getAttribute('aria-busy'),
+   terms:el.querySelectorAll('.sf-discovery-term-skeleton').length,
+   products:el.querySelectorAll('.sf-discovery-card-skeleton').length,
+   firstImageWidth:el.querySelector('.sf-discovery-card-skeleton .sf-explore-photo')?.getBoundingClientRect().width
+ }));
+ assert(discoveryLoading.visible && discoveryLoading.loading && discoveryLoading.busy==='true','Discovery signals loading as soon as Search opens');
+ assert.equal(discoveryLoading.terms,3,'Three popular-term capsules reserve the real vertical layout');
+ assert.equal(discoveryLoading.products,3,'Discover shelf has scrolling square product placeholders');
+ assert(discoveryLoading.firstImageWidth>110,'Skeleton matches product card visual width');
+ await page.waitForFunction(()=>document.querySelector('#sf-discovery')?.getAttribute('aria-busy')==='false'
+   && document.querySelectorAll('#sf-explore-list a.sf-explore-card').length===1);
+ assert.equal(await page.locator('#sf-popular-list button.sf-popular-term').count(),3,'Real category suggestions replace the skeleton');
+ assert.equal(await page.locator('#sf-explore-list .sf-discovery-card-skeleton').count(),0,'Product placeholders are replaced, not stacked');
+ assert.equal(await page.locator('#sf-explore-list img').getAttribute('loading'),'eager','First suggested product image is eager');
  assert.equal(await page.evaluate(()=>document.activeElement.classList.contains('sf-menu-trigger')),true);
  assert.equal(await page.locator('#sf-panel .sf-mobile-dock').count(),1);
  assert.equal(await page.locator('.sf-dock-item.is-active').getAttribute('data-dock-view'),'search');

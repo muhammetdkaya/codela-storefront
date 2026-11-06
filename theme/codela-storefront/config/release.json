@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Ürün kutularında basit ürünlerin sepete ekleme simgesi 24px'ten 18px'e, görünen cam yuvarlağı 44px'ten 36px'e indirildi; 44px dokunma alanı, AJAX bağlantısı, erişilebilir etiket ve değişken ürünlerin seçenek ikonu korundu.",
-    "iPhone Safari'de hareketli cam alt menünün dışına taşabilen dikdörtgen blur/arka plan katmanı oval bir kesimle sınırlandırıldı; kayan aktif sekme ve dokunma alanları korunuyor.",
-    "Şeffaf mobil header değişmedi; yalnızca logo/menü ve varsa header araçları üzerindeki cam kapsüller ürün görselleri kaydırıldığında daha okunur olacak şekilde aynı hafif opaklıkta tutarlılaştırıldı."
+    "Alt gezinme çubuğunun 0.1.216'da eklenen overflow:hidden ve clip-path kırpması geri alındı; beyaz zeminlerde eski cam yüzey, gölge ve aktif sekme görünümü geri döndü.",
+    "Mobil Arama açılır açılmaz Popüler aramalar için üç oval skeleton, Keşfet ürünleri için kare görsel ve başlık/fiyat iskeletleri görüntülenir. WooCommerce Store API yanıtlarıyla içerik yer değiştirir.",
+    "Discovery placeholderları yumuşak hareketle yüklenir (azaltılmış hareket tercihinde animasyon yoktur); arama yazılırken, istek iptalinde veya API hatasında takılı kalmaz. İlk iki gerçek Keşfet görseli gecikmeyi azaltmak için eager yüklenir."
   ]
 }
