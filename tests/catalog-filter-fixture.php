@@ -5,7 +5,8 @@ class WP_Term {
     public $term_id = 7;
     public $taxonomy = 'product_cat';
     public $name = 'Bags & more';
-    public function __construct(){ $this->name = getenv('FIXTURE_CATEGORY_TITLE') ?: 'Bags & more'; }
+    public $parent = 0;
+    public function __construct(){ $this->name = getenv('FIXTURE_CATEGORY_TITLE') ?: 'Bags & more'; $this->parent = getenv('FIXTURE_CATEGORY_PARENT') === '1' ? 2 : 0; }
     public $count = 3;
 }
 function is_shop() { return getenv('FIXTURE_CATALOG') === 'shop'; }
@@ -13,6 +14,7 @@ function is_product_taxonomy() { return in_array(getenv('FIXTURE_CATALOG'), ['ca
 function is_product_category() { return getenv('FIXTURE_CATALOG') === 'category'; }
 function is_product_tag() { return getenv('FIXTURE_CATALOG') === 'tag'; }
 function get_queried_object() { return new WP_Term(); }
+function get_term($id,$taxonomy='product_cat'){ return (object)['term_id'=>(int)$id,'taxonomy'=>$taxonomy,'name'=>'Parent category','parent'=>0]; }
 function wc_clean($value) { return is_array($value) ? array_map("wc_clean",$value) : strip_tags($value); }
 function wp_unslash($value) { return is_array($value) ? array_map("wp_unslash",$value) : stripslashes($value); }
 function wc_format_decimal($value) { return is_numeric($value) ? (string)(float)$value : ''; }
