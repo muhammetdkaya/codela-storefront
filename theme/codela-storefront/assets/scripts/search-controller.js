@@ -6,6 +6,13 @@ import { escape, decode, safeURL, money } from 'codela-storefront/format';
 
 export function createSearchController({ $, config, t, getCurrent }) {
     let timer = null, controller = null, sequence = 0;
+    let returnScroll = null;
+    function restorePanelScroll() {
+        if (returnScroll === null) return;
+        const content = $('#sf-search .sf-search-content');
+        if (content) content.scrollTop = returnScroll;
+        returnScroll = null;
+    }
 
     // Discovery extends the existing mobile search panel; no search backend or header is added.
     let discoveryProducts = null, discoveryTerms = null, discoveryRequest = null;
@@ -103,6 +110,7 @@ export function createSearchController({ $, config, t, getCurrent }) {
         $('#sf-explore-list').innerHTML = cards.join('');
         $('#sf-explore-section').hidden = !cards.length;
         fitDiscoveryTerms();
+        restorePanelScroll();
     }
 
     async function loadDiscovery() {
@@ -235,7 +243,27 @@ export function createSearchController({ $, config, t, getCurrent }) {
             results.innerHTML = products.length ? products.map(p => `<a class="sf-result" href="${safeURL(p.url)}"><img src="${safeURL(p.image)}" alt="" width="80" height="100"><div><h3>${escape(decode(p.name))}</h3><p>${typeof p.price_html === 'string' ? p.price_html : escape(decode(p.price))}</p><small>${escape(p.sku)}</small></div></a>`).join('') : `<p>${escape(t('No matching products.'))}</p>`;
         } catch (error) {
             if (error.name !== 'AbortError' && requestId === sequence && getCurrent() === 'search') results.innerHTML = `<p>${escape(t('Something went wrong. Please try again.'))}</p><button class="sf-retry-search sf-ui-pressable">${escape(t('Retry'))}</button>`;
-        } finally { if (requestId === sequence) results.setAttribute('aria-busy','false'); }
+        } finally {
+            if (requestId === sequence) {
+                results.setAttribute('aria-busy','false');
+                if (getCurrent() === 'search') restorePanelScroll();
+            }
+        }
+    }
+
+    function restore(state) {
+        // Rebuild the same search using the actual Woo endpoint. Never persist
+        // opaque result HTML or take a stale product snapshot across documents.
+        const query = typeof state?.query === 'string' ? state.query.slice(0, 80) : '';
+        returnScroll = Math.max(0, Math.min(100000, Number(state?.scrollTop) || 0));
+        cancel();
+        $('#sf-query').value = query;
+        $('#sf-results').textContent = '';
+        syncSearchControls();
+        syncDiscovery();
+        if (query.trim().length >= 2) return search();
+        if (!query.trim() && discoveryProducts !== null) restorePanelScroll();
+        return Promise.resolve();
     }
 
     return {
@@ -243,6 +271,7 @@ export function createSearchController({ $, config, t, getCurrent }) {
         cancel,
         start() { syncSearchControls(); syncDiscovery(); return search(); },
         retry: search,
+        restore,
         syncControls: syncSearchControls,
     };
 }
