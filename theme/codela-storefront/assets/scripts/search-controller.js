@@ -181,6 +181,7 @@ export function createSearchController({ $, config, t, getCurrent }) {
 
     function bind() {
         $('#sf-query').addEventListener('input', () => {
+            returnScroll = null;
             cancel();
             $('#sf-results').textContent = '';
             syncSearchControls();
@@ -193,6 +194,7 @@ export function createSearchController({ $, config, t, getCurrent }) {
             search();
         });
         $('.sf-search-clear').addEventListener('click', () => {
+            returnScroll = null;
             $('#sf-query').value = '';
             cancel();
             $('#sf-results').textContent = '';
@@ -203,6 +205,7 @@ export function createSearchController({ $, config, t, getCurrent }) {
         $('#sf-discovery').addEventListener('click', event => {
             const button = event.target.closest('button[data-search-term]');
             if (!button) return;
+            returnScroll = null;
             $('#sf-query').value = button.dataset.searchTerm || '';
             cancel();
             syncSearchControls();
