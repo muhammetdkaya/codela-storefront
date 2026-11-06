@@ -105,7 +105,7 @@ class Tests(unittest.TestCase):
         self.assertLess(header.index("codela_sf_ui_icon_button( 'menu'"),header.index('class="sf-brand sf-ui-surface'))
         self.assertLess(header.index('class="sf-brand sf-ui-surface'),header.index("codela_sf_ui_icon_button( 'search'"))
         self.assertLess(header.index("codela_sf_ui_icon_button( 'search'"),header.index("codela_sf_ui_icon_button( 'shopping-bag'"))
-        self.assertEqual(header.count('codela_sf_ui_icon_button('),5)
+        self.assertEqual(header.count('codela_sf_ui_icon_button('),6)  # 5 original header controls + product-only Home
         self.assertIn('class="sf-search-leading"',render)
         self.assertIn("'class' => 'sf-search-cancel sf-close'",render)
         self.assertIn("'class' => 'sf-search-clear'",render)
