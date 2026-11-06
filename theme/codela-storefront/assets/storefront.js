@@ -74,6 +74,10 @@ function init() {
             const url = new URL(value, location.href);
             url.hash = '';
             if (url.pathname !== '/') url.pathname = url.pathname.replace(/\/+$/, '');
+            for (const key of [...url.searchParams.keys()]) {
+                if (/^(utm_.+|gclid|fbclid)$/i.test(key)) url.searchParams.delete(key);
+            }
+            url.searchParams.sort();
             return url.origin + url.pathname + url.search;
         };
         if (canonical(saved.url) !== canonical(location.href)) return;
