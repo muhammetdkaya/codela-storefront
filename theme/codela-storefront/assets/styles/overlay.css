@@ -238,6 +238,51 @@
 #sf-search .sf-explore-name{display:block;min-width:0;width:100%;margin-top:9px;font-family:var(--wp--preset--font-family--system,Arial,Helvetica,sans-serif);font-size:13px;line-height:1.45;font-weight:500;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:clip;color:var(--sf-muted,#77776d)}
 #sf-search .sf-explore-name.is-clipped{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 18px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 18px),transparent)}
 #sf-search .sf-explore-price{display:block;min-width:0;margin-top:4px;font-family:var(--wp--preset--font-family--system,Arial,Helvetica,sans-serif);font-size:16px;line-height:1.5;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:0;color:var(--sf-ui-control-ink)}
+/* Discovery is lazy-loaded; display honest, animated UI-shaped placeholders
+   as soon as the Search panel opens, not a blank page awaiting Store API. */
+#sf-search .sf-discovery-term-skeleton{
+  display:block;
+  box-sizing:border-box;
+  flex:none;
+  max-width:100%;
+  height:44px;
+  border-radius:var(--sf-ui-pill);
+}
+#sf-search .sf-discovery-card-skeleton{
+  pointer-events:none;
+}
+#sf-search .sf-discovery-card-skeleton .sf-explore-photo{
+  border-radius:var(--sf-ui-control-radius);
+  aspect-ratio:1;
+}
+#sf-search .sf-discovery-card-skeleton .sf-explore-name{
+  height:13px;
+  width:82%;
+  margin-top:11px;
+  border-radius:6px;
+}
+#sf-search .sf-discovery-card-skeleton .sf-explore-price{
+  width:51%;
+  height:16px;
+  margin-top:10px;
+  border-radius:6px;
+}
+#sf-search .sf-discovery-shimmer{
+  background-color:#e9e9e7;
+  background-image:linear-gradient(105deg,#e9e9e7 25%,#f9f9f8 47%,#e9e9e7 69%);
+  background-size:220% 100%;
+  animation:sf-discovery-shimmer 1.25s ease-in-out infinite;
+}
+@keyframes sf-discovery-shimmer{
+  from{background-position:100% 0}
+  to{background-position:-120% 0}
+}
+@media(prefers-reduced-motion:reduce){
+  #sf-search .sf-discovery-shimmer{
+    animation:none;
+    background-image:none;
+  }
+}
 #sf-search #sf-results:empty{min-height:0}
 @media(max-width:700px){
  #sf-search .sf-discovery h3{margin:9px 0 7px}
