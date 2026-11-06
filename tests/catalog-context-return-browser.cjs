@@ -65,6 +65,34 @@ const headers={home:render({}),shop:render({FIXTURE_CATALOG:'shop'}),category:re
   // Canonical redirect to a slash URL must keep the clicked source.
   await page.goto(origin+'/category/?filter=blue');await page.locator('#redirect').click();
   assert.equal(await back().getAttribute('href'),origin+'/category/?filter=blue','Canonical product redirect');
+  // Search is an overlay, not a URL. Product Back must carry its query and
+  // shelf scroll to the original document without storing a stale result HTML.
+  await page.goto(origin+'/');
+  await page.evaluate(()=>{
+    const panel=document.createElement('section');
+    panel.id='sf-panel';
+    panel.className='is-search-panel';
+    panel.setAttribute('open','');
+    panel.style.setProperty('position','static','important');
+    panel.style.setProperty('display','block','important');
+    panel.innerHTML='<section id="sf-search"><input id="sf-query" value="Seramik vazo">' +
+      '<div class="sf-search-content" style="height:110px;overflow-y:auto">' +
+      '<a id="search-product" href="/product/item/">Open searched product</a>' +
+      '<div style="height:700px"></div></div></section>';
+    document.querySelector('main').append(panel);
+    panel.querySelector('.sf-search-content').scrollTop=35;
+  });
+  await page.locator('#search-product').click();
+  assert(await back().isVisible(),'Search -> product retains meaningful Back');
+  assert.equal(await back().getAttribute('href'),origin+'/','Search results return to their host page');
+  assert.equal(await back().getAttribute('data-sf-return-search'),'1','Back carries Search overlay return intent');
+  await back().click();
+  const savedSearch=await page.evaluate(()=>JSON.parse(sessionStorage.getItem('sf-search-return-state')));
+  assert.equal(savedSearch.url,origin+'/');
+  assert.equal(savedSearch.query,'Seramik vazo','Search query survives the product document');
+  assert(savedSearch.scrollTop>=0,'Search shelf position is recorded for restoration');
+  // Reusing a retained URL must not leak the Search overlay into a new visit.
+  await page.evaluate(()=>sessionStorage.clear());
   // Menu entries start a top-level page, not a back chain.
   await page.goto(origin+'/');await page.locator('#menu-about').click();assert(!await back().isVisible());assert.equal(await title().innerText(),'Hakkımızda');
   // No fake Shop history for direct product entries or excluded checkout.
