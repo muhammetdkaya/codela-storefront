@@ -31,7 +31,7 @@ assert.ok(cart.includes("t('Your cart is empty.')"),'Empty cart message remains'
 assert.ok(search.includes('row.repeat(6)'), 'Six static skeleton rows while a real query is in flight');
 assert.ok(search.includes('function showDiscoverySkeleton()') && search.includes('function clearDiscoverySkeleton()'),'Discovery has loading and cleanup states separate from typed search');
 assert.ok(search.includes('showDiscoverySkeleton();') && search.includes("discoveryRequest = new AbortController()"),'Discovery skeleton is rendered immediately when the Store API request starts');
-assert.ok(search.includes("'sf-discovery-term-skeleton sf-discovery-shimmer'"),'Popular keywords have 44px pill placeholders');
+assert.ok(search.includes('sf-discovery-term-skeleton sf-discovery-shimmer'),'Popular keywords have 44px pill placeholders');
 assert.ok(search.includes('sf-discovery-card-skeleton') && search.includes('card.repeat(3)'),'Discover shelf uses real card geometry for three placeholders');
 assert.ok(search.includes("discovery.classList.add('is-loading')") && search.includes("discovery.classList.remove('is-loading')"),'Discovery loading state is balanced');
 assert.ok(search.includes("clearDiscoverySkeleton();") && search.includes("discoveryRequest?.abort()"),'Cancelled/failed discovery requests clear stale loading UI');
