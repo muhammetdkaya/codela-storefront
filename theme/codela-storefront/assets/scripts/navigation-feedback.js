@@ -100,7 +100,7 @@
             where.append(el);
         }
         const cameFromHome = type === 'product' && config.home &&
-            new URL(location.href).pathname.replace(/\\/$/, '') === new URL(config.home, location.href).pathname.replace(/\\/$/, '');
+            new URL(location.href).pathname.replace(/\/$/, '') === new URL(config.home, location.href).pathname.replace(/\/$/, '');
         if (type === 'home') capsule(left, 'logo');
         else if (type === 'product') {
             capsule(left, 'icon'); // Back
