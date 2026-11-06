@@ -76,3 +76,38 @@ add_filter( 'render_block_codela/page-layout', static function( $html ) {
     return $html;
 } );
 
+/**
+ * Pages with a valid, enabled Codela Contact layout present that layout as the
+ * primary body. In block themes core/post-content may bypass the plugin's
+ * classic in_the_loop() condition and leave the old HTML editor content visible.
+ * Keep the original post_content untouched in the database for recovery/editing;
+ * override only the public render of this explicitly managed Contact layout.
+ */
+function codela_sf_contact_page_layout( int $post_id ): string {
+    if ( $post_id <= 0 || ! function_exists( 'codela_sections_validate_meta' ) ) { return ''; }
+    $post = get_post( $post_id );
+    if ( ! $post || 'page' !== $post->post_type
+        || has_block( 'codela/page-layout', $post ) || post_password_required( $post_id ) ) { return ''; }
+    $raw = get_post_meta( $post_id, '_codela_page_layout', true );
+    if ( ! is_string( $raw ) || '' === $raw || is_wp_error( codela_sections_validate_meta( $raw ) ) ) { return ''; }
+    foreach ( parse_blocks( $raw ) as $root ) {
+        if ( 'codela/page-layout' !== ( $root['blockName'] ?? '' ) ) { continue; }
+        foreach ( $root['innerBlocks'] ?? [] as $child ) {
+            if ( 'codela/section-contact' !== ( $child['blockName'] ?? '' ) ) { continue; }
+            $contact = codela_sections_clean( 'contact', $child['attrs']['data'] ?? [] );
+            if ( ! is_wp_error( $contact ) && ! empty( $contact['enabled'] ) ) {
+                // The plugin remains authoritative for schema validation and
+                // section rendering. Never trust or print unvalidated raw HTML.
+                return render_block( $root );
+            }
+        }
+    }
+    return '';
+}
+add_filter( 'render_block_core/post-content', static function( $html, $block, $instance ) {
+    if ( is_admin() || ! is_singular( 'page' ) ) { return $html; }
+    $id = (int) get_queried_object_id();
+    if ( ! $id || (int) ( $instance->context['postId'] ?? $id ) !== $id ) { return $html; }
+    $contact = codela_sf_contact_page_layout( $id );
+    return '' !== $contact ? $contact : $html;
+}, 30, 3 );
