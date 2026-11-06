@@ -6,9 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Gezinme kökleri ve detay ekranları ayrıldı: Ana Sayfa, Mağaza, ana kategoriler ve menüden açılan sayfalarda gereksiz Geri gösterilmez; içerik/kategori/ürün detayına gerçek site içi geçişte Geri görünür.",
-    "Mobil ürün sayfasında Ana Sayfa’dan gelindiğinde yalnız Geri, kategori/arama/ilgili üründen gelindiğinde Geri ve Ana Sayfa, doğrudan bağlantıyla açıldığında yalnız Ana Sayfa görünür. Ürün sayfasının geri düşüşü artık sahte Mağaza bağlantısı değildir.",
-    "Arama içinden ürüne gidilip Geri ile dönüldüğünde aynı arama paneli sorgusuyla yeniden açılır, gerçek ürünler güncel API’den getirilir ve panel kaydırması geri yüklenir. Filtreli katalogların URL ve sayfa kaydırması da saklanır.",
-    "Alt kategori üst kategoriye, Hesabım alt ekranları gerçek WooCommerce ebeveynlerine ve Ödeme ekranı Sepet’e geri dönebilir. Contextual oklar ortak chevron-left simgesini kullanır; dört sekmeli alt menüye hiç dokunulmadı."
+    "Normal ziyaretçinin wp-login.php giriş ve kayıt bağlantıları WooCommerce Hesabım sayfasına yönlendirilir. Yönetici girişleri, yeniden kimlik doğrulama, POST oturum işlemleri, şifre sıfırlama ve Google giriş akışı korunur.",
+    "Geçerli Codela İletişim yerleşimi kaydedilmiş sayfalarda ziyaretçilere özel iletişim alanı öncelikli gösterilir; eski WordPress sayfa HTML içeriği veritabanından silinmez. Düzen geçersiz veya devre dışıysa normal sayfa içeriği korunur.",
+    "Sayfa geçişinde içerik skeletonuyla birlikte headerdaki hedef logo/başlık, sepet, filtre ve menü kapsülleri de hemen skeletona dönüşür. Eski sayfanın ikonları görünmez; geçiş iptal edilirse eski header eksiksiz geri gelir. Dört sekmeli alt menü değiştirilmedi."
   ]
 }

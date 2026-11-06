@@ -12,7 +12,7 @@ module.exports=async function destinationBottomBrowser(browser){
   await page.goto('https://store.test/');
   for(const width of [320,390,700,701,900,901,1280])for(const product of [false,true]){
    await page.setViewportSize({width,height:850});
-   await page.setContent(`<!doctype html><html><head><meta charset="utf-8"><style>${css}</style></head><body class="${product?'single-product woocommerce':''}"><div class="sf-shell has-mobile-dock"><header class="sf-header"><div class="sf-actions"><a class="sf-cart-trigger">Cart</a></div></header><nav class="sf-mobile-dock" ${product?'hidden':''}><div class="sf-dock-surface"><a data-dock-view="home">Home</a></div></nav></div><main id="sf-content"><div class="product"><form class="cart"><div class="sf-product-purchase" style="position:fixed;bottom:12px;visibility:visible"><span data-old-price>42 ₺</span><input name="quantity" value="7"><button type="submit" name="add-to-cart" value="42">Old product</button></div></form></div></main><footer class="sf-footer"><a>Privacy</a></footer></body></html>`);
+   await page.setContent(`<!doctype html><html><head><meta charset="utf-8"><style>${css}</style></head><body class="${product?'single-product woocommerce':''}"><div class="sf-shell has-mobile-dock"><header class="sf-header"><div class="sf-brand sf-ui-surface">ORIGINAL LOGO</div><nav class="sf-header-menu">ORIGINAL MENU</nav><div class="sf-actions"><a class="sf-cart-trigger">Cart</a></div></header><nav class="sf-mobile-dock" ${product?'hidden':''}><div class="sf-dock-surface"><a data-dock-view="home">Home</a></div></nav></div><main id="sf-content"><div class="product"><form class="cart"><div class="sf-product-purchase" style="position:fixed;bottom:12px;visibility:visible"><span data-old-price>42 ₺</span><input name="quantity" value="7"><button type="submit" name="add-to-cart" value="42">Old product</button></div></form></div></main><footer class="sf-footer"><a>Privacy</a></footer></body></html>`);
    await page.evaluate(preview=>{window.codelaSFDocument={home:'https://store.test/',productBase:'https://store.test/product/',purchasePreview:preview};window.originalForm=document.querySelector('form.cart');window.originalDock=document.querySelector('.sf-mobile-dock');window.submits=0;originalForm.addEventListener('submit',e=>{e.preventDefault();submits++});},preview);
    await page.addScriptTag({content:script});
    for(const target of ['product','home'])for(const owner of ['document','router']){
@@ -26,6 +26,18 @@ module.exports=async function destinationBottomBrowser(browser){
      return{bottom:document.documentElement.dataset.sfNavigationBottom,dock:visible(originalDock),preview:visible(panel),old:visible(document.querySelector('[data-old-price]')),forms:document.querySelectorAll('form.cart').length,same:document.querySelector('form.cart')===originalForm,quantity:originalForm.elements.quantity.value,submits,locked:originalForm.closest('[inert]')!==null,footer:document.querySelector('.sf-footer').inert,buttonDisabled:panel?.querySelector('button')?.disabled,buttonHeight:panel?.querySelector('button')?.getBoundingClientRect().height,formInPreview:!!panel?.querySelector('form,input,[name="add-to-cart"]'),box:box&&{top:box.top,bottom:box.bottom,width:box.width}};
     });
     assert.equal(state.bottom,target==='product'?'product':'dock');
+    const header=await page.locator('.sf-header').evaluate(el=>{
+      const preview=el.querySelector('.sf-header-destination');
+      const old=el.querySelector('.sf-brand');
+      return {visible:!!preview&&getComputedStyle(preview).visibility==='visible',
+        product:preview?.classList.contains('sf-header-destination--product'),
+        capsules:preview?.querySelectorAll('.sf-header-destination-capsule').length,
+        oldBrandHidden:getComputedStyle(old).visibility==='hidden',
+        menuSkeleton:!!preview?.querySelector('.sf-header-destination-right .sf-header-destination-capsule--icon')};
+    });
+    assert(header.visible && header.oldBrandHidden && header.menuSkeleton,'Header replaces stale logo/menu icons with destination loading islands immediately');
+    assert.equal(header.product,target==='product','Header skeleton follows destination type, not outgoing page');
+    assert.equal(header.capsules,target==='product'?3:3,'Header controls preserve destination slots on home/product changes');
     assert.equal(state.preview,width<=700&&target==='product');
     if(width<=700)assert.equal(state.dock,target==='home','Bottom follows destination, never outgoing page');
     assert(!state.old,'Outgoing product data stays hidden');
@@ -34,6 +46,8 @@ module.exports=async function destinationBottomBrowser(browser){
     await page.evaluate(()=>{document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}));});
     assert.equal(await page.locator('.sf-mobile-dock').evaluate(el=>el.outerHTML.replace(/ style=""/g,'')),before,'Cancel restores original dock exactly');
     assert.equal(await page.locator('.sf-navigation-preview').count(),0);
+    assert.equal(await page.locator('.sf-header-destination').count(),0,'Header skeleton cleans up on cancellation');
+    assert.equal(await page.locator('.sf-brand').evaluate(el=>getComputedStyle(el).visibility),'visible','Original header is restored without replacing its nodes');
     assert.equal(await page.locator('form.cart input').inputValue(),'7');
    }
    // A stale completion cannot remove the newer destination's preview.
