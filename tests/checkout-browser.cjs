@@ -64,9 +64,17 @@ const homeHeaderGeometry=await page.locator('.sf-header').evaluate(el=>{
  return {logoX:logo.x,logoY:logo.y,logoWidth:logo.width,menuX:menu.x,menuY:menu.y,
   menuWidth:menu.width,toolsVisible:getComputedStyle(tools).display!=='none'};
 });
-for(const prop of ['logoX','logoY','logoWidth','menuX','menuY','menuWidth'])
+for(const prop of ['logoX','logoY','menuX','menuY','menuWidth'])
  assert(Math.abs(checkoutHeader[prop]-homeHeaderGeometry[prop])<1,
    'Checkout and Home share '+prop+' at '+width+'px: '+JSON.stringify({checkoutHeader,homeHeaderGeometry}));
+// Checkout intentionally shows only the back icon. Home displays the brand
+// wordmark; their pill widths are not expected to match.
+if(width<=700) {
+ assert(checkoutHeader.logoWidth>=43 && checkoutHeader.logoWidth<=45,
+   'Checkout uses a compact 44px Back island, not the Home wordmark');
+ assert(homeHeaderGeometry.logoWidth>checkoutHeader.logoWidth,
+   'Home retains its larger brand capsule independently of Checkout');
+}
 assert.equal(checkoutHeader.toolsVisible,homeHeaderGeometry.toolsVisible,
  'Header action visibility is identical on Home and Checkout at '+width);
 if(width<=700){
