@@ -27,7 +27,14 @@ async function startServer() {
     };
     if(req.method==='GET' && req.url==='/') return send(200,fixture,'text/html; charset=utf-8');
     if(req.method==='GET' && req.url==='/quick-login.js') return send(200,js,'text/javascript; charset=utf-8');
-    if(req.method==='GET' && req.url==='/account/') return send(200,'<h1>WooCommerce account opened</h1>','text/html');
+    if(req.method==='GET' && req.url?.startsWith('/account/')) {
+      // Simulate the old cached guest response for a plain same-URL redirect.
+      const actual = new URL(req.url,'http://localhost');
+      if (!actual.searchParams.has('sf_quick_auth')) {
+        return send(200,'<h1>Cached guest login page</h1>','text/html');
+      }
+      return send(200,'<h1>WooCommerce account opened</h1>','text/html');
+    }
     if(req.method==='POST' && req.url==='/quick-login/challenge') return send(200,JSON.stringify({challenge:'ab'.repeat(32)}));
     if(req.method==='POST' && req.url==='/quick-login/verify') {
       let body='';
@@ -88,6 +95,10 @@ function release(ok) {
       assert.equal(await page.locator('.sf-quick-user').innerText(),'Ayşe Yılmaz','Full name, not remembered-account label');
       assert.equal(await page.locator('.sf-quick-sheet').isVisible(),false,'Bottom sheet closed at first paint');
       assert.equal(await page.locator('.sf-quick-slot').count(),6,'Six visually aligned PIN cells');
+      assert.equal(await page.getByText('Continue',{exact:true}).count(),1,
+        'Remembered account uses a concise welcome-free heading');
+      assert.equal(await page.locator('.sf-quick-sheet').evaluate(el=>getComputedStyle(el).backgroundColor),
+        'rgb(255, 255, 255)','PIN sheet must be an opaque white surface');
       await page.locator('.sf-quick-account').click();
       await page.locator('.sf-quick-sheet').waitFor({state:'visible'});
       assert(await page.evaluate(()=>document.activeElement===document.querySelector('.sf-quick-native-pin')),
@@ -104,17 +115,19 @@ function release(ok) {
         await page.locator('.sf-quick-pin-track.is-verified').waitFor({state:'attached'});
         await page.waitForFunction(() => {
           const box = document.querySelector('.sf-quick-result');
-          return box && getComputedStyle(box).borderColor === 'rgb(40, 116, 84)';
+          return box && getComputedStyle(box).borderColor === 'rgb(22, 132, 79)';
         }, {timeout:4000});
         const border=await page.locator('.sf-quick-result').evaluate(el=>getComputedStyle(el).borderColor);
-        assert.equal(border,'rgb(40, 116, 84)','Success uses Codela restrained green');
-        await page.waitForURL('**/account/',{timeout:10000});
+        assert.equal(border,'rgb(22, 132, 79)','Success uses distinct confirmed green');
+        await page.waitForURL(url=>url.pathname==='/account/'&&url.searchParams.has('sf_quick_auth'),{timeout:10000});
         assert(await page.getByText('WooCommerce account opened').isVisible(),'Real account redirect follows verification');
       } else {
         await page.locator('.sf-quick-pin-track.is-error').waitFor({state:'attached'});
         assert.equal(await page.locator('.sf-quick-native-pin').inputValue(),'','Failed code is cleared');
         assert.equal(await page.locator('.sf-quick-slot.is-filled').count(),0,'No persisted PIN dots after error');
         assert.equal(await page.locator('.sf-quick-pin-track.is-verified').count(),0,'Error never shows success check');
+        assert.equal(await page.locator('.sf-quick-status').evaluate(el=>getComputedStyle(el).color),
+          'rgb(197, 54, 67)','Failed PIN visibly uses red feedback');
         await page.locator('.sf-quick-password').click();
         assert(await page.locator('#customer_login').isVisible(),'Native Woo password login remains available');
       }
