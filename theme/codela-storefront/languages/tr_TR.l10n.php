@@ -42,6 +42,8 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'Gallery navigation' => 'Galeri gezinmesi',
 'Previous image' => 'Önceki görsel',
 'Next image' => 'Sonraki görsel',
+'Pause slideshow' => 'Slaytı duraklat',
+'Start slideshow' => 'Slaytı başlat',
 'Explore categories' => 'Kategorileri keşfet',
 'Best sellers' => 'Çok satanlar',
 'New arrivals' => 'Yeni ürünler',

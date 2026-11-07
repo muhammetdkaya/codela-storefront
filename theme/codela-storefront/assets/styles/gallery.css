@@ -137,6 +137,10 @@
 
 /* Page sliders allow vertical gestures to continue down the document. */
 [data-sf-gallery] .sf-ui-gallery-track{overscroll-behavior-y:auto}
+/* Mouse dragging augments the same native scrollport; touch/wheel stay native. */
+@media(hover:hover){[data-sf-gallery-ready] .sf-ui-gallery-track{cursor:grab}}
+[data-sf-gallery-ready] .sf-ui-gallery-track.is-dragging{cursor:grabbing;scroll-snap-type:none;user-select:none;-webkit-user-select:none}
+[data-sf-gallery-ready] .sf-ui-gallery-track img{-webkit-user-drag:none}
 
 /* One gallery track, with native responsive art direction. */
 .sf-ui-gallery .woocommerce-product-gallery__image picture{display:block;width:100%;height:100%}

@@ -30,6 +30,7 @@ jobs:
           node --check theme/codela-storefront/assets/scripts/gallery-horizontal.js
           node --check tests/showcase-viewport-browser.cjs
           node tests/showcase-caption.cjs
+          node tests/showcase-motion.cjs
           python3 tests/package.py
       - name: Install one browser engine
         run: |
@@ -52,9 +53,11 @@ jobs:
         env:
           SHOWCASE_INLINE_VISUALS: '1'
           TEST_WEBKIT: ${{ matrix.browser == 'webkit' && '1' || '' }}
+          TEST_BROWSER: ${{ matrix.browser }}
         run: |
           node tests/showcase-viewport-browser.cjs
           node tests/homepage-browser.cjs
+          node tests/showcase-motion-browser.cjs
       - name: Prove previous 183 CSS fails the shorter-frame contract
         env:
           TEST_WEBKIT: ${{ matrix.browser == 'webkit' && '1' || '' }}

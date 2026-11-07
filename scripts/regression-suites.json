@@ -464,6 +464,17 @@
         ],
         "dependencies": [],
         "timeout_ms": 180000
+      },
+      {
+        "file": "tests/showcase-motion-browser.cjs",
+        "engines": [
+          "chromium",
+          "webkit"
+        ],
+        "dependencies": [
+          "php"
+        ],
+        "timeout_ms": 240000
       }
     ],
     "ui": [
