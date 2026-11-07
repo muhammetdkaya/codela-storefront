@@ -169,11 +169,13 @@ function preventInitialAccountAutoFocus() {
             }
         }
 
-        // Native hooks print the buttons inside Woo's REAL forms. Switching
-        // views does not trigger the mobile keyboard or browser AutoFill.
-        container.addEventListener('click', event => {
+        // Register CTA is a sibling AFTER #customer_login (before Google).
+        // Back-to-login remains inside Woo registration. Delegate within
+        // the shared Woo shell, never to the document or unrelated links.
+        // Switching views does not focus any field or invoke AutoFill.
+        root?.addEventListener('click', event => {
             const action = event.target.closest('a.sf-auth-register-cta,a.sf-auth-back-login');
-            if (!action || !container.contains(action)) return;
+            if (!action || !root.contains(action)) return;
             event.preventDefault();
             select(action.classList.contains('sf-auth-register-cta') ? 'register' : 'login');
         });

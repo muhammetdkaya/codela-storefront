@@ -34,15 +34,16 @@ function codela_sf_account_intro(): void {
 add_action( 'woocommerce_before_customer_login_form', 'codela_sf_account_intro', 5 );
 
 /**
- * Guest form actions are inserted into the EXISTING WooCommerce forms, not a
- * second authentication implementation. With JS disabled the genuine Woo
- * registration form stays on the page and the anchor still reaches it.
+ * Render registration BETWEEN the completed Woo account forms and Google's
+ * social offer. Never print the CTA from inside a Woo form-row: native submit /
+ * remember-me layouts can give form-end hooks a narrow column and reorder it.
+ * WooCommerce still owns both forms, validation, and registration permissions.
  */
 function codela_sf_account_register_action(): void {
     if ( is_user_logged_in() || 'yes' !== get_option( 'woocommerce_enable_myaccount_registration', 'no' )
         || ( ! is_account_page() && empty( $GLOBALS['codela_sf_auth_overlay'] ) ) ) { return; }
     ?>
-    <a href="#register" class="sf-auth-register-cta sf-ui-pressable" aria-controls="sf-auth-register">
+    <a href="#sf-auth-register" class="sf-auth-register-cta sf-ui-pressable" aria-controls="sf-auth-register">
         <span class="sf-auth-register-glyph" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" focusable="false">
                 <rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="m3 6 9 7 9-7"/>
@@ -52,7 +53,7 @@ function codela_sf_account_register_action(): void {
     </a>
     <?php
 }
-add_action( 'woocommerce_login_form_end', 'codela_sf_account_register_action', 12 );
+add_action( 'woocommerce_after_customer_login_form', 'codela_sf_account_register_action', 10 );
 
 /** Registration stays the native WooCommerce form; returning never focuses an input. */
 function codela_sf_account_login_return(): void {

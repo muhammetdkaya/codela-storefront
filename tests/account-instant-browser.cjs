@@ -13,10 +13,13 @@ const html='<!doctype html><html><head><meta name="viewport" content="width=devi
  +'<p class="sf-auth-description">Sign in to your account.</p></header>'
  +'<div id="customer_login"><div class="u-column1"><form class="woocommerce-form woocommerce-form-login" action="/myaccount/" method="post">'
  +'<input type="hidden" name="woocommerce-login-nonce" value="expired-public-cache"><input name="username">'
- +'<button type="submit">Log in</button><a class="sf-auth-register-cta" href="#register">Register with email</a></form></div>'
+ +'<button type="submit">Log in</button></form></div>'
  +'<div class="u-column2"><form class="woocommerce-form woocommerce-form-register" action="/myaccount/" method="post"><a class="sf-auth-back-login" href="#customer_login">Back to sign in</a>'
  +'<input type="hidden" name="woocommerce-register-nonce" value="expired-public-cache"><input name="email">'
- +'<button type="submit">Register</button></form></div></div></div></section>'
+ +'<button type="submit">Register</button></form></div></div>'
+ +'<a class="sf-auth-register-cta" href="#sf-auth-register">Register with email</a>'
+ +'<div class="sf-auth-social"><span>or</span><button class="sf-auth-google">Google</button></div>'
+ +'</div></section>'
  +'<script src="/auth.js"></script></body></html>';
 async function setup(){
  const server=http.createServer((req,res)=>{
@@ -68,7 +71,9 @@ async function setup(){
   assert.equal(await page.locator('.sf-auth-heading-text').innerText(),'Welcome back','Login heading returns');
   assert.equal(await page.locator('.sf-auth-heading-wave').isVisible(),true,'Login welcome wave returns');
   await page.locator('.sf-auth-register-cta').click();
-  assert.equal(await page.locator('#customer_login').getAttribute('data-auth-view'),'register','Email registration button opens native Woo form');
+  assert.equal(await page.locator('#customer_login').getAttribute('data-auth-view'),'register','Email registration sibling opens native Woo form');
+  assert.equal(await page.locator('.sf-overlay-auth').evaluate(el=>el.classList.contains('sf-auth-register-view')),true,
+    'Native registration toggles its root display state without CSS being loaded by this JS-only fixture');
   assert.equal(formRequests,1,'One background request per Account opening');
   await page.close();
   authenticated=true;
