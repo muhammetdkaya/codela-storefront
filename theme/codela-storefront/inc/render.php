@@ -87,10 +87,11 @@ function codela_sf_header(): string {
     $context = codela_sf_header_context();
     $catalog_page = function_exists( 'codela_sf_is_catalog_archive' ) && codela_sf_is_catalog_archive();
     $desktop_menu = codela_sf_menu( true );
-    // One canonical authentication surface: /my-account/ for both dock and
-    // header links. An in-page modal rendered a second WooCommerce form with
-    // independent registration tabs and stale session markup.
-    $guest_overlay = false;
+    // Render the *same* WooCommerce native login/register component in the
+    // already-present theme dialog for guests outside My Account. This restores
+    // the zero-navigation dock interaction while retaining /my-account/ as the
+    // canonical fallback and POST destination. Never duplicate on My Account.
+    $guest_overlay = ! is_user_logged_in() && ! ( function_exists( 'is_account_page' ) && is_account_page() );
     $checkout_page = is_checkout();
     $show_mobile_dock = ! $checkout_page && ! in_array( $settings['mobile_dock_enabled'] ?? true, [ false, 0, '0', '' ], true );
     // Checkout is a full page without the mobile dock, but uses the same
