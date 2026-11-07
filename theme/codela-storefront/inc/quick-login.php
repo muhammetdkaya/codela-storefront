@@ -184,6 +184,50 @@ function codela_sf_quick_revoke( WP_REST_Request $request ) {
     return rest_ensure_response( [ 'ok' => true ] );
 }
 
+/**
+ * Public, read-only browser credential status. Admin AJAX intentionally checks
+ * the actual WordPress cookie even when stale guest markup lacks a REST nonce.
+ * This endpoint never issues authentication, and proof replay grants no session.
+ */
+function codela_sf_quick_status_active( int $user_id, string $device, string $challenge, string $signature ): bool {
+    if ( ! $user_id || ! codela_sf_quick_device_id( $device )
+        || ! preg_match( '/^[0-9a-f]{64}$/D', $challenge ) ) { return false; }
+    $user = get_user_by( 'id', $user_id );
+    if ( ! $user || ! codela_sf_quick_customer( $user ) ) { return false; }
+    $credential = codela_sf_quick_devices( $user_id )[ $device ] ?? null;
+    return is_array( $credential ) && ( $credential['expires'] ?? 0 ) > time()
+        && isset( $credential['public_key'] )
+        && codela_sf_quick_signature_valid(
+            (string) $credential['public_key'],
+            'codela-pin-status:v1:' . $user_id . ':' . $device . ':' . $challenge,
+            $signature
+        );
+}
+
+function codela_sf_quick_browser_status(): void {
+    // This read-only check must never be cached across account transitions.
+    nocache_headers();
+    $ip = isset( $_SERVER['REMOTE_ADDR'] ) && is_string( $_SERVER['REMOTE_ADDR'] )
+        ? $_SERVER['REMOTE_ADDR'] : '';
+    if ( ! codela_sf_quick_request_limit( 'status-ip:' . $ip, 90 ) ) {
+        wp_send_json( [ 'error' => 'rate_limited' ], 429 );
+    }
+    codela_sf_quick_request_limit( 'status-ip:' . $ip, 90, true );
+    $user_id = isset( $_POST['user_id'] ) ? absint( wp_unslash( $_POST['user_id'] ) ) : 0;
+    $device = isset( $_POST['device_id'] ) && is_string( $_POST['device_id'] )
+        ? wp_unslash( $_POST['device_id'] ) : '';
+    $challenge = isset( $_POST['challenge'] ) && is_string( $_POST['challenge'] )
+        ? wp_unslash( $_POST['challenge'] ) : '';
+    $signature = isset( $_POST['signature'] ) && is_string( $_POST['signature'] )
+        ? wp_unslash( $_POST['signature'] ) : '';
+    wp_send_json( [
+        'authenticated' => is_user_logged_in(),
+        'active' => codela_sf_quick_status_active( $user_id, $device, $challenge, $signature ),
+    ] );
+}
+add_action( 'wp_ajax_codela_sf_quick_status', 'codela_sf_quick_browser_status' );
+add_action( 'wp_ajax_nopriv_codela_sf_quick_status', 'codela_sf_quick_browser_status' );
+
 add_action( 'rest_api_init', static function(): void {
     $routes = [
         'enroll' => [ 'callback' => 'codela_sf_quick_enroll', 'permission_callback' => 'is_user_logged_in' ],
@@ -220,6 +264,13 @@ add_action( 'profile_update', static function( $user_id, $old_user ): void {
     }
 }, 10, 2 );
 
+
+/** The WooCommerce account is session-specific, before and after logout. */
+add_action( 'template_redirect', static function(): void {
+    if ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) { return; }
+    if ( ! defined( 'DONOTCACHEPAGE' ) ) { define( 'DONOTCACHEPAGE', true ); }
+    nocache_headers();
+}, 0 );
 
 /**
  * One-time post-PIN navigation must never reuse a cached anonymous account
@@ -405,6 +456,7 @@ add_action( 'wp_enqueue_scripts', static function(): void {
         'rest' => esc_url_raw( rest_url( 'codela-storefront/v1/quick-login/' ) ),
         'nonce' => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
         'account' => wc_get_page_permalink( 'myaccount' ),
+        'statusUrl' => admin_url( 'admin-ajax.php' ),
         // Refresh old username-only hints on normal signed-in account visits.
         'identity' => ( is_user_logged_in() && codela_sf_quick_customer( wp_get_current_user() ) )
             ? [
