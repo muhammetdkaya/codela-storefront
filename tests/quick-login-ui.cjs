@@ -26,6 +26,19 @@ assert(php.includes("function_exists( 'codela_sf_google_enabled' ) && codela_sf_
 assert(css.includes('.sf-quick-or') && css.includes('.sf-quick-google'),'Divider and Google CTA have dedicated styles');
 assert(!js.includes("data-quick-digit"),'No custom number keypad should be used');
 
+assert(js.includes("currentBrowserStatus(profile, privateKey)") &&
+  js.includes("if (!browserStatus.active)") &&
+  js.includes("await forgetRemembered(profile)"),'Saved browser is verified server-side and revoked devices are removed');
+assert(js.includes("browserStatus.authenticated") && js.includes("freshAccountDocument()"),
+  'Cached anonymous HTML is replaced when actual WordPress cookie is present');
+assert(js.includes("Number(config.identity.userId) !== profile.userId") &&
+  js.includes("await forgetRemembered(profile)"),'Different Google/password account clears previous remembered identity');
+assert(php.includes("wp_ajax_nopriv_codela_sf_quick_status") &&
+  php.includes("codela_sf_quick_status_active"),'Read-only device status uses real WordPress cookie context');
+assert(php.includes("woocommerce_logout_default_redirect_url") &&
+  php.includes("woocommerce_login_redirect"),'Native login and logout bypass cached account HTML');
+assert(php.includes("DONOTCACHEPAGE") && php.includes("is_account_page()"),
+  'WooCommerce account route never caches account-specific HTML');
 assert(js.includes("window.location.replace(destination.href)"),'Successful PIN forces a full document navigation');
 assert(js.includes("destination.searchParams.set('sf_quick_auth'"),'Authenticated redirect bypasses cached guest account HTML');
 assert(php.includes("nocache_headers()"),'Authentication completion page explicitly disables caches');
