@@ -48,6 +48,17 @@ function codela_sf_style_version(): string {
     }
     return $version;
 }
+/** Static, audited Codela SVGs for zero-request header transitions. */
+function codela_sf_transition_icon( string $name ): string {
+    static $cached = [];
+    if ( ! in_array( $name, [ 'house', 'shopping-bag', 'menu', 'sliders-horizontal', 'search', 'user-round' ], true ) ) { return ''; }
+    if ( isset( $cached[ $name ] ) ) { return $cached[ $name ]; }
+    $file = get_template_directory() . '/assets/icons/' . $name . '.svg';
+    if ( ! is_file( $file ) ) { return ''; }
+    $svg = file_get_contents( $file );
+    return $cached[ $name ] = is_string( $svg )
+        ? str_replace( '<svg ', '<svg class="sf-icon" aria-hidden="true" focusable="false" ', $svg ) : '';
+}
 require_once get_template_directory() . '/inc/render.php';
 require_once get_template_directory() . '/inc/product-mobile-media.php';
 require_once get_template_directory() . '/inc/media.php';
@@ -171,6 +182,16 @@ add_action( 'wp_enqueue_scripts', function() {
             'accountLabel' => __( 'My account', 'codela-storefront' ),
             // Trusted bundled SVG is available before the navigation response or icon request.
             'backIcon' => str_replace( [ '<svg ', 'width="56"', 'height="56"' ], [ '<svg class="sf-icon" aria-hidden="true" focusable="false" ', 'width="24"', 'height="24"' ], file_get_contents( __DIR__ . '/assets/icons/chevron-left.svg' ) ),
+            // Header icons are real, preloaded SVG markup. Only the page BODY
+            // uses skeleton; destination header paints immediately on click.
+            'brandMarkup' => has_custom_logo() ? get_custom_logo() : '<span>' . esc_html( get_bloginfo( 'name' ) ) . '</span>',
+            'homeIcon' => codela_sf_transition_icon( 'house' ),
+            'cartIcon' => codela_sf_transition_icon( 'shopping-bag' ),
+            'menuIcon' => codela_sf_transition_icon( 'menu' ),
+            'filterIcon' => codela_sf_transition_icon( 'sliders-horizontal' ),
+            'searchIcon' => codela_sf_transition_icon( 'search' ),
+            'accountIcon' => codela_sf_transition_icon( 'user-round' ),
+            'shopLabel' => __( 'Shop', 'woocommerce' ),
             'accountParents' => [
                 [ 'url' => wc_get_account_endpoint_url( 'view-order' ), 'back' => wc_get_account_endpoint_url( 'orders' ), 'label' => wc_get_account_menu_items()['orders'] ?? __( 'My account', 'codela-storefront' ) ],
                 [ 'url' => wc_get_account_endpoint_url( 'edit-address' ), 'back' => wc_get_account_endpoint_url( 'edit-address' ), 'label' => wc_get_account_menu_items()['edit-address'] ?? __( 'My account', 'codela-storefront' ), 'childOnly' => true ],
@@ -203,11 +224,10 @@ add_action( 'wp_enqueue_scripts', function() {
         }
         wp_enqueue_script( 'codela-storefront-auth', $root_uri . 'scripts/auth.js', [], $style_version, true );
     }
-    // The guest account has a quiet header without any dialog/store tools.
-    // Its native forms need only auth.js; avoid the entire storefront graph.
-    if ( is_user_logged_in() || ! function_exists( 'is_account_page' ) || ! is_account_page() ) {
-        wp_enqueue_script_module( 'codela-storefront' );
-    }
+    // Every Account document, including after ?loggedout=true, uses the same
+    // four-tab store shell and working menu/cart/search module as the shop.
+    // WooCommerce still owns its native guest login form and auth processing.
+    wp_enqueue_script_module( 'codela-storefront' );
     if ( codela_sf_seamless_allowed() ) {
         wp_enqueue_script_module( 'codela-storefront/navigation' );
     }

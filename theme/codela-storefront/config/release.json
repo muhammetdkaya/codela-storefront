@@ -6,8 +6,8 @@
     "codela": "1.2.3"
   },
   "changes": [
-    "Normal ziyaretçinin wp-login.php giriş ve kayıt bağlantıları WooCommerce Hesabım sayfasına yönlendirilir. Yönetici girişleri, yeniden kimlik doğrulama, POST oturum işlemleri, şifre sıfırlama ve Google giriş akışı korunur.",
-    "Geçerli Codela İletişim yerleşimi kaydedilmiş sayfalarda ziyaretçilere özel iletişim alanı öncelikli gösterilir; eski WordPress sayfa HTML içeriği veritabanından silinmez. Düzen geçersiz veya devre dışıysa normal sayfa içeriği korunur.",
-    "Sayfa geçişinde içerik skeletonuyla birlikte headerdaki hedef logo/başlık, sepet, filtre ve menü kapsülleri de hemen skeletona dönüşür. Eski sayfanın ikonları görünmez; geçiş iptal edilirse eski header eksiksiz geri gelir. Dört sekmeli alt menü değiştirilmedi."
+    "WooCommerce oturum çıkışı sonrasında /hesabim/?loggedout=true adresi artık ayrı giriş kabuğu değil, normal Codela mağaza headerı ve dört sekmeli alt menü ile açılır; Hesabım sekmesi seçili kalır. WordPress yönetici ve güvenli giriş yolları korunur.",
+    "Ürün ve diğer sayfalar arasında geçiş başladığı anda headerdaki gerçek logo, geri, ev, sepet, filtre ve menü ikonları görünür. Headerda skeleton/shimmer yoktur; skeleton yalnız yüklenen içerik bölümündedir.",
+    "Geçiş iptalinde önceki header DOM’u geri yüklenir; giriş sayfasındaki WooCommerce formu korunur ve aynı ekranda ikinci bir giriş formu oluşturulmaz. Alt menü tasarımı değiştirilmedi."
   ]
 }

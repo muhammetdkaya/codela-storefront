@@ -5,6 +5,10 @@ module.exports=async function destinationBottomBrowser(browser){
  const preview=execFileSync(process.env.PHP_BIN||'php',['tests/render-product-sheet.php','navigation'],{encoding:'utf8'});
  const css=fs.readFileSync(root+'assets/storefront.css','utf8')+['tokens','components','navigation','product','navigation-feedback'].map(name=>fs.readFileSync(root+'assets/styles/'+name+'.css','utf8')).join('\n');
  const script=fs.readFileSync(process.env.FEEDBACK_SCRIPT||root+'assets/scripts/navigation-feedback.js','utf8');
+ const rawIcon=name=>fs.readFileSync(root+'assets/icons/'+name+'.svg','utf8').replace('<svg ','<svg class="sf-icon" ');
+ const icons={backIcon:rawIcon('chevron-left'),homeIcon:rawIcon('house'),menuIcon:rawIcon('menu'),
+   cartIcon:rawIcon('shopping-bag'),filterIcon:rawIcon('sliders-horizontal'),searchIcon:rawIcon('search'),
+   accountIcon:rawIcon('user-round'),brandMarkup:'<a href="/">AZ SERAMIK</a>',brandName:'AZ SERAMIK'};
  const context=await browser.newContext({viewport:{width:390,height:850}});
  try{
   const page=await context.newPage();
@@ -13,7 +17,7 @@ module.exports=async function destinationBottomBrowser(browser){
   for(const width of [320,390,700,701,900,901,1280])for(const product of [false,true]){
    await page.setViewportSize({width,height:850});
    await page.setContent(`<!doctype html><html><head><meta charset="utf-8"><style>${css}</style></head><body class="${product?'single-product woocommerce':''}"><div class="sf-shell has-mobile-dock"><header class="sf-header"><div class="sf-brand sf-ui-surface">ORIGINAL LOGO</div><nav class="sf-header-menu">ORIGINAL MENU</nav><div class="sf-actions"><a class="sf-cart-trigger">Cart</a></div></header><nav class="sf-mobile-dock" ${product?'hidden':''}><div class="sf-dock-surface"><a data-dock-view="home">Home</a></div></nav></div><main id="sf-content"><div class="product"><form class="cart"><div class="sf-product-purchase" style="position:fixed;bottom:12px;visibility:visible"><span data-old-price>42 ₺</span><input name="quantity" value="7"><button type="submit" name="add-to-cart" value="42">Old product</button></div></form></div></main><footer class="sf-footer"><a>Privacy</a></footer></body></html>`);
-   await page.evaluate(preview=>{window.codelaSFDocument={home:'https://store.test/',productBase:'https://store.test/product/',purchasePreview:preview};window.originalForm=document.querySelector('form.cart');window.originalDock=document.querySelector('.sf-mobile-dock');window.submits=0;originalForm.addEventListener('submit',e=>{e.preventDefault();submits++});},preview);
+   await page.evaluate(({preview,icons})=>{window.codelaSFDocument={home:'https://store.test/',productBase:'https://store.test/product/',purchasePreview:preview,...icons};window.originalForm=document.querySelector('form.cart');window.originalDock=document.querySelector('.sf-mobile-dock');window.submits=0;originalForm.addEventListener('submit',e=>{e.preventDefault();submits++});},{preview,icons});
    await page.addScriptTag({content:script});
    for(const target of ['product','home'])for(const owner of ['document','router']){
     const before=await page.locator('.sf-mobile-dock').evaluate(el=>el.outerHTML.replace(/ style=""/g,''));
@@ -31,13 +35,19 @@ module.exports=async function destinationBottomBrowser(browser){
       const old=el.querySelector('.sf-brand');
       return {visible:!!preview&&getComputedStyle(preview).visibility==='visible',
         product:preview?.classList.contains('sf-header-destination--product'),
-        capsules:preview?.querySelectorAll('.sf-header-destination-capsule').length,
         oldBrandHidden:getComputedStyle(old).visibility==='hidden',
-        menuSkeleton:!!preview?.querySelector('.sf-header-destination-right .sf-header-destination-capsule--icon')};
+        logo:preview?.querySelector('.sf-header-destination-capsule--logo')?.textContent,
+        menuSvg:!!preview?.querySelector('.sf-header-destination-capsule--menu svg.sf-icon'),
+        cartSvg:!!preview?.querySelector('.sf-header-destination-capsule--cart svg.sf-icon'),
+        backSvg:!!preview?.querySelector('.sf-header-destination-capsule--back svg.sf-icon'),
+        shimmer:preview?.querySelectorAll('.sf-header-destination-shape').length};
     });
-    assert(header.visible && header.oldBrandHidden && header.menuSkeleton,'Header replaces stale logo/menu icons with destination loading islands immediately');
-    assert.equal(header.product,target==='product','Header skeleton follows destination type, not outgoing page');
-    assert.equal(header.capsules,target==='product'?3:3,'Header controls preserve destination slots on home/product changes');
+    assert(header.visible && header.oldBrandHidden,'Immediate destination header replaces outgoing header, not a skeleton');
+    assert.equal(header.product,target==='product','Real header layout follows destination type');
+    assert.equal(header.shimmer,0,'Header must never contain skeleton pills or pulse placeholders');
+    assert(header.menuSvg,'Real Menu SVG renders immediately during transition');
+    if(target==='product') assert(header.cartSvg&&header.backSvg,'Real Cart and Back SVG render immediately');
+    else assert(header.logo?.includes('AZ SERAMIK'),'Brand/logo immediately appears on the home transition');
     assert.equal(state.preview,width<=700&&target==='product');
     if(width<=700)assert.equal(state.dock,target==='home','Bottom follows destination, never outgoing page');
     assert(!state.old,'Outgoing product data stays hidden');
