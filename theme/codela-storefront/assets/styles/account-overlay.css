@@ -368,64 +368,56 @@
  #sf-panel.is-account-panel .sf-auth-tab-slide{transition:none}
 }
 
-/* 0.1.235 — same Mineral hierarchy inside the FAST Account panel. */
-#sf-panel.is-account-panel{
-  --sf-ui-page:#f6f4f0;
-  --sf-ui-accent:#496658;
-  --sf-ui-button-height:54px;
-}
+/* 0.1.236 — On store pages, ONLY account-overlay.css is enqueued.
+   Keep the same UI Kit colors, widths, order and typography as /hesabim/. */
+#sf-panel.is-account-panel{--sf-ui-button-height:var(--sf-ui-action-height)}
 #sf-panel.is-account-panel .woocommerce form .form-row.sf-auth-placeholder-ready input.input-text{
-  height:54px;min-height:54px;border-radius:15px;border-color:#dfe1df;background:#fff;
+  height:var(--sf-ui-action-height);min-height:var(--sf-ui-action-height);
+  border-radius:var(--sf-ui-control-radius);
 }
-#sf-panel.is-account-panel .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register) button[type=submit]{
-  min-height:54px!important;height:54px!important;border-radius:999px!important;
-  background:#232c29!important;color:#fff!important;border:1px solid #232c29!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 4px 11px rgba(24,32,30,.14)!important;
-  font-size:15px!important;font-weight:620!important;
+#sf-panel.is-account-panel .woocommerce > .sf-auth-register-cta{
+  display:flex!important;position:relative;box-sizing:border-box;
+  width:100%!important;min-width:0;max-width:none;
+  height:var(--sf-ui-action-height);min-height:var(--sf-ui-action-height);
+  margin:10px 0 0;padding:0 50px;align-items:center;justify-content:center;
+  border:1px solid var(--sf-ui-border)!important;border-radius:var(--sf-ui-button-radius)!important;
+  background:var(--sf-ui-button-tonal)!important;color:var(--sf-ui-control-ink)!important;
+  text-decoration:none!important;box-shadow:none!important;
+  font-size:14px;font-weight:600;line-height:1.2;
+  text-align:center;white-space:nowrap;letter-spacing:0;
+}
+#sf-panel.is-account-panel .sf-auth-register-glyph{
+  position:absolute;left:20px;top:50%;transform:translateY(-50%);
+  display:grid;place-items:center;width:22px;height:22px;pointer-events:none;
+}
+#sf-panel.is-account-panel .sf-auth-register-glyph svg{display:block;width:22px;height:22px}
+#sf-panel.is-account-panel .woocommerce.sf-auth-register-view > :is(.sf-auth-social,.sf-auth-register-cta){
+  display:none!important;
 }
 #sf-panel.is-account-panel .woocommerce .sf-auth-social{margin-top:12px;gap:10px}
 #sf-panel.is-account-panel .sf-auth-google,
 #sf-panel.is-account-panel .sf-auth-google:disabled{
-  min-height:54px;height:54px;border-radius:999px!important;
-  border:1px solid #747775!important;background:#fff!important;
-  background-image:none!important;color:#1f1f1f!important;
-  opacity:1!important;font-size:14px;font-weight:550;
-  box-shadow:0 1px 3px rgba(0,0,0,.025)!important;
+  width:100%;height:var(--sf-ui-action-height);min-height:var(--sf-ui-action-height);
+  border-radius:var(--sf-ui-button-radius)!important;
+  border:1px solid var(--sf-ui-border)!important;
+  background:var(--sf-ui-surface)!important;background-image:none!important;
+  color:var(--sf-ui-control-ink)!important;opacity:1!important;
+  box-shadow:none!important;font-size:14px;font-weight:600;
 }
 #sf-panel.is-account-panel .sf-auth-google .sf-google-glyph::after{display:none!important}
-#sf-panel.is-account-panel .woocommerce.sf-auth-register-view .sf-auth-social{display:none!important}
-@media(max-width:700px){
-  #sf-panel.is-account-panel .sf-account-body{padding-top:clamp(14px,3dvh,28px)}
-}
-
-/* Material parity: storefront pages enqueue account-overlay.css WITHOUT
-   account.css. Never rely on standalone-only rules for register actions. */
-#sf-panel.is-account-panel .woocommerce .sf-auth-register-cta{
-  position:relative;display:flex!important;align-items:center;justify-content:center;
-  box-sizing:border-box;width:100%;min-height:54px;height:54px;
-  margin:10px 0 0;padding:0 48px;border-radius:999px!important;
-  border:1px solid #d4c7b8!important;background:#e6dacb!important;
-  color:#302a24!important;text-align:center;text-decoration:none!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.65),0 3px 9px rgba(35,29,21,.045)!important;
-  font-size:15px;font-weight:620;line-height:1.25;
-  transition:filter .16s ease,transform .16s ease;
-}
-#sf-panel.is-account-panel .woocommerce .sf-auth-register-glyph{
-  position:absolute;left:20px;top:50%;transform:translateY(-50%);
-  display:grid;place-items:center;width:22px;height:22px;pointer-events:none;
-}
-#sf-panel.is-account-panel .woocommerce .sf-auth-register-glyph svg{display:block;width:22px;height:22px}
-#sf-panel.is-account-panel .woocommerce .sf-auth-register-cta:hover{filter:brightness(.97)}
-#sf-panel.is-account-panel .woocommerce .sf-auth-register-cta:active{transform:scale(.986)}
 #sf-panel.is-account-panel .woocommerce .sf-auth-back-login{
   display:inline-flex;align-items:center;gap:7px;min-height:44px;
-  margin:0 0 15px;color:#4d554e!important;text-decoration:none!important;
-  font-size:13px;font-weight:550;
+  margin:0 0 15px;color:var(--sf-ui-control-ink)!important;
+  text-decoration:none!important;font-size:13px;font-weight:550;
 }
 #sf-panel.is-account-panel .woocommerce .sf-auth-back-login span{font-size:24px;line-height:1}
 #sf-panel.is-account-panel .woocommerce :is(.sf-auth-register-cta,.sf-auth-back-login):focus-visible{
-  outline:2px solid #496658!important;outline-offset:3px;
+  outline:2px solid var(--sf-ui-glass-ink)!important;outline-offset:3px;
+}
+@media(max-width:360px){
+  #sf-panel.is-account-panel .woocommerce > .sf-auth-register-cta{padding-inline:43px;font-size:13px}
+  #sf-panel.is-account-panel .sf-auth-register-glyph{left:16px}
 }
 @media(prefers-reduced-motion:reduce){
-  #sf-panel.is-account-panel .woocommerce .sf-auth-register-cta{transition:none}
+  #sf-panel.is-account-panel .woocommerce > .sf-auth-register-cta{transition:none}
 }
