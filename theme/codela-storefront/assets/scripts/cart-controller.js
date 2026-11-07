@@ -90,22 +90,17 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
     function renderCartProgress(data) {
         const host = $('#sf-cart-progress');
         if (!host) return;
-        // The plugin owns the threshold, display preference, locale and messages.
-        // Config arrives alongside each live Store API cart, never from cached HTML.
-        const encoded = data.extensions?.['codela-free-shipping-bar']?.config_json;
-        if (!encoded || !data.items?.length || typeof window.CodelaFsbHtml !== 'function') {
+        // Theme Store API extension delegates the full cart bar to the
+        // original plugin's render_cart(), with its own active settings and
+        // WooCommerce zone/discount logic. The theme has no threshold logic.
+        const markup = data.extensions?.['codela-storefront-shipping']?.html;
+        if (!data.items?.length || typeof markup !== 'string' || !markup) {
             host.innerHTML = '';
             host.hidden = true;
             return;
         }
-        try {
-            const config = JSON.parse(encoded);
-            host.innerHTML = window.CodelaFsbHtml(config, data) || '';
-            host.hidden = !host.innerHTML;
-        } catch {
-            host.innerHTML = '';
-            host.hidden = true;
-        }
+        host.innerHTML = markup;
+        host.hidden = false;
     }
     function renderCart(data) {
         // Keep the live badge immediate; closed-cart photos/rows do no work.
