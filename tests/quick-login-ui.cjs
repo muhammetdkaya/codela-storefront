@@ -9,7 +9,16 @@ assert(js.includes("crypto.subtle.generateKey(") && js.includes("false, ['sign',
 assert(js.includes("indexedDB.open(") && js.includes("tx.objectStore('keys').put(key, deviceId)"),'Private key only stored via IndexedDB');
 assert(!js.includes("localStorage.setItem(savedKey, pin"),'PIN is never stored as a plaintext browser hint');
 assert(js.includes("host.classList.add('sf-pin-active')") && js.includes("sf-quick-password"),'Native Woo login fallback remains available');
-assert(js.includes("if (pin.length === 6) void submit()"),'Auto-submit is based on the sixth digit');
+assert(js.includes("if (input.value.length === 6) void submit()"),'Sixth digit automatically submits native numeric input');
+assert(js.includes('choose.addEventListener(\'click\', openSheet)'),'Remembered account opens a dedicated PIN bottom sheet');
+assert(js.includes("input.focus({preventScroll:true})"),'A direct account tap opens the operating system numeric keyboard');
+assert(js.includes('mergeSlots()') && js.includes("track.classList.add('is-merging')"),'The six visible PIN boxes merge into one center result');
+assert(js.includes("if (!result.ok || typeof result.account_url !== 'string')"),'Server authentication response is validated before success');
+assert(js.indexOf("track.classList.add('is-verified')") > js.indexOf("if (!result.ok || typeof result.account_url !== 'string')"),'Check animation cannot start before successful server verification');
+assert(js.includes("remembered.displayName = settings.dataset.displayName"),'Existing remembered accounts refresh their customer name');
+assert(js.includes("displayName:settings.dataset.displayName"),'New remembered accounts store display name');
+assert(!js.includes("data-quick-digit"),'No custom number keypad should be used');
+
 assert(js.includes("window.location.assign(result.account_url)"),'Redirect occurs only after server authenticated');
 assert(js.includes("derFromP1363"),'P1363 ECDSA signatures are converted to OpenSSL DER');
 assert(php.includes("wp_set_auth_cookie(") && php.includes("do_action( 'wp_login'"),'WordPress sessions are the authority');
@@ -19,6 +28,12 @@ assert(php.includes("codela_sf_quick_request_limit( $limit, 5 )"),'Online guessi
 assert(php.includes("after_password_reset") && php.includes("wp_set_password"),'Password changes revoke device access');
 assert(php.includes("woocommerce_before_customer_login_form"),'Native WooCommerce registration is preserved');
 assert(php.includes("woocommerce_edit_account_form"),'Quick enrollment is available inside native account');
-assert(css.includes(".sf-pin-active .sf-account-intro"),'Password view hidden only for remembered browser');
+assert(css.includes(".sf-pin-active .sf-account-intro"),'Native form hidden only while remembered-account selection active');
+assert(css.includes('.sf-quick-sheet') && css.includes('.sf-quick-scrim'),'PIN lives in a responsive accessible bottom sheet');
+assert(css.includes('.sf-quick-slot.is-filled') && css.includes('.sf-quick-slot.is-current'),'PIN fill and current-slot colors defined');
+assert(css.includes('.sf-quick-pin-track.is-verified .sf-quick-result'),'Verified-state color remains separate from typing/loading');
+assert(css.includes('#287454'),'Success tone is intentionally restrained dark green');
+assert(css.includes('.sf-quick-status.is-error'),'Errors have their own muted warning hue');
+
 assert(css.includes("@media(prefers-reduced-motion:reduce)"),'Reduced-motion setting respected');
 console.log('Quick login browser contracts passed');
