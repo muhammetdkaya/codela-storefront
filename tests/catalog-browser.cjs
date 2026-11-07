@@ -117,7 +117,17 @@ for(const width of [320,390,700,900,1280]){
   const r=b.getBoundingClientRect(),g=b.querySelector('.sf-icon').getBoundingClientRect();
   return{header:read(a),card:read(b),glyph:{w:g.width,h:g.height,x:g.x+g.width/2-r.x-r.width/2,y:g.y+g.height/2-r.y-r.height/2}};
  });
- assert.deepEqual(parity.card,parity.header,'Catalog and Header share one soft IconButton');
+ // The catalog's full 44px target is intentionally transparent with a
+ // painted 36px inner disc. The Header's 44px Menu target uses the outer
+ // soft glass material. Hit geometry and press feedback match, not paint.
+ for (const dimension of ['w','h','padding','radius','transition']) {
+  assert.equal(parity.card[dimension],parity.header[dimension],
+    'Catalog and Header share '+dimension+' IconButton mechanics');
+ }
+ assert.equal(parity.card.background,'rgba(0, 0, 0, 0)','Catalog hit target stays transparent');
+ assert.equal(parity.card.border,'0px','Catalog action has no outer border');
+ assert.notEqual(parity.card.background,parity.header.background,
+   'Header glass and Catalog inner-disc paint are intentionally different');
  assert.equal(parity.glyph.w,24);assert.equal(parity.glyph.h,24);
  assert(Math.abs(parity.glyph.x)<.5 && Math.abs(parity.glyph.y)<.5,'Native glyph is centered in its shared target');
  await page.locator('.sf-menu-trigger,.sf-product-card-footer .sf-ui-icon-button').evaluateAll(els=>els.forEach(e=>e.classList.add('is-pressed')));
