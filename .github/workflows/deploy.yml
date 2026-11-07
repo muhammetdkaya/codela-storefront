@@ -84,6 +84,10 @@ jobs:
           node tests/product-skeleton-geometry-browser.cjs
           TEST_WEBKIT=1 node tests/product-skeleton-geometry-browser.cjs
           node tests/product-sheet-browser.cjs
+          # Verify shared logged-out Account chrome and instantaneous real
+          # header SVGs before the unrelated broad search navigation suite.
+          node tests/account-browser.cjs
+          TEST_WEBKIT=1 node tests/navigation-feedback-bottom-browser.cjs
           node tests/navigation-browser.cjs
           node tests/checkout-browser.cjs
           node tests/catalog-browser.cjs
@@ -95,7 +99,6 @@ jobs:
           node tests/shell-navigation-browser.cjs
           node tests/navigation-viewport-browser.cjs
           node tests/document-continuity-browser.cjs
-          TEST_WEBKIT=1 node tests/navigation-feedback-bottom-browser.cjs
           node tests/gallery-defer-browser.cjs
           node tests/product-mobile-media-admin-browser.cjs
           node tests/product-mobile-media-browser.cjs
@@ -106,7 +109,6 @@ jobs:
           TEST_WEBKIT=1 node tests/context-header-browser.cjs
           node tests/account-dashboard-browser.cjs
           TEST_WEBKIT=1 node tests/account-dashboard-browser.cjs
-          node tests/account-browser.cjs
           node tests/ui-kit-preview.cjs
       - uses: actions/upload-artifact@v4
         if: always()
