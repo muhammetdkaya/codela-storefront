@@ -53,6 +53,11 @@ const css=['tokens.css','components.css','quick-login.css','account.css','accoun
     assert.equal(layout.insideForm,false,'Signup is not trapped in a Woo form row');
     assert.equal(await page.locator('.sf-auth-google').evaluate(el=>getComputedStyle(el).backgroundColor),
       'rgb(255, 255, 255)','Overlay-only Google CTA uses theme white');
+    await page.locator('.woocommerce').evaluate(el=>el.classList.add('sf-auth-register-view'));
+    assert.equal(await page.locator('.sf-auth-register-cta').isVisible(),false,
+      'Registration hides duplicate signup action in CSS-backed quick panel');
+    assert.equal(await page.locator('.sf-auth-social').isVisible(),false,
+      'Registration hides duplicate Google action in CSS-backed quick panel');
   }
   await page.setViewportSize({width:390,height:844});
   // Recreate the sheet for its native keyboard geometry acceptance.
