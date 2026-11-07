@@ -18,6 +18,14 @@ function codela_sf_quick_customer( $user ): bool {
         && ! user_can( $user, 'edit_posts' ) && ! user_can( $user, 'manage_woocommerce' );
 }
 
+/**
+ * The six-digit space is small. Include WordPress server secret before the
+ * slow password hash, so a stolen database alone cannot offline-bruteforce it.
+ */
+function codela_sf_quick_pin_secret( string $pin ): string {
+    return hash_hmac( 'sha256', $pin, wp_salt( 'auth' ) );
+}
+
 function codela_sf_quick_devices( int $user_id ): array {
     $stored = get_user_meta( $user_id, '_codela_sf_quick_devices', true );
     return is_array( $stored ) ? $stored : [];
@@ -90,7 +98,7 @@ function codela_sf_quick_enroll( WP_REST_Request $request ) {
     $now = time();
     $devices[ $device ] = [
         'public_key' => $public,
-        'pin_hash' => wp_hash_password( $pin ),
+        'pin_hash' => wp_hash_password( codela_sf_quick_pin_secret( $pin ) ),
         'created' => $now,
         'expires' => $now + 180 * DAY_IN_SECONDS,
         'last_used' => 0,
@@ -147,7 +155,7 @@ function codela_sf_quick_verify( WP_REST_Request $request ) {
         && ( $data['expires'] ?? 0 ) > time()
         && codela_sf_quick_signature_valid( (string) $data['public_key'],
             'codela-pin-login:v1:' . $user_id . ':' . $device . ':' . $challenge, $signature )
-        && wp_check_password( $pin, (string) $data['pin_hash'], $user_id );
+        && wp_check_password( codela_sf_quick_pin_secret( $pin ), (string) $data['pin_hash'], $user_id );
     if ( ! $valid ) {
         codela_sf_quick_request_limit( $limit, 5, true );
         codela_sf_quick_ip_limit( true );
