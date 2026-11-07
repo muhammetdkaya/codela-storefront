@@ -22,6 +22,7 @@ class WP_REST_Request {
     public function get_param( $key ) { return $this->data[$key] ?? null; }
 }
 function add_action(...$args) {}
+function __($text,$domain='') { return $text; }
 function is_ssl() { return true; }
 function user_can( $user, $cap ) { return !empty($GLOBALS['admin']); }
 function get_user_meta($id,$key,$single=true) { return $GLOBALS['meta'][$id][$key]??null; }
