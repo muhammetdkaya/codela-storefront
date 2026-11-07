@@ -87,6 +87,26 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
         });
         renderCart(data);
     }
+    function renderCartProgress(data) {
+        const host = $('#sf-cart-progress');
+        if (!host) return;
+        // The plugin owns the threshold, display preference, locale and messages.
+        // Config arrives alongside each live Store API cart, never from cached HTML.
+        const encoded = data.extensions?.['codela-free-shipping-bar']?.config_json;
+        if (!encoded || !data.items?.length || typeof window.CodelaFsbHtml !== 'function') {
+            host.innerHTML = '';
+            host.hidden = true;
+            return;
+        }
+        try {
+            const config = JSON.parse(encoded);
+            host.innerHTML = window.CodelaFsbHtml(config, data) || '';
+            host.hidden = !host.innerHTML;
+        } catch {
+            host.innerHTML = '';
+            host.hidden = true;
+        }
+    }
     function renderCart(data) {
         // Keep the live badge immediate; closed-cart photos/rows do no work.
         if (getCurrent() !== 'cart') return;
@@ -94,8 +114,14 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
         const signature = cartSignature(data);
         const count = Number(data.items_count) || data.items.reduce((n, item) => n + (Number(item.quantity) || 0), 0);
         const countLabel = t('Items in cart: %d').replace('%d', String(count));
+        const countElement = $('#sf-cart-count');
+        if (countElement) {
+            countElement.hidden = !data.items.length;
+            countElement.textContent = countLabel;
+        }
+        renderCartProgress(data);
         // An unchanged session refresh preserves rows, decoded photos and focus.
-        if (signature !== renderedCart) root.innerHTML = data.items.length ? '<p class="sf-cart-count">' + escape(countLabel) + '</p>' + data.items.map(item => {
+        if (signature !== renderedCart) root.innerHTML = data.items.length ? data.items.map(item => {
             const limits = item.quantity_limits || {minimum:1,maximum:9999,multiple_of:1,editable:true};
             const subtotal = Number(item.totals.line_subtotal) + (config().taxInclusive ? Number(item.totals.line_subtotal_tax) : 0);
             const variants = (item.variation || []).map(v => `${escape(decode(v.attribute))}: ${escape(decode(v.value))}`).join(' · ');

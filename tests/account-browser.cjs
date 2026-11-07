@@ -157,7 +157,7 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
        const intro=document.querySelector('.sf-account-intro').getBoundingClientRect();
        const form=document.querySelector('form.woocommerce-form-login').getBoundingClientRect();
        const headings=[...document.querySelectorAll('.woocommerce > h2')].filter(el=>getComputedStyle(el).display!=='none');
-       const arrow=document.querySelector('.sf-header .sf-menu-trigger .sf-icon');
+       const arrow=document.querySelector('.sf-header .sf-menu-trigger .sf-menu-mark');
        const logo=document.querySelector('.sf-header .sf-brand');
        const main=document.querySelector('main.sf-content');
        return {gap:form.top-intro.bottom,headings:headings.length,hasSvg:!!arrow,

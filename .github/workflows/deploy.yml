@@ -54,6 +54,7 @@ jobs:
           node tests/cart-race.cjs
           node tests/cart-sync.cjs
           node tests/cart-design.cjs
+          node tests/cart-free-shipping.cjs
           node tests/search-panel.cjs
           node tests/format.cjs
           node tests/ui-kit.cjs

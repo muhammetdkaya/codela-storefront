@@ -198,7 +198,11 @@ function codela_sf_header(): string {
                 </div>
             </section>
             <?php if ( $catalog_page ) : ?><section class="sf-panel-body" id="sf-filters" hidden><?php echo codela_sf_catalog_filters(); ?></section><?php endif; ?>
-            <section class="sf-panel-body" id="sf-cart" hidden><div id="sf-cart-items"></div></section>
+            <section class="sf-panel-body" id="sf-cart" hidden>
+                <p class="sf-cart-count" id="sf-cart-count" hidden></p>
+                <div id="sf-cart-progress" hidden></div>
+                <div id="sf-cart-items"></div>
+            </section>
             <div class="sf-cart-bottom" hidden><div class="sf-subtotal"><span><?php esc_html_e( 'Subtotal', 'codela-storefront' ); ?></span><strong id="sf-subtotal"></strong></div><p><?php esc_html_e( 'Shipping and discounts are calculated at checkout.', 'codela-storefront' ); ?></p><?php echo codela_sf_ui_primary_link( wc_get_checkout_url(), __( 'Checkout', 'codela-storefront' ) ); ?></div>
             <p class="sf-status" id="sf-status" role="status" aria-live="polite"></p>
         </dialog>
