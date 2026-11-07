@@ -15,24 +15,44 @@
   max-width:100%;
   font-family:inherit;
 }
-/* A saved profile hint triggers a prepaint pause. Never render the
-   native form briefly and then replace it with a recognized profile. */
+/* If a remembered browser exists, show the same-sized account card while
+   the server verifies it. This applies to both the standalone Account page
+   and the pre-rendered instant Account dialog, NEVER a page-wide skeleton.
+   Without a remembered hint, Woo login/register is visible immediately. */
 html.sf-quick-checking body.woocommerce-account .sf-account-intro,
 html.sf-quick-checking body.woocommerce-account #customer_login,
 html.sf-quick-checking body.woocommerce-account .sf-auth-social,
-html.sf-quick-checking body.woocommerce-account .sf-google-error{display:none!important}
-html.sf-quick-checking body.woocommerce-account .sf-quick-login[hidden]{display:block!important}
-html.sf-quick-checking body.woocommerce-account .sf-quick-login[hidden] .sf-quick-account{
-  visibility:visible;pointer-events:none;
-  background:linear-gradient(105deg,#f0f0f2 15%,#e8e8ea 45%,#f0f0f2 75%)!important;
-  background-size:220% 100%!important;
-  animation:sf-quick-preflight 1.2s linear infinite;
+html.sf-quick-checking body.woocommerce-account .sf-google-error,
+html.sf-quick-checking #sf-account .sf-account-intro,
+html.sf-quick-checking #sf-account #customer_login,
+html.sf-quick-checking #sf-account .sf-auth-social,
+html.sf-quick-checking #sf-account .sf-google-error{display:none!important}
+html.sf-quick-checking body.woocommerce-account .sf-quick-login[hidden],
+html.sf-quick-checking #sf-account .sf-quick-login[hidden]{display:block!important}
+html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account{
+  position:relative;pointer-events:none;
+  background:#fff!important;border:1px solid #e5e6e9!important;
+  box-shadow:0 9px 26px rgba(36,38,43,.045)!important;
 }
-html.sf-quick-checking body.woocommerce-account .sf-quick-login[hidden] .sf-quick-account>*{visibility:hidden}
-html.sf-quick-checking body.woocommerce-account .sf-quick-login[hidden] :is(.sf-quick-choice-alternatives,.sf-quick-register-line){visibility:hidden}
-@keyframes sf-quick-preflight{to{background-position-x:-220%}}
+html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account>*{visibility:hidden}
+html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account::before,
+html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account::after{
+  content:"";position:absolute;left:18px;top:50%;
+  pointer-events:none;background:#e8e9ec;
+  animation:sf-quick-preflight 1.15s ease-in-out infinite alternate;
+}
+html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account::before{
+  width:50px;height:50px;transform:translateY(-50%);border-radius:50%;
+}
+html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account::after{
+  left:82px;top:calc(50% - 15px);width:min(44%,165px);height:13px;
+  border-radius:6px;box-shadow:0 23px 0 -2px #eeeff1;
+}
+html.sf-quick-checking .sf-quick-login[hidden] :is(.sf-quick-choice-alternatives,.sf-quick-register-line){visibility:hidden}
+@keyframes sf-quick-preflight{to{opacity:.48}}
 @media(prefers-reduced-motion:reduce){
-  html.sf-quick-checking body.woocommerce-account .sf-quick-login[hidden] .sf-quick-account{animation:none}
+  html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account::before,
+  html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account::after{animation:none}
 }
 .sf-quick-login *{box-sizing:border-box}
 .sf-quick-login button,.sf-quick-login input{font-family:inherit}
