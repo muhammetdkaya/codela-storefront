@@ -137,12 +137,13 @@ function release(ok) {
       release(outcome==='success');
       if(outcome==='success'){
         await page.locator('.sf-quick-pin-track.is-verified').waitFor({state:'attached'});
+        // Assertion occurs within one DOM poll, before the 420ms redirect
+        // removes the old document. A separate locator.evaluate() raced
+        // against successful navigation and hung after the page was replaced.
         await page.waitForFunction(() => {
           const box = document.querySelector('.sf-quick-result');
           return box && getComputedStyle(box).borderColor === 'rgb(22, 132, 79)';
-        }, {timeout:4000});
-        const border=await page.locator('.sf-quick-result').evaluate(el=>getComputedStyle(el).borderColor);
-        assert.equal(border,'rgb(22, 132, 79)','Success uses distinct confirmed green');
+        }, null, {timeout:4000});
         await page.waitForURL(url=>url.pathname==='/account/'&&url.searchParams.has('sf_quick_auth'),{timeout:10000});
         assert(await page.getByText('WooCommerce account opened').isVisible(),'Real account redirect follows verification');
       } else {
