@@ -6,10 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Google ile devam et butonu etkin olmayan OAuth durumunda da üç Hesabım ekranında #252628 koyu zemin, tam okunabilir beyaz yazı ve tam renkli Google simgesi gösterir; gerçek OAuth bağlantısının devre dışı durumu değiştirilmez.",
-    "Tanınan hesaptaki E-posta ve şifreyle giriş yap eylemi WooCommerce formuna geçer ama giriş alanını otomatik odaklamaz; klavye ve iOS parola yöneticisi yalnız kullanıcının alanı seçmesiyle açılır.",
-    "Altı haneli hızlı giriş paneli iOS Safari VisualViewport konumuna göre klavye ile hizalanır; çift klavye yükseltmesi ve aç/kapat sıçraması kaldırıldı, kapalı klavyede gerçek alt kenara döner.",
-    "PIN güvenliği, sunucuyla doğrulama, otomatik hesap anahtarı temizliği, WooCommerce formu, Google OAuth ve hızlı Hesabım paneli korunur.",
-    "Chromium ve WebKit'te Google düğmesi rengi ile PIN panelinin klavye açık/kapalı görsel ölçüleri için regresyon testleri eklendi."
+    "Hesabım misafir girişinde üstteki Giriş Yap/Kayıt Ol accordion/segment sekmeleri kaldırıldı. E-posta ve şifre alanları, Beni hatırla, şifre sıfırlama ve WooCommerce giriş formu korundu.",
+    "Mevcut WooCommerce formunun içine 54px E-posta ile Kayıt Ol geçiş butonu eklendi; kayıt ekranına dönüş linki ve kayıt sonrası hatalarda doğru görünüm korundu. E-posta alanına otomatik odaklama yapılmaz.",
+    "Mineral renk sistemi: #f6f4f0 sayfa yüzeyi, #232c29 koyu yeşilimsi antrasit Giriş Yap, #e6dacb sıcak kum tonu e-posta kayıt, beyaz arka plan ve #747775 kenarlıklı resmi Google düğmesi. Butonlar ve alanlar 54px.",
+    "Hızlı Hesabım panelinde aynı form akışı ve görsel hiyerarşi kullanılır. Google OAuth, Woo nonce/doğrulama, kayıt yetkisi, tanınan hesap/PIN ve eklenti modülleri korunur.",
+    "Gerçek Woo kayıt kapalıysa kayıt geçişi gösterilmez; JavaScript kapalıysa WooCommerce native kayıt formuna erişim devam eder."
   ]
 }

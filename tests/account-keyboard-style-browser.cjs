@@ -14,9 +14,26 @@ const css=['quick-login.css','account.css','account-overlay.css'].map(x=>fs.read
     const result=await page.locator(selector).evaluate(el=>{
       const st=getComputedStyle(el);return {background:st.backgroundColor,opacity:st.opacity};
     });
-    assert.equal(result.background,'rgb(37, 38, 40)',selector+' dark surface');
+    assert.equal(result.background,selector==='.sf-quick-google'
+      ? 'rgb(37, 38, 40)' : 'rgb(255, 255, 255)',
+      selector+' retains its configured visual surface');
     assert.equal(result.opacity,'1',selector+' full contrast even when disabled');
   }
+  // Homepage/shop loads account-overlay.css without standalone account.css.
+  // The warm registration action must still look like a full Mineral button.
+  const overlayOnly=fs.readFileSync(base+'account-overlay.css','utf8');
+  await page.setContent('<!doctype html><html><head><style>'+overlayOnly+'</style></head><body><div id="sf-panel" class="is-account-panel"><div class="woocommerce"><a class="sf-auth-register-cta" href="#register"><span class="sf-auth-register-glyph">✉</span>Register with email</a><a class="sf-auth-back-login" href="#customer_login">Back to login</a><button class="sf-auth-google" disabled>Google</button></div></div></body></html>');
+  const quickRegister=await page.locator('.sf-auth-register-cta').evaluate(el=>({
+    height:el.getBoundingClientRect().height,bg:getComputedStyle(el).backgroundColor,
+    ink:getComputedStyle(el).color
+  }));
+  assert.equal(quickRegister.height,54,'Standalone quick-panel stylesheet renders 54px register action');
+  assert.equal(quickRegister.bg,'rgb(230, 218, 203)','Quick-panel register has approved warm Mineral fill');
+  assert.equal(quickRegister.ink,'rgb(48, 42, 36)','Quick-panel signup text is readable');
+  assert.equal(await page.locator('.sf-auth-google').evaluate(el=>getComputedStyle(el).backgroundColor),
+    'rgb(255, 255, 255)','Overlay-only Google CTA is official white');
+  // Recreate the sheet for its native keyboard geometry acceptance.
+  await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body class="woocommerce-account"><section class="sf-quick-sheet"><div style="height:300px"></div></section></body></html>');
   const closed=await page.locator('.sf-quick-sheet').evaluate(el=>el.getBoundingClientRect().bottom);
   assert(Math.abs(closed-844)<2,'Sheet rests on layout viewport when keyboard is absent');
   const opened=await page.locator('.sf-quick-sheet').evaluate(el=>{

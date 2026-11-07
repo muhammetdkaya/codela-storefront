@@ -6,6 +6,11 @@ const css=['assets/styles/tokens.css','assets/storefront.css','assets/styles/ove
 const render=env=>execFileSync(process.env.PHP_BIN||'php',['tests/render-account.php'],{encoding:'utf8',env:{...process.env,...env}});
 const intro=render({});
 const signed=render({ACCOUNT_SIGNED_IN:'1'});
+const registerCTA=render({ACCOUNT_ACTION:'login'});
+const loginReturn=render({ACCOUNT_ACTION:'register'});
+assert(registerCTA.includes('sf-auth-register-cta'),'Woo login form-end exposes email signup action');
+assert(loginReturn.includes('sf-auth-back-login'),'Woo register form offers a native login return');
+assert.equal(render({ACCOUNT_ACTION:'login',ACCOUNT_NO_REGISTER:'1'}),'','Disabled Woo registration must not create a false signup action');
 const authJS=fs.readFileSync('theme/codela-storefront/assets/scripts/auth.js','utf8');
 const nativeGoogleInfo=JSON.parse(execFileSync(process.env.PHP_BIN||'php',['tests/google-auth.php'],{encoding:'utf8'}));
 const unconfiguredGoogle=nativeGoogleInfo.disabled_button;
@@ -27,7 +32,8 @@ assert(locale.includes("'Welcome back' => 'Hoş geldiniz'"),'Account title is th
 assert(!intro.includes('sf-auth-mark'),'Guest hero does not repeat the account icon');
 assert(intro.includes('data-auth-login-placeholder="Email or username"'),'Login placeholder metadata comes from localized theme');
 assert(intro.includes('Sign in to your account.'),'Guest account hero includes short subtitle');
-assert(intro.includes('sf-auth-tabs'),'Guest intro offers progressive tabs');
+assert(!intro.includes('sf-auth-tabs'),'The segmented Login/Register control is removed entirely');
+assert(intro.includes('sf-auth-view-title'),'Guest heading remains accessible to both native forms');
 assert(!intro.includes('Manage your orders and account details.'),'Unnecessary account subtitle removed');
 assert.equal(signed,'','Signed-in Woo account never receives a duplicate theme header');
 assert.equal(render({ACCOUNT_OUTSIDE:'1'}),'','Do not inject account heading elsewhere');
@@ -35,9 +41,9 @@ const fields='<p class="woocommerce-form-row form-row"><label for="username">Ema
 '<p class="woocommerce-form-row form-row"><label for="password">Password</label><input class="woocommerce-Input input-text" id="password" type="password" autocomplete="current-password" required></p>'+
 '<p class="form-row"><label class="woocommerce-form__label woocommerce-form-login__rememberme"><input type="checkbox" name="rememberme"><span>Remember me</span></label><button class="woocommerce-button woocommerce-form-login__submit" type="submit">Log in</button></p>'+
 '<p class="woocommerce-LostPassword lost_password"><a href="/account/lost-password/">Lost password?</a></p>';
-const form='<h2>Log in</h2><form class="woocommerce-form woocommerce-form-login login" method="post">'+fields+'</form>';
-const login='<div class="woocommerce">'+intro+form+'</div>';
-const register='<div class="woocommerce">'+intro+'<div class="u-columns col2-set" id="customer_login"><div class="u-column1 col-1">'+form+'</div><div class="u-column2 col-2"><h2>Register</h2><form class="woocommerce-form woocommerce-form-register register"><p class="form-row"><label for="reg_email">Email</label><input class="input-text" type="email" id="reg_email"></p><button type="submit">Register</button></form></div></div></div>';
+const form='<h2>Log in</h2><form class="woocommerce-form woocommerce-form-login login" method="post">'+fields+registerCTA+'</form>';
+const login='<div class="woocommerce">'+intro+form.replace(registerCTA,'')+'</div>';
+const register='<div class="woocommerce">'+intro+'<div class="u-columns col2-set" id="customer_login"><div class="u-column1 col-1">'+form+'</div><div class="u-column2 col-2"><h2>Register</h2><form id="register" class="woocommerce-form woocommerce-form-register register">'+loginReturn+'<p class="form-row"><label for="reg_email">Email</label><input class="input-text" type="email" id="reg_email"></p><button type="submit">Register</button></form></div></div></div>';
 const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccount-navigation"><ul><li class="is-active"><a href="/account/" aria-current="page">Dashboard</a></li><li><a href="/orders/">Orders</a></li><li><a href="/addresses/">Addresses</a></li></ul></nav><div class="woocommerce-MyAccount-content"><h2>My orders</h2><p>Account details here.</p></div></div>';
 (async()=>{
  const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_BIN?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-gpu','--use-gl=disabled','--disable-software-rasterizer','--disable-dev-shm-usage','--no-zygote','--single-process']}:{})});
@@ -104,23 +110,23 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
        shell.remove();
        return result;
       });
-      assert.equal(controls.sameBackground,true,'Guest submit buttons reuse UI Kit primary palette');
-      assert.equal(controls.sameRadius,true,'Native Woo buttons reuse the shared control radius');
-      assert.equal(controls.samePadding,true,'Native Woo buttons reuse shared button spacing');
-      assert.equal(controls.sameMotion,true,'Native Woo and UI Kit buttons share press feedback');
+      const primaryColor=await page.locator('.woocommerce-form-login__submit').evaluate(el=>getComputedStyle(el).backgroundColor);
+      assert.equal(primaryColor,'rgb(35, 44, 41)','Mineral primary is the approved deep green-charcoal #232c29');
+      assert.equal(controls.samePadding,true,'Native Woo button keeps the shared touch padding');
+      assert.equal(controls.sameMotion,true,'Native Woo and UI Kit button share press feedback');
        const actionSize=await page.locator('.woocommerce-form-login__submit').evaluate(el=>{
          const st=getComputedStyle(el);
          return {height:el.getBoundingClientRect().height,min:st.minHeight,font:st.fontSize,
            paddingTop:st.paddingTop,paddingBottom:st.paddingBottom};
        });
-       assert(actionSize.height>=52&&actionSize.height<=54,'Native login uses the 52px common Button sizing');
-       assert.equal(actionSize.min,'52px','Guest Button token is scoped to the account, not global design');
+       assert(actionSize.height>=54&&actionSize.height<=55,'Mineral guest login uses a 54px primary action');
+       assert.equal(actionSize.min,'54px','Mineral Button token is scoped to the guest Account only');
        assert.equal(actionSize.font,'15px','Compact guest CTA type uses shared Button font token');
 
-      assert.equal(controls.fieldRadius,'12px','Inputs follow the same UI Kit control radius');
+      assert.equal(controls.fieldRadius,'15px','Mineral form fields have clean 15px corners');
       assert.equal(await page.locator('#username').evaluate(el=>getComputedStyle(el).backgroundColor),
         'rgb(255, 255, 255)','Guest input is a clean outlined white field, not a bulky gray surface');
-      assert(controls.fieldHeight>=49&&controls.fieldHeight<=51,'Guest input uses approved 50px geometry');
+      assert(controls.fieldHeight>=54&&controls.fieldHeight<=55,'Guest input uses Mineral 54px geometry');
       const fieldAlignment=await page.evaluate(()=>{
        const input=document.querySelector('#username');
        const label=document.querySelector('label[for="username"]');
@@ -149,8 +155,11 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
       assert.equal(ring.width,'2px','Standalone guest input has the same single focus ring');
       assert.equal(ring.offset,'2px','Standalone guest input matches Search focus offset');
       assert.equal(ring.color,'rgb(28, 28, 30)','Standalone guest ring uses shared glass ink');
-      assert(['rgba(0, 0, 0, 0)','rgb(221, 224, 229)'].includes(ring.borderColor),
-        'Standalone Woo field keeps only a neutral edge, never a second dark ring');
+      const borderRGB=(ring.borderColor.match(/\d+/g)||[]).slice(0,3).map(Number);
+      assert(ring.borderColor === 'rgba(0, 0, 0, 0)'
+          || (borderRGB.length===3 && Math.min(...borderRGB)>=215
+              && Math.max(...borderRGB)-Math.min(...borderRGB)<=10),
+        'Standalone Woo field keeps only a pale neutral edge: '+JSON.stringify(ring));
       assert(fieldAlignment.sameLine,'Remember me and lost-password share the same row');
       assert(fieldAlignment.rememberBeforeLost,'Remember me stays left, password reset right');
       assert.equal(controls.registerPresent,type==='register','Registration follows native Woo setting');
@@ -172,7 +181,7 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
       assert(compact.brandHeight>=30,'Real store brand remains readable');
       if(type==='login')assert.equal(compact.headings,0,'Single login page hides duplicated WooCommerce heading');
       const background=await page.locator('.sf-account-intro').evaluate(el=>getComputedStyle(document.body).backgroundColor);
-      assert.equal(background,'rgb(248, 247, 244)','Guest account shares the theme page canvas');
+      assert.equal(background,'rgb(246, 244, 240)','Guest Account owns its scoped Mineral canvas');
       if(type==='login'){
         await page.locator('.woocommerce').evaluate(node=>node.insertAdjacentHTML('beforeend',
           '<div class="sf-shell sf-auth-social"><div class="sf-auth-divider"><span>or</span></div>'+
@@ -191,9 +200,9 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
         });
         const parent=await page.locator('.sf-auth-social').boundingBox();
         assert(social.width>=parent.width-2,'Google Button fills same form width');
-        assert(social.height>=52&&social.height<=54,'Google Button reuses compact UI Kit action height');
-        assert.equal(social.background,'rgb(37, 38, 40)','Google uses approved dark Codela CTA');
-        assert.equal(social.radius,'30px','Google Button uses the approved rounded Codela capsule');
+        assert(social.height>=54&&social.height<=55,'Google uses 54px Mineral action height');
+        assert.equal(social.background,'rgb(255, 255, 255)','Google uses the official white provider surface');
+        assert.equal(social.radius,'999px','Google uses the full Mineral capsule');
         if(social.border!=='1px')console.error('Secondary Button computed styles',social,await page.locator('.sf-auth-google').evaluate(el=>({
          classes:el.className, borderStyle:getComputedStyle(el).borderTopStyle,
          borderToken:getComputedStyle(el).getPropertyValue('--sf-ui-border'),
@@ -202,7 +211,7 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
           .map(rule=>rule.cssText.slice(0,450)).slice(-12)
         })));
         assert.equal(social.border,'1px','Google secondary UI Kit Button must retain its visible border');
-        assert.equal(social.borderColor,social.background,'Dark Google button uses the same surface and edge color');
+        assert.equal(social.borderColor,'rgb(116, 119, 117)','Google retains its official outlined border');
         assert.equal(social.display,'flex','Google uses centered text plus a positioned multicolor icon');
         assert(Math.abs(social.textCenter-social.buttonCenter)<1,
           'Google label is centered in the complete Button regardless of glyph width');
@@ -216,36 +225,35 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
 
       }
       if(type==='register'){
-        assert.equal(await page.locator('.sf-auth-tabs').isVisible(),true,'Tabs appear when Woo renders registration');
-        const tabs=await page.locator('.sf-auth-tabs').evaluate(el=>{
-         const selected=el.querySelector('[aria-selected="true"]');
-         return {height:selected.getBoundingClientRect().height,shadow:getComputedStyle(selected).boxShadow};
+        assert.equal(await page.locator('.sf-auth-tabs').count(),0,'No segmented login/register tabs remain');
+        assert.equal(await page.locator('#customer_login').getAttribute('data-auth-view'),'login','Native login is initial view');
+        assert.equal(await page.locator('#customer_login .u-column2').isVisible(),false,'Registration starts hidden');
+        const action=await page.locator('.sf-auth-register-cta').evaluate(el=>{
+          const style=getComputedStyle(el);
+          return {height:el.getBoundingClientRect().height,bg:style.backgroundColor,
+            ink:style.color,anchor:el.getAttribute('href'),outline:style.borderRadius};
         });
-        assert(tabs.height>=39,'Account tabs maintain a comfortable accessible hit target');
-        assert.equal(tabs.shadow,'none','Active tab paint belongs to the sliding surface');
-        assert.notEqual(await page.locator('.sf-auth-tab-slide').evaluate(el=>getComputedStyle(el).boxShadow),'none','Sliding white surface has subtle shadow');
-        assert.equal(await page.locator('.sf-auth-tabs').getAttribute('data-active'),'login','Login slide initially selected');
-        assert.equal(await page.locator('.sf-auth-tabs').evaluate(el=>el.compareDocumentPosition(document.querySelector('.sf-account-intro h1')) & Node.DOCUMENT_POSITION_FOLLOWING ? 'before' : 'after'),'before','Tabs remain above the welcome heading');
-
-        assert.equal(await page.locator('#customer_login .u-column2').isVisible(),false,'Login selected by default');
-        await page.locator('[data-auth-tab="register"]').click();
-        assert.equal(await page.locator('#reg_email').getAttribute('placeholder'),'Email address','Registration uses its own email placeholder');
-        assert.equal(await page.locator('#customer_login .u-column2').isVisible(),true,'Registration tab shows the native register form');
-        assert.equal(await page.locator('#customer_login .u-column1').isVisible(),false,'Login form hidden while Register is selected');
-        assert.equal(await page.locator('[data-auth-tab="register"]').getAttribute('aria-selected'),'true');
-        assert.equal(await page.locator('.sf-auth-heading-text').innerText(),'Create an account','Register tab updates its heading');
-        assert.equal(await page.locator('.sf-auth-description').innerText(),'Join us in a few steps.','Register tab updates its subtitle');
-        assert.equal(await page.locator('.sf-auth-heading-wave').isVisible(),false,'Register tab does not repeat welcome emoji');
-        assert.equal(await page.locator('.sf-auth-tabs').getAttribute('data-active'),'register','Slider follows registration');
-        await page.locator('[data-auth-tab="register"]').focus();
-        await page.keyboard.press('ArrowLeft');
-        assert.equal(await page.locator('[data-auth-tab="login"]').getAttribute('aria-selected'),'true','Keyboard arrows change tabs');
-        assert.equal(await page.locator('#customer_login .u-column1').isVisible(),true,'Login form restored without re-creating form');
-        assert.equal(await page.locator('.sf-auth-heading-text').innerText(),'Welcome back','Login tab restores welcome heading and subtitle');
-        assert.equal(await page.locator('.sf-auth-heading-wave').isVisible(),true,'Login greeting uses one emoji');
-        assert.equal(await page.locator('form.woocommerce-form').count(),2,'Both native Woo forms remain in DOM');
+        assert(action.height>=54&&action.height<=55,'Email registration button shares 54px action height');
+        assert.equal(action.bg,'rgb(230, 218, 203)','Warm Mineral register background matches approved palette');
+        assert.equal(action.ink,'rgb(48, 42, 36)','Mineral register label retains warm dark contrast');
+        assert.equal(action.anchor,'#register','Native Woo fallback link targets its form');
+        await page.locator('.sf-auth-register-cta').click();
+        assert.equal(await page.locator('#reg_email').getAttribute('placeholder'),'Email address','Registration retains native email placeholder');
+        assert.equal(await page.locator('#customer_login').getAttribute('data-auth-view'),'register','Register CTA selects native registration');
+        assert.equal(await page.locator('#customer_login .u-column2').isVisible(),true,'Native registration becomes visible');
+        assert.equal(await page.locator('#customer_login .u-column1').isVisible(),false,'Native login is hidden during registration');
+        assert.equal(await page.locator('#reg_email').evaluate(el=>document.activeElement===el),false,'No automatic mobile keyboard or password manager');
+        assert.equal(await page.locator('.sf-auth-heading-text').innerText(),'Create an account','Registration updates heading');
+        assert.equal(await page.locator('.sf-auth-description').innerText(),'Join us in a few steps.','Registration updates subtitle');
+        assert.equal(await page.locator('.sf-auth-heading-wave').isVisible(),false,'Registration does not show greeting wave');
+        await page.locator('.sf-auth-back-login').click();
+        assert.equal(await page.locator('#customer_login').getAttribute('data-auth-view'),'login','Back action restores login');
+        assert.equal(await page.locator('#customer_login .u-column1').isVisible(),true,'Native login restored without rebuilding form');
+        assert.equal(await page.locator('.sf-auth-heading-text').innerText(),'Welcome back','Login heading returns');
+        assert.equal(await page.locator('.sf-auth-heading-wave').isVisible(),true,'Welcome emoji returns');
+        assert.equal(await page.locator('form.woocommerce-form').count(),2,'Both genuine Woo forms remain mounted');
       }else{
-        assert.equal(await page.locator('.sf-auth-tabs').isVisible(),false,'No fake Register tab if Woo registration is disabled');
+        assert.equal(await page.locator('.sf-auth-register-cta').count(),0,'No false email-register action if Woo registration is disabled');
       }
     } else {
       const nav=page.locator('.woocommerce-MyAccount-navigation');

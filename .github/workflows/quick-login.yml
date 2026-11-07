@@ -10,6 +10,11 @@ on:
       - 'tests/quick-login-markup.php'
       - 'tests/account-registration-discovery.php'
       - 'theme/codela-storefront/inc/account.php'
+      - 'theme/codela-storefront/assets/scripts/auth.js'
+      - 'theme/codela-storefront/assets/styles/account.css'
+      - 'theme/codela-storefront/assets/styles/account-overlay.css'
+      - 'tests/account-browser.cjs'
+      - 'tests/account-instant-browser.cjs'
       - 'tests/quick-login-ui.cjs'
       - 'tests/account-keyboard-style-browser.cjs'
       - '.github/workflows/quick-login.yml'
@@ -50,3 +55,6 @@ jobs:
           TEST_WEBKIT=1 node tests/quick-login-browser.cjs
           node tests/account-keyboard-style-browser.cjs
           TEST_WEBKIT=1 node tests/account-keyboard-style-browser.cjs
+          node tests/account-instant-browser.cjs
+          TEST_WEBKIT=1 node tests/account-instant-browser.cjs
+          node tests/account-browser.cjs
