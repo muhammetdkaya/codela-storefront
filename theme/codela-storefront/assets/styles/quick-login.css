@@ -143,14 +143,14 @@ html.sf-quick-checking .sf-quick-login[hidden] :is(.sf-quick-choice-alternatives
   transition:filter .18s ease,transform .18s ease;
 }
 .sf-quick-google{
-  color:#fff!important;background:#171719!important;border:1px solid #171719!important;
+  color:#fff!important;background:#252628!important;border:1px solid #252628!important;
   box-shadow:0 5px 14px rgba(0,0,0,.07)!important;
 }
 .sf-quick-switch.sf-quick-email-login{
   color:#18181b!important;background:#fff!important;border:1px solid #dedee3!important;
   box-shadow:0 4px 14px rgba(0,0,0,.035)!important;
 }
-.sf-quick-google:disabled{opacity:.62;cursor:not-allowed;filter:none!important;transform:none!important}
+.sf-quick-google:disabled{opacity:1!important;cursor:not-allowed;filter:none!important;transform:none!important}
 .sf-quick-remove-line{
   width:100%;display:flex;justify-content:center;margin:9px auto 0;
 }
