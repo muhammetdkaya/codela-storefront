@@ -96,6 +96,8 @@ jobs:
           # header SVGs before the unrelated broad search navigation suite.
           node tests/quick-login-browser.cjs
           TEST_WEBKIT=1 node tests/quick-login-browser.cjs
+          node tests/account-keyboard-style-browser.cjs
+          TEST_WEBKIT=1 node tests/account-keyboard-style-browser.cjs
           node tests/account-instant-browser.cjs
           TEST_WEBKIT=1 node tests/account-instant-browser.cjs
           node tests/account-browser.cjs
