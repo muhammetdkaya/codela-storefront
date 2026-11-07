@@ -6,11 +6,11 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Hesabım alt menüsü, site üst menüsü ve çıkış sonrası yönlendirme artık yalnızca WooCommerce'in kanonik Hesabım sayfasını kullanır; ikinci misafir popup formu kaldırıldı.",
-    "Tanınan hesap doğrulanırken ilk açılışta normal giriş formu parlamaz; sunucu cevabına kadar opak nötr kart bekleme görünümü gösterilir.",
-    "Tanınan hesap kartının sağ oku düzeltildi; kart ve giriş seçenekleri sayfa kenar boşluklarına hizalandı.",
-    "Google ile devam et butonu OAuth ayarı kapalıyken de görünür, ancak sahte giriş başlatmamak için pasif kalır.",
-    "Tanınan hesaptan Kayıt Ol seçimi WooCommerce'in mevcut kayıt sekmesini açar; kayıt kapalıysa seçenek gösterilmez.",
-    "Tek kullanımlık sf_quick_auth önbellek atlatma parametresi Hesabım belgesi açıldıktan sonra URL'den temizlenir."
+    "Mobil alt menü ve header Hesabım, misafir kullanıcı için tekrar mevcut hazır diyalogda anında açılır; sayfa değişimi ve yanlış tam-sayfa skeleton'u kaldırıldı.",
+    "Login ve kayıt için hem dialog hem doğrudan Hesabım sayfasında gerçek WooCommerce form şablonu ve nonce yapısı kullanılır.",
+    "Tanınan kullanıcı doğrulanırken yalnızca ilgili hesap kartı gerçeğe uygun beyaz yüzeyli skeleton gösterir; normal giriş formu anlık parlamaz.",
+    "Önbellekten gelmiş form nonce'ları panel açılır açılmaz arka planda no-store AJAX üzerinden yenilenir. Giriş anında açık başka oturum algılanırsa güvenli şekilde taze Hesabım sayfasına gidilir.",
+    "Panel ve WooCommerce kayıt/Google alternatifleri aynı şablonu kullanır; alt menü anında açılır ve başarılı girişten sonra normal Hesabım yönlendirmesi korunur.",
+    "Chromium ve Safari motorlarında anında panel, yenilenen nonce, kayıt ve farklı oturum regresyon testleri eklendi."
   ]
 }
