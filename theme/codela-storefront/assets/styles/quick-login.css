@@ -48,7 +48,7 @@ html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account::after{
   left:82px;top:calc(50% - 15px);width:min(44%,165px);height:13px;
   border-radius:6px;box-shadow:0 23px 0 -2px #eeeff1;
 }
-html.sf-quick-checking .sf-quick-login[hidden] :is(.sf-quick-choice-alternatives,.sf-quick-register-line){visibility:hidden}
+html.sf-quick-checking .sf-quick-login[hidden] :is(.sf-quick-choice-alternatives,.sf-quick-remove-line){visibility:hidden}
 @keyframes sf-quick-preflight{to{opacity:.48}}
 @media(prefers-reduced-motion:reduce){
   html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account::before,
@@ -151,17 +151,17 @@ html.sf-quick-checking .sf-quick-login[hidden] :is(.sf-quick-choice-alternatives
   box-shadow:0 4px 14px rgba(0,0,0,.035)!important;
 }
 .sf-quick-google:disabled{opacity:.62;cursor:not-allowed;filter:none!important;transform:none!important}
-.sf-quick-register-line{
-  width:100%;margin:48px auto 0;display:flex;justify-content:center;
-  align-items:center;gap:11px;color:#797980;font-size:13px;
-  line-height:1.5;
+.sf-quick-remove-line{
+  width:100%;display:flex;justify-content:center;margin:9px auto 0;
 }
-.sf-quick-register-line .sf-quick-register{
-  border:0!important;background:transparent!important;color:#242426!important;
-  min-height:32px;padding:4px 0!important;box-shadow:none!important;
-  font-size:13px!important;font-weight:650!important;cursor:pointer;
+.sf-quick-remove-line .sf-quick-remove{
+  min-height:32px;padding:5px 12px!important;
+  background:transparent!important;border:0!important;box-shadow:none!important;
+  color:#85858b!important;font-size:12px!important;font-weight:500!important;cursor:pointer;
 }
-.sf-quick-register-line .sf-quick-register:focus-visible{outline:2px solid #242426;outline-offset:4px;border-radius:5px}
+.sf-quick-remove-line .sf-quick-remove:focus-visible{
+  outline:2px solid #55565b;outline-offset:2px;border-radius:8px;
+}
 .sf-quick-google:hover,.sf-quick-switch.sf-quick-email-login:hover{filter:brightness(.96)}
 .sf-quick-google:active,.sf-quick-switch.sf-quick-email-login:active{transform:scale(.988)}
 .sf-quick-action-icon{display:grid;place-items:center;min-width:0}
