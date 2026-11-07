@@ -41,8 +41,13 @@ jobs:
           fi
       - name: Fetch the public AZ banner for labeled fixture previews
         run: |
-          curl --fail --location --retry 1 --max-time 30 'https://azseramik.com/wp-content/uploads/2026/10/AZ-Seramik-Kadin-Girisimci-Slider-v4-1024x466.webp' -o /tmp/showcase-az.webp
-          echo 'SHOWCASE_REAL_IMAGE=/tmp/showcase-az.webp' >> "$GITHUB_ENV"
+          # The real shop may be temporarily unreachable. The browser suite
+          # has an independent local fixture and does not require this asset.
+          if curl --fail --location --retry 1 --max-time 15 'https://azseramik.com/wp-content/uploads/2026/10/AZ-Seramik-Kadin-Girisimci-Slider-v4-1024x466.webp' -o /tmp/showcase-az.webp; then
+            echo 'SHOWCASE_REAL_IMAGE=/tmp/showcase-az.webp' >> "$GITHUB_ENV"
+          else
+            echo '::warning::Public AZ image unavailable; run deterministic local fixture without network image.'
+          fi
       - name: Background coverage, shorter frame, counter and skeleton acceptance
         env:
           SHOWCASE_INLINE_VISUALS: '1'
