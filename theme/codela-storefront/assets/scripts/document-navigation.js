@@ -76,10 +76,10 @@
         const icon = document.createElement('template'); icon.innerHTML = config.backIcon || '';
         link.append(icon.content.cloneNode(true)); brand.replaceChildren(link);
     }
-    /** Project the destination's header islands when feedback begins.
-     * The outgoing page's logo/tools are hidden only while the transition is
-     * pending; the target document/router stays authoritative for real controls.
-     * This is intentionally inert UI, not another header/menu controller.
+    /**
+     * Immediate destination chrome, NEVER a skeleton. The page body alone
+     * shimmers. All icons/logo are server-provided real SVG/markup, already
+     * available before navigation begins. No second menu/commerce controller.
      */
     function previewDestinationHeader(type, url, link) {
         const header = document.querySelector('.sf-shell .sf-header');
@@ -94,26 +94,70 @@
         left.className = 'sf-header-destination-left';
         centre.className = 'sf-header-destination-centre';
         right.className = 'sf-header-destination-right';
-        function capsule(where, kind) {
+
+        function capsule(where, kind, html = '', text = '') {
             const el = document.createElement('span');
             el.className = 'sf-header-destination-capsule sf-header-destination-capsule--' + kind;
-            const shimmer = document.createElement('span');
-            shimmer.className = 'sf-header-destination-shape';
-            el.append(shimmer);
+            if (html) {
+                // Trusted server-rendered theme SVG or custom logo, never
+                // arbitrary destination page HTML.
+                const fragment = document.createElement('template');
+                fragment.innerHTML = html;
+                el.append(fragment.content.cloneNode(true));
+            } else if (text) el.textContent = text;
             where.append(el);
+            return el;
         }
-        const cameFromHome = type === 'product' && config.home &&
-            new URL(location.href).pathname.replace(/\/$/, '') === new URL(config.home, location.href).pathname.replace(/\/$/, '');
-        if (type === 'home') capsule(left, 'logo');
-        else if (type === 'product') {
-            capsule(left, 'icon'); // Back
-            if (!cameFromHome) capsule(left, 'icon'); // Home shortcut
-        } else if (type === 'account') capsule(left, accountDepth(url.href) > 0 ? 'icon' : 'title');
-        else capsule(left, 'title');
-        if (type !== 'product' && type !== 'account') capsule(centre, 'navigation');
-        if (type === 'product') capsule(right, 'icon'); // Cart
-        if (type === 'catalog') capsule(right, 'catalog'); // Filter
-        capsule(right, 'icon'); // Menu
+        const clean = value => {
+            const u = new URL(value, location.href);
+            return u.origin + u.pathname.replace(/\/+$/, '') + u.search;
+        };
+        const fromHome = !!config.home && clean(location.href) === clean(config.home);
+        const fromMenu = !!link?.closest?.('.sf-header-menu,.sf-desktop-navigation,.sf-mobile-dock,#sf-menu');
+        const linkTitle = (link?.getAttribute?.('aria-label') ||
+            link?.dataset?.sfPageTitle || link?.textContent || '').trim().slice(0, 64);
+        const fallbackLogo = config.brandMarkup || '';
+        const fallbackTitle = type === 'catalog' ? (config.shopLabel || 'Shop') :
+            type === 'account' ? (config.accountLabel || 'Account') : linkTitle;
+
+        if (type === 'home') {
+            capsule(left, 'logo', fallbackLogo, config.brandName || '');
+        } else if (type === 'product') {
+            // A navigation from the Home page already has a Back-to-Home
+            // control. Else display both the genuine Back and Home SVG.
+            capsule(left, 'back', config.backIcon);
+            if (!fromHome) capsule(left, 'home', config.homeIcon);
+        } else if (type === 'account') {
+            if (!document.body.matches('.logged-in')) {
+                capsule(left, 'logo', fallbackLogo, config.brandName || '');
+            } else if (accountDepth(url.href) > 0) {
+                capsule(left, 'back', config.backIcon);
+            } else {
+                capsule(left, 'title', '', config.accountLabel || 'Account');
+            }
+        } else if (link && !fromMenu && type !== 'catalog' && !link.closest?.('.sf-mobile-dock')) {
+            capsule(left, 'back', config.backIcon);
+        } else if (type === 'catalog' && link && !fromMenu) {
+            capsule(left, 'back', config.backIcon);
+        } else {
+            capsule(left, 'title', '', linkTitle || fallbackTitle || config.brandName || '');
+        }
+
+        const desktopNav = header.querySelector('.sf-desktop-navigation');
+        if (desktopNav) {
+            const copy = desktopNav.cloneNode(true);
+            copy.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+            copy.removeAttribute('id');
+            centre.append(copy);
+        }
+        if (type === 'product') capsule(right, 'cart', config.cartIcon);
+        else if (type === 'catalog') capsule(right, 'filter', config.filterIcon);
+        // Desktop gets its ordinary tools instead of an empty icon placeholder.
+        capsule(right, 'desktop-action', config.searchIcon);
+        capsule(right, 'desktop-action', config.cartIcon);
+        capsule(right, 'desktop-action', config.accountIcon);
+        capsule(right, 'menu', config.menuIcon);
+
         preview.append(left, centre, right);
         header.append(preview);
         pending.headerPreview = preview;
