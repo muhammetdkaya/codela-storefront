@@ -63,8 +63,8 @@ assert(css.includes('background:#fff!important;color:#252527!important'),'PIN mo
 assert(css.includes('.sf-quick-sheet-links')&&css.includes('background:#f8f8f9!important'),'Password/recovery footer uses an integrated surface');
 
 assert(css.includes("@media(prefers-reduced-motion:reduce)"),'Reduced-motion setting respected');
-assert(php.includes('sf-quick-register-line') && js.includes("register?.addEventListener('click'"),
- 'Native Woo Register entry is available to remembered visitors');
+assert(php.includes('sf-quick-remove-line') && js.includes("removeAccount?.addEventListener('click'"),
+ 'Removing a remembered account clears local device data and reopens native Woo login');
 assert(php.includes("'wp_head'") && php.includes('sf-quick-checking'),
  'Prepaint device hint suppresses the native form until status verification');
 assert(js.includes("document.documentElement.classList.remove('sf-quick-checking')"),

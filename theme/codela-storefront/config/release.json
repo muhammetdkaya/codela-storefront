@@ -6,11 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Mobil alt menü ve header Hesabım, misafir kullanıcı için tekrar mevcut hazır diyalogda anında açılır; sayfa değişimi ve yanlış tam-sayfa skeleton'u kaldırıldı.",
-    "Login ve kayıt için hem dialog hem doğrudan Hesabım sayfasında gerçek WooCommerce form şablonu ve nonce yapısı kullanılır.",
-    "Tanınan kullanıcı doğrulanırken yalnızca ilgili hesap kartı gerçeğe uygun beyaz yüzeyli skeleton gösterir; normal giriş formu anlık parlamaz.",
-    "Önbellekten gelmiş form nonce'ları panel açılır açılmaz arka planda no-store AJAX üzerinden yenilenir. Giriş anında açık başka oturum algılanırsa güvenli şekilde taze Hesabım sayfasına gidilir.",
-    "Panel ve WooCommerce kayıt/Google alternatifleri aynı şablonu kullanır; alt menü anında açılır ve başarılı girişten sonra normal Hesabım yönlendirmesi korunur.",
-    "Chromium ve Safari motorlarında anında panel, yenilenen nonce, kayıt ve farklı oturum regresyon testleri eklendi."
+    "Normal giriş ve kayıt ekranlarında üstte aynı 2 sekmeli, kayarak değişen beyaz cam yüzey geri geldi; hızlı açılan Hesabım paneli ile doğrudan Hesabım sayfası aynı tab seçiciyi kullanır.",
+    "Sekme değişiminde Hoş geldiniz 👋 / Hesap oluştur başlığı ve alt açıklama seçili WooCommerce giriş/kayıt formuna eşleşir; alt taraftaki tekrarlı kayıt bağlantısı kaldırıldı.",
+    "Tanınan hesap kendi sade ekranında kalır; hesap kaldırma, Google ve e-posta/şifre alternatifleri korunur; altı haneli PIN paneli değiştirilmez.",
+    "Google giriş simgesi kayıt ve normal girişte de tanınan hesaptaki çok renkli SVG ile aynı, butonlar tüm ekranlarda koyu Codela stili ve kurulum yoksa pasif görünüm kullanır.",
+    "Kayıt/giriş form gönderimi, nonce yenileme, şifre sıfırlama, oturum kontrolü ve hızlı dock paneli gerçek WooCommerce işleyişinde kalır."
   ]
 }

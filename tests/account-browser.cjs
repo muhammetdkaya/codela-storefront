@@ -190,8 +190,8 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
         const parent=await page.locator('.sf-auth-social').boundingBox();
         assert(social.width>=parent.width-2,'Google Button fills same form width');
         assert(social.height>=52&&social.height<=54,'Google Button reuses compact UI Kit action height');
-        assert.equal(social.background,'rgb(237, 237, 237)','Google Button uses the shared neutral tonal variant');
-        assert.equal(social.radius,'999px','Google Button uses the shared capsule Button radius');
+        assert.equal(social.background,'rgb(37, 38, 40)','Google uses approved dark Codela CTA');
+        assert.equal(social.radius,'30px','Google Button uses the approved rounded Codela capsule');
         if(social.border!=='1px')console.error('Secondary Button computed styles',social,await page.locator('.sf-auth-google').evaluate(el=>({
          classes:el.className, borderStyle:getComputedStyle(el).borderTopStyle,
          borderToken:getComputedStyle(el).getPropertyValue('--sf-ui-border'),
@@ -200,12 +200,12 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
           .map(rule=>rule.cssText.slice(0,450)).slice(-12)
         })));
         assert.equal(social.border,'1px','Google secondary UI Kit Button must retain its visible border');
-        assert.notEqual(social.borderColor,social.background,'Google outline must contrast with white surface');
-        assert.equal(social.display,'grid','Google content uses aligned grid inside the shared Button');
+        assert.equal(social.borderColor,social.background,'Dark Google button uses the same surface and edge color');
+        assert.equal(social.display,'flex','Google uses centered text plus a positioned multicolor icon');
         assert(Math.abs(social.textCenter-social.buttonCenter)<1,
           'Google label is centered in the complete Button regardless of glyph width');
-        assert(social.textLeft-social.glyphRight>=7&&social.textLeft-social.glyphRight<=14,
-          'The Google mark has a consistent gap and never overlaps its label');
+        assert(social.textLeft-social.glyphRight>=12,
+          'The positioned Google mark does not overlap the centered label');
         await page.locator('.sf-auth-social').evaluate(el=>el.remove());
         await page.locator('.woocommerce').evaluate((node,markup)=>node.insertAdjacentHTML('beforeend',markup),unconfiguredGoogle);
         assert.equal(await page.locator('.sf-auth-google').count(),1,'Google option stays visible when not configured');
@@ -219,8 +219,11 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
          const selected=el.querySelector('[aria-selected="true"]');
          return {height:selected.getBoundingClientRect().height,shadow:getComputedStyle(selected).boxShadow};
         });
-        assert.equal(tabs.height,44,'Account tabs use 44px shared navigation height');
-        assert.notEqual(tabs.shadow,'none','Selected tab retains a subtle surface distinction');
+        assert(tabs.height>=39,'Account tabs maintain a comfortable accessible hit target');
+        assert.equal(tabs.shadow,'none','Active tab paint belongs to the sliding surface');
+        assert.notEqual(await page.locator('.sf-auth-tab-slide').evaluate(el=>getComputedStyle(el).boxShadow),'none','Sliding white surface has subtle shadow');
+        assert.equal(await page.locator('.sf-auth-tabs').getAttribute('data-active'),'login','Login slide initially selected');
+        assert.equal(await page.locator('.sf-auth-tabs').evaluate(el=>el.compareDocumentPosition(document.querySelector('.sf-account-intro h1')) & Node.DOCUMENT_POSITION_FOLLOWING ? 'before' : 'after'),'before','Tabs remain above the welcome heading');
 
         assert.equal(await page.locator('#customer_login .u-column2').isVisible(),false,'Login selected by default');
         await page.locator('[data-auth-tab="register"]').click();
@@ -228,10 +231,16 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
         assert.equal(await page.locator('#customer_login .u-column2').isVisible(),true,'Registration tab shows the native register form');
         assert.equal(await page.locator('#customer_login .u-column1').isVisible(),false,'Login form hidden while Register is selected');
         assert.equal(await page.locator('[data-auth-tab="register"]').getAttribute('aria-selected'),'true');
+        assert.equal(await page.locator('.sf-auth-heading-text').innerText(),'Create an account','Register tab updates its heading');
+        assert.equal(await page.locator('.sf-auth-description').innerText(),'Join us in a few steps.','Register tab updates its subtitle');
+        assert.equal(await page.locator('.sf-auth-heading-wave').isVisible(),false,'Register tab does not repeat welcome emoji');
+        assert.equal(await page.locator('.sf-auth-tabs').getAttribute('data-active'),'register','Slider follows registration');
         await page.locator('[data-auth-tab="register"]').focus();
         await page.keyboard.press('ArrowLeft');
         assert.equal(await page.locator('[data-auth-tab="login"]').getAttribute('aria-selected'),'true','Keyboard arrows change tabs');
         assert.equal(await page.locator('#customer_login .u-column1').isVisible(),true,'Login form restored without re-creating form');
+        assert.equal(await page.locator('.sf-auth-heading-text').innerText(),'Welcome back','Login tab restores welcome heading and subtitle');
+        assert.equal(await page.locator('.sf-auth-heading-wave').isVisible(),true,'Login greeting uses one emoji');
         assert.equal(await page.locator('form.woocommerce-form').count(),2,'Both native Woo forms remain in DOM');
       }else{
         assert.equal(await page.locator('.sf-auth-tabs').isVisible(),false,'No fake Register tab if Woo registration is disabled');

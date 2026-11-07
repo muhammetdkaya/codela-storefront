@@ -197,7 +197,14 @@ function codela_sf_google_button(): void {
         <?php else : ?>
         <button type="button" class="sf-auth-google sf-ui-button sf-ui-button--secondary" disabled aria-label="<?php esc_attr_e( 'Google sign-in is currently unavailable', 'codela-storefront' ); ?>">
         <?php endif; ?>
-            <span class="sf-google-glyph" aria-hidden="true">G</span>
+            <span class="sf-google-glyph" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="24" height="24" focusable="false" aria-hidden="true">
+                    <path fill="#4285F4" d="M21.8 12.2c0-.7-.06-1.4-.18-2.08H12v3.94h5.5a4.7 4.7 0 0 1-2.04 3.08v2.56h3.3c1.93-1.78 3.04-4.39 3.04-7.5z"/>
+                    <path fill="#34A853" d="M12 22c2.75 0 5.07-.91 6.76-2.46l-3.3-2.56c-.92.62-2.1.98-3.46.98-2.66 0-4.91-1.8-5.72-4.22H2.87v2.64A10 10 0 0 0 12 22z"/>
+                    <path fill="#FBBC05" d="M6.28 13.74a6 6 0 0 1 0-3.48V7.62H2.87a10 10 0 0 0 0 8.76l3.41-2.64z"/>
+                    <path fill="#EA4335" d="M12 6.04c1.5 0 2.84.52 3.9 1.54l2.93-2.93A9.95 9.95 0 0 0 12 2a10 10 0 0 0-9.13 5.62l3.41 2.64C7.09 7.84 9.34 6.04 12 6.04z"/>
+                </svg>
+            </span>
             <span class="sf-ui-button-label"><?php esc_html_e( 'Continue with Google', 'codela-storefront' ); ?></span>
         <?php if ( $google_available ) : ?></a><?php else : ?></button><?php endif; ?>
     </div>

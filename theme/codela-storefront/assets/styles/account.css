@@ -365,3 +365,68 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form .form-row.sf-auth-placeholder-ready input.input-text::placeholder{
   color:#8a8e96;opacity:1;
 }
+
+/* 0.1.232 - One app-like Login/Register switch on both the native Woo page
+   and the existing instant panel. Keep forms and Google provider hooks native. */
+.sf-account-intro .sf-auth-tabs{
+  position:relative;isolation:isolate;
+  width:100%;height:49px;min-height:49px;max-width:none;
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:0;padding:4px;margin:0 0 30px;
+  background:#ebebed;border:1px solid #e5e5e7;border-radius:16px;
+}
+.sf-account-intro .sf-auth-tab-slide{
+  position:absolute;left:4px;top:4px;bottom:4px;
+  width:calc(50% - 4px);border-radius:12px;
+  background:#fff;box-shadow:0 2px 9px rgba(20,22,27,.09);
+  transform:translateX(0);
+  transition:transform .29s cubic-bezier(.2,.85,.2,1);
+  pointer-events:none;
+}
+.sf-account-intro .sf-auth-tabs[data-active="register"] .sf-auth-tab-slide{transform:translateX(100%)}
+.sf-account-intro .sf-auth-tabs .sf-auth-tab{
+  z-index:1;position:relative;display:grid;place-items:center;
+  min-width:0;min-height:39px;border:0!important;border-radius:12px;
+  padding:8px 6px;background:transparent!important;box-shadow:none!important;
+  color:#85858b;font-size:14px;font-weight:600;line-height:1.2;
+}
+.sf-account-intro .sf-auth-tabs .sf-auth-tab[aria-selected="true"]{color:#222326}
+.sf-account-intro .sf-auth-tabs .sf-auth-tab:focus-visible{
+  outline:2px solid #55565b;outline-offset:1px;
+}
+.sf-account-intro .sf-auth-heading-wave{display:inline;vertical-align:baseline;font-size:.82em;letter-spacing:0}
+.sf-account-intro .sf-auth-heading-wave[hidden]{display:none!important}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-account-intro{
+  text-align:left;margin-bottom:25px;
+}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-account-intro h1{
+  font-size:clamp(29px,4vw,35px);font-weight:720;line-height:1.12;
+  letter-spacing:-.04em;text-align:left;
+}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-account-intro p{
+  text-align:left;margin:11px 0 0;color:#808087;font-size:14px;line-height:1.5;
+}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-account-intro .sf-auth-tabs{
+  margin:0 0 30px;
+}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-auth-social .sf-auth-google{
+  display:flex;position:relative;align-items:center;justify-content:center;
+  width:100%;min-height:54px;gap:0;margin:0;padding:12px 70px;
+  border:1px solid #252628;border-radius:30px;background:#252628;
+  box-shadow:none;color:#fff;font-size:14px;font-weight:630;
+  text-decoration:none;line-height:1.3;
+}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-auth-social .sf-auth-google:disabled{
+  background:#9d9da0;color:#fff;border-color:#9d9da0;opacity:1;
+}
+.sf-auth-social .sf-auth-google .sf-google-glyph{
+  position:absolute;left:22px;top:50%;transform:translateY(-50%);
+  display:grid;place-items:center;width:24px;height:24px;
+}
+.sf-auth-social .sf-auth-google .sf-google-glyph svg{display:block;width:23px;height:23px}
+.sf-auth-social .sf-auth-google .sf-google-glyph::after{
+  content:"";position:absolute;left:42px;top:0;width:1px;height:24px;background:rgba(255,255,255,.38);
+}
+@media(prefers-reduced-motion:reduce){
+ .sf-account-intro .sf-auth-tab-slide{transition:none}
+}
