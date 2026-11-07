@@ -57,9 +57,84 @@ function preventInitialAccountAutoFocus() {
                 });
             });
     }
+    /**
+     * Keep the instant dialog fast without trusting stale form nonces embedded
+     * in a cached Home/Shop document. WooCommerce still submits its own forms.
+     * A read-only no-store AJAX call refreshes both nonce fields on each open.
+     */
+    function initInstantAccountFreshness() {
+        const root = document.querySelector('#sf-account .sf-overlay-auth');
+        const accountSection = document.querySelector('#sf-account');
+        if (!root || !accountSection || !root.dataset.authStateUrl) return;
+        const forms = [...root.querySelectorAll('form.woocommerce-form-login,form.woocommerce-form-register')];
+        if (!forms.length) return;
+        const buttons = forms.flatMap(form => [...form.querySelectorAll('button[type="submit"],input[type="submit"]')]);
+        let ready = false;
+        let pending = null;
+        const account = root.querySelector('form.woocommerce-form-login')?.action
+            || document.querySelector('.sf-account-link')?.href || '/my-account/';
+        const goToFreshAccount = () => {
+            const target = new URL(account, window.location.href);
+            if (target.origin !== window.location.origin) return;
+            target.searchParams.set('sf_quick_auth', Date.now().toString(36));
+            window.location.replace(target.href);
+        };
+        const setWaiting = waiting => {
+            buttons.forEach(button => { button.disabled = waiting; });
+            root.setAttribute('aria-busy', String(waiting));
+        };
+        forms.forEach(form => {
+            // Browser native form cannot submit while a cached nonce is being
+            // refreshed. No duplicate auth handler or credentials API is used.
+            form.addEventListener('submit', event => {
+                if (!ready) event.preventDefault();
+            }, true);
+        });
+        accountSection.addEventListener('codela:account-open', () => {
+            if (pending) return;
+            ready = false;
+            setWaiting(true);
+            const signal = typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function'
+                ? AbortSignal.timeout(8000) : undefined;
+            pending = fetch(root.dataset.authStateUrl, {
+                method:'POST', credentials:'same-origin', cache:'no-store',
+                headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
+                body:'action=codela_sf_account_form_state', signal
+            }).then(async response => {
+                if (!response.ok) throw Error('Account session refresh failed');
+                const state = await response.json();
+                if (state.authenticated) {
+                    goToFreshAccount();
+                    return;
+                }
+                if (!state.login_nonce || !state.register_nonce) {
+                    throw Error('Account form verification unavailable');
+                }
+                const fields = {
+                    'woocommerce-login-nonce':state.login_nonce,
+                    'woocommerce-register-nonce':state.register_nonce
+                };
+                for (const form of forms) {
+                    for (const [name,nonce] of Object.entries(fields)) {
+                        const input = form.querySelector('input[name="' + name + '"]');
+                        if (input) input.value = nonce;
+                    }
+                }
+                ready = true;
+                setWaiting(false);
+            }).catch(() => {
+                // Fail closed for cached Woo nonces. A fresh full My Account
+                // document is the safe fallback when the lightweight request
+                // cannot be completed, rather than silently submitting a stale
+                // public-page form and claiming login succeeded.
+                goToFreshAccount();
+            }).finally(() => { pending = null; });
+        });
+    }
     function init() {
         preventInitialAccountAutoFocus();
         applyAuthPlaceholders();
+        initInstantAccountFreshness();
         const tabs = document.querySelector('.sf-account-intro .sf-auth-tabs');
         const container = document.querySelector('#customer_login');
         if (!tabs || !container) return;
