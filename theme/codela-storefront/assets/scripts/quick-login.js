@@ -354,6 +354,13 @@
   }
   async function init() {
     const profile = log();
+    // A previously enrolled browser may have saved only "demo". On the next
+    // normal Woo sign-in, replace that hint with the actual customer name.
+    if (profile && config.identity?.userId === profile.userId
+      && typeof config.identity.displayName === 'string' && config.identity.displayName.trim()) {
+      profile.displayName = config.identity.displayName.trim();
+      localStorage.setItem(savedKey, JSON.stringify(profile));
+    }
     if (profile) {
       // All login surfaces refer to the same browser key but are independent dialogs.
       for (const section of document.querySelectorAll('.sf-quick-login')) {
