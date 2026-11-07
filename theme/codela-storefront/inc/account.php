@@ -16,6 +16,7 @@ function codela_sf_account_intro(): void {
     }
     ?>
     <header class="sf-account-intro"
+        data-auth-initial="<?php echo isset( $_POST['register'] ) ? 'register' : 'login'; ?>"
         data-auth-login-placeholder="<?php esc_attr_e( 'Email or username', 'codela-storefront' ); ?>"
         data-auth-username-placeholder="<?php esc_attr_e( 'Username', 'codela-storefront' ); ?>"
         data-auth-email-placeholder="<?php esc_attr_e( 'Email address', 'codela-storefront' ); ?>"
