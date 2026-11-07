@@ -26,6 +26,10 @@
 .sf-quick-status{min-height:22px;font-size:13px;margin:8px auto;color:var(--sf-muted,#72737a)}
 .sf-quick-password{margin:8px auto 0;width:100%;max-width:300px}
 .sf-quick-forget{border:0;background:none;padding:13px 8px;margin:2px auto;color:var(--sf-muted,#73747b);font-size:12px;cursor:pointer}
+.sf-quick-onboarding{margin:20px 0;padding:20px;border:1px solid var(--sf-ui-border,#e7e7ea);border-radius:18px;background:var(--sf-ui-surface,#fbfbfc)}
+.sf-quick-onboarding h3{font-size:17px;font-weight:600;letter-spacing:-.25px;margin:0 0 8px}
+.sf-quick-onboarding p{font-size:13px;color:var(--sf-muted,#73757b);line-height:1.5;margin:0 0 16px}
+.sf-quick-onboarding a.sf-ui-button{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;min-height:44px;padding:0 18px}
 .sf-quick-settings{margin:22px 0 8px;padding:18px;border-radius:18px;border:1px solid var(--sf-ui-border,#e6e7e8);background:var(--sf-ui-surface,#fbfbfc)}
 .sf-quick-settings h3{font-size:18px;margin:0 0 6px}
 .sf-quick-settings>p{font-size:13px;color:var(--sf-muted,#74757d);line-height:1.5;margin:0 0 16px}
