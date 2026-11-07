@@ -155,7 +155,7 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
       assert.equal(ring.width,'2px','Standalone guest input has the same single focus ring');
       assert.equal(ring.offset,'2px','Standalone guest input matches Search focus offset');
       assert.equal(ring.color,'rgb(28, 28, 30)','Standalone guest ring uses shared glass ink');
-      const borderRGB=(ring.borderColor.match(/\\d+/g)||[]).slice(0,3).map(Number);
+      const borderRGB=(ring.borderColor.match(/\d+/g)||[]).slice(0,3).map(Number);
       assert(ring.borderColor === 'rgba(0, 0, 0, 0)'
           || (borderRGB.length===3 && Math.min(...borderRGB)>=215
               && Math.max(...borderRGB)-Math.min(...borderRGB)<=10),
