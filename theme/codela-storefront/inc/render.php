@@ -88,6 +88,7 @@ function codela_sf_header(): string {
     $catalog_page = function_exists( 'codela_sf_is_catalog_archive' ) && codela_sf_is_catalog_archive();
     $desktop_menu = codela_sf_menu( true );
     $guest_account = ! is_user_logged_in();
+    $guest_overlay = $guest_account && ! ( function_exists( 'is_account_page' ) && is_account_page() );
     $checkout_page = is_checkout();
     $show_mobile_dock = ! $checkout_page && ! in_array( $settings['mobile_dock_enabled'] ?? true, [ false, 0, '0', '' ], true );
     // Checkout is a full page without the mobile dock, but uses the same
@@ -137,7 +138,7 @@ function codela_sf_header(): string {
                 <?php echo codela_sf_ui_icon_button( 'shopping-bag', __( 'Your cart', 'codela-storefront' ), [ 'variant' => $product_page ? 'soft' : 'bare', 'href' => wc_get_cart_url(), 'class' => 'sf-cart-trigger', 'attributes' => [ 'data-wp-on--click' => 'actions.cart', 'data-panel' => 'cart', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] ], '<span class="sf-badge" aria-hidden="true"></span>' ); ?>
                 <?php echo codela_sf_ui_icon_button( 'user-round', __( 'My account', 'codela-storefront' ), [
     'href' => wc_get_page_permalink( 'myaccount' ), 'class' => 'sf-account-link',
-    'attributes' => $guest_account ? [ 'data-wp-on--click' => 'actions.account', 'data-panel' => 'account', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] : [],
+    'attributes' => $guest_overlay ? [ 'data-wp-on--click' => 'actions.account', 'data-panel' => 'account', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] : [],
 ] ); ?>
             </nav>
         </header>
@@ -153,7 +154,7 @@ function codela_sf_header(): string {
             <a data-dock-view="cart" class="sf-dock-item sf-ui-nav-tab" href="<?php echo esc_url( wc_get_cart_url() ); ?>" data-wp-on--click="actions.cart" data-panel="cart" aria-haspopup="dialog" aria-expanded="false" aria-label="<?php esc_attr_e( 'Your cart', 'codela-storefront' ); ?>">
                 <span class="sf-ui-icon-badged"><?php echo codela_sf_icon( 'shopping-bag' ); ?><span class="sf-badge" aria-hidden="true"></span></span><span><?php esc_html_e( 'Cart', 'codela-storefront' ); ?></span>
             </a>
-            <a data-dock-view="account" class="sf-dock-item sf-ui-nav-tab <?php echo esc_attr( is_account_page() ? 'is-active' : '' ); ?>" href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>" <?php if ( $guest_account ) : ?>data-wp-on--click="actions.account" data-panel="account" aria-haspopup="dialog" aria-expanded="false"<?php endif; ?> <?php if ( is_account_page() ) : ?>aria-current="page"<?php endif; ?>>
+            <a data-dock-view="account" class="sf-dock-item sf-ui-nav-tab <?php echo esc_attr( is_account_page() ? 'is-active' : '' ); ?>" href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>" <?php if ( $guest_overlay ) : ?>data-wp-on--click="actions.account" data-panel="account" aria-haspopup="dialog" aria-expanded="false"<?php endif; ?> <?php if ( is_account_page() ) : ?>aria-current="page"<?php endif; ?>>
                 <?php echo codela_sf_icon( 'user-round' ); ?><span><?php esc_html_e( 'My account', 'codela-storefront' ); ?></span>
             </a>
             </div>
@@ -164,9 +165,9 @@ function codela_sf_header(): string {
             <div class="sf-panel-top"><h2 id="sf-panel-title" tabindex="-1"></h2><span class="sf-panel-app-title sf-panel-app-title--account sf-ui-surface" aria-hidden="true"><?php echo codela_sf_icon( 'user-round' ); ?><?php esc_html_e( 'My account', 'codela-storefront' ); ?></span><span class="sf-panel-app-title sf-panel-app-title--cart sf-ui-surface" aria-hidden="true"><?php echo codela_sf_icon( 'shopping-bag' ); ?><?php esc_html_e( 'Cart', 'codela-storefront' ); ?></span><?php echo codela_sf_ui_icon_button( 'x', __( 'Close', 'codela-storefront' ), [ 'variant' => 'soft', 'class' => 'sf-close', 'attributes' => [ 'data-wp-on--click' => 'actions.close' ] ] ); ?></div>
             <section class="sf-panel-body" id="sf-menu" hidden><?php if ( ! $show_mobile_dock || $product_page ) : ?><nav class="sf-menu-tools<?php echo $product_page && $show_mobile_dock ? ' sf-menu-tools--product-mobile' : ''; ?>" aria-label="<?php esc_attr_e( 'Store tools', 'codela-storefront' ); ?>">
                 <?php echo codela_sf_ui_icon_button( 'search', __( 'Search', 'codela-storefront' ), [ 'variant' => 'soft', 'href' => add_query_arg( [ 's' => '', 'post_type' => 'product' ], home_url( '/' ) ), 'attributes' => [ 'data-wp-on--click' => 'actions.search', 'data-panel' => 'search', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] ] ); ?>
-                <?php echo codela_sf_ui_icon_button( 'user-round', __( 'My account', 'codela-storefront' ), [ 'variant' => 'soft', 'href' => wc_get_page_permalink( 'myaccount' ), 'attributes' => $guest_account ? [ 'data-wp-on--click' => 'actions.account', 'data-panel' => 'account', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] : [] ] ); ?>
+                <?php echo codela_sf_ui_icon_button( 'user-round', __( 'My account', 'codela-storefront' ), [ 'variant' => 'soft', 'href' => wc_get_page_permalink( 'myaccount' ), 'attributes' => $guest_overlay ? [ 'data-wp-on--click' => 'actions.account', 'data-panel' => 'account', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] : [] ] ); ?>
             </nav><?php endif; ?><button class="sf-back" aria-label="<?php esc_attr_e( 'Back', 'codela-storefront' ); ?>" hidden><?php echo codela_sf_icon( 'arrow-left' ); ?></button><nav aria-label="<?php esc_attr_e( 'Main menu', 'codela-storefront' ); ?>"><?php echo codela_sf_menu(); ?></nav><div class="sf-menu-secondary"><?php if ( get_privacy_policy_url() ) { ?><a href="<?php echo esc_url( get_privacy_policy_url() ); ?>"><?php esc_html_e( 'Privacy', 'codela-storefront' ); ?></a><?php } ?></div></section>
-            <?php if ( $guest_account ) : ?>
+            <?php if ( $guest_overlay ) : ?>
             <section class="sf-panel-body sf-account-body" id="sf-account" hidden>
                 <?php echo codela_sf_account_overlay_form(); ?>
             </section>
