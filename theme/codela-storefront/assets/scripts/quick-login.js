@@ -168,8 +168,12 @@
       if (pin.length === 6) void submit();
     }
     buttons.forEach(button => button.addEventListener('click', () => enter(button.dataset.quickDigit)));
-    // Physical keyboards are supported when the quick-login view is visible.
-    section.addEventListener('keydown', event => {
+    // Support desktop keyboards without requiring a keypad button to take
+    // focus; ignore hidden dialogs and native username/password inputs.
+    document.addEventListener('keydown', event => {
+      if (!host.classList.contains('sf-pin-active') || section.hidden
+        || section.getClientRects().length === 0
+        || event.target?.closest?.('input,textarea,[contenteditable="true"]')) return;
       if (event.key === 'Backspace') { event.preventDefault(); enter('erase'); }
       else if (/^[0-9]$/.test(event.key)) { event.preventDefault(); enter(event.key); }
     });
