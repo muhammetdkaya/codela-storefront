@@ -63,8 +63,12 @@ assert(css.includes('background:#fff!important;color:#252527!important'),'PIN mo
 assert(css.includes('.sf-quick-sheet-links')&&css.includes('background:#f8f8f9!important'),'Password/recovery footer uses an integrated surface');
 
 assert(css.includes("@media(prefers-reduced-motion:reduce)"),'Reduced-motion setting respected');
-assert(php.includes('sf-quick-remove-line') && js.includes("removeAccount?.addEventListener('click'"),
- 'Removing a remembered account clears local device data and reopens native Woo login');
+assert(!php.includes('sf-quick-remove') && !js.includes("removeAccount?.addEventListener('click'") && !css.includes('.sf-quick-remove-line'),
+ 'Remembered account removal option is absent from markup, handlers and styles');
+assert(js.includes('async function forgetRemembered(profile)'),
+ 'Automatic device revocation and Google account switch still clean outdated keys');
+assert(css.includes('.sf-quick-google:disabled{opacity:1!important'),
+ 'Quick Google button retains the approved dark background when OAuth is not configured');
 assert(php.includes("'wp_head'") && php.includes('sf-quick-checking'),
  'Prepaint device hint suppresses the native form until status verification');
 assert(js.includes("document.documentElement.classList.remove('sf-quick-checking')"),
