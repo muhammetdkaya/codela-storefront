@@ -237,4 +237,12 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'Quick sign-in is enabled for this browser.' => 'Hızlı giriş bu tarayıcıda etkinleştirildi.',
 'Could not enable quick sign-in.' => 'Hızlı giriş etkinleştirilemedi.',
 'Could not remove browser.' => 'Tarayıcı kaldırılamadı.',
+'Account information' => 'Hesap bilgileri',
+'Customer registration is disabled in WooCommerce.' => 'WooCommerce üzerinden müşteri kaydı kapalı.',
+'The Codela Register tab is hidden until account creation on the My Account page is enabled.' => 'Hesabım sayfasında hesap oluşturma seçeneği açılıncaya kadar Codela\'nın Kayıt Ol alanı gizlenir.',
+'Open WooCommerce account settings' => 'WooCommerce hesap ayarlarını aç',
+'Quick sign-in' => 'Hızlı giriş',
+'For security, 6-digit quick sign-in is available only to customer accounts on HTTPS. Administrator and staff accounts must use their normal WordPress login.' => 'Güvenlik nedeniyle 6 haneli hızlı giriş yalnız HTTPS kullanan müşteri hesaplarında çalışır. Yönetici ve personel hesapları normal WordPress girişi kullanmalıdır.',
+'Manage your trusted browsers or set a code for this browser.' => 'Güvenilen tarayıcıları yönetin veya bu tarayıcı için yeni bir kod oluşturun.',
+'Manage quick sign-in' => 'Hızlı girişi yönet',
 ] ];
