@@ -38,7 +38,10 @@ function codela_sf_google_cookie( string $state, int $expires ): void {
 /** All errors are deliberately generic: no token or account data in URLs. */
 function codela_sf_google_return( bool $error = true ): void {
     $account = wc_get_page_permalink( 'myaccount' );
-    $url = $error ? add_query_arg( 'google_login', 'error', $account ) : $account;
+    // A successful provider callback must never land on cached guest HTML.
+    $url = $error ? add_query_arg( 'google_login', 'error', $account )
+        : ( function_exists( 'codela_sf_quick_fresh_account_redirect' )
+            ? codela_sf_quick_fresh_account_redirect( $account ) : $account );
     nocache_headers();
     wp_safe_redirect( $url, 303 );
     exit;
