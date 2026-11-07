@@ -220,6 +220,19 @@ add_action( 'profile_update', static function( $user_id, $old_user ): void {
     }
 }, 10, 2 );
 
+
+/**
+ * One-time post-PIN navigation must never reuse a cached anonymous account
+ * page. A unique query is used only for this redirect; no auth token travels
+ * in the URL. The WordPress login cookie remains the sole session authority.
+ */
+add_action( 'template_redirect', static function(): void {
+    if ( ! function_exists( 'is_account_page' ) || ! is_account_page()
+        || ! isset( $_GET['sf_quick_auth'] ) ) { return; }
+    if ( ! defined( 'DONOTCACHEPAGE' ) ) { define( 'DONOTCACHEPAGE', true ); }
+    nocache_headers();
+}, 0 );
+
 /** Guest PIN screen: unhidden only if an actual browser key is found. */
 function codela_sf_quick_guest_markup(): void {
     if ( is_user_logged_in() || ( ! empty( $GLOBALS['codela_sf_auth_overlay'] )
@@ -227,6 +240,10 @@ function codela_sf_quick_guest_markup(): void {
     ?>
     <section class="sf-quick-login" hidden aria-label="<?php esc_attr_e( 'Quick sign-in', 'codela-storefront' ); ?>">
         <div class="sf-quick-choice">
+            <div class="sf-quick-choice-intro">
+                <h2><?php esc_html_e( 'Continue', 'codela-storefront' ); ?></h2>
+                <p><?php esc_html_e( 'Sign in quickly with your saved account.', 'codela-storefront' ); ?></p>
+            </div>
             <button type="button" class="sf-quick-account sf-ui-pressable" aria-haspopup="dialog" aria-controls="sf-quick-sheet">
                 <span class="sf-quick-monogram" aria-hidden="true"></span>
                 <span class="sf-quick-account-text"><strong class="sf-quick-user"></strong></span>

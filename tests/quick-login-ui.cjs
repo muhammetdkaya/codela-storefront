@@ -19,7 +19,10 @@ assert(js.includes("remembered.displayName = settings.dataset.displayName"),'Exi
 assert(js.includes("displayName:settings.dataset.displayName"),'New remembered accounts store display name');
 assert(!js.includes("data-quick-digit"),'No custom number keypad should be used');
 
-assert(js.includes("window.location.assign(result.account_url)"),'Redirect occurs only after server authenticated');
+assert(js.includes("window.location.replace(destination.href)"),'Successful PIN forces a full document navigation');
+assert(js.includes("destination.searchParams.set('sf_quick_auth'"),'Authenticated redirect bypasses cached guest account HTML');
+assert(php.includes("nocache_headers()"),'Authentication completion page explicitly disables caches');
+assert(js.includes("if (!result.ok || typeof result.account_url !== 'string')"),'Redirect only follows successful server result');
 assert(js.includes("derFromP1363"),'P1363 ECDSA signatures are converted to OpenSSL DER');
 assert(php.includes("wp_set_auth_cookie(") && php.includes("do_action( 'wp_login'"),'WordPress sessions are the authority');
 assert(php.includes("wp_hash_password( codela_sf_quick_pin_secret( $pin ) )"),'PIN is hashed and server peppered');
@@ -32,8 +35,12 @@ assert(css.includes(".sf-pin-active .sf-account-intro"),'Native form hidden only
 assert(css.includes('.sf-quick-sheet') && css.includes('.sf-quick-scrim'),'PIN lives in a responsive accessible bottom sheet');
 assert(css.includes('.sf-quick-slot.is-filled') && css.includes('.sf-quick-slot.is-current'),'PIN fill and current-slot colors defined');
 assert(css.includes('.sf-quick-pin-track.is-verified .sf-quick-result'),'Verified-state color remains separate from typing/loading');
-assert(css.includes('#287454'),'Success tone is intentionally restrained dark green');
-assert(css.includes('.sf-quick-status.is-error'),'Errors have their own muted warning hue');
+assert(css.includes('#16844f'),'Verified state uses distinct green');
+assert(css.includes('#c53643'),'Failed state uses distinct red');
+assert(css.includes('.sf-quick-status.is-error'),'Errors have distinct warning hue');
+assert(css.includes('.sf-quick-choice-intro'),'Remembered account has concise heading and supporting description');
+assert(css.includes('background:#fff!important;color:#252527!important'),'PIN modal is opaque white regardless of shared glass styling');
+assert(css.includes('.sf-quick-sheet-links')&&css.includes('background:#f8f8f9!important'),'Password/recovery footer uses an integrated surface');
 
 assert(css.includes("@media(prefers-reduced-motion:reduce)"),'Reduced-motion setting respected');
 console.log('Quick login browser contracts passed');

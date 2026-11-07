@@ -6,10 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Altı haneli hızlı girişin açılış ekranında sadece tanınan WooCommerce hesabı gösterilir; hesap seçildiğinde beyaz alttan açılır PIN paneli açılır.",
-    "Kullanıcı adı yerine mümkünse müşterinin adı ve soyadı, aksi hâlde WooCommerce görüntü adı veya kullanıcı adı gösterilir. Eski tanınan hesaplar normal giriş sonrasında güncellenir.",
-    "Özel sayı tuşları kaldırıldı; hesap seçimine dokunulunca iOS ve Android'in kendi sayısal klavyesi açılır. Şifreyle giriş ve şifremi unuttum bağlantıları küçük tutulur.",
-    "Altıncı rakamda altı kutu merkeze birleşir, doğrulama sürerken nötr spinner görünür; sunucu başarılı oturum yanıtı verdiğinde tek kutuda hafif yeşil onay animasyonu gösterilir. Hatalı PIN'de giriş alanı sıfırlanır.",
-    "Codela Commerce Toolkit eklentisine müdahale edilmedi. WooCommerce kayıt, şifre sıfırlama ve oturum güvenliği korunur."
+    "iPhone Safari'de PIN paneli, cam/şeffaflık stillerinden ayrılarak tam opak beyaz tek yüzey olarak düzenlendi; alt şifre ve kurtarma bağlantıları kompakt, uyumlu bir footer alanına taşındı.",
+    "Başarılı PIN doğrulamasından sonra aynı misafir Hesabım belgesinin önbellekten geri gelmesi önlendi: WordPress oturum çerezi sonrası tek kullanımlık benzersiz adresle tam sayfa yönlendirme ve sunucu cache-kapatma yanıtı eklendi.",
+    "Doğrulama esnasında nötr antrasit; başarıda belirgin yeşil (#16844f), hatada kırmızı (#c53643) kutu/metin ve hafif titreme animasyonu uygulanır. Yeşil onay yalnızca gerçek sunucu başarısından sonra gösterilir.",
+    "Tanınan hesap ekranına Codela'nın sade diline uygun 'Devam et' başlığı ve kısa açıklama eklendi. Hesap ad-soyad gösterimi korundu.",
+    "Chromium ve WebKit testlerinde opak panel, renkler, giriş sonrası önbellek atlatma ve WooCommerce ekranının güncel açılması kontrol edilir; eklenti deposu değişmedi."
   ]
 }
