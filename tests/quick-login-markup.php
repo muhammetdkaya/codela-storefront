@@ -10,6 +10,7 @@ class WP_User {
         public array $roles = [ 'customer' ]
     ) {}
 }
+function add_filter(...$args) {}
 function add_action( ...$args ) {}
 function __( $s, $domain = '' ) { return $s; }
 function esc_attr_e( $s, $domain = '' ) { echo htmlspecialchars( $s, ENT_QUOTES ); }
