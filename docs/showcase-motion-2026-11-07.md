@@ -33,3 +33,9 @@ After correcting that first assertion, clean main also reproduces the next outda
 ## Approved GitHub release candidate
 
 All final implementation checks passed on `32e62acb`: full validation/navigation 42379052119, Chromium/WebKit showcase 42379052124, and quick-login/security 42379052118. Deployment was skipped. The user subsequently approved merging PR #122 and publishing a new GitHub theme release. The 0.1.230 candidate changes only the version, package assertions and release notes/documentation relative to that validated implementation. Its exact-head CI will be checked before merging. Release publication will explicitly use `publish_feed:false`, leaving stable-feed auto-update offers, FTP and AZ installation unchanged. Physical Safari and live installation acceptance remain outstanding.
+
+## Published and verified
+
+PR #122 merged as `1f63706c70500fff5f2a6d4d0d8b16c028b424cf`. Version 0.1.230 source/tag is `7b7b7c1736ba3dba1e2208ef01b5688387fa4be9`; its full validation/browser CI 42383141981, Chromium/WebKit showcase CI 42383142041 and quick-login/security CI 42383142124 all passed. [GitHub release](https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.230) publication [42383656371](https://github.com/muhammetdkaya/codela-storefront/actions/runs/42383656371) succeeded. The 263,857-byte ZIP contains 109 files and matches both deterministic local builds, the downloaded public bytes, GitHub asset digest and release manifest: SHA256 `0ee9122c9bcc7a205cc718f6da3c6a64406d04168b34e21001848ac175f4d34a`.
+
+Release request `9f3ce79` uses `publish_feed:false`; the feed step was skipped. Stable remains 0.1.229 at `7d0a9eb27b49564ef9eaa599f1b068ebdb49eb30`. No FTP, cache, site settings or AZ installation was changed by this task. Physical Safari/live installation acceptance remains separate. GitHub reports this release is not platform-immutable. These verified results supersede the historical in-flight candidate entries above.
