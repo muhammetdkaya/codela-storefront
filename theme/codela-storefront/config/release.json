@@ -6,8 +6,9 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Ücretsiz kargo çubuğu Codela eklentisine değişiklik yapılmadan, temanın kendi WooCommerce Store API bağlantısı üzerinden özel sepet panelinde gösterilir.",
-    "Çubuk, eklentinin orijinal render_cart() metodunu ve WooCommerce kargo bölgesi/indirim/özel mesaj hesaplamalarını kullanır. Modül veya Sepette göster kapalıysa görünmez.",
-    "1.2.6 ile eklenen eklenti API bağımlılığı kaldırıldı; Codela 1.2.5 ve 1.2.7'nin orijinal kargo modülüyle çalışır."
+    "Yeni isteğe bağlı hızlı giriş: WooCommerce müşterileri Hesabım üzerinden bu tarayıcı için 6 haneli PIN oluşturabilir; bir sonraki çıkıştan sonra kullanıcı adı hatırlanır.",
+    "PIN, tarayıcıda dışa aktarılamayan WebCrypto P-256 özel anahtarıyla birlikte sunucuda doğrulanır. PIN tek başına veya başka cihazda geçerli değildir; sunucuda gizli anahtarla güçlendirilmiş parola karması tutulur.",
+    "Gerçek yanıt süresiyle ilerleyen giriş animasyonu, tek kullanımlık challenge, deneme sınırı, cihaz kaldırma, 180 günlük geçerlilik ve şifre/Google ile girişe dönüş eklendi.",
+    "Mevcut WooCommerce kayıt/giriş sistemine ve Codela Commerce Toolkit eklentisine dokunulmadı. Passkey / biyometrik giriş ayrı bir güvenlik aşaması olarak planlanmıştır."
   ]
 }

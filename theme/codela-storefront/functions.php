@@ -71,6 +71,7 @@ require_once get_template_directory() . '/inc/catalog.php';
 require_once get_template_directory() . '/inc/search.php';
 require_once get_template_directory() . '/inc/sections.php';
 require_once get_template_directory() . '/inc/account.php';
+require_once get_template_directory() . '/inc/quick-login.php';
 require_once get_template_directory() . '/inc/google-auth.php';
 /**
  * Fixed file paths only; hash once per request. Stable module identifiers in
