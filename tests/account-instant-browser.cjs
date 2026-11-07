@@ -9,14 +9,12 @@ let authenticated=false, formRequests=0;
 const html='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head>'
  +'<body><section id="sf-account"><div class="woocommerce sf-overlay-auth" data-auth-state-url="/state">'
  +'<header class="sf-account-intro" data-auth-login-title="Welcome back" data-auth-login-description="Sign in to your account." data-auth-register-title="Create an account" data-auth-register-description="Join us in a few steps.">'
- +'<div class="sf-auth-tabs" role="tablist" data-active="login" hidden><span class="sf-auth-tab-slide" aria-hidden="true"></span>'
- +'<button data-auth-tab="login">Log in</button><button data-auth-tab="register">Register</button></div>'
  +'<h1><span class="sf-auth-heading-text">Welcome back</span><span class="sf-auth-heading-wave">👋</span></h1>'
  +'<p class="sf-auth-description">Sign in to your account.</p></header>'
  +'<div id="customer_login"><div class="u-column1"><form class="woocommerce-form woocommerce-form-login" action="/myaccount/" method="post">'
  +'<input type="hidden" name="woocommerce-login-nonce" value="expired-public-cache"><input name="username">'
- +'<button type="submit">Log in</button></form></div>'
- +'<div class="u-column2"><form class="woocommerce-form woocommerce-form-register" action="/myaccount/" method="post">'
+ +'<button type="submit">Log in</button><a class="sf-auth-register-cta" href="#register">Register with email</a></form></div>'
+ +'<div class="u-column2"><form class="woocommerce-form woocommerce-form-register" action="/myaccount/" method="post"><a class="sf-auth-back-login" href="#customer_login">Back to sign in</a>'
  +'<input type="hidden" name="woocommerce-register-nonce" value="expired-public-cache"><input name="email">'
  +'<button type="submit">Register</button></form></div></div></div></section>'
  +'<script src="/auth.js"></script></body></html>';
@@ -59,15 +57,18 @@ async function setup(){
   await page.evaluate(()=>document.querySelector('#customer_login').dispatchEvent(new CustomEvent('codela:auth-select',{detail:{view:'register'}})));
   assert.equal(await page.locator('.u-column1').isVisible(),false,'Native login tab hidden after switch');
   assert.equal(await page.locator('.u-column2').isVisible(),true,'Native Woo registration tab selected in same panel');
-  assert.equal(await page.locator('.sf-auth-tabs').getAttribute('data-active'),'register','The top slider follows native registration in the instant panel');
+  assert.equal(await page.locator('#customer_login').getAttribute('data-auth-view'),'register','Native registration is selected in the instant panel');
   assert.equal(await page.locator('.sf-auth-heading-text').innerText(),'Create an account','Registration has its own heading');
   assert.equal(await page.locator('.sf-auth-description').innerText(),'Join us in a few steps.','Registration has its own subtitle');
   assert.equal(await page.locator('.sf-auth-heading-wave').isVisible(),false,'Registration does not show welcome wave');
-  assert.equal(await page.locator('.sf-auth-tabs').evaluate(el=>el.nextElementSibling.matches('h1')),true,'Slidable tabs remain above the heading');
-  await page.locator('[data-auth-tab="login"]').click();
-  assert.equal(await page.locator('.sf-auth-tabs').getAttribute('data-active'),'login','Login slide restores without navigation');
+  assert.equal(await page.locator('.sf-auth-tabs').count(),0,'The old segmented account switch is gone');
+  assert.equal(await page.locator('[name="email"]').evaluate(el=>document.activeElement===el),false,'Registration does not auto-focus email');
+  await page.locator('.sf-auth-back-login').click();
+  assert.equal(await page.locator('#customer_login').getAttribute('data-auth-view'),'login','Back link restores login without navigation');
   assert.equal(await page.locator('.sf-auth-heading-text').innerText(),'Welcome back','Login heading returns');
   assert.equal(await page.locator('.sf-auth-heading-wave').isVisible(),true,'Login welcome wave returns');
+  await page.locator('.sf-auth-register-cta').click();
+  assert.equal(await page.locator('#customer_login').getAttribute('data-auth-view'),'register','Email registration button opens native Woo form');
   assert.equal(formRequests,1,'One background request per Account opening');
   await page.close();
   authenticated=true;
