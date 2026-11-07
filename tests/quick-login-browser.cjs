@@ -90,7 +90,6 @@ async function enrollFixture(page,url,visible=true) {
   });
   await page.reload({waitUntil:'load'});
   if (visible) await page.locator('.sf-quick-login').waitFor({state:'visible'});
-  else await page.waitForFunction(()=>document.querySelector('.sf-quick-login')?.hidden === true);
 
 }
 async function awaitRequest(page) {
@@ -166,6 +165,7 @@ function release(ok) {
       const page=await context.newPage();
       const before=statusRequests;
       await enrollFixture(page,url,false);
+      await page.waitForFunction(()=>localStorage.getItem('codela_sf_quick_profile_v1') === null);
       assert(statusRequests>before,'Server-side status was consulted before rendering remembered account');
       assert.equal(await page.locator('.sf-quick-login').isVisible(),false,'Revoked device must never appear as recognized');
       assert.equal(await page.locator('#customer_login').isVisible(),true,'Original password form is available');
