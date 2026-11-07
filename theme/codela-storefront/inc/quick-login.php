@@ -253,7 +253,17 @@ add_action( 'woocommerce_before_customer_login_form', 'codela_sf_quick_guest_mar
 /** Enrollment appears within WooCommerce account management, not registration pre-verification. */
 function codela_sf_quick_settings(): void {
     $user = wp_get_current_user();
-    if ( ! codela_sf_quick_customer( $user ) ) { return; }
+    if ( ! codela_sf_quick_customer( $user ) ) {
+        // Never silently hide the feature from a signed-in administrator;
+        // privileged accounts must continue using their normal WP login.
+        if ( $user instanceof WP_User ) {
+            echo '<div class="sf-quick-role-notice" id="sf-quick-settings" role="note"><strong>'
+                . esc_html__( 'Quick sign-in', 'codela-storefront' ) . '</strong><p>'
+                . esc_html__( 'For security, 6-digit quick sign-in is available only to customer accounts on HTTPS. Administrator and staff accounts must use their normal WordPress login.', 'codela-storefront' )
+                . '</p></div>';
+        }
+        return;
+    }
     $devices = codela_sf_quick_devices( $user->ID );
     ?>
     <section class="sf-quick-settings" id="sf-quick-settings" data-user-id="<?php echo esc_attr( (string) $user->ID ); ?>"
@@ -284,17 +294,33 @@ function codela_sf_quick_settings(): void {
 }
 add_action( 'woocommerce_edit_account_form', 'codela_sf_quick_settings', 20 );
 
-/** After WooCommerce registration/sign-in, suggest setup; never demand a PIN. */
-add_action( 'woocommerce_account_dashboard', static function(): void {
+/** Keep the optional quick-login setting discoverable on the Codela account home.
+ * WooCommerce and Codela's existing dashboard hooks both reach this action.
+ * Administrator and staff accounts retain their normal secure login route.
+ */
+function codela_sf_quick_dashboard_entry(): void {
     $user = wp_get_current_user();
-    if ( ! codela_sf_quick_customer( $user ) || ! function_exists( 'wc_get_account_endpoint_url' ) ) { return; }
-    $devices = codela_sf_quick_devices( $user->ID );
-    if ( $devices ) { return; }
-    $url = wc_get_account_endpoint_url( 'edit-account' ) . '#sf-quick-settings';
-    echo '<div class="sf-quick-onboarding"><h3>' . esc_html__( 'Quick sign in', 'codela-storefront' ) . '</h3>'
-        . '<p>' . esc_html__( 'Set a 6-digit code to sign in faster on this browser next time.', 'codela-storefront' ) . '</p>'
-        . '<a class="sf-ui-button" href="' . esc_url( $url ) . '">' . esc_html__( 'Enable quick sign in', 'codela-storefront' ) . '</a></div>';
-}, 20 );
+    if ( ! $user instanceof WP_User || ! function_exists( 'wc_get_account_endpoint_url' ) ) { return; }
+    $eligible = codela_sf_quick_customer( $user );
+    $devices = $eligible ? codela_sf_quick_devices( $user->ID ) : [];
+    echo '<section class="sf-quick-onboarding" aria-labelledby="sf-quick-onboarding-title">'
+        . '<h3 id="sf-quick-onboarding-title">' . esc_html__( 'Quick sign-in', 'codela-storefront' ) . '</h3><p>';
+    if ( ! $eligible ) {
+        echo esc_html__( 'For security, 6-digit quick sign-in is available only to customer accounts on HTTPS. Administrator and staff accounts must use their normal WordPress login.', 'codela-storefront' );
+        echo '</p></section>';
+        return;
+    }
+    echo $devices
+        ? esc_html__( 'Manage your trusted browsers or set a code for this browser.', 'codela-storefront' )
+        : esc_html__( 'Set a 6-digit code to sign in faster on this browser next time.', 'codela-storefront' );
+    echo '</p><a class="sf-ui-button" href="'
+        . esc_url( wc_get_account_endpoint_url( 'edit-account' ) . '#sf-quick-settings' ) . '">'
+        . ( $devices
+            ? esc_html__( 'Manage quick sign-in', 'codela-storefront' )
+            : esc_html__( 'Enable quick sign in', 'codela-storefront' ) )
+        . '</a></section>';
+}
+add_action( 'woocommerce_account_dashboard', 'codela_sf_quick_dashboard_entry', 20 );
 
 
 add_action( 'wp_enqueue_scripts', static function(): void {

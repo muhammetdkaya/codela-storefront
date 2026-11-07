@@ -97,8 +97,11 @@ add_filter( 'render_block_core/post-title', function ( string $html, array $bloc
 /** Keep the native endpoint registry, including independent module destinations. */
 add_filter( 'woocommerce_account_menu_items', function ( array $items ): array {
     if ( isset( $items['dashboard'] ) ) { $items['dashboard'] = __( 'Overview', 'codela-storefront' ); }
+    // Keep WooCommerce's real edit-account endpoint; only improve the label
+    // shown by both the native menu and the Codela account appearance.
+    if ( isset( $items['edit-account'] ) ) { $items['edit-account'] = __( 'Account information', 'codela-storefront' ); }
     return $items;
-} );
+}, 20 );
 add_filter( 'body_class', function ( array $classes ): array {
     if ( function_exists( 'is_account_page' ) && is_account_page() && is_user_logged_in() && ! is_wc_endpoint_url() ) {
         $classes[] = 'sf-account-dashboard';
@@ -122,3 +125,29 @@ add_action( 'woocommerce_account_content', function (): void {
     $title = $items[ $endpoint ] ?? WC()->query->get_endpoint_title( $endpoint );
     if ( $title ) { echo '<h1 class="sf-account-endpoint-title">' . esc_html( $title ) . '</h1>'; }
 }, 5 );
+
+
+// Explain disabled WooCommerce customer registration INSIDE the Codela admin
+// settings screen. Never display this notice to the site's visitors or
+// enable registration behind the merchant's back.
+function codela_sf_registration_settings_notice(): void {
+    if ( ! current_user_can( 'manage_woocommerce' )
+        || ! function_exists( 'get_option' )
+        || 'yes' === get_option( 'woocommerce_enable_myaccount_registration', 'no' ) ) { return; }
+
+    $page = isset( $_GET['page'] ) && is_string( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+    $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+    $screen_id = $screen && isset( $screen->id ) ? (string) $screen->id : '';
+    $is_codela = str_contains( $page, 'codela' ) || str_contains( $screen_id, 'codela' );
+    if ( ! $is_codela ) { return; }
+
+    $settings_url = admin_url( 'admin.php?page=wc-settings&tab=account' );
+    echo '<div class="notice notice-warning codela-sf-registration-warning"><p><strong>'
+        . esc_html__( 'Customer registration is disabled in WooCommerce.', 'codela-storefront' )
+        . '</strong> '
+        . esc_html__( 'The Codela Register tab is hidden until account creation on the My Account page is enabled.', 'codela-storefront' )
+        . ' <a href="' . esc_url( $settings_url ) . '">'
+        . esc_html__( 'Open WooCommerce account settings', 'codela-storefront' )
+        . '</a></p></div>';
+}
+add_action( 'admin_notices', 'codela_sf_registration_settings_notice' );

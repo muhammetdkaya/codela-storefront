@@ -30,6 +30,9 @@
 .sf-quick-onboarding h3{font-size:17px;font-weight:600;letter-spacing:-.25px;margin:0 0 8px}
 .sf-quick-onboarding p{font-size:13px;color:var(--sf-muted,#73757b);line-height:1.5;margin:0 0 16px}
 .sf-quick-onboarding a.sf-ui-button{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;min-height:44px;padding:0 18px}
+.sf-quick-role-notice{margin:20px 0 8px;padding:18px;border:1px solid var(--sf-ui-border,#e6e7e8);border-radius:18px;background:var(--sf-ui-surface,#fbfbfc)}
+.sf-quick-role-notice strong{display:block;font-size:17px;font-weight:600;margin-bottom:8px}
+.sf-quick-role-notice p{font-size:13px;color:var(--sf-muted,#74757d);line-height:1.6;margin:0}
 .sf-quick-settings{margin:22px 0 8px;padding:18px;border-radius:18px;border:1px solid var(--sf-ui-border,#e6e7e8);background:var(--sf-ui-surface,#fbfbfc)}
 .sf-quick-settings h3{font-size:18px;margin:0 0 6px}
 .sf-quick-settings>p{font-size:13px;color:var(--sf-muted,#74757d);line-height:1.5;margin:0 0 16px}

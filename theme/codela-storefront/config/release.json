@@ -6,9 +6,9 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Yeni isteğe bağlı hızlı giriş: WooCommerce müşterileri Hesabım üzerinden bu tarayıcı için 6 haneli PIN oluşturabilir; bir sonraki çıkıştan sonra kullanıcı adı hatırlanır.",
-    "PIN, tarayıcıda dışa aktarılamayan WebCrypto P-256 özel anahtarıyla birlikte sunucuda doğrulanır. PIN tek başına veya başka cihazda geçerli değildir; sunucuda gizli anahtarla güçlendirilmiş parola karması tutulur.",
-    "Gerçek yanıt süresiyle ilerleyen giriş animasyonu, tek kullanımlık challenge, deneme sınırı, cihaz kaldırma, 180 günlük geçerlilik ve şifre/Google ile girişe dönüş eklendi.",
-    "Mevcut WooCommerce kayıt/giriş sistemine ve Codela Commerce Toolkit eklentisine dokunulmadı. Passkey / biyometrik giriş ayrı bir güvenlik aşaması olarak planlanmıştır."
+    "Temanın kullandığı WooCommerce 'Hesap detayları' navigasyon başlığı, kullanıcıya daha anlaşılır 'Hesap bilgileri' olarak düzenlendi; mevcut WooCommerce hesabı ve endpoint'i korunur.",
+    "WooCommerce Hesabım kayıt özelliği kapalıyken Codela yönetim ekranında ilgili WooCommerce hesap ayarlarına yönlendiren uyarı gösterilir; mağaza ayarı gizlice değiştirilmez.",
+    "Hızlı giriş, müşteri hesaplarının ana ekranından her zaman erişilebilir hâle getirildi. Yönetici/personel hesaplarında 6 haneli PIN güvenlik gereği devre dışı kalır ve gizlenmek yerine açıklama gösterilir.",
+    "Testler: WooCommerce kayıt ayarı, yönetici uyarısı, PIN ayarlarına yönlendirme ve rol yalıtımı için otomatik regresyon kontrolleri eklendi."
   ]
 }
