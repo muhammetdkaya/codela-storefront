@@ -19,14 +19,20 @@ function codela_sf_account_intro(): void {
         data-auth-login-placeholder="<?php esc_attr_e( 'Email or username', 'codela-storefront' ); ?>"
         data-auth-username-placeholder="<?php esc_attr_e( 'Username', 'codela-storefront' ); ?>"
         data-auth-email-placeholder="<?php esc_attr_e( 'Email address', 'codela-storefront' ); ?>"
-        data-auth-password-placeholder="<?php esc_attr_e( 'Password', 'codela-storefront' ); ?>">
-        <h1><?php esc_html_e( 'Welcome back', 'codela-storefront' ); ?></h1>
-        <p><?php esc_html_e( 'Sign in to your account.', 'codela-storefront' ); ?></p>
-        <!-- Registration switch appears only if WooCommerce renders both native forms. -->
-        <div class="sf-auth-tabs" role="tablist" aria-label="<?php esc_attr_e( 'Account access', 'codela-storefront' ); ?>" data-register-prompt="<?php esc_attr_e( 'New here?', 'codela-storefront' ); ?>" data-login-prompt="<?php esc_attr_e( 'Already registered?', 'codela-storefront' ); ?>" hidden>
+        data-auth-password-placeholder="<?php esc_attr_e( 'Password', 'codela-storefront' ); ?>"
+        data-auth-login-title="<?php esc_attr_e( 'Welcome back', 'codela-storefront' ); ?>"
+        data-auth-login-description="<?php esc_attr_e( 'Sign in to your account.', 'codela-storefront' ); ?>"
+        data-auth-register-title="<?php esc_attr_e( 'Create an account', 'codela-storefront' ); ?>"
+        data-auth-register-description="<?php esc_attr_e( 'Join us in a few steps.', 'codela-storefront' ); ?>">
+        <!-- The same accessible sliding tab bar stays ABOVE both native Woo forms
+             on the Account page and in the fast Account dialog. -->
+        <div class="sf-auth-tabs" role="tablist" aria-label="<?php esc_attr_e( 'Account access', 'codela-storefront' ); ?>" data-active="login" hidden>
+            <span class="sf-auth-tab-slide" aria-hidden="true"></span>
             <button type="button" class="sf-auth-tab sf-ui-nav-tab sf-ui-pressable" role="tab" data-auth-tab="login" aria-selected="true"><?php esc_html_e( 'Log in', 'codela-storefront' ); ?></button>
             <button type="button" class="sf-auth-tab sf-ui-nav-tab sf-ui-pressable" role="tab" data-auth-tab="register" aria-selected="false"><?php esc_html_e( 'Register', 'codela-storefront' ); ?></button>
         </div>
+        <h1><span class="sf-auth-heading-text"><?php esc_html_e( 'Welcome back', 'codela-storefront' ); ?></span> <span class="sf-auth-heading-wave" aria-hidden="true">👋</span></h1>
+        <p class="sf-auth-description"><?php esc_html_e( 'Sign in to your account.', 'codela-storefront' ); ?></p>
     </header>
     <?php
 }
