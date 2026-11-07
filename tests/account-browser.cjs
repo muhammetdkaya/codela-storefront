@@ -10,15 +10,14 @@ const authJS=fs.readFileSync('theme/codela-storefront/assets/scripts/auth.js','u
 const nativeGoogleInfo=JSON.parse(execFileSync(process.env.PHP_BIN||'php',['tests/google-auth.php'],{encoding:'utf8'}));
 const unconfiguredGoogle=nativeGoogleInfo.disabled_button;
 const guestHeader=execFileSync(process.env.PHP_BIN||'php',['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_GUEST_ACCOUNT:'1'}});
-assert(guestHeader.includes('sf-auth-site-header') && guestHeader.includes('Back to store'),'Guest header returns to store');
-assert(!guestHeader.includes('sf-mobile-dock') && !guestHeader.includes('sf-panel'),'Guest header has no normal store dock or overlays');
-// Baseline 687ef83 already uses the shared left-arrow image for back navigation.
-// Check its real link/name/decorative-icon contract, not the obsolete right arrow.
-const backLinkHTML=guestHeader.match(/<a\b[^>]*class="[^"]*\bsf-auth-store-link\b[^"]*"[^>]*>[\s\S]*?<\/a>/)?.[0];
-assert(backLinkHTML,'Guest header has its native back link');
-assert(backLinkHTML.includes('aria-label="Back to store"')&&backLinkHTML.includes('href="https://store.test/"'),'Back link names and targets the store home');
-assert.match(backLinkHTML,/<img\b[^>]*class="sf-icon"[^>]*alt=""[^>]*src="https:\/\/store\.test\/theme\/assets\/icons\/arrow-left\.svg(?:\?[^\"]*)?"/,'Back link uses the shared local, decorative left-arrow SVG image');
-assert(!guestHeader.includes('↗'),'No Apple emoji-rendered arrow glyph');
+assert(guestHeader.includes('class="sf-header') && guestHeader.includes('sf-mobile-dock') &&
+  guestHeader.includes('class="sf-panel"'),'Logged-out My Account uses the same header, dock and panel as the store');
+assert(!guestHeader.includes('sf-auth-site-header') && !guestHeader.includes('sf-auth-shell'),
+  'There is no separate standalone login header');
+assert(guestHeader.includes('data-dock-view="account"') && guestHeader.includes('is-active'),
+  'My Account is the selected bottom navigation tab');
+assert(!guestHeader.includes('class="sf-panel-body sf-account-body"'),
+  'The real account login has no duplicate form inside an overlay');
 assert(intro.includes('Welcome back'),'Guest account hero has app greeting');
 const locale=fs.readFileSync('theme/codela-storefront/languages/tr_TR.l10n.php','utf8');
 assert.equal((locale.match(/'Welcome back'\s*=>/g)||[]).length,1,'Turkish welcome copy has one translation (no overwritten duplicate)');
@@ -58,16 +57,14 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
     assert(!info.overflows,type+' must not overflow viewport '+width);
     assert.equal(info.titleVisible,type==='logged', 'WP title shown only in vanilla Woo fallback; guest intro has own heading');
     if(type==='login'||type==='register'){
-      const back=page.getByRole('link',{name:'Back to store',exact:true});
-      assert.equal(await back.count(),1,'Exactly one accessible back navigation link');
-      assert.equal(await back.getAttribute('href'),'https://store.test/','Back remains a real home navigation link');
-      const backIcon=back.locator('img.sf-icon');
-      assert.equal(await backIcon.count(),1,'Back uses one shared SVG image, not duplicated text/emoji');
-      assert.equal(await backIcon.getAttribute('alt'),'','Decorative icon does not duplicate the accessible link name');
-      assert.equal(new URL(await backIcon.getAttribute('src')).pathname,'/theme/assets/icons/arrow-left.svg','Current shared back direction is left');
-      assert(await backIcon.evaluate(el=>el.complete&&el.naturalWidth>0),'Local SVG is actually loaded');
-      const backBox=await back.boundingBox();
-      assert(backBox.width>=44&&backBox.height>=44,'Back link retains the shared accessible hit target');
+      assert.equal(await page.locator('.sf-auth-store-link').count(),0,'Do not add a separate login Back shortcut');
+      const menu=page.locator('.sf-header .sf-menu-trigger');
+      assert.equal(await menu.count(),1,'Same genuine menu as every other page');
+      assert((await menu.boundingBox()).width>=44,'Menu has 44px hit target');
+      assert.equal(await page.locator('.sf-mobile-dock').isVisible(),width<=700,
+        'Normal bottom navigation is available on mobile logged-out Account');
+      assert.equal(await page.locator('.sf-mobile-dock [data-dock-view="account"]').getAttribute('aria-current'),'page',
+        'Account tab stays selected after logout');
       const layout=await page.evaluate(()=>{
        const wrap=document.querySelector('#customer_login');
        if(!wrap)return {single:true};
@@ -160,17 +157,17 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
        const intro=document.querySelector('.sf-account-intro').getBoundingClientRect();
        const form=document.querySelector('form.woocommerce-form-login').getBoundingClientRect();
        const headings=[...document.querySelectorAll('.woocommerce > h2')].filter(el=>getComputedStyle(el).display!=='none');
-       const arrow=document.querySelector('.sf-auth-store-link .sf-icon');
-       const logo=document.querySelector('.sf-auth-brand');
+       const arrow=document.querySelector('.sf-header .sf-menu-trigger .sf-icon');
+       const logo=document.querySelector('.sf-header .sf-brand');
        const main=document.querySelector('main.sf-content');
        return {gap:form.top-intro.bottom,headings:headings.length,hasSvg:!!arrow,
         sectionPadding:parseFloat(getComputedStyle(main).paddingTop),
         brandHeight:logo?.getBoundingClientRect().height};
       });
-      assert(compact.hasSvg,'Back link has shared arrow icon');
+      assert(compact.hasSvg,'Shared header has the real Menu icon');
       assert(compact.sectionPadding<=36,'Guest content starts close below header divider');
       assert(compact.gap<85,'Guest intro and form have no oversized vertical gap');
-      assert(compact.brandHeight>=30,'Brand remains readable on phone');
+      assert(compact.brandHeight>=30,'Real store brand remains readable');
       if(type==='login')assert.equal(compact.headings,0,'Single login page hides duplicated WooCommerce heading');
       const background=await page.locator('.sf-account-intro').evaluate(el=>getComputedStyle(document.body).backgroundColor);
       assert.equal(background,'rgb(248, 247, 244)','Guest account shares the theme page canvas');
