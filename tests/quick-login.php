@@ -12,7 +12,7 @@ $GLOBALS['login'] = [];
 $GLOBALS['user'] = null;
 class WP_User {
     public function __construct( public int $ID, public string $user_login = 'customer',
-        public string $display_name = 'Customer', public array $roles = [ 'customer' ] ) {}
+        public string $display_name = 'Customer', public string $user_email = 'customer@example.test', public array $roles = [ 'customer' ] ) {}
 }
 class WP_Error {
     public function __construct( public string $code, public string $message = '', public array $data = [] ) {}
@@ -21,6 +21,7 @@ class WP_REST_Request {
     public function __construct( private array $data ) {}
     public function get_param( $key ) { return $this->data[$key] ?? null; }
 }
+function add_filter(...$args) {}
 function add_action(...$args) {}
 function __($text,$domain='') { return $text; }
 function is_ssl() { return true; }
