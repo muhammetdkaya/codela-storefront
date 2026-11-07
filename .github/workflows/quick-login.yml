@@ -7,6 +7,8 @@ on:
       - 'theme/codela-storefront/assets/styles/quick-login.css'
       - 'theme/codela-storefront/languages/tr_TR.l10n.php'
       - 'tests/quick-login.php'
+      - 'tests/account-registration-discovery.php'
+      - 'theme/codela-storefront/inc/account.php'
       - 'tests/quick-login-ui.cjs'
       - '.github/workflows/quick-login.yml'
   workflow_dispatch:
@@ -23,6 +25,7 @@ jobs:
           php -l theme/codela-storefront/inc/quick-login.php
           php -l theme/codela-storefront/languages/tr_TR.l10n.php
           php tests/quick-login.php
+          php tests/account-registration-discovery.php
       - name: WebCrypto integration and browser contract
         run: |
           node --check theme/codela-storefront/assets/scripts/quick-login.js
