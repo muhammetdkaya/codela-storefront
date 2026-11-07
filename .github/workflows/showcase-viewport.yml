@@ -64,7 +64,11 @@ jobs:
         run: |
           git fetch origin 2ab3e6211115d6210fc632de504af90425bc9258 --depth=1
           git show 2ab3e6211115d6210fc632de504af90425bc9258:theme/codela-storefront/assets/styles/sections.css > /tmp/showcase-before.css
-          SHOWCASE_CSS=/tmp/showcase-before.css SHOWCASE_PHASE=before-183 SHOWCASE_SCREENSHOTS_ONLY=1 node tests/showcase-viewport-browser.cjs
+          if [ -n "${SHOWCASE_REAL_IMAGE:-}" ] && [ -s "${SHOWCASE_REAL_IMAGE}" ]; then
+            SHOWCASE_CSS=/tmp/showcase-before.css SHOWCASE_PHASE=before-183 SHOWCASE_SCREENSHOTS_ONLY=1 node tests/showcase-viewport-browser.cjs
+          else
+            echo '::warning::Skipped optional external AZ before/after image; deterministic layout regression still runs.'
+          fi
           if SHOWCASE_CSS=/tmp/showcase-before.css node tests/showcase-viewport-browser.cjs > /tmp/showcase-before.log 2>&1; then
             cat /tmp/showcase-before.log
             echo '::error::Previous 183 CSS unexpectedly passed'
@@ -91,7 +95,11 @@ jobs:
         run: |
           git fetch origin 0908ab278a4e6b6f425cfb90c9f2862fd673a85a --depth=1
           git show 0908ab278a4e6b6f425cfb90c9f2862fd673a85a:theme/codela-storefront/assets/styles/sections.css > /tmp/showcase-184-before.css
-          SHOWCASE_CSS=/tmp/showcase-184-before.css SHOWCASE_PHASE=before-184 SHOWCASE_SCREENSHOTS_ONLY=1 node tests/showcase-viewport-browser.cjs
+          if [ -n "${SHOWCASE_REAL_IMAGE:-}" ] && [ -s "${SHOWCASE_REAL_IMAGE}" ]; then
+            SHOWCASE_CSS=/tmp/showcase-184-before.css SHOWCASE_PHASE=before-184 SHOWCASE_SCREENSHOTS_ONLY=1 node tests/showcase-viewport-browser.cjs
+          else
+            echo '::warning::Skipped optional external AZ before/after image; deterministic layout regression still runs.'
+          fi
           if SHOWCASE_CSS=/tmp/showcase-184-before.css SHOWCASE_ALIGNMENT_ONLY=1 node tests/showcase-viewport-browser.cjs > /tmp/showcase-alignment-before.log 2>&1; then
             cat /tmp/showcase-alignment-before.log
             echo '::error::Previous reserved gap unexpectedly passed'
