@@ -6,10 +6,9 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Hesabım misafir girişinde üstteki Giriş Yap/Kayıt Ol accordion/segment sekmeleri kaldırıldı. E-posta ve şifre alanları, Beni hatırla, şifre sıfırlama ve WooCommerce giriş formu korundu.",
-    "Mevcut WooCommerce formunun içine 54px E-posta ile Kayıt Ol geçiş butonu eklendi; kayıt ekranına dönüş linki ve kayıt sonrası hatalarda doğru görünüm korundu. E-posta alanına otomatik odaklama yapılmaz.",
-    "Mineral renk sistemi: #f6f4f0 sayfa yüzeyi, #232c29 koyu yeşilimsi antrasit Giriş Yap, #e6dacb sıcak kum tonu e-posta kayıt, beyaz arka plan ve #747775 kenarlıklı resmi Google düğmesi. Butonlar ve alanlar 54px.",
-    "Hızlı Hesabım panelinde aynı form akışı ve görsel hiyerarşi kullanılır. Google OAuth, Woo nonce/doğrulama, kayıt yetkisi, tanınan hesap/PIN ve eklenti modülleri korunur.",
-    "Gerçek Woo kayıt kapalıysa kayıt geçişi gösterilmez; JavaScript kapalıysa WooCommerce native kayıt formuna erişim devam eder."
+    "Misafir Hesabım ekranında E-posta ile Kayıt Ol butonu WooCommerce form satırının dışına, Giriş Yap ile Google arasına alındı; tüm satır genişliğinde, tek satır etiketli ve 54px yüksekliğinde.",
+    "Mineral renk override'ları kaldırıldı; Giriş Yap temanın standart koyu UI Kit butonunu, E-posta ile Kayıt Ol standart nötr tonal butonunu ve Google standart beyaz ikincil yüzeyi kullanıyor.",
+    "Doğrudan Hesabım ve hızlı hesap paneli aynı tam genişlik/dizilim tasarımını kullanır. WooCommerce giriş/kayıt, izin, şifre kurtarma, nonce, OAuth, tanınan hesap/PIN ve otomatik odak davranışı değişmez.",
+    "320px ve 390px mobil görünümde giriş, kayıt, Google butonlarının dizilimi ve etiket taşması için tarayıcı testleri eklendi."
   ]
 }
