@@ -20,6 +20,7 @@ function esc_html( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES ); }
 function codela_sf_icon( $s ) { return '<svg class="sf-icon"></svg>'; }
 function wc_lostpassword_url() { return 'https://store.test/my-account/lost-password/'; }
 function esc_url( $s ) { return htmlspecialchars( $s, ENT_QUOTES ); }
+function get_option($key, $default='') { return $key === 'woocommerce_enable_myaccount_registration' ? 'yes' : $default; }
 function is_user_logged_in() { return false; }
 function is_account_page() { return true; }
 function is_ssl() { return true; }
@@ -48,6 +49,8 @@ check( str_contains( $html, 'sf-quick-wave' ), 'Waving-hand emoji follows the he
 check( str_contains( $html, 'sf-quick-email' ), 'Saved account email line is present' );
 check( str_contains( $html, "codela_sf_icon( 'chevron-left' )" ) === false && str_contains( $html, 'sf-quick-chevron' ), 'Account card has a slim chevron' );
 check( str_contains( $html, 'sf-quick-or' ) && str_contains( $html, 'sf-quick-email-login' ), 'Alternative password login remains available beneath or separator' );
+check( str_contains( $html, 'sf-quick-register' ), 'Native Woo registration entry is available next to remembered account' );
+check( str_contains( $html, 'sf-quick-google' ) && str_contains( $html, 'disabled aria-label=' ), 'Google entry renders as safely disabled if OAuth is not configured' );
 check( ! str_contains( $html, 'data-quick-digit' ), 'No bespoke numeric keypad' );
 check( preg_match_all( '/class="sf-quick-slot"/', $html ) === 6, 'Exactly six PIN cells' );
 check( str_contains( $html, 'inputmode="numeric"' ), 'Uses native device numeric keyboard' );

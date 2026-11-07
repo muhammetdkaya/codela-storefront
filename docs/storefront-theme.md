@@ -1,3 +1,7 @@
+## 7 Kasım 2026 — test dalı güncel ana dalla uzlaştırıldı
+
+Taslak PR #122'nin ilk kaynağı `a5c966e` için Chromium/WebKit vitrin CI ve quick-login kontrolleri başarılı. Genel CI ortak eşzamanlılık grubu nedeniyle başlamadan iptal edildi. Kullanıcı hesabına ait bağımsız 0.1.229 çalışması ve yayını `c3b1207` üzerinden test dalına aynen alındı; ana dala veya canlı siteye bu slider işiyle yazılmadı. Slider üretim kodu aynı, Türkçe çeviriler iki çalışmayı da koruyarak birleşti. Güncel birleşik adayın testleri/CI yeniden doğrulanıyor; bu iş yeni sürüm çıkarmıyor.
+
 # 7 Kasım 2026 — AZ Seramik vitrin hareketi adayı (yayınlanmadı)
 
 Canlı 0.1.228 ana sayfasında beş slaytın otomatik ilerlemediği ve masaüstü fare sürüklemesinin çalışmadığı doğrulandı. Güncel `8a95f7c` tabanında, mevcut native kaydırma adaptörüne yalnız hero için altı saniyelik otomatik geçiş ve duraklat/başlat kontrolü; sayfa galerilerine fare sürüklemesi eklendi. Hover, klavye odağı, görünmeyen sekme/galeri, reduced-motion, tıklama güvenliği ve router temizliği korunur. Ürün galerisi, Woo verileri, bölüm içeriği ve sürüm numarası değişmedi.

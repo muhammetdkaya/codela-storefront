@@ -188,14 +188,18 @@ add_action( 'admin_post_codela_sf_google_callback', 'codela_sf_google_callback' 
 function codela_sf_google_button(): void {
     if ( ! function_exists( 'is_account_page' ) || ( ! is_account_page() && empty( $GLOBALS['codela_sf_auth_overlay'] ) )
         || is_user_logged_in() ) { return; }
-    if ( ! codela_sf_google_enabled() ) { return; }
+    $google_available = codela_sf_google_enabled();
     ?>
     <div class="sf-shell sf-auth-social">
         <div class="sf-auth-divider"><span><?php esc_html_e( 'or', 'codela-storefront' ); ?></span></div>
+        <?php if ( $google_available ) : ?>
         <a class="sf-auth-google sf-ui-button sf-ui-button--secondary" href="<?php echo esc_url( codela_sf_google_auth_url() ); ?>">
+        <?php else : ?>
+        <button type="button" class="sf-auth-google sf-ui-button sf-ui-button--secondary" disabled aria-label="<?php esc_attr_e( 'Google sign-in is currently unavailable', 'codela-storefront' ); ?>">
+        <?php endif; ?>
             <span class="sf-google-glyph" aria-hidden="true">G</span>
             <span class="sf-ui-button-label"><?php esc_html_e( 'Continue with Google', 'codela-storefront' ); ?></span>
-        </a>
+        <?php if ( $google_available ) : ?></a><?php else : ?></button><?php endif; ?>
     </div>
     <?php
 }

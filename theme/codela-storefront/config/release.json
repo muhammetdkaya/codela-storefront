@@ -6,10 +6,11 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Hoş geldin 👋 tanınan hesap ekranı; ad-soyad, e-posta, Google ile devam et ve e-posta/şifre seçenekleri sade bir hesap seçicisinde birleştirildi.",
-    "Her hızlı giriş gösteriminde cihazın sunucu yetkisi ve WordPress oturumu doğrulanır; devre dışı bırakılmış ya da süresi dolmuş kayıtlar tekrar gösterilmez.",
-    "Giriş/çıkış ve Google dönüşünde kişiye özel Hesabım içeriği eski misafir önbelleğiyle karışmaz; Google ile devam et eski WordPress hesabına sessizce dönmek yerine Google hesap seçimini başlatır.",
-    "Başka Google veya şifre hesabıyla giriş yapıldığında önceki hesabın tarayıcıdaki hızlı giriş önerisi temizlenir; normal çıkış ise isteğe bağlı açık hızlı girişi bozmaz.",
-    "PIN doğrulama, iptal edilen cihaz, farklı hesap, önbellek ve Chromium/WebKit tarayıcı senaryoları için regresyon testleri genişletildi."
+    "Hesabım alt menüsü, site üst menüsü ve çıkış sonrası yönlendirme artık yalnızca WooCommerce'in kanonik Hesabım sayfasını kullanır; ikinci misafir popup formu kaldırıldı.",
+    "Tanınan hesap doğrulanırken ilk açılışta normal giriş formu parlamaz; sunucu cevabına kadar opak nötr kart bekleme görünümü gösterilir.",
+    "Tanınan hesap kartının sağ oku düzeltildi; kart ve giriş seçenekleri sayfa kenar boşluklarına hizalandı.",
+    "Google ile devam et butonu OAuth ayarı kapalıyken de görünür, ancak sahte giriş başlatmamak için pasif kalır.",
+    "Tanınan hesaptan Kayıt Ol seçimi WooCommerce'in mevcut kayıt sekmesini açar; kayıt kapalıysa seçenek gösterilmez.",
+    "Tek kullanımlık sf_quick_auth önbellek atlatma parametresi Hesabım belgesi açıldıktan sonra URL'den temizlenir."
   ]
 }

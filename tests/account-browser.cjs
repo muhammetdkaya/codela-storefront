@@ -208,7 +208,9 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
           'The Google mark has a consistent gap and never overlaps its label');
         await page.locator('.sf-auth-social').evaluate(el=>el.remove());
         await page.locator('.woocommerce').evaluate((node,markup)=>node.insertAdjacentHTML('beforeend',markup),unconfiguredGoogle);
-        assert.equal(await page.locator('.sf-auth-google').count(),0,'Unconfigured provider is not offered');
+        assert.equal(await page.locator('.sf-auth-google').count(),1,'Google option stays visible when not configured');
+        assert.equal(await page.locator('.sf-auth-google').isDisabled(),true,'Unconfigured Google cannot start OAuth');
+        assert.equal(await page.locator('.sf-auth-google[href]').count(),0,'Disabled Google has no authentication redirect');
 
       }
       if(type==='register'){

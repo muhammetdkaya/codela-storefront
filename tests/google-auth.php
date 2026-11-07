@@ -28,6 +28,7 @@ function admin_url( $path, $scheme = null ) { return 'https://store.test/wp-admi
 function wc_get_page_permalink( $page ) { return 'https://store.test/my-account/'; }
 function esc_url( $value ) { return htmlspecialchars( $value, ENT_QUOTES ); }
 function esc_html_e( $value, $domain = '' ) { echo htmlspecialchars( $value, ENT_QUOTES ); }
+function esc_attr_e( $value, $domain = '' ) { echo htmlspecialchars( $value, ENT_QUOTES ); }
 function esc_html__( $value, $domain = '' ) { return $value; }
 function esc_attr( $value ) { return htmlspecialchars( $value, ENT_QUOTES ); }
 function esc_html( $value ) { return htmlspecialchars( $value, ENT_QUOTES ); }

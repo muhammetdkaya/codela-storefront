@@ -133,6 +133,7 @@
     const destination = new URL(url, window.location.href);
     if (destination.origin !== window.location.origin) return;
     destination.searchParams.set('sf_quick_auth', Date.now().toString(36));
+    document.documentElement.classList.add('sf-quick-auth-redirect');
     window.location.replace(destination.href);
   }
 
@@ -175,6 +176,7 @@
     const slots = [...section.querySelectorAll('.sf-quick-slot')];
     const status = section.querySelector('.sf-quick-status');
     const password = section.querySelector('.sf-quick-password');
+    const register = section.querySelector('.sf-quick-register');
     if (!choose || !sheet || !input || slots.length !== 6) return;
 
     const displayName = String(profile.displayName || profile.username || t('account','Your account')).trim();
@@ -269,13 +271,20 @@
       choose.focus({preventScroll:true});
     }
 
-    function showNativeLogin() {
+    function showNativeLogin(view = 'login') {
       if (pending) return;
       closeSheet();
       host.classList.remove('sf-pin-active');
       section.hidden = true;
-      // WooCommerce's original login/register and Google buttons stay intact.
-      host.querySelector('input[name="username"]')?.focus({preventScroll:true});
+      // Always use the one native WooCommerce form. Register is a view change,
+      // not a second authentication route or a custom account creator.
+      const form = host.querySelector('#customer_login');
+      form?.dispatchEvent(new CustomEvent('codela:auth-select', {
+        detail:{view:view === 'register' ? 'register' : 'login'}
+      }));
+      if (view !== 'register') {
+        host.querySelector('input[name="username"]')?.focus({preventScroll:true});
+      }
     }
 
     function mergeSlots() {
@@ -340,8 +349,9 @@
     }
 
     choose.addEventListener('click', openSheet);
-    changeAccount?.addEventListener('click', showNativeLogin);
-    password?.addEventListener('click', showNativeLogin);
+    changeAccount?.addEventListener('click', () => showNativeLogin('login'));
+    password?.addEventListener('click', () => showNativeLogin('login'));
+    register?.addEventListener('click', () => showNativeLogin('register'));
     close?.addEventListener('click', closeSheet);
     scrim?.addEventListener('click', closeSheet);
     input.addEventListener('input', () => {
@@ -444,6 +454,7 @@
     });
   }
   async function init() {
+    try {
     const profile = log();
     // A previously enrolled browser may have saved only "demo". On the next
     // normal Woo sign-in, replace that hint with the actual customer name.
@@ -469,6 +480,22 @@
     }
     for (const settings of document.querySelectorAll('.sf-quick-settings')) {
       void initSettings(settings);
+    }
+    } finally {
+      // Atomically reveal either the verified remembered account or the native
+      // Woo form; never paint the form first while the status request is pending.
+      if (!document.documentElement.classList.contains('sf-quick-auth-redirect')) {
+        document.documentElement.classList.remove('sf-quick-checking');
+      }
+      // The one-time redirect token is needed for the request, not for the
+      // visible address. Keep the canonical /my-account/ URL after loading.
+      if (config.accountPage) {
+        const uri = new URL(window.location.href);
+        if (uri.searchParams.has('sf_quick_auth')) {
+          uri.searchParams.delete('sf_quick_auth');
+          window.history.replaceState(window.history.state, '', uri.pathname + uri.search + uri.hash);
+        }
+      }
     }
   }
   // Safari/Chromium BFCache can restore a screen from before a login/logout.
