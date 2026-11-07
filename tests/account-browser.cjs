@@ -6,6 +6,11 @@ const css=['assets/styles/tokens.css','assets/storefront.css','assets/styles/ove
 const render=env=>execFileSync(process.env.PHP_BIN||'php',['tests/render-account.php'],{encoding:'utf8',env:{...process.env,...env}});
 const intro=render({});
 const signed=render({ACCOUNT_SIGNED_IN:'1'});
+const registerCTA=render({ACCOUNT_ACTION:'login'});
+const loginReturn=render({ACCOUNT_ACTION:'register'});
+assert(registerCTA.includes('sf-auth-register-cta'),'Woo login form-end exposes email signup action');
+assert(loginReturn.includes('sf-auth-back-login'),'Woo register form offers a native login return');
+assert.equal(render({ACCOUNT_ACTION:'login',ACCOUNT_NO_REGISTER:'1'}),'','Disabled Woo registration must not create a false signup action');
 const authJS=fs.readFileSync('theme/codela-storefront/assets/scripts/auth.js','utf8');
 const nativeGoogleInfo=JSON.parse(execFileSync(process.env.PHP_BIN||'php',['tests/google-auth.php'],{encoding:'utf8'}));
 const unconfiguredGoogle=nativeGoogleInfo.disabled_button;
@@ -27,7 +32,8 @@ assert(locale.includes("'Welcome back' => 'Hoş geldiniz'"),'Account title is th
 assert(!intro.includes('sf-auth-mark'),'Guest hero does not repeat the account icon');
 assert(intro.includes('data-auth-login-placeholder="Email or username"'),'Login placeholder metadata comes from localized theme');
 assert(intro.includes('Sign in to your account.'),'Guest account hero includes short subtitle');
-assert(intro.includes('sf-auth-tabs'),'Guest intro offers progressive tabs');
+assert(!intro.includes('sf-auth-tabs'),'The segmented Login/Register control is removed entirely');
+assert(intro.includes('sf-auth-view-title'),'Guest heading remains accessible to both native forms');
 assert(!intro.includes('Manage your orders and account details.'),'Unnecessary account subtitle removed');
 assert.equal(signed,'','Signed-in Woo account never receives a duplicate theme header');
 assert.equal(render({ACCOUNT_OUTSIDE:'1'}),'','Do not inject account heading elsewhere');
@@ -35,9 +41,9 @@ const fields='<p class="woocommerce-form-row form-row"><label for="username">Ema
 '<p class="woocommerce-form-row form-row"><label for="password">Password</label><input class="woocommerce-Input input-text" id="password" type="password" autocomplete="current-password" required></p>'+
 '<p class="form-row"><label class="woocommerce-form__label woocommerce-form-login__rememberme"><input type="checkbox" name="rememberme"><span>Remember me</span></label><button class="woocommerce-button woocommerce-form-login__submit" type="submit">Log in</button></p>'+
 '<p class="woocommerce-LostPassword lost_password"><a href="/account/lost-password/">Lost password?</a></p>';
-const form='<h2>Log in</h2><form class="woocommerce-form woocommerce-form-login login" method="post">'+fields+'</form>';
+const form='<h2>Log in</h2><form class="woocommerce-form woocommerce-form-login login" method="post">'+fields+registerCTA+'</form>';
 const login='<div class="woocommerce">'+intro+form+'</div>';
-const register='<div class="woocommerce">'+intro+'<div class="u-columns col2-set" id="customer_login"><div class="u-column1 col-1">'+form+'</div><div class="u-column2 col-2"><h2>Register</h2><form class="woocommerce-form woocommerce-form-register register"><p class="form-row"><label for="reg_email">Email</label><input class="input-text" type="email" id="reg_email"></p><button type="submit">Register</button></form></div></div></div>';
+const register='<div class="woocommerce">'+intro+'<div class="u-columns col2-set" id="customer_login"><div class="u-column1 col-1">'+form+'</div><div class="u-column2 col-2"><h2>Register</h2><form id="register" class="woocommerce-form woocommerce-form-register register">'+loginReturn+'<p class="form-row"><label for="reg_email">Email</label><input class="input-text" type="email" id="reg_email"></p><button type="submit">Register</button></form></div></div></div>';
 const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccount-navigation"><ul><li class="is-active"><a href="/account/" aria-current="page">Dashboard</a></li><li><a href="/orders/">Orders</a></li><li><a href="/addresses/">Addresses</a></li></ul></nav><div class="woocommerce-MyAccount-content"><h2>My orders</h2><p>Account details here.</p></div></div>';
 (async()=>{
  const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_BIN?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-gpu','--use-gl=disabled','--disable-software-rasterizer','--disable-dev-shm-usage','--no-zygote','--single-process']}:{})});
@@ -104,23 +110,23 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
        shell.remove();
        return result;
       });
-      assert.equal(controls.sameBackground,true,'Guest submit buttons reuse UI Kit primary palette');
-      assert.equal(controls.sameRadius,true,'Native Woo buttons reuse the shared control radius');
-      assert.equal(controls.samePadding,true,'Native Woo buttons reuse shared button spacing');
-      assert.equal(controls.sameMotion,true,'Native Woo and UI Kit buttons share press feedback');
+      const primaryColor=await page.locator('.woocommerce-form-login__submit').evaluate(el=>getComputedStyle(el).backgroundColor);
+      assert.equal(primaryColor,'rgb(35, 44, 41)','Mineral primary is the approved deep green-charcoal #232c29');
+      assert.equal(controls.samePadding,true,'Native Woo button keeps the shared touch padding');
+      assert.equal(controls.sameMotion,true,'Native Woo and UI Kit button share press feedback');
        const actionSize=await page.locator('.woocommerce-form-login__submit').evaluate(el=>{
          const st=getComputedStyle(el);
          return {height:el.getBoundingClientRect().height,min:st.minHeight,font:st.fontSize,
            paddingTop:st.paddingTop,paddingBottom:st.paddingBottom};
        });
-       assert(actionSize.height>=52&&actionSize.height<=54,'Native login uses the 52px common Button sizing');
-       assert.equal(actionSize.min,'52px','Guest Button token is scoped to the account, not global design');
+       assert(actionSize.height>=54&&actionSize.height<=55,'Mineral guest login uses a 54px primary action');
+       assert.equal(actionSize.min,'54px','Mineral Button token is scoped to the guest Account only');
        assert.equal(actionSize.font,'15px','Compact guest CTA type uses shared Button font token');
 
-      assert.equal(controls.fieldRadius,'12px','Inputs follow the same UI Kit control radius');
+      assert.equal(controls.fieldRadius,'15px','Mineral form fields have clean 15px corners');
       assert.equal(await page.locator('#username').evaluate(el=>getComputedStyle(el).backgroundColor),
         'rgb(255, 255, 255)','Guest input is a clean outlined white field, not a bulky gray surface');
-      assert(controls.fieldHeight>=49&&controls.fieldHeight<=51,'Guest input uses approved 50px geometry');
+      assert(controls.fieldHeight>=54&&controls.fieldHeight<=55,'Guest input uses Mineral 54px geometry');
       const fieldAlignment=await page.evaluate(()=>{
        const input=document.querySelector('#username');
        const label=document.querySelector('label[for="username"]');
@@ -172,7 +178,7 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
       assert(compact.brandHeight>=30,'Real store brand remains readable');
       if(type==='login')assert.equal(compact.headings,0,'Single login page hides duplicated WooCommerce heading');
       const background=await page.locator('.sf-account-intro').evaluate(el=>getComputedStyle(document.body).backgroundColor);
-      assert.equal(background,'rgb(248, 247, 244)','Guest account shares the theme page canvas');
+      assert.equal(background,'rgb(246, 244, 240)','Guest Account owns its scoped Mineral canvas');
       if(type==='login'){
         await page.locator('.woocommerce').evaluate(node=>node.insertAdjacentHTML('beforeend',
           '<div class="sf-shell sf-auth-social"><div class="sf-auth-divider"><span>or</span></div>'+
