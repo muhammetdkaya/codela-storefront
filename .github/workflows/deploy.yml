@@ -56,6 +56,7 @@ jobs:
           node tests/cart-sync.cjs
           node tests/cart-design.cjs
           php tests/quick-login.php
+          php tests/quick-login-markup.php
           node --check theme/codela-storefront/assets/scripts/quick-login.js
           node tests/quick-login-ui.cjs
           php tests/cart-shipping.php
