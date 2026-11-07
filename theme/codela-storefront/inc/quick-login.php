@@ -208,6 +208,18 @@ add_action( 'wp_set_password', static function( $password, $user_id ): void {
     delete_user_meta( (int) $user_id, '_codela_sf_quick_devices' );
 }, 10, 2 );
 
+// WooCommerce password changes often go through wp_update_user(), not
+// wp_set_password(). Only revoke when the actual password hash changes.
+add_action( 'profile_update', static function( $user_id, $old_user ): void {
+    if ( ! $old_user instanceof WP_User ) { return; }
+    $current = get_userdata( (int) $user_id );
+    if ( $current instanceof WP_User && is_string( $old_user->user_pass )
+        && is_string( $current->user_pass )
+        && ! hash_equals( $old_user->user_pass, $current->user_pass ) ) {
+        delete_user_meta( (int) $user_id, '_codela_sf_quick_devices' );
+    }
+}, 10, 2 );
+
 /** Guest PIN screen: unhidden only if an actual browser key is found. */
 function codela_sf_quick_guest_markup(): void {
     if ( is_user_logged_in() || ( ! empty( $GLOBALS['codela_sf_auth_overlay'] )
