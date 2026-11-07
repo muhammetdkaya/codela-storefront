@@ -280,6 +280,9 @@ export function createOverlayController({
             dialog.querySelectorAll('#sf-account form.woocommerce-form').forEach(form => {
                 form.action = config().account;
             });
+            // Present the dialog now; nonce/session refresh is asynchronous.
+            // No page-wide skeleton or full navigation on the dock tap.
+            $('#sf-account')?.dispatchEvent(new Event('codela:account-open'));
         }
         if (name === 'cart' && desktop.matches) animateDrawer(false, drawerFrom);
         else animatePanelContent(name === 'search' ? $('.sf-search-content') : $(`#sf-${name}`), previous === 'cart' && name === 'search' ? -1 : 1);
