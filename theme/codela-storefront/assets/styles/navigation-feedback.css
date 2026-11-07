@@ -154,57 +154,59 @@ html[data-sf-navigation-target="account"] .sf-skeleton-layout{padding-inline:cla
  .sf-skeleton-product-detail{width:40%;height:18px}
 }
 
-/* Destination-aware header anticipation: the old page's logo and icons must
-   not linger through skeleton loading then jump when the new document arrives.
-   Draw only inert loading surfaces, retaining the fixed transparent header.
-   Exact clickable controls always belong to the destination document. */
+/* Header chrome is immediate actual UI. Only content below the header
+   uses loading skeleton. Do not shimmer or fabricate header controls. */
 html[data-sf-navigation-pending] .sf-shell .sf-header > :not(.sf-header-destination){
   visibility:hidden!important;
 }
 .sf-shell .sf-header .sf-header-destination{
   position:absolute;inset:0;z-index:1;pointer-events:none!important;
-  display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,auto) minmax(0,1fr);
   align-items:center;gap:8px;padding:0 5vw;box-sizing:border-box;
 }
+.sf-header-destination *{pointer-events:none!important}
 .sf-header-destination-left,.sf-header-destination-centre,.sf-header-destination-right{
   display:flex;align-items:center;gap:10px;min-width:0;
 }
+.sf-header-destination-left{justify-content:flex-start}
 .sf-header-destination-centre{justify-content:center}
 .sf-header-destination-right{justify-content:flex-end}
 .sf-header-destination-capsule{
-  display:flex;align-items:center;justify-content:center;flex:none;
-  height:var(--sf-ui-hit,44px);min-width:var(--sf-ui-hit,44px);
-  padding:0;box-sizing:border-box;border-radius:var(--sf-ui-pill,999px);
+  display:inline-flex;align-items:center;justify-content:center;flex:none;
+  height:var(--sf-ui-hit,44px);min-width:var(--sf-ui-hit,44px);box-sizing:border-box;
+  border-radius:var(--sf-ui-pill,999px);
   border:1px solid var(--sf-ui-glass-border,rgba(255,255,255,.55));
-  background:var(--sf-ui-glass-surface,rgba(255,255,255,.88));
+  background:var(--sf-ui-glass-surface,rgba(255,255,255,.91));
   box-shadow:var(--sf-ui-glass-control-shadow,0 2px 10px rgba(0,0,0,.07));
   -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  color:var(--sf-ui-glass-ink,#1c1c1e);
 }
-.sf-header-destination-capsule--logo{min-width:96px}
-.sf-header-destination-capsule--title{min-width:116px}
-.sf-header-destination-capsule--navigation{min-width:172px}
-.sf-header-destination-shape{
-  display:block;width:18px;height:18px;border-radius:6px;
-  background:var(--sf-ui-skeleton,#dfe1e5);
-  animation:sf-header-awaiting 1.35s ease-in-out infinite;
+.sf-header-destination-capsule :is(svg,.sf-icon){display:block;width:24px;height:24px;stroke:currentColor}
+.sf-header-destination-capsule--back :is(svg,.sf-icon),
+.sf-header-destination-capsule--home :is(svg,.sf-icon){width:20px;height:20px}
+.sf-header-destination-capsule--title{
+  padding-inline:16px;max-width:min(40vw,220px);min-width:0;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;font-size:15px;
 }
-.sf-header-destination-capsule--logo .sf-header-destination-shape{width:69px;height:13px;border-radius:5px}
-.sf-header-destination-capsule--title .sf-header-destination-shape{width:77px;height:12px;border-radius:5px}
-.sf-header-destination-capsule--navigation .sf-header-destination-shape{width:122px;height:12px;border-radius:5px}
-.sf-header-destination-capsule--catalog .sf-header-destination-shape{width:18px;height:14px;border-radius:4px}
-@keyframes sf-header-awaiting{0%,100%{opacity:.48}50%{opacity:.95}}
+.sf-header-destination-capsule--logo{padding-inline:9px;min-width:0;max-width:min(44vw,220px)}
+.sf-header-destination-capsule--logo a{display:flex;align-items:center;justify-content:center}
+.sf-header-destination-capsule--logo img{display:block;max-height:34px;max-width:100%;width:auto;height:auto}
+.sf-header-destination-capsule--desktop-action{display:none}
+.sf-header-destination-centre .sf-desktop-navigation{pointer-events:none!important}
+@media(min-width:701px){
+  .sf-header-destination-capsule--menu{display:none}
+  .sf-header-destination-capsule--desktop-action{display:inline-flex}
+}
 @media(max-width:700px){
   .sf-shell .sf-header .sf-header-destination{
-    grid-template-columns:minmax(0,1fr) auto;
-    padding-inline:20px;
+    grid-template-columns:minmax(0,1fr) auto;column-gap:8px;
+    padding:0 20px;
   }
   .sf-header-destination-centre{display:none}
-  .sf-header-destination-capsule--title{min-width:108px}
-}
-@media(prefers-reduced-motion:reduce){
-  .sf-header-destination-shape{animation:none}
+  .sf-header-destination-left,.sf-header-destination-right{gap:10px}
+  .sf-header-destination-capsule{--sf-ui-glass-surface:rgba(255,255,255,.91)}
+  .sf-header-destination-capsule--title{max-width:42vw}
 }
 @media(forced-colors:active){
   .sf-header-destination-capsule{border:1px solid CanvasText}
-  .sf-header-destination-shape{background:CanvasText}
 }
