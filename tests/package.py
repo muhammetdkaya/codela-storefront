@@ -170,7 +170,7 @@ class Tests(unittest.TestCase):
         render=(build.ROOT/'inc/render.php').read_text()
         self.assertNotIn('class="sf-auth-site-header"',render)
         self.assertNotIn('class="sf-shell sf-auth-shell"',render)
-        self.assertIn('$guest_overlay = false;',render)
+        self.assertIn('$guest_overlay = ! is_user_logged_in()',render)
         self.assertIn('sf-mobile-dock',render)
         feedback=(build.ROOT/'assets/scripts/navigation-feedback.js').read_text()
         self.assertIn("capsule(right, 'menu', config.menuIcon)",feedback)
