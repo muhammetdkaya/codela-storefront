@@ -3,11 +3,11 @@
     "wordpress": "6.5",
     "php": "8.0",
     "woocommerce": "9.0",
-    "codela": "1.2.3"
+    "codela": "1.2.6"
   },
   "changes": [
-    "WooCommerce oturum çıkışı sonrasında /hesabim/?loggedout=true adresi artık ayrı giriş kabuğu değil, normal Codela mağaza headerı ve dört sekmeli alt menü ile açılır; Hesabım sekmesi seçili kalır. WordPress yönetici ve güvenli giriş yolları korunur.",
-    "Ürün ve diğer sayfalar arasında geçiş başladığı anda headerdaki gerçek logo, geri, ev, sepet, filtre ve menü ikonları görünür. Headerda skeleton/shimmer yoktur; skeleton yalnız yüklenen içerik bölümündedir.",
-    "Geçiş iptalinde önceki header DOM’u geri yüklenir; giriş sayfasındaki WooCommerce formu korunur ve aynı ekranda ikinci bir giriş formu oluşturulmaz. Alt menü tasarımı değiştirilmedi."
+    "Codela Commerce Toolkit 1.2.6 ile entegre ücretsiz kargo ilerleme çubuğu, mağazanın mobil sepet panelinde artık görünüyor; aktif sepet verisi ve modülün yerel ayarları kullanılır.",
+    "Sepete ekleme, adet değiştirme, sepeti boşaltma, kargo bölgesine bağlı eşik ve modülün açık/kapalı ayarlarında gösterim güncellenir. Eklentisiz veya özellik kapalıyken ekstra alan görünmez.",
+    "Sepet ürün sayacı ve kargo ilerleme kartı kompakt yüzeylerle ayrıldı; Hesabım ortak menü ikonu regresyon testi güncellendi."
   ]
 }
