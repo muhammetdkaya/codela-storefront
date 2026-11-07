@@ -266,6 +266,9 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-auth-social .sf-auth-google{
   width:100%;gap:12px;margin:0;font-size:14px;font-weight:500;
 }
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-auth-social .sf-auth-google:disabled{
+  opacity:.62;cursor:not-allowed;transform:none!important;
+}
 .sf-auth-google .sf-google-glyph{
   display:inline-grid;place-items:center;width:22px;height:22px;
   font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:700;
