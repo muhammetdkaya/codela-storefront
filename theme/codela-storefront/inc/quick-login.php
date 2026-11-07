@@ -314,9 +314,6 @@ function codela_sf_quick_guest_markup(): void {
                 <span class="sf-quick-account-text"><strong class="sf-quick-user"></strong><small class="sf-quick-email" hidden></small></span>
                 <span class="sf-quick-chevron" aria-hidden="true"><?php echo codela_sf_icon( 'arrow-right' ); ?></span>
             </button>
-            <div class="sf-quick-remove-line">
-                <button type="button" class="sf-quick-remove"><?php esc_html_e( 'Remove this account', 'codela-storefront' ); ?></button>
-            </div>
             <div class="sf-quick-choice-alternatives">
                 <div class="sf-quick-or"><span><?php esc_html_e( 'or', 'codela-storefront' ); ?></span></div>
                 <?php $google_available = function_exists( 'codela_sf_google_enabled' ) && codela_sf_google_enabled(); ?>
