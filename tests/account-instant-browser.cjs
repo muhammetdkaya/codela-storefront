@@ -72,8 +72,8 @@ async function setup(){
   assert.equal(await page.locator('.sf-auth-heading-wave').isVisible(),true,'Login welcome wave returns');
   await page.locator('.sf-auth-register-cta').click();
   assert.equal(await page.locator('#customer_login').getAttribute('data-auth-view'),'register','Email registration sibling opens native Woo form');
-  assert.equal(await page.locator('.sf-auth-register-cta').isVisible(),false,
-    'Signup action outside the form is hidden during native registration');
+  assert.equal(await page.locator('.sf-overlay-auth').evaluate(el=>el.classList.contains('sf-auth-register-view')),true,
+    'Native registration toggles its root display state without CSS being loaded by this JS-only fixture');
   assert.equal(formRequests,1,'One background request per Account opening');
   await page.close();
   authenticated=true;
