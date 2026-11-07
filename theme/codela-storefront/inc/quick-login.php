@@ -32,6 +32,7 @@ function codela_sf_quick_devices( int $user_id ): array {
 }
 
 function codela_sf_quick_public_key( string $encoded ) {
+    if ( ! function_exists( 'openssl_pkey_get_public' ) || ! defined( 'OPENSSL_KEYTYPE_EC' ) ) { return false; }
     if ( strlen( $encoded ) > 256 || ! preg_match( '/^[A-Za-z0-9+\/]+={0,2}$/D', $encoded ) ) { return false; }
     $der = base64_decode( $encoded, true );
     if ( ! is_string( $der ) || strlen( $der ) < 70 || strlen( $der ) > 140 ) { return false; }
@@ -231,7 +232,7 @@ function codela_sf_quick_guest_markup(): void {
         </div>
         <p class="sf-quick-status" role="status" aria-live="polite"></p>
         <button type="button" class="sf-quick-password sf-ui-button sf-ui-button--secondary"><?php esc_html_e( 'Sign in with password or Google', 'codela-storefront' ); ?></button>
-        <button type="button" class="sf-quick-forget"><?php esc_html_e( 'Forget this device', 'codela-storefront' ); ?></button>
+        <button type="button" class="sf-quick-forget"><?php esc_html_e( 'Clear sign-in on this browser', 'codela-storefront' ); ?></button>
     </section>
     <?php
 }
@@ -244,7 +245,7 @@ function codela_sf_quick_settings(): void {
     $devices = codela_sf_quick_devices( $user->ID );
     ?>
     <section class="sf-quick-settings" id="sf-quick-settings" data-user-id="<?php echo esc_attr( (string) $user->ID ); ?>"
-        data-username="<?php echo esc_attr( (string) $user->display_name ); ?>">
+        data-username="<?php echo esc_attr( (string) $user->user_login ); ?>">
         <h3><?php esc_html_e( 'Quick sign in', 'codela-storefront' ); ?></h3>
         <p><?php esc_html_e( 'Enable a 6-digit code for this browser. Your normal WooCommerce password will continue to work.', 'codela-storefront' ); ?></p>
         <div class="sf-quick-enroll">
