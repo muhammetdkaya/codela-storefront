@@ -69,6 +69,24 @@ add_filter( 'login_url', static function( $url, $redirect, $force_reauth ) {
 // Keep WooCommerce endpoint navigation and all registered plugin destinations.
 
 /**
+ * Refresh guest Woo form nonces when the instant dialog opens. A storefront
+ * page may be publicly cached for longer than the WooCommerce login/register
+ * nonce lifetime. This read-only endpoint returns fresh guest form tokens,
+ * never an authentication token and never authenticates a customer.
+ */
+function codela_sf_account_form_state(): void {
+    nocache_headers();
+    wp_send_json( [
+        'authenticated' => is_user_logged_in(),
+        'login_nonce' => wp_create_nonce( 'woocommerce-login' ),
+        'register_nonce' => wp_create_nonce( 'woocommerce-register' ),
+        'registration' => 'yes' === get_option( 'woocommerce_enable_myaccount_registration', 'no' ),
+    ] );
+}
+add_action( 'wp_ajax_nopriv_codela_sf_account_form_state', 'codela_sf_account_form_state' );
+add_action( 'wp_ajax_codela_sf_account_form_state', 'codela_sf_account_form_state' );
+
+/**
  * Render genuine WooCommerce login and optional registration forms inside the
  * existing Storefront dialog. No iframe, duplicate auth engine, or AJAX endpoint.
  * The native Woo template retains its own nonces, hooks and validation.
@@ -78,7 +96,7 @@ function codela_sf_account_overlay_form(): string {
     ob_start();
     $GLOBALS['codela_sf_auth_overlay'] = true;
     try {
-        echo '<div class="woocommerce sf-overlay-auth">';
+        echo '<div class="woocommerce sf-overlay-auth" data-auth-state-url="' . esc_url( admin_url( 'admin-ajax.php' ) ) . '">';
         wc_get_template( 'myaccount/form-login.php' );
         echo '</div>';
     } finally {
