@@ -467,6 +467,17 @@ function codela_sf_quick_dashboard_entry(): void {
 add_action( 'woocommerce_account_dashboard', 'codela_sf_quick_dashboard_entry', 20 );
 
 
+/**
+ * Suppress the native Woo form's first paint only when the visitor has a
+ * remembered browser hint. Status must still be checked server-side before
+ * showing the actual remembered name/card; absent a valid device, the native
+ * form is revealed. This short head bootstrap does not authenticate anyone.
+ */
+add_action( 'wp_head', static function(): void {
+    if ( is_user_logged_in() || ! function_exists( 'is_account_page' ) || ! is_account_page() ) { return; }
+    echo '<script>(function(){try{var p=JSON.parse(localStorage.getItem("codela_sf_quick_profile_v1")||"null");if(p&&Number.isSafeInteger(p.userId)&&/^[0-9a-f]{32}$/.test(p.deviceId||"")){document.documentElement.classList.add("sf-quick-checking");window.setTimeout(function(){document.documentElement.classList.remove("sf-quick-checking")},7000)}}catch(e){}})();</script>';
+}, 1 );
+
 add_action( 'wp_enqueue_scripts', static function(): void {
     // The login overlay can be opened on any storefront page by a guest.
     if ( is_user_logged_in() && ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) ) { return; }
