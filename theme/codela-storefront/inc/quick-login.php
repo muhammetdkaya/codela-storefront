@@ -296,6 +296,19 @@ add_action( 'wp_enqueue_scripts', static function(): void {
         'rest' => esc_url_raw( rest_url( 'codela-storefront/v1/quick-login/' ) ),
         'nonce' => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
         'account' => wc_get_page_permalink( 'myaccount' ),
+        'strings' => [
+            'account' => __( 'Your account', 'codela-storefront' ),
+            'requestFailed' => __( 'Request could not be completed. Try again.', 'codela-storefront' ),
+            'waiting' => __( 'Signing in…', 'codela-storefront' ),
+            'success' => __( 'Signed in', 'codela-storefront' ),
+            'responseInvalid' => __( 'Sign-in response could not be verified.', 'codela-storefront' ),
+            'failed' => __( 'Sign-in failed. Try again.', 'codela-storefront' ),
+            'pinMismatch' => __( 'Enter and confirm the same six digits.', 'codela-storefront' ),
+            'linking' => __( 'Linking this browser securely…', 'codela-storefront' ),
+            'enabled' => __( 'Quick sign-in is enabled for this browser.', 'codela-storefront' ),
+            'enableFailed' => __( 'Could not enable quick sign-in.', 'codela-storefront' ),
+            'revokeFailed' => __( 'Could not remove browser.', 'codela-storefront' ),
+        ],
     ] );
     wp_script_add_data( 'codela-storefront-quick-login', 'strategy', 'defer' );
 }, 25 );
