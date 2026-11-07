@@ -17,6 +17,13 @@ assert(js.includes("if (!result.ok || typeof result.account_url !== 'string')"),
 assert(js.indexOf("track.classList.add('is-verified')") > js.indexOf("if (!result.ok || typeof result.account_url !== 'string')"),'Check animation cannot start before successful server verification');
 assert(js.includes("remembered.displayName = settings.dataset.displayName"),'Existing remembered accounts refresh their customer name');
 assert(js.includes("displayName:settings.dataset.displayName"),'New remembered accounts store display name');
+assert(js.includes("email:settings.dataset.email"),'Enrollment stores only a display email alongside remembered account');
+assert(js.includes("email.textContent = rememberedEmail"),'Guest card reads the remembered email');
+assert(php.includes("class=\"sf-quick-email\""),'Saved-account markup has an optional email line');
+assert(php.includes("codela_sf_icon( 'chevron-left' )"),'Saved-account trailing icon uses the existing thin chevron');
+assert(php.includes('sf-quick-choice-alternatives') && php.includes('sf-quick-email-login'),'Reference actions belong below the account card');
+assert(php.includes("function_exists( 'codela_sf_google_enabled' ) && codela_sf_google_enabled()"),'Google button is only shown when actually available');
+assert(css.includes('.sf-quick-or') && css.includes('.sf-quick-google'),'Divider and Google CTA have dedicated styles');
 assert(!js.includes("data-quick-digit"),'No custom number keypad should be used');
 
 assert(js.includes("window.location.replace(destination.href)"),'Successful PIN forces a full document navigation');
