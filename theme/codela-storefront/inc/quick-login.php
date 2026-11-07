@@ -241,15 +241,40 @@ function codela_sf_quick_guest_markup(): void {
     <section class="sf-quick-login" hidden aria-label="<?php esc_attr_e( 'Quick sign-in', 'codela-storefront' ); ?>">
         <div class="sf-quick-choice">
             <div class="sf-quick-choice-intro">
-                <h2><?php esc_html_e( 'Continue', 'codela-storefront' ); ?></h2>
-                <p><?php esc_html_e( 'Sign in quickly with your saved account.', 'codela-storefront' ); ?></p>
+                <h2><?php esc_html_e( 'Welcome', 'codela-storefront' ); ?> <span class="sf-quick-wave" aria-hidden="true">👋</span></h2>
+                <p><?php esc_html_e( 'Continue quickly with your account.', 'codela-storefront' ); ?></p>
             </div>
             <button type="button" class="sf-quick-account sf-ui-pressable" aria-haspopup="dialog" aria-controls="sf-quick-sheet">
                 <span class="sf-quick-monogram" aria-hidden="true"></span>
-                <span class="sf-quick-account-text"><strong class="sf-quick-user"></strong></span>
-                <span class="sf-quick-chevron" aria-hidden="true"><?php echo codela_sf_icon( 'arrow-right' ); ?></span>
+                <span class="sf-quick-account-text"><strong class="sf-quick-user"></strong><small class="sf-quick-email" hidden></small></span>
+                <span class="sf-quick-chevron" aria-hidden="true"><?php echo codela_sf_icon( 'chevron-left' ); ?></span>
             </button>
-            <button type="button" class="sf-quick-switch"><?php esc_html_e( 'Use another account', 'codela-storefront' ); ?></button>
+            <div class="sf-quick-choice-alternatives">
+                <div class="sf-quick-or"><span><?php esc_html_e( 'or', 'codela-storefront' ); ?></span></div>
+                <?php if ( function_exists( 'codela_sf_google_enabled' ) && codela_sf_google_enabled() ) : ?>
+                    <a class="sf-quick-google" href="<?php echo esc_url( codela_sf_google_auth_url() ); ?>">
+                        <span class="sf-quick-action-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+                                <path fill="#4285F4" d="M21.8 12.2c0-.7-.06-1.4-.18-2.08H12v3.94h5.5a4.7 4.7 0 0 1-2.04 3.08v2.56h3.3c1.93-1.78 3.04-4.39 3.04-7.5z"/>
+                                <path fill="#34A853" d="M12 22c2.75 0 5.07-.91 6.76-2.46l-3.3-2.56c-.92.62-2.1.98-3.46.98-2.66 0-4.91-1.8-5.72-4.22H2.87v2.64A10 10 0 0 0 12 22z"/>
+                                <path fill="#FBBC05" d="M6.28 13.74a6 6 0 0 1 0-3.48V7.62H2.87a10 10 0 0 0 0 8.76l3.41-2.64z"/>
+                                <path fill="#EA4335" d="M12 6.04c1.5 0 2.84.52 3.9 1.54l2.93-2.93A9.95 9.95 0 0 0 12 2a10 10 0 0 0-9.13 5.62l3.41 2.64C7.09 7.84 9.34 6.04 12 6.04z"/>
+                            </svg>
+                        </span>
+                        <span class="sf-quick-action-divider" aria-hidden="true"></span>
+                        <span class="sf-quick-action-label"><?php esc_html_e( 'Continue with Google', 'codela-storefront' ); ?></span>
+                    </a>
+                <?php endif; ?>
+                <button type="button" class="sf-quick-switch sf-quick-email-login">
+                    <span class="sf-quick-action-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6 8.5 7 8.5-7"/>
+                        </svg>
+                    </span>
+                    <span class="sf-quick-action-divider" aria-hidden="true"></span>
+                    <span class="sf-quick-action-label"><?php esc_html_e( 'Sign in with email and password', 'codela-storefront' ); ?></span>
+                </button>
+            </div>
         </div>
 
         <div class="sf-quick-scrim" hidden></div>
@@ -311,7 +336,8 @@ function codela_sf_quick_settings(): void {
     ?>
     <section class="sf-quick-settings" id="sf-quick-settings" data-user-id="<?php echo esc_attr( (string) $user->ID ); ?>"
         data-username="<?php echo esc_attr( (string) $user->user_login ); ?>"
-        data-display-name="<?php echo esc_attr( codela_sf_quick_display_name( $user ) ); ?>">
+        data-display-name="<?php echo esc_attr( codela_sf_quick_display_name( $user ) ); ?>"
+        data-email="<?php echo esc_attr( (string) $user->user_email ); ?>">
         <h3><?php esc_html_e( 'Quick sign in', 'codela-storefront' ); ?></h3>
         <p><?php esc_html_e( 'Enable a 6-digit code for this browser. Your normal WooCommerce password will continue to work.', 'codela-storefront' ); ?></p>
         <div class="sf-quick-enroll">
@@ -384,6 +410,7 @@ add_action( 'wp_enqueue_scripts', static function(): void {
             ? [
                 'userId' => (int) wp_get_current_user()->ID,
                 'displayName' => codela_sf_quick_display_name( wp_get_current_user() ),
+                'email' => (string) wp_get_current_user()->user_email,
             ]
             : null,
         'strings' => [
