@@ -105,6 +105,7 @@
     const choose = section.querySelector('.sf-quick-account');
     const changeAccount = section.querySelector('.sf-quick-switch');
     const name = section.querySelector('.sf-quick-user');
+    const email = section.querySelector('.sf-quick-email');
     const monogram = section.querySelector('.sf-quick-monogram');
     const scrim = section.querySelector('.sf-quick-scrim');
     const sheet = section.querySelector('.sf-quick-sheet');
@@ -118,6 +119,11 @@
 
     const displayName = String(profile.displayName || profile.username || t('account','Your account')).trim();
     name.textContent = displayName;
+    const rememberedEmail = String(profile.email || '').trim();
+    if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rememberedEmail)) {
+      email.textContent = rememberedEmail;
+      email.hidden = false;
+    }
     monogram.textContent = Array.from(displayName)[0]?.toLocaleUpperCase() || '?';
     section.hidden = false;
     host.classList.add('sf-pin-active');
@@ -308,6 +314,7 @@
     const remembered = log();
     if (remembered && remembered.userId === userId) {
       remembered.displayName = settings.dataset.displayName || remembered.username || '';
+      remembered.email = settings.dataset.email || remembered.email || '';
       localStorage.setItem(savedKey, JSON.stringify(remembered));
     }
     button?.addEventListener('click', async () => {
@@ -332,7 +339,8 @@
         });
         localStorage.setItem(savedKey, JSON.stringify({
           deviceId, userId, username:settings.dataset.username || '',
-          displayName:settings.dataset.displayName || settings.dataset.username || ''
+          displayName:settings.dataset.displayName || settings.dataset.username || '',
+          email:settings.dataset.email || ''
         }));
         pinInput.value = '';
         confirm.value = '';
@@ -369,6 +377,7 @@
     if (profile && config.identity?.userId === profile.userId
       && typeof config.identity.displayName === 'string' && config.identity.displayName.trim()) {
       profile.displayName = config.identity.displayName.trim();
+      profile.email = typeof config.identity.email === 'string' ? config.identity.email.trim() : (profile.email || '');
       localStorage.setItem(savedKey, JSON.stringify(profile));
     }
     if (profile) {
