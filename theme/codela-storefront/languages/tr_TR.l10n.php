@@ -218,6 +218,7 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'Delete digit' => 'Rakamı sil',
 'Sign in with password or Google' => 'Şifre veya Google ile giriş',
 'Forget this device' => 'Bu cihazı unut',
+'Clear sign-in on this browser' => 'Bu tarayıcıdaki hızlı girişi temizle',
 'Enable a 6-digit code for this browser. Your normal WooCommerce password will continue to work.' => 'Bu tarayıcı için 6 haneli kod belirleyin. Mevcut şifreniz çalışmaya devam eder.',
 'New 6-digit code' => 'Yeni 6 haneli kod',
 'Confirm code' => 'Kodu tekrar girin',
