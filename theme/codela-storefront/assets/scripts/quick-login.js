@@ -176,7 +176,6 @@
     const slots = [...section.querySelectorAll('.sf-quick-slot')];
     const status = section.querySelector('.sf-quick-status');
     const password = section.querySelector('.sf-quick-password');
-    const removeAccount = section.querySelector('.sf-quick-remove');
     if (!choose || !sheet || !input || slots.length !== 6) return;
 
     const displayName = String(profile.displayName || profile.username || t('account','Your account')).trim();
@@ -351,14 +350,6 @@
     choose.addEventListener('click', openSheet);
     changeAccount?.addEventListener('click', () => showNativeLogin('login'));
     password?.addEventListener('click', () => showNativeLogin('login'));
-    removeAccount?.addEventListener('click', async () => {
-      if (pending) return;
-      // Remove the local non-exportable key as well as its display-only hint.
-      // No server session is created; the normal Woo tabbed login remains.
-      removeAccount.disabled = true;
-      await forgetRemembered(profile);
-      showNativeLogin('login');
-    });
     close?.addEventListener('click', closeSheet);
     scrim?.addEventListener('click', closeSheet);
     input.addEventListener('input', () => {

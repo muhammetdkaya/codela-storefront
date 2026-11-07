@@ -31,7 +31,12 @@ function codela_sf_header_context(): array {
                 $back = wc_get_account_endpoint_url( 'edit-address' );
             }
         }
-        return [ 'title' => $label, 'back' => $back, 'history' => false ];
+        return [ 'title' => $label, 'back' => $back, 'history' => false, 'account_root' => ! $endpoint ];
+    }
+    // Guest My Account must use the same contextual icon/title as the app
+    // dialog and signed-in account root, never the store's custom logo.
+    if ( $account ) {
+        return [ 'title' => __( 'My account', 'codela-storefront' ), 'back' => '', 'history' => false, 'account_root' => true ];
     }
     // Catalog archives are top-level destinations in the shared header.
     if ( function_exists( 'is_shop' ) && is_shop() && ! is_front_page() ) {
@@ -122,7 +127,9 @@ function codela_sf_header(): string {
             </nav>
             <div class="sf-brand sf-ui-surface<?php echo $context ? ' sf-context-brand' : ''; ?>" data-wp-router-region="codela/storefront/brand">
                 <?php if ( $context ) : ?>
-                    <?php if ( $context['history'] ) : ?>
+                    <?php if ( ! empty( $context['account_root'] ) ) : ?>
+                    <span class="sf-context-account-heading"><?php echo codela_sf_icon( 'user-round' ); ?><span class="sf-context-label"><?php echo esc_html( $context['title'] ); ?></span></span>
+                    <?php elseif ( $context['history'] ) : ?>
                     <a class="sf-ui-pressable" data-sf-context-back <?php echo ! empty( $context['root'] ) ? 'data-sf-context-root' : ''; ?> <?php echo ! empty( $context['parent'] ) ? 'data-sf-hierarchy-parent="' . esc_url( $context['parent'] ) . '"' : ''; ?> data-sf-page-title="<?php echo esc_attr( get_the_title( get_queried_object_id() ) ); ?>" href="<?php echo esc_url( $context['back'] ?: home_url( '/' ) ); ?>" aria-label="<?php esc_attr_e( 'Back', 'codela-storefront' ); ?>" <?php echo ! empty( $context['root'] ) ? 'hidden' : ''; ?>><?php echo codela_sf_icon( 'chevron-left' ); ?></a>
                     <span class="sf-context-label" <?php echo empty( $context['root'] ) || $product_page ? 'hidden' : ''; ?>><?php echo esc_html( $context['title'] ); ?></span>
                     <?php elseif ( $context['back'] ) : ?><a class="sf-ui-pressable" data-sf-page-title="<?php echo esc_attr( get_the_title( get_queried_object_id() ) ); ?>" href="<?php echo esc_url( $context['back'] ); ?>" data-sf-account-back aria-label="<?php echo esc_attr( __( 'Back', 'codela-storefront' ) . ': ' . ( $checkout_page ? __( 'Your cart', 'codela-storefront' ) : $context['title'] ) ); ?>"><?php echo codela_sf_icon( 'chevron-left' ); ?></a>

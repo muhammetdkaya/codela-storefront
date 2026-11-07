@@ -13,6 +13,12 @@ const noDockHeader = execFileSync(php, ['tests/render-header.php'], {encoding:'u
 assert(!noDockHeader.includes('class="sf-mobile-dock'), 'Disabled setting omits dock');
 assert.equal(header,execFileSync(php,['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_DOCK:'1'}}),'Unset defaults to enabled');
 const accountHeader=execFileSync(php,['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_ACCOUNT:'1'}});
+const guestAccountHeader=execFileSync(php,['tests/render-header.php'],{encoding:'utf8',env:{...process.env,FIXTURE_GUEST_ACCOUNT:'1'}});
+assert(guestAccountHeader.includes('sf-context-account-heading') && guestAccountHeader.includes('user-round.svg'),
+  'Guest Account header uses account icon and title rather than site logo');
+assert(accountHeader.includes('sf-context-account-heading'),
+  'Signed-in Account dashboard retains the same contextual title');
+
 let activeHeader=header;
 const checkout = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8',env:{...process.env,FIXTURE_CHECKOUT:'1'}});
 const footer = execFileSync(php, ['tests/render-footer.php'], {encoding:'utf8',env:{...process.env,FOOTER_PRIVACY:'1',FOOTER_TERMS:'1',FOOTER_NOTE:'1'}});
