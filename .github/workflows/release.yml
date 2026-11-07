@@ -53,6 +53,9 @@ jobs:
           node tests/cart-race.cjs
           node tests/cart-sync.cjs
           node tests/cart-design.cjs
+          php tests/quick-login.php
+          node --check theme/codela-storefront/assets/scripts/quick-login.js
+          node tests/quick-login-ui.cjs
           php tests/cart-shipping.php
           node tests/cart-free-shipping.cjs
           # Full browser navigation regressions passed earlier in CI run
