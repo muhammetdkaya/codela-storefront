@@ -48,7 +48,10 @@ function codela_sf_google_return( bool $error = true ): void {
 }
 
 function codela_sf_google_start(): void {
-    if ( is_user_logged_in() ) { codela_sf_google_return( false ); }
+    // Clicking Google is an explicit account-selection request, even if a
+    // WordPress cookie for another account is still present (for example after
+    // a stale guest overlay). Never silently reopen the previous account.
+    // Keep the existing session until a verified OAuth callback succeeds.
     if ( ! codela_sf_google_enabled() ) { codela_sf_google_return(); }
     [ $id ] = codela_sf_google_credentials();
 
