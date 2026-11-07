@@ -32,3 +32,4 @@ jobs:
         run: |
           node --check theme/codela-storefront/assets/scripts/quick-login.js
           node tests/quick-login-ui.cjs
+          node --check tests/quick-login-browser.cjs
