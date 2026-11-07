@@ -319,3 +319,7 @@ body.admin-bar{--sf-header-offset:32px}
 .sf-context-brand [hidden]{display:none!important}
 .sf-shell .sf-header .sf-context-brand:has([data-sf-context-back]:not([hidden])){padding-inline:0;width:var(--sf-ui-hit);min-width:var(--sf-ui-hit)}
 .sf-shell .sf-header .sf-context-brand:has([data-sf-context-back][hidden]){width:auto;min-width:0;padding-inline:16px}
+
+/* Shared root My Account label on direct guest and authenticated documents. */
+.sf-shell .sf-header .sf-account-context-heading{display:inline-flex;align-items:center;gap:9px;min-width:0;white-space:nowrap}
+.sf-shell .sf-header .sf-account-context-heading .sf-icon{display:block;flex:none;width:20px;height:20px}
