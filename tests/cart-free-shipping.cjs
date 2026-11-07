@@ -1,24 +1,19 @@
-// The Codela cart must display the enabled plugin module from the live Woo Store API,
-// without guessing a threshold from page HTML or making another cart network request.
+// Theme-only cart shipping integration: reuse original plugin HTML via Woo cart data.
 const assert=require('node:assert/strict');
 const {setup,snapshot,tick}=require('./cart-race.cjs');
 
 function makeSetup() {
-  let renders=0, latestConfig;
   const x=setup((ctx,nodes)=>{
     nodes['#sf-cart-count']={textContent:'',hidden:true};
     nodes['#sf-cart-progress']={innerHTML:'',hidden:true};
-    ctx.window.CodelaFsbHtml=(config,cart)=>{
-      renders++;
-      latestConfig=config;
-      return cart.items.length ? '<div class="cdl-fsb">'+config.threshold+'</div>' : '';
-    };
+    // The plugin's front-end JavaScript must NOT be needed in this cart.
+    ctx.window.CodelaFsbHtml=undefined;
   });
-  return {...x,get renders(){return renders},get config(){return latestConfig}};
+  return x;
 }
-function pluginCart(quantity,config) {
+function themeCart(quantity,html) {
   const data=snapshot(quantity);
-  data.extensions={'codela-free-shipping-bar':{config_json:config?JSON.stringify(config):''}};
+  data.extensions={'codela-storefront-shipping':{html}};
   return data;
 }
 async function load(x,data) {
@@ -30,26 +25,28 @@ async function load(x,data) {
 (async()=>{
   {
     const x=makeSetup();
-    await load(x,pluginCart(1,{threshold:5000,context:'cart',progress:'{remaining}'}));
-    assert.equal(x.nodes['#sf-cart-progress'].hidden,false,'Enabled progress becomes visible');
-    assert.match(x.nodes['#sf-cart-progress'].innerHTML,/5000/,'Plugin threshold reaches the renderer');
-    assert.equal(x.config.context,'cart','Plugin controls rendering context');
+    await load(x,themeCart(1,'<div class="cdl-fsb cdl-fsb--cart"><div class="cdl-fsb-text">Ücretsiz kargo için ₺4.250 daha ekleyin.</div><div class="cdl-fsb-track"><span class="cdl-fsb-fill" style="width:15%"></span></div></div>'));
+    assert.equal(x.nodes['#sf-cart-progress'].hidden,false,'Enabled module HTML becomes visible');
+    assert.match(x.nodes['#sf-cart-progress'].innerHTML,/₺4.250/,'Plugin-owned message reaches the cart intact');
     assert.equal(x.nodes['#sf-cart-count'].textContent,'Items in cart: 1');
     assert.equal(x.nodes['#sf-cart-count'].hidden,false);
-    assert.equal(x.requests.length,1,'No second cart request for progress');
-    assert.equal(x.renders,1);
+    assert.equal(x.requests.length,1,'No second cart request for shipping progress');
   }
   {
     const x=makeSetup();
-    await load(x,pluginCart(1,null));
+    await load(x,themeCart(1,''));
     assert.equal(x.nodes['#sf-cart-progress'].hidden,true,'Disabled or inapplicable module stays hidden');
-    assert.equal(x.renders,0);
   }
   {
     const x=makeSetup();
-    await load(x,pluginCart(0,{threshold:5000}));
-    assert.equal(x.nodes['#sf-cart-progress'].hidden,true,'Empty cart has no progress bar');
+    await load(x,themeCart(0,'<div class="cdl-fsb">stale HTML</div>'));
+    assert.equal(x.nodes['#sf-cart-progress'].hidden,true,'Empty cart ignores any stale progress markup');
     assert.equal(x.nodes['#sf-cart-count'].hidden,true,'Empty cart has no item count');
   }
-  console.log('Storefront / free-shipping module cart integration contracts passed');
+  {
+    const x=makeSetup();
+    await load(x,snapshot(1));
+    assert.equal(x.nodes['#sf-cart-progress'].hidden,true,'Without plugin, no progress markup appears');
+  }
+  console.log('Theme-owned free-shipping cart integration contracts passed');
 })().catch(error=>{console.error(error);process.exitCode=1;});

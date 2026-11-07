@@ -3,11 +3,11 @@
     "wordpress": "6.5",
     "php": "8.0",
     "woocommerce": "9.0",
-    "codela": "1.2.6"
+    "codela": "1.2.5"
   },
   "changes": [
-    "Codela Commerce Toolkit 1.2.6 ile entegre ücretsiz kargo ilerleme çubuğu, mağazanın mobil sepet panelinde artık görünüyor; aktif sepet verisi ve modülün yerel ayarları kullanılır.",
-    "Sepete ekleme, adet değiştirme, sepeti boşaltma, kargo bölgesine bağlı eşik ve modülün açık/kapalı ayarlarında gösterim güncellenir. Eklentisiz veya özellik kapalıyken ekstra alan görünmez.",
-    "Sepet ürün sayacı ve kargo ilerleme kartı kompakt yüzeylerle ayrıldı; Hesabım ortak menü ikonu regresyon testi güncellendi."
+    "Ücretsiz kargo çubuğu Codela eklentisine değişiklik yapılmadan, temanın kendi WooCommerce Store API bağlantısı üzerinden özel sepet panelinde gösterilir.",
+    "Çubuk, eklentinin orijinal render_cart() metodunu ve WooCommerce kargo bölgesi/indirim/özel mesaj hesaplamalarını kullanır. Modül veya Sepette göster kapalıysa görünmez.",
+    "1.2.6 ile eklenen eklenti API bağımlılığı kaldırıldı; Codela 1.2.5 ve 1.2.7'nin orijinal kargo modülüyle çalışır."
   ]
 }
