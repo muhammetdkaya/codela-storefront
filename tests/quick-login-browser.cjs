@@ -66,7 +66,7 @@ async function enrollFixture(page,url) {
     });
     db.close();
     localStorage.setItem('codela_sf_quick_profile_v1',JSON.stringify({
-      deviceId,userId,username:'demo',displayName:'Ayşe Yılmaz'
+      deviceId,userId,username:'demo',displayName:'Ayşe Yılmaz',email:'ayse@example.test'
     }));
   });
   await page.reload({waitUntil:'load'});
@@ -93,10 +93,13 @@ function release(ok) {
       const page=await context.newPage();
       await enrollFixture(page,url);
       assert.equal(await page.locator('.sf-quick-user').innerText(),'Ayşe Yılmaz','Full name, not remembered-account label');
+      assert.equal(await page.locator('.sf-quick-email').innerText(),'ayse@example.test','Saved account includes email as a secondary line');
+      assert(await page.locator('.sf-quick-email-login').isVisible(),'Email/password fallback is visible on first screen');
+      assert(await page.locator('.sf-quick-or').isVisible(),'Reference divider is visible');
       assert.equal(await page.locator('.sf-quick-sheet').isVisible(),false,'Bottom sheet closed at first paint');
       assert.equal(await page.locator('.sf-quick-slot').count(),6,'Six visually aligned PIN cells');
-      assert.equal(await page.getByText('Continue',{exact:true}).count(),1,
-        'Remembered account uses a concise welcome-free heading');
+      assert.equal(await page.getByText('Welcome',{exact:false}).count(),1,
+        'Reference welcome heading is present');
       assert.equal(await page.locator('.sf-quick-sheet').evaluate(el=>getComputedStyle(el).backgroundColor),
         'rgb(255, 255, 255)','PIN sheet must be an opaque white surface');
       await page.locator('.sf-quick-account').click();
