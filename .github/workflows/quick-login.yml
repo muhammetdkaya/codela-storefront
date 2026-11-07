@@ -1,0 +1,29 @@
+name: Quick login security checks (no deployment)
+on:
+  pull_request:
+    paths:
+      - 'theme/codela-storefront/inc/quick-login.php'
+      - 'theme/codela-storefront/assets/scripts/quick-login.js'
+      - 'theme/codela-storefront/assets/styles/quick-login.css'
+      - 'theme/codela-storefront/languages/tr_TR.l10n.php'
+      - 'tests/quick-login.php'
+      - 'tests/quick-login-ui.cjs'
+      - '.github/workflows/quick-login.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: PHP syntax and native WordPress security contracts
+        run: |
+          php -l theme/codela-storefront/inc/quick-login.php
+          php -l theme/codela-storefront/languages/tr_TR.l10n.php
+          php tests/quick-login.php
+      - name: WebCrypto integration and browser contract
+        run: |
+          node --check theme/codela-storefront/assets/scripts/quick-login.js
+          node tests/quick-login-ui.cjs
