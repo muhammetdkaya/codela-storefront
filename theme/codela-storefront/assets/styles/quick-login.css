@@ -1,9 +1,9 @@
 /* Browser-bound quick sign-in, subordinate to the original WooCommerce forms. */
 .sf-quick-login[hidden], .sf-quick-settings[hidden]{display:none!important}
-.sf-pin-active>.sf-account-intro,
-.sf-pin-active>#customer_login,
-.sf-pin-active>.sf-auth-social,
-.sf-pin-active>.sf-google-error{display:none!important}
+.sf-pin-active .sf-account-intro,
+.sf-pin-active #customer_login,
+.sf-pin-active .sf-auth-social,
+.sf-pin-active .sf-google-error{display:none!important}
 .sf-quick-login{max-width:360px;margin:0 auto;text-align:center;color:var(--sf-ui-ink,#242629)}
 .sf-quick-avatar{display:grid;place-items:center;width:58px;height:58px;margin:0 auto 16px;border-radius:50%;background:var(--sf-ui-surface,#f4f4f5);border:1px solid var(--sf-ui-border,#e7e7ea)}
 .sf-quick-avatar svg{width:25px;height:25px;stroke-width:1.6}
@@ -18,7 +18,7 @@
 .sf-quick-login.is-error .sf-quick-dots{animation:sf-quick-error .3s linear}
 @keyframes sf-quick-error{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
 .sf-quick-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:13px 18px;max-width:266px;margin:0 auto 14px}
-.sf-quick-pad .sf-quick-digit{display:grid;place-items:center;justify-self:center;width:67px;height:67px;min-height:0;border-radius:50%;border:1px solid var(--sf-ui-border,#e6e7e8);background:var(--sf-ui-surface,#f5f5f6);box-shadow:0 2px 8px rgba(0,0,0,.025);font:400 25px/1 inherit;color:var(--sf-ui-ink,#25272a);-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.sf-quick-pad .sf-quick-digit{display:grid;place-items:center;justify-self:center;width:67px;height:67px;min-height:0;border-radius:50%;border:1px solid var(--sf-ui-border,#e6e7e8);background:var(--sf-ui-surface,#f5f5f6);box-shadow:0 2px 8px rgba(0,0,0,.025);font-family:inherit;font-size:25px;font-weight:400;line-height:1;color:var(--sf-ui-ink,#25272a);-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .sf-quick-pad .sf-quick-digit:active{transform:scale(.94);background:#e9e9ed}
 .sf-quick-pad .sf-quick-digit:focus-visible{outline:2px solid #51535c;outline-offset:3px}
 .sf-quick-pad .sf-quick-digit[disabled]{opacity:.45;pointer-events:none}
