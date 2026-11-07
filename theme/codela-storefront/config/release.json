@@ -6,9 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Doğrudan Hesabım sayfasında oturum açık veya kapalıyken sol üst logo yerine ortak kullanıcı ikonu ve Hesabım başlığı kullanılır; hesap alt sayfalarının geri kontrolü korunur.",
-    "Google ile giriş butonu hızlı tanınan hesap, normal giriş/kayıt ve hesap panelinde aynı koyu Codela arka planını kullanır; devre dışı durum erişilebilir kalır.",
-    "Bu hesabı kaldır bağlantısı tanınan hesap ekranından ve gereksiz tıklama/CSS kodundan çıkarıldı; geçersiz veya iptal edilmiş cihaz anahtarı temizliği, hesap değiştirme ve altı haneli PIN güvenliği korunur.",
-    "Mevcut hızlı Hesabım paneli, Giriş/Kayıt cam sekmeleri, WooCommerce doğrulama ve Google OAuth akışları değiştirilmez."
+    "Google ile devam et butonu etkin olmayan OAuth durumunda da üç Hesabım ekranında #252628 koyu zemin, tam okunabilir beyaz yazı ve tam renkli Google simgesi gösterir; gerçek OAuth bağlantısının devre dışı durumu değiştirilmez.",
+    "Tanınan hesaptaki E-posta ve şifreyle giriş yap eylemi WooCommerce formuna geçer ama giriş alanını otomatik odaklamaz; klavye ve iOS parola yöneticisi yalnız kullanıcının alanı seçmesiyle açılır.",
+    "Altı haneli hızlı giriş paneli iOS Safari VisualViewport konumuna göre klavye ile hizalanır; çift klavye yükseltmesi ve aç/kapat sıçraması kaldırıldı, kapalı klavyede gerçek alt kenara döner.",
+    "PIN güvenliği, sunucuyla doğrulama, otomatik hesap anahtarı temizliği, WooCommerce formu, Google OAuth ve hızlı Hesabım paneli korunur.",
+    "Chromium ve WebKit'te Google düğmesi rengi ile PIN panelinin klavye açık/kapalı görsel ölçüleri için regresyon testleri eklendi."
   ]
 }
