@@ -113,7 +113,8 @@
     const response = await fetch(config.statusUrl, {
       method:'POST', credentials:'same-origin', cache:'no-store',
       headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'}, body:data,
-      signal:typeof AbortSignal?.timeout === 'function' ? AbortSignal.timeout(12000) : undefined
+      signal:typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function'
+        ? AbortSignal.timeout(12000) : undefined
     });
     if (!response.ok) throw Error('Status could not be verified');
     const result = await response.json();
