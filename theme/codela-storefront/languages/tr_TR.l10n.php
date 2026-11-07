@@ -141,6 +141,7 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'Credentials are managed in the server configuration.' => 'Giriş bilgileri sunucu yapılandırmasından yönetiliyor.',
 'Google login' => 'Google ile giriş',
 'Continue with Google' => 'Google ile devam et',
+'Google sign-in is currently unavailable' => 'Google ile giriş şu anda kullanılamıyor',
 'Google sign-in needs an OAuth web client. Configure it to enable the sign-in button.' => 'Google ile giriş için OAuth web istemcisi gerekiyor. Giriş düğmesini etkinleştirmek için yapılandırın.',
     'Google sign-in is not configured yet.' => 'Google ile giriş henüz ayarlanmadı.',
 'or' => 'veya',

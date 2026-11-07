@@ -124,6 +124,12 @@ function preventInitialAccountAutoFocus() {
             });
         });
 
+        // The remembered-account chooser requests a native Woo registration
+        // tab rather than navigating to a different form or route.
+        container.addEventListener('codela:auth-select', event => {
+            select(event.detail?.view === 'register' ? 'register' : 'login', false);
+        });
+
         // Add the selected-tab class before hiding anything: without JS, Woo
         // retains the full two-form fallback (including registration).
         container.classList.add('sf-auth-ready');

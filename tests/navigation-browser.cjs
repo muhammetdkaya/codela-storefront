@@ -6,7 +6,8 @@ const {execFileSync} = require('node:child_process');
 const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const php = process.env.PHP_BIN || 'php';
 const google=JSON.parse(execFileSync(php,['tests/google-auth.php'],{encoding:'utf8'}));
-assert.equal(google.disabled_button,'','Unconfigured Google has no customer action');
+assert(google.disabled_button.includes('sf-auth-google') && google.disabled_button.includes('disabled'), 'Unconfigured Google remains visible but inactive');
+assert(!google.disabled_button.includes('href='), 'Disabled Google cannot initiate authentication');
 const header = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8'});
 const noDockHeader = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8',env:{...process.env,FIXTURE_DOCK:'0'}});
 assert(!noDockHeader.includes('class="sf-mobile-dock'), 'Disabled setting omits dock');
@@ -427,120 +428,19 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  await click('search');
  assert(!(await page.evaluate(()=>window.focusLog)).includes('sf-query'),'Reopening must never briefly focus query');
  await page.evaluate(()=>window.sfActions.close());
- // Guest Account shares Search/Cart's native modal and Woo form.
- await page.addScriptTag({content:fs.readFileSync('theme/codela-storefront/assets/scripts/auth.js','utf8')});
- await click('account');
- assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),true,'Guest Account opens dialog');
- assert.equal(await page.locator('#sf-account').isVisible(),true,'WooCommerce login is the active section');
- assert.equal(await page.locator('#sf-account form.woocommerce-form-login').count(),1,'Native login form retained');
- const accountVisual=await page.locator('#sf-account .sf-account-intro').evaluate(root=>{
-  const box=root.getBoundingClientRect(),title=root.querySelector('h1'),copy=root.querySelector('p');
-  const t=getComputedStyle(title);
-  return {iconCount:root.querySelectorAll('.sf-auth-mark').length,
-    align:getComputedStyle(root).alignItems,headingSize:parseFloat(t.fontSize),
-    headingWeight:t.fontWeight,titleLeft:title.getBoundingClientRect().left,
-    heroLeft:box.left,copySize:getComputedStyle(copy).fontSize};
- });
- assert.equal(accountVisual.iconCount,0,'No extra user mark above native login');
- assert.equal(accountVisual.align,'flex-start','Welcome content is left aligned');
- assert(accountVisual.titleLeft-accountVisual.heroLeft<2,'Welcome heading aligns with form');
- assert(accountVisual.headingSize>=24&&accountVisual.headingSize<=29,'Welcome typography is restrained');
- assert.equal(accountVisual.headingWeight,'600');
- assert.equal(accountVisual.copySize,'13px');
- const placeholderMode=await page.locator('#sf-account').evaluate(root=>{
-  const username=root.querySelector('#test-login-username'),password=root.querySelector('#test-login-password');
-  const label=root.querySelector('label[for="test-login-username"]');
-  const row=username.closest('.form-row');
-  return {username:username.placeholder,password:password.placeholder,
-    ready:row.classList.contains('sf-auth-placeholder-ready'),
-    labelWidth:label.getBoundingClientRect().width,
-    height:username.getBoundingClientRect().height,
-    paddingTop:getComputedStyle(username).paddingTop,
-    placeholderOpacity:getComputedStyle(username,'::placeholder').opacity,
-    pseudoContent:getComputedStyle(row,'::before').content};
- });
- assert.equal(placeholderMode.username,'Email or username');
- assert.equal(placeholderMode.password,'Password');
- assert(placeholderMode.ready&&placeholderMode.labelWidth<=1,'Native label stays accessible and visually hidden');
- assert.equal(placeholderMode.pseudoContent,'none','No redundant leading user icon');
- assert.equal(placeholderMode.placeholderOpacity,'1','Native placeholder is visible');
- assert(placeholderMode.height>=49&&placeholderMode.height<=51,'Input keeps 50px geometry');
- assert(parseFloat(placeholderMode.paddingTop)<18,'No floating-label inset remains');
- await page.locator('#test-login-username').focus();
- const accountFocus=await page.locator('#test-login-username').evaluate(input=>{
-   const css=getComputedStyle(input);
-   return {width:css.outlineWidth,offset:css.outlineOffset,color:css.outlineColor,borderColor:css.borderTopColor};
- });
- for(const key of ['width','offset','color']){
-   assert.equal(accountFocus[key],searchFocus[key], 'Account and Search share the same '+key+' focus treatment');
- }
- assert.equal(accountFocus.borderColor,'rgba(0, 0, 0, 0)','Focused account field has no extra inner border');
- const compactAuth=await page.locator('#sf-account').evaluate(root=>{
-  const input=root.querySelector('#test-login-username').getBoundingClientRect();
-  const label=root.querySelector('label[for="test-login-username"]').getBoundingClientRect();
-  const remember=root.querySelector('.woocommerce-form-login__rememberme').getBoundingClientRect();
-  const forgot=root.querySelector('.lost_password').getBoundingClientRect();
-  const submit=root.querySelector('button[type=submit]');
-  return {hiddenLabel:label.width<=1 && label.height<=1,
-   sameLine:Math.abs(remember.top+remember.height/2-forgot.top-forgot.height/2)<10,
-   submitBg:getComputedStyle(submit).backgroundColor,
-   fieldHeight:input.height,
-   fieldBackground:getComputedStyle(root.querySelector('#test-login-username')).backgroundColor,
-   submitHeight:submit.getBoundingClientRect().height,
-   submitMinHeight:getComputedStyle(submit).minHeight,
-   toolbarTitleHidden:getComputedStyle(document.querySelector('#sf-panel-title')).clipPath==='inset(50%)',
-   heroVisible:getComputedStyle(root.querySelector('.sf-account-intro h1')).display!=='none',
-   hintVisible:getComputedStyle(root.querySelector('.sf-account-intro p')).display!=='none',
-   bodyPaddingTop:parseFloat(getComputedStyle(root).paddingTop),
-   toolbarBottom:document.querySelector('#sf-panel .sf-panel-top').getBoundingClientRect().bottom,
-   formTop:root.querySelector('form.woocommerce-form-login').getBoundingClientRect().top,
-   subtitle:root.textContent.includes('Manage your orders and account details.')};
- });
- assert(compactAuth.hiddenLabel,'Native field label is visually hidden after enhancement');
- assert(compactAuth.sameLine,'Modal remember and password recovery share a row');
- assert.equal(compactAuth.submitBg,'color(srgb 0.145098 0.152941 0.164706 / 0.9)','Native modal submit uses shared primary Button');
- assert(compactAuth.fieldHeight>=49&&compactAuth.fieldHeight<=51,'Mobile login fields use the compact 50px glass height');
- assert.equal(compactAuth.fieldBackground,'rgba(255, 255, 255, 0.75)','Guest fields use Codela glass material');
- assert(compactAuth.heroVisible&&compactAuth.hintVisible,'App welcome hero is visible');
- assert.equal(compactAuth.submitMinHeight,'52px','Popup submit uses shared compact 52px Button token');
- assert(compactAuth.submitHeight>=52&&compactAuth.submitHeight<=54,'Popup submit keeps accessible compact touch target');
- assert(compactAuth.toolbarTitleHidden,'Account semantic title stays screen-reader accessible');
- const accountTitle=await page.locator('#sf-panel .sf-panel-app-title--account').evaluate(el=>({label:el.textContent.trim(),display:getComputedStyle(el).display,background:getComputedStyle(el).backgroundColor,icon:el.querySelector('.sf-icon')?.getAttribute('src'),iconWidth:el.querySelector('.sf-icon')?.getBoundingClientRect().width}));
- assert.equal(accountTitle.label,'My account');
- assert(accountTitle.icon?.includes('/user-round.svg'),'Account header uses the same user glyph as the dock');
- assert.equal(accountTitle.iconWidth,18,'Account header icon matches Cart geometry');
- assert.notEqual(accountTitle.display,'none');
- assert.equal(accountTitle.background,logoSurface,'Account title uses the same logo glass surface');
- assert.equal(await page.locator('#sf-panel .sf-panel-top .sf-close').isVisible(),false,'Account has no duplicate X');
- await page.locator('#sf-panel > .sf-menu-trigger').click();
- assert.equal(await page.locator('#sf-menu').isVisible(),true,'Menu opens from Account');
- assert.equal(await page.locator('#sf-panel > .sf-menu-trigger').getAttribute('aria-expanded'),'true','Menu morphs into X');
- await page.locator('#sf-panel > .sf-menu-trigger').click();
- assert.equal(await page.locator('#sf-account').isVisible(),true,'Menu X returns to Account');
- assert(compactAuth.bodyPaddingTop>=26&&compactAuth.bodyPaddingTop<=44,'Tall-phone greeting starts near header without wasted space');
- assert(compactAuth.formTop-compactAuth.toolbarBottom<300,'Native form follows compact welcome hero');
- assert.equal(compactAuth.subtitle,false,'Account popup has no descriptive subtitle');
- assert.equal(await page.locator('#sf-account form.woocommerce-form-login').getAttribute('action'),'https://store.test/myaccount/','Login submits to genuine Account URL');
- assert.equal(page.url(),'https://store.test/','Guest Account does not reload');
- await page.locator('#sf-account .sf-overlay-auth').evaluate((element,markup)=>element.insertAdjacentHTML('beforeend',markup),google.configured_button);
- const visualGoogle=await page.locator('#sf-account .sf-auth-google').evaluate(el=>{
-  const button=el.getBoundingClientRect(),label=el.querySelector('.sf-ui-button-label').getBoundingClientRect();
-  const glyph=el.querySelector('.sf-google-glyph').getBoundingClientRect();
-  return {mode:getComputedStyle(el).display,centerError:Math.abs((label.left+label.width/2)-(button.left+button.width/2)),
-   iconGap:label.left-glyph.right,buttonHeight:button.height};
- });
- assert.equal(visualGoogle.mode,'grid','Live Account panel applies shared Google grid alignment');
- assert(visualGoogle.centerError<1,'Google label is precisely centered in actual dialog');
- assert(visualGoogle.iconGap>=7&&visualGoogle.iconGap<=14,'Google icon and text have consistent nonoverlapping gap');
- assert(visualGoogle.buttonHeight>=52&&visualGoogle.buttonHeight<=54,'Google retains shared compact touch target');
- assert.match(await page.locator('#sf-account .sf-auth-google').getAttribute('href'),/action=codela_sf_google_start/,'Configured Google uses the real OAuth start action');
-
- await click('search');
- assert.equal(await page.locator('#sf-account').isVisible(),false,'Search hides Account in same dialog');
- await click('account');
- assert.equal(await page.locator('#sf-account').isVisible(),true,'Account returns without page load');
- await click('home');
- assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),false,'Home dismisses guest Account');
+ // All guest account navigation uses one canonical WooCommerce document.
+ // The old popup rendered a second login/register form with divergent state.
+ const accountEntry=await page.locator('.sf-mobile-dock [data-dock-view="account"]').evaluate(el=>({
+   href:el.href,panel:el.dataset.panel||null,handler:el.getAttribute('data-wp-on--click'),
+   modal:el.getAttribute('aria-haspopup')
+ }));
+ assert.equal(accountEntry.href,'https://store.test/myaccount/','Dock account uses the real WooCommerce route');
+ assert.equal(accountEntry.panel,null,'Dock account has no separate popup form');
+ assert.equal(accountEntry.handler,null,'Dock account does not intercept canonical navigation');
+ assert.equal(accountEntry.modal,null,'Dock account is a link, not a dialog trigger');
+ assert.equal(await page.locator('#sf-account').count(),0,'Home does not duplicate the account login form');
+ assert.equal(await page.locator('.sf-account-link').getAttribute('data-panel'),null,
+  'Header account link uses the same canonical account document');
  // On the already-rendered Home page, Search/Cart -> Home must just close.
  await page.evaluate(()=>{window.samePageDocumentMarker='home';});
  for(const popup of ['search','cart']){
@@ -561,11 +461,9 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
    emit('touchstart',x,y);if(hold)await new Promise(r=>setTimeout(r,260));emit('touchmove',b.left+b.width/2,y);emit('touchend',b.left+b.width/2,outside?y-130:y,true);
   },{from,to,outside,hold});
  }
- await scrub(0,3);
- assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),true,'Account gesture opens modal');
- assert.equal(await page.locator('#sf-account').isVisible(),true,'Scrub displays native Woo login');
- await scrub(3,0);
- assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),false,'Home gesture closes Account');
+ // Gesture-preview never renders a second authentication panel.
+ // Search/Cart gestures remain fully tested; Account is a normal navigation.
+ assert.equal(await page.locator('.sf-mobile-dock [data-dock-view="account"]').getAttribute('data-panel'),null);
  await scrub(0,2);
  assert.equal(await page.locator('#sf-panel').getAttribute('open'),'','Scrub opens modal instead of leaving page');
  assert.equal(page.url(),'https://store.test/');

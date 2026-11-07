@@ -20,9 +20,9 @@ assert(js.includes("displayName:settings.dataset.displayName"),'New remembered a
 assert(js.includes("email:settings.dataset.email"),'Enrollment stores only a display email alongside remembered account');
 assert(js.includes("email.textContent = rememberedEmail"),'Guest card reads the remembered email');
 assert(php.includes("class=\"sf-quick-email\""),'Saved-account markup has an optional email line');
-assert(php.includes("codela_sf_icon( 'chevron-left' )"),'Saved-account trailing icon uses the existing thin chevron');
+assert(php.includes("codela_sf_icon( 'arrow-right' )"),'Saved-account trailing icon points right without CSS rotation');
 assert(php.includes('sf-quick-choice-alternatives') && php.includes('sf-quick-email-login'),'Reference actions belong below the account card');
-assert(php.includes("function_exists( 'codela_sf_google_enabled' ) && codela_sf_google_enabled()"),'Google button is only shown when actually available');
+assert(php.includes('sf-quick-google') && php.includes('disabled aria-label='),'Google button stays visible but safely disabled without configured OAuth');
 assert(css.includes('.sf-quick-or') && css.includes('.sf-quick-google'),'Divider and Google CTA have dedicated styles');
 assert(!js.includes("data-quick-digit"),'No custom number keypad should be used');
 
@@ -63,4 +63,12 @@ assert(css.includes('background:#fff!important;color:#252527!important'),'PIN mo
 assert(css.includes('.sf-quick-sheet-links')&&css.includes('background:#f8f8f9!important'),'Password/recovery footer uses an integrated surface');
 
 assert(css.includes("@media(prefers-reduced-motion:reduce)"),'Reduced-motion setting respected');
+assert(php.includes('sf-quick-register-line') && js.includes("register?.addEventListener('click'"),
+ 'Native Woo Register entry is available to remembered visitors');
+assert(php.includes("'wp_head'") && php.includes('sf-quick-checking'),
+ 'Prepaint device hint suppresses the native form until status verification');
+assert(js.includes("document.documentElement.classList.remove('sf-quick-checking')"),
+ 'Verification atomically reveals the native or recognized screen');
+assert(js.includes("uri.searchParams.delete('sf_quick_auth')"),
+ 'One-time account cache-bypass parameter is removed from the address');
 console.log('Quick login browser contracts passed');
