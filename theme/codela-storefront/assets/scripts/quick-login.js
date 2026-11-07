@@ -198,6 +198,7 @@
       if (!sheet.hidden) {
         sheet.hidden = true;
         scrim.hidden = true;
+        resetSheetPosition();
         document.documentElement.classList.remove('sf-quick-modal-open');
       }
     });
@@ -234,13 +235,49 @@
       });
     }
 
-    function updateKeyboard() {
+    // iOS Safari scrolls the visual viewport when its keyboard opens. Lifting
+    // a fixed-bottom sheet by the keyboard height applies that offset twice.
+    // Instead place its TOP at the actual bottom of the visible viewport.
+    let sheetFrame = 0;
+    let keyboardSettleUntil = 0;
+    let restingViewportHeight = window.visualViewport?.height || window.innerHeight;
+    function resetSheetPosition() {
+      if (sheetFrame) window.cancelAnimationFrame(sheetFrame);
+      sheetFrame = 0;
+      sheet.classList.remove('has-keyboard');
+      sheet.style.removeProperty('--sf-quick-visual-top');
+      sheet.style.removeProperty('--sf-quick-visual-height');
+    }
+    function positionSheet() {
+      sheetFrame = 0;
       if (sheet.hidden) return;
       const viewport = window.visualViewport;
-      const lift = viewport
-        ? Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop)
-        : 0;
-      sheet.style.setProperty('--sf-quick-keyboard-lift', lift + 'px');
+      const visibleBottom = viewport ? viewport.offsetTop + viewport.height : window.innerHeight;
+      // offsetTop can increase as Safari pans the visual viewport, cancelling
+      // the apparent keyboard inset. Compare against the pre-focus height too.
+      // Keep the panel docked while the keyboard closes after a PIN submit.
+      const keyboardOpen = !!viewport && (
+        restingViewportHeight - viewport.height > 120
+        || window.innerHeight - visibleBottom > 120
+      );
+      sheet.classList.toggle('has-keyboard', keyboardOpen);
+      if (keyboardOpen) {
+        sheet.style.setProperty('--sf-quick-visual-height', Math.max(1, Math.floor(viewport.height - 12)) + 'px');
+        const height = sheet.getBoundingClientRect().height;
+        const top = Math.max(viewport.offsetTop + 4, visibleBottom - height);
+        sheet.style.setProperty('--sf-quick-visual-top', top + 'px');
+      } else {
+        sheet.style.removeProperty('--sf-quick-visual-top');
+        sheet.style.removeProperty('--sf-quick-visual-height');
+      }
+      if (performance.now() < keyboardSettleUntil) {
+        sheetFrame = window.requestAnimationFrame(positionSheet);
+      }
+    }
+    function syncSheet(settle = false) {
+      if (sheet.hidden) return;
+      if (settle) keyboardSettleUntil = performance.now() + 650;
+      if (!sheetFrame) sheetFrame = window.requestAnimationFrame(positionSheet);
     }
 
     function openSheet() {
@@ -251,39 +288,39 @@
       sheet.hidden = false;
       section.classList.add('is-sheet-open');
       document.documentElement.classList.add('sf-quick-modal-open');
-      updateKeyboard();
-      // The browser's native numeric keyboard must be triggered by this direct
-      // tap; no custom keypad is rendered by Codela.
+      restingViewportHeight = window.visualViewport?.height || window.innerHeight;
+      syncSheet(true);
+      // A real account tap opens the native numeric keypad; viewport resize/
+      // scroll events then keep the sheet joined to the keyboard accessory bar.
       input.focus({preventScroll:true});
     }
 
-    function closeSheet() {
+    function closeSheet(restoreFocus = true) {
       if (pending) return;
       input.blur();
       sheet.hidden = true;
       scrim.hidden = true;
-      sheet.style.removeProperty('--sf-quick-keyboard-lift');
+      resetSheetPosition();
       section.classList.remove('is-sheet-open');
       document.documentElement.classList.remove('sf-quick-modal-open');
       challengePromise = null;
       clearTrack();
-      choose.focus({preventScroll:true});
+      if (restoreFocus) choose.focus({preventScroll:true});
     }
 
     function showNativeLogin(view = 'login') {
       if (pending) return;
-      closeSheet();
+      // Switching to email/password is navigation, NOT permission to open the
+      // keyboard or iOS/Chrome Password AutoFill prompt.
+      closeSheet(false);
+      if (section.contains(document.activeElement)) document.activeElement.blur();
       host.classList.remove('sf-pin-active');
       section.hidden = true;
-      // Always use the one native WooCommerce form. Register is a view change,
-      // not a second authentication route or a custom account creator.
+      // Keep the genuine native Woo form and tabs without focusing any input.
       const form = host.querySelector('#customer_login');
       form?.dispatchEvent(new CustomEvent('codela:auth-select', {
         detail:{view:view === 'register' ? 'register' : 'login'}
       }));
-      if (view !== 'register') {
-        host.querySelector('input[name="username"]')?.focus({preventScroll:true});
-      }
     }
 
     function mergeSlots() {
@@ -379,8 +416,12 @@
         }
       }
     });
-    window.visualViewport?.addEventListener('resize', updateKeyboard, {passive:true});
-    window.visualViewport?.addEventListener('scroll', updateKeyboard, {passive:true});
+    window.visualViewport?.addEventListener('resize', () => syncSheet(), {passive:true});
+    window.visualViewport?.addEventListener('scroll', () => syncSheet(), {passive:true});
+    window.addEventListener('resize', () => syncSheet(), {passive:true});
+    window.addEventListener('orientationchange', () => syncSheet(true), {passive:true});
+    input.addEventListener('focus', () => syncSheet(true));
+    input.addEventListener('blur', () => syncSheet(true));
   }
 
   async function initSettings(settings) {

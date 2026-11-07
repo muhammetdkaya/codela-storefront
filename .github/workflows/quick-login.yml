@@ -11,6 +11,7 @@ on:
       - 'tests/account-registration-discovery.php'
       - 'theme/codela-storefront/inc/account.php'
       - 'tests/quick-login-ui.cjs'
+      - 'tests/account-keyboard-style-browser.cjs'
       - '.github/workflows/quick-login.yml'
   workflow_dispatch:
 permissions:
@@ -47,3 +48,5 @@ jobs:
         run: |
           node tests/quick-login-browser.cjs
           TEST_WEBKIT=1 node tests/quick-login-browser.cjs
+          node tests/account-keyboard-style-browser.cjs
+          TEST_WEBKIT=1 node tests/account-keyboard-style-browser.cjs

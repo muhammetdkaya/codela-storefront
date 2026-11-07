@@ -12,6 +12,10 @@ assert(js.includes("host.classList.add('sf-pin-active')") && js.includes("sf-qui
 assert(js.includes("if (input.value.length === 6) void submit()"),'Sixth digit automatically submits native numeric input');
 assert(js.includes('choose.addEventListener(\'click\', openSheet)'),'Remembered account opens a dedicated PIN bottom sheet');
 assert(js.includes("input.focus({preventScroll:true})"),'A direct account tap opens the operating system numeric keyboard');
+assert(!js.includes("host.querySelector('input[name=\"username\"]')?.focus"),'Switching to email must not autofocus login fields');
+assert(js.includes('window.visualViewport') && js.includes('visibleBottom - height') && js.includes('has-keyboard'),'PIN sheet anchors to visual viewport instead of a doubled keyboard inset');
+assert(!css.includes('sf-quick-keyboard-lift'),'Do not lift fixed bottom sheet by keyboard height');
+assert(css.includes('.sf-quick-google:disabled{opacity:1!important'),'Disabled Google CTA preserves full dark background and logo colors');
 assert(js.includes('mergeSlots()') && js.includes("track.classList.add('is-merging')"),'The six visible PIN boxes merge into one center result');
 assert(js.includes("if (!result.ok || typeof result.account_url !== 'string')"),'Server authentication response is validated before success');
 assert(js.indexOf("track.classList.add('is-verified')") > js.indexOf("if (!result.ok || typeof result.account_url !== 'string')"),'Check animation cannot start before successful server verification');
