@@ -1,3 +1,9 @@
+## 7 Kasım 2026 — 0.1.230 GitHub sürüm adayı
+
+Kullanıcı PR #122 birleşmesini ve yeni GitHub tema sürümünü açıkça onayladı. Tema 0.1.229 → 0.1.230; eklenti değişmedi. Altı saniyelik hero otomatik geçişi, fareyle sürükleme, erişilebilir duraklat/başlat, reduced-motion ve yaşam döngüsü temizliği tamamlandı. Bağımsız 0.1.229 hesap çalışması korundu. `32e62acb` üzerindeki tam doğrulama/tarayıcı CI 42379052119, Chromium/WebKit vitrin CI 42379052124 ve quick-login/güvenlik CI 42379052118 başarılı; deploy atlandı. Bu sürüm adayında yalnız sürüm, paket beklentileri ve yayın notları değişti; yeni tam commitin CI sonucu birleşmeden önce doğrulanacak.
+
+Yayın sınırı: GitHub tag/ZIP; yayın isteğinde `publish_feed:false`. Stable besleme, FTP, AZ kurulumu, cache ve site ayarları değiştirilmeyecek. Fiziksel Safari ve kurulum sonrası canlı kabul yapılmadı. Sıradaki: aday CI başarılıysa PR #122 birleştir, doğrulanan kaynaktan 0.1.230 ZIP yayımla, tag/kaynak/hash eşleşmesini kaydet.
+
 ## 7 Kasım 2026 — birleşik aday doğrulaması
 
 `e880f184` için Chromium/WebKit vitrin ve quick-login CI başarılı. Genel CI yalnız eski katalog ikon beklentisinde durdu: temiz `c3b1207` de 18px gerçek ölçüye karşı 24px bekleyen aynı testi kaybediyor. 0.1.216 kaynağı `e46c8775` 18px kompakt sepet ikonunu açıkça tanımlıyor. Aynı testin doğrudan ürün sayfasındaki gizli Back adasını görünür sanan eski koşulu da temiz ana dalda doğrulandı ve mevcut bağlamsal başlık sözleşmesine uyarlandı. Yalnız bu iki test beklentisi düzeltildi; katalog/başlık üretim davranışı değişmedi. Tam CI tekrar çalıştırılıyor. Ana dal, yayın ve canlı kurulum bu iş kapsamında değişmedi.

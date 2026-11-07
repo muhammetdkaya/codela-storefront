@@ -6,11 +6,9 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Hesabım alt menüsü, site üst menüsü ve çıkış sonrası yönlendirme artık yalnızca WooCommerce'in kanonik Hesabım sayfasını kullanır; ikinci misafir popup formu kaldırıldı.",
-    "Tanınan hesap doğrulanırken ilk açılışta normal giriş formu parlamaz; sunucu cevabına kadar opak nötr kart bekleme görünümü gösterilir.",
-    "Tanınan hesap kartının sağ oku düzeltildi; kart ve giriş seçenekleri sayfa kenar boşluklarına hizalandı.",
-    "Google ile devam et butonu OAuth ayarı kapalıyken de görünür, ancak sahte giriş başlatmamak için pasif kalır.",
-    "Tanınan hesaptan Kayıt Ol seçimi WooCommerce'in mevcut kayıt sekmesini açar; kayıt kapalıysa seçenek gösterilmez.",
-    "Tek kullanımlık sf_quick_auth önbellek atlatma parametresi Hesabım belgesi açıldıktan sonra URL'den temizlenir."
+    "Ana sayfa vitrin slaytları altı saniyelik aralıklarla kendiliğinden ilerler; son slayttan ilkine döner.",
+    "Masaüstünde fareyle sağa/sola sürükleyerek slayt değiştirilebilir; normal bağlantı tıklaması, dokunma ve tekerlek kaydırması korunur.",
+    "Vitrine duraklat/başlat kontrolü eklendi. Fare üzerindeyken, klavye odağı içerideyken, sekme veya vitrin görünmüyorken hareket durur; azaltılmış hareket tercihine uyulur.",
+    "Sayfa geçişlerinde galeri zamanlayıcısı ve olay dinleyicileri temizlenir; ürün galerisi ve WooCommerce işlemleri değişmez."
   ]
 }
