@@ -315,7 +315,9 @@ function codela_sf_quick_dashboard_entry(): void {
         : esc_html__( 'Set a 6-digit code to sign in faster on this browser next time.', 'codela-storefront' );
     echo '</p><a class="sf-ui-button" href="'
         . esc_url( wc_get_account_endpoint_url( 'edit-account' ) . '#sf-quick-settings' ) . '">'
-        . esc_html__( $devices ? 'Manage quick sign-in' : 'Enable quick sign in', 'codela-storefront' )
+        . ( $devices
+            ? esc_html__( 'Manage quick sign-in', 'codela-storefront' )
+            : esc_html__( 'Enable quick sign in', 'codela-storefront' ) )
         . '</a></section>';
 }
 add_action( 'woocommerce_account_dashboard', 'codela_sf_quick_dashboard_entry', 20 );
