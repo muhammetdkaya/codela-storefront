@@ -1,3 +1,7 @@
+# 7 Kasım 2026 — 0.1.233 Hesabım başlık/Google/bağlantı düzeltmesi (yayın adayı)
+
+Giriş yapılmamış gerçek Hesabım sayfası mağaza logosu yerine oturum açılmış kök Hesabım ile aynı kullanıcı ikonu + Hesabım başlığını kullanır. Hesap endpoint geri kontrolü, aynı header/dock ve hızlı overlay korunur. Tanınan hesap görünümündeki “Bu hesabı kaldır” bağlantısı HTML, CSS ve JS tıklama handler'ından kaldırıldı; iptal edilmiş veya farklı kullanıcıya ait cihaz anahtarlarının otomatik temizliği, kullanıcı değiştirme ve altı haneli PIN saklandı. Google ile giriş tüm üç görünümde aynı koyu #252628 zemin ve beyaz metin kullanır; devre dışı görünüm aynı rengi daha düşük opaklıkla taşır. Tema 0.1.232 → 0.1.233; eklenti değişmedi. Bu kayıt kaynak adayıdır; CI, GitHub release, stable besleme ve canlı kurulum henüz doğrulanmamıştır.
+
 ## 7 Kasım 2026 — 0.1.230 GitHub yayını doğrulandı
 
 Kullanıcının açık onayıyla [PR #122](https://github.com/muhammetdkaya/codela-storefront/pull/122) `1f63706` üzerinden ana dala birleşti. Tema 0.1.229 → 0.1.230; eklenti değişmedi. Test edilen kaynak ve tag `7b7b7c1736ba3dba1e2208ef01b5688387fa4be9`. Bu tam kaynağın [genel doğrulama/tarayıcı CI](https://github.com/muhammetdkaya/codela-storefront/actions/runs/42383141981), [Chromium/WebKit vitrin CI](https://github.com/muhammetdkaya/codela-storefront/actions/runs/42383142041) ve [quick-login/güvenlik CI](https://github.com/muhammetdkaya/codela-storefront/actions/runs/42383142124) başarılı; deploy atlandı.
