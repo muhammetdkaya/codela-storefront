@@ -24,20 +24,45 @@ function codela_sf_account_intro(): void {
         data-auth-login-description="<?php esc_attr_e( 'Sign in to your account.', 'codela-storefront' ); ?>"
         data-auth-register-title="<?php esc_attr_e( 'Create an account', 'codela-storefront' ); ?>"
         data-auth-register-description="<?php esc_attr_e( 'Join us in a few steps.', 'codela-storefront' ); ?>">
-        <!-- The same accessible sliding tab bar stays ABOVE both native Woo forms
-             on the Account page and in the fast Account dialog. -->
-        <div class="sf-auth-tabs" role="tablist" aria-label="<?php esc_attr_e( 'Account access', 'codela-storefront' ); ?>" data-active="login" hidden>
-            <span class="sf-auth-tab-slide" aria-hidden="true"></span>
-            <button type="button" class="sf-auth-tab sf-ui-nav-tab sf-ui-pressable" role="tab" data-auth-tab="login" aria-selected="true"><?php esc_html_e( 'Log in', 'codela-storefront' ); ?></button>
-            <button type="button" class="sf-auth-tab sf-ui-nav-tab sf-ui-pressable" role="tab" data-auth-tab="register" aria-selected="false"><?php esc_html_e( 'Register', 'codela-storefront' ); ?></button>
-        </div>
-        <h1><span class="sf-auth-heading-text"><?php esc_html_e( 'Welcome back', 'codela-storefront' ); ?></span> <span class="sf-auth-heading-wave" aria-hidden="true">👋</span></h1>
+        <h1 id="sf-auth-view-title"><span class="sf-auth-heading-text"><?php esc_html_e( 'Welcome back', 'codela-storefront' ); ?></span> <span class="sf-auth-heading-wave" aria-hidden="true">👋</span></h1>
         <p class="sf-auth-description"><?php esc_html_e( 'Sign in to your account.', 'codela-storefront' ); ?></p>
     </header>
     <?php
 }
 
 add_action( 'woocommerce_before_customer_login_form', 'codela_sf_account_intro', 5 );
+
+/**
+ * Guest form actions are inserted into the EXISTING WooCommerce forms, not a
+ * second authentication implementation. With JS disabled the genuine Woo
+ * registration form stays on the page and the anchor still reaches it.
+ */
+function codela_sf_account_register_action(): void {
+    if ( is_user_logged_in() || 'yes' !== get_option( 'woocommerce_enable_myaccount_registration', 'no' )
+        || ( ! is_account_page() && empty( $GLOBALS['codela_sf_auth_overlay'] ) ) ) { return; }
+    ?>
+    <a href="#register" class="sf-auth-register-cta sf-ui-pressable" aria-controls="sf-auth-register">
+        <span class="sf-auth-register-glyph" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="m3 6 9 7 9-7"/>
+            </svg>
+        </span>
+        <span><?php esc_html_e( 'Register with email', 'codela-storefront' ); ?></span>
+    </a>
+    <?php
+}
+add_action( 'woocommerce_login_form_end', 'codela_sf_account_register_action', 12 );
+
+/** Registration stays the native WooCommerce form; returning never focuses an input. */
+function codela_sf_account_login_return(): void {
+    if ( is_user_logged_in() || ( ! is_account_page() && empty( $GLOBALS['codela_sf_auth_overlay'] ) ) ) { return; }
+    ?>
+    <a href="#customer_login" class="sf-auth-back-login sf-ui-pressable" aria-controls="sf-auth-login">
+        <span aria-hidden="true">‹</span><?php esc_html_e( 'Back to sign in', 'codela-storefront' ); ?>
+    </a>
+    <?php
+}
+add_action( 'woocommerce_register_form_start', 'codela_sf_account_login_return', 12 );
 
 /** Storefront authentication lives on WooCommerce My Account, not wp-login.php.
  * Keep WordPress's administrative login, reauthentication, password recovery,
@@ -169,7 +194,7 @@ function codela_sf_registration_settings_notice(): void {
     echo '<div class="notice notice-warning codela-sf-registration-warning"><p><strong>'
         . esc_html__( 'Customer registration is disabled in WooCommerce.', 'codela-storefront' )
         . '</strong> '
-        . esc_html__( 'The Codela Register tab is hidden until account creation on the My Account page is enabled.', 'codela-storefront' )
+        . esc_html__( 'The email registration action is hidden until account creation on the My Account page is enabled.', 'codela-storefront' )
         . ' <a href="' . esc_url( $settings_url ) . '">'
         . esc_html__( 'Open WooCommerce account settings', 'codela-storefront' )
         . '</a></p></div>';
