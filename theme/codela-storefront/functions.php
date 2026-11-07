@@ -171,6 +171,16 @@ add_action( 'wp_enqueue_scripts', function() {
             'accountLabel' => __( 'My account', 'codela-storefront' ),
             // Trusted bundled SVG is available before the navigation response or icon request.
             'backIcon' => str_replace( [ '<svg ', 'width="56"', 'height="56"' ], [ '<svg class="sf-icon" aria-hidden="true" focusable="false" ', 'width="24"', 'height="24"' ], file_get_contents( __DIR__ . '/assets/icons/chevron-left.svg' ) ),
+            // Header icons are real, preloaded SVG markup. Only the page BODY
+            // uses skeleton; destination header paints immediately on click.
+            'brandMarkup' => has_custom_logo() ? get_custom_logo() : '<span>' . esc_html( get_bloginfo( 'name' ) ) . '</span>',
+            'homeIcon' => codela_sf_icon( 'house' ),
+            'cartIcon' => codela_sf_icon( 'shopping-bag' ),
+            'menuIcon' => codela_sf_icon( 'menu' ),
+            'filterIcon' => codela_sf_icon( 'sliders-horizontal' ),
+            'searchIcon' => codela_sf_icon( 'search' ),
+            'accountIcon' => codela_sf_icon( 'user-round' ),
+            'shopLabel' => __( 'Shop', 'woocommerce' ),
             'accountParents' => [
                 [ 'url' => wc_get_account_endpoint_url( 'view-order' ), 'back' => wc_get_account_endpoint_url( 'orders' ), 'label' => wc_get_account_menu_items()['orders'] ?? __( 'My account', 'codela-storefront' ) ],
                 [ 'url' => wc_get_account_endpoint_url( 'edit-address' ), 'back' => wc_get_account_endpoint_url( 'edit-address' ), 'label' => wc_get_account_menu_items()['edit-address'] ?? __( 'My account', 'codela-storefront' ), 'childOnly' => true ],
