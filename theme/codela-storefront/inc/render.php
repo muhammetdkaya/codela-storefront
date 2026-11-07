@@ -83,26 +83,6 @@ function codela_sf_header_context(): array {
 
 function codela_sf_header(): string {
     if ( ! codela_sf_ready() ) { return ''; }
-    // Guest authentication has its own quiet header. Do not show the store dock,
-    // search/cart dialogs or a second menu above the WooCommerce login form.
-    if ( function_exists( 'is_account_page' ) && is_account_page() && ! is_user_logged_in() ) {
-        $settings = codela_theme_settings();
-        ob_start(); ?>
-        <div class="sf-shell sf-auth-shell">
-            <a class="sf-skip" href="#sf-content"><?php esc_html_e( 'Skip to content', 'codela-storefront' ); ?></a>
-            <header class="sf-auth-site-header" aria-label="<?php esc_attr_e( 'Your account', 'codela-storefront' ); ?>">
-                <div class="sf-auth-brand">
-                    <?php if ( has_custom_logo() ) { the_custom_logo(); } else { ?>
-                    <a data-sf-route="home" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></a>
-                    <?php } ?>
-                </div>
-                <a class="sf-auth-store-link sf-ui-pressable" aria-label="<?php esc_attr_e( 'Back to store', 'codela-storefront' ); ?>" href="<?php echo esc_url( home_url( '/' ) ); ?>">
-                    <?php echo codela_sf_icon( 'arrow-left' ); ?>
-                </a>
-            </header>
-        </div>
-        <?php return ob_get_clean();
-    }
     $settings = codela_theme_settings();
     $context = codela_sf_header_context();
     $catalog_page = function_exists( 'codela_sf_is_catalog_archive' ) && codela_sf_is_catalog_archive();
