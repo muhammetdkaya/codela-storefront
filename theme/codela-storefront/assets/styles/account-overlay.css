@@ -346,10 +346,15 @@
   color:#fff;font-size:14px;font-weight:630;text-decoration:none;
   box-shadow:none;
 }
-#sf-panel.is-account-panel .sf-auth-google:disabled{
-  background:#9d9da0;color:#fff;border-color:#9d9da0;
-  opacity:1;cursor:not-allowed;
+#sf-panel.is-account-panel .sf-auth-social .sf-auth-google,
+#sf-panel.is-account-panel .sf-auth-social .sf-auth-google:disabled{
+  background:#252628!important;
+  background-color:#252628!important;
+  border-color:#252628!important;
+  color:#fff!important;
+  opacity:1!important;
 }
+#sf-panel.is-account-panel .sf-auth-google:disabled{cursor:not-allowed}
 #sf-panel.is-account-panel .sf-auth-google .sf-google-glyph{
   position:absolute;left:22px;top:50%;transform:translateY(-50%);
   display:grid;place-items:center;width:24px;height:24px;
