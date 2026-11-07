@@ -102,19 +102,32 @@
     }
     const host = section.closest('.sf-overlay-auth') || section.closest('.woocommerce');
     if (!host) return;
-    const dots = [...section.querySelectorAll('.sf-quick-dots span')];
-    const buttons = [...section.querySelectorAll('[data-quick-digit]')];
+    const choose = section.querySelector('.sf-quick-account');
+    const changeAccount = section.querySelector('.sf-quick-switch');
+    const name = section.querySelector('.sf-quick-user');
+    const monogram = section.querySelector('.sf-quick-monogram');
+    const scrim = section.querySelector('.sf-quick-scrim');
+    const sheet = section.querySelector('.sf-quick-sheet');
+    const close = section.querySelector('.sf-quick-close');
+    const input = section.querySelector('.sf-quick-native-pin');
+    const track = section.querySelector('.sf-quick-pin-track');
+    const slots = [...section.querySelectorAll('.sf-quick-slot')];
     const status = section.querySelector('.sf-quick-status');
-    const username = section.querySelector('.sf-quick-user');
-    username.textContent = profile.username || t('account','Your account');
+    const password = section.querySelector('.sf-quick-password');
+    if (!choose || !sheet || !input || slots.length !== 6) return;
+
+    const displayName = String(profile.displayName || profile.username || t('account','Your account')).trim();
+    name.textContent = displayName;
+    monogram.textContent = Array.from(displayName)[0]?.toLocaleUpperCase() || '?';
     section.hidden = false;
     host.classList.add('sf-pin-active');
-    let pin = '';
+
     let pending = false;
     let challengePromise = null;
     let challengeStarted = 0;
-    // Start the network request on the FIRST keypad tap, not on every page
-    // load. Usually the challenge is ready before the sixth digit is entered.
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const pause = ms => new Promise(resolve => window.setTimeout(resolve, reducedMotion ? 0 : ms));
+
     function getChallenge() {
       if (challengePromise && Date.now() - challengeStarted < 65000) return challengePromise;
       challengeStarted = Date.now();
@@ -123,16 +136,91 @@
       });
       return challengePromise;
     }
-    const render = () => dots.forEach((dot,i) => dot.classList.toggle('is-filled', i < pin.length));
-    const lock = value => {
-      pending = value;
-      buttons.forEach(button => button.disabled = value);
-      section.classList.toggle('is-pending', value);
-    };
+
+    function clearTrack() {
+      track.classList.remove('is-merging','is-verifying','is-verified','is-error');
+      slots.forEach(slot => slot.style.removeProperty('--sf-quick-shift'));
+      input.disabled = false;
+      input.value = '';
+      render();
+    }
+
+    function render() {
+      const filtered = input.value.replace(/[^0-9]/g, '').slice(0, 6);
+      if (input.value !== filtered) input.value = filtered;
+      slots.forEach((slot, i) => {
+        slot.classList.toggle('is-filled', i < filtered.length);
+        slot.classList.toggle('is-current', i === filtered.length);
+      });
+    }
+
+    function updateKeyboard() {
+      if (sheet.hidden) return;
+      const viewport = window.visualViewport;
+      const lift = viewport
+        ? Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop)
+        : 0;
+      sheet.style.setProperty('--sf-quick-keyboard-lift', lift + 'px');
+    }
+
+    function openSheet() {
+      if (pending) return;
+      clearTrack();
+      status.textContent = '';
+      scrim.hidden = false;
+      sheet.hidden = false;
+      section.classList.add('is-sheet-open');
+      document.documentElement.classList.add('sf-quick-modal-open');
+      updateKeyboard();
+      // The browser's native numeric keyboard must be triggered by this direct
+      // tap; no custom keypad is rendered by Codela.
+      input.focus({preventScroll:true});
+    }
+
+    function closeSheet() {
+      if (pending) return;
+      input.blur();
+      sheet.hidden = true;
+      scrim.hidden = true;
+      sheet.style.removeProperty('--sf-quick-keyboard-lift');
+      section.classList.remove('is-sheet-open');
+      document.documentElement.classList.remove('sf-quick-modal-open');
+      challengePromise = null;
+      clearTrack();
+      choose.focus({preventScroll:true});
+    }
+
+    function showNativeLogin() {
+      if (pending) return;
+      closeSheet();
+      host.classList.remove('sf-pin-active');
+      section.hidden = true;
+      // WooCommerce's original login/register and Google buttons stay intact.
+      host.querySelector('input[name="username"]')?.focus({preventScroll:true});
+    }
+
+    function mergeSlots() {
+      const bounds = track.getBoundingClientRect();
+      const middle = bounds.left + bounds.width / 2;
+      slots.forEach(slot => {
+        const rect = slot.getBoundingClientRect();
+        slot.style.setProperty('--sf-quick-shift', (middle - rect.left - rect.width / 2) + 'px');
+      });
+      track.classList.add('is-merging');
+    }
+
     async function submit() {
-      if (pin.length !== 6 || pending) return;
-      lock(true);
+      if (pending || input.value.length !== 6) return;
+      pending = true;
+      const pin = input.value;
+      input.blur();
+      input.disabled = true;
       status.textContent = t('waiting','Signing in…');
+      status.classList.remove('is-error','is-success');
+      mergeSlots();
+      // Network verification and visual merging run concurrently. A success
+      // check is never drawn before the WooCommerce REST session is issued.
+      const mergeFinished = pause(440).then(() => track.classList.add('is-verifying'));
       try {
         const challenge = await getChallenge();
         const message = 'codela-pin-login:v1:' + profile.userId + ':' + profile.deviceId + ':' + challenge.challenge;
@@ -141,52 +229,61 @@
           user_id:profile.userId, device_id:profile.deviceId,
           challenge:challenge.challenge, signature:signed, pin
         });
-        pin = '';
-        status.textContent = t('success','Signed in');
-        if (result.ok && typeof result.account_url === 'string') {
-          window.location.assign(result.account_url);
-          return;
+        if (!result.ok || typeof result.account_url !== 'string') {
+          throw Error(t('responseInvalid','Sign-in response could not be verified.'));
         }
-        throw Error(t('responseInvalid','Sign-in response could not be verified.'));
+        await mergeFinished;
+        track.classList.add('is-verified');
+        status.classList.add('is-success');
+        status.textContent = t('success','Signed in');
+        await pause(510);
+        window.location.assign(result.account_url);
       } catch (error) {
+        await mergeFinished;
         status.textContent = error.message || t('failed','Sign-in failed. Try again.');
-        pin = '';
-        render();
-        section.classList.add('is-error');
-        window.setTimeout(() => section.classList.remove('is-error'), 380);
-      } finally { challengePromise = null; lock(false); }
-    }
-    function enter(value) {
-      if (pending) return;
-      status.textContent = '';
-      if (value === 'erase') pin = pin.slice(0,-1);
-      else if (pin.length < 6 && /^[0-9]$/.test(value)) {
-        pin += value;
-        if (!challengePromise) void getChallenge().catch(() => { challengePromise = null; });
+        status.classList.add('is-error');
+        clearTrack();
+        track.classList.add('is-error');
+        pending = false;
+      } finally {
+        challengePromise = null;
       }
-      render();
-      if (pin.length === 6) void submit();
     }
-    buttons.forEach(button => button.addEventListener('click', () => enter(button.dataset.quickDigit)));
-    // Support desktop keyboards without requiring a keypad button to take
-    // focus; ignore hidden dialogs and native username/password inputs.
-    document.addEventListener('keydown', event => {
-      if (!host.classList.contains('sf-pin-active') || section.hidden
-        || section.getClientRects().length === 0
-        || event.target?.closest?.('input,textarea,[contenteditable="true"]')) return;
-      if (event.key === 'Backspace') { event.preventDefault(); enter('erase'); }
-      else if (/^[0-9]$/.test(event.key)) { event.preventDefault(); enter(event.key); }
+
+    choose.addEventListener('click', openSheet);
+    changeAccount?.addEventListener('click', showNativeLogin);
+    password?.addEventListener('click', showNativeLogin);
+    close?.addEventListener('click', closeSheet);
+    scrim?.addEventListener('click', closeSheet);
+    input.addEventListener('input', () => {
+      if (pending) return;
+      const oldLength = input.value.length;
+      render();
+      if (input.value.length && oldLength && !challengePromise) {
+        void getChallenge().catch(() => { challengePromise = null; });
+      }
+      if (input.value.length === 6) void submit();
+      else {
+        status.classList.remove('is-error');
+        status.textContent = '';
+        track.classList.remove('is-error');
+      }
     });
-    section.querySelector('.sf-quick-password')?.addEventListener('click', () => {
-      host.classList.remove('sf-pin-active');
-      section.hidden = true;
+    section.addEventListener('keydown', event => {
+      if (sheet.hidden || pending) return;
+      if (event.key === 'Escape') { event.preventDefault(); closeSheet(); }
+      if (event.key === 'Tab') {
+        const nodes = [close,input,password,section.querySelector('.sf-quick-lost-password')].filter(Boolean);
+        const first = nodes[0], last = nodes[nodes.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault(); last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault(); first.focus();
+        }
+      }
     });
-    section.querySelector('.sf-quick-forget')?.addEventListener('click', async () => {
-      try { await forgetKey(profile.deviceId); } catch (_) {}
-      localStorage.removeItem(savedKey);
-      host.classList.remove('sf-pin-active');
-      section.hidden = true;
-    });
+    window.visualViewport?.addEventListener('resize', updateKeyboard, {passive:true});
+    window.visualViewport?.addEventListener('scroll', updateKeyboard, {passive:true});
   }
 
   async function initSettings(settings) {
@@ -196,6 +293,13 @@
     const pinInput = settings.querySelector('.sf-quick-create');
     const confirm = settings.querySelector('.sf-quick-confirm');
     const status = settings.querySelector('.sf-quick-enroll-status');
+    // Previous devices stored a username only. Refresh their display label
+    // whenever the customer visits WooCommerce Account Information again.
+    const remembered = log();
+    if (remembered && remembered.userId === userId) {
+      remembered.displayName = settings.dataset.displayName || remembered.username || '';
+      localStorage.setItem(savedKey, JSON.stringify(remembered));
+    }
     button?.addEventListener('click', async () => {
       const pin = pinInput.value;
       if (!/^[0-9]{6}$/.test(pin) || pin !== confirm.value) {
@@ -217,7 +321,8 @@
           device_id:deviceId, public_key:publicKey, signature:signed, pin
         });
         localStorage.setItem(savedKey, JSON.stringify({
-          deviceId, userId, username:settings.dataset.username || ''
+          deviceId, userId, username:settings.dataset.username || '',
+          displayName:settings.dataset.displayName || settings.dataset.username || ''
         }));
         pinInput.value = '';
         confirm.value = '';
@@ -249,6 +354,13 @@
   }
   async function init() {
     const profile = log();
+    // A previously enrolled browser may have saved only "demo". On the next
+    // normal Woo sign-in, replace that hint with the actual customer name.
+    if (profile && config.identity?.userId === profile.userId
+      && typeof config.identity.displayName === 'string' && config.identity.displayName.trim()) {
+      profile.displayName = config.identity.displayName.trim();
+      localStorage.setItem(savedKey, JSON.stringify(profile));
+    }
     if (profile) {
       // All login surfaces refer to the same browser key but are independent dialogs.
       for (const section of document.querySelectorAll('.sf-quick-login')) {

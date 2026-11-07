@@ -245,4 +245,9 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'For security, 6-digit quick sign-in is available only to customer accounts on HTTPS. Administrator and staff accounts must use their normal WordPress login.' => 'Güvenlik nedeniyle 6 haneli hızlı giriş yalnız HTTPS kullanan müşteri hesaplarında çalışır. Yönetici ve personel hesapları normal WordPress girişi kullanmalıdır.',
 'Manage your trusted browsers or set a code for this browser.' => 'Güvenilen tarayıcıları yönetin veya bu tarayıcı için yeni bir kod oluşturun.',
 'Manage quick sign-in' => 'Hızlı girişi yönet',
+'Use another account' => 'Başka hesap kullan',
+'Enter your 6-digit code.' => '6 haneli giriş kodunu gir.',
+'6-digit quick sign-in code' => '6 haneli hızlı giriş kodu',
+'Sign in with password' => 'Şifreyle giriş',
+'Forgot password?' => 'Şifremi unuttum',
 ] ];

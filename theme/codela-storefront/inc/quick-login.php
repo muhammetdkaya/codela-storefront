@@ -225,30 +225,56 @@ function codela_sf_quick_guest_markup(): void {
     if ( is_user_logged_in() || ( ! empty( $GLOBALS['codela_sf_auth_overlay'] )
         ? false : ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) ) ) { return; }
     ?>
-    <section class="sf-quick-login" hidden aria-label="<?php esc_attr_e( 'Quick sign in', 'codela-storefront' ); ?>">
-        <div class="sf-quick-avatar" aria-hidden="true"><?php echo codela_sf_icon( 'user-round' ); ?></div>
-        <h2><?php esc_html_e( 'Welcome back', 'codela-storefront' ); ?></h2>
-        <p class="sf-quick-user" aria-live="polite"></p>
-        <p class="sf-quick-description"><?php esc_html_e( 'Enter your 6-digit quick sign-in code', 'codela-storefront' ); ?></p>
-        <div class="sf-quick-dots" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
-        <div class="sf-quick-pad" role="group" aria-label="<?php esc_attr_e( 'Number pad', 'codela-storefront' ); ?>">
-            <?php foreach ( [ 1,2,3,4,5,6,7,8,9,'',0,'erase' ] as $digit ) : ?>
-                <?php if ( '' === $digit ) : ?><span aria-hidden="true"></span>
-                <?php else : ?>
-                <button type="button" class="sf-quick-digit sf-ui-pressable" data-quick-digit="<?php echo esc_attr( (string) $digit ); ?>"
-                    aria-label="<?php echo esc_attr( 'erase' === $digit ? __( 'Delete digit', 'codela-storefront' ) : (string) $digit ); ?>">
-                    <?php echo 'erase' === $digit ? '&#9003;' : esc_html( (string) $digit ); ?>
-                </button>
-                <?php endif; ?>
-            <?php endforeach; ?>
+    <section class="sf-quick-login" hidden aria-label="<?php esc_attr_e( 'Quick sign-in', 'codela-storefront' ); ?>">
+        <div class="sf-quick-choice">
+            <button type="button" class="sf-quick-account sf-ui-pressable" aria-haspopup="dialog" aria-controls="sf-quick-sheet">
+                <span class="sf-quick-monogram" aria-hidden="true"></span>
+                <span class="sf-quick-account-text"><strong class="sf-quick-user"></strong></span>
+                <span class="sf-quick-chevron" aria-hidden="true"><?php echo codela_sf_icon( 'arrow-right' ); ?></span>
+            </button>
+            <button type="button" class="sf-quick-switch"><?php esc_html_e( 'Use another account', 'codela-storefront' ); ?></button>
         </div>
-        <p class="sf-quick-status" role="status" aria-live="polite"></p>
-        <button type="button" class="sf-quick-password sf-ui-button sf-ui-button--secondary"><?php esc_html_e( 'Sign in with password or Google', 'codela-storefront' ); ?></button>
-        <button type="button" class="sf-quick-forget"><?php esc_html_e( 'Clear sign-in on this browser', 'codela-storefront' ); ?></button>
+
+        <div class="sf-quick-scrim" hidden></div>
+        <section class="sf-quick-sheet" id="sf-quick-sheet" role="dialog" aria-modal="true"
+            aria-labelledby="sf-quick-sheet-title" hidden>
+            <div class="sf-quick-handle" aria-hidden="true"></div>
+            <header class="sf-quick-sheet-head">
+                <h2 id="sf-quick-sheet-title"><?php esc_html_e( 'Quick sign-in', 'codela-storefront' ); ?></h2>
+                <button type="button" class="sf-quick-close" aria-label="<?php esc_attr_e( 'Close', 'codela-storefront' ); ?>"><span aria-hidden="true">&times;</span></button>
+            </header>
+            <p class="sf-quick-description"><?php esc_html_e( 'Enter your 6-digit code.', 'codela-storefront' ); ?></p>
+            <div class="sf-quick-pin-track">
+                <?php for ( $i = 0; $i < 6; $i++ ) : ?>
+                    <span class="sf-quick-slot" aria-hidden="true"><i></i></span>
+                <?php endfor; ?>
+                <span class="sf-quick-result" aria-hidden="true">
+                    <span class="sf-quick-spinner"></span>
+                    <svg class="sf-quick-check" width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+                <input class="sf-quick-native-pin" type="text" inputmode="numeric" pattern="[0-9]*"
+                    maxlength="6" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done"
+                    aria-label="<?php esc_attr_e( '6-digit quick sign-in code', 'codela-storefront' ); ?>"/>
+            </div>
+            <p class="sf-quick-status" role="status" aria-live="polite"></p>
+            <div class="sf-quick-sheet-links">
+                <button type="button" class="sf-quick-password"><?php esc_html_e( 'Sign in with password', 'codela-storefront' ); ?></button>
+                <span class="sf-quick-link-divider" aria-hidden="true"></span>
+                <a class="sf-quick-lost-password" href="<?php echo esc_url( wc_lostpassword_url() ); ?>"><?php esc_html_e( 'Forgot password?', 'codela-storefront' ); ?></a>
+            </div>
+        </section>
     </section>
     <?php
 }
 add_action( 'woocommerce_before_customer_login_form', 'codela_sf_quick_guest_markup', 4 );
+
+/** Public-safe display label is persisted only on the customer's own browser. */
+function codela_sf_quick_display_name( WP_User $user ): string {
+    $full_name = trim( (string) get_user_meta( $user->ID, 'first_name', true ) . ' ' . (string) get_user_meta( $user->ID, 'last_name', true ) );
+    return $full_name ?: ( trim( (string) $user->display_name ) ?: (string) $user->user_login );
+}
 
 /** Enrollment appears within WooCommerce account management, not registration pre-verification. */
 function codela_sf_quick_settings(): void {
@@ -267,7 +293,8 @@ function codela_sf_quick_settings(): void {
     $devices = codela_sf_quick_devices( $user->ID );
     ?>
     <section class="sf-quick-settings" id="sf-quick-settings" data-user-id="<?php echo esc_attr( (string) $user->ID ); ?>"
-        data-username="<?php echo esc_attr( (string) $user->user_login ); ?>">
+        data-username="<?php echo esc_attr( (string) $user->user_login ); ?>"
+        data-display-name="<?php echo esc_attr( codela_sf_quick_display_name( $user ) ); ?>">
         <h3><?php esc_html_e( 'Quick sign in', 'codela-storefront' ); ?></h3>
         <p><?php esc_html_e( 'Enable a 6-digit code for this browser. Your normal WooCommerce password will continue to work.', 'codela-storefront' ); ?></p>
         <div class="sf-quick-enroll">
@@ -335,6 +362,13 @@ add_action( 'wp_enqueue_scripts', static function(): void {
         'rest' => esc_url_raw( rest_url( 'codela-storefront/v1/quick-login/' ) ),
         'nonce' => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
         'account' => wc_get_page_permalink( 'myaccount' ),
+        // Refresh old username-only hints on normal signed-in account visits.
+        'identity' => ( is_user_logged_in() && codela_sf_quick_customer( wp_get_current_user() ) )
+            ? [
+                'userId' => (int) wp_get_current_user()->ID,
+                'displayName' => codela_sf_quick_display_name( wp_get_current_user() ),
+            ]
+            : null,
         'strings' => [
             'account' => __( 'Your account', 'codela-storefront' ),
             'requestFailed' => __( 'Request could not be completed. Try again.', 'codela-storefront' ),
