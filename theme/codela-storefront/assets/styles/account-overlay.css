@@ -348,7 +348,7 @@
 }
 #sf-panel.is-account-panel .sf-auth-google:disabled{
   background:#252628!important;color:#fff!important;border-color:#252628!important;
-  opacity:.65;cursor:not-allowed;
+  opacity:1!important;cursor:not-allowed;
 }
 #sf-panel.is-account-panel .sf-auth-google .sf-google-glyph{
   position:absolute;left:22px;top:50%;transform:translateY(-50%);
