@@ -600,6 +600,8 @@
     min-height:var(--sf-ui-hit);height:var(--sf-ui-hit);
     padding:0 16px;border-radius:var(--sf-ui-pill);
     gap:8px;font-size:16px;font-weight:500;letter-spacing:-.02em;
+    /* Match the header logo's high-contrast local glass, not the lighter dock. */
+    --sf-ui-glass-surface:rgba(255,255,255,.91);
     color:var(--sf-ui-glass-ink);white-space:nowrap;
   }
   #sf-panel .sf-panel-app-title .sf-icon{

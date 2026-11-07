@@ -252,4 +252,7 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'Forgot password?' => 'Şifremi unuttum',
 'Continue' => 'Devam et',
 'Sign in quickly with your saved account.' => 'Kayıtlı hesabınla hızlıca giriş yap.',
+'Welcome' => 'Hoş geldin',
+'Continue quickly with your account.' => 'Hesabınla hızlıca devam et.',
+'Sign in with email and password' => 'E-posta ve şifreyle giriş yap',
 ] ];

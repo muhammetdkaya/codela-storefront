@@ -12,7 +12,7 @@ $GLOBALS['login'] = [];
 $GLOBALS['user'] = null;
 class WP_User {
     public function __construct( public int $ID, public string $user_login = 'customer',
-        public string $display_name = 'Customer', public array $roles = [ 'customer' ] ) {}
+        public string $display_name = 'Customer', public string $user_email = 'customer@example.test', public array $roles = [ 'customer' ] ) {}
 }
 class WP_Error {
     public function __construct( public string $code, public string $message = '', public array $data = [] ) {}
@@ -21,6 +21,7 @@ class WP_REST_Request {
     public function __construct( private array $data ) {}
     public function get_param( $key ) { return $this->data[$key] ?? null; }
 }
+function add_filter(...$args) {}
 function add_action(...$args) {}
 function __($text,$domain='') { return $text; }
 function is_ssl() { return true; }
@@ -42,6 +43,8 @@ function wp_set_current_user($id) { $GLOBALS['login']['current']=$id; }
 function wp_set_auth_cookie($id,$remember,$secure) { $GLOBALS['login']['cookie']=[$id,$remember,$secure]; }
 function do_action($name,...$args) { if($name==='wp_login')$GLOBALS['login']['hook']=$args; }
 function wc_get_page_permalink($name) { return 'https://example.test/my-account/'; }
+function untrailingslashit($url) { return rtrim($url, '/'); }
+function add_query_arg($key, $value, $url) { return $url . (str_contains($url, '?') ? '&' : '?') . rawurlencode($key) . '=' . rawurlencode($value); }
 function a($condition,$message){ if(!$condition)throw new RuntimeException($message); }
 
 require __DIR__ . '/../theme/codela-storefront/inc/quick-login.php';
@@ -63,6 +66,16 @@ $stored=codela_sf_quick_devices(17);
 a(count($stored)===1,'device persisted');
 a(!str_contains(json_encode($stored),$pin),'PIN is not persisted in plaintext');
 a(!isset($stored[$device]['private_key']),'private key not persisted on server');
+$nonce=bin2hex(random_bytes(32));
+$status_signature=$signature('codela-pin-status:v1:17:'.$device.':'.$nonce);
+a(codela_sf_quick_status_active(17,$device,$nonce,$status_signature),'Active signed device passes public read-only status');
+a(!codela_sf_quick_status_active(17,$device,$nonce,'invalid'), 'Status does not accept a forged signature');
+a(!codela_sf_quick_status_active(18,$device,$nonce,$status_signature), 'Status is bound to exact user');
+a(!isset($GLOBALS['login']['cookie']), 'Status cannot create a WordPress login');
+$clean=codela_sf_quick_fresh_account_redirect('https://example.test/my-account/');
+a(str_contains($clean,'sf_quick_auth='), 'Successful account redirects bypass stale anonymous cache');
+a(codela_sf_quick_fresh_account_redirect('https://example.test/checkout/')==='https://example.test/checkout/',
+  'Checkout redirects never change');
 
 $challenge=codela_sf_quick_challenge($request(['user_id'=>17,'device_id'=>$device]));
 a(preg_match('/^[0-9a-f]{64}$/D',$challenge['challenge'])===1,'secure challenge length');
@@ -89,6 +102,7 @@ a(codela_sf_quick_enroll($request(['device_id'=>$device])) instanceof WP_Error,'
 $GLOBALS['admin']=false;
 codela_sf_quick_revoke($request(['device_id'=>$device]));
 a(codela_sf_quick_devices(17)===[],'revocation deletes browser credential');
+a(!codela_sf_quick_status_active(17,$device,$nonce,$status_signature), 'Revoked credential is rejected by guest status');
 a(codela_sf_quick_challenge($request(['user_id'=>17,'device_id'=>$device]))['challenge']??false,'unknown browser returns generic challenge');
 $expired=codela_sf_quick_verify($request($payload));
 a($expired instanceof WP_Error,'revoked browser denied');

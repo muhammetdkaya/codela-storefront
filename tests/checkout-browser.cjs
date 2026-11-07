@@ -64,9 +64,25 @@ const homeHeaderGeometry=await page.locator('.sf-header').evaluate(el=>{
  return {logoX:logo.x,logoY:logo.y,logoWidth:logo.width,menuX:menu.x,menuY:menu.y,
   menuWidth:menu.width,toolsVisible:getComputedStyle(tools).display!=='none'};
 });
-for(const prop of ['logoX','logoY','logoWidth','menuX','menuY','menuWidth'])
+// Menu location and vertical alignment are shared on all widths.
+for(const prop of ['logoY','menuX','menuY','menuWidth'])
  assert(Math.abs(checkoutHeader[prop]-homeHeaderGeometry[prop])<1,
    'Checkout and Home share '+prop+' at '+width+'px: '+JSON.stringify({checkoutHeader,homeHeaderGeometry}));
+// Checkout renders a Back icon; Home renders a text brand. The pill width
+// and therefore its left edge can differ without a layout regression.
+assert(checkoutHeader.logoWidth>=43 && checkoutHeader.logoWidth<=45,
+  'Checkout keeps its compact 44px Back island');
+if(width<=700) {
+ assert(Math.abs(checkoutHeader.logoX-homeHeaderGeometry.logoX)<1,
+   'Mobile Checkout and Home share the left brand alignment');
+ assert(homeHeaderGeometry.logoWidth>checkoutHeader.logoWidth,
+   'Home retains the full mobile brand wordmark');
+}else {
+ const checkoutCenter=checkoutHeader.logoX+checkoutHeader.logoWidth/2;
+ const homeCenter=homeHeaderGeometry.logoX+homeHeaderGeometry.logoWidth/2;
+ assert(Math.abs(checkoutCenter-homeCenter)<1,
+   'Desktop Checkout Back and Home logo share the centered brand axis');
+}
 assert.equal(checkoutHeader.toolsVisible,homeHeaderGeometry.toolsVisible,
  'Header action visibility is identical on Home and Checkout at '+width);
 if(width<=700){

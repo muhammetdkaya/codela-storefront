@@ -94,17 +94,78 @@
   const randomDeviceId = () => Array.from(crypto.getRandomValues(new Uint8Array(16)))
     .map(v => v.toString(16).padStart(2,'0')).join('');
 
+  // Browser memory is a display hint, not proof that the device remains trusted.
+  // The server signs off on each presentation of a remembered account.
+  async function currentBrowserStatus(profile, privateKey) {
+    if (!config.statusUrl) throw Error('No device-status endpoint');
+    // A fresh random challenge binds the response to this local private key.
+    // Status is read-only; even a captured signature cannot create a session.
+    const challenge = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+      .map(value => value.toString(16).padStart(2, '0')).join('');
+    const signed = await signature(privateKey,
+      'codela-pin-status:v1:' + profile.userId + ':' + profile.deviceId + ':' + challenge);
+    const data = new URLSearchParams({
+      action:'codela_sf_quick_status',
+      user_id:String(profile.userId),
+      device_id:profile.deviceId,
+      challenge, signature:signed
+    });
+    const response = await fetch(config.statusUrl, {
+      method:'POST', credentials:'same-origin', cache:'no-store',
+      headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'}, body:data,
+      signal:typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function'
+        ? AbortSignal.timeout(12000) : undefined
+    });
+    if (!response.ok) throw Error('Status could not be verified');
+    const result = await response.json();
+    if (typeof result?.active !== 'boolean' || typeof result?.authenticated !== 'boolean') {
+      throw Error('Invalid device status');
+    }
+    return result;
+  }
+
+  async function forgetRemembered(profile) {
+    if (log()?.deviceId === profile.deviceId) localStorage.removeItem(savedKey);
+    try { await forgetKey(profile.deviceId); } catch (_) { /* Already unavailable. */ }
+  }
+
+  function freshAccountDocument(url = config.account || window.location.href) {
+    const destination = new URL(url, window.location.href);
+    if (destination.origin !== window.location.origin) return;
+    destination.searchParams.set('sf_quick_auth', Date.now().toString(36));
+    window.location.replace(destination.href);
+  }
+
   async function initGuest(section, profile) {
     const privateKey = await getKey(profile.deviceId);
     if (!privateKey) {
-      localStorage.removeItem(savedKey);
+      await forgetRemembered(profile);
       return;
     }
+    let browserStatus;
+    try { browserStatus = await currentBrowserStatus(profile, privateKey); }
+    catch (_) {
+      // The network may be unavailable: keep normal Woo/Google login, never
+      // present an unverified remembered account as usable.
+      return;
+    }
+    if (browserStatus.authenticated) {
+      // Cached anonymous HTML must not overrule an active WordPress session.
+      freshAccountDocument();
+      return;
+    }
+    if (!browserStatus.active) {
+      await forgetRemembered(profile);
+      return;
+    }
+    // A parallel tab may have disabled quick login while status was in flight.
+    if (log()?.deviceId !== profile.deviceId) return;
     const host = section.closest('.sf-overlay-auth') || section.closest('.woocommerce');
     if (!host) return;
     const choose = section.querySelector('.sf-quick-account');
     const changeAccount = section.querySelector('.sf-quick-switch');
     const name = section.querySelector('.sf-quick-user');
+    const email = section.querySelector('.sf-quick-email');
     const monogram = section.querySelector('.sf-quick-monogram');
     const scrim = section.querySelector('.sf-quick-scrim');
     const sheet = section.querySelector('.sf-quick-sheet');
@@ -118,9 +179,27 @@
 
     const displayName = String(profile.displayName || profile.username || t('account','Your account')).trim();
     name.textContent = displayName;
+    const rememberedEmail = String(profile.email || '').trim();
+    if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rememberedEmail)) {
+      email.textContent = rememberedEmail;
+      email.hidden = false;
+    }
     monogram.textContent = Array.from(displayName)[0]?.toLocaleUpperCase() || '?';
     section.hidden = false;
     host.classList.add('sf-pin-active');
+    // Sign-out retains an explicitly trusted device; explicit disable and
+    // account switching do not. Honor cross-tab storage updates immediately.
+    window.addEventListener('storage', event => {
+      if (event.key !== savedKey || log()?.deviceId === profile.deviceId) return;
+      input.blur();
+      section.hidden = true;
+      host.classList.remove('sf-pin-active');
+      if (!sheet.hidden) {
+        sheet.hidden = true;
+        scrim.hidden = true;
+        document.documentElement.classList.remove('sf-quick-modal-open');
+      }
+    });
 
     let pending = false;
     let challengePromise = null;
@@ -308,6 +387,7 @@
     const remembered = log();
     if (remembered && remembered.userId === userId) {
       remembered.displayName = settings.dataset.displayName || remembered.username || '';
+      remembered.email = settings.dataset.email || remembered.email || '';
       localStorage.setItem(savedKey, JSON.stringify(remembered));
     }
     button?.addEventListener('click', async () => {
@@ -332,7 +412,8 @@
         });
         localStorage.setItem(savedKey, JSON.stringify({
           deviceId, userId, username:settings.dataset.username || '',
-          displayName:settings.dataset.displayName || settings.dataset.username || ''
+          displayName:settings.dataset.displayName || settings.dataset.username || '',
+          email:settings.dataset.email || ''
         }));
         pinInput.value = '';
         confirm.value = '';
@@ -366,15 +447,23 @@
     const profile = log();
     // A previously enrolled browser may have saved only "demo". On the next
     // normal Woo sign-in, replace that hint with the actual customer name.
-    if (profile && config.identity?.userId === profile.userId
-      && typeof config.identity.displayName === 'string' && config.identity.displayName.trim()) {
-      profile.displayName = config.identity.displayName.trim();
+    if (profile && Number.isSafeInteger(Number(config.identity?.userId))
+      && Number(config.identity.userId) > 0 && Number(config.identity.userId) !== profile.userId) {
+      // Google or password signed into a DIFFERENT customer. Never suggest
+      // the previous account on subsequent logout; discard its local key.
+      await forgetRemembered(profile);
+    } else if (profile && config.identity?.userId === profile.userId) {
+      // A signed-in account refreshes its *own* display metadata only.
+      if (typeof config.identity.displayName === 'string' && config.identity.displayName.trim()) {
+        profile.displayName = config.identity.displayName.trim();
+      }
+      profile.email = typeof config.identity.email === 'string' ? config.identity.email.trim() : (profile.email || '');
       localStorage.setItem(savedKey, JSON.stringify(profile));
     }
-    if (profile) {
+    if (log()) {
       // All login surfaces refer to the same browser key but are independent dialogs.
       for (const section of document.querySelectorAll('.sf-quick-login')) {
-        try { await initGuest(section,profile); }
+        try { await initGuest(section,log()); }
         catch (_) { /* Always preserve the native Woo login fallback. */ }
       }
     }
@@ -382,6 +471,11 @@
       void initSettings(settings);
     }
   }
+  // Safari/Chromium BFCache can restore a screen from before a login/logout.
+  // On account pages, obtain a fresh server document rather than old DOM.
+  window.addEventListener('pageshow', event => {
+    if (event.persisted && config.accountPage) freshAccountDocument(window.location.href);
+  });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => void init(), {once:true});
   else void init();
 })();

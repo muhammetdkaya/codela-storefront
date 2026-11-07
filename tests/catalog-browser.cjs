@@ -79,7 +79,7 @@ for(const width of [320,390,700,900,1280]){
    const footerStyle=getComputedStyle(footer),badge=getComputedStyle(button.querySelector('.sf-icon')),titleStyle=getComputedStyle(title);
    const actionStyle=getComputedStyle(button),disc=getComputedStyle(button,'::before');
    return{weight:getComputedStyle(title).fontWeight,buttonWidth:b.width,cardWidth:el.getBoundingClientRect().width,priceX:p.x,buttonX:b.x,footerChildren:footer.children.length,divider:footerStyle.borderTopWidth,dividerColor:footerStyle.borderTopColor,
-     icon:button.querySelector('.sf-icon').src,iconWidth:badge.width,iconMargin:badge.margin,titleColor:titleStyle.color,titleFont:titleStyle.fontFamily,priceWeight:getComputedStyle(price).fontWeight,buttonBorder:getComputedStyle(button).borderTopColor,buttonShadow:actionStyle.boxShadow,buttonFill:actionStyle.backgroundColor,
+     icon:button.querySelector('.sf-icon').src,iconWidth:badge.width,iconMargin:badge.margin,titleColor:titleStyle.color,titleFont:titleStyle.fontFamily,priceWeight:getComputedStyle(price).fontWeight,buttonBorderWidth:getComputedStyle(button).borderTopWidth,buttonShadow:actionStyle.boxShadow,buttonFill:actionStyle.backgroundColor,
      discSize:parseFloat(disc.width)+2*parseFloat(disc.borderLeftWidth),
      discShadow:disc.boxShadow,discRadius:disc.borderRadius};
   });
@@ -88,7 +88,7 @@ for(const width of [320,390,700,900,1280]){
   assert(!/Georgia|Times/.test(detail.titleFont),'Product titles use the theme sans-serif family');
   assert.equal(detail.priceWeight,'500','Price hierarchy without heavy bold');
   assert.equal(detail.dividerColor,'rgb(243, 243, 243)','Quiet divider');
-  assert.equal(detail.buttonBorder,'rgba(0, 0, 0, 0)','Shared floating surface has no raised ring');
+  assert.equal(detail.buttonBorderWidth,'0px','Shared floating action has no visible border ring');
   assert.equal(detail.buttonShadow,'none','Full 44px hit target has no oversized glass paint');
   assert.equal(detail.buttonFill,'rgba(0, 0, 0, 0)','Clickable area remains transparent');
   assert(detail.discSize>=35&&detail.discSize<=37,'Only the inner 36px circle is painted');

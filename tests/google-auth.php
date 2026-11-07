@@ -22,7 +22,7 @@ function add_action( ...$args ) {}
 function is_wp_error( $value ) { return $value instanceof WP_Error; }
 function get_option( $key, $default = '' ) { return $GLOBALS['settings'][ $key ] ?? $default; }
 function is_ssl() { return true; }
-function is_user_logged_in() { return false; }
+function is_user_logged_in() { return !empty($GLOBALS['already_logged_in']); }
 function is_account_page() { return true; }
 function admin_url( $path, $scheme = null ) { return 'https://store.test/wp-admin/' . $path; }
 function wc_get_page_permalink( $page ) { return 'https://store.test/my-account/'; }
@@ -124,6 +124,13 @@ $verifier=get_transient('sf_google_'.hash('sha256',$query['state']));
 $results['start_host']=parse_url($start,PHP_URL_HOST);
 $results['start_redirect']=$query['redirect_uri'];
 $results['pkce_matches']=$query['code_challenge']===rtrim(strtr(base64_encode(hash('sha256',$verifier,true)),'+/','-_'),'=');
+$results['select_account_prompt']=$query['prompt']==='select_account';
+// Explicitly pressing Google while another WordPress customer still has a
+// cookie must start a new provider selection, never bounce to the old account.
+$GLOBALS['already_logged_in']=true;
+$existing_start=run_redirect('codela_sf_google_start');
+$results['existing_session_can_switch']=parse_url($existing_start,PHP_URL_HOST)==='accounts.google.com';
+$GLOBALS['already_logged_in']=false;
 $_GET=['state'=>$query['state'],'code'=>'isolated-code'];$_COOKIE=['sf_google_oauth'=>str_repeat('a',64)];
 $results['wrong_browser']=run_redirect('codela_sf_google_callback');
 $results['wrong_browser_no_request']=empty($GLOBALS['http']);

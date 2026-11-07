@@ -6,10 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "iPhone Safari'de PIN paneli, cam/şeffaflık stillerinden ayrılarak tam opak beyaz tek yüzey olarak düzenlendi; alt şifre ve kurtarma bağlantıları kompakt, uyumlu bir footer alanına taşındı.",
-    "Başarılı PIN doğrulamasından sonra aynı misafir Hesabım belgesinin önbellekten geri gelmesi önlendi: WordPress oturum çerezi sonrası tek kullanımlık benzersiz adresle tam sayfa yönlendirme ve sunucu cache-kapatma yanıtı eklendi.",
-    "Doğrulama esnasında nötr antrasit; başarıda belirgin yeşil (#16844f), hatada kırmızı (#c53643) kutu/metin ve hafif titreme animasyonu uygulanır. Yeşil onay yalnızca gerçek sunucu başarısından sonra gösterilir.",
-    "Tanınan hesap ekranına Codela'nın sade diline uygun 'Devam et' başlığı ve kısa açıklama eklendi. Hesap ad-soyad gösterimi korundu.",
-    "Chromium ve WebKit testlerinde opak panel, renkler, giriş sonrası önbellek atlatma ve WooCommerce ekranının güncel açılması kontrol edilir; eklenti deposu değişmedi."
+    "Hoş geldin 👋 tanınan hesap ekranı; ad-soyad, e-posta, Google ile devam et ve e-posta/şifre seçenekleri sade bir hesap seçicisinde birleştirildi.",
+    "Her hızlı giriş gösteriminde cihazın sunucu yetkisi ve WordPress oturumu doğrulanır; devre dışı bırakılmış ya da süresi dolmuş kayıtlar tekrar gösterilmez.",
+    "Giriş/çıkış ve Google dönüşünde kişiye özel Hesabım içeriği eski misafir önbelleğiyle karışmaz; Google ile devam et eski WordPress hesabına sessizce dönmek yerine Google hesap seçimini başlatır.",
+    "Başka Google veya şifre hesabıyla giriş yapıldığında önceki hesabın tarayıcıdaki hızlı giriş önerisi temizlenir; normal çıkış ise isteğe bağlı açık hızlı girişi bozmaz.",
+    "PIN doğrulama, iptal edilen cihaz, farklı hesap, önbellek ve Chromium/WebKit tarayıcı senaryoları için regresyon testleri genişletildi."
   ]
 }

@@ -36,6 +36,8 @@ assert(php.includes("current_user_can( 'manage_options' )")&&php.includes("check
 console.log('Native Google OAuth: PKCE/state/cookie, verified customer identity, admin isolation, unconfigured method hidden: passed.');
 
 assert.equal(result.start_host,'accounts.google.com');
+assert.equal(result.select_account_prompt,true,'Google displays account picker instead of silently recycling the prior identity');
+assert.equal(result.existing_session_can_switch,true,'Explicit Google sign-in starts OAuth even when old WP session cookie remains');
 assert.equal(result.start_redirect,result.callback,'Exact configured redirect accompanies authorization');
 assert.equal(result.pkce_matches,true,'Authorization challenge matches the stored verifier');
 assert(result.wrong_browser.endsWith('?google_login=error'));

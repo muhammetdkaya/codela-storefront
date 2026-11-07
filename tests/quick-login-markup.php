@@ -6,9 +6,11 @@ class WP_User {
         public int $ID = 47,
         public string $user_login = 'testuser',
         public string $display_name = 'Test User',
+        public string $user_email = 'ayse@example.test',
         public array $roles = [ 'customer' ]
     ) {}
 }
+function add_filter(...$args) {}
 function add_action( ...$args ) {}
 function __( $s, $domain = '' ) { return $s; }
 function esc_attr_e( $s, $domain = '' ) { echo htmlspecialchars( $s, ENT_QUOTES ); }
@@ -41,7 +43,11 @@ if ( '1' === getenv( 'CODELA_RENDER_ONLY' ) ) {
 check( str_contains( $html, 'class="sf-quick-account' ), 'Remembered account is a single primary action' );
 check( str_contains( $html, 'sf-quick-user' ), 'Account name placeholder exists' );
 check( ! str_contains( $html, 'Welcome back' ), 'No redundant welcome heading' );
-check( str_contains( $html, 'Continue' ) && str_contains( $html, 'Sign in quickly with your saved account.' ), 'Balanced account intro is visible' );
+check( str_contains( $html, 'Welcome' ) && str_contains( $html, 'Continue quickly with your account.' ), 'Welcome heading and succinct copy are visible' );
+check( str_contains( $html, 'sf-quick-wave' ), 'Waving-hand emoji follows the heading' );
+check( str_contains( $html, 'sf-quick-email' ), 'Saved account email line is present' );
+check( str_contains( $html, "codela_sf_icon( 'chevron-left' )" ) === false && str_contains( $html, 'sf-quick-chevron' ), 'Account card has a slim chevron' );
+check( str_contains( $html, 'sf-quick-or' ) && str_contains( $html, 'sf-quick-email-login' ), 'Alternative password login remains available beneath or separator' );
 check( ! str_contains( $html, 'data-quick-digit' ), 'No bespoke numeric keypad' );
 check( preg_match_all( '/class="sf-quick-slot"/', $html ) === 6, 'Exactly six PIN cells' );
 check( str_contains( $html, 'inputmode="numeric"' ), 'Uses native device numeric keyboard' );
@@ -56,4 +62,5 @@ codela_sf_quick_settings();
 $settings = ob_get_clean();
 check( str_contains( $settings, 'data-display-name="Ayşe Yılmaz"' ), 'Uses actual customer first and last name' );
 check( str_contains( $settings, 'data-username="testuser"' ), 'Original Woo username is still retained as fallback' );
+check( str_contains( $settings, 'data-email="ayse@example.test"' ), 'Real account email is available for the display-only remembered profile' );
 echo "Quick-login remembered-account markup, native input and full-name contracts passed\n";

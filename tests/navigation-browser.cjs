@@ -171,6 +171,21 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
   const style=getComputedStyle(el,'::before');return {x:new DOMMatrix(style.transform).e,width:parseFloat(style.width)};
  });
  await page.evaluate(()=>window.sfActions.search());
+ // First open must reserve the actual Woo discovery geometry during the
+ // 300ms fixture requests; reopening later is served from the local cache.
+ await page.waitForSelector('#sf-popular-list .sf-discovery-term-skeleton');
+ const firstDiscoveryLoading=await page.locator('#sf-discovery').evaluate(el=>({
+   visible:!el.hidden,loading:el.classList.contains('is-loading'),
+   busy:el.getAttribute('aria-busy'),
+   terms:el.querySelectorAll('.sf-discovery-term-skeleton').length,
+   products:el.querySelectorAll('.sf-discovery-card-skeleton').length,
+   firstImageWidth:el.querySelector('.sf-discovery-card-skeleton .sf-explore-photo')?.getBoundingClientRect().width
+ }));
+ assert(firstDiscoveryLoading.visible && firstDiscoveryLoading.loading && firstDiscoveryLoading.busy==='true',
+   'Initial discovery reserves loading space during real Store API requests');
+ assert.equal(firstDiscoveryLoading.terms,3,'Three loading suggestions hold their layout');
+ assert.equal(firstDiscoveryLoading.products,3,'Discover shelf has three placeholders');
+ assert(firstDiscoveryLoading.firstImageWidth>110,'Placeholder matches product width');
  await page.waitForTimeout(55);
  const openingSlide=await capsule();
  assert(openingSlide.x>0 && openingSlide.x<openingSlide.width-1,'Opening popup slides through an intermediate position');
@@ -241,18 +256,11 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
 
 
  await click('search');
- await page.waitForSelector('#sf-popular-list .sf-discovery-term-skeleton');
- const discoveryLoading=await page.locator('#sf-discovery').evaluate(el=>({
-   visible:!el.hidden,loading:el.classList.contains('is-loading'),
-   busy:el.getAttribute('aria-busy'),
-   terms:el.querySelectorAll('.sf-discovery-term-skeleton').length,
-   products:el.querySelectorAll('.sf-discovery-card-skeleton').length,
-   firstImageWidth:el.querySelector('.sf-discovery-card-skeleton .sf-explore-photo')?.getBoundingClientRect().width
- }));
- assert(discoveryLoading.visible && discoveryLoading.loading && discoveryLoading.busy==='true','Discovery signals loading as soon as Search opens');
- assert.equal(discoveryLoading.terms,3,'Three popular-term capsules reserve the real vertical layout');
- assert.equal(discoveryLoading.products,3,'Discover shelf has scrolling square product placeholders');
- assert(discoveryLoading.firstImageWidth>110,'Skeleton matches product card visual width');
+ // Reopening after the first successful fetch must be instant, not a
+ // fabricated second skeleton. The old assertion flaked whenever the
+ // discovery cache was correctly warm by the time Search reopened.
+ assert.equal(await page.locator('#sf-popular-list .sf-discovery-term-skeleton').count(),0,
+   'Cached discovery reopens without an unnecessary loading shimmer');
  await page.waitForFunction(()=>document.querySelector('#sf-discovery')?.getAttribute('aria-busy')==='false'
    && document.querySelectorAll('#sf-explore-list a.sf-explore-card').length===1);
  assert.equal(await page.locator('#sf-popular-list button.sf-popular-term').count(),3,'Real category suggestions replace the skeleton');

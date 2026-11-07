@@ -17,8 +17,28 @@ assert(js.includes("if (!result.ok || typeof result.account_url !== 'string')"),
 assert(js.indexOf("track.classList.add('is-verified')") > js.indexOf("if (!result.ok || typeof result.account_url !== 'string')"),'Check animation cannot start before successful server verification');
 assert(js.includes("remembered.displayName = settings.dataset.displayName"),'Existing remembered accounts refresh their customer name');
 assert(js.includes("displayName:settings.dataset.displayName"),'New remembered accounts store display name');
+assert(js.includes("email:settings.dataset.email"),'Enrollment stores only a display email alongside remembered account');
+assert(js.includes("email.textContent = rememberedEmail"),'Guest card reads the remembered email');
+assert(php.includes("class=\"sf-quick-email\""),'Saved-account markup has an optional email line');
+assert(php.includes("codela_sf_icon( 'chevron-left' )"),'Saved-account trailing icon uses the existing thin chevron');
+assert(php.includes('sf-quick-choice-alternatives') && php.includes('sf-quick-email-login'),'Reference actions belong below the account card');
+assert(php.includes("function_exists( 'codela_sf_google_enabled' ) && codela_sf_google_enabled()"),'Google button is only shown when actually available');
+assert(css.includes('.sf-quick-or') && css.includes('.sf-quick-google'),'Divider and Google CTA have dedicated styles');
 assert(!js.includes("data-quick-digit"),'No custom number keypad should be used');
 
+assert(js.includes("currentBrowserStatus(profile, privateKey)") &&
+  js.includes("if (!browserStatus.active)") &&
+  js.includes("await forgetRemembered(profile)"),'Saved browser is verified server-side and revoked devices are removed');
+assert(js.includes("browserStatus.authenticated") && js.includes("freshAccountDocument()"),
+  'Cached anonymous HTML is replaced when actual WordPress cookie is present');
+assert(js.includes("Number(config.identity.userId) !== profile.userId") &&
+  js.includes("await forgetRemembered(profile)"),'Different Google/password account clears previous remembered identity');
+assert(php.includes("wp_ajax_nopriv_codela_sf_quick_status") &&
+  php.includes("codela_sf_quick_status_active"),'Read-only device status uses real WordPress cookie context');
+assert(php.includes("woocommerce_logout_default_redirect_url") &&
+  php.includes("woocommerce_login_redirect"),'Native login and logout bypass cached account HTML');
+assert(php.includes("DONOTCACHEPAGE") && php.includes("is_account_page()"),
+  'WooCommerce account route never caches account-specific HTML');
 assert(js.includes("window.location.replace(destination.href)"),'Successful PIN forces a full document navigation');
 assert(js.includes("destination.searchParams.set('sf_quick_auth'"),'Authenticated redirect bypasses cached guest account HTML');
 assert(php.includes("nocache_headers()"),'Authentication completion page explicitly disables caches');
