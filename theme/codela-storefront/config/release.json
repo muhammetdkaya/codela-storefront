@@ -6,9 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Temanın kullandığı WooCommerce 'Hesap detayları' navigasyon başlığı, kullanıcıya daha anlaşılır 'Hesap bilgileri' olarak düzenlendi; mevcut WooCommerce hesabı ve endpoint'i korunur.",
-    "WooCommerce Hesabım kayıt özelliği kapalıyken Codela yönetim ekranında ilgili WooCommerce hesap ayarlarına yönlendiren uyarı gösterilir; mağaza ayarı gizlice değiştirilmez.",
-    "Hızlı giriş, müşteri hesaplarının ana ekranından her zaman erişilebilir hâle getirildi. Yönetici/personel hesaplarında 6 haneli PIN güvenlik gereği devre dışı kalır ve gizlenmek yerine açıklama gösterilir.",
-    "Testler: WooCommerce kayıt ayarı, yönetici uyarısı, PIN ayarlarına yönlendirme ve rol yalıtımı için otomatik regresyon kontrolleri eklendi."
+    "Altı haneli hızlı girişin açılış ekranında sadece tanınan WooCommerce hesabı gösterilir; hesap seçildiğinde beyaz alttan açılır PIN paneli açılır.",
+    "Kullanıcı adı yerine mümkünse müşterinin adı ve soyadı, aksi hâlde WooCommerce görüntü adı veya kullanıcı adı gösterilir. Eski tanınan hesaplar normal giriş sonrasında güncellenir.",
+    "Özel sayı tuşları kaldırıldı; hesap seçimine dokunulunca iOS ve Android'in kendi sayısal klavyesi açılır. Şifreyle giriş ve şifremi unuttum bağlantıları küçük tutulur.",
+    "Altıncı rakamda altı kutu merkeze birleşir, doğrulama sürerken nötr spinner görünür; sunucu başarılı oturum yanıtı verdiğinde tek kutuda hafif yeşil onay animasyonu gösterilir. Hatalı PIN'de giriş alanı sıfırlanır.",
+    "Codela Commerce Toolkit eklentisine müdahale edilmedi. WooCommerce kayıt, şifre sıfırlama ve oturum güvenliği korunur."
   ]
 }
