@@ -19,10 +19,10 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 function codela_sf_cart_shipping_module() {
     if ( ! function_exists( 'codela_is_module_active' )
         || ! codela_is_module_active( 'free-shipping-bar' )
-        || ! class_exists( '\Codela\\Modules\\FreeShippingBar\\Module' ) ) {
+        || ! class_exists( '\Codela\Modules\FreeShippingBar\Module' ) ) {
         return null;
     }
-    return new \Codela\\Modules\\FreeShippingBar\\Module( null );
+    return new \Codela\Modules\FreeShippingBar\Module( null );
 }
 
 /** Server-render the plugin's existing cart bar using the current WC session. */
@@ -45,11 +45,11 @@ function codela_sf_cart_shipping_extension_data(): array {
 function codela_sf_register_cart_shipping_extension(): void {
     static $registered = false;
     if ( $registered || ! function_exists( 'woocommerce_store_api_register_endpoint_data' )
-        || ! class_exists( '\Automattic\\WooCommerce\\StoreApi\\Schemas\\V1\\CartSchema' ) ) {
+        || ! class_exists( '\Automattic\WooCommerce\StoreApi\Schemas\V1\CartSchema' ) ) {
         return;
     }
     woocommerce_store_api_register_endpoint_data( [
-        'endpoint'        => \Automattic\\WooCommerce\\StoreApi\\Schemas\\V1\\CartSchema::IDENTIFIER,
+        'endpoint'        => \Automattic\WooCommerce\StoreApi\Schemas\V1\CartSchema::IDENTIFIER,
         'namespace'       => 'codela-storefront-shipping',
         'data_callback'   => 'codela_sf_cart_shipping_extension_data',
         'schema_callback' => static function(): array {
