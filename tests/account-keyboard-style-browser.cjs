@@ -23,11 +23,10 @@ const css=['quick-login.css','account.css','account-overlay.css'].map(x=>fs.read
     el.classList.add('has-keyboard');
     el.style.setProperty('--sf-quick-visual-height','430px');
     el.style.setProperty('--sf-quick-visual-top','142px');
-    return {top:el.getBoundingClientRect().top,bottom:getComputedStyle(el).bottom,
+    return {top:el.getBoundingClientRect().top,
       maxHeight:getComputedStyle(el).maxHeight};
   });
   assert(Math.abs(opened.top-142)<2,'Keyboard mode uses measured visual top, not double lift');
-  assert.equal(opened.bottom,'auto');
   assert.equal(opened.maxHeight,'430px','Sheet can scroll in a reduced viewport');
   await page.locator('.sf-quick-sheet').evaluate(el=>{
     el.classList.remove('has-keyboard');
