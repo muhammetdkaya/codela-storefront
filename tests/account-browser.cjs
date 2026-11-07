@@ -16,6 +16,12 @@ assert(!guestHeader.includes('sf-auth-site-header') && !guestHeader.includes('sf
   'There is no separate standalone login header');
 assert(guestHeader.includes('data-dock-view="account"') && guestHeader.includes('is-active'),
   'My Account is the selected bottom navigation tab');
+assert(guestHeader.includes('sf-context-account-heading') && guestHeader.includes('user-round.svg') &&
+  guestHeader.includes('sf-context-label'),
+  'Logged-out My Account uses the same user icon and Account label as the instant dialog');
+assert(!guestHeader.includes('class="sf-brand sf-ui-surface"'),
+  'The direct guest account route must not fall back to the store logo');
+
 assert(!guestHeader.includes('class="sf-panel-body sf-account-body"'),
   'The real account login has no duplicate form inside an overlay');
 assert(intro.includes('Welcome back'),'Guest account hero has app greeting');
@@ -211,6 +217,8 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
         assert.equal(await page.locator('.sf-auth-google').count(),1,'Google option stays visible when not configured');
         assert.equal(await page.locator('.sf-auth-google').isDisabled(),true,'Unconfigured Google cannot start OAuth');
         assert.equal(await page.locator('.sf-auth-google[href]').count(),0,'Disabled Google has no authentication redirect');
+        assert.equal(await page.locator('.sf-auth-google').evaluate(el=>getComputedStyle(el).backgroundColor),
+          'rgb(37, 38, 40)','Disabled Google stays charcoal and remains safely non-interactive');
 
       }
       if(type==='register'){
