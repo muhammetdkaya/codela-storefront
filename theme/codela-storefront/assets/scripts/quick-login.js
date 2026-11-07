@@ -80,9 +80,11 @@
   async function request(path, payload) {
     const headers = {'Content-Type':'application/json'};
     if (config.nonce) headers['X-WP-Nonce'] = config.nonce;
+    const signal = typeof AbortSignal !== 'undefined' && typeof AbortSignal.timeout === 'function'
+      ? AbortSignal.timeout(12000) : undefined;
     const response = await fetch(config.rest + path, {
       method:'POST', credentials:'same-origin', cache:'no-store',
-      headers, body:JSON.stringify(payload)
+      headers, body:JSON.stringify(payload), signal
     });
     let body = {};
     try { body = await response.json(); } catch (_) {}
@@ -109,6 +111,18 @@
     host.classList.add('sf-pin-active');
     let pin = '';
     let pending = false;
+    let challengePromise = null;
+    let challengeStarted = 0;
+    // Start the network request on the FIRST keypad tap, not on every page
+    // load. Usually the challenge is ready before the sixth digit is entered.
+    function getChallenge() {
+      if (challengePromise && Date.now() - challengeStarted < 65000) return challengePromise;
+      challengeStarted = Date.now();
+      challengePromise = request('challenge', {
+        user_id:profile.userId, device_id:profile.deviceId
+      });
+      return challengePromise;
+    }
     const render = () => dots.forEach((dot,i) => dot.classList.toggle('is-filled', i < pin.length));
     const lock = value => {
       pending = value;
@@ -120,9 +134,7 @@
       lock(true);
       status.textContent = t('waiting','Signing in…');
       try {
-        const challenge = await request('challenge', {
-          user_id:profile.userId, device_id:profile.deviceId
-        });
+        const challenge = await getChallenge();
         const message = 'codela-pin-login:v1:' + profile.userId + ':' + profile.deviceId + ':' + challenge.challenge;
         const signed = await signature(privateKey, message);
         const result = await request('verify', {
@@ -142,13 +154,16 @@
         render();
         section.classList.add('is-error');
         window.setTimeout(() => section.classList.remove('is-error'), 380);
-      } finally { lock(false); }
+      } finally { challengePromise = null; lock(false); }
     }
     function enter(value) {
       if (pending) return;
       status.textContent = '';
       if (value === 'erase') pin = pin.slice(0,-1);
-      else if (pin.length < 6 && /^[0-9]$/.test(value)) pin += value;
+      else if (pin.length < 6 && /^[0-9]$/.test(value)) {
+        pin += value;
+        if (!challengePromise) void getChallenge().catch(() => { challengePromise = null; });
+      }
       render();
       if (pin.length === 6) void submit();
     }
