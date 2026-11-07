@@ -270,6 +270,12 @@ function codela_sf_quick_guest_markup(): void {
 }
 add_action( 'woocommerce_before_customer_login_form', 'codela_sf_quick_guest_markup', 4 );
 
+/** Public-safe display label is persisted only on the customer's own browser. */
+function codela_sf_quick_display_name( WP_User $user ): string {
+    $full_name = trim( (string) get_user_meta( $user->ID, 'first_name', true ) . ' ' . (string) get_user_meta( $user->ID, 'last_name', true ) );
+    return $full_name ?: ( trim( (string) $user->display_name ) ?: (string) $user->user_login );
+}
+
 /** Enrollment appears within WooCommerce account management, not registration pre-verification. */
 function codela_sf_quick_settings(): void {
     $user = wp_get_current_user();
@@ -288,10 +294,7 @@ function codela_sf_quick_settings(): void {
     ?>
     <section class="sf-quick-settings" id="sf-quick-settings" data-user-id="<?php echo esc_attr( (string) $user->ID ); ?>"
         data-username="<?php echo esc_attr( (string) $user->user_login ); ?>"
-        data-display-name="<?php
-            $given_name = trim( (string) get_user_meta( $user->ID, 'first_name', true ) . ' ' . (string) get_user_meta( $user->ID, 'last_name', true ) );
-            echo esc_attr( $given_name ?: ( trim( (string) $user->display_name ) ?: (string) $user->user_login ) );
-        ?>">
+        data-display-name="<?php echo esc_attr( codela_sf_quick_display_name( $user ) ); ?>">
         <h3><?php esc_html_e( 'Quick sign in', 'codela-storefront' ); ?></h3>
         <p><?php esc_html_e( 'Enable a 6-digit code for this browser. Your normal WooCommerce password will continue to work.', 'codela-storefront' ); ?></p>
         <div class="sf-quick-enroll">
@@ -359,6 +362,13 @@ add_action( 'wp_enqueue_scripts', static function(): void {
         'rest' => esc_url_raw( rest_url( 'codela-storefront/v1/quick-login/' ) ),
         'nonce' => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
         'account' => wc_get_page_permalink( 'myaccount' ),
+        // Refresh old username-only hints on normal signed-in account visits.
+        'identity' => ( is_user_logged_in() && codela_sf_quick_customer( wp_get_current_user() ) )
+            ? [
+                'userId' => (int) wp_get_current_user()->ID,
+                'displayName' => codela_sf_quick_display_name( wp_get_current_user() ),
+            ]
+            : null,
         'strings' => [
             'account' => __( 'Your account', 'codela-storefront' ),
             'requestFailed' => __( 'Request could not be completed. Try again.', 'codela-storefront' ),
