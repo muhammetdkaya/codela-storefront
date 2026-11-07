@@ -14,7 +14,7 @@ assert(js.includes("'/remove-item'")&&js.includes("'/update-item'"),'Woo API mut
 assert(css.includes('#sf-panel.is-cart-panel:not(.is-product-cart) #sf-panel-title'),'Heading hidden visually');
 assert(css.includes('min-height:var(--sf-overlay-toolbar-height);padding:10px var(--sf-overlay-gutter)'),'Cart close aligns with search 68px toolbar');
 assert(css.includes('border-bottom:0;justify-content:flex-end'),'Close remains right-aligned');
-assert(css.includes('.sf-cart-count + .sf-cart-row{padding-top:0}'),'First row keeps compact top spacing');
+assert(css.includes('#sf-cart-items>.sf-cart-row:first-child{padding-top:0}'),'First row keeps compact top spacing');
 assert(css.includes('-webkit-line-clamp:2'),'Two-row item title');
 assert(css.includes('aspect-ratio:1'),'Square photos');
 assert(css.includes('gap:12px;align-items:start;padding:12px 0'),'Compact mobile rows');
@@ -31,6 +31,11 @@ assert(css.includes('rgba(255,255,255,.55)'),'Quantity glass material is less do
 assert(css.includes("mask:url('../icons/trash-2.svg')"),'Shared licensed icon');
 assert(icon.includes('xmlns="http://www.w3.org/2000/svg"'),'Icon is SVG');
 assert(icon.includes('width="56" height="56" viewBox="0 0 56 56"'),'Filled deletion glyph matches existing icon geometry');
+assert(html.includes('id="sf-cart-count" hidden'),'Cart count has an independent header slot');
+assert(html.includes('id="sf-cart-progress" hidden'),'Optional shipping progress has a dedicated slot');
+assert(js.includes("data.extensions?.['codela-free-shipping-bar']?.config_json"),'Progress uses plugin-owned Store API settings');
+assert(js.includes('window.CodelaFsbHtml(config, data)'),'Progress uses the plugin renderer, not a second threshold implementation');
+assert(css.includes('#sf-cart-progress[hidden]'),'Disabled progress is completely hidden');
 assert(html.includes('aria-labelledby="sf-panel-title"'),'Accessible native dialog');
 assert(!js.includes("t('Continue shopping')"),'No empty-state CTA');
 console.log('Mobile cart layout contract: passed');
