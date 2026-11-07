@@ -60,6 +60,7 @@ function codela_sf_transition_icon( string $name ): string {
         ? str_replace( '<svg ', '<svg class="sf-icon" aria-hidden="true" focusable="false" ', $svg ) : '';
 }
 require_once get_template_directory() . '/inc/render.php';
+require_once get_template_directory() . '/inc/cart-shipping.php';
 require_once get_template_directory() . '/inc/product-mobile-media.php';
 require_once get_template_directory() . '/inc/media.php';
 require_once get_template_directory() . '/inc/navigation.php';
