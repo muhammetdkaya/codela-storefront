@@ -9,7 +9,7 @@ const eventTarget=(target={})=>{
  target.addEventListener=(name,fn)=>{if(!listeners.has(name))listeners.set(name,new Set());listeners.get(name).add(fn)};
  target.removeEventListener=(name,fn)=>listeners.get(name)?.delete(fn);
  target.emit=(name,event={})=>{for(const fn of listeners.get(name)||[])fn(event)};
- target.listenerCount=()=>[...listeners.values()].reduce((total,set)=>total+set.size,0);
+ target.listenerCount=name=>name?(listeners.get(name)?.size||0):[...listeners.values()].reduce((total,set)=>total+set.size,0);
  return target;
 };
 const style=(values=new Map())=>({setProperty:(key,value)=>values.set(key,value),removeProperty:key=>values.delete(key),getPropertyValue:key=>values.get(key)||'',getPropertyPriority:()=>''});
@@ -30,7 +30,7 @@ const resized=()=>{observers[0]();flush()};
 const child=height=>({height,getBoundingClientRect(){return{height:this.height}},style:{display:'block'}});
 const copies=[{children:[child(64),child(42),child(44)]},{children:[child(64),child(44)]}];
 const items=copies.map((copy,i)=>({querySelector:s=>s==='.sf-section-copy'?copy:null,getBoundingClientRect:()=>({left:i*390}),dispatchEvent(){}}));
-const track=attributes(eventTarget({children:items,style:style(),getBoundingClientRect:()=>({left:0})}));
+const track=attributes(eventTarget({children:items,style:style(),classList:{remove(){}},getBoundingClientRect:()=>({left:0})}));
 const count={};
 const controls=eventTarget({hidden:true,querySelector:s=>s==='[data-gallery-count]'?count:null,querySelectorAll:()=>[]});
 const gallery={isConnected:true,dataset:{},classList:{contains:s=>s==='sf-section--hero'},querySelector:s=>s==='.sf-ui-gallery-track'?track:controls,style:style(values)};
@@ -39,7 +39,7 @@ const context={document:{documentElement:{},activeElement:null,querySelectorAll:
  getComputedStyle:el=>copies.includes(el)?{paddingTop:'18px',paddingBottom:bottom+'px',rowGap:'8px'}:{display:'block',direction:'ltr'},
  MutationObserver:mutationDouble(mutations),
  ResizeObserver:class{constructor(fn){observers.push(fn);resizeInstances.push(this);this.disconnected=false}observe(el){observed.push(el)}disconnect(){this.disconnected=true}},
- Event:class{},requestAnimationFrame(fn){const id=++frame;queue.push({id,fn});return id},cancelAnimationFrame(id){cancelled.add(id)}};
+ Event:class{},clearTimeout(){},requestAnimationFrame(fn){const id=++frame;queue.push({id,fn});return id},cancelAnimationFrame(id){cancelled.add(id)}};
 vm.runInNewContext(source,context);
 assert.equal(values.get('--sf-hero-caption-height'),'266px','Tallest actual caption includes dock padding, child heights and gaps');
 assert(copies.every(copy=>observed.includes(copy)),'Padding-only geometry changes are observed on the caption itself');
@@ -85,12 +85,13 @@ assert.deepEqual(JSON.parse(JSON.stringify(mutations[0].options)),{childList:tru
 mutations[0].deliver([{addedNodes:[{nodeType:3}],removedNodes:[]}]);
 mutations[0].deliver([{addedNodes:[{nodeType:1}],removedNodes:[]}]);
 assert.equal(observers.length,1,'Text and unrelated element mutations do not duplicate caption ownership');
-assert.equal(context.window.listenerCount(),1,'Repeated adapter execution retains one route listener');
+assert.equal(context.window.listenerCount('codela:route-committed'),1,'Repeated adapter execution retains one route listener');
 resized();observers[0]();assert(queue.length>0,'A caption frame is pending before removal');
 gallery.isConnected=false;
 mutations[0].deliver([{addedNodes:[],removedNodes:[{nodeType:1}]}]);flush();
 assert(resizeInstances[0].disconnected,'Removed caption observer is disconnected');
 assert.equal(track.listenerCount(),0,'Removed track listeners are detached');
+assert.equal(context.window.listenerCount(),1,'Removed gallery detaches global drag listeners and retains only router reconciliation');
 assert.equal(gallery.dataset.sfGalleryReady,undefined,'Removed gallery can be safely mounted again');
 assert.equal(controls.hidden,true,'Original control visibility is restored');
 assert(!values.has('--sf-hero-caption-height'),'Disposed frames cannot rewrite restored caption style');

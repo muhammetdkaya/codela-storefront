@@ -1,3 +1,11 @@
+# 7 Kasım 2026 — AZ Seramik vitrin hareketi adayı (yayınlanmadı)
+
+Canlı 0.1.228 ana sayfasında beş slaytın otomatik ilerlemediği ve masaüstü fare sürüklemesinin çalışmadığı doğrulandı. Güncel `8a95f7c` tabanında, mevcut native kaydırma adaptörüne yalnız hero için altı saniyelik otomatik geçiş ve duraklat/başlat kontrolü; sayfa galerilerine fare sürüklemesi eklendi. Hover, klavye odağı, görünmeyen sekme/galeri, reduced-motion, tıklama güvenliği ve router temizliği korunur. Ürün galerisi, Woo verileri, bölüm içeriği ve sürüm numarası değişmedi.
+
+Yerel Chromium: yeni hareket kabulü, mevcut ana sayfa testleri, 107 vitrin yerleşim senaryosu ve native galeri regresyonu (gerçek touch/wheel dahil) geçti. PHP/UI Kit, caption/native yaşam döngüsü, yeni zamanlayıcı/pointer sözleşmeleri, 24 paket ve üç asset testi başarılı. Önceki kaynak yeni autoplay testinde beklendiği gibi başarısız. Ayrıntılar: [vitrin hareketi kabulü](docs/showcase-motion-2026-11-07.md).
+
+Yayın durumu: kullanıcı yalnız test dalı ve taslak PR paylaşımını onayladı. Ana dal, sürüm/tag, stable besleme, FTP ve AZ kurulumu değiştirilmedi. WebKit/uzak CI, fiziksel Safari ve canlı kurulum kabulü henüz tamamlanmadı. Sıradaki: taslak PR'ın tam commitinde CI'ı doğrula; merge/release/kurulum için ayrıca yetkili kapsamı izle.
+
 # 4 Kasım 2026 — Codela Storefront 0.1.197 GitHub-only yayımlandı
 
 Framework7 9.3.0 seçili glass, Button ve toolbar uyarlamaları ile 15 yerel Framework7 SVG ikonu tema 0.1.197 sürümüne alındı. Başlık/alt dock, popup ve satın alma bileşenlerinde tek tasarım dili korunur; Framework7 runtime/router veya eklenti değişikliği yoktur. WebKit'te alt menünün basılı seçimi eski opaklıkta takılmasın diye yalnız basılı görsel katmanlar anlık boyanır. Native Woo ve tek store/dialog/dock korunur.

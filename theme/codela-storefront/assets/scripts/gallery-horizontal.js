@@ -13,6 +13,8 @@
     const next=controls.querySelector('[data-gallery-next]');
     const count=controls.querySelector('[data-gallery-count]');
     const hero=gallery.classList.contains('sf-section--hero');
+    const rotation=hero?controls.querySelector('[data-gallery-rotation]'):null;
+    const rotationLabel=rotation?.querySelector?.('.sf-ui-button-label')||rotation;
     const reduced=matchMedia('(prefers-reduced-motion:reduce)');
     const disposers=[];
     let current=0,frame=0,captionFrame=0,disposed=false;
@@ -49,10 +51,87 @@
       prepare(index);
       track.scrollTo({left:track.scrollLeft+items[index].getBoundingClientRect().left-track.getBoundingClientRect().left,behavior:reduced.matches?'instant':'smooth'});
     };
+    // Only the main showcase rotates. Product, promo and category galleries
+    // remain manual. One timer belongs to this instance and never catches up
+    // after a hidden tab, offscreen section or router replacement.
+    let timer=0,visible=false,hovered=false,drag=null,suppressClick=false;
+    let wanted=!!rotation&&!reduced.matches,allowFocusedToggle=false;
+    const stopTimer=()=>{clearTimeout(timer);timer=0;};
+    const canRotate=()=>wanted&&visible&&!hovered&&!drag&&!document.hidden&&!disposed&&gallery.isConnected&&
+      (!gallery.contains(document.activeElement)||(allowFocusedToggle&&document.activeElement===rotation));
+    const syncRotation=()=>{
+      if(!rotation)return;
+      stopTimer();
+      rotationLabel.textContent=wanted?rotation.dataset.pauseLabel:rotation.dataset.playLabel;
+      // Automatic changes must not announce over the reader's current task.
+      count?.setAttribute('aria-live',canRotate()?'off':'polite');
+      if(canRotate())timer=setTimeout(()=>{timer=0;if(canRotate()){updateNative();select((current+1)%items.length);}syncRotation();},6000);
+    };
+    if(rotation){
+      const originalLive=count?.getAttribute('aria-live');
+      disposers.push(()=>{stopTimer();if(count){if(originalLive===null)count.removeAttribute('aria-live');else count.setAttribute('aria-live',originalLive);}});
+      listen(rotation,'click',()=>{wanted=!wanted;allowFocusedToggle=wanted;syncRotation();});
+      listen(gallery,'pointerenter',event=>{if(event.pointerType==='mouse'||event.pointerType==='pen'){hovered=true;syncRotation();}});
+      listen(gallery,'pointerleave',event=>{if(event.pointerType==='mouse'||event.pointerType==='pen'){hovered=false;syncRotation();}});
+      listen(gallery,'focusin',event=>{allowFocusedToggle=false;if(event.target!==rotation)wanted=false;syncRotation();});
+      listen(gallery,'focusout',()=>{queueMicrotask(()=>{if(!disposed)syncRotation();});});
+      listen(document,'visibilitychange',syncRotation);
+      listen(window,'pagehide',()=>{visible=false;syncRotation();});
+      listen(window,'pageshow',()=>{visible=gallery.getBoundingClientRect().bottom>0&&gallery.getBoundingClientRect().top<innerHeight;syncRotation();});
+      listen(reduced,'change',()=>{if(reduced.matches)wanted=false;syncRotation();});
+      if(typeof IntersectionObserver!=='undefined'){
+        const observer=new IntersectionObserver(entries=>{visible=entries.some(entry=>entry.isIntersecting&&entry.intersectionRatio>=.5);syncRotation();},{threshold:[0,.5]});
+        observer.observe(gallery);disposers.push(()=>observer.disconnect());
+      }else{
+        const checkVisible=()=>{const rect=gallery.getBoundingClientRect();visible=rect.bottom>0&&rect.top<innerHeight;syncRotation();};
+        listen(window,'scroll',checkVisible,{passive:true});listen(window,'resize',checkVisible,{passive:true});checkVisible();
+      }
+      syncRotation();
+    }
     if(previous)listen(previous,'click',()=>select(current-1));
     if(next)listen(next,'click',()=>select(current+1));
-    listen(track,'scroll',()=>{if(!frame)frame=requestAnimationFrame(updateNative);},{passive:true});
-    listen(track,'pointerdown',()=>{prepare(current-1);prepare(current+1);},{passive:true});
+    listen(track,'scroll',()=>{if(!frame)frame=requestAnimationFrame(updateNative);if(rotation)syncRotation();},{passive:true});
+    const endDrag=(event,cancelled=false)=>{
+      if(!drag||(event&&event.pointerId!==drag.id))return;
+      const state=drag;drag=null;
+      track.classList.remove('is-dragging');
+      if(track.hasPointerCapture?.(state.id))track.releasePointerCapture(state.id);
+      if(state.active){
+        suppressClick=true;
+        const delta=state.lastX-state.x,threshold=Math.min(80,track.clientWidth*.15);
+        const direction=getComputedStyle(track).direction==='rtl'?-1:1;
+        select(cancelled||Math.abs(delta)<threshold?state.index:state.index-(delta>0?1:-1)*direction);
+      }
+      syncRotation();
+    };
+    listen(track,'pointerdown',event=>{
+      prepare(current-1);prepare(current+1);
+      if(event.pointerType!=='mouse'||event.button!==0||event.isPrimary===false||
+        event.target.closest('button,input,select,textarea,[contenteditable="true"]'))return;
+      // No capture/preventDefault before a real drag: normal CTA clicks work.
+      suppressClick=false;updateNative();
+      drag={id:event.pointerId,x:event.clientX,y:event.clientY,lastX:event.clientX,left:track.scrollLeft,index:current,active:false};
+      syncRotation();
+    },{passive:true});
+    listen(window,'pointermove',event=>{
+      if(!drag||event.pointerId!==drag.id)return;
+      if(event.buttons===0){endDrag(event,true);return;}
+      const dx=event.clientX-drag.x,dy=event.clientY-drag.y;
+      if(!drag.active){
+        if(Math.max(Math.abs(dx),Math.abs(dy))<8)return;
+        if(Math.abs(dy)>Math.abs(dx)){endDrag(event,true);return;}
+        drag.active=true;track.classList.add('is-dragging');track.setPointerCapture?.(event.pointerId);
+      }
+      event.preventDefault();drag.lastX=event.clientX;
+      track.scrollLeft=drag.left-dx;
+    },{passive:false});
+    listen(window,'pointerup',event=>endDrag(event));
+    listen(window,'pointercancel',event=>endDrag(event,true));
+    listen(track,'lostpointercapture',event=>endDrag(event,true));
+    listen(window,'blur',()=>endDrag(null,true));
+    listen(window,'resize',()=>endDrag(null,true),{passive:true});
+    listen(track,'dragstart',event=>{if(drag)event.preventDefault();});
+    listen(track,'click',event=>{if(suppressClick){suppressClick=false;if(event.detail!==0){event.preventDefault();event.stopImmediatePropagation();}}},true);
     const keyboard=event=>{
       if(event.target!==track||!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
       event.preventDefault();
@@ -89,6 +168,9 @@
     const destroy=()=>{
       if(disposed)return;
       disposed=true;
+      stopTimer();
+      const pointer=drag?.id;drag=null;track.classList.remove('is-dragging');
+      if(pointer!==undefined&&track.hasPointerCapture?.(pointer))track.releasePointerCapture(pointer);
       cancelAnimationFrame(frame);cancelAnimationFrame(captionFrame);
       disposers.forEach(dispose=>dispose());
       restoreCaption();
