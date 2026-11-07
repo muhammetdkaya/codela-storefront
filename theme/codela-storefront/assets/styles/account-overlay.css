@@ -342,13 +342,13 @@
   position:relative;display:flex;justify-content:center;align-items:center;
   width:100%;min-height:54px;margin:0;
   padding:12px 70px;gap:0;border-radius:30px;
-  border:1px solid #252628;background:#252628;
-  color:#fff;font-size:14px;font-weight:630;text-decoration:none;
+  border:1px solid #252628!important;background:#252628!important;
+  background-image:none!important;color:#fff!important;font-size:14px;font-weight:630;text-decoration:none;
   box-shadow:none;
 }
 #sf-panel.is-account-panel .sf-auth-google:disabled{
-  background:#9d9da0;color:#fff;border-color:#9d9da0;
-  opacity:1;cursor:not-allowed;
+  background:#252628!important;color:#fff!important;border-color:#252628!important;
+  opacity:.65;cursor:not-allowed;
 }
 #sf-panel.is-account-panel .sf-auth-google .sf-google-glyph{
   position:absolute;left:22px;top:50%;transform:translateY(-50%);
