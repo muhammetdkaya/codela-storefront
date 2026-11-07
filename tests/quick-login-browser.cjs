@@ -102,6 +102,10 @@ function release(ok) {
       release(outcome==='success');
       if(outcome==='success'){
         await page.locator('.sf-quick-pin-track.is-verified').waitFor({state:'attached'});
+        await page.waitForFunction(() => {
+          const box = document.querySelector('.sf-quick-result');
+          return box && getComputedStyle(box).borderColor === 'rgb(40, 116, 84)';
+        }, {timeout:4000});
         const border=await page.locator('.sf-quick-result').evaluate(el=>getComputedStyle(el).borderColor);
         assert.equal(border,'rgb(40, 116, 84)','Success uses Codela restrained green');
         await page.waitForURL('**/account/',{timeout:10000});
