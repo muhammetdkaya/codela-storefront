@@ -135,35 +135,27 @@ function preventInitialAccountAutoFocus() {
         preventInitialAccountAutoFocus();
         applyAuthPlaceholders();
         initInstantAccountFreshness();
-        const tabs = document.querySelector('.sf-account-intro .sf-auth-tabs');
         const container = document.querySelector('#customer_login');
-        if (!tabs || !container) return;
+        if (!container) return;
         const login = container.querySelector('.u-column1');
         const register = container.querySelector('.u-column2');
+        // When the merchant disables registration Woo renders only the login
+        // form; do not manufacture a registration action or a second form.
         if (!login?.querySelector('form.woocommerce-form-login')
             || !register?.querySelector('form.woocommerce-form-register')) return;
 
-        const buttons = [...tabs.querySelectorAll('[data-auth-tab]')];
-        const panels = {login, register};
-        const heading = tabs.closest('.sf-account-intro');
+        const heading = document.querySelector('.sf-account-intro');
         const headingText = heading?.querySelector('.sf-auth-heading-text');
         const headingWave = heading?.querySelector('.sf-auth-heading-wave');
         const description = heading?.querySelector('.sf-auth-description');
-        // The native Woo forms and their server-side validation stay intact.
-        // Do not move tabs into the modal footer: the very same sliding selector
-        // is rendered above the heading on the fast panel and /my-account/.
+        const root = container.closest('.woocommerce');
         login.id = 'sf-auth-login';
         register.id = 'sf-auth-register';
 
-        function select(view, focus) {
+        function select(view) {
             const active = view === 'register' ? 'register' : 'login';
-            tabs.dataset.active = active;
-            for (const button of buttons) {
-                const selected = button.dataset.authTab === active;
-                button.setAttribute('aria-selected', String(selected));
-                button.tabIndex = selected ? 0 : -1;
-                if (selected && focus) button.focus({preventScroll:true});
-            }
+            container.dataset.authView = active;
+            root?.classList.toggle('sf-auth-register-view', active === 'register');
             if (heading) {
                 if (headingText) headingText.textContent = active === 'register'
                     ? heading.dataset.authRegisterTitle : heading.dataset.authLoginTitle;
@@ -171,37 +163,33 @@ function preventInitialAccountAutoFocus() {
                     ? heading.dataset.authRegisterDescription : heading.dataset.authLoginDescription;
                 if (headingWave) headingWave.hidden = active === 'register';
             }
-            for (const [key, panel] of Object.entries(panels)) {
+            for (const [key, panel] of Object.entries({login,register})) {
                 panel.hidden = key !== active;
-                panel.setAttribute('aria-labelledby', 'sf-auth-tab-' + key);
+                panel.setAttribute('aria-labelledby', 'sf-auth-view-title');
             }
         }
 
-        buttons.forEach(button => {
-            const view = button.dataset.authTab;
-            button.id = 'sf-auth-tab-' + view;
-            button.setAttribute('aria-controls', panels[view].id);
-            button.addEventListener('click', () => select(view, false));
-            button.addEventListener('keydown', event => {
-                if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
-                event.preventDefault();
-                select(event.key === 'Home' ? 'login'
-                    : event.key === 'End' ? 'register'
-                    : (view === 'login' ? 'register' : 'login'), true);
-            });
+        // Native hooks print the buttons inside Woo's REAL forms. Switching
+        // views does not trigger the mobile keyboard or browser AutoFill.
+        container.addEventListener('click', event => {
+            const action = event.target.closest('a.sf-auth-register-cta,a.sf-auth-back-login');
+            if (!action || !container.contains(action)) return;
+            event.preventDefault();
+            select(action.classList.contains('sf-auth-register-cta') ? 'register' : 'login');
         });
 
-        // The remembered-account chooser requests a native Woo registration
-        // tab rather than navigating to a different form or route.
+        // Existing remembered-device -> password fallback uses this event.
         container.addEventListener('codela:auth-select', event => {
-            select(event.detail?.view === 'register' ? 'register' : 'login', false);
+            select(event.detail?.view === 'register' ? 'register' : 'login');
         });
 
-        // Add the selected-tab class before hiding anything: without JS, Woo
-        // retains the full two-form fallback (including registration).
+        // No-JS fallback leaves both native forms accessible. When enhancement
+        // runs there is one active view, including after a failed Woo register
+        // POST (to preserve the merchant's visible validation messages).
         container.classList.add('sf-auth-ready');
-        tabs.hidden = false;
-        select(window.location.hash === '#sf-auth-register' ? 'register' : 'login', false);
+        select(heading?.dataset.authInitial === 'register'
+            || ['#register','#sf-auth-register'].includes(window.location.hash)
+            ? 'register' : 'login');
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, {once:true});
     else init();
