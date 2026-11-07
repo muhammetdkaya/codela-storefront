@@ -6,9 +6,11 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Ana sayfa vitrin slaytları altı saniyelik aralıklarla kendiliğinden ilerler; son slayttan ilkine döner.",
-    "Masaüstünde fareyle sağa/sola sürükleyerek slayt değiştirilebilir; normal bağlantı tıklaması, dokunma ve tekerlek kaydırması korunur.",
-    "Vitrine duraklat/başlat kontrolü eklendi. Fare üzerindeyken, klavye odağı içerideyken, sekme veya vitrin görünmüyorken hareket durur; azaltılmış hareket tercihine uyulur.",
-    "Sayfa geçişlerinde galeri zamanlayıcısı ve olay dinleyicileri temizlenir; ürün galerisi ve WooCommerce işlemleri değişmez."
+    "Mobil alt menü ve header Hesabım, misafir kullanıcı için tekrar mevcut hazır diyalogda anında açılır; sayfa değişimi ve yanlış tam-sayfa skeleton'u kaldırıldı.",
+    "Login ve kayıt için hem dialog hem doğrudan Hesabım sayfasında gerçek WooCommerce form şablonu ve nonce yapısı kullanılır.",
+    "Tanınan kullanıcı doğrulanırken yalnızca ilgili hesap kartı gerçeğe uygun beyaz yüzeyli skeleton gösterir; normal giriş formu anlık parlamaz.",
+    "Önbellekten gelmiş form nonce'ları panel açılır açılmaz arka planda no-store AJAX üzerinden yenilenir. Giriş anında açık başka oturum algılanırsa güvenli şekilde taze Hesabım sayfasına gidilir.",
+    "Panel ve WooCommerce kayıt/Google alternatifleri aynı şablonu kullanır; alt menü anında açılır ve başarılı girişten sonra normal Hesabım yönlendirmesi korunur.",
+    "Chromium ve Safari motorlarında anında panel, yenilenen nonce, kayıt ve farklı oturum regresyon testleri eklendi."
   ]
 }

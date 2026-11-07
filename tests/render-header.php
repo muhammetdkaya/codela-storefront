@@ -27,6 +27,7 @@ function wc_get_page_permalink( $s ) { return home_url('/'.$s.'/'); }
 function wc_get_cart_url() { return home_url('/cart/'); }
 function wc_get_checkout_url() { return home_url('/checkout/'); }
 function rest_url( $s ) { return home_url('/wp-json/'.$s); }
+function admin_url( $s ) { return home_url('/wp-admin/'.$s); }
 function wp_interactivity_state( ...$args ) {}
 function get_option( ...$args ) { return ($args[0]??'') === 'page_for_posts' ? 22 : ''; }
 function get_permalink($id){return home_url('/blog/');}

@@ -41,6 +41,7 @@ jobs:
           php tests/navigation.php
           php tests/account-contact-ux.php
           php tests/account-registration-discovery.php
+          php tests/account-nonces.php
           node --check theme/codela-storefront/assets/scripts/navigation-feedback.js
           node --check theme/codela-storefront/assets/scripts/document-continuity.js
           php tests/document-continuity.php
@@ -95,6 +96,8 @@ jobs:
           # header SVGs before the unrelated broad search navigation suite.
           node tests/quick-login-browser.cjs
           TEST_WEBKIT=1 node tests/quick-login-browser.cjs
+          node tests/account-instant-browser.cjs
+          TEST_WEBKIT=1 node tests/account-instant-browser.cjs
           node tests/account-browser.cjs
           TEST_WEBKIT=1 node tests/navigation-feedback-bottom-browser.cjs
           node tests/navigation-browser.cjs
