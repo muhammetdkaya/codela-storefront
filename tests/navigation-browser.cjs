@@ -428,19 +428,27 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  await click('search');
  assert(!(await page.evaluate(()=>window.focusLog)).includes('sf-query'),'Reopening must never briefly focus query');
  await page.evaluate(()=>window.sfActions.close());
- // All guest account navigation uses one canonical WooCommerce document.
- // The old popup rendered a second login/register form with divergent state.
+ // Guest account opens immediately in the existing Codela dialog: no
+ // navigation, no secondary authentication engine. WooCommerce's own form
+ // is rendered by codela_sf_account_overlay_form for this same page.
  const accountEntry=await page.locator('.sf-mobile-dock [data-dock-view="account"]').evaluate(el=>({
    href:el.href,panel:el.dataset.panel||null,handler:el.getAttribute('data-wp-on--click'),
    modal:el.getAttribute('aria-haspopup')
  }));
- assert.equal(accountEntry.href,'https://store.test/myaccount/','Dock account uses the real WooCommerce route');
- assert.equal(accountEntry.panel,null,'Dock account has no separate popup form');
- assert.equal(accountEntry.handler,null,'Dock account does not intercept canonical navigation');
- assert.equal(accountEntry.modal,null,'Dock account is a link, not a dialog trigger');
- assert.equal(await page.locator('#sf-account').count(),0,'Home does not duplicate the account login form');
- assert.equal(await page.locator('.sf-account-link').getAttribute('data-panel'),null,
-  'Header account link uses the same canonical account document');
+ assert.equal(accountEntry.href,'https://store.test/myaccount/','Account link retains canonical Woo fallback');
+ assert.equal(accountEntry.panel,'account','Guest Account uses the instant dialog');
+ assert.equal(accountEntry.handler,'actions.account','Dock tap is intercepted for fast local opening');
+ assert.equal(accountEntry.modal,'dialog','Account triggers a native dialog');
+ assert.equal(await page.locator('#sf-account').count(),1,'One pre-rendered Account dialog exists');
+ assert.equal(await page.locator('.sf-account-link').getAttribute('data-panel'),'account','Header shares the same instant account view');
+ await page.evaluate(()=>window.samePageDocumentMarker='account-open');
+ await click('account');
+ assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),true,'Account dialog opens synchronously');
+ assert.equal(await page.locator('#sf-account').isVisible(),true,'Native WooCommerce guest form is immediately available');
+ assert.equal(await page.locator('#sf-account form.woocommerce-form-login').count(),1,'Uses real WooCommerce login form');
+ assert.equal(await page.locator('#sf-account form.woocommerce-form-login').getAttribute('action'),'https://store.test/myaccount/','Native Woo form always posts to canonical route');
+ assert.equal(await page.evaluate(()=>window.samePageDocumentMarker),'account-open','Instant Account does not reload Home');
+ await page.evaluate(()=>window.sfActions.close());
  // On the already-rendered Home page, Search/Cart -> Home must just close.
  await page.evaluate(()=>{window.samePageDocumentMarker='home';});
  for(const popup of ['search','cart']){
@@ -463,7 +471,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  }
  // Gesture-preview never renders a second authentication panel.
  // Search/Cart gestures remain fully tested; Account is a normal navigation.
- assert.equal(await page.locator('.sf-mobile-dock [data-dock-view="account"]').getAttribute('data-panel'),null);
+ assert.equal(await page.locator('.sf-mobile-dock [data-dock-view="account"]').getAttribute('data-panel'),'account','Instant account remains a modal gesture target');
  await scrub(0,2);
  assert.equal(await page.locator('#sf-panel').getAttribute('open'),'','Scrub opens modal instead of leaving page');
  assert.equal(page.url(),'https://store.test/');
