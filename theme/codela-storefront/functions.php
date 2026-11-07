@@ -203,11 +203,10 @@ add_action( 'wp_enqueue_scripts', function() {
         }
         wp_enqueue_script( 'codela-storefront-auth', $root_uri . 'scripts/auth.js', [], $style_version, true );
     }
-    // The guest account has a quiet header without any dialog/store tools.
-    // Its native forms need only auth.js; avoid the entire storefront graph.
-    if ( is_user_logged_in() || ! function_exists( 'is_account_page' ) || ! is_account_page() ) {
-        wp_enqueue_script_module( 'codela-storefront' );
-    }
+    // Every Account document, including after ?loggedout=true, uses the same
+    // four-tab store shell and working menu/cart/search module as the shop.
+    // WooCommerce still owns its native guest login form and auth processing.
+    wp_enqueue_script_module( 'codela-storefront' );
     if ( codela_sf_seamless_allowed() ) {
         wp_enqueue_script_module( 'codela-storefront/navigation' );
     }
