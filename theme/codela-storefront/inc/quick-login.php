@@ -86,7 +86,7 @@ function codela_sf_quick_enroll( WP_REST_Request $request ) {
     $pin = codela_sf_quick_input( $request, 'pin', 12 );
     if ( ! codela_sf_quick_device_id( $device ) || ! preg_match( '/^[0-9]{6}$/D', $pin )
         || ! codela_sf_quick_signature_valid( $public, 'codela-pin-enroll:v1:' . $device, $signature ) ) {
-        return codela_sf_quick_failure( __( 'Check the six-digit code and this browser's security.', 'codela-storefront' ), 400 );
+        return codela_sf_quick_failure( __( 'Check the six-digit code and browser security.', 'codela-storefront' ), 400 );
     }
     if ( preg_match( '/^(\d)\1{5}$/D', $pin ) || in_array( $pin, [ '123456', '654321', '012345', '111222' ], true ) ) {
         return codela_sf_quick_failure( __( 'Choose a stronger six-digit code.', 'codela-storefront' ), 400 );
