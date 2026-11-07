@@ -250,4 +250,6 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 '6-digit quick sign-in code' => '6 haneli hızlı giriş kodu',
 'Sign in with password' => 'Şifreyle giriş',
 'Forgot password?' => 'Şifremi unuttum',
+'Continue' => 'Devam et',
+'Sign in quickly with your saved account.' => 'Kayıtlı hesabınla hızlıca giriş yap.',
 ] ];
