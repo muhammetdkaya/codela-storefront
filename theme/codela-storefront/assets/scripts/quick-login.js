@@ -236,8 +236,18 @@
         track.classList.add('is-verified');
         status.classList.add('is-success');
         status.textContent = t('success','Signed in');
-        await pause(510);
-        window.location.assign(result.account_url);
+        await pause(420);
+        // This document was rendered as an anonymous WooCommerce page. A
+        // same-URL navigation can show a cached guest view even after the
+        // server has issued a valid WordPress login cookie. Force an uncached
+        // full DOCUMENT navigation with a one-time public cache-buster.
+        const destination = new URL(result.account_url, window.location.href);
+        if (destination.origin !== window.location.origin) {
+          throw Error(t('responseInvalid','Sign-in response could not be verified.'));
+        }
+        destination.searchParams.set('sf_quick_auth', Date.now().toString(36));
+        section.classList.add('is-auth-redirecting');
+        window.location.replace(destination.href);
       } catch (error) {
         await mergeFinished;
         status.textContent = error.message || t('failed','Sign-in failed. Try again.');
