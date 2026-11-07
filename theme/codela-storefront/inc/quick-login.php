@@ -265,6 +265,20 @@ add_action( 'profile_update', static function( $user_id, $old_user ): void {
 }, 10, 2 );
 
 
+/**
+ * Use a fresh public URL only after Woo login/logout has genuinely succeeded.
+ * The session remains authoritative; these URLs contain NO credential.
+ * Do not override merchant redirect rules for checkout or other destinations.
+ */
+function codela_sf_quick_fresh_account_redirect( $redirect ) {
+    if ( ! is_string( $redirect ) || ! function_exists( 'wc_get_page_permalink' ) ) { return $redirect; }
+    $account = (string) wc_get_page_permalink( 'myaccount' );
+    if ( '' === $account || untrailingslashit( $redirect ) !== untrailingslashit( $account ) ) { return $redirect; }
+    return add_query_arg( 'sf_quick_auth', bin2hex( random_bytes( 8 ) ), $account );
+}
+add_filter( 'woocommerce_login_redirect', 'codela_sf_quick_fresh_account_redirect', 20 );
+add_filter( 'woocommerce_logout_default_redirect_url', 'codela_sf_quick_fresh_account_redirect', 20 );
+
 /** The WooCommerce account is session-specific, before and after logout. */
 add_action( 'template_redirect', static function(): void {
     if ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) { return; }
@@ -457,9 +471,11 @@ add_action( 'wp_enqueue_scripts', static function(): void {
         'nonce' => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
         'account' => wc_get_page_permalink( 'myaccount' ),
         'statusUrl' => admin_url( 'admin-ajax.php' ),
+        'accountPage' => function_exists( 'is_account_page' ) && is_account_page(),
         // Refresh old username-only hints on normal signed-in account visits.
-        'identity' => ( is_user_logged_in() && codela_sf_quick_customer( wp_get_current_user() ) )
-            ? [
+        // The authenticated account may be different from the saved device,
+        // including when a different Google identity or staff login is used.
+        'identity' => is_user_logged_in() ? [
                 'userId' => (int) wp_get_current_user()->ID,
                 'displayName' => codela_sf_quick_display_name( wp_get_current_user() ),
                 'email' => (string) wp_get_current_user()->user_email,
