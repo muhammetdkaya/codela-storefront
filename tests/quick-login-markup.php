@@ -34,6 +34,10 @@ require __DIR__ . '/../theme/codela-storefront/inc/quick-login.php';
 ob_start();
 codela_sf_quick_guest_markup();
 $html = ob_get_clean();
+if ( '1' === getenv( 'CODELA_RENDER_ONLY' ) ) {
+    echo $html;
+    exit;
+}
 check( str_contains( $html, 'class="sf-quick-account' ), 'Remembered account is a single primary action' );
 check( str_contains( $html, 'sf-quick-user' ), 'Account name placeholder exists' );
 check( ! str_contains( $html, 'Welcome back' ), 'No redundant welcome heading' );
