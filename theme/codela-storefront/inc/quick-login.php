@@ -263,6 +263,19 @@ function codela_sf_quick_settings(): void {
 }
 add_action( 'woocommerce_edit_account_form', 'codela_sf_quick_settings', 20 );
 
+/** After WooCommerce registration/sign-in, suggest setup; never demand a PIN. */
+add_action( 'woocommerce_account_dashboard', static function(): void {
+    $user = wp_get_current_user();
+    if ( ! codela_sf_quick_customer( $user ) || ! function_exists( 'wc_get_account_endpoint_url' ) ) { return; }
+    $devices = codela_sf_quick_devices( $user->ID );
+    if ( $devices ) { return; }
+    $url = wc_get_account_endpoint_url( 'edit-account' ) . '#sf-quick-settings';
+    echo '<div class="sf-quick-onboarding"><h3>' . esc_html__( 'Quick sign in', 'codela-storefront' ) . '</h3>'
+        . '<p>' . esc_html__( 'Set a 6-digit code to sign in faster on this browser next time.', 'codela-storefront' ) . '</p>'
+        . '<a class="sf-ui-button" href="' . esc_url( $url ) . '">' . esc_html__( 'Enable quick sign in', 'codela-storefront' ) . '</a></div>';
+}, 20 );
+
+
 add_action( 'wp_enqueue_scripts', static function(): void {
     // The login overlay can be opened on any storefront page by a guest.
     if ( is_user_logged_in() && ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) ) { return; }
