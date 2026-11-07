@@ -257,7 +257,7 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
           && action.nowrap==='nowrap','Email signup stays on ONE line, without text clipping');
         assert(action.outsideLogin && action.parent.includes('woocommerce'),'Signup must not sit inside a Woo form-row');
         assert.equal(action.bg,'rgb(237, 237, 237)','Signup uses the standard UI Kit tonal surface');
-        assert.equal(action.ink,'rgb(32, 32, 32)','Signup uses the standard UI Kit ink');
+        assert.equal(action.ink,'rgb(34, 36, 40)','Signup uses the existing Account UI Kit ink');
         assert.equal(action.anchor,'#sf-auth-register','Progressive signup link targets the native Woo registration view');
         await page.locator('.sf-auth-register-cta').click();
         assert.equal(await page.locator('#reg_email').getAttribute('placeholder'),'Email address','Registration retains native email placeholder');
