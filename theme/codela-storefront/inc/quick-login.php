@@ -216,7 +216,7 @@ function codela_sf_quick_guest_markup(): void {
                 <?php else : ?>
                 <button type="button" class="sf-quick-digit sf-ui-pressable" data-quick-digit="<?php echo esc_attr( (string) $digit ); ?>"
                     aria-label="<?php echo esc_attr( 'erase' === $digit ? __( 'Delete digit', 'codela-storefront' ) : (string) $digit ); ?>">
-                    <?php echo 'erase' === $digit ? codela_sf_icon( 'delete' ) : esc_html( (string) $digit ); ?>
+                    <?php echo 'erase' === $digit ? '&#9003;' : esc_html( (string) $digit ); ?>
                 </button>
                 <?php endif; ?>
             <?php endforeach; ?>
@@ -235,7 +235,7 @@ function codela_sf_quick_settings(): void {
     if ( ! codela_sf_quick_customer( $user ) ) { return; }
     $devices = codela_sf_quick_devices( $user->ID );
     ?>
-    <section class="sf-quick-settings" data-user-id="<?php echo esc_attr( (string) $user->ID ); ?>"
+    <section class="sf-quick-settings" id="sf-quick-settings" data-user-id="<?php echo esc_attr( (string) $user->ID ); ?>"
         data-username="<?php echo esc_attr( (string) $user->display_name ); ?>">
         <h3><?php esc_html_e( 'Quick sign in', 'codela-storefront' ); ?></h3>
         <p><?php esc_html_e( 'Enable a 6-digit code for this browser. Your normal WooCommerce password will continue to work.', 'codela-storefront' ); ?></p>
