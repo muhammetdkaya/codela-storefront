@@ -416,8 +416,18 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
   box-shadow:none;color:#fff;font-size:14px;font-weight:630;
   text-decoration:none;line-height:1.3;
 }
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-auth-social .sf-auth-google,
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-auth-social .sf-auth-google:disabled{
-  background:#9d9da0;color:#fff;border-color:#9d9da0;opacity:1;
+  /* Preserve the same charcoal CTA even when OAuth has not been configured.
+     The HTML disabled attribute, not a gray-looking mock action, blocks use. */
+  background:#252628!important;
+  background-color:#252628!important;
+  border-color:#252628!important;
+  color:#fff!important;
+  opacity:1!important;
+}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-auth-social .sf-auth-google:disabled{
+  cursor:not-allowed;
 }
 .sf-auth-social .sf-auth-google .sf-google-glyph{
   position:absolute;left:22px;top:50%;transform:translateY(-50%);
