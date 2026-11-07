@@ -160,7 +160,8 @@
   border-color:var(--sf-quick-success);background:#f0f8f3;
 }
 .sf-quick-pin-track.is-verified .sf-quick-spinner{display:none}
-.sf-quick-pin-track.is-verified .sf-quick-check{display:block;stroke-dashoffset:0}
+.sf-quick-pin-track.is-verified .sf-quick-check{display:block;animation:sf-quick-draw .40s ease forwards}
+@keyframes sf-quick-draw{from{stroke-dashoffset:35}to{stroke-dashoffset:0}}
 .sf-quick-status{
   text-align:center!important;min-height:20px;
   margin:15px 0 17px!important;
