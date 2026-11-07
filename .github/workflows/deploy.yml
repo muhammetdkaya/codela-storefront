@@ -93,6 +93,8 @@ jobs:
           node tests/product-sheet-browser.cjs
           # Verify shared logged-out Account chrome and instantaneous real
           # header SVGs before the unrelated broad search navigation suite.
+          node tests/quick-login-browser.cjs
+          TEST_WEBKIT=1 node tests/quick-login-browser.cjs
           node tests/account-browser.cjs
           TEST_WEBKIT=1 node tests/navigation-feedback-bottom-browser.cjs
           node tests/navigation-browser.cjs
