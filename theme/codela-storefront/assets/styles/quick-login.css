@@ -150,7 +150,7 @@ html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-choice-alternatives{vis
   color:#18181b!important;background:#fff!important;border:1px solid #dedee3!important;
   box-shadow:0 4px 14px rgba(0,0,0,.035)!important;
 }
-.sf-quick-google:disabled{opacity:.62;cursor:not-allowed;filter:none!important;transform:none!important}
+.sf-quick-google:disabled{opacity:1!important;cursor:not-allowed;filter:none!important;transform:none!important}
 .sf-quick-google:hover,.sf-quick-switch.sf-quick-email-login:hover{filter:brightness(.96)}
 .sf-quick-google:active,.sf-quick-switch.sf-quick-email-login:active{transform:scale(.988)}
 .sf-quick-action-icon{display:grid;place-items:center;min-width:0}
@@ -165,7 +165,7 @@ html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-choice-alternatives{vis
   -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
 }
 .sf-quick-sheet{
-  position:fixed;bottom:var(--sf-quick-keyboard-lift,0px);left:0;right:0;
+  position:fixed;bottom:0;left:0;right:0;
   width:100%;max-width:540px;margin:0 auto;
   z-index:99999;
   padding:11px 22px max(18px,env(safe-area-inset-bottom));
@@ -179,6 +179,13 @@ html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-choice-alternatives{vis
   border:1px solid #e6e6e8!important;
   border-bottom:0;
   box-shadow:0 -12px 44px rgba(0,0,0,.09);
+}
+/* A focused native keyboard is not a CSS bottom inset on iOS: the visual
+   viewport can itself be scrolled. JS supplies the actual visible top. */
+.sf-quick-sheet.has-keyboard{
+  top:var(--sf-quick-visual-top,auto);bottom:auto;
+  max-height:var(--sf-quick-visual-height,calc(100dvh - 24px));
+  padding-bottom:18px;
 }
 .sf-quick-handle{width:35px;height:4px;border-radius:99px;background:#d9d9db;margin:0 auto 16px}
 .sf-quick-sheet-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0}
