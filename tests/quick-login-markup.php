@@ -41,6 +41,7 @@ if ( '1' === getenv( 'CODELA_RENDER_ONLY' ) ) {
 check( str_contains( $html, 'class="sf-quick-account' ), 'Remembered account is a single primary action' );
 check( str_contains( $html, 'sf-quick-user' ), 'Account name placeholder exists' );
 check( ! str_contains( $html, 'Welcome back' ), 'No redundant welcome heading' );
+check( str_contains( $html, 'Continue' ) && str_contains( $html, 'Sign in quickly with your saved account.' ), 'Balanced account intro is visible' );
 check( ! str_contains( $html, 'data-quick-digit' ), 'No bespoke numeric keypad' );
 check( preg_match_all( '/class="sf-quick-slot"/', $html ) === 6, 'Exactly six PIN cells' );
 check( str_contains( $html, 'inputmode="numeric"' ), 'Uses native device numeric keyboard' );
