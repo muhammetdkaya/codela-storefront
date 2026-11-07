@@ -474,7 +474,9 @@ add_action( 'woocommerce_account_dashboard', 'codela_sf_quick_dashboard_entry', 
  * form is revealed. This short head bootstrap does not authenticate anyone.
  */
 add_action( 'wp_head', static function(): void {
-    if ( is_user_logged_in() || ! function_exists( 'is_account_page' ) || ! is_account_page() ) { return; }
+    // Prepaint protection also covers the instant Account panel on other
+    // storefront pages. Only the visible view is masked; no navigation waits.
+    if ( is_user_logged_in() ) { return; }
     echo '<script>(function(){try{var p=JSON.parse(localStorage.getItem("codela_sf_quick_profile_v1")||"null");if(p&&Number.isSafeInteger(p.userId)&&/^[0-9a-f]{32}$/.test(p.deviceId||"")){document.documentElement.classList.add("sf-quick-checking");window.setTimeout(function(){document.documentElement.classList.remove("sf-quick-checking")},7000)}}catch(e){}})();</script>';
 }, 1 );
 
