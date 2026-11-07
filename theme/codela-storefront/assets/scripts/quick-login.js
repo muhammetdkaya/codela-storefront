@@ -240,6 +240,7 @@
     // Instead place its TOP at the actual bottom of the visible viewport.
     let sheetFrame = 0;
     let keyboardSettleUntil = 0;
+    let restingViewportHeight = window.visualViewport?.height || window.innerHeight;
     function resetSheetPosition() {
       if (sheetFrame) window.cancelAnimationFrame(sheetFrame);
       sheetFrame = 0;
@@ -252,8 +253,13 @@
       if (sheet.hidden) return;
       const viewport = window.visualViewport;
       const visibleBottom = viewport ? viewport.offsetTop + viewport.height : window.innerHeight;
-      const keyboardOpen = !!viewport && document.activeElement === input
-        && window.innerHeight - visibleBottom > 120;
+      // offsetTop can increase as Safari pans the visual viewport, cancelling
+      // the apparent keyboard inset. Compare against the pre-focus height too.
+      // Keep the panel docked while the keyboard closes after a PIN submit.
+      const keyboardOpen = !!viewport && (
+        restingViewportHeight - viewport.height > 120
+        || window.innerHeight - visibleBottom > 120
+      );
       sheet.classList.toggle('has-keyboard', keyboardOpen);
       if (keyboardOpen) {
         sheet.style.setProperty('--sf-quick-visual-height', Math.max(1, Math.floor(viewport.height - 12)) + 'px');
@@ -282,6 +288,7 @@
       sheet.hidden = false;
       section.classList.add('is-sheet-open');
       document.documentElement.classList.add('sf-quick-modal-open');
+      restingViewportHeight = window.visualViewport?.height || window.innerHeight;
       syncSheet(true);
       // A real account tap opens the native numeric keypad; viewport resize/
       // scroll events then keep the sheet joined to the keyboard accessory bar.
