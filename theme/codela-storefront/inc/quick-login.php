@@ -56,8 +56,8 @@ function codela_sf_quick_input( WP_REST_Request $request, string $key, int $max 
     return is_string( $value ) && strlen( $value ) <= $max ? $value : '';
 }
 
-function codela_sf_quick_failure( string $message = 'Hızlı giriş doğrulanamadı.', int $status = 401 ): WP_Error {
-    return new WP_Error( 'codela_quick_login_failed', $message, [ 'status' => $status ] );
+function codela_sf_quick_failure( string $message = '', int $status = 401 ): WP_Error {
+    return new WP_Error( 'codela_quick_login_failed', $message ?: __( 'Quick sign-in could not be verified.', 'codela-storefront' ), [ 'status' => $status ] );
 }
 
 function codela_sf_quick_device_id( string $id ): bool {
@@ -79,21 +79,21 @@ function codela_sf_quick_ip_limit( bool $record = false ): bool {
 
 function codela_sf_quick_enroll( WP_REST_Request $request ) {
     $user = wp_get_current_user();
-    if ( ! codela_sf_quick_customer( $user ) ) { return codela_sf_quick_failure( 'Bu hesapta hızlı giriş kullanılamaz.', 403 ); }
+    if ( ! codela_sf_quick_customer( $user ) ) { return codela_sf_quick_failure( __( 'Quick sign-in is not available for this account.', 'codela-storefront' ), 403 ); }
     $device = codela_sf_quick_input( $request, 'device_id', 64 );
     $public = codela_sf_quick_input( $request, 'public_key', 256 );
     $signature = codela_sf_quick_input( $request, 'signature', 256 );
     $pin = codela_sf_quick_input( $request, 'pin', 12 );
     if ( ! codela_sf_quick_device_id( $device ) || ! preg_match( '/^[0-9]{6}$/D', $pin )
         || ! codela_sf_quick_signature_valid( $public, 'codela-pin-enroll:v1:' . $device, $signature ) ) {
-        return codela_sf_quick_failure( 'Altı haneli kodu ve cihaz güvenliğini kontrol edin.', 400 );
+        return codela_sf_quick_failure( __( 'Check the six-digit code and this browser's security.', 'codela-storefront' ), 400 );
     }
     if ( preg_match( '/^(\d)\1{5}$/D', $pin ) || in_array( $pin, [ '123456', '654321', '012345', '111222' ], true ) ) {
-        return codela_sf_quick_failure( 'Daha güçlü bir altı haneli kod seçin.', 400 );
+        return codela_sf_quick_failure( __( 'Choose a stronger six-digit code.', 'codela-storefront' ), 400 );
     }
     $devices = codela_sf_quick_devices( $user->ID );
     if ( ! isset( $devices[ $device ] ) && count( $devices ) >= 5 ) {
-        return codela_sf_quick_failure( 'En fazla beş cihaz eklenebilir. Önce eski bir cihazı kaldırın.', 400 );
+        return codela_sf_quick_failure( __( 'You can add up to five browsers. Remove an old browser first.', 'codela-storefront' ), 400 );
     }
     $now = time();
     $devices[ $device ] = [
@@ -112,7 +112,7 @@ function codela_sf_quick_challenge( WP_REST_Request $request ) {
     $device = codela_sf_quick_input( $request, 'device_id', 64 );
     if ( ! codela_sf_quick_device_id( $device ) || ! $user_id
         || ! codela_sf_quick_ip_limit() || ! codela_sf_quick_request_limit( 'challenge:' . $device, 30 ) ) {
-        return codela_sf_quick_failure( 'Bir süre sonra tekrar deneyin.', 429 );
+        return codela_sf_quick_failure( __( 'Please try again later.', 'codela-storefront' ), 429 );
     }
     codela_sf_quick_ip_limit( true );
     codela_sf_quick_request_limit( 'challenge:' . $device, 30, true );
@@ -141,7 +141,7 @@ function codela_sf_quick_verify( WP_REST_Request $request ) {
     }
     $limit = 'verify:' . $user_id . ':' . $device;
     if ( ! codela_sf_quick_request_limit( $limit, 5 ) || ! codela_sf_quick_ip_limit() ) {
-        return codela_sf_quick_failure( 'Çok fazla deneme yapıldı. 15 dakika sonra şifreyle giriş yapın.', 429 );
+        return codela_sf_quick_failure( __( 'Too many attempts. Sign in with your password or try again in 15 minutes.', 'codela-storefront' ), 429 );
     }
     $key = 'sf_quick_ch_' . hash( 'sha256', $user_id . ':' . $device );
     $stored_challenge = get_transient( $key );
@@ -174,9 +174,9 @@ function codela_sf_quick_verify( WP_REST_Request $request ) {
 
 function codela_sf_quick_revoke( WP_REST_Request $request ) {
     $user = wp_get_current_user();
-    if ( ! codela_sf_quick_customer( $user ) ) { return codela_sf_quick_failure( 'İzin verilmedi.', 403 ); }
+    if ( ! codela_sf_quick_customer( $user ) ) { return codela_sf_quick_failure( __( 'Permission denied.', 'codela-storefront' ), 403 ); }
     $device = codela_sf_quick_input( $request, 'device_id', 64 );
-    if ( ! codela_sf_quick_device_id( $device ) ) { return codela_sf_quick_failure( 'Geçersiz cihaz.', 400 ); }
+    if ( ! codela_sf_quick_device_id( $device ) ) { return codela_sf_quick_failure( __( 'Invalid browser.', 'codela-storefront' ), 400 ); }
     $devices = codela_sf_quick_devices( $user->ID );
     unset( $devices[ $device ] );
     update_user_meta( $user->ID, '_codela_sf_quick_devices', $devices );
