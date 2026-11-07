@@ -198,7 +198,16 @@ function codela_sf_header(): string {
                 </div>
             </section>
             <?php if ( $catalog_page ) : ?><section class="sf-panel-body" id="sf-filters" hidden><?php echo codela_sf_catalog_filters(); ?></section><?php endif; ?>
-            <section class="sf-panel-body" id="sf-cart" hidden><div id="sf-cart-items"></div></section>
+            <section class="sf-panel-body" id="sf-cart" hidden>
+                <?php
+                // Optional Codela module integration: no duplicate threshold or message logic in the theme.
+                $cart_progress = apply_filters( 'codela_storefront_cart_progress', '' );
+                if ( is_string( $cart_progress ) && '' !== $cart_progress ) :
+                ?>
+                <div id="sf-cart-progress"><?php echo $cart_progress; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped by the supplying module. ?></div>
+                <?php endif; ?>
+                <div id="sf-cart-items"></div>
+            </section>
             <div class="sf-cart-bottom" hidden><div class="sf-subtotal"><span><?php esc_html_e( 'Subtotal', 'codela-storefront' ); ?></span><strong id="sf-subtotal"></strong></div><p><?php esc_html_e( 'Shipping and discounts are calculated at checkout.', 'codela-storefront' ); ?></p><?php echo codela_sf_ui_primary_link( wc_get_checkout_url(), __( 'Checkout', 'codela-storefront' ) ); ?></div>
             <p class="sf-status" id="sf-status" role="status" aria-live="polite"></p>
         </dialog>
