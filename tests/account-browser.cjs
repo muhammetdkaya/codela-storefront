@@ -212,7 +212,7 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
           .map(rule=>rule.cssText.slice(0,450)).slice(-12)
         })));
         assert.equal(social.border,'1px','Google secondary UI Kit Button must retain its visible border');
-        assert.notEqual(social.borderColor,social.background,'Google uses the theme's neutral outline border');
+        assert.notEqual(social.borderColor,social.background,"Google uses the theme neutral outline border");
         assert.equal(social.display,'flex','Google uses centered text plus a positioned multicolor icon');
         assert(Math.abs(social.textCenter-social.buttonCenter)<1,
           'Google label is centered in the complete Button regardless of glyph width');
