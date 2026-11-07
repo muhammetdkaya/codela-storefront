@@ -24,6 +24,7 @@ assert(php.includes("codela_sf_icon( 'arrow-right' )"),'Saved-account trailing i
 assert(php.includes('sf-quick-choice-alternatives') && php.includes('sf-quick-email-login'),'Reference actions belong below the account card');
 assert(php.includes('sf-quick-google') && php.includes('disabled aria-label='),'Google button stays visible but safely disabled without configured OAuth');
 assert(css.includes('.sf-quick-or') && css.includes('.sf-quick-google'),'Divider and Google CTA have dedicated styles');
+assert(css.includes('background:#252628!important;background-image:none!important'), 'Remembered Google button uses the same dark Codela surface without a secondary tint');
 assert(!js.includes("data-quick-digit"),'No custom number keypad should be used');
 
 assert(js.includes("currentBrowserStatus(profile, privateKey)") &&
@@ -63,8 +64,10 @@ assert(css.includes('background:#fff!important;color:#252527!important'),'PIN mo
 assert(css.includes('.sf-quick-sheet-links')&&css.includes('background:#f8f8f9!important'),'Password/recovery footer uses an integrated surface');
 
 assert(css.includes("@media(prefers-reduced-motion:reduce)"),'Reduced-motion setting respected');
-assert(php.includes('sf-quick-remove-line') && js.includes("removeAccount?.addEventListener('click'"),
- 'Removing a remembered account clears local device data and reopens native Woo login');
+assert(!php.includes('sf-quick-remove-line') && !js.includes('sf-quick-remove'),
+ 'Remembered account removal is absent from guest UI and handler');
+assert(js.includes('await forgetRemembered(profile)'),
+ 'Revoked or mismatched remembered identities still clear local device data');
 assert(php.includes("'wp_head'") && php.includes('sf-quick-checking'),
  'Prepaint device hint suppresses the native form until status verification');
 assert(js.includes("document.documentElement.classList.remove('sf-quick-checking')"),

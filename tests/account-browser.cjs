@@ -14,6 +14,8 @@ assert(guestHeader.includes('class="sf-header') && guestHeader.includes('sf-mobi
   guestHeader.includes('class="sf-panel"'),'Logged-out My Account uses the same header, dock and panel as the store');
 assert(!guestHeader.includes('sf-auth-site-header') && !guestHeader.includes('sf-auth-shell'),
   'There is no separate standalone login header');
+assert(guestHeader.includes('sf-account-context-heading') && guestHeader.includes('user-round.svg') && guestHeader.includes('My account'),
+  'Guest account header has the same icon and title as signed-in root');
 assert(guestHeader.includes('data-dock-view="account"') && guestHeader.includes('is-active'),
   'My Account is the selected bottom navigation tab');
 assert(!guestHeader.includes('class="sf-panel-body sf-account-body"'),

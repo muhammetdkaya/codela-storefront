@@ -1,3 +1,7 @@
+## 7 Kasım 2026 — 0.1.233 Hesabım görsel düzeltme adayı
+
+Kullanıcının açık “Uygula yayınla” talebiyle 0.1.232 → 0.1.233 kaynak adayı: guest/kayıtlı root Hesabım header kullanıcı simgesi + başlığı; Google CTA tüm görünümlerde ortak koyu yüzey; “Bu hesabı kaldır” guest eylemi ve gereksiz kod kaldırılır. Tanınan hesap/PIN/cihaz iptali, gerçek Woo formu, hızlı panel ve checkout/ürün/sepet değişmez. GitHub CI ve stable release gerçekleşmeden tamamlandı denmemeli. Sıradaki: CI sonucunu doğrula, [github-only] ile ana dala birleştir, kaynak SHA sabitlenince `.releases/storefront.json` üzerinden yeni sürümü ve stable beslemeyi yayımla; FTP veya AZ canlı kurulum yapılmadıkça yapılmış sayma.
+
 ## 7 Kasım 2026 — 0.1.230 GitHub yayını doğrulandı
 
 Kullanıcının açık onayıyla [PR #122](https://github.com/muhammetdkaya/codela-storefront/pull/122) `1f63706` üzerinden ana dala birleşti. Tema 0.1.229 → 0.1.230; eklenti değişmedi. Test edilen kaynak ve tag `7b7b7c1736ba3dba1e2208ef01b5688387fa4be9`. Bu tam kaynağın [genel doğrulama/tarayıcı CI](https://github.com/muhammetdkaya/codela-storefront/actions/runs/42383141981), [Chromium/WebKit vitrin CI](https://github.com/muhammetdkaya/codela-storefront/actions/runs/42383142041) ve [quick-login/güvenlik CI](https://github.com/muhammetdkaya/codela-storefront/actions/runs/42383142124) başarılı; deploy atlandı.

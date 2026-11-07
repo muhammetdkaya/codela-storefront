@@ -49,7 +49,7 @@ check( str_contains( $html, 'sf-quick-wave' ), 'Waving-hand emoji follows the he
 check( str_contains( $html, 'sf-quick-email' ), 'Saved account email line is present' );
 check( str_contains( $html, "codela_sf_icon( 'chevron-left' )" ) === false && str_contains( $html, 'sf-quick-chevron' ), 'Account card has a slim chevron' );
 check( str_contains( $html, 'sf-quick-or' ) && str_contains( $html, 'sf-quick-email-login' ), 'Alternative password login remains available beneath or separator' );
-check( str_contains( $html, 'sf-quick-remove' ), 'Remembered account can be removed without changing WooCommerce credentials' );
+check( ! str_contains( $html, 'sf-quick-remove' ) && ! str_contains( $html, 'Remove this account' ), 'Remembered account removal is absent from guest UI' );
 check( str_contains( $html, 'sf-quick-google' ) && str_contains( $html, 'disabled aria-label=' ), 'Google entry renders as safely disabled if OAuth is not configured' );
 check( ! str_contains( $html, 'data-quick-digit' ), 'No bespoke numeric keypad' );
 check( preg_match_all( '/class="sf-quick-slot"/', $html ) === 6, 'Exactly six PIN cells' );
