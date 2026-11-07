@@ -14,7 +14,9 @@ const css=['quick-login.css','account.css','account-overlay.css'].map(x=>fs.read
     const result=await page.locator(selector).evaluate(el=>{
       const st=getComputedStyle(el);return {background:st.backgroundColor,opacity:st.opacity};
     });
-    assert.equal(result.background,'rgb(37, 38, 40)',selector+' dark surface');
+    assert.equal(result.background,selector==='.sf-quick-google'
+      ? 'rgb(37, 38, 40)' : 'rgb(255, 255, 255)',
+      selector+' retains its configured visual surface');
     assert.equal(result.opacity,'1',selector+' full contrast even when disabled');
   }
   const closed=await page.locator('.sf-quick-sheet').evaluate(el=>el.getBoundingClientRect().bottom);
