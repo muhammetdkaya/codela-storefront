@@ -27,6 +27,7 @@ function user_can( $user, $cap ) { return !empty($GLOBALS['admin']); }
 function get_user_meta($id,$key,$single=true) { return $GLOBALS['meta'][$id][$key]??null; }
 function update_user_meta($id,$key,$value) { $GLOBALS['meta'][$id][$key]=$value; }
 function delete_user_meta($id,$key) { unset($GLOBALS['meta'][$id][$key]); }
+function wp_salt($scheme) { return 'test-secret-not-in-database'; }
 function wp_hash_password($password) { return password_hash($password, PASSWORD_BCRYPT); }
 function wp_check_password($password,$hash,$uid) { return password_verify($password,$hash); }
 function wp_get_current_user() { return $GLOBALS['user']; }
