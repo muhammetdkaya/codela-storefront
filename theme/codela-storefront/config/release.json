@@ -6,10 +6,9 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Normal giriş ve kayıt ekranlarında üstte aynı 2 sekmeli, kayarak değişen beyaz cam yüzey geri geldi; hızlı açılan Hesabım paneli ile doğrudan Hesabım sayfası aynı tab seçiciyi kullanır.",
-    "Sekme değişiminde Hoş geldiniz 👋 / Hesap oluştur başlığı ve alt açıklama seçili WooCommerce giriş/kayıt formuna eşleşir; alt taraftaki tekrarlı kayıt bağlantısı kaldırıldı.",
-    "Tanınan hesap kendi sade ekranında kalır; hesap kaldırma, Google ve e-posta/şifre alternatifleri korunur; altı haneli PIN paneli değiştirilmez.",
-    "Google giriş simgesi kayıt ve normal girişte de tanınan hesaptaki çok renkli SVG ile aynı, butonlar tüm ekranlarda koyu Codela stili ve kurulum yoksa pasif görünüm kullanır.",
-    "Kayıt/giriş form gönderimi, nonce yenileme, şifre sıfırlama, oturum kontrolü ve hızlı dock paneli gerçek WooCommerce işleyişinde kalır."
+    "Doğrudan açılan Hesabım sayfasının üst sol başlığı artık site logosu değil, hızlı açılan Hesabım paneliyle aynı kullanıcı ikonu ve Hesabım etiketi.",
+    "Google ile devam et düğmesi Hesabım sayfası, anlık Hesabım paneli ve tanınan hesapta koyu Codela rengini korur; OAuth kurulumu yoksa görsel olarak koyu ama HTML disabled ile kullanılamaz kalır.",
+    "Tanınan hesaptaki Bu hesabı kaldır bağlantısı, JavaScript işleyicisi ve CSS alanı kaldırıldı; güvenli otomatik cihaz iptali ve oturum değişimindeki anahtar temizliği korunuyor.",
+    "Giriş/kayıt kayan sekmeleri, PIN hızlı girişi, WooCommerce oturum ve kayıt doğrulaması değiştirilmedi."
   ]
 }
