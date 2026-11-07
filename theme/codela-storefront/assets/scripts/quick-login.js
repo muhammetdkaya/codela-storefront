@@ -10,6 +10,7 @@
   const savedKey = 'codela_sf_quick_profile_v1';
   const databaseName = 'codela_sf_quick_keys_v1';
   const encoding = new TextEncoder();
+  const t = (key, fallback) => config.strings?.[key] || fallback;
   const log = () => {
     try {
       const profile = JSON.parse(localStorage.getItem(savedKey) || 'null');
@@ -85,7 +86,7 @@
     });
     let body = {};
     try { body = await response.json(); } catch (_) {}
-    if (!response.ok) throw Error(body.message || 'İşlem tamamlanamadı. Tekrar deneyin.');
+    if (!response.ok) throw Error(body.message || t('requestFailed','Request could not be completed. Try again.'));
     return body;
   }
   const randomDeviceId = () => Array.from(crypto.getRandomValues(new Uint8Array(16)))
@@ -103,7 +104,7 @@
     const buttons = [...section.querySelectorAll('[data-quick-digit]')];
     const status = section.querySelector('.sf-quick-status');
     const username = section.querySelector('.sf-quick-user');
-    username.textContent = profile.username || 'Hesabınız';
+    username.textContent = profile.username || t('account','Your account');
     section.hidden = false;
     host.classList.add('sf-pin-active');
     let pin = '';
@@ -117,7 +118,7 @@
     async function submit() {
       if (pin.length !== 6 || pending) return;
       lock(true);
-      status.textContent = 'Giriş yapılıyor…';
+      status.textContent = t('waiting','Signing in…');
       try {
         const challenge = await request('challenge', {
           user_id:profile.userId, device_id:profile.deviceId
@@ -129,14 +130,14 @@
           challenge:challenge.challenge, signature:signed, pin
         });
         pin = '';
-        status.textContent = 'Giriş başarılı';
+        status.textContent = t('success','Signed in');
         if (result.ok && typeof result.account_url === 'string') {
           window.location.assign(result.account_url);
           return;
         }
-        throw Error('Giriş yanıtı doğrulanamadı.');
+        throw Error(t('responseInvalid','Sign-in response could not be verified.'));
       } catch (error) {
-        status.textContent = error.message || 'Giriş başarısız. Tekrar deneyin.';
+        status.textContent = error.message || t('failed','Sign-in failed. Try again.');
         pin = '';
         render();
         section.classList.add('is-error');
@@ -179,11 +180,11 @@
     button?.addEventListener('click', async () => {
       const pin = pinInput.value;
       if (!/^[0-9]{6}$/.test(pin) || pin !== confirm.value) {
-        status.textContent = 'Altı rakam girin ve aynı kodu iki kez yazın.';
+        status.textContent = t('pinMismatch','Enter and confirm the same six digits.');
         return;
       }
       button.disabled = true;
-      status.textContent = 'Cihaz güvenli biçimde eşleştiriliyor…';
+      status.textContent = t('linking','Linking this browser securely…');
       let deviceId = '';
       try {
         const keypair = await crypto.subtle.generateKey(
@@ -201,11 +202,11 @@
         }));
         pinInput.value = '';
         confirm.value = '';
-        status.textContent = 'Hızlı giriş bu tarayıcıda etkinleştirildi.';
+        status.textContent = t('enabled','Quick sign-in is enabled for this browser.');
         window.location.reload();
       } catch (error) {
         if (deviceId) try { await forgetKey(deviceId); } catch (_) {}
-        status.textContent = error.message || 'Etkinleştirme tamamlanamadı.';
+        status.textContent = error.message || t('enableFailed','Could not enable quick sign-in.');
       } finally { button.disabled = false; }
     });
     settings.querySelectorAll('.sf-quick-revoke').forEach(button => {
@@ -221,7 +222,7 @@
           }
           window.location.reload();
         } catch (error) {
-          status.textContent = error.message || 'Cihaz kaldırılamadı.';
+          status.textContent = error.message || t('revokeFailed','Could not remove browser.');
           button.disabled = false;
         }
       });
