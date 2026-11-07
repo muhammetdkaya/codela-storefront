@@ -17,6 +17,7 @@ class Element extends Events{
   super();this.className=className;this.tagName=tag;this.nodeType=1;this.children=[];this.parent=null;this.dataset={};this.attrs=new Map();this.hidden=false;this.textContent='';this.scrollLeft=0;
   this.styles=new Map();this.style={setProperty:(k,v,p='')=>this.styles.set(k,{v,p}),removeProperty:k=>this.styles.delete(k),getPropertyValue:k=>this.styles.get(k)?.v||'',getPropertyPriority:k=>this.styles.get(k)?.p||''};
   this.classList={contains:k=>this.className.split(' ').includes(k),toggle:(k,on)=>{const set=new Set(this.className.split(' '));if(on)set.add(k);else set.delete(k);this.className=[...set].join(' ');}};
+  this.classList.add=k=>this.classList.toggle(k,true);this.classList.remove=k=>this.classList.toggle(k,false);
  }
  getAttribute(key){return this.attrs.get(key)??null;}
  setAttribute(key,value){this.attrs.set(key,String(value));}
@@ -51,7 +52,7 @@ function setup({hero=true,count=3}={}){
  Object.defineProperty(window,'codelaSfVendors',{get(){throw Error('Production read removed vendor config')}});
  const observers=[],frames=new Map();let frame=0;
  class Observer{constructor(fn){this.fn=fn;this.disconnected=0;observers.push(this);}observe(){}disconnect(){this.disconnected++;}}
- const ctx={document,window,Symbol,Event,Map,MutationObserver:Observer,ResizeObserver:Observer,
+ const ctx={document,window,Symbol,Event,Map,MutationObserver:Observer,ResizeObserver:Observer,clearTimeout(){},
  matchMedia:query=>query.includes('reduced-motion')?reduced:{matches:false},getComputedStyle:()=>({direction:'ltr'}),
  requestAnimationFrame:fn=>{frames.set(++frame,fn);return frame;},cancelAnimationFrame:id=>frames.delete(id)};
  vm.createContext(ctx);const initial=gallery({hero,count});document.append(initial.section);vm.runInContext(source,ctx);
