@@ -15,13 +15,32 @@
   max-width:100%;
   font-family:inherit;
 }
+/* A saved profile hint triggers a prepaint pause. Never render the
+   native form briefly and then replace it with a recognized profile. */
+html.sf-quick-checking body.woocommerce-account .sf-account-intro,
+html.sf-quick-checking body.woocommerce-account #customer_login,
+html.sf-quick-checking body.woocommerce-account .sf-auth-social,
+html.sf-quick-checking body.woocommerce-account .sf-google-error{display:none!important}
+html.sf-quick-checking body.woocommerce-account .sf-quick-login[hidden]{display:block!important}
+html.sf-quick-checking body.woocommerce-account .sf-quick-login[hidden] .sf-quick-account{
+  visibility:visible;pointer-events:none;
+  background:linear-gradient(105deg,#f0f0f2 15%,#e8e8ea 45%,#f0f0f2 75%)!important;
+  background-size:220% 100%!important;
+  animation:sf-quick-preflight 1.2s linear infinite;
+}
+html.sf-quick-checking body.woocommerce-account .sf-quick-login[hidden] .sf-quick-account>*{visibility:hidden}
+html.sf-quick-checking body.woocommerce-account .sf-quick-login[hidden] :is(.sf-quick-choice-alternatives,.sf-quick-register-line){visibility:hidden}
+@keyframes sf-quick-preflight{to{background-position-x:-220%}}
+@media(prefers-reduced-motion:reduce){
+  html.sf-quick-checking body.woocommerce-account .sf-quick-login[hidden] .sf-quick-account{animation:none}
+}
 .sf-quick-login *{box-sizing:border-box}
 .sf-quick-login button,.sf-quick-login input{font-family:inherit}
 /* Remembered account landing: match the approved Codela welcome reference. */
 .sf-quick-choice{
   min-height:clamp(420px,56svh,590px);
-  width:100%;
-  padding:34px 18px 50px;
+  width:100%;max-width:480px;margin-inline:auto;
+  padding:34px 0 50px;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -29,7 +48,7 @@
   text-align:left;
   gap:0;
 }
-.sf-quick-choice-intro{width:min(100%,370px);text-align:left;margin:0 0 25px}
+.sf-quick-choice-intro{width:100%;text-align:left;margin:0 0 25px}
 .sf-quick-choice-intro h2{
   font-size:30px!important;font-weight:700!important;line-height:1.2!important;
   letter-spacing:-.85px;margin:0 0 9px!important;color:#161616!important;
@@ -41,7 +60,7 @@
 }
 .sf-quick-account{
   display:flex;align-items:center;gap:14px;
-  width:min(100%,370px);min-height:84px;
+  width:100%;min-height:84px;
   padding:14px 18px;
   color:var(--sf-quick-ink)!important;
   background:#fff!important;
@@ -79,9 +98,9 @@
 }
 .sf-quick-email[hidden]{display:none!important}
 .sf-quick-chevron{display:grid;place-items:center;flex:none;color:#252529!important}
-.sf-quick-chevron svg{width:19px;height:19px;transform:rotate(180deg)}
+.sf-quick-chevron svg{width:19px;height:19px;transform:none!important}
 .sf-quick-choice-alternatives{
-  width:min(100%,370px);display:flex;flex-direction:column;gap:11px;
+  width:100%;display:flex;flex-direction:column;gap:11px;
 }
 .sf-quick-or{
   display:flex;align-items:center;gap:16px;
@@ -111,6 +130,18 @@
   color:#18181b!important;background:#fff!important;border:1px solid #dedee3!important;
   box-shadow:0 4px 14px rgba(0,0,0,.035)!important;
 }
+.sf-quick-google:disabled{opacity:.62;cursor:not-allowed;filter:none!important;transform:none!important}
+.sf-quick-register-line{
+  width:100%;margin:48px auto 0;display:flex;justify-content:center;
+  align-items:center;gap:11px;color:#797980;font-size:13px;
+  line-height:1.5;
+}
+.sf-quick-register-line .sf-quick-register{
+  border:0!important;background:transparent!important;color:#242426!important;
+  min-height:32px;padding:4px 0!important;box-shadow:none!important;
+  font-size:13px!important;font-weight:650!important;cursor:pointer;
+}
+.sf-quick-register-line .sf-quick-register:focus-visible{outline:2px solid #242426;outline-offset:4px;border-radius:5px}
 .sf-quick-google:hover,.sf-quick-switch.sf-quick-email-login:hover{filter:brightness(.96)}
 .sf-quick-google:active,.sf-quick-switch.sf-quick-email-login:active{transform:scale(.988)}
 .sf-quick-action-icon{display:grid;place-items:center;min-width:0}
@@ -253,7 +284,7 @@
 @media(max-width:480px){
   .sf-quick-sheet{padding-inline:20px}
   .sf-quick-pin-track{gap:8px}
-  .sf-quick-choice{min-height:clamp(395px,55svh,590px);padding-inline:20px}
+  .sf-quick-choice{min-height:clamp(395px,55svh,590px);padding-inline:0}
 }
 @media(prefers-reduced-motion:reduce){
   .sf-quick-account,.sf-quick-slot,.sf-quick-slot i,.sf-quick-result,.sf-quick-check{transition:none!important}
