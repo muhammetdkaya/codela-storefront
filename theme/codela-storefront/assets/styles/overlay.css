@@ -299,6 +299,24 @@
   font-size:12px;line-height:1.5;font-weight:400;
 }
 #sf-panel.is-product-cart .sf-cart-count{display:none}
+/* Optional module-owned shipping progress. Theme owns presentation, never calculations. */
+#sf-panel.is-cart-panel #sf-cart-progress{
+  max-width:780px;
+  margin:0 auto 16px;
+}
+#sf-panel.is-cart-panel #sf-cart-progress[hidden]{display:none!important}
+#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb{
+  margin:0;
+  padding:13px 15px;
+  border:1px solid var(--sf-ui-border);
+  border-radius:var(--sf-ui-control-radius);
+  background:var(--sf-ui-surface);
+  box-shadow:var(--sf-ui-glass-control-shadow);
+}
+#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb-track{
+  height:5px;
+  margin-top:9px;
+}
 #sf-panel.is-cart-panel .sf-stepper.sf-ui-surface{
   border-color:transparent;border-radius:var(--sf-ui-pill);
   --sf-ui-surface-shadow:var(--sf-ui-glass-thumb-shadow);
@@ -337,7 +355,7 @@
   #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-row{
     grid-template-columns:86px minmax(0,1fr);gap:12px;align-items:start;padding:12px 0;
   }
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-count + .sf-cart-row{padding-top:0}
+  #sf-panel.is-cart-panel:not(.is-product-cart) #sf-cart-items>.sf-cart-row:first-child{padding-top:0}
   #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-row>a{
     align-self:start;min-height:0;width:100%;height:auto;aspect-ratio:1;
   }
