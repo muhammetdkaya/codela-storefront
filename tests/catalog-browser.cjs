@@ -128,7 +128,8 @@ for(const width of [320,390,700,900,1280]){
  assert.equal(parity.card.border,'0px','Catalog action has no outer border');
  assert.notEqual(parity.card.background,parity.header.background,
    'Header glass and Catalog inner-disc paint are intentionally different');
- assert.equal(parity.glyph.w,24);assert.equal(parity.glyph.h,24);
+ // The compact add-to-cart glyph is 18px inside its 36px disc; the hit target stays 44px.
+ assert.equal(parity.glyph.w,18);assert.equal(parity.glyph.h,18);
  assert(Math.abs(parity.glyph.x)<.5 && Math.abs(parity.glyph.y)<.5,'Native glyph is centered in its shared target');
  await page.locator('.sf-menu-trigger,.sf-product-card-footer .sf-ui-icon-button').evaluateAll(els=>els.forEach(e=>e.classList.add('is-pressed')));
  await page.waitForTimeout(180);
@@ -176,7 +177,11 @@ for(const width of [320,390,700,900,1280]){
   }
   if(width<=700){assert(layout.brand.x<layout.menu.x,'Logo stays left');if(anchor)assert(Math.abs(layout.menu.x-anchor)<1,'Menu never changes slot');else anchor=layout.menu.x;
    assert.deepEqual(layout.tools,mode==='product'?['cart']:mode==='no-dock'?['search','cart','account']:[]);
-  }else{assert.equal(layout.tools.length,3,'Desktop keeps all tools');assert(layout.menu.x<layout.brand.x);}
+  }else{
+   assert.equal(layout.tools.length,3,'Desktop keeps all tools');
+   if(mode==='product')assert.equal(layout.brand.width,0,'Direct product has no empty Back island');
+   else assert(layout.menu.x<layout.brand.x,'Menu precedes the visible desktop brand');
+  }
  }
 }
 // Separate touch-only context: preserving a keyboard-pointer page keeps

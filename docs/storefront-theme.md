@@ -1,3 +1,7 @@
+## 7 Kasım 2026 — birleşik aday doğrulaması
+
+`e880f184` için Chromium/WebKit vitrin ve quick-login CI başarılı. Genel CI yalnız eski katalog ikon beklentisinde durdu: temiz `c3b1207` de 18px gerçek ölçüye karşı 24px bekleyen aynı testi kaybediyor. 0.1.216 kaynağı `e46c8775` 18px kompakt sepet ikonunu açıkça tanımlıyor. Aynı testin doğrudan ürün sayfasındaki gizli Back adasını görünür sanan eski koşulu da temiz ana dalda doğrulandı ve mevcut bağlamsal başlık sözleşmesine uyarlandı. Yalnız bu iki test beklentisi düzeltildi; katalog/başlık üretim davranışı değişmedi. Tam CI tekrar çalıştırılıyor. Ana dal, yayın ve canlı kurulum bu iş kapsamında değişmedi.
+
 ## 7 Kasım 2026 — test dalı güncel ana dalla uzlaştırıldı
 
 Taslak PR #122'nin ilk kaynağı `a5c966e` için Chromium/WebKit vitrin CI ve quick-login kontrolleri başarılı. Genel CI ortak eşzamanlılık grubu nedeniyle başlamadan iptal edildi. Kullanıcı hesabına ait bağımsız 0.1.229 çalışması ve yayını `c3b1207` üzerinden test dalına aynen alındı; ana dala veya canlı siteye bu slider işiyle yazılmadı. Slider üretim kodu aynı, Türkçe çeviriler iki çalışmayı da koruyarak birleşti. Güncel birleşik adayın testleri/CI yeniden doğrulanıyor; bu iş yeni sürüm çıkarmıyor.
@@ -8,7 +12,7 @@ Canlı 0.1.228 ana sayfasında beş slaytın otomatik ilerlemediği ve masaüst�
 
 Yerel Chromium: yeni hareket kabulü, mevcut ana sayfa testleri, 107 vitrin yerleşim senaryosu ve native galeri regresyonu (gerçek touch/wheel dahil) geçti. PHP/UI Kit, caption/native yaşam döngüsü, yeni zamanlayıcı/pointer sözleşmeleri, 24 paket ve üç asset testi başarılı. Önceki kaynak yeni autoplay testinde beklendiği gibi başarısız. Ayrıntılar: [vitrin hareketi kabulü](showcase-motion-2026-11-07.md).
 
-Yayın durumu: kullanıcı yalnız test dalı ve taslak PR paylaşımını onayladı. Ana dal, sürüm/tag, stable besleme, FTP ve AZ kurulumu değiştirilmedi. WebKit/uzak CI, fiziksel Safari ve canlı kurulum kabulü henüz tamamlanmadı. Sıradaki: taslak PR'ın tam commitinde CI'ı doğrula; merge/release/kurulum için ayrıca yetkili kapsamı izle.
+Yayın durumu: kullanıcı yalnız test dalı ve taslak PR paylaşımını onayladı. Ana dal, sürüm/tag, stable besleme, FTP ve AZ kurulumu değiştirilmedi. Chromium/WebKit odaklı uzak CI başarılı; genel CI, fiziksel Safari ve canlı kurulum kabulü ayrı izleniyor. Sıradaki: taslak PR'ın tam commitinde CI'ı doğrula; merge/release/kurulum için ayrıca yetkili kapsamı izle.
 
 # 4 Kasım 2026 — 0.1.197 GitHub-only sürümü
 
