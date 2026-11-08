@@ -119,12 +119,30 @@ function codela_sf_pk_register( WP_REST_Request $request ) {
 function codela_sf_pk_assertion_options( WP_REST_Request $request ) {
     if ( ! codela_sf_pk_origin() || ! codela_sf_quick_ip_limit() ) { return codela_sf_pk_error( 429 ); }
     codela_sf_quick_ip_limit( true );
+    // A previously enrolled browser knows its high-entropy credential ID.
+    // Resolve it server-side: never trust the localStorage identity by itself.
+    // Only an active registered credential is allowed into the targeted flow.
+    $hint = $request->get_param( 'credential_id' );
+    $allowed_id = '';
+    if ( is_string( $hint ) && strlen( $hint ) <= 1368 ) {
+        $raw = codela_sf_pk_decode( $hint, 1024 );
+        if ( $raw && hash_equals( $hint, codela_sf_pk_encode( $raw ) ) ) {
+            $owner_id = absint( get_option( codela_sf_pk_option( $hint ), 0 ) );
+            $owner = $owner_id ? get_user_by( 'id', $owner_id ) : null;
+            $stored = $owner_id ? codela_sf_pk_credentials( $owner_id ) : [];
+            if ( codela_sf_pk_enabled( $owner ) && isset( $stored[ $hint ] )
+                && empty( $stored[ $hint ]['paused'] ) ) {
+                $allowed_id = $hint;
+            }
+        }
+    }
     $id = bin2hex( random_bytes( 16 ) );
     $challenge = codela_sf_pk_encode( random_bytes( 32 ) );
-    set_transient( 'sf_pk_req_' . $id, $challenge, 120 );
+    set_transient( 'sf_pk_req_' . $id, [ 'challenge' => $challenge, 'allowed_id' => $allowed_id ], 120 );
     return rest_ensure_response( [ 'requestId' => $id,
         'publicKey' => [ 'challenge' => $challenge, 'rpId' => codela_sf_pk_host(), 'timeout' => 90000,
-            'userVerification' => 'required', 'allowCredentials' => [] ],
+            'userVerification' => 'required',
+            'allowCredentials' => $allowed_id ? [ [ 'type' => 'public-key', 'id' => $allowed_id ] ] : [] ],
     ] );
 }
 function codela_sf_pk_assert( WP_REST_Request $request ) {
@@ -134,8 +152,10 @@ function codela_sf_pk_assert( WP_REST_Request $request ) {
     $request_id = is_string( $body['requestId'] ?? null ) ? $body['requestId'] : '';
     if ( ! preg_match( '/^[a-f0-9]{32}$/D', $request_id ) ) { return codela_sf_pk_error(); }
     $transient = 'sf_pk_req_' . $request_id;
-    $challenge = get_transient( $transient );
+    $challenge_record = get_transient( $transient );
     delete_transient( $transient ); // Reject replay before cryptographic verification.
+    $challenge = is_array( $challenge_record ) ? ( $challenge_record['challenge'] ?? '' ) : $challenge_record;
+    $allowed_id = is_array( $challenge_record ) ? (string) ( $challenge_record['allowed_id'] ?? '' ) : '';
     $id = is_string( $body['id'] ?? null ) ? $body['id'] : '';
     $response = is_array( $body['response'] ?? null ) ? $body['response'] : [];
     $decoded = codela_sf_pk_decode( $id, 1024 );
@@ -143,7 +163,8 @@ function codela_sf_pk_assert( WP_REST_Request $request ) {
         ? codela_sf_pk_client_data( $response['clientDataJSON'] ?? null, 'webauthn.get', $challenge ) : false;
     $auth = codela_sf_pk_auth_data( $response['authenticatorData'] ?? null );
     $signature = codela_sf_pk_decode( $response['signature'] ?? null, 1024 );
-    if ( ! $decoded || ! hash_equals( $id, codela_sf_pk_encode( $decoded ) ) || ! $client || ! $auth || ! $signature ) {
+    if ( ! $decoded || ! hash_equals( $id, codela_sf_pk_encode( $decoded ) ) || ! $client || ! $auth || ! $signature
+        || ( $allowed_id && ! hash_equals( $allowed_id, $id ) ) ) {
         return codela_sf_pk_error();
     }
     $user_id = absint( get_option( codela_sf_pk_option( $id ), 0 ) );
