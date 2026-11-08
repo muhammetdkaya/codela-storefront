@@ -121,6 +121,9 @@ function preventInitialAccountAutoFocus() {
                     }
                 }
                 ready = true;
+                root.dispatchEvent(new CustomEvent('codela:auth-nonce-refreshed',{
+                    detail:{lookup_nonce:state.lookup_nonce||''}
+                }));
                 setWaiting(false);
             }).catch(() => {
                 // Fail closed for cached Woo nonces. A fresh full My Account
@@ -185,18 +188,22 @@ function preventInitialAccountAutoFocus() {
                 root.classList.remove('sf-auth-focus-mode');
             };
             const start = () => {
-                if (root.classList.contains('sf-auth-register-view')
+                if ((root.classList.contains('sf-auth-register-view')
+                    && !root.classList.contains('sf-smart-auth-active'))
                     || root.classList.contains('sf-pin-active')) return;
                 active = true;
                 root.classList.add('sf-auth-focus-mode');
             };
-            const isCredential = element => credentials.includes(element);
+            const isCredential = element => credentials.includes(element)
+                || !!(element?.matches?.('.sf-smart-identity,.sf-smart-name-fields input,'
+                    + '.woocommerce-form-register input[name="password"],'
+                    + '.woocommerce-form-register input[name="username"]'));
             // Track input focus, not password-manager suggestions or programmatic
             // selection of the login view.
-            loginForm.addEventListener('focusin', event => {
+            root.addEventListener('focusin', event => {
                 if (isCredential(event.target)) start();
             });
-            loginForm.addEventListener('focusout', () => {
+            root.addEventListener('focusout', () => {
                 window.requestAnimationFrame(() => {
                     if (!isCredential(document.activeElement)) stop();
                 });

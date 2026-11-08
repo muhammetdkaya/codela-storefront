@@ -5,7 +5,7 @@
  */
 (() => {
   'use strict';
-  const emailPattern = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const query = (root,selector) => root.querySelector(selector);
   function initRoot(root) {
     const intro = query(root,'.sf-account-intro');
@@ -130,6 +130,10 @@
       abort();
       active=input.value.trim();
       loginUser.value=active;
+      // Changing the identity must never display credentials typed for an
+      // entirely different customer in the same browser session.
+      loginPassword.value='';
+      if(registerPassword)registerPassword.value='';
       if(registerEmail && emailPattern.test(active))registerEmail.value=active;
       if(!active){setStage('start');return;}
       if(!active.includes('@')){
@@ -220,7 +224,6 @@
       input.value=registerEmail.value;active=input.value.trim();
       if(emailPattern.test(active))setStage('new');else setStage('start');
     }
-    root.querySelector('#sf-account')?.addEventListener('codela:account-open',updateSubmit);
     root.closest('#sf-account')?.addEventListener('codela:account-open',()=>{
       // Updated nonce is available after the native nonce refresh resolves.
       updateSubmit();

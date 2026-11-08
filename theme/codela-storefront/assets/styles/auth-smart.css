@@ -143,3 +143,9 @@
 @media(prefers-reduced-motion:reduce){
   .woocommerce.sf-smart-auth-active *{animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+
+/* Keep Google accessible in registration, unlike the former separate
+   registration page where this secondary action was intentionally hidden. */
+.woocommerce.sf-smart-auth-active.sf-auth-register-view > .sf-auth-social{
+ display:flex!important
+}

@@ -664,7 +664,9 @@
           arrow.setAttribute('aria-hidden','true');
           arrow.textContent='←';
           returnButton.append(arrow,document.createTextNode('Hızlı girişe dön'));
-          nativeForm.before(returnButton);
+          const social=host.querySelector('.sf-auth-social');
+          if(social)social.before(returnButton);
+          else nativeForm.before(returnButton);
         }
         const showNative=()=>{
           for(const child of group.querySelectorAll('.sf-quick-login.is-inline-open')){
