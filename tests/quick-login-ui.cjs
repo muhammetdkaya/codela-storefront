@@ -13,8 +13,10 @@ assert(js.includes("if (input.value.length === 6) void submit()"),'Sixth digit a
 assert(js.includes("choose.addEventListener('click', () => {") && js.includes('openInline()'),'Remembered account expands the existing card');
 assert(js.includes("input.focus({preventScroll:true})"),'A direct account tap opens the operating system numeric keyboard');
 assert(!js.includes("host.querySelector('input[name=\"username\"]')?.focus"),'Switching to email must not autofocus login fields');
-assert(js.includes('window.visualViewport') && js.includes('frame.scrollIntoView') && !js.includes('positionSheet()'),'Inline card stays visible above the actual iOS keyboard');
-assert(!css.includes('sf-quick-keyboard-lift'),'Do not lift fixed bottom sheet by keyboard height');
+assert(js.includes('window.visualViewport') && js.includes('browserChrome') && js.includes('safeBottom') && js.includes('naturalBottom') && !js.includes('positionSheet()'),'Inline card reserves native iOS keyboard and Safari toolbar visible area without fixed bottom sheet');
+assert(css.includes('var(--sf-quick-keyboard-lift,0px)') && js.includes("frame.style.setProperty('--sf-quick-keyboard-lift'"),'Only the expanded account card lifts to stay visible over native keyboard');
+assert(css.includes('.sf-quick-login.is-inline-open .sf-quick-inline-inner{visibility:visible;padding-bottom:18px}') && !css.includes('.sf-quick-inline-inner{padding-bottom:18px}'),'Collapsed remembered card must not retain expanded PIN padding');
+assert(css.includes('.sf-quick-account-frame::before') && !css.includes('.sf-quick-account::before'),'Skeleton uses the single actual outer card frame');
 assert(css.includes('.sf-quick-google:disabled{opacity:1!important'),'Disabled Google CTA preserves full dark background and logo colors');
 assert(js.includes('mergeSlots()') && js.includes("track.classList.add('is-merging')"),'The six square boxes converge to a single result');
 assert(js.includes("if (!result.ok || typeof result.account_url !== 'string')"),'Server authentication response is validated before success');

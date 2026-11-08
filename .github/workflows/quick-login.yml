@@ -17,6 +17,7 @@ on:
       - 'tests/account-instant-browser.cjs'
       - 'tests/quick-login-ui.cjs'
       - 'tests/account-keyboard-style-browser.cjs'
+      - 'tests/account-focus-browser.cjs'
       - '.github/workflows/quick-login.yml'
   workflow_dispatch:
 permissions:
@@ -58,3 +59,5 @@ jobs:
           node tests/account-instant-browser.cjs
           TEST_WEBKIT=1 node tests/account-instant-browser.cjs
           node tests/account-browser.cjs
+          node tests/account-focus-browser.cjs
+          TEST_WEBKIT=1 node tests/account-focus-browser.cjs

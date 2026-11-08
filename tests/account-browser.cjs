@@ -270,6 +270,10 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
         assert.equal(action.bg,'rgb(237, 237, 237)','Signup uses the standard UI Kit tonal surface');
         assert.equal(action.ink,'rgb(34, 36, 40)','Signup uses the existing Account UI Kit ink');
         assert.equal(action.anchor,'#sf-auth-register','Progressive signup link targets the native Woo registration view');
+        // Registration remains behind the focus scrim while typing.
+        // Close the native keyboard/field focus before switching views.
+        await page.evaluate(()=>document.activeElement?.blur());
+        await page.waitForFunction(()=>!document.querySelector('.woocommerce')?.classList.contains('sf-auth-focus-mode'));
         await page.locator('.sf-auth-register-cta').click();
         assert.equal(await page.locator('#reg_email').getAttribute('placeholder'),'Email address','Registration retains native email placeholder');
         assert.equal(await page.locator('#customer_login').getAttribute('data-auth-view'),'register','Register CTA selects native registration');

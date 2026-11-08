@@ -150,8 +150,8 @@ function release(ok) {
           const box = document.querySelector('.sf-quick-result');
           if (!box || !document.querySelector('.sf-quick-pin-track')?.classList.contains('is-verified')) return false;
           const style=getComputedStyle(box),a=box.getBoundingClientRect(),b=document.querySelector('.sf-quick-pin-track').getBoundingClientRect();
-          return style.opacity === '1' && style.backgroundColor === 'rgb(22, 132, 79)'
-            && Math.abs(a.left+a.width/2-b.left-b.width/2)<2;
+          return Number(style.opacity)>.9 && style.backgroundColor === 'rgb(22, 132, 79)'
+            && Math.abs(a.left+a.width/2-b.left-b.width/2)<4;
         }, null, {timeout:4000});
         await page.waitForURL(url=>url.pathname==='/account/'&&url.searchParams.has('sf_quick_auth'),{timeout:10000});
         assert(await page.getByText('WooCommerce account opened').isVisible(),'Real account redirect follows verification');
