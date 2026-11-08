@@ -406,3 +406,6 @@ html.sf-quick-checking #sf-panel.is-account-panel #sf-account
 @media(prefers-reduced-motion:reduce){.sf-pk-choice,.sf-pk-legacy-toggle span{transition:none}}
 
 .sf-pk-use-pin{display:block;margin:11px auto 0;padding:10px 14px;border:0;background:transparent;color:#67676d;font-size:12.5px;font-weight:560;cursor:pointer}
+
+.sf-pk-glyph svg,.sf-pk-symbol svg,.sf-pk-avatar svg{width:25px;height:25px;display:block}
+.sf-pk-symbol{display:grid;place-items:center}
