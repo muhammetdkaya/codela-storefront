@@ -223,7 +223,7 @@ function codela_sf_quick_browser_status(): void {
     wp_send_json( [
         'authenticated' => is_user_logged_in(),
         'active' => codela_sf_quick_status_active( $user_id, $device, $challenge, $signature ),
-        'paused' => ! empty( codela_sf_quick_devices( $user_id )[ $device ]['paused'] ),
+        'paused' => codela_sf_quick_status_active( $user_id, $device, $challenge, $signature ) && ! empty( codela_sf_quick_devices( $user_id )[ $device ]['paused'] ),
     ] );
 }
 add_action( 'wp_ajax_codela_sf_quick_status', 'codela_sf_quick_browser_status' );
