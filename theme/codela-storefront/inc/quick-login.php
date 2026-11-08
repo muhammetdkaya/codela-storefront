@@ -309,11 +309,38 @@ function codela_sf_quick_guest_markup(): void {
                 <h2><?php esc_html_e( 'Welcome', 'codela-storefront' ); ?> <span class="sf-quick-wave" aria-hidden="true">👋</span></h2>
                 <p><?php esc_html_e( 'Continue quickly with your account.', 'codela-storefront' ); ?></p>
             </div>
-            <button type="button" class="sf-quick-account sf-ui-pressable" aria-haspopup="dialog" aria-controls="sf-quick-sheet">
-                <span class="sf-quick-monogram" aria-hidden="true"></span>
-                <span class="sf-quick-account-text"><strong class="sf-quick-user"></strong><small class="sf-quick-email" hidden></small></span>
-                <span class="sf-quick-chevron" aria-hidden="true"><?php echo codela_sf_icon( 'arrow-right' ); ?></span>
-            </button>
+            <div class="sf-quick-account-frame">
+                <button type="button" class="sf-quick-account sf-ui-pressable"
+                    aria-expanded="false" aria-controls="sf-quick-inline-pin">
+                    <span class="sf-quick-monogram" aria-hidden="true"></span>
+                    <span class="sf-quick-account-text"><strong class="sf-quick-user"></strong><small class="sf-quick-email" hidden></small></span>
+                    <span class="sf-quick-chevron" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" focusable="false">
+                            <path d="m5 9 7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                </button>
+                <div class="sf-quick-inline-pin" id="sf-quick-inline-pin" aria-hidden="true">
+                    <div class="sf-quick-inline-inner">
+                        <div class="sf-quick-inline-divider" aria-hidden="true"></div>
+                        <p class="sf-quick-inline-label"><?php esc_html_e( 'Enter your 6-digit code.', 'codela-storefront' ); ?></p>
+                        <div class="sf-quick-pin-track">
+                            <?php for ( $i = 0; $i < 6; $i++ ) : ?>
+                                <span class="sf-quick-slot" aria-hidden="true"><i></i></span>
+                            <?php endfor; ?>
+                            <span class="sf-quick-result" aria-hidden="true">
+                                <svg class="sf-quick-check" width="30" height="30" viewBox="0 0 24 24" fill="none" focusable="false">
+                                    <path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            <input class="sf-quick-native-pin" type="text" inputmode="numeric" pattern="[0-9]*"
+                                maxlength="6" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done"
+                                aria-label="<?php esc_attr_e( '6-digit quick sign-in code', 'codela-storefront' ); ?>"/>
+                        </div>
+                        <p class="sf-quick-status" role="status" aria-live="polite"></p>
+                    </div>
+                </div>
+            </div>
             <div class="sf-quick-choice-alternatives">
                 <div class="sf-quick-or"><span><?php esc_html_e( 'or', 'codela-storefront' ); ?></span></div>
                 <?php $google_available = function_exists( 'codela_sf_google_enabled' ) && codela_sf_google_enabled(); ?>
@@ -346,36 +373,7 @@ function codela_sf_quick_guest_markup(): void {
 
         </div>
 
-        <div class="sf-quick-scrim" hidden></div>
-        <section class="sf-quick-sheet" id="sf-quick-sheet" role="dialog" aria-modal="true"
-            aria-labelledby="sf-quick-sheet-title" hidden>
-            <div class="sf-quick-handle" aria-hidden="true"></div>
-            <header class="sf-quick-sheet-head">
-                <h2 id="sf-quick-sheet-title"><?php esc_html_e( 'Quick sign-in', 'codela-storefront' ); ?></h2>
-                <button type="button" class="sf-quick-close" aria-label="<?php esc_attr_e( 'Close', 'codela-storefront' ); ?>"><span aria-hidden="true">&times;</span></button>
-            </header>
-            <p class="sf-quick-description"><?php esc_html_e( 'Enter your 6-digit code.', 'codela-storefront' ); ?></p>
-            <div class="sf-quick-pin-track">
-                <?php for ( $i = 0; $i < 6; $i++ ) : ?>
-                    <span class="sf-quick-slot" aria-hidden="true"><i></i></span>
-                <?php endfor; ?>
-                <span class="sf-quick-result" aria-hidden="true">
-                    <span class="sf-quick-spinner"></span>
-                    <svg class="sf-quick-check" width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </span>
-                <input class="sf-quick-native-pin" type="text" inputmode="numeric" pattern="[0-9]*"
-                    maxlength="6" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done"
-                    aria-label="<?php esc_attr_e( '6-digit quick sign-in code', 'codela-storefront' ); ?>"/>
-            </div>
-            <p class="sf-quick-status" role="status" aria-live="polite"></p>
-            <div class="sf-quick-sheet-links">
-                <button type="button" class="sf-quick-password"><?php esc_html_e( 'Sign in with password', 'codela-storefront' ); ?></button>
-                <span class="sf-quick-link-divider" aria-hidden="true"></span>
-                <a class="sf-quick-lost-password" href="<?php echo esc_url( wc_lostpassword_url() ); ?>"><?php esc_html_e( 'Forgot password?', 'codela-storefront' ); ?></a>
-            </div>
-        </section>
+        <div class="sf-quick-scrim" hidden aria-hidden="true"></div>
     </section>
     <?php
 }
