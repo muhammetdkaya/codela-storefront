@@ -80,7 +80,7 @@ ob_start();codela_sf_quick_dashboard_entry();$existing=ob_get_clean();
 check(str_contains($existing,'Manage quick sign-in'), 'PIN device management always discoverable');
 $GLOBALS['user'] = new WP_User(1, ['administrator'], 'admin');
 ob_start();codela_sf_quick_dashboard_entry();$administrator=ob_get_clean();
-check(str_contains($administrator,'Administrator and staff accounts')&&!str_contains($administrator,'Enable quick sign in'), 'Admin gets security explanation, never a PIN action');
+check(str_contains($administrator,'Administrators and shop managers can enable Face ID')&&!str_contains($administrator,'Enable quick sign in'), 'Admin gets security explanation, never a PIN action');
 ob_start();codela_sf_quick_settings();$restricted=ob_get_clean();
 check(str_contains($restricted,'sf-quick-role-notice')&&!str_contains($restricted,'sf-quick-create'), 'No admin PIN form, clear notice instead');
 echo "Account settings discovery and registration warning contracts passed\n";
