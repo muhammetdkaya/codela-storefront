@@ -167,10 +167,16 @@
   .woocommerce.sf-smart-auth-active *{animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
 
-/* Keep Google accessible in registration, unlike the former separate
-   registration page where this secondary action was intentionally hidden. */
-.woocommerce.sf-smart-auth-active.sf-auth-register-view > .sf-auth-social{
- display:flex!important
+/* Registration is a single focused flow, not another login-provider menu.
+   The original provider controls return when the email is edited to a
+   recognized address or the field is cleared. */
+.woocommerce.sf-smart-auth-active.sf-smart-new > :is(.sf-auth-social,.sf-quick-return,.sf-google-error){
+  display:none!important
+}
+/* When WooCommerce asks for a username, the email is submitted natively as
+   the login name. Never show an additional username input to customers. */
+.woocommerce.sf-smart-auth-active .woocommerce-form-register .sf-smart-register-username{
+  display:none!important
 }
 
 /* Trusted biometric/PIN identity cards always take priority over the
@@ -207,11 +213,20 @@ body.woocommerce-account .woocommerce.sf-smart-auth-active .sf-auth-back-login{
  display:none!important;visibility:hidden!important
 }
 
-/* The former standalone registration view hides Google. Smart registration
-   is not another page: keep the same Google alternative beneath both stages. */
-#sf-panel.is-account-panel .woocommerce.sf-smart-auth-active.sf-auth-register-view > .sf-auth-social,
-body.woocommerce-account:not(.logged-in) .woocommerce.sf-smart-auth-active.sf-auth-register-view > .sf-auth-social{
- display:flex!important;visibility:visible!important
+/* Native and instant Account layouts previously force-shown social
+   actions in register view. Override both specifically for smart sign-up. */
+#sf-panel.is-account-panel .woocommerce.sf-smart-auth-active.sf-smart-new > :is(.sf-auth-social,.sf-quick-return,.sf-google-error),
+body.woocommerce-account:not(.logged-in) .woocommerce.sf-smart-auth-active.sf-smart-new > :is(.sf-auth-social,.sf-quick-return,.sf-google-error){
+ display:none!important;visibility:hidden!important
+}
+/* Reliable ready state over Woo/custom form styles on BOTH hosts. */
+#sf-panel.is-account-panel .woocommerce.sf-smart-new.sf-smart-register-ready .woocommerce-form-register button[type="submit"],
+body.woocommerce-account:not(.logged-in) .woocommerce.sf-smart-new.sf-smart-register-ready .woocommerce-form-register button[type="submit"]{
+ display:flex!important;visibility:visible!important;opacity:1!important;
+ align-items:center;justify-content:center;
+ width:100%!important;min-height:54px!important;margin-top:7px!important;
+ border:1px solid #252628!important;border-radius:999px!important;
+ background:#252628!important;color:#fff!important
 }
 
 /* Direct focus state for browsers where :has() and independently animated
