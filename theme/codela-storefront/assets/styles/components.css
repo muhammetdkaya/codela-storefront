@@ -700,6 +700,7 @@ body.woocommerce-account:not(.codela-my-account-layout) .sf-content .wc-block-co
     #sf-panel.is-account-panel .woocommerce).sf-auth-focus-mode
   form.woocommerce-form-login :is(input.input-text,input[name="username"],input[name="password"]):focus{
     box-sizing:border-box;border:2px solid var(--sf-ui-ink)!important;
+    border-color:var(--sf-ui-ink)!important;
     outline:none!important;outline-offset:0!important;box-shadow:none!important;
     background:var(--sf-ui-surface);
 }
