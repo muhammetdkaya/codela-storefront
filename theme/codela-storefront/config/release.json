@@ -6,8 +6,9 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Alt menüden açılan ve doğrudan açılan Hesabım biyometrik giriş ekranlarının başlıkları sola hizalandı; alternatif giriş butonu aynı tam genişlik ve koyu renkte.",
-    "Normal girişte odak karartması header ve alt gezinmeyi de kapsar; kullanıcı adı, şifre ve Giriş Yap butonu önde kalır.",
-    "Klavye kapandığında karartma kalkar; Face ID, geçiş anahtarı, PIN ve WooCommerce oturum doğrulaması değişmedi."
+    "Normal girişte kullanıcı adı veya şifre alanına odaklanıldığında tema header ve alt gezinme menüsü tamamen gizlenir; odak bittiğinde geri görünür.",
+    "PIN ve Face ID aynı hesapta kayıtlıysa iki ayrı giriş ekranı yerine tek kart açılır. Kartın sağında birbirinden bağımsız Face ID ve 6 haneli PIN butonları bulunur.",
+    "Geçiş anahtarı çalıştırılırken 'Telefon doğrulaması açılıyor' satırı gösterilmez; biyometrik simgede düşük yoğunluklu Apple tarzı hareket uygulanır, işlem bitince durur.",
+    "Hızlı girişin başlangıç skeleton metni ve tipografisi ortak kartla uyumlu hale getirildi; WooCommerce ve WebAuthn doğrulama mantığı korunur."
   ]
 }
