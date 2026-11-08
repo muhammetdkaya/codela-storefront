@@ -61,8 +61,16 @@ $enrolled=codela_sf_pk_register(req([
 check(($enrolled['ok']??false)===true,'valid customer registration');
 check(get_option(codela_sf_pk_option($credential))==='17','credential map belongs to customer');
 check(count(codela_sf_pk_credentials(17))===1,'credential persisted');
-function assertion(string $id,OpenSSLAsymmetricKey $pair,string $auth,bool $wrongOrigin=false):array{
-    $o=codela_sf_pk_assertion_options(req());
+$targeted=codela_sf_pk_assertion_options(req(['credential_id'=>$credential]));
+check(count($targeted['publicKey']['allowCredentials'])===1,'known browser targets just its enrolled passkey');
+check($targeted['publicKey']['allowCredentials'][0]['id']===$credential,'same saved key is returned');
+$unknown=codela_sf_pk_assertion_options(req(['credential_id'=>codela_sf_pk_encode(random_bytes(32))]));
+check($unknown['publicKey']['allowCredentials']===[],'unknown browser hint cannot target an account');
+$unhinted=codela_sf_pk_assertion_options(req());
+check($unhinted['publicKey']['allowCredentials']===[],'no-hint request keeps safe discoverable fallback');
+
+function assertion(string $id,OpenSSLAsymmetricKey $pair,string $auth,bool $wrongOrigin=false,bool $targeted=false):array{
+    $o=codela_sf_pk_assertion_options(req($targeted?['credential_id'=>$id]:[]));
     $client=json_encode(['type'=>'webauthn.get','challenge'=>$o['publicKey']['challenge'],
         'origin'=>$wrongOrigin?'https://evil.test':'https://shop.test']);
     openssl_sign($auth.hash('sha256',$client,true),$sig,$pair,OPENSSL_ALGO_SHA256);
@@ -75,10 +83,24 @@ function assertion(string $id,OpenSSLAsymmetricKey $pair,string $auth,bool $wron
 }
 $bad=assertion($credential,$pair,$auth,true);
 check(codela_sf_pk_assert(req($bad)) instanceof WP_Error,'reject wrong origin');
+$bound=codela_sf_pk_assertion_options(req(['credential_id'=>$credential]));
+$another=codela_sf_pk_encode(random_bytes(32));
+$clientBound=json_encode(['type'=>'webauthn.get','challenge'=>$bound['publicKey']['challenge'],'origin'=>'https://shop.test']);
+openssl_sign($auth.hash('sha256',$clientBound,true),$boundSig,$pair,OPENSSL_ALGO_SHA256);
+$wrongCredential=req(['requestId'=>$bound['requestId'],'id'=>$another,'response'=>[
+    'clientDataJSON'=>codela_sf_pk_encode($clientBound),
+    'authenticatorData'=>codela_sf_pk_encode($auth),
+    'signature'=>codela_sf_pk_encode($boundSig)
+]]);
+check(codela_sf_pk_assert($wrongCredential) instanceof WP_Error,'targeted challenge rejects any other credential');
+
 check(!$GLOBALS['login'],'wrong-origin assertion cannot authenticate');
 $payload=assertion($credential,$pair,$auth);
 $ok=codela_sf_pk_assert(req($payload));
 check(($ok['ok']??false)===true,'valid signed assertion creates session');
+$targetedPayload=assertion($credential,$pair,$auth,false,true);
+check((codela_sf_pk_assert(req($targetedPayload))['ok']??false)===true,'saved key signs in with targeted challenge');
+
 check($GLOBALS['login']['cookie']===[17,true,true],'WordPress session cookie set securely');
 check(codela_sf_pk_assert(req($payload)) instanceof WP_Error,'request challenge is one-use');
 $other=openssl_pkey_new(['private_key_type'=>OPENSSL_KEYTYPE_EC,'curve_name'=>'prime256v1']);
