@@ -52,6 +52,87 @@ ${overlay?'</div></div>':''}</body></html>`;
       }
     }
     await page.close();
-    console.log('Passkey/native registration CSS visual isolation passed');
+
+    // Regression: when the same customer has BOTH trusted PIN and WebAuthn,
+    // the passkey module waits for the PIN server status. It must enrich one
+    // account card, never paint a second welcome/identity view in parallel.
+    const combined=await browser.newPage({viewport:{width:390,height:844}});
+    const origin='https://storefront-auth.test';
+    const combinedHtml='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head>'
+      +'<body class="woocommerce-account"><div class="woocommerce">'
+      +'<section class="sf-pk-guest" hidden><header class="sf-pk-hello"><h2>Hoş geldin 👋</h2></header>'
+      +'<button class="sf-pk-choice"><span class="sf-pk-symbol"><svg></svg></span></button>'
+      +'<button class="sf-pk-use-email">Email</button></section>'
+      +'<div class="sf-account-intro">Normal login</div>'
+      +'<div id="customer_login">Woo login</div>'
+      +'<section class="sf-quick-login" hidden><div class="sf-quick-choice">'
+      +'<div class="sf-quick-account-frame"><div class="sf-quick-account">'
+      +'<span class="sf-quick-account-text">Customer</span>'
+      +'<span class="sf-quick-methods"><button type="button" class="sf-quick-method sf-quick-method--passkey" hidden><svg viewBox="0 0 24 24"></svg></button>'
+      +'<button type="button" class="sf-quick-method sf-quick-method--pin">PIN</button></span>'
+      +'</div></div><div class="sf-quick-choice-alternatives"><button class="sf-quick-native-alt">Email</button></div></div></section>'
+      +'</div></body></html>';
+    await combined.route(origin+'/**',route=>{
+      const url=new URL(route.request().url());
+      if(url.pathname==='/account')return route.fulfill({status:200,contentType:'text/html',body:combinedHtml});
+      if(url.pathname==='/api/assert-options')return route.fulfill({status:200,contentType:'application/json',
+        body:JSON.stringify({requestId:'test-request',publicKey:{challenge:'YQ',allowCredentials:[],
+          rpId:'storefront-auth.test',userVerification:'required'}})});
+      return route.fulfill({status:404,contentType:'text/plain',body:'Not found'});
+    });
+    await combined.addInitScript(()=>{
+      localStorage.setItem('codela_sf_quick_profile_v1',JSON.stringify({
+        deviceId:'a'.repeat(32),userId:17,displayName:'Demo Demo'
+      }));
+      localStorage.setItem('codela_sf_passkey_hint_v1',JSON.stringify({
+        credentialId:'test-credential',userId:17,displayName:'Demo Demo',
+        email:'demo@example.test',paused:false
+      }));
+      window.PublicKeyCredential=class {};
+      Object.defineProperty(navigator,'credentials',{configurable:true,value:{
+        get:()=>new Promise((resolve,reject)=>{window.rejectAuth=reject})
+      }});
+      window.CodelaSFPasskey={rest:'/api',identity:null};
+    });
+    await combined.goto(origin+'/account');
+    await combined.addStyleTag({content:cssAccount+'\n'+cssOverlay+'\n'+cssQuick});
+    const passkeysScript=fs.readFileSync('theme/codela-storefront/assets/scripts/passkeys.js','utf8');
+    await combined.addScriptTag({content:passkeysScript});
+    assert.equal(await combined.locator('.sf-pk-guest').isVisible(),false,
+      'Saved passkey must not paint a second account before PIN server status');
+    assert.equal(await combined.locator('.sf-quick-login').isVisible(),false,
+      'PIN card remains hidden until the trusted browser is server verified');
+
+    await combined.evaluate(()=>{
+      const host=document.querySelector('.woocommerce');
+      const quick=host.querySelector('.sf-quick-login');
+      quick.hidden=false;
+      host.classList.add('sf-pin-active');
+      host.dataset.sfQuickStatus='active';host.dataset.sfQuickUserId='17';
+      host.dispatchEvent(new CustomEvent('codela:quick-status',{
+        detail:{active:true,userId:17}
+      }));
+    });
+    assert.equal(await combined.locator('.sf-quick-login').isVisible(),true,'One combined card visible');
+    assert.equal(await combined.locator('.sf-pk-guest').isVisible(),false,'Duplicate passkey card stays hidden');
+    assert.equal(await combined.locator('.sf-quick-method--pin').isVisible(),true,'PIN icon remains available');
+    assert.equal(await combined.locator('.sf-quick-method--passkey').isVisible(),true,'Face ID icon added to same card');
+    assert.equal(await combined.locator('.sf-quick-native-alt').isVisible(),true,
+      'Combined card has one standard email/Google fallback');
+
+    await combined.locator('.sf-quick-method--passkey').click();
+    await combined.waitForFunction(()=>!!window.rejectAuth);
+    assert.equal(await combined.locator('.sf-quick-method--passkey').getAttribute('aria-busy'),
+      'true','Face ID gesture animates the chosen icon');
+    assert.equal(await combined.locator('.sf-quick-passkey-error').innerText(),'',
+      'No intrusive phone verification progress line is inserted');
+    await combined.evaluate(()=>window.rejectAuth(Object.assign(new Error('Cancelled'),{
+      name:'NotAllowedError'
+    })));
+    await combined.waitForFunction(()=>!document.querySelector('.sf-quick-method--passkey')?.classList.contains('is-verifying'));
+    assert.equal(await combined.locator('.sf-quick-passkey-error').innerText(),
+      'Doğrulama iptal edildi.','Native cancellation leaves a clear error and stops icon animation');
+    await combined.close();
+    console.log('Passkey/native registration and combined method card passed');
   } finally {await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});
