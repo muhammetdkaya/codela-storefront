@@ -345,7 +345,9 @@
         track.classList.add('is-verified');
         status.textContent = t('success','Signed in'); // screen readers only
         status.classList.add('is-success');
-        await pause(430);
+        // WebKit/Safari must have time to finish the merged-square check
+        // before the authenticated document replaces this guest card.
+        await pause(650);
         // The server has already issued the real WordPress login cookie.
         // Bypass anonymous HTML caching with a disposable public query value.
         destination.searchParams.set('sf_quick_auth', Date.now().toString(36));
