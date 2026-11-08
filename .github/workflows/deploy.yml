@@ -42,6 +42,8 @@ jobs:
           php tests/account-contact-ux.php
           php tests/account-registration-discovery.php
           php tests/account-nonces.php
+          php tests/account-smart.php
+          node --check theme/codela-storefront/assets/scripts/auth-smart.js
           node --check theme/codela-storefront/assets/scripts/navigation-feedback.js
           node --check theme/codela-storefront/assets/scripts/document-continuity.js
           php tests/document-continuity.php
@@ -104,6 +106,8 @@ jobs:
           TEST_WEBKIT=1 node tests/quick-login-browser.cjs
           node tests/account-keyboard-style-browser.cjs
           TEST_WEBKIT=1 node tests/account-keyboard-style-browser.cjs
+          node tests/account-smart-browser.cjs
+          TEST_WEBKIT=1 node tests/account-smart-browser.cjs
           node tests/account-instant-browser.cjs
           TEST_WEBKIT=1 node tests/account-instant-browser.cjs
           node tests/account-browser.cjs
