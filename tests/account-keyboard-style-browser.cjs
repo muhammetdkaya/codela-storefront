@@ -157,6 +157,36 @@ const css=['tokens.css','components.css','quick-login.css','account.css','accoun
   },null,{timeout:2500});
   assert.equal(await page.locator('.sf-quick-login').evaluate(el=>el.classList.contains('is-inline-open')),false,
     'Collapsing card hides the PIN without a page navigation');
+  // The preflight skeleton and loaded card must be ONE identical frame.
+  await page.setContent('<!doctype html><html class="sf-quick-checking"><head>'
+    +'<meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head>'
+    +'<body class="woocommerce-account"><section class="sf-quick-login" hidden>'
+    +'<div class="sf-quick-choice"><div class="sf-quick-account-frame">'
+    +'<button class="sf-quick-account"><span class="sf-quick-monogram">D</span>'
+    +'<span class="sf-quick-account-text"><strong>Demo</strong></span></button>'
+    +'<div class="sf-quick-inline-pin"><div class="sf-quick-inline-inner">'
+    +'<div class="sf-quick-inline-divider"></div><p>Enter code</p>'
+    +'<div class="sf-quick-pin-track">'
+    +Array.from({length:6},()=>'<span class="sf-quick-slot"></span>').join('')
+    +'</div></div></div></div></div></section></body></html>');
+  const skeleton=await page.locator('.sf-quick-account-frame').evaluate(el=>({
+    height:el.getBoundingClientRect().height,
+    outerBorder:getComputedStyle(el).borderTopWidth,
+    buttonBorder:getComputedStyle(el.querySelector('.sf-quick-account')).borderTopWidth,
+    pseudo:getComputedStyle(el,'::before').content,
+    pin:getComputedStyle(el.querySelector('.sf-quick-inline-pin')).display
+  }));
+  assert.equal(skeleton.outerBorder,'1px','Skeleton has one outer card border');
+  assert.equal(skeleton.buttonBorder,'0px','Skeleton does not draw an inner duplicate card border');
+  assert.notEqual(skeleton.pseudo,'none','Skeleton placeholders attach to the outer card frame');
+  assert.equal(skeleton.pin,'none','Hidden PIN contributes no skeleton space');
+  await page.evaluate(()=>{
+    document.documentElement.classList.remove('sf-quick-checking');
+    document.querySelector('.sf-quick-login').hidden=false;
+  });
+  const loadedHeight=await page.locator('.sf-quick-account-frame').evaluate(el=>el.getBoundingClientRect().height);
+  assert(Math.abs(skeleton.height-loadedHeight)<3,'Skeleton and real compact card have identical heights');
+  assert(loadedHeight<=90,'Collapsed remembered account does not reserve PIN padding');
   console.log('Account Google and PIN visual states passed in '+(process.env.TEST_WEBKIT?'WebKit':'Chromium'));
  }finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;});
