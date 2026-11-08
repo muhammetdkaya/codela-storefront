@@ -46,7 +46,7 @@
       if(!value)return {level:0,eligible:false,message:intro.dataset.authSmartStrengthMin||'At least 8 characters'};
       if(value.length<8)return {level:1,eligible:false,message:intro.dataset.authSmartStrengthMin||'At least 8 characters'};
       const variety=Number(/[a-zA-Z]/.test(value))+Number(/[0-9]/.test(value))+Number(/[^a-zA-Z0-9]/.test(value));
-      const common=/^(?:password|12345678|qwerty|abcdefgh|11111111)/i.test(value)||/^(.)\\1{7,}$/.test(value);
+      const common=/^(?:password|12345678|qwerty|abcdefgh|11111111)/i.test(value)||/^(.)\1{7,}$/.test(value);
       if(variety<2||common)return {level:1,eligible:false,message:intro.dataset.authSmartStrengthMix||'Add a number or symbol'};
       const strong=value.length>=12&&variety>=3;
       return {level:strong?3:2,eligible:true,message:strong?(intro.dataset.authSmartStrengthStrong||'Strong password'):(intro.dataset.authSmartStrengthOk||'Password meets requirements')};
