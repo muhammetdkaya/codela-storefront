@@ -6,10 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Normal Hesabım ve hızlı Hesabım girişlerinde e-posta ile kayıt ol butonu Google ile giriş yap butonunun üzerinde kalıyor; görünürlük ve gerçek kayıt akışı korunuyor.",
-    "Gerçek WooCommerce kullanıcı adı/e-posta ve şifre alanları butonlarla aynı tam oval (999px) radius kullanıyor; odak kenarlığı çevresinde boşluk bulunmuyor.",
-    "Giriş Yap yalnız iki alanın ikisi de dolu olduğunda temanın --sf-ui-ink koyu rengine geçiyor. Sadece odaklanmak düğmeyi koyulaştırmıyor.",
-    "Hazır duruma ilk geçişte hafif, bir kerelik 330ms animasyon kullanılıyor; sürekli nabız yok ve azaltılmış hareket ayarına saygı gösteriliyor.",
-    "Beni hatırla, parola sıfırlama, mevcut PIN karartması, WooCommerce gerçek oturum doğrulaması, nonce güvenliği ve Google OAuth değiştirilmedi."
+    "Kayıtlı iPhone'da hızlı giriş kartı, eşleşen geçiş anahtarına öncelik vererek sistem Face ID doğrulamasını daha kısa akışla başlatır.",
+    "Normal kullanıcı adı/şifre giriş sayfasına eklenen gereksiz Telefonla hızlı giriş satırı kaldırıldı.",
+    "Tanımlı hızlı giriş ekranında E-posta ile Kayıt Ol butonu gizleniyor; normal girişte kayıt seçeneği korunuyor.",
+    "Sunucu seçilen geçiş anahtarının etkinliğini doğruluyor ve tek kullanımlık challenge ile eşleştiriyor; başka anahtarla oturum açılamıyor.",
+    "WooCommerce, Google ile giriş, PIN alternatifi ve diğer hesap işlemleri korunuyor."
   ]
 }
