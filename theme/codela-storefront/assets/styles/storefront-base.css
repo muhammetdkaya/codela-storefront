@@ -2022,14 +2022,6 @@ body.woocommerce-account:not(.codela-my-account-layout) .sf-content .wc-block-co
    Use the existing theme ink, not a new green/brand-specific hex value. */
 :is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
     #sf-panel.is-account-panel .woocommerce)
-  form.woocommerce-form-login button[type="submit"]{
-    transition:background-color var(--sf-ui-motion-release) ease,
-      border-color var(--sf-ui-motion-release) ease,
-      color var(--sf-ui-motion-release) ease,
-      transform var(--sf-ui-motion-release) var(--sf-ui-ease-release);
-}
-:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
-    #sf-panel.is-account-panel .woocommerce)
   form.woocommerce-form-login.sf-auth-submit-ready button[type="submit"]{
     background:var(--sf-ui-ink)!important;background-image:none!important;
     border:1px solid var(--sf-ui-ink)!important;color:#fff!important;
