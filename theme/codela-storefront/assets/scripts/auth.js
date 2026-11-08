@@ -131,10 +131,91 @@ function preventInitialAccountAutoFocus() {
             }).finally(() => { pending = null; });
         });
     }
+    /**
+     * Normal Woo login focus mode. Keep the REAL form (including Remember me,
+     * password recovery and submit) above a scrim identical to quick PIN.
+     * Secondary registration/Google actions remain behind it.
+     *
+     * The mode is purely visual. It never auto-focuses a credential field,
+     * reads credentials or replaces Woo's native authentication.
+     */
+    function initAccountFormFocusMode() {
+        const roots = [...document.querySelectorAll('.woocommerce')]
+            .filter(root => root.querySelector('form.woocommerce-form-login')
+                && root.querySelector('.sf-account-intro'));
+        for (const root of roots) {
+            if (root.querySelector(':scope > .sf-auth-focus-scrim')) continue;
+            const loginForm = root.querySelector('form.woocommerce-form-login');
+            const credentials = [...loginForm.querySelectorAll(
+                'input[name="username"],input[name="password"],input#username,input#password'
+            )];
+            if (!credentials.length) continue;
+            const scrim = document.createElement('div');
+            scrim.className = 'sf-auth-focus-scrim';
+            scrim.setAttribute('aria-hidden', 'true');
+            root.appendChild(scrim);
+            const viewport = window.visualViewport;
+            let baseline = viewport?.height || window.innerHeight;
+            let hadKeyboard = false;
+            let active = false;
+
+            const stop = () => {
+                if (!active) return;
+                active = false;
+                hadKeyboard = false;
+                root.classList.remove('sf-auth-focus-mode');
+            };
+            const start = () => {
+                if (root.classList.contains('sf-auth-register-view')
+                    || root.classList.contains('sf-pin-active')) return;
+                active = true;
+                root.classList.add('sf-auth-focus-mode');
+            };
+            const isCredential = element => credentials.includes(element);
+            // Track input focus, not password-manager suggestions or programmatic
+            // selection of the login view.
+            loginForm.addEventListener('focusin', event => {
+                if (isCredential(event.target)) start();
+            });
+            loginForm.addEventListener('focusout', () => {
+                window.requestAnimationFrame(() => {
+                    if (!isCredential(document.activeElement)) stop();
+                });
+            });
+            scrim.addEventListener('pointerdown', event => {
+                event.preventDefault();
+                if (isCredential(document.activeElement)) document.activeElement.blur();
+                stop();
+            });
+            function onViewportResize() {
+                const height = viewport?.height || window.innerHeight;
+                if (!active) {
+                    baseline = Math.max(baseline, height);
+                    return;
+                }
+                if (baseline - height > 110) hadKeyboard = true;
+                // Safari's Done key can close the native keyboard while the
+                // input is still technically focused. Clear the dim in that case.
+                if (hadKeyboard && height >= baseline - 48) {
+                    if (isCredential(document.activeElement)) document.activeElement.blur();
+                    stop();
+                }
+            }
+            viewport?.addEventListener('resize', onViewportResize, {passive:true});
+            // Native browser back/navigation, form submission and view changes
+            // must never leave a stale black scrim over the site.
+            loginForm.addEventListener('submit', stop);
+            root.addEventListener('click', event => {
+                if (event.target.closest('.sf-auth-register-cta,.sf-auth-back-login')) stop();
+            });
+            root.querySelector('#customer_login')?.addEventListener('codela:auth-select', stop);
+        }
+    }
     function init() {
         preventInitialAccountAutoFocus();
         applyAuthPlaceholders();
         initInstantAccountFreshness();
+        initAccountFormFocusMode();
         const container = document.querySelector('#customer_login');
         if (!container) return;
         const login = container.querySelector('.u-column1');
