@@ -90,6 +90,9 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Continue securely w
    assert.equal(await page.locator('.u-column1').isVisible(),false,'Native login stays folded');
    assert.equal(await page.locator('.u-column2').isVisible(),false,'Native registration stays folded');
    assert.equal(await page.locator('.sf-auth-register-cta').isVisible(),false,'No extra registration CTA');
+   // iOS/WebKit honors the intentional initial-autofocus guard more
+   // strictly than Chromium. A real tap releases it before typing.
+   await uid.click();
    await uid.fill('existing@example.test');
    await page.waitForFunction(()=>document.querySelector('.woocommerce')?.classList.contains('sf-smart-existing'),
      null,{timeout:6500}).catch(async error=>{
