@@ -1,0 +1,145 @@
+/*
+ * Smart Auth — progressive stages over native WooCommerce login/register
+ * forms. The ordinary My Account page and the instant Account drawer use
+ * precisely the same stages, oval fields and restrained dark primary action.
+ */
+.woocommerce.sf-smart-auth-active{
+  --sf-smart-ink:#252628;--sf-smart-line:#dedee2;
+}
+.woocommerce.sf-smart-auth-active .sf-smart-auth{
+  width:100%;max-width:480px;margin:0 auto 11px;position:relative;
+}
+.woocommerce.sf-smart-auth-active .sf-smart-label{
+  display:block;position:relative;width:100%;margin:0
+}
+.woocommerce.sf-smart-auth-active .sf-smart-label .sf-smart-identity{
+  appearance:none;box-sizing:border-box;display:block;
+  width:100%;height:54px;min-height:54px;border:1px solid var(--sf-smart-line);
+  background:#fff;color:var(--sf-smart-ink);border-radius:999px;
+  padding:0 48px 0 18px;outline:0;font:inherit;font-size:16px;
+  line-height:1.35;box-shadow:none;letter-spacing:-.01em;
+  transition:border-color .18s,box-shadow .18s;
+}
+.woocommerce.sf-smart-auth-active .sf-smart-label .sf-smart-identity:focus{
+  border-color:#74777f;box-shadow:0 0 0 3px rgba(35,36,40,.055);
+}
+.woocommerce.sf-smart-auth-active .sf-smart-label .sf-smart-identity::placeholder{color:#999ca2}
+.woocommerce.sf-smart-auth-active .sf-smart-label{
+  font-size:0;color:transparent
+}
+.woocommerce.sf-smart-auth-active .sf-smart-progress{
+  position:absolute;top:19px;right:21px;
+  width:16px;height:16px;border-radius:50%;
+  border:1.5px solid rgba(37,38,40,.18);border-top-color:#252628;
+  animation:sf-smart-spin .75s linear infinite;pointer-events:none
+}
+.woocommerce.sf-smart-auth-active .sf-smart-progress[hidden]{display:none!important}
+@keyframes sf-smart-spin{to{transform:rotate(360deg)}}
+.woocommerce.sf-smart-auth-active .sf-smart-message{
+  font-size:12px;color:#7f8188;line-height:1.55;margin:7px 3px 0;
+}
+.woocommerce.sf-smart-auth-active .sf-smart-message:empty{display:none}
+.woocommerce.sf-smart-auth-active .sf-smart-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:3px}
+.woocommerce.sf-smart-auth-active :is(.sf-smart-change,.sf-smart-manual-register){
+  appearance:none;border:0;background:transparent;color:#686b72;
+  padding:8px 3px;min-height:34px;font-family:inherit;font-size:12px;
+  cursor:pointer;text-decoration:underline;text-decoration-color:#d0d1d5;
+  text-underline-offset:3px
+}
+.woocommerce.sf-smart-auth-active :is(.sf-smart-change,.sf-smart-manual-register)[hidden]{display:none!important}
+.woocommerce.sf-smart-auth-active #customer_login{width:100%;max-width:480px;margin:0 auto}
+.woocommerce.sf-smart-auth-active #customer_login > :is(.u-column1,.u-column2),
+.woocommerce.sf-smart-auth-active > form.woocommerce-form-login{
+  display:none!important;
+}
+.woocommerce.sf-smart-existing #customer_login > .u-column1:not([hidden]),
+.woocommerce.sf-smart-unavailable #customer_login > .u-column1:not([hidden]),
+.woocommerce.sf-smart-existing > form.woocommerce-form-login,
+.woocommerce.sf-smart-unavailable > form.woocommerce-form-login{
+  display:block!important;
+}
+.woocommerce.sf-smart-new #customer_login > .u-column2:not([hidden]){display:block!important}
+.woocommerce.sf-smart-auth-active .sf-smart-native-identity,
+.woocommerce.sf-smart-auth-active .sf-smart-register-email{display:none!important}
+.woocommerce.sf-smart-auth-active .sf-auth-register-cta,
+.woocommerce.sf-smart-auth-active .sf-auth-back-login,
+.woocommerce.sf-smart-auth-active :is(#customer_login h2,.sf-auth-tabs){display:none!important}
+.woocommerce.sf-smart-auth-active .woocommerce-form-login .woocommerce-form-login__submit,
+.woocommerce.sf-smart-auth-active .woocommerce-form-register :is(button[type=submit],input[type=submit]),
+.woocommerce.sf-smart-auth-active .woocommerce-form-login .woocommerce-form-login__rememberme{
+  display:none!important
+}
+.woocommerce.sf-smart-existing.sf-smart-password-ready .woocommerce-form-login .woocommerce-form-login__submit,
+.woocommerce.sf-smart-unavailable.sf-smart-password-ready .woocommerce-form-login .woocommerce-form-login__submit,
+.woocommerce.sf-smart-new.sf-smart-register-ready .woocommerce-form-register :is(button[type=submit],input[type=submit]){
+  display:flex!important;align-items:center;justify-content:center;
+  min-height:54px;width:100%;margin-top:10px!important;
+  border-radius:999px!important;background:#252628!important;
+  border:1px solid #252628!important;color:#fff!important;
+  font-size:14px;font-weight:600;box-shadow:none!important;
+}
+.woocommerce.sf-smart-existing.sf-smart-password-ready .woocommerce-form-login .woocommerce-form-login__rememberme,
+.woocommerce.sf-smart-unavailable.sf-smart-password-ready .woocommerce-form-login .woocommerce-form-login__rememberme{
+  display:inline-flex!important
+}
+.woocommerce.sf-smart-auth-active .woocommerce-form-login .sf-smart-password-row,
+.woocommerce.sf-smart-auth-active .woocommerce-form-register .form-row{
+  animation:sf-smart-rise .25s cubic-bezier(.2,.7,.25,1) both
+}
+@keyframes sf-smart-rise{from{opacity:.15;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.woocommerce.sf-smart-auth-active .sf-smart-name-fields{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;
+  margin:0 0 10px
+}
+.woocommerce.sf-smart-auth-active .sf-smart-name-fields .form-row{margin:0!important;min-width:0}
+.woocommerce.sf-smart-auth-active .woocommerce-form-register .sf-smart-name-fields input{
+  height:54px;min-height:54px;border-radius:999px!important;
+  font-size:16px;padding-inline:17px
+}
+.woocommerce.sf-smart-auth-active .woocommerce-form-register .sf-smart-name-fields label{display:none!important}
+.woocommerce.sf-smart-auth-active .woocommerce-form-register .sf-smart-register-username{margin-top:9px}
+.woocommerce.sf-smart-auth-active .sf-smart-password-help{
+  font-size:12px;line-height:1.55;color:#85868c;margin:0 0 12px
+}
+.woocommerce.sf-smart-auth-active #customer_login .woocommerce-form-login .sf-smart-password-row input,
+.woocommerce.sf-smart-auth-active #customer_login .woocommerce-form-register :is(input[type=password],input[type=text],input[type=email]){
+  border-radius:999px!important;min-height:54px;box-shadow:none!important
+}
+.woocommerce.sf-smart-auth-active .woocommerce-form-login .sf-smart-password-row label,
+.woocommerce.sf-smart-auth-active .woocommerce-form-register .form-row > label[for]:not(.woocommerce-form__label){
+  display:none!important
+}
+.woocommerce.sf-smart-auth-active .woocommerce-form-login .lost_password{margin-top:3px!important;text-align:right}
+.woocommerce.sf-smart-auth-active .woocommerce-form-login .lost_password a{
+  font-size:12px;text-decoration:none;color:#85868c
+}
+.woocommerce.sf-smart-auth-active .sf-quick-return{
+  display:flex!important;justify-content:center;align-items:center;gap:11px;
+  box-sizing:border-box;width:100%;max-width:480px;min-height:53px;
+  margin:13px auto 11px;padding:12px 20px;
+  border:1px solid #e0e0e4!important;border-radius:999px!important;
+  background:#fff!important;color:#37393f!important;
+  box-shadow:none!important;font:inherit;font-size:13px;font-weight:550;
+  cursor:pointer
+}
+.woocommerce.sf-smart-auth-active .sf-quick-return[hidden]{display:none!important}
+.woocommerce.sf-smart-auth-active .sf-quick-return-arrow{
+  display:inline-grid;place-items:center;font-size:19px;font-weight:400;line-height:1
+}
+.woocommerce.sf-smart-auth-active.sf-auth-focus-mode > .sf-smart-auth,
+.woocommerce.sf-smart-auth-active.sf-auth-focus-mode > #customer_login{
+  position:relative;z-index:10;isolation:isolate
+}
+.woocommerce.sf-smart-auth-active.sf-auth-focus-mode > .sf-smart-auth .sf-smart-identity{
+  position:relative;z-index:1
+}
+#sf-panel.is-account-panel .woocommerce.sf-smart-auth-active .sf-auth-social{
+  margin-top:11px!important
+}
+@media(max-width:430px){
+  .woocommerce.sf-smart-auth-active .sf-smart-name-fields{gap:8px}
+  .woocommerce.sf-smart-auth-active .sf-smart-auth{margin-bottom:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  .woocommerce.sf-smart-auth-active *{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
