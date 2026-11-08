@@ -101,26 +101,59 @@ const css=['tokens.css','components.css','quick-login.css','account.css','accoun
       'Registration hides duplicate Google action in CSS-backed quick panel');
   }
   await page.setViewportSize({width:390,height:844});
-  // Recreate the sheet for its native keyboard geometry acceptance.
-  await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body class="woocommerce-account"><section class="sf-quick-sheet"><div style="height:300px"></div></section></body></html>');
-  const closed=await page.locator('.sf-quick-sheet').evaluate(el=>el.getBoundingClientRect().bottom);
-  assert(Math.abs(closed-844)<2,'Sheet rests on layout viewport when keyboard is absent');
-  const opened=await page.locator('.sf-quick-sheet').evaluate(el=>{
-    el.classList.add('has-keyboard');
-    el.style.setProperty('--sf-quick-visual-height','430px');
-    el.style.setProperty('--sf-quick-visual-top','142px');
-    return {top:el.getBoundingClientRect().top,
-      maxHeight:getComputedStyle(el).maxHeight};
+  // Native PIN now expands within the account card: no fixed sheet. CSS
+  // geometry and chevron are verified in both Chromium and WebKit.
+  await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head>'
+    +'<body><section class="sf-quick-login"><div class="sf-quick-choice">'
+    +'<div class="sf-quick-account-frame">'
+    +'<button class="sf-quick-account" aria-expanded="false"><span class="sf-quick-monogram">A</span>'
+    +'<span class="sf-quick-account-text">Ayşe Yılmaz</span>'
+    +'<span class="sf-quick-chevron"><svg viewBox="0 0 24 24"><path d="m5 9 7 7 7-7"/></svg></span></button>'
+    +'<div class="sf-quick-inline-pin" aria-hidden="true"><div class="sf-quick-inline-inner">'
+    +'<div class="sf-quick-inline-divider"></div><p class="sf-quick-inline-label">6-digit code</p>'
+    +'<div class="sf-quick-pin-track">'
+    +Array.from({length:6},()=>'<span class="sf-quick-slot"><i></i></span>').join('')
+    +'<span class="sf-quick-result"><svg class="sf-quick-check"><path d="M4 12l5 5L20 6"/></svg></span>'
+    +'<input class="sf-quick-native-pin" inputmode="numeric" autocomplete="off"></div>'
+    +'<p class="sf-quick-status"></p></div></div></div></div>'
+    +'<div class="sf-quick-choice-alternatives">Other actions</div></div>'
+    +'<div class="sf-quick-scrim" hidden></div></section></body></html>');
+  assert.equal(await page.locator('.sf-quick-sheet').count(),0,'No bottom modal is rendered');
+  await page.locator('.sf-quick-login').evaluate(el=>el.classList.add('is-inline-open'));
+  await page.locator('.sf-quick-scrim').evaluate(el=>el.hidden=false);
+  await page.waitForTimeout(470);
+  const geometry=await page.locator('.sf-quick-account-frame').evaluate(el=>{
+    const card=el.getBoundingClientRect(),track=el.querySelector('.sf-quick-pin-track').getBoundingClientRect();
+    const cells=[...el.querySelectorAll('.sf-quick-slot')].map(slot=>{
+      const rect=slot.getBoundingClientRect();
+      return {w:rect.width,h:rect.height};
+    });
+    return {cardWidth:card.width,trackWidth:track.width,cells};
   });
-  assert(Math.abs(opened.top-142)<2,'Keyboard mode uses measured visual top, not double lift');
-  assert.equal(opened.maxHeight,'430px','Sheet can scroll in a reduced viewport');
-  await page.locator('.sf-quick-sheet').evaluate(el=>{
-    el.classList.remove('has-keyboard');
-    el.style.removeProperty('--sf-quick-visual-top');
-    el.style.removeProperty('--sf-quick-visual-height');
-  });
-  const restored=await page.locator('.sf-quick-sheet').evaluate(el=>el.getBoundingClientRect().bottom);
-  assert(Math.abs(restored-844)<2,'Keyboard dismissal restores true bottom anchoring');
+  assert.equal(geometry.cells.length,6,'Exactly six inline PIN squares');
+  for(const square of geometry.cells){
+    assert(Math.abs(square.w-square.h)<1,'PIN fields remain square');
+    assert(square.w>20,'PIN square can be tapped on mobile');
+  }
+  assert(geometry.trackWidth<geometry.cardWidth,'PIN remains inside card padding');
+  const chevron=await page.locator('.sf-quick-chevron svg').evaluate(el=>getComputedStyle(el).transform);
+  assert(chevron!=='none','Chevron rotates upward while card is expanded');
+  const shade=await page.locator('.sf-quick-scrim').evaluate(el=>getComputedStyle(el));
+  assert(await page.locator('.sf-quick-scrim').isVisible(),'The rest of the screen dims when inline PIN opens');
+  assert.equal(await page.locator('.sf-quick-native-pin').getAttribute('inputmode'),'numeric','System numeric keyboard is used');
+  assert.equal(await page.locator('.sf-quick-result').evaluate(el=>getComputedStyle(el).opacity),'0',
+    'Green check is hidden while PIN is unverified');
+  await page.locator('.sf-quick-pin-track').evaluate(el=>el.classList.add('is-merging'));
+  assert.equal(await page.locator('.sf-quick-result').evaluate(el=>getComputedStyle(el).opacity),'0',
+    'Even the merge transition does not reveal the check early');
+  await page.locator('.sf-quick-pin-track').evaluate(el=>el.classList.add('is-verified'));
+  await page.waitForTimeout(380);
+  assert.equal(await page.locator('.sf-quick-result').evaluate(el=>getComputedStyle(el).backgroundColor),
+    'rgb(22, 132, 79)','Single result becomes green after verified state');
+  await page.locator('.sf-quick-login').evaluate(el=>el.classList.remove('is-inline-open'));
+  await page.waitForTimeout(450);
+  assert.equal(await page.locator('.sf-quick-inline-pin').evaluate(el=>getComputedStyle(el).opacity),'0',
+    'Collapsing card hides the PIN without a page navigation');
   console.log('Account Google and PIN visual states passed in '+(process.env.TEST_WEBKIT?'WebKit':'Chromium'));
  }finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;});
