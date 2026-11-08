@@ -6,10 +6,11 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Tek ve aşamalı WooCommerce giriş ekranında kullanıcı adı girildiğinde gereksiz Hesap oluştur bağlantısı gösterilmez.",
-    "Yeni e-posta ile otomatik kayıt akışı; mevcut hesapla parola üzerinden giriş ve WooCommerce yerleşik doğrulama korunur.",
-    "Giriş alanları ve Giriş Yap butonu arasındaki dikey aralıklar sıkılaştırıldı; gizli ara işlem satırı yer kaplamaz.",
-    "Hızlı girişe dön butonu Google ile Giriş Yap tasarımına eşitlendi; modern yüz tarama ikonu eklendi.",
-    "E-posta doğrulaması kullanılamadığında alternatif e-posta ile devam et seçeneği korunur."
+    "Giriş ve kayıt için tek e-posta alanı: kullanıcı adıyla giriş önerilmez ve geçersiz e-posta parola alanını açmaz.",
+    "Mevcut e-posta otomatik giriş adımına, yeni e-posta tek sayfada kayıt adımına yönlendirilir.",
+    "Kayıt sırasında ad-soyad, gerektiğinde parola istenir; WooCommerce kullanıcı adı otomatik olarak e-postadan doldurulur.",
+    "Kayıt Ol butonu kayıt adımıyla görünür; zorunlu bilgiler tamamlanınca koyu renkte etkinleşir.",
+    "E-posta değiştir bağlantısı kaldırıldı; kayıt adımında Hızlı girişe dön, Google ile Giriş Yap ve ayırıcı gizlendi.",
+    "Yerleşik WooCommerce nonce, doğrulama, şifre sıfırlama ve parola ile giriş işlemleri korunur."
   ]
 }
