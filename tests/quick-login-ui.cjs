@@ -57,7 +57,12 @@ assert(php.includes("delete_transient( $key ); // A challenge is usable only onc
 assert(php.includes("codela_sf_quick_request_limit( $limit, 5 )"),'Online guessing is rate-limited');
 assert(php.includes("after_password_reset") && php.includes("wp_set_password"),'Password changes revoke device access');
 assert(php.includes("woocommerce_before_customer_login_form"),'Native WooCommerce registration is preserved');
-assert(php.includes("woocommerce_edit_account_form"),'Quick enrollment is available inside native account');
+const passkeys = fs.readFileSync('theme/codela-storefront/inc/passkeys.php','utf8');
+assert(!php.includes("add_action( 'woocommerce_edit_account_form', 'codela_sf_quick_settings'") &&
+  !php.includes("add_action( 'woocommerce_account_dashboard', 'codela_sf_quick_dashboard_entry'") &&
+  passkeys.includes("add_action( 'woocommerce_account_guvenlik_endpoint'") &&
+  passkeys.includes('codela_sf_quick_settings();'),
+  'PIN enrollment moves from permanent account card into dedicated security endpoint');
 assert(css.includes(".sf-pin-active .sf-account-intro"),'Native form hidden only while remembered-account selection active');
 assert(css.includes('.woocommerce.sf-pin-active .sf-auth-register-cta') && css.includes('html.sf-quick-checking'),'Signup is hidden with sufficient specificity during remembered choice and preflight');
 assert(css.includes('.sf-quick-inline-pin') && css.includes('.sf-quick-account-frame') && css.includes('.sf-quick-scrim'),'PIN is part of the focused account card with backdrop');
