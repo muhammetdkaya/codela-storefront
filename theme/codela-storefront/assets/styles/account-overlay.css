@@ -421,3 +421,22 @@
 @media(prefers-reduced-motion:reduce){
   #sf-panel.is-account-panel .woocommerce > .sf-auth-register-cta{transition:none}
 }
+
+/* 0.1.238 — normal sign-in inside fast Account panel follows the SAME palette
+   as /hesabim/. Recognized-account quick screen uses quick-login.css instead. */
+#sf-panel.is-account-panel .woocommerce form.woocommerce-form-login button[type=submit]{
+  background:var(--sf-ui-surface)!important;
+  background-image:none!important;
+  color:var(--sf-ui-control-ink)!important;
+  border:1px solid var(--sf-ui-border)!important;
+  box-shadow:var(--sf-ui-glass-control-shadow)!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+#sf-panel.is-account-panel .woocommerce .sf-auth-social .sf-auth-google,
+#sf-panel.is-account-panel .woocommerce .sf-auth-social .sf-auth-google:disabled{
+  background:var(--sf-ui-ink)!important;
+  background-image:none!important;
+  border:1px solid var(--sf-ui-ink)!important;
+  color:#fff!important;opacity:1!important;
+  box-shadow:var(--sf-ui-action-shadow)!important;
+}
