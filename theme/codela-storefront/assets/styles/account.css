@@ -529,3 +529,29 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
   opacity:1!important;
   box-shadow:var(--sf-ui-action-shadow)!important;
 }
+
+/* 0.1.240 — Focus the existing Woo login form, NOT the register/Google actions.
+   EXACT same scrim color and blur as the verified quick-PIN account view.
+   The scrim is a Woo child; only the native login area is raised above it. */
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce > .sf-auth-focus-scrim{
+  position:fixed;inset:0;z-index:9;
+  background:rgba(20,21,25,.30);
+  -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+  opacity:0;pointer-events:none;
+  transition:opacity .22s ease;
+}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce.sf-auth-focus-mode > .sf-auth-focus-scrim{
+  opacity:1;pointer-events:auto;
+}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce.sf-auth-focus-mode > #customer_login,
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce.sf-auth-focus-mode > form.woocommerce-form-login{
+  position:relative;z-index:10;isolation:isolate;
+}
+@media(prefers-reduced-motion:reduce){
+  body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+   .woocommerce > .sf-auth-focus-scrim{transition:none}
+}
