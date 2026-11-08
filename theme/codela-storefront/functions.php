@@ -226,6 +226,11 @@ add_action( 'wp_enqueue_scripts', function() {
             wp_enqueue_style( 'codela-storefront-account-overlay', $root_uri . 'styles/account-overlay.css', [ 'codela-storefront-components' ], $style_version );
         }
         wp_enqueue_script( 'codela-storefront-auth', $root_uri . 'scripts/auth.js', [], $style_version, true );
+        wp_enqueue_style( 'codela-storefront-auth-smart', $root_uri . 'styles/auth-smart.css',
+            [ function_exists( 'is_account_page' ) && is_account_page() ? 'codela-storefront-account' : 'codela-storefront-account-overlay' ],
+            codela_sf_script_module_version( 'styles/auth-smart.css' ) );
+        wp_enqueue_script( 'codela-storefront-auth-smart', $root_uri . 'scripts/auth-smart.js',
+            [ 'codela-storefront-auth' ], codela_sf_script_module_version( 'scripts/auth-smart.js' ), true );
     }
     // Every Account document, including after ?loggedout=true, uses the same
     // four-tab store shell and working menu/cart/search module as the shop.

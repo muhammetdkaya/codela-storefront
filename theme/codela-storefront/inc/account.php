@@ -24,7 +24,20 @@ function codela_sf_account_intro(): void {
         data-auth-login-title="<?php esc_attr_e( 'Welcome back', 'codela-storefront' ); ?>"
         data-auth-login-description="<?php esc_attr_e( 'Sign in to your account.', 'codela-storefront' ); ?>"
         data-auth-register-title="<?php esc_attr_e( 'Create an account', 'codela-storefront' ); ?>"
-        data-auth-register-description="<?php esc_attr_e( 'Join us in a few steps.', 'codela-storefront' ); ?>">
+        data-auth-register-description="<?php esc_attr_e( 'Join us in a few steps.', 'codela-storefront' ); ?>"
+        data-auth-lookup-url="<?php echo function_exists( 'admin_url' ) && function_exists( 'esc_attr' ) ? esc_attr( admin_url( 'admin-ajax.php' ) ) : ''; ?>"
+        data-auth-lookup-nonce="<?php echo function_exists( 'wp_create_nonce' ) && function_exists( 'esc_attr' ) ? esc_attr( wp_create_nonce( 'codela_sf_auth_lookup' ) ) : ''; ?>"
+        data-auth-smart-label="<?php esc_attr_e( 'Email or username', 'codela-storefront' ); ?>"
+        data-auth-smart-checking="<?php esc_attr_e( 'Checking account…', 'codela-storefront' ); ?>"
+        data-auth-smart-error="<?php esc_attr_e( 'Account check is unavailable. You can still sign in or create an account.', 'codela-storefront' ); ?>"
+        data-auth-smart-closed="<?php esc_attr_e( 'New account registration is currently unavailable.', 'codela-storefront' ); ?>"
+        data-auth-smart-confirm="<?php esc_attr_e( 'Use your email address to create an account.', 'codela-storefront' ); ?>"
+        data-auth-smart-change="<?php esc_attr_e( 'Change email', 'codela-storefront' ); ?>"
+        data-auth-smart-register="<?php esc_attr_e( 'Create account', 'codela-storefront' ); ?>"
+        data-auth-smart-password-link="<?php esc_attr_e( 'Your password setup link will be sent by email.', 'codela-storefront' ); ?>"
+        data-auth-smart-name-required="<?php esc_attr_e( 'Enter your first and last name.', 'codela-storefront' ); ?>"
+        data-auth-smart-first="<?php esc_attr_e( 'First name', 'codela-storefront' ); ?>"
+        data-auth-smart-last="<?php esc_attr_e( 'Last name', 'codela-storefront' ); ?>">
         <h1 id="sf-auth-view-title"><span class="sf-auth-heading-text"><?php esc_html_e( 'Welcome back', 'codela-storefront' ); ?></span> <span class="sf-auth-heading-wave" aria-hidden="true">👋</span></h1>
         <p class="sf-auth-description"><?php esc_html_e( 'Sign in to your account.', 'codela-storefront' ); ?></p>
     </header>
@@ -65,6 +78,77 @@ function codela_sf_account_login_return(): void {
     <?php
 }
 add_action( 'woocommerce_register_form_start', 'codela_sf_account_login_return', 12 );
+
+/**
+ * Native WooCommerce registration remains the only account-creation engine.
+ * First and last name are submitted with its own nonce and native form.
+ */
+function codela_sf_auth_registration_names(): void {
+    if ( is_user_logged_in() || ( ! is_account_page() && empty( $GLOBALS['codela_sf_auth_overlay'] ) )
+        || 'yes' !== get_option( 'woocommerce_enable_myaccount_registration', 'no' ) ) { return; }
+    $first = isset( $_POST['first_name'] ) && is_string( $_POST['first_name'] )
+        ? sanitize_text_field( wp_unslash( $_POST['first_name'] ) ) : '';
+    $last = isset( $_POST['last_name'] ) && is_string( $_POST['last_name'] )
+        ? sanitize_text_field( wp_unslash( $_POST['last_name'] ) ) : '';
+    echo '<div class="sf-smart-name-fields">';
+    echo '<p class="form-row form-row-first"><label for="sf-smart-first">'
+        . esc_html__( 'First name', 'codela-storefront' ) . '</label>'
+        . '<input type="text" class="input-text" id="sf-smart-first" name="first_name" autocomplete="given-name"'
+        . ' maxlength="70" value="' . esc_attr( $first ) . '" /></p>';
+    echo '<p class="form-row form-row-last"><label for="sf-smart-last">'
+        . esc_html__( 'Last name', 'codela-storefront' ) . '</label>'
+        . '<input type="text" class="input-text" id="sf-smart-last" name="last_name" autocomplete="family-name"'
+        . ' maxlength="70" value="' . esc_attr( $last ) . '" /></p>';
+    echo '</div>';
+}
+add_action( 'woocommerce_register_form_start', 'codela_sf_auth_registration_names', 14 );
+add_action( 'woocommerce_created_customer', static function( $customer_id ): void {
+    if ( empty( $_POST['register'] ) ) { return; }
+    foreach ( [ 'first_name', 'last_name' ] as $key ) {
+        if ( isset( $_POST[$key] ) && is_string( $_POST[$key] ) ) {
+            update_user_meta( (int) $customer_id, $key, substr(
+                sanitize_text_field( wp_unslash( $_POST[$key] ) ), 0, 255
+            ) );
+        }
+    }
+}, 10, 1 );
+
+/**
+ * Read-only EMAIL lookup, never a username-enumeration endpoint.
+ * Rate limited per remote IP, guest-nonce guarded and no raw emails logged.
+ * Actual login and registration are still handled exclusively by Woo.
+ */
+function codela_sf_auth_lookup(): void {
+    nocache_headers();
+    if ( is_user_logged_in() ) {
+        wp_send_json( [ 'status' => 'authenticated' ] );
+        return;
+    }
+    if ( ! check_ajax_referer( 'codela_sf_auth_lookup', 'token', false ) ) {
+        wp_send_json( [ 'status' => 'unavailable' ], 403 );
+        return;
+    }
+    $email = isset( $_POST['identity'] ) && is_string( $_POST['identity'] )
+        ? sanitize_email( wp_unslash( $_POST['identity'] ) ) : '';
+    if ( strlen( $email ) > 254 || ! is_email( $email ) ) {
+        wp_send_json( [ 'status' => 'unavailable' ], 400 );
+        return;
+    }
+    $ip = isset( $_SERVER['REMOTE_ADDR'] ) && is_string( $_SERVER['REMOTE_ADDR'] )
+        ? $_SERVER['REMOTE_ADDR'] : '';
+    $budget_key = 'sf_auth_lookup_' . hash_hmac( 'sha256', $ip, wp_salt( 'auth' ) );
+    $hits = (int) get_transient( $budget_key );
+    if ( $hits >= 18 ) {
+        wp_send_json( [ 'status' => 'unavailable' ], 429 );
+        return;
+    }
+    set_transient( $budget_key, $hits + 1, 15 * MINUTE_IN_SECONDS );
+    $existing = (bool) email_exists( $email );
+    $registration = 'yes' === get_option( 'woocommerce_enable_myaccount_registration', 'no' );
+    wp_send_json( [ 'status' => $existing ? 'existing' : ( $registration ? 'new' : 'closed' ) ] );
+}
+add_action( 'wp_ajax_nopriv_codela_sf_auth_lookup', 'codela_sf_auth_lookup' );
+
 
 /** Storefront authentication lives on WooCommerce My Account, not wp-login.php.
  * Keep WordPress's administrative login, reauthentication, password recovery,
@@ -113,6 +197,7 @@ function codela_sf_account_form_state(): void {
         'authenticated' => is_user_logged_in(),
         'login_nonce' => wp_create_nonce( 'woocommerce-login' ),
         'register_nonce' => wp_create_nonce( 'woocommerce-register' ),
+        'lookup_nonce' => wp_create_nonce( 'codela_sf_auth_lookup' ),
         'registration' => 'yes' === get_option( 'woocommerce_enable_myaccount_registration', 'no' ),
     ] );
 }
