@@ -47,7 +47,7 @@ check( ! str_contains( $html, 'Welcome back' ), 'No redundant welcome heading' )
 check( str_contains( $html, 'Welcome' ) && str_contains( $html, 'Continue quickly with your account.' ), 'Welcome heading and succinct copy are visible' );
 check( str_contains( $html, 'sf-quick-wave' ), 'Waving-hand emoji follows the heading' );
 check( str_contains( $html, 'sf-quick-email' ), 'Saved account email line is present' );
-check( str_contains( $html, "codela_sf_icon( 'chevron-left' )" ) === false && str_contains( $html, 'sf-quick-chevron' ), 'Account card has a slim chevron' );
+check( str_contains( $html, 'sf-quick-chevron' ) && str_contains( $html, 'aria-expanded="false"' ) && str_contains( $html, 'm5 9 7 7 7-7' ), 'Account card has a downward chevron that rotates upward on expand' );
 check( str_contains( $html, 'sf-quick-or' ) && str_contains( $html, 'sf-quick-email-login' ), 'Alternative password login remains available beneath or separator' );
 check( ! str_contains( $html, 'sf-quick-remove' ) && ! str_contains( $html, 'Remove this account' ), 'Remembered account removal is absent from guest UI' );
 check( str_contains( $html, 'sf-quick-google' ) && str_contains( $html, 'disabled aria-label=' ), 'Google entry renders as safely disabled if OAuth is not configured' );
@@ -55,9 +55,10 @@ check( ! str_contains( $html, 'data-quick-digit' ), 'No bespoke numeric keypad' 
 check( preg_match_all( '/class="sf-quick-slot"/', $html ) === 6, 'Exactly six PIN cells' );
 check( str_contains( $html, 'inputmode="numeric"' ), 'Uses native device numeric keyboard' );
 check( str_contains( $html, 'autocomplete="off"' ), 'Browser autocomplete never stores PIN' );
-check( str_contains( $html, 'role="dialog"' ) && str_contains( $html, 'aria-modal="true"' ), 'Accessible PIN bottom sheet' );
+check( str_contains( $html, 'sf-quick-account-frame' ) && str_contains( $html, 'sf-quick-inline-pin' ) && ! str_contains( $html, 'role="dialog"' ), 'PIN expands within the same account card without a popup' );
 check( str_contains( $html, 'https://store.test/my-account/lost-password/' ), 'Uses native Woo lost-password route' );
-check( str_contains( $html, 'sf-quick-sheet-links' ), 'Secondary actions do not crowd account picker' );
+check( ! str_contains( $html, 'sf-quick-sheet-links' ) && ! str_contains( $html, 'sf-quick-spinner' ), 'No duplicate password footer, loading spinner or extra success row' );
+check( str_contains( $html, 'sf-quick-result' ) && str_contains( $html, 'sf-quick-check' ), 'Center check replaces six squares after actual verification' );
 
 $GLOBALS['user'] = new WP_User();
 ob_start();
