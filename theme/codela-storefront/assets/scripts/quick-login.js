@@ -164,19 +164,18 @@
     const host = section.closest('.sf-overlay-auth') || section.closest('.woocommerce');
     if (!host) return;
     const choose = section.querySelector('.sf-quick-account');
+    const frame = section.querySelector('.sf-quick-account-frame');
+    const inline = section.querySelector('.sf-quick-inline-pin');
     const changeAccount = section.querySelector('.sf-quick-switch');
     const name = section.querySelector('.sf-quick-user');
     const email = section.querySelector('.sf-quick-email');
     const monogram = section.querySelector('.sf-quick-monogram');
     const scrim = section.querySelector('.sf-quick-scrim');
-    const sheet = section.querySelector('.sf-quick-sheet');
-    const close = section.querySelector('.sf-quick-close');
     const input = section.querySelector('.sf-quick-native-pin');
     const track = section.querySelector('.sf-quick-pin-track');
     const slots = [...section.querySelectorAll('.sf-quick-slot')];
     const status = section.querySelector('.sf-quick-status');
-    const password = section.querySelector('.sf-quick-password');
-    if (!choose || !sheet || !input || slots.length !== 6) return;
+    if (!choose || !frame || !inline || !scrim || !input || !track || !status || slots.length !== 6) return;
 
     const displayName = String(profile.displayName || profile.username || t('account','Your account')).trim();
     name.textContent = displayName;
@@ -188,24 +187,12 @@
     monogram.textContent = Array.from(displayName)[0]?.toLocaleUpperCase() || '?';
     section.hidden = false;
     host.classList.add('sf-pin-active');
-    // Sign-out retains an explicitly trusted device; explicit disable and
-    // account switching do not. Honor cross-tab storage updates immediately.
-    window.addEventListener('storage', event => {
-      if (event.key !== savedKey || log()?.deviceId === profile.deviceId) return;
-      input.blur();
-      section.hidden = true;
-      host.classList.remove('sf-pin-active');
-      if (!sheet.hidden) {
-        sheet.hidden = true;
-        scrim.hidden = true;
-        resetSheetPosition();
-        document.documentElement.classList.remove('sf-quick-modal-open');
-      }
-    });
+    inline.inert = true;
 
     let pending = false;
     let challengePromise = null;
     let challengeStarted = 0;
+    let scrollFrame = 0;
     const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     const pause = ms => new Promise(resolve => window.setTimeout(resolve, reducedMotion ? 0 : ms));
 
@@ -218,111 +205,83 @@
       return challengePromise;
     }
 
-    function clearTrack() {
-      track.classList.remove('is-merging','is-verifying','is-verified','is-error');
-      slots.forEach(slot => slot.style.removeProperty('--sf-quick-shift'));
-      input.disabled = false;
-      input.value = '';
-      render();
-    }
-
     function render() {
       const filtered = input.value.replace(/[^0-9]/g, '').slice(0, 6);
       if (input.value !== filtered) input.value = filtered;
       slots.forEach((slot, i) => {
         slot.classList.toggle('is-filled', i < filtered.length);
-        slot.classList.toggle('is-current', i === filtered.length);
+        slot.classList.toggle('is-current', i === filtered.length && filtered.length < 6);
       });
     }
 
-    // iOS Safari scrolls the visual viewport when its keyboard opens. Lifting
-    // a fixed-bottom sheet by the keyboard height applies that offset twice.
-    // Instead place its TOP at the actual bottom of the visible viewport.
-    let sheetFrame = 0;
-    let keyboardSettleUntil = 0;
-    let restingViewportHeight = window.visualViewport?.height || window.innerHeight;
-    function resetSheetPosition() {
-      if (sheetFrame) window.cancelAnimationFrame(sheetFrame);
-      sheetFrame = 0;
-      sheet.classList.remove('has-keyboard');
-      sheet.style.removeProperty('--sf-quick-visual-top');
-      sheet.style.removeProperty('--sf-quick-visual-height');
-    }
-    function positionSheet() {
-      sheetFrame = 0;
-      if (sheet.hidden) return;
-      const viewport = window.visualViewport;
-      const visibleBottom = viewport ? viewport.offsetTop + viewport.height : window.innerHeight;
-      // offsetTop can increase as Safari pans the visual viewport, cancelling
-      // the apparent keyboard inset. Compare against the pre-focus height too.
-      // Keep the panel docked while the keyboard closes after a PIN submit.
-      const keyboardOpen = !!viewport && (
-        restingViewportHeight - viewport.height > 120
-        || window.innerHeight - visibleBottom > 120
-      );
-      sheet.classList.toggle('has-keyboard', keyboardOpen);
-      if (keyboardOpen) {
-        sheet.style.setProperty('--sf-quick-visual-height', Math.max(1, Math.floor(viewport.height - 12)) + 'px');
-        const height = sheet.getBoundingClientRect().height;
-        const top = Math.max(viewport.offsetTop + 4, visibleBottom - height);
-        sheet.style.setProperty('--sf-quick-visual-top', top + 'px');
-      } else {
-        sheet.style.removeProperty('--sf-quick-visual-top');
-        sheet.style.removeProperty('--sf-quick-visual-height');
-      }
-      if (performance.now() < keyboardSettleUntil) {
-        sheetFrame = window.requestAnimationFrame(positionSheet);
-      }
-    }
-    function syncSheet(settle = false) {
-      if (sheet.hidden) return;
-      if (settle) keyboardSettleUntil = performance.now() + 650;
-      if (!sheetFrame) sheetFrame = window.requestAnimationFrame(positionSheet);
-    }
-
-    function openSheet() {
-      if (pending) return;
-      clearTrack();
+    function clearTrack() {
+      track.classList.remove('is-merging','is-checking','is-verified','is-error');
+      slots.forEach(slot => slot.style.removeProperty('--sf-quick-shift'));
+      input.value = '';
+      render();
       status.textContent = '';
-      scrim.hidden = false;
-      sheet.hidden = false;
-      section.classList.add('is-sheet-open');
-      document.documentElement.classList.add('sf-quick-modal-open');
-      restingViewportHeight = window.visualViewport?.height || window.innerHeight;
-      syncSheet(true);
-      // A real account tap opens the native numeric keypad; viewport resize/
-      // scroll events then keep the sheet joined to the keyboard accessory bar.
-      input.focus({preventScroll:true});
+      status.classList.remove('is-error','is-success');
     }
 
-    function closeSheet(restoreFocus = true) {
-      if (pending) return;
+    function keepCardVisible() {
+      scrollFrame = 0;
+      if (!section.classList.contains('is-inline-open')) return;
+      const viewport = window.visualViewport;
+      const visibleTop = viewport?.offsetTop || 0;
+      const visibleBottom = visibleTop + (viewport?.height || window.innerHeight);
+      const rectangle = frame.getBoundingClientRect();
+      // Scroll only when the expanding card is actually covered by the native
+      // keyboard. Never simulate a keypad or move the card to a fixed sheet.
+      if (rectangle.bottom > visibleBottom - 12 || rectangle.top < visibleTop + 8) {
+        frame.scrollIntoView({block:'nearest', behavior:reducedMotion ? 'auto' : 'smooth'});
+      }
+    }
+    function queueCardAlignment() {
+      if (!scrollFrame) scrollFrame = window.requestAnimationFrame(keepCardVisible);
+    }
+
+    function closeInline(restoreFocus = true, force = false) {
+      if (pending && !force) return;
       input.blur();
-      sheet.hidden = true;
+      section.classList.remove('is-inline-open');
+      choose.setAttribute('aria-expanded','false');
+      inline.setAttribute('aria-hidden','true');
+      inline.inert = true;
       scrim.hidden = true;
-      resetSheetPosition();
-      section.classList.remove('is-sheet-open');
-      document.documentElement.classList.remove('sf-quick-modal-open');
       challengePromise = null;
       clearTrack();
       if (restoreFocus) choose.focus({preventScroll:true});
     }
 
+    function openInline() {
+      if (pending) return;
+      clearTrack();
+      section.classList.add('is-inline-open');
+      choose.setAttribute('aria-expanded','true');
+      inline.setAttribute('aria-hidden','false');
+      inline.inert = false;
+      scrim.hidden = false;
+      // This focus must occur directly in the user's tap event for iOS to
+      // display the system numeric keypad. No custom keyboard is created.
+      input.focus({preventScroll:true});
+      queueCardAlignment();
+    }
+
     function showNativeLogin(view = 'login') {
       if (pending) return;
-      // Switching to email/password is navigation, NOT permission to open the
-      // keyboard or iOS/Chrome Password AutoFill prompt.
-      closeSheet(false);
+      closeInline(false);
       if (section.contains(document.activeElement)) document.activeElement.blur();
       host.classList.remove('sf-pin-active');
       section.hidden = true;
-      // Keep the genuine native Woo form and tabs without focusing any input.
+      // Changing to native Woo password login never autofocuses the fields.
       const form = host.querySelector('#customer_login');
       form?.dispatchEvent(new CustomEvent('codela:auth-select', {
         detail:{view:view === 'register' ? 'register' : 'login'}
       }));
     }
 
+    // After the verified response, the SIX squares converge and one center
+    // square receives a tick. Never reveal correctness digit by digit.
     function mergeSlots() {
       const bounds = track.getBoundingClientRect();
       const middle = bounds.left + bounds.width / 2;
@@ -337,14 +296,9 @@
       if (pending || input.value.length !== 6) return;
       pending = true;
       const pin = input.value;
-      input.blur();
-      input.disabled = true;
+      track.classList.add('is-checking');
       status.textContent = t('waiting','Signing in…');
       status.classList.remove('is-error','is-success');
-      mergeSlots();
-      // Network verification and visual merging run concurrently. A success
-      // check is never drawn before the WooCommerce REST session is issued.
-      const mergeFinished = pause(440).then(() => track.classList.add('is-verifying'));
       try {
         const challenge = await getChallenge();
         const message = 'codela-pin-login:v1:' + profile.userId + ':' + profile.deviceId + ':' + challenge.challenge;
@@ -356,39 +310,48 @@
         if (!result.ok || typeof result.account_url !== 'string') {
           throw Error(t('responseInvalid','Sign-in response could not be verified.'));
         }
-        await mergeFinished;
-        track.classList.add('is-verified');
-        status.classList.add('is-success');
-        status.textContent = t('success','Signed in');
-        await pause(420);
-        // This document was rendered as an anonymous WooCommerce page. A
-        // same-URL navigation can show a cached guest view even after the
-        // server has issued a valid WordPress login cookie. Force an uncached
-        // full DOCUMENT navigation with a one-time public cache-buster.
         const destination = new URL(result.account_url, window.location.href);
         if (destination.origin !== window.location.origin) {
           throw Error(t('responseInvalid','Sign-in response could not be verified.'));
         }
+        input.blur();
+        track.classList.remove('is-checking');
+        mergeSlots();
+        await pause(580);
+        track.classList.add('is-verified');
+        status.textContent = t('success','Signed in'); // screen readers only
+        status.classList.add('is-success');
+        await pause(430);
+        // The server has already issued the real WordPress login cookie.
+        // Bypass anonymous HTML caching with a disposable public query value.
         destination.searchParams.set('sf_quick_auth', Date.now().toString(36));
         section.classList.add('is-auth-redirecting');
         window.location.replace(destination.href);
       } catch (error) {
-        await mergeFinished;
+        track.classList.remove('is-checking','is-merging','is-verified');
+        slots.forEach(slot => slot.style.removeProperty('--sf-quick-shift'));
         status.textContent = error.message || t('failed','Sign-in failed. Try again.');
         status.classList.add('is-error');
-        clearTrack();
         track.classList.add('is-error');
+        await pause(630);
+        input.value = '';
+        render();
+        track.classList.remove('is-error');
         pending = false;
       } finally {
         challengePromise = null;
       }
     }
 
-    choose.addEventListener('click', openSheet);
+    choose.addEventListener('click', () => {
+      if (section.classList.contains('is-inline-open')) closeInline();
+      else openInline();
+    });
     changeAccount?.addEventListener('click', () => showNativeLogin('login'));
-    password?.addEventListener('click', () => showNativeLogin('login'));
-    close?.addEventListener('click', closeSheet);
-    scrim?.addEventListener('click', closeSheet);
+    scrim.addEventListener('click', () => closeInline());
+    track.addEventListener('click', () => {
+      if (!pending && section.classList.contains('is-inline-open')) input.focus({preventScroll:true});
+    });
     input.addEventListener('input', () => {
       if (pending) return;
       const oldLength = input.value.length;
@@ -404,24 +367,19 @@
       }
     });
     section.addEventListener('keydown', event => {
-      if (sheet.hidden || pending) return;
-      if (event.key === 'Escape') { event.preventDefault(); closeSheet(); }
-      if (event.key === 'Tab') {
-        const nodes = [close,input,password,section.querySelector('.sf-quick-lost-password')].filter(Boolean);
-        const first = nodes[0], last = nodes[nodes.length - 1];
-        if (event.shiftKey && document.activeElement === first) {
-          event.preventDefault(); last.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-          event.preventDefault(); first.focus();
-        }
-      }
+      if (!section.classList.contains('is-inline-open') || pending) return;
+      if (event.key === 'Escape') { event.preventDefault(); closeInline(); }
     });
-    window.visualViewport?.addEventListener('resize', () => syncSheet(), {passive:true});
-    window.visualViewport?.addEventListener('scroll', () => syncSheet(), {passive:true});
-    window.addEventListener('resize', () => syncSheet(), {passive:true});
-    window.addEventListener('orientationchange', () => syncSheet(true), {passive:true});
-    input.addEventListener('focus', () => syncSheet(true));
-    input.addEventListener('blur', () => syncSheet(true));
+    window.visualViewport?.addEventListener('resize', queueCardAlignment, {passive:true});
+    window.addEventListener('orientationchange', queueCardAlignment, {passive:true});
+
+    // Another tab may revoke the recognized device while the card is open.
+    window.addEventListener('storage', event => {
+      if (event.key !== savedKey || log()?.deviceId === profile.deviceId) return;
+      closeInline(false, true);
+      section.hidden = true;
+      host.classList.remove('sf-pin-active');
+    });
   }
 
   async function initSettings(settings) {
