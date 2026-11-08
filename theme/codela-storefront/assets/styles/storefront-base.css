@@ -1920,3 +1920,87 @@ body.woocommerce-account:not(.codela-my-account-layout) .sf-content .wc-block-co
 @media(forced-colors:active){body.woocommerce-account:not(.codela-my-account-layout) .sf-content .wc-block-components-notice-banner__content .wc-forward{background:ButtonFace!important;color:ButtonText!important;border:1px solid ButtonText}}
 
 .sf-shell .sf-cart-skeleton-row :is(i,b){background:var(--sf-ui-skeleton);border-radius:var(--sf-ui-control-radius)}
+
+
+/* 0.1.241 — Native Woo sign-in: one restrained helper row and one compact
+   credential group. Shared by the standalone Account page and instant panel.
+   Keep native checkbox/link/submit semantics and the existing PIN scrim. */
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
+    #sf-panel.is-account-panel .woocommerce)
+  form.woocommerce-form-login .woocommerce-form-login__rememberme{
+    display:inline-flex;align-items:center;gap:8px;min-height:38px;
+    color:var(--sf-muted,#777b80);font-size:12px;font-weight:500;
+}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
+    #sf-panel.is-account-panel .woocommerce)
+  form.woocommerce-form-login .woocommerce-form-login__rememberme input[type="checkbox"]{
+    -webkit-appearance:none;appearance:none;box-sizing:border-box;
+    display:inline-block;flex:none;width:18px!important;height:18px!important;
+    margin:0!important;padding:0!important;border:1px solid var(--sf-ui-border)!important;
+    border-radius:6px;background:var(--sf-ui-surface);box-shadow:none;
+    vertical-align:middle;cursor:pointer;
+}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
+    #sf-panel.is-account-panel .woocommerce)
+  form.woocommerce-form-login .woocommerce-form-login__rememberme input[type="checkbox"]:checked{
+    border-color:var(--sf-ui-ink)!important;background-color:var(--sf-ui-ink);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='m4 9 3.4 3.4L14 5.7' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-position:center;background-repeat:no-repeat;background-size:15px 15px;
+}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
+    #sf-panel.is-account-panel .woocommerce)
+  form.woocommerce-form-login .woocommerce-form-login__rememberme input[type="checkbox"]:focus-visible{
+    outline:2px solid var(--sf-ui-ink);outline-offset:2px;
+}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
+    #sf-panel.is-account-panel .woocommerce)
+  form.woocommerce-form-login > :is(.lost_password,.woocommerce-LostPassword){
+    display:flex;align-items:center;justify-content:flex-end;min-height:38px;
+}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
+    #sf-panel.is-account-panel .woocommerce)
+  form.woocommerce-form-login > :is(.lost_password,.woocommerce-LostPassword) a{
+    display:inline-flex;align-items:center;justify-content:flex-end;
+    color:var(--sf-ui-control-ink);font-size:12px;font-weight:500;
+    text-decoration:none!important;white-space:nowrap;
+}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
+    #sf-panel.is-account-panel .woocommerce)
+  form.woocommerce-form-login > :is(.lost_password,.woocommerce-LostPassword) a::after{
+    content:"";width:6px;height:6px;margin-left:7px;flex:none;
+    border-right:1.5px solid currentColor;border-top:1.5px solid currentColor;
+    transform:rotate(45deg);
+}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
+    #sf-panel.is-account-panel .woocommerce).sf-auth-focus-mode
+  form.woocommerce-form-login{
+    grid-template-columns:minmax(0,1fr);row-gap:9px;
+}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
+    #sf-panel.is-account-panel .woocommerce).sf-auth-focus-mode
+  form.woocommerce-form-login > .form-row:not(:has(button[type="submit"])){
+    margin:0!important;
+}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
+    #sf-panel.is-account-panel .woocommerce).sf-auth-focus-mode
+  form.woocommerce-form-login .woocommerce-form-login__rememberme,
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
+    #sf-panel.is-account-panel .woocommerce).sf-auth-focus-mode
+  form.woocommerce-form-login > :is(.lost_password,.woocommerce-LostPassword){
+    display:none!important;
+}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
+    #sf-panel.is-account-panel .woocommerce).sf-auth-focus-mode
+  form.woocommerce-form-login :is(input.input-text,input[name="username"],input[name="password"]):focus{
+    box-sizing:border-box;border:2px solid var(--sf-ui-ink)!important;
+    outline:none!important;outline-offset:0!important;box-shadow:none!important;
+    background:var(--sf-ui-surface);
+}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
+    #sf-panel.is-account-panel .woocommerce).sf-auth-focus-mode
+  form.woocommerce-form-login button[type="submit"]{
+    grid-column:1/-1;margin:3px 0 0!important;
+    background:var(--sf-ui-ink)!important;background-image:none!important;
+    border:1px solid var(--sf-ui-ink)!important;color:#fff!important;
+    box-shadow:var(--sf-ui-action-shadow)!important;
+}
