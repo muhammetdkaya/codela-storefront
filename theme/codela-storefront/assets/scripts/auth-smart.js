@@ -236,6 +236,13 @@
       // Updated nonce is available after the native nonce refresh resolves.
       updateSubmit();
     });
+    root.addEventListener('codela:smart-reset',()=>{
+      abort();
+      active='';input.value='';loginUser.value='';loginPassword.value='';
+      if(registerEmail)registerEmail.value='';
+      if(registerPassword)registerPassword.value='';
+      setStage('start');
+    });
     root.addEventListener('codela:auth-nonce-refreshed',event=>{
       if(event.detail?.lookup_nonce)intro.dataset.authLookupNonce=event.detail.lookup_nonce;
     });

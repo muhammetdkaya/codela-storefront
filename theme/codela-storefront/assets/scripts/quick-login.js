@@ -674,6 +674,7 @@
           }
           group.hidden=true;
           host.classList.remove('sf-pin-active','sf-passkey-active');
+          host.dispatchEvent(new Event('codela:smart-reset'));
           if(returnButton)returnButton.hidden=false;
           nativeForm?.dispatchEvent(new CustomEvent(
             'codela:auth-select',{detail:{view:'login'}}
