@@ -186,15 +186,72 @@ function release(ok) {
       assert.equal(await page.evaluate(()=>localStorage.getItem('codela_sf_quick_profile_v1')),null,'Revoked profile cleared locally');
       await context.close();
     }
-    // Signing in with a distinct Google/password identity discards old A.
+    // Signing in to Woo/Google B must preserve A's browser key. This is an
+    // account switch, NOT a revocation; a fresh guest screen can offer A again.
     browserStatus='active';
     {
       const context=await browser.newContext({viewport:{width:390,height:844}});
       const page=await context.newPage();
       await enrollFixture(page,url);
       await page.goto(url+'switch-account',{waitUntil:'load'});
-      await page.waitForFunction(()=>localStorage.getItem('codela_sf_quick_profile_v1') === null);
-      assert.equal(await page.locator('.sf-quick-login').isVisible(),false,'Other authenticated identity cannot offer previous remembered account');
+      assert.equal(await page.evaluate(()=>
+        window.CodelaSFRemembered.pins().some(item=>item.userId===17)),true,
+        'A remains saved after signing into another WooCommerce user');
+      assert.equal(await page.locator('.sf-quick-login').isVisible(),false,
+        'Signed-in pages do not display guest account switching UI');
+      await page.goto(url,{waitUntil:'load'});
+      await page.locator('.sf-quick-login').waitFor({state:'visible'});
+      assert.equal(await page.locator('.sf-quick-user').first().innerText(),'Ayşe Yılmaz',
+        'A is selectable again after signing out of B');
+      await context.close();
+    }
+
+    // Two different customers remain visible, each with a separate browser
+    // ECDSA key. Six digits verify ONLY the chosen card, without keyboard Done.
+    {
+      const context=await browser.newContext({viewport:{width:390,height:844}});
+      const page=await context.newPage();
+      await enrollFixture(page,url);
+      await page.evaluate(async()=>{
+        const deviceId='b'.repeat(32);
+        const pair=await crypto.subtle.generateKey(
+          {name:'ECDSA',namedCurve:'P-256'},false,['sign','verify']
+        );
+        const db=await new Promise((resolve,reject)=>{
+          const req=indexedDB.open('codela_sf_quick_keys_v1',1);
+          req.onsuccess=()=>resolve(req.result);
+          req.onerror=()=>reject(req.error);
+        });
+        await new Promise((resolve,reject)=>{
+          const tx=db.transaction('keys','readwrite');
+          tx.objectStore('keys').put(pair.privateKey,deviceId);
+          tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);
+        });
+        db.close();
+        localStorage.setItem('codela_sf_quick_profiles_v2',JSON.stringify([
+          {deviceId:'a'.repeat(32),userId:17,displayName:'Ayşe Yılmaz',email:'ayse@example.test'},
+          {deviceId,userId:28,displayName:'Mehmet Demir',email:'mehmet@example.test'}
+        ]));
+        localStorage.removeItem('codela_sf_quick_profile_v1');
+      });
+      await page.reload({waitUntil:'load'});
+      await page.waitForFunction(()=>document.querySelectorAll('.sf-quick-login:not([hidden])').length===2);
+      assert.equal(await page.locator('.sf-quick-account-frame').count(),2,'Two account cards are available');
+      assert.equal(await page.locator('.sf-quick-choice-intro').count(),1,'One shared welcome heading');
+      assert.equal(await page.locator('.sf-quick-choice-alternatives').count(),1,'One shared native-login fallback');
+      assert.deepEqual(await page.locator('.sf-quick-user').allInnerTexts(),['Ayşe Yılmaz','Mehmet Demir']);
+      await page.locator('.sf-quick-method--pin').nth(1).click();
+      await page.locator('.sf-quick-native-pin').nth(1).fill('381905');
+      await page.waitForFunction(()=>document.querySelectorAll('.sf-quick-pin-track.is-checking').length===1);
+      assert.equal(await page.evaluate(()=>document.activeElement?.classList.contains('sf-quick-native-pin')),
+        false,'PIN keyboard loses focus when the sixth digit arrives automatically');
+      for(let i=0;i<30&&!pending.length;i++)await page.waitForTimeout(25);
+      assert.equal(pending.length,1,'Only one PIN verification request is sent');
+      assert.equal(pending[0].body.user_id,28,'PIN belongs to selected account B, not A');
+      release(false);
+      await page.locator('.sf-quick-pin-track.is-error').waitFor({state:'attached'});
+      assert.equal(await page.evaluate(()=>window.CodelaSFRemembered.pins().length),2,
+        'An unsuccessful login does not remove the other account');
       await context.close();
     }
     // When a guest document is restored from a stale cache with an active
