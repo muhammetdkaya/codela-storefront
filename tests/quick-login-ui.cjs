@@ -22,7 +22,9 @@ assert(css.includes('.sf-quick-google:disabled{opacity:1!important'),'Disabled G
 assert(js.includes('mergeSlots()') && js.includes("track.classList.add('is-merging')"),'The six square boxes converge to a single result');
 assert(js.includes("if (!result.ok || typeof result.account_url !== 'string')"),'Server authentication response is validated before success');
 assert(js.indexOf('mergeSlots();') > js.indexOf("const result = await request('verify'") && js.indexOf("track.classList.add('is-verified')") > js.indexOf('mergeSlots();'),'Both merge and check are gated on the successful server response');
-assert(js.includes("remembered.displayName = settings.dataset.displayName"),'Existing remembered accounts refresh their customer name');
+assert(js.includes("accountStore.storePin({...remembered,") &&
+  js.includes("displayName:settings.dataset.displayName || remembered.username"),
+  'An existing customer profile refreshes only its own remembered name and email');
 assert(js.includes("displayName:settings.dataset.displayName"),'New remembered accounts store display name');
 assert(js.includes("email:settings.dataset.email"),'Enrollment stores only a display email alongside remembered account');
 assert(js.includes("email.textContent = rememberedEmail"),'Guest card reads the remembered email');
