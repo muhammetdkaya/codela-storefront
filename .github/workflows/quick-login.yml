@@ -52,12 +52,12 @@ jobs:
           npx playwright install --with-deps chromium webkit
       - name: Signed-in and failed PIN motion acceptance
         run: |
+          node tests/account-focus-browser.cjs
+          TEST_WEBKIT=1 node tests/account-focus-browser.cjs
+          node tests/account-browser.cjs
           node tests/quick-login-browser.cjs
           TEST_WEBKIT=1 node tests/quick-login-browser.cjs
           node tests/account-keyboard-style-browser.cjs
           TEST_WEBKIT=1 node tests/account-keyboard-style-browser.cjs
           node tests/account-instant-browser.cjs
           TEST_WEBKIT=1 node tests/account-instant-browser.cjs
-          node tests/account-browser.cjs
-          node tests/account-focus-browser.cjs
-          TEST_WEBKIT=1 node tests/account-focus-browser.cjs

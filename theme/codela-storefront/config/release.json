@@ -6,12 +6,9 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Hızlı girişte kapalı hesap kartının altında kalan gereksiz boşluk düzeltildi; alt padding yalnız altı kare PIN alanı açıkken uygulanıyor.",
-    "Hızlı hesap yükleme skeleton'u yeni gerçek hesap kartının tek dış çerçevesini kullanacak şekilde güncellendi; ikinci beyaz kart görünümü giderildi.",
-    "iPhone Safari'de kendi sayısal klavyesi ve tarayıcı adres/araç çubuğu açıldığında PIN kartı visualViewport güvenli görünür alanına göre ölçülüp gerektiği kadar yukarı taşınıyor; klavye kapanınca kaydırma kaldırılıyor.",
-    "Kullanıcının beğendiği mevcut hızlı PIN karartmasının rengi ve bulanıklığı hiç değiştirilmedi; altı kare/tek yeşil tikli kare animasyonu ve sunucu doğrulaması korundu.",
-    "Normal WooCommerce girişinde kullanıcı adı veya şifreye dokunulunca hızlı PIN ile aynı karartma açılıyor; kullanıcı adı, şifre, Beni hatırla, şifre sıfırlama ve Giriş Yap butonu önde kalıyor. Google/kayıt ve diğer içerikler kararıyor.",
-    "Normal girişte alandan çıkınca veya iPhone klavyesi kapandığında karartma kapanıyor; otomatik odak, nonce, gerçek Woo giriş/kayıt ve Google OAuth değişmedi.",
-    "Chromium/WebKit odak karartması, hızlı kart/skeleton ölçüleri ve Safari klavye görünür alanı testleri genişletildi."
+    "Normal WooCommerce girişinde Beni hatırla ve Şifremi unuttum sade, eşit hizalı yardımcı satırda; native checkbox ve şifre sıfırlama bağlantısı korunuyor.",
+    "Kullanıcı adı veya şifre odaklandığında yardımcı satır gizleniyor; alanlar eşit aralıklı tek sütuna dönüşüyor, siyah odak çizgisindeki dış boşluk kaldırılıyor.",
+    "Yalnız odak sırasında Giriş Yap, temanın kendi --sf-ui-ink koyu rengine ve beyaz metne geçiyor; normal girişte beyaz buton kalıyor.",
+    "Normal Hesabım ve anında açılan Hesabım paneli ortak stilleri kullanıyor; mevcut PIN karartması, Safari klavye davranışı, Woo native submit ve Google giriş değiştirilmedi."
   ]
 }
