@@ -500,7 +500,7 @@ add_action( 'wp_head', static function(): void {
     // Prepaint protection also covers the instant Account panel on other
     // storefront pages. Only the visible view is masked; no navigation waits.
     if ( is_user_logged_in() ) { return; }
-    echo '<script>(function(){try{var p=JSON.parse(localStorage.getItem("codela_sf_quick_profile_v1")||"null");if(p&&Number.isSafeInteger(p.userId)&&/^[0-9a-f]{32}$/.test(p.deviceId||"")){document.documentElement.classList.add("sf-quick-checking");var k=JSON.parse(localStorage.getItem("codela_sf_passkey_hint_v1")||"null");if(k&&k.userId===p.userId&&!k.paused&&typeof k.credentialId==="string"){document.documentElement.classList.add("sf-quick-passkey-hint");}window.setTimeout(function(){document.documentElement.classList.remove("sf-quick-checking")},7000)}}catch(e){}})();</script>';
+    echo '<script>(function(){try{var p=JSON.parse(localStorage.getItem("codela_sf_quick_profile_v1")||"null");if(p&&Number.isSafeInteger(p.userId)&&/^[0-9a-f]{32}$/.test(p.deviceId||"")){document.documentElement.classList.add("sf-quick-checking");var k=null;try{k=JSON.parse(localStorage.getItem("codela_sf_passkey_hint_v1")||"null")}catch(_e){}if(k&&k.userId===p.userId&&!k.paused&&typeof k.credentialId==="string"){document.documentElement.classList.add("sf-quick-passkey-hint");}window.setTimeout(function(){document.documentElement.classList.remove("sf-quick-checking")},7000)}}catch(e){}})();</script>';
 }, 1 );
 
 add_action( 'wp_enqueue_scripts', static function(): void {
