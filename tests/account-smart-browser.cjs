@@ -20,7 +20,7 @@ data-auth-smart-label="Email address" data-auth-smart-first="First name"
 data-auth-smart-last="Last name" data-auth-smart-checking="Checking account…"
 data-auth-smart-error="Check unavailable" data-auth-smart-closed="Registration closed"
 data-auth-smart-continue="Continue with email"
-data-auth-smart-password-link="Password link emailed"
+data-auth-smart-password-link="Password link emailed" data-auth-smart-register-password="Password (at least 8 characters)"
 data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or create an account with your email.">
 <h1><span class="sf-auth-heading-text">Welcome back</span>
 <span class="sf-auth-heading-wave">👋</span></h1>
@@ -144,11 +144,15 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or create a
    assert.equal(await page.locator('.sf-auth-google').isVisible(),false,'Google option is hidden during registration');
    assert.equal(await page.locator('.sf-quick-return').isVisible(),false,'Quick return is hidden during registration');
    assert.equal(await page.locator('.sf-smart-actions').isVisible(),false,'No change-email link in registration');
-   assert.equal(await page.locator('.woocommerce-form-register button[type=submit]').isVisible(),false,'Register hidden before details');
+   assert.equal(await page.locator('.woocommerce-form-register button[type=submit]').isVisible(),true,'Register CTA is discoverable as soon as the new email is recognized');
+   assert.equal(await page.locator('.woocommerce-form-register button[type=submit]').isDisabled(),true,'Register remains disabled until required details are complete');
+   assert.equal(await page.locator('#reg_password').getAttribute('minlength'),'8','Registration password requirement is clear');
    await page.locator('#sf-smart-first').fill('Ada');
    await page.locator('#sf-smart-last').fill('Yılmaz');
    await page.locator('#reg_password').fill('StrongP4ss!Good');
-   assert(await page.locator('.woocommerce-form-register button[type=submit]').isVisible(),'Register appears after required details');
+   assert(await page.locator('.woocommerce-form-register button[type=submit]').isVisible(),'Register remains visible after required details');
+   assert.equal(await page.locator('.woocommerce-form-register button[type=submit]').isEnabled(),true,'Completed form enables Register');
+   assert.equal(await page.locator('.woocommerce-form-register button[type=submit]').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(37, 38, 40)','Register darkens when ready');
    assert.equal(await page.locator('.sf-auth-google').isVisible(),false,'Google remains hidden after registration is ready');
    assert.equal(await page.locator('.sf-quick-return').isVisible(),false,'Quick login remains hidden after registration is ready');
    assert.equal(await page.locator('.sf-auth-register-cta').isVisible(),false,'Old separate registration action remains absent');
