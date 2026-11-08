@@ -175,6 +175,26 @@
       result.setAttribute('role','status');result.setAttribute('aria-live','polite');
       btn.after(result);
       btn.addEventListener('click',()=>signIn(result));
+      // Preserve the existing six-digit PIN account card as an explicit fallback.
+      // Only offer it if the old non-exportable browser credential is present.
+      try {
+        const legacy = JSON.parse(localStorage.getItem('codela_sf_quick_profile_v1') || 'null');
+        if (legacy?.userId === remembered.userId) {
+          const alternative = document.createElement('button');
+          alternative.type='button';
+          alternative.className='sf-pk-use-pin';
+          alternative.textContent='6 haneli kod ile giriş';
+          section.querySelector('.sf-pk-use-email')?.before(alternative);
+          alternative.addEventListener('click',()=>{
+            const card=host.querySelector('.sf-quick-login');
+            if (card && !card.hidden) {
+              host.classList.remove('sf-passkey-active');
+              host.classList.add('sf-pin-active');
+              section.hidden=true;
+            } else notify(result,'Eski giriş bu tarayıcıda kullanılamıyor. E-posta ile giriş yapabilirsiniz.');
+          });
+        }
+      } catch (_) { /* No legacy credential hint. */ }
       section.querySelector('.sf-pk-use-email')?.addEventListener('click',()=>{
         host.classList.remove('sf-passkey-active','sf-pin-active');
         host.querySelectorAll('.sf-quick-login').forEach(node=>node.hidden=true);
