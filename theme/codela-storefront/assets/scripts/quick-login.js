@@ -210,8 +210,10 @@
     if (!host) return;
     host.dataset.sfQuickStatus = active ? 'active' : 'inactive';
     host.dataset.sfQuickUserId = String(profile.userId);
+    section.dataset.sfQuickStatus = active ? 'active' : 'inactive';
+    section.dataset.sfQuickUserId = String(profile.userId);
     host.dispatchEvent(new CustomEvent('codela:quick-status', {
-      detail:{active, userId:profile.userId}
+      detail:{active, userId:profile.userId, section}
     }));
   }
   async function initGuest(section, profile) {
@@ -406,6 +408,9 @@
     async function submit() {
       if (pending || input.value.length !== 6) return;
       pending = true;
+      // Dismiss the iOS numeric keyboard when digit six arrives. Verification
+      // starts automatically and does not require the keyboard's Done arrow.
+      input.blur();
       const pin = input.value;
       track.classList.add('is-checking');
       status.textContent = t('waiting','Signing in…');
@@ -457,6 +462,7 @@
     }
 
     choose.addEventListener('click', () => {
+      accountStore.select(profile.userId);
       if (section.classList.contains('is-inline-open')) closeInline();
       else openInline();
     });
@@ -467,18 +473,30 @@
     track.addEventListener('click', () => {
       if (!pending && section.classList.contains('is-inline-open')) input.focus({preventScroll:true});
     });
-    input.addEventListener('input', () => {
+    const handleDigits = () => {
       if (pending) return;
       const oldLength = input.value.length;
       render();
       if (input.value.length && oldLength && !challengePromise) {
         void getChallenge().catch(() => { challengePromise = null; });
       }
-      if (input.value.length === 6) void submit();
-      else {
+      if (input.value.length === 6) {
+        input.blur();
+        void submit();
+      } else {
         status.classList.remove('is-error');
         status.textContent = '';
         track.classList.remove('is-error');
+      }
+    };
+    input.addEventListener('input', handleDigits);
+    // Also catch iOS one-time-code insertion, keypad Done, and autofill paths
+    // that dispatch a change event rather than a regular input event.
+    input.addEventListener('change', handleDigits);
+    input.addEventListener('compositionend', handleDigits);
+    input.addEventListener('keydown', event => {
+      if (event.key === 'Enter' && input.value.length === 6) {
+        event.preventDefault();handleDigits();
       }
     });
     section.addEventListener('keydown', event => {
@@ -578,6 +596,93 @@
       });
     });
   }
+  // One guest surface for every remembered user, regardless of whether they
+  // have a PIN, a passkey, or both. The same markup is reused across /hesabim/
+  // and the instantly opened account dialog; no second welcome card flashes.
+  function renderGuestAccountGroups() {
+    const users=new Map();
+    for(const profile of accountStore.pins()){
+      users.set(profile.userId,{userId:profile.userId,pin:profile,passkey:null});
+    }
+    for(const hint of accountStore.passkeys()){
+      if(hint.paused)continue;
+      const account=users.get(hint.userId)||{userId:hint.userId,pin:null,passkey:null};
+      account.passkey=hint;
+      users.set(hint.userId,account);
+    }
+    const preferred=accountStore.preferredUser();
+    const accounts=[...users.values()].sort((a,b)=>
+      Number(b.userId===preferred)-Number(a.userId===preferred)
+    ).slice(0,8);
+    if(!accounts.length)return [];
+    const groups=[];
+    for(const template of [...document.querySelectorAll('.sf-quick-login')]){
+      if(template.closest('.sf-quick-accounts'))continue;
+      const host=template.closest('.sf-overlay-auth')||template.closest('.woocommerce');
+      if(!host)continue;
+      const group=document.createElement('div');
+      group.className='sf-quick-accounts';
+      if(accounts.length>1)group.classList.add('has-many');
+      const choice=template.querySelector('.sf-quick-choice');
+      const hero=choice.querySelector('.sf-quick-choice-intro');
+      const alternatives=choice.querySelector('.sf-quick-choice-alternatives');
+      template.before(group);
+      if(hero)group.append(hero);
+      if(alternatives)alternatives.remove();
+      for(const [index,account] of accounts.entries()){
+        const section=index===0?template:template.cloneNode(true);
+        if(index){
+          section.classList.add('is-extra-account');
+          section.querySelector('.sf-quick-choice-intro')?.remove();
+          section.querySelector('.sf-quick-choice-alternatives')?.remove();
+        }
+        section.dataset.sfQuickUserId=String(account.userId);
+        section.hidden=true;
+        const pin=section.querySelector('.sf-quick-method--pin');
+        if(pin){
+          pin.hidden=!account.pin;
+          const uid='sf-quick-inline-pin-'+account.userId;
+          const inline=section.querySelector('.sf-quick-inline-pin');
+          if(inline)inline.id=uid;
+          pin.setAttribute('aria-controls',uid);
+        }
+        group.append(section);
+        groups.push({section,account,host});
+      }
+      if(alternatives){
+        group.append(alternatives);
+        const showNative=()=>{
+          for(const child of group.querySelectorAll('.sf-quick-login.is-inline-open')){
+            child.dispatchEvent(new CustomEvent('codela:quick-pin-close'));
+          }
+          group.hidden=true;
+          host.classList.remove('sf-pin-active','sf-passkey-active');
+          host.querySelector('#customer_login')?.dispatchEvent(new CustomEvent(
+            'codela:auth-select',{detail:{view:'login'}}
+          ));
+        };
+        alternatives.querySelector('.sf-quick-switch')?.addEventListener('click',showNative);
+        alternatives.querySelector('.sf-quick-native-alt')?.addEventListener('click',showNative);
+      }
+    }
+    return groups;
+  }
+
+  function showPasskeyOnly(section,hint) {
+    const host=section.closest('.sf-overlay-auth')||section.closest('.woocommerce');
+    const name=String(hint.displayName||hint.email||'Hesabım').trim();
+    section.querySelector('.sf-quick-user').textContent=name;
+    const mail=section.querySelector('.sf-quick-email');
+    if(mail && hint.email){mail.textContent=hint.email;mail.hidden=false}
+    section.querySelector('.sf-quick-monogram').textContent=
+      Array.from(name)[0]?.toLocaleUpperCase()||'?';
+    const pin=section.querySelector('.sf-quick-method--pin');
+    if(pin)pin.hidden=true;
+    section.classList.add('is-passkey-only');
+    section.hidden=false;
+    host.classList.add('sf-pin-active');
+    announceQuickStatus(section,hint,true);
+  }
   async function init() {
     try {
     const identity=config.identity;
@@ -594,11 +699,22 @@
       });
     }
     if(!identity){
-      for(const section of document.querySelectorAll('.sf-quick-login')){
-        const profile=log();
-        if(!profile)continue;
-        try { await initGuest(section,profile); }
-        catch (_){ announceQuickStatus(section,profile,false); }
+      const guests=renderGuestAccountGroups();
+      // All guest options exist before the passkey script initializes.
+      // PIN options must prove the browser key on the server; passkey-only
+      // cards merely display a saved account hint until native WebAuthn.
+      await Promise.all(guests.map(async ({section,account})=>{
+        if(account.pin){
+          try {await initGuest(section,account.pin);}
+          catch (_){announceQuickStatus(section,account.pin,false);}
+          if(section.hidden && account.passkey)showPasskeyOnly(section,account.passkey);
+        } else if(account.passkey){
+          showPasskeyOnly(section,account.passkey);
+        }
+      }));
+      for(const group of document.querySelectorAll('.sf-quick-accounts')){
+        const visible=[...group.querySelectorAll('.sf-quick-login')].some(node=>!node.hidden);
+        group.hidden=!visible;
       }
     }
     for (const settings of document.querySelectorAll('.sf-quick-settings')) {
