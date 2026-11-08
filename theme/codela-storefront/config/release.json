@@ -6,9 +6,9 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Misafir Hesabım ekranında E-posta ile Kayıt Ol butonu WooCommerce form satırının dışına, Giriş Yap ile Google arasına alındı; tüm satır genişliğinde, tek satır etiketli ve 54px yüksekliğinde.",
-    "Mineral renk override'ları kaldırıldı; Giriş Yap temanın standart koyu UI Kit butonunu, E-posta ile Kayıt Ol standart nötr tonal butonunu ve Google standart beyaz ikincil yüzeyi kullanıyor.",
-    "Doğrudan Hesabım ve hızlı hesap paneli aynı tam genişlik/dizilim tasarımını kullanır. WooCommerce giriş/kayıt, izin, şifre kurtarma, nonce, OAuth, tanınan hesap/PIN ve otomatik odak davranışı değişmez.",
-    "320px ve 390px mobil görünümde giriş, kayıt, Google butonlarının dizilimi ve etiket taşması için tarayıcı testleri eklendi."
+    "Vitrine eklenen görünür Slaytı Başlat/Duraklat düğmesi kaldırıldı.",
+    "Vitrin düğmeye basılmasını beklemeden altı saniyede bir otomatik ilerler; son slayttan ilkine döner.",
+    "Masaüstünde fareyle sağa/sola sürükleme, native dokunma/tekerlek ve normal bağlantı tıklaması korunur.",
+    "Klavye odağı, fareyle etkileşim, görünmeyen sekme/vitrin ve azaltılmış hareket tercihleri korunur; geçici durma koşulu kalkınca yeniden düğmeye gerek kalmadan devam eder."
   ]
 }

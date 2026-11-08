@@ -33,7 +33,7 @@ expect(str_contains(codela_sf_section_controls(5,true),'01 / 05'),'Five slides u
 expect(str_contains(codela_sf_section_controls(12,true),'01 / 12'),'Two digit totals are not truncated');
 expect(str_contains(codela_sf_section_controls(2,false),'data-gallery-next'),'Other galleries keep their controls');
 expect(codela_sf_section_controls(1,true)==='','Single-slide hero has no false navigation');
-expect(str_contains(codela_sf_section_controls(2,true),'data-gallery-rotation'),'Multiple hero slides expose an accessible rotation control');
+expect(!str_contains(codela_sf_section_controls(2,true),'data-gallery-rotation'),'Hero autoplay has no visible start/pause button');
 expect(!str_contains(codela_sf_section_controls(2,false),'data-gallery-rotation'),'Promo/category controls do not enable automatic rotation');
 
 expect(substr_count($html,'<h1>')===1,'Exactly one page H1');

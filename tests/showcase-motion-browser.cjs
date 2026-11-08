@@ -31,14 +31,19 @@ const aligned=page=>page.waitForFunction(()=>{const t=document.querySelector('.s
  const drag=async(page,from,to,y)=>{await page.mouse.move(from,y);await page.mouse.down();await page.mouse.move(to,y,{steps:18});await page.mouse.up();await aligned(page)};
  try{
   let test=await open({reducedMotion:'no-preference'}),page=test.page;
+  assert.equal(await section(page).locator('[data-gallery-rotation],.sf-gallery-rotation').count(),0,'No start/pause button is rendered');
+  assert.equal(await section(page).locator('[data-gallery-controls] button').count(),0,'Hero controls contain only the existing counter/progress');
   await waitCount(page,'02 / 03');await waitCount(page,'03 / 03');await waitCount(page,'01 / 03');
   assert.equal(await section(page).locator('[data-gallery-count]').getAttribute('aria-live'),'off');results.push('Autoplay advances every six seconds and wraps');
   await page.mouse.move(600,200);const paused=await count(page);await page.waitForTimeout(6500);assert.equal(await count(page),paused);
   await page.mouse.move(1279,899);await waitCount(page,'02 / 03');results.push('Hover pauses and leave resumes');
-  await section(page).getByRole('button',{name:'Pause slideshow',exact:true}).click();await page.mouse.move(1279,899);const stopped=await count(page);await page.waitForTimeout(6500);assert.equal(await count(page),stopped);results.push('Pause control remains stopped after mouse leaves');
   await track(page).focus();await page.keyboard.press('Home');await waitCount(page,'01 / 03');
-  await section(page).getByRole('button',{name:'Start slideshow',exact:true}).focus();await page.keyboard.press('Enter');await waitCount(page,'02 / 03');results.push('Keyboard can explicitly restart rotation');
-  await page.emulateMedia({reducedMotion:'reduce'});await section(page).getByRole('button',{name:'Start slideshow',exact:true}).waitFor();const reduced=await count(page);await page.waitForTimeout(6500);assert.equal(await count(page),reduced);results.push('Changed reduced-motion preference stops autoplay');await test.close();
+  await page.waitForTimeout(6500);assert.equal(await count(page),'01 / 03');results.push('Keyboard focus pauses rotation while inside the gallery');
+  await page.evaluate(()=>{const outside=document.querySelector('.spacer');outside.tabIndex=-1;outside.focus({preventScroll:true})});
+  await waitCount(page,'02 / 03');results.push('Leaving keyboard focus resumes automatically without a start button');
+  await page.emulateMedia({reducedMotion:'reduce'});const reduced=await count(page);await page.waitForTimeout(6500);assert.equal(await count(page),reduced);results.push('Changed reduced-motion preference stops autoplay');
+  await page.emulateMedia({reducedMotion:'no-preference'});await waitCount(page,'03 / 03');results.push('Restoring motion preference resumes without a button');await test.close();
+  test=await open({width:390,reducedMotion:'no-preference'});page=test.page;await waitCount(page,'02 / 03');results.push('Mobile hero also advances automatically after six seconds');await test.close();
 
   test=await open();page=test.page;
   await drag(page,1000,450,200);await waitCount(page,'02 / 03');await drag(page,400,950,200);await waitCount(page,'01 / 03');
@@ -50,12 +55,12 @@ const aligned=page=>page.waitForFunction(()=>{const t=document.querySelector('.s
   await page.evaluate(()=>{window.removedHero=document.querySelector('.sf-section--hero');removedHero.remove()});await page.waitForTimeout(100);assert.equal(await page.evaluate(()=>removedHero.hasAttribute('data-sf-gallery-ready')),false);await page.waitForTimeout(6500);assert.equal(await page.evaluate(()=>removedHero.querySelector('[data-gallery-count]').textContent),'01 / 03');results.push('Removed gallery is disposed without stale repaint');await test.close();
   for(const width of [320,390,700,1280]){
    test=await open({width});page=test.page;
-   const geometry=await section(page).evaluate(el=>{const box=e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height}};return {hero:box(el),controls:box(el.querySelector('[data-gallery-controls]')),button:box(el.querySelector('[data-gallery-rotation]')),cta:box(el.querySelector('.sf-section-copy a')),overflow:document.documentElement.scrollWidth>innerWidth+1}});
-   assert(!geometry.overflow);assert(geometry.button.height>=44);assert(geometry.controls.right<=width+1);assert(geometry.controls.bottom<=geometry.hero.bottom+1);
+   const geometry=await section(page).evaluate(el=>{const box=e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height}};return {hero:box(el),controls:box(el.querySelector('[data-gallery-controls]')),cta:box(el.querySelector('.sf-section-copy a')),overflow:document.documentElement.scrollWidth>innerWidth+1}});
+   assert(!geometry.overflow);assert.equal(await section(page).locator('[data-gallery-rotation]').count(),0);assert(geometry.controls.right<=width+1);assert(geometry.controls.bottom<=geometry.hero.bottom+1);
    assert(geometry.controls.left>=geometry.cta.right||geometry.controls.top>=geometry.cta.bottom||geometry.controls.bottom<=geometry.cta.top,'CTA and controls never overlap at '+width);
    await page.screenshot({path:`qa/slider/${engine}-${width}.png`});await test.close();
   }
-  results.push('320/390/700/1280 layout, 44px control and CTA clearance');
+  results.push('320/390/700/1280 layout, no rotation button and CTA clearance');
   fs.writeFileSync(`qa/slider/browser-${engine}.json`,JSON.stringify({engine,passed:true,results},null,2));console.log(engine,results);
  }finally{await browser.close()}
 })().catch(error=>{console.error(error);process.exitCode=1});
