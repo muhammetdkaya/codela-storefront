@@ -67,12 +67,17 @@ ${overlay?'</div></div>':''}</body></html>`;
       +'<button class="sf-pk-use-email">Email</button></section>'
       +'<div class="sf-account-intro">Normal login</div>'
       +'<div id="customer_login">Woo login</div>'
-      +'<section class="sf-quick-login" hidden><div class="sf-quick-choice">'
-      +'<div class="sf-quick-account-frame"><div class="sf-quick-account">'
+      +'<div class="sf-quick-accounts"><div class="sf-quick-choice-intro">Welcome</div>'
+      +'<section class="sf-quick-login" data-sf-user-id="17" hidden>'
+      +'<div class="sf-quick-choice"><div class="sf-quick-account-frame"><div class="sf-quick-account">'
       +'<span class="sf-quick-account-text">Customer</span>'
-      +'<span class="sf-quick-methods"><button type="button" class="sf-quick-method sf-quick-method--passkey" hidden><svg viewBox="0 0 24 24"></svg></button>'
+      +'<span class="sf-quick-methods"><button type="button" class="sf-quick-method sf-quick-method--passkey" hidden>'
+      +'<svg class="sf-bio-icon" viewBox="0 0 24 24"><g class="sf-bio-face"><path class="sf-bio-corner" d="M3 8v-4h5"/>'
+      +'<path class="sf-bio-feature" d="M7 9h10"/><path class="sf-bio-scanline" d="M6 7h12"/></g>'
+      +'<path class="sf-bio-verified" d="M5 12l4 4 10-10"/></svg></button>'
       +'<button type="button" class="sf-quick-method sf-quick-method--pin">PIN</button></span>'
-      +'</div></div><div class="sf-quick-choice-alternatives"><button class="sf-quick-native-alt">Email</button></div></div></section>'
+      +'</div></div></div></section>'
+      +'<div class="sf-quick-choice-alternatives"><button class="sf-quick-native-alt">Email</button></div></div>'
       +'</div></body></html>';
     await combined.route(origin+'/**',route=>{
       const url=new URL(route.request().url());
@@ -98,6 +103,10 @@ ${overlay?'</div></div>':''}</body></html>`;
       Object.defineProperty(navigator,'credentials',{configurable:true,value:{
         get:()=>new Promise((resolve,reject)=>{window.rejectAuth=reject})
       }});
+      window.CodelaSFRemembered={
+        passkeys:()=>[JSON.parse(localStorage.getItem('codela_sf_passkey_hint_v1'))],
+        select:()=>{}
+      };
       window.CodelaSFPasskey={rest:'/api',identity:null};
     });
     await combined.addStyleTag({content:cssAccount+'\n'+cssOverlay+'\n'+cssQuick});
@@ -135,7 +144,8 @@ ${overlay?'</div></div>':''}</body></html>`;
         guestHidden:host?.querySelector('.sf-pk-guest')?.hidden
       };
     });
-    console.log('COMBINED_AUTH_DIAGNOSTICS',JSON.stringify(combinedDiagnostics));
+    assert.equal(combinedDiagnostics.biometricHidden,false,
+      'Fake trusted account event activates the saved biometric icon');
     assert.equal(await combined.locator('.sf-quick-method--passkey').isVisible(),true,'Face ID icon added to same card');
     assert.equal(await combined.locator('.sf-quick-native-alt').isVisible(),true,
       'Combined card has one standard email/Google fallback');
@@ -144,6 +154,9 @@ ${overlay?'</div></div>':''}</body></html>`;
     await combined.waitForFunction(()=>!!window.rejectAuth);
     assert.equal(await combined.locator('.sf-quick-method--passkey').getAttribute('aria-busy'),
       'true','Face ID gesture animates the chosen icon');
+    assert.equal(await combined.locator('.sf-quick-method--passkey .sf-bio-corner').evaluate(el=>
+      getComputedStyle(el).animationName),'sf-bio-trace',
+      'Animated vector corner traces only while system WebAuthn is pending');
     assert.equal(await combined.locator('.sf-quick-passkey-error').innerText(),'',
       'No intrusive phone verification progress line is inserted');
     await combined.evaluate(()=>window.rejectAuth(Object.assign(new Error('Cancelled'),{
