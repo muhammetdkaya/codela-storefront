@@ -157,7 +157,8 @@ function release(ok) {
         assert(await page.getByText('WooCommerce account opened').isVisible(),'Real account redirect follows verification');
       } else {
         await page.locator('.sf-quick-pin-track.is-error').waitFor({state:'attached'});
-        assert.equal(await page.locator('.sf-quick-native-pin').inputValue(),'','Failed code is cleared');
+        await page.waitForFunction(()=>document.querySelector('.sf-quick-native-pin')?.value==='',{timeout:3500});
+        assert.equal(await page.locator('.sf-quick-native-pin').inputValue(),'','Failed code clears after short red feedback');
         assert.equal(await page.locator('.sf-quick-slot.is-filled').count(),0,'No persisted PIN dots after error');
         assert.equal(await page.locator('.sf-quick-pin-track.is-verified').count(),0,'Error never shows success check');
         assert.equal(await page.locator('.sf-quick-status').evaluate(el=>getComputedStyle(el).color),
