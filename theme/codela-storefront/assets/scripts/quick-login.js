@@ -193,6 +193,8 @@
     let challengePromise = null;
     let challengeStarted = 0;
     let scrollFrame = 0;
+    let keyboardLift = 0;
+    const fullViewportHeight = window.visualViewport?.height || window.innerHeight;
     const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     const pause = ms => new Promise(resolve => window.setTimeout(resolve, reducedMotion ? 0 : ms));
 
@@ -227,14 +229,25 @@
       scrollFrame = 0;
       if (!section.classList.contains('is-inline-open')) return;
       const viewport = window.visualViewport;
-      const visibleTop = viewport?.offsetTop || 0;
-      const visibleBottom = visibleTop + (viewport?.height || window.innerHeight);
-      const rectangle = frame.getBoundingClientRect();
-      // Scroll only when the expanding card is actually covered by the native
-      // keyboard. Never simulate a keypad or move the card to a fixed sheet.
-      if (rectangle.bottom > visibleBottom - 12 || rectangle.top < visibleTop + 8) {
-        frame.scrollIntoView({block:'nearest', behavior:reducedMotion ? 'auto' : 'smooth'});
-      }
+      const top = viewport?.offsetTop || 0;
+      const viewportHeight = viewport?.height || window.innerHeight;
+      const nativeKeyboardVisible = fullViewportHeight - viewportHeight > 110;
+      // Safari's keyboard assistant, bottom URL pill and Done bar occupy
+      // additional space above the keypad even inside visualViewport.
+      // Reserve that space only while the system keyboard is visible.
+      const browserChrome = nativeKeyboardVisible
+        ? Math.min(140, Math.max(100, Math.round(fullViewportHeight * .14))) : 12;
+      const safeTop = top + (nativeKeyboardVisible ? 100 : 12);
+      const safeBottom = top + viewportHeight - browserChrome;
+      const rect = frame.getBoundingClientRect();
+      // Transforms affect getBoundingClientRect: undo our PREVIOUS lift
+      // before computing the new target, otherwise resize events oscillate.
+      const naturalTop = rect.top + keyboardLift;
+      const naturalBottom = rect.bottom + keyboardLift;
+      const requiredLift = Math.max(0, naturalBottom - safeBottom);
+      const availableLift = Math.max(0, naturalTop - safeTop);
+      keyboardLift = Math.min(requiredLift, availableLift);
+      frame.style.setProperty('--sf-quick-keyboard-lift', (-keyboardLift) + 'px');
     }
     function queueCardAlignment() {
       if (!scrollFrame) scrollFrame = window.requestAnimationFrame(keepCardVisible);
@@ -243,6 +256,10 @@
     function closeInline(restoreFocus = true, force = false) {
       if (pending && !force) return;
       input.blur();
+      if (scrollFrame) window.cancelAnimationFrame(scrollFrame);
+      scrollFrame = 0;
+      keyboardLift = 0;
+      frame.style.removeProperty('--sf-quick-keyboard-lift');
       section.classList.remove('is-inline-open');
       choose.setAttribute('aria-expanded','false');
       inline.setAttribute('aria-hidden','true');
@@ -269,6 +286,9 @@
       // display the system numeric keypad. No custom keyboard is created.
       input.focus({preventScroll:true});
       queueCardAlignment();
+      // The native iOS keyboard animates AFTER focus. A second measurement
+      // catches its final viewport size without creating a fake keyboard.
+      window.setTimeout(queueCardAlignment, 280);
     }
 
     function showNativeLogin(view = 'login') {
@@ -375,6 +395,8 @@
       if (event.key === 'Escape') { event.preventDefault(); closeInline(); }
     });
     window.visualViewport?.addEventListener('resize', queueCardAlignment, {passive:true});
+    window.visualViewport?.addEventListener('scroll', queueCardAlignment, {passive:true});
+    window.addEventListener('resize', queueCardAlignment, {passive:true});
     window.addEventListener('orientationchange', queueCardAlignment, {passive:true});
 
     // Another tab may revoke the recognized device while the card is open.
