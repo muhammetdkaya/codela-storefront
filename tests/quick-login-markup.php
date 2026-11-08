@@ -56,7 +56,7 @@ check( preg_match_all( '/class="sf-quick-slot"/', $html ) === 6, 'Exactly six PI
 check( str_contains( $html, 'inputmode="numeric"' ), 'Uses native device numeric keyboard' );
 check( str_contains( $html, 'autocomplete="off"' ), 'Browser autocomplete never stores PIN' );
 check( str_contains( $html, 'sf-quick-account-frame' ) && str_contains( $html, 'sf-quick-inline-pin' ) && ! str_contains( $html, 'role="dialog"' ), 'PIN expands within the same account card without a popup' );
-check( str_contains( $html, 'https://store.test/my-account/lost-password/' ), 'Uses native Woo lost-password route' );
+check( ! str_contains( $html, 'https://store.test/my-account/lost-password/' ) && str_contains( $html, 'sf-quick-email-login' ), 'Quick card does not duplicate Woo lost-password link; native email login still provides recovery' );
 check( ! str_contains( $html, 'sf-quick-sheet-links' ) && ! str_contains( $html, 'sf-quick-spinner' ), 'No duplicate password footer, loading spinner or extra success row' );
 check( str_contains( $html, 'sf-quick-result' ) && str_contains( $html, 'sf-quick-check' ), 'Center check replaces six squares after actual verification' );
 
