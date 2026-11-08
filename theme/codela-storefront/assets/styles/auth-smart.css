@@ -190,3 +190,10 @@ body.woocommerce-account .woocommerce.sf-smart-auth-active .sf-auth-back-login{
 body.woocommerce-account:not(.logged-in) .woocommerce.sf-smart-auth-active.sf-auth-register-view > .sf-auth-social{
  display:flex!important;visibility:visible!important
 }
+
+/* Direct focus state for browsers where :has() and independently animated
+   mobile chrome disagree for a frame. No header/dock while typing. */
+#sf-panel.is-account-panel.sf-auth-chrome-hidden > :is(.sf-panel-top,.sf-mobile-dock),
+body.sf-auth-chrome-hidden .sf-shell > :is(.sf-header,.sf-mobile-dock){
+  opacity:0!important;visibility:hidden!important;pointer-events:none!important
+}

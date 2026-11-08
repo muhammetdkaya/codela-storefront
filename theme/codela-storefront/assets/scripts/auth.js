@@ -180,12 +180,14 @@ function preventInitialAccountAutoFocus() {
             let baseline = viewport?.height || window.innerHeight;
             let hadKeyboard = false;
             let active = false;
+            const chromeHost = root.closest('#sf-panel') || document.body;
 
             const stop = () => {
                 if (!active) return;
                 active = false;
                 hadKeyboard = false;
                 root.classList.remove('sf-auth-focus-mode');
+                chromeHost.classList.remove('sf-auth-chrome-hidden');
             };
             const start = () => {
                 if ((root.classList.contains('sf-auth-register-view')
@@ -193,6 +195,7 @@ function preventInitialAccountAutoFocus() {
                     || root.classList.contains('sf-pin-active')) return;
                 active = true;
                 root.classList.add('sf-auth-focus-mode');
+                chromeHost.classList.add('sf-auth-chrome-hidden');
             };
             const isCredential = element => credentials.includes(element)
                 || !!(element?.matches?.('.sf-smart-identity,.sf-smart-name-fields input,'
