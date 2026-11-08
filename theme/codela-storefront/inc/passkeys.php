@@ -248,7 +248,7 @@ add_action( 'woocommerce_account_guvenlik_endpoint', static function(): void {
     }
     $records = codela_sf_pk_credentials( $user->ID );
     echo '<section class="sf-pk-settings" data-pk-settings>';
-    echo '<h2>' . esc_html__( 'Security and sign-in', 'codela-storefront' ) . '</h2>';
+    // The native WooCommerce account endpoint already supplies the page heading.
     echo '<p class="sf-pk-help">' . esc_html__( 'Sign in with your device verification. Your password and Google sign-in remain available.', 'codela-storefront' ) . '</p>';
     echo '<div class="sf-pk-section"><div class="sf-pk-section-title"><span class="sf-pk-glyph" aria-hidden="true">◎</span><span><strong>' . esc_html__( 'Sign in with your device', 'codela-storefront' ) . '</strong><small>' . esc_html__( 'Face ID, fingerprint or screen lock', 'codela-storefront' ) . '</small></span></div>';
     echo '<button type="button" class="sf-pk-enroll sf-pk-primary">' . esc_html__( 'Enable fast sign-in', 'codela-storefront' ) . '</button>';
