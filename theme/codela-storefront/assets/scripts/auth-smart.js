@@ -22,17 +22,22 @@
     const first = registerForm && query(registerForm,'input[name="first_name"]');
     const last = registerForm && query(registerForm,'input[name="last_name"]');
     const registerAllowed = !!(registerForm && registerEmail && first && last);
+    const registerSubmit=registerForm && query(registerForm,'button[type="submit"],input[type="submit"]');
+    if(registerPassword){
+      registerPassword.placeholder=intro.dataset.authSmartRegisterPassword||'Password (8+ characters)';
+      registerPassword.minLength=Math.max(registerPassword.minLength||0,8);
+    }
 
     const shell=document.createElement('div');
     shell.className='sf-smart-auth';
     const label=document.createElement('label');
     label.className='sf-smart-label';
-    label.textContent=intro.dataset.authSmartLabel||'Email or username';
+    label.textContent=intro.dataset.authSmartLabel||'Email address';
     const input=document.createElement('input');
     input.className='sf-smart-identity';
-    input.type='text';input.maxLength=254;input.autocomplete='username';
+    input.type='email';input.inputMode='email';input.maxLength=254;input.autocomplete='email';
     input.autocapitalize='none';input.spellcheck=false;
-    input.placeholder=intro.dataset.authSmartLabel||'Email or username';
+    input.placeholder=intro.dataset.authSmartLabel||'Email address';
     input.setAttribute('aria-label',input.placeholder);
     input.setAttribute('aria-describedby','sf-smart-message');
     label.append(input);
@@ -43,11 +48,9 @@
     const hint=document.createElement('p');
     hint.className='sf-smart-message';hint.id='sf-smart-message';
     hint.setAttribute('role','status');hint.setAttribute('aria-live','polite');
+    // An editable email input is the only identity control. No separate
+    // "change email" action, login/register tabs or username prompt.
     const actions=document.createElement('div');actions.className='sf-smart-actions';
-    const change=document.createElement('button');
-    change.type='button';change.className='sf-smart-change';
-    change.textContent=intro.dataset.authSmartChange||'Change email';
-    change.hidden=true;actions.append(change);
     const manual=document.createElement('button');
     manual.type='button';manual.className='sf-smart-manual-register';
     manual.textContent=intro.dataset.authSmartContinue||'Continue with email';
@@ -97,19 +100,18 @@
       root.classList.add('sf-smart-'+next);
       status(message);
       indicator.hidden=next!=='checking';
-      change.hidden=next!=='new';
-      // Registration is automatic for an unrecognized email. Never suggest
-      // creating an account merely because a username was typed.
-      // A discreet recovery action is available only if email lookup failed.
+      // The fallback appears only when an actual email lookup fails.
+      // A new address opens the same native Woo registration form automatically.
       manual.hidden=!registerAllowed || !(next==='unavailable' && emailPattern.test(active));
-      actions.hidden=change.hidden && manual.hidden;
+      actions.hidden=manual.hidden;
       if(next==='new' && registerAllowed) {
         chooseForm('new');
         registerEmail.value=active;
-        if(registerUsername && !registerUsername.value){
-          // In stores that do not auto-generate a username, allow the visitor
-          // to choose it through WooCommerce's own normal input.
-          registerUsername.placeholder=intro.dataset.authUsernamePlaceholder||'Username';
+        if(registerUsername){
+          // Woo stores with username autogeneration disabled still require the
+          // native reg_username POST. Use the email as the account login name,
+          // without asking the visitor to create a second identifier.
+          registerUsername.value=active;
         }
       }else{
         chooseForm('login');
@@ -124,9 +126,14 @@
       if(stage==='new' && registerAllowed){
         const hasNames=first.value.trim().length>0 && last.value.trim().length>0;
         const hasPassword=!registerPassword || registerPassword.value.length>=8;
-        const hasUsername=!registerUsername || registerUsername.value.trim().length>0;
-        root.classList.toggle('sf-smart-register-ready',hasNames&&hasPassword&&hasUsername);
-      }else root.classList.remove('sf-smart-register-ready');
+        const hasUsername=!registerUsername || registerUsername.value.trim()===active;
+        const ready=hasNames&&hasPassword&&hasUsername;
+        root.classList.toggle('sf-smart-register-ready',ready);
+        if(registerSubmit)registerSubmit.disabled=!ready;
+      }else{
+        root.classList.remove('sf-smart-register-ready');
+        if(registerSubmit)registerSubmit.disabled=false;
+      }
     };
     const abort=()=>{
       sequence++;clearTimeout(timer);
@@ -148,13 +155,8 @@
       }
       if(registerEmail && emailPattern.test(active))registerEmail.value=active;
       if(!active){setStage('start');return;}
-      if(!active.includes('@')){
-        if(active.length>=3){
-          // Usernames must not be exposed through an existence oracle.
-          setStage('existing');
-        }else setStage('start');
-        return;
-      }
+      // Only complete email addresses enter the account discovery flow.
+      // Arbitrary text such as "test" must never open a password field.
       if(!emailPattern.test(active) || active.length>254){
         setStage('start');return;
       }
@@ -201,18 +203,10 @@
         else input.blur();
       }
     });
-    change.addEventListener('click',()=>{
-      if(input.disabled)return;
-      abort();input.value='';active='';loginUser.value='';
-      if(registerEmail)registerEmail.value='';
-      loginPassword.value='';
-      setStage('start');input.focus();
-    });
     manual.addEventListener('click',()=>{
       if(!registerAllowed)return;
       if(!emailPattern.test(active)){
-        abort();input.value='';active='';loginPassword.value='';loginUser.value='';
-        setStage('start',intro.dataset.authSmartConfirm||'Use an email to register.');
+        setStage('start',intro.dataset.authSmartConfirm||'Please enter a valid email address.');
         input.focus();return;
       }
       setStage('new');
@@ -223,7 +217,7 @@
     }
     loginForm.addEventListener('submit',event=>{
       loginUser.value=input.value.trim();
-      if(stage!=='existing' && stage!=='unavailable' || !loginUser.value || !loginPassword.value){
+      if(!['existing','unavailable'].includes(stage) || !emailPattern.test(loginUser.value) || !loginPassword.value){
         event.preventDefault();
       }
     },true);
@@ -236,15 +230,17 @@
       },true);
     }
     setStage('start');
-    // When password manager/autofill has filled a native username, reflect it
-    // without triggering an account lookup before user interaction.
+    // Reflect a native email autofill without an unsolicited focus request.
     if(loginUser.value && !input.value){
       input.value=loginUser.value;check();
     }
     // On a rejected Woo POST, keep the relevant native registration visible.
     if(intro.dataset.authInitial==='register' && registerAllowed && registerEmail.value){
       input.value=registerEmail.value;active=input.value.trim();
-      if(emailPattern.test(active))setStage('new');else setStage('start');
+      if(emailPattern.test(active)){
+        if(registerUsername)registerUsername.value=active;
+        setStage('new');
+      }else setStage('start');
     }
     root.closest('#sf-account')?.addEventListener('codela:account-open',()=>{
       // Updated nonce is available after the native nonce refresh resolves.

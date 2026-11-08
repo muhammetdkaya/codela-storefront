@@ -30,7 +30,7 @@ const locale=fs.readFileSync('theme/codela-storefront/languages/tr_TR.l10n.php',
 assert.equal((locale.match(/'Welcome back'\s*=>/g)||[]).length,1,'Turkish welcome copy has one translation (no overwritten duplicate)');
 assert(locale.includes("'Welcome back' => 'Hoş geldiniz'"),'Account title is the short welcome copy');
 assert(!intro.includes('sf-auth-mark'),'Guest hero does not repeat the account icon');
-assert(intro.includes('data-auth-login-placeholder="Email or username"'),'Login placeholder metadata comes from localized theme');
+assert(intro.includes('data-auth-login-placeholder="Email address"'),'Login placeholder metadata is email-only');
 assert(intro.includes('Sign in to your account.'),'Guest account hero includes short subtitle');
 assert(!intro.includes('sf-auth-tabs'),'The segmented Login/Register control is removed entirely');
 assert(intro.includes('sf-auth-view-title'),'Guest heading remains accessible to both native forms');
@@ -153,7 +153,7 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
       });
       assert(fieldAlignment.labelHidden&&fieldAlignment.ready,'Original label remains accessible without visual duplication');
       assert(fieldAlignment.textPadding<18,'Text has no floating-label padding');
-      assert.equal(fieldAlignment.placeholder,'Email or username');
+      assert.equal(fieldAlignment.placeholder,'Email address');
       assert.equal(fieldAlignment.password,'Password');
       assert.equal(fieldAlignment.placeholderOpacity,'1','Placeholder stays readable');
       // Real touch/click releases the intentional initial-autofocus guard.

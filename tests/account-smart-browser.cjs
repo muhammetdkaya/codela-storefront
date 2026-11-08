@@ -16,12 +16,12 @@ const html=`<!doctype html><html><head><meta name="viewport" content="width=devi
 data-auth-initial="login" data-auth-login-title="Welcome back"
 data-auth-login-description="Sign in to your account."
 data-auth-register-title="Create an account" data-auth-register-description="Join us in a few steps."
-data-auth-smart-label="Email or username" data-auth-smart-first="First name"
+data-auth-smart-label="Email address" data-auth-smart-first="First name"
 data-auth-smart-last="Last name" data-auth-smart-checking="Checking account…"
 data-auth-smart-error="Check unavailable" data-auth-smart-closed="Registration closed"
-data-auth-smart-change="Change email" data-auth-smart-continue="Continue with email"
-data-auth-smart-password-link="Password link emailed"
-data-auth-smart-title="Welcome" data-auth-smart-description="Continue securely with your account.">
+data-auth-smart-continue="Continue with email"
+data-auth-smart-password-link="Password link emailed" data-auth-smart-register-password="Password (at least 8 characters)"
+data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or create an account with your email.">
 <h1><span class="sf-auth-heading-text">Welcome back</span>
 <span class="sf-auth-heading-wave">👋</span></h1>
 <p class="sf-auth-description">Sign in to your account.</p></header>
@@ -43,6 +43,8 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Continue securely w
 <input id="sf-smart-first" name="first_name" type="text" class="input-text"></p>
 <p class="form-row"><label for="sf-smart-last">Last name</label>
 <input id="sf-smart-last" name="last_name" type="text" class="input-text"></p></div>
+<p class="form-row"><label for="reg_username">Username</label>
+<input id="reg_username" name="username" type="text"></p>
 <p class="form-row"><label for="reg_email">Email</label>
 <input id="reg_email" name="email" type="email"></p>
 <p class="form-row"><label for="reg_password">Create password</label>
@@ -50,6 +52,7 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Continue securely w
 <p class="form-row"><button type="submit" name="register" value="Register">Register</button></p>
 <input name="woocommerce-register-nonce" type="hidden" value="old"></form></div></div>
 <a class="sf-auth-register-cta" href="#sf-auth-register">Register with email</a>
+<button class="sf-quick-return" type="button">Quick sign in</button>
 <div class="sf-auth-social"><button class="sf-auth-google">Google login</button></div>
 </div><div class="sf-mobile-dock">Dock</div></div>
 <script src="/auth.js"></script><script src="/auth-smart.js"></script></body></html>`;
@@ -90,9 +93,15 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Continue securely w
    assert.equal(await page.locator('.u-column1').isVisible(),false,'Native login stays folded');
    assert.equal(await page.locator('.u-column2').isVisible(),false,'Native registration stays folded');
    assert.equal(await page.locator('.sf-auth-register-cta').isVisible(),false,'No extra registration CTA');
-   // iOS/WebKit honors the intentional initial-autofocus guard more
-   // strictly than Chromium. A real tap releases it before typing.
+   assert.equal(await uid.getAttribute('type'),'email','Only email addresses can initiate account lookup');
+   assert.equal(await uid.getAttribute('autocomplete'),'email','Native email autofill stays available');
+   assert.equal(await page.locator('.sf-smart-change').count(),0,'There is no change-email action');
+   // A real gesture releases the iOS/WebKit initial-autofocus guard.
    await uid.click();
+   await uid.fill('test');
+   assert.equal(await page.locator('#password').isVisible(),false,'Bare username-like text never opens a password field');
+   assert.equal(await page.locator('.u-column2').isVisible(),false,'Bare text never opens registration');
+   assert.equal(requests,0,'Bare text does not reach the existence endpoint');
    await uid.fill('existing@example.test');
    await page.waitForFunction(()=>document.querySelector('.woocommerce')?.classList.contains('sf-smart-existing'),
      null,{timeout:6500}).catch(async error=>{
@@ -130,12 +139,22 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Continue securely w
    assert(await page.locator('#sf-smart-first').isVisible(),'New email opens first name');
    assert(await page.locator('#sf-smart-last').isVisible(),'New email opens last name');
    assert.equal(await page.locator('#reg_email').inputValue(),'new@example.test','Woo native registration email synchronized');
-   assert.equal(await page.locator('.woocommerce-form-register button[type=submit]').isVisible(),false,'Register hidden before details');
+   assert.equal(await page.locator('#reg_username').inputValue(),'new@example.test','Woo native username is derived from email');
+   assert.equal(await page.locator('#reg_username').isVisible(),false,'Registration never asks for a separate username');
+   assert.equal(await page.locator('.sf-auth-google').isVisible(),false,'Google option is hidden during registration');
+   assert.equal(await page.locator('.sf-quick-return').isVisible(),false,'Quick return is hidden during registration');
+   assert.equal(await page.locator('.sf-smart-actions').isVisible(),false,'No change-email link in registration');
+   assert.equal(await page.locator('.woocommerce-form-register button[type=submit]').isVisible(),true,'Register CTA is discoverable as soon as the new email is recognized');
+   assert.equal(await page.locator('.woocommerce-form-register button[type=submit]').isDisabled(),true,'Register remains disabled until required details are complete');
+   assert.equal(await page.locator('#reg_password').getAttribute('minlength'),'8','Registration password requirement is clear');
    await page.locator('#sf-smart-first').fill('Ada');
    await page.locator('#sf-smart-last').fill('Yılmaz');
    await page.locator('#reg_password').fill('StrongP4ss!Good');
-   assert(await page.locator('.woocommerce-form-register button[type=submit]').isVisible(),'Register appears after required details');
-   assert.equal(await page.locator('.sf-auth-google').isVisible(),true,'Google remains available in same screen');
+   assert(await page.locator('.woocommerce-form-register button[type=submit]').isVisible(),'Register remains visible after required details');
+   assert.equal(await page.locator('.woocommerce-form-register button[type=submit]').isEnabled(),true,'Completed form enables Register');
+   assert.equal(await page.locator('.woocommerce-form-register button[type=submit]').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(37, 38, 40)','Register darkens when ready');
+   assert.equal(await page.locator('.sf-auth-google').isVisible(),false,'Google remains hidden after registration is ready');
+   assert.equal(await page.locator('.sf-quick-return').isVisible(),false,'Quick login remains hidden after registration is ready');
    assert.equal(await page.locator('.sf-auth-register-cta').isVisible(),false,'Old separate registration action remains absent');
    assert.equal(await page.locator('.sf-auth-heading-text').innerText(),'Welcome','Welcome header remains on one unified page');
    await uid.fill('limited@example.test');
@@ -146,16 +165,17 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Continue securely w
    assert(await page.locator('#sf-smart-first').isVisible(),'Fallback creates no separate registration page');
    await uid.fill('existing@example.test');
    await page.waitForFunction(()=>document.querySelector('.woocommerce')?.classList.contains('sf-smart-existing'));
+   assert.equal(await page.locator('.sf-auth-google').isVisible(),true,'Google returns on the sign-in screen');
+   assert.equal(await page.locator('.sf-quick-return').isVisible(),true,'Quick sign-in returns outside registration');
+   assert.equal(await page.locator('.sf-smart-actions').isVisible(),false,'No empty action row on login');
    await uid.fill('username123');
-   assert(await page.locator('#password').isVisible(),'Username login works without username enumeration');
-   assert.equal(await page.locator('.sf-smart-manual-register').isVisible(),false,'Username never shows a create-account CTA');
-   assert.equal(await page.locator('.sf-smart-actions').isVisible(),false,'Hidden actions leave no empty layout row');
+   assert.equal(await page.locator('#password').isVisible(),false,'Username-like text cannot reach sign-in');
+   assert.equal(await page.locator('.sf-smart-actions').isVisible(),false,'No username-based account creation action');
    const before=requests;
-   await uid.fill('username456');
    await page.waitForTimeout(850);
-   assert.equal(requests,before,'Username typing never probes username existence');
+   assert.equal(requests,before,'Username-like text is never probed');
    await page.close();
-   console.log('Smart account staged UI, native Woo forms, focus mode and privacy fallback passed');
+   console.log('Email-only staged login/registration, native Woo forms, focus and alternate-action hiding passed');
  }finally{
    await browser.close();
    await new Promise(done=>server.close(done));
