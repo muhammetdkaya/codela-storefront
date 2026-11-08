@@ -17,7 +17,7 @@ function codela_sf_account_intro(): void {
     ?>
     <header class="sf-account-intro"
         data-auth-initial="<?php echo isset( $_POST['register'] ) ? 'register' : 'login'; ?>"
-        data-auth-login-placeholder="<?php esc_attr_e( 'Email or username', 'codela-storefront' ); ?>"
+        data-auth-login-placeholder="<?php esc_attr_e( 'Email address', 'codela-storefront' ); ?>"
         data-auth-username-placeholder="<?php esc_attr_e( 'Username', 'codela-storefront' ); ?>"
         data-auth-email-placeholder="<?php esc_attr_e( 'Email address', 'codela-storefront' ); ?>"
         data-auth-password-placeholder="<?php esc_attr_e( 'Password', 'codela-storefront' ); ?>"
@@ -27,19 +27,18 @@ function codela_sf_account_intro(): void {
         data-auth-register-description="<?php esc_attr_e( 'Join us in a few steps.', 'codela-storefront' ); ?>"
         data-auth-lookup-url="<?php echo function_exists( 'admin_url' ) && function_exists( 'esc_attr' ) ? esc_attr( admin_url( 'admin-ajax.php' ) ) : ''; ?>"
         data-auth-lookup-nonce="<?php echo function_exists( 'wp_create_nonce' ) && function_exists( 'esc_attr' ) ? esc_attr( wp_create_nonce( 'codela_sf_auth_lookup' ) ) : ''; ?>"
-        data-auth-smart-label="<?php esc_attr_e( 'Email or username', 'codela-storefront' ); ?>"
+        data-auth-smart-label="<?php esc_attr_e( 'Email address', 'codela-storefront' ); ?>"
         data-auth-smart-checking="<?php esc_attr_e( 'Checking account…', 'codela-storefront' ); ?>"
         data-auth-smart-error="<?php esc_attr_e( 'Account check is unavailable. You can still sign in or create an account.', 'codela-storefront' ); ?>"
         data-auth-smart-closed="<?php esc_attr_e( 'New account registration is currently unavailable.', 'codela-storefront' ); ?>"
-        data-auth-smart-confirm="<?php esc_attr_e( 'Use your email address to create an account.', 'codela-storefront' ); ?>"
-        data-auth-smart-change="<?php esc_attr_e( 'Change email', 'codela-storefront' ); ?>"
+        data-auth-smart-confirm="<?php esc_attr_e( 'Please enter a valid email address.', 'codela-storefront' ); ?>"
         data-auth-smart-continue="<?php esc_attr_e( 'Continue with email', 'codela-storefront' ); ?>"
         data-auth-smart-password-link="<?php esc_attr_e( 'Your password setup link will be sent by email.', 'codela-storefront' ); ?>"
         data-auth-smart-name-required="<?php esc_attr_e( 'Enter your first and last name.', 'codela-storefront' ); ?>"
         data-auth-smart-first="<?php esc_attr_e( 'First name', 'codela-storefront' ); ?>"
         data-auth-smart-last="<?php esc_attr_e( 'Last name', 'codela-storefront' ); ?>"
         data-auth-smart-title="<?php esc_attr_e( 'Welcome', 'codela-storefront' ); ?>"
-        data-auth-smart-description="<?php esc_attr_e( 'Continue securely with your account.', 'codela-storefront' ); ?>">
+        data-auth-smart-description="<?php esc_attr_e( 'Sign in or create an account with your email.', 'codela-storefront' ); ?>">
         <h1 id="sf-auth-view-title"><span class="sf-auth-heading-text"><?php esc_html_e( 'Welcome back', 'codela-storefront' ); ?></span> <span class="sf-auth-heading-wave" aria-hidden="true">👋</span></h1>
         <p class="sf-auth-description"><?php esc_html_e( 'Sign in to your account.', 'codela-storefront' ); ?></p>
     </header>
