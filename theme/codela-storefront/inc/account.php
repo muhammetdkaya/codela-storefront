@@ -94,14 +94,29 @@ function codela_sf_auth_registration_names(): void {
     echo '<p class="form-row form-row-first"><label for="sf-smart-first">'
         . esc_html__( 'First name', 'codela-storefront' ) . '</label>'
         . '<input type="text" class="input-text" id="sf-smart-first" name="first_name" autocomplete="given-name"'
-        . ' maxlength="70" value="' . esc_attr( $first ) . '" /></p>';
+        . ' maxlength="70" required value="' . esc_attr( $first ) . '" /></p>';
     echo '<p class="form-row form-row-last"><label for="sf-smart-last">'
         . esc_html__( 'Last name', 'codela-storefront' ) . '</label>'
         . '<input type="text" class="input-text" id="sf-smart-last" name="last_name" autocomplete="family-name"'
-        . ' maxlength="70" value="' . esc_attr( $last ) . '" /></p>';
+        . ' maxlength="70" required value="' . esc_attr( $last ) . '" /></p>';
     echo '</div>';
 }
 add_action( 'woocommerce_register_form_start', 'codela_sf_auth_registration_names', 14 );
+// Even with JS disabled, Woo rejects empty name fields instead of accepting
+// an incomplete account. Existing Woo validation and email checks still run.
+add_filter( 'woocommerce_registration_errors', static function( $errors, $username, $email ) {
+    if ( empty( $_POST['register'] ) ) { return $errors; }
+    foreach ( [ 'first_name', 'last_name' ] as $field ) {
+        $value = isset( $_POST[$field] ) && is_string( $_POST[$field] )
+            ? trim( sanitize_text_field( wp_unslash( $_POST[$field] ) ) ) : '';
+        if ( '' === $value ) {
+            $errors->add( 'codela_sf_missing_' . $field,
+                __( 'Please enter your first and last name.', 'codela-storefront' ) );
+            break;
+        }
+    }
+    return $errors;
+}, 10, 3 );
 add_action( 'woocommerce_created_customer', static function( $customer_id ): void {
     if ( empty( $_POST['register'] ) ) { return; }
     foreach ( [ 'first_name', 'last_name' ] as $key ) {

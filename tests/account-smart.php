@@ -2,10 +2,10 @@
 /** Single-screen login must retain Woo's native validation and safe lookup. */
 define('ABSPATH',__DIR__);
 define('MINUTE_IN_SECONDS',60);
-$GLOBALS['hooks']=[];$GLOBALS['transients']=[];$GLOBALS['users']=[];$GLOBALS['auth']=false;
+$GLOBALS['hooks']=[];$GLOBALS['filters']=[];$GLOBALS['transients']=[];$GLOBALS['users']=[];$GLOBALS['auth']=false;
 $GLOBALS['token_ok']=true;$GLOBALS['register_open']=true;
 function add_action($name,$fn,$priority=10,$args=1){$GLOBALS['hooks'][$name][]=$fn;}
-function add_filter(...$args){}
+function add_filter($name,$callback,$priority=10,$accepted_args=1){$GLOBALS['filters'][$name][]=$callback;}
 function __( $s,$d=''){return $s;}
 function esc_html__($s,$d=''){return htmlspecialchars($s,ENT_QUOTES);}
 function esc_attr($s){return htmlspecialchars((string)$s,ENT_QUOTES);}
@@ -31,6 +31,10 @@ class SmartResponse extends Exception{
 function wp_send_json($payload,$code=200){throw new SmartResponse($payload,$code);}
 function update_user_meta($id,$field,$value){$GLOBALS['users'][$id][$field]=$value;}
 function check($ok,$msg){if(!$ok)throw new RuntimeException($msg);}
+class WP_Error{
+  public array $errors=[];
+  public function add($code,$text){$this->errors[$code][]=$text;}
+}
 require __DIR__.'/../theme/codela-storefront/inc/account.php';
 function resolve($identity,$token=true){
   $GLOBALS['token_ok']=$token;$_POST=['identity'=>$identity,'token'=>'sample'];
@@ -58,6 +62,11 @@ $_SERVER['REMOTE_ADDR']='203.0.113.49';
 for($i=0;$i<18;$i++)resolve('fresh@example.test');
 [$value,$status]=resolve('fresh@example.test');
 check($status===429&&$value['status']==='unavailable','Email lookup is rate-limited');
+// Registration validation runs on Woo's real native POST, even with no JS.
+$_POST=['first_name'=>'','last_name'=>'','register'=>'Register'];
+$errors=new WP_Error();
+foreach($GLOBALS['filters']['woocommerce_registration_errors'] as $validate)$validate($errors,'test','new@example.test');
+check(isset($errors->errors['codela_sf_missing_first_name']),'Empty names fail Woo native registration');
 $_POST=['first_name'=>' Ada ','last_name'=>' Yılmaz ','register'=>'Register'];
 ob_start();codela_sf_auth_registration_names();$markup=ob_get_clean();
 check(str_contains($markup,'name="first_name"')&&str_contains($markup,'name="last_name"'),'Native Woo form has both names');

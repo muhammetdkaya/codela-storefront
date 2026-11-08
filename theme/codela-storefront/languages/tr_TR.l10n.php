@@ -288,6 +288,7 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'Create account' => 'Hesap oluştur',
 'Your password setup link will be sent by email.' => 'Şifre oluşturma bağlantısı e-postana gönderilecek.',
 'Enter your first and last name.' => 'Adını ve soyadını gir.',
+'Please enter your first and last name.' => 'Lütfen adını ve soyadını gir.',
 'First name' => 'Ad',
 'Last name' => 'Soyad',
 ] ];

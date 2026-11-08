@@ -96,7 +96,10 @@
       status(message);
       indicator.hidden=next!=='checking';
       change.hidden=next!=='new';
-      manual.hidden=next!=='unavailable' || !registerAllowed || !emailPattern.test(active);
+      manual.hidden=!registerAllowed || !(
+        (next==='unavailable' && emailPattern.test(active))
+        || (next==='existing' && !active.includes('@'))
+      );
       if(next==='new' && registerAllowed) {
         chooseForm('new');
         registerEmail.value=active;
@@ -193,7 +196,12 @@
       setStage('start');input.focus();
     });
     manual.addEventListener('click',()=>{
-      if(!registerAllowed || !emailPattern.test(active))return;
+      if(!registerAllowed)return;
+      if(!emailPattern.test(active)){
+        abort();input.value='';active='';loginPassword.value='';loginUser.value='';
+        setStage('start',intro.dataset.authSmartConfirm||'Use an email to register.');
+        input.focus();return;
+      }
       setStage('new');
     });
     loginPassword.addEventListener('input',updateSubmit);
