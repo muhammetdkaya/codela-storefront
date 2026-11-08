@@ -50,8 +50,9 @@
     change.hidden=true;actions.append(change);
     const manual=document.createElement('button');
     manual.type='button';manual.className='sf-smart-manual-register';
-    manual.textContent=intro.dataset.authSmartRegister||'Create account';
+    manual.textContent=intro.dataset.authSmartContinue||'Continue with email';
     manual.hidden=true;actions.append(manual);
+    actions.hidden=true;
     shell.append(label,hint,actions);
     const insertion=container||loginForm;
     insertion.before(shell);
@@ -97,10 +98,11 @@
       status(message);
       indicator.hidden=next!=='checking';
       change.hidden=next!=='new';
-      manual.hidden=!registerAllowed || !(
-        (next==='unavailable' && emailPattern.test(active))
-        || (next==='existing' && !active.includes('@'))
-      );
+      // Registration is automatic for an unrecognized email. Never suggest
+      // creating an account merely because a username was typed.
+      // A discreet recovery action is available only if email lookup failed.
+      manual.hidden=!registerAllowed || !(next==='unavailable' && emailPattern.test(active));
+      actions.hidden=change.hidden && manual.hidden;
       if(next==='new' && registerAllowed) {
         chooseForm('new');
         registerEmail.value=active;

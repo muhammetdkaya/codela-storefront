@@ -6,12 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Tek ve aşamalı WooCommerce giriş ekranı: ilk açılışta yalnız e-posta/kullanıcı adı alanı.",
-    "Mevcut hesapta parola alanı görünür, parola girilince koyu Giriş Yap butonu açılır.",
-    "Yeni e-posta için aynı ekranda ad, soyad ve WooCommerce yapılandırmasına göre parola veya e-posta üzerinden parola oluşturma akışı açılır.",
-    "E-posta kontrolü 680 ms gecikmeli, nonce korumalı ve IP başına 15 dakikada 18 sorguyla sınırlıdır; kullanıcı adı listesi sorgulanmaz.",
-    "WooCommerce’un yerleşik giriş, kayıt, nonce, şifre sıfırlama, Google ve sunucu validasyonu korunur.",
-    "Hızlı girişe dön, Google ile giriş butonuyla uyumlu oval alternatif buton olarak sunulur; iki ekran sayfa yenilemeden geçiş yapar.",
-    "Hesap alanına odaklanıldığında header ve alt menü gizlenir; kayıt için ad-soyad sunucu tarafında da zorunlu tutulur."
+    "Tek ve aşamalı WooCommerce giriş ekranında kullanıcı adı girildiğinde gereksiz Hesap oluştur bağlantısı gösterilmez.",
+    "Yeni e-posta ile otomatik kayıt akışı; mevcut hesapla parola üzerinden giriş ve WooCommerce yerleşik doğrulama korunur.",
+    "Giriş alanları ve Giriş Yap butonu arasındaki dikey aralıklar sıkılaştırıldı; gizli ara işlem satırı yer kaplamaz.",
+    "Hızlı girişe dön butonu Google ile Giriş Yap tasarımına eşitlendi; modern yüz tarama ikonu eklendi.",
+    "E-posta doğrulaması kullanılamadığında alternatif e-posta ile devam et seçeneği korunur."
   ]
 }
