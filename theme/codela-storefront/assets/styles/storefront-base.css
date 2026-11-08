@@ -2002,11 +2002,41 @@ body.woocommerce-account:not(.codela-my-account-layout) .sf-content .wc-block-co
     outline:none!important;outline-offset:0!important;box-shadow:none!important;
     background:var(--sf-ui-surface);
 }
+/* 0.1.242 — Keep the approved separate email-signup CTA above Google.
+   Match the native login fields to the fully oval shared action radius. */
 :is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
-    #sf-panel.is-account-panel .woocommerce).sf-auth-focus-mode
+    #sf-panel.is-account-panel .woocommerce)
+  form.woocommerce-form-login input:is([name="username"],[name="password"],#username,#password){
+    border-radius:var(--sf-ui-button-radius,999px)!important;
+}
+
+/* Dark means both fields are nonempty; focus alone never switches color.
+   Use the existing theme ink, not a new green/brand-specific hex value. */
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
+    #sf-panel.is-account-panel .woocommerce)
   form.woocommerce-form-login button[type="submit"]{
-    grid-column:1/-1;margin:3px 0 0!important;
+    transition:background-color var(--sf-ui-motion-release) ease,
+      border-color var(--sf-ui-motion-release) ease,
+      color var(--sf-ui-motion-release) ease,
+      transform var(--sf-ui-motion-release) var(--sf-ui-ease-release);
+}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
+    #sf-panel.is-account-panel .woocommerce)
+  form.woocommerce-form-login.sf-auth-submit-ready button[type="submit"]{
     background:var(--sf-ui-ink)!important;background-image:none!important;
     border:1px solid var(--sf-ui-ink)!important;color:#fff!important;
     box-shadow:var(--sf-ui-action-shadow)!important;
+    animation:sf-auth-submit-ready-enter 330ms var(--sf-ui-ease-press) 1 both;
+}
+@keyframes sf-auth-submit-ready-enter{
+    0%{transform:scale(.985)}
+    68%{transform:scale(1.008)}
+    100%{transform:scale(1)}
+}
+@media(prefers-reduced-motion:reduce){
+    :is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
+        #sf-panel.is-account-panel .woocommerce)
+      form.woocommerce-form-login button[type="submit"]{
+        animation:none!important;transition:none!important;
+    }
 }
