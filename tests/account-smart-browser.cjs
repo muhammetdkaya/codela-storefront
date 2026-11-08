@@ -19,7 +19,7 @@ data-auth-register-title="Create an account" data-auth-register-description="Joi
 data-auth-smart-label="Email or username" data-auth-smart-first="First name"
 data-auth-smart-last="Last name" data-auth-smart-checking="Checking account…"
 data-auth-smart-error="Check unavailable" data-auth-smart-closed="Registration closed"
-data-auth-smart-change="Change email" data-auth-smart-register="Create account"
+data-auth-smart-change="Change email" data-auth-smart-continue="Continue with email"
 data-auth-smart-password-link="Password link emailed"
 data-auth-smart-title="Welcome" data-auth-smart-description="Continue securely with your account.">
 <h1><span class="sf-auth-heading-text">Welcome back</span>
@@ -141,12 +141,15 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Continue securely w
    await uid.fill('limited@example.test');
    await page.waitForFunction(()=>document.querySelector('.woocommerce')?.classList.contains('sf-smart-unavailable'));
    assert(await page.locator('.sf-smart-manual-register').isVisible(),'Throttled lookup has native fallback');
+   assert.equal(await page.locator('.sf-smart-manual-register').innerText(),'Continue with email','Fallback is not a separate create-account CTA');
    await page.locator('.sf-smart-manual-register').click();
    assert(await page.locator('#sf-smart-first').isVisible(),'Fallback creates no separate registration page');
    await uid.fill('existing@example.test');
    await page.waitForFunction(()=>document.querySelector('.woocommerce')?.classList.contains('sf-smart-existing'));
    await uid.fill('username123');
    assert(await page.locator('#password').isVisible(),'Username login works without username enumeration');
+   assert.equal(await page.locator('.sf-smart-manual-register').isVisible(),false,'Username never shows a create-account CTA');
+   assert.equal(await page.locator('.sf-smart-actions').isVisible(),false,'Hidden actions leave no empty layout row');
    const before=requests;
    await uid.fill('username456');
    await page.waitForTimeout(850);
