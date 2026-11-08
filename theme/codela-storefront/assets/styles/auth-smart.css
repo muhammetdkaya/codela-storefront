@@ -70,6 +70,19 @@
 .woocommerce.sf-smart-auth-active .woocommerce-form-login .woocommerce-form-login__rememberme{
   display:none!important
 }
+/* Registration submit is always discoverable. It is disabled and muted until
+   native first/last name and password requirements have been met. */
+.woocommerce.sf-smart-auth-active.sf-smart-new .woocommerce-form-register :is(button[type=submit],input[type=submit]){
+  display:flex!important;align-items:center;justify-content:center;
+  width:100%;min-height:54px;margin-top:7px!important;
+  border:1px solid #e2e2e5!important;border-radius:999px!important;
+  background:#e9e9ec!important;color:#84858b!important;
+  box-shadow:none!important;opacity:1!important;
+  font-size:14px;font-weight:600;cursor:not-allowed
+}
+.woocommerce.sf-smart-new.sf-smart-register-ready .woocommerce-form-register :is(button[type=submit],input[type=submit]){
+  cursor:pointer
+}
 .woocommerce.sf-smart-existing.sf-smart-password-ready .woocommerce-form-login .woocommerce-form-login__submit,
 .woocommerce.sf-smart-unavailable.sf-smart-password-ready .woocommerce-form-login .woocommerce-form-login__submit,
 .woocommerce.sf-smart-new.sf-smart-register-ready .woocommerce-form-register :is(button[type=submit],input[type=submit]){
