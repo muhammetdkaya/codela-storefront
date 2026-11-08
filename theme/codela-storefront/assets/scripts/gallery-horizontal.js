@@ -13,8 +13,6 @@
     const next=controls.querySelector('[data-gallery-next]');
     const count=controls.querySelector('[data-gallery-count]');
     const hero=gallery.classList.contains('sf-section--hero');
-    const rotation=hero?controls.querySelector('[data-gallery-rotation]'):null;
-    const rotationLabel=rotation?.querySelector?.('.sf-ui-button-label')||rotation;
     const reduced=matchMedia('(prefers-reduced-motion:reduce)');
     const disposers=[];
     let current=0,frame=0,captionFrame=0,disposed=false;
@@ -55,30 +53,27 @@
     // remain manual. One timer belongs to this instance and never catches up
     // after a hidden tab, offscreen section or router replacement.
     let timer=0,visible=false,hovered=false,drag=null,suppressClick=false;
-    let wanted=!!rotation&&!reduced.matches,allowFocusedToggle=false;
     const stopTimer=()=>{clearTimeout(timer);timer=0;};
-    const canRotate=()=>wanted&&visible&&!hovered&&!drag&&!document.hidden&&!disposed&&gallery.isConnected&&
-      (!gallery.contains(document.activeElement)||(allowFocusedToggle&&document.activeElement===rotation));
+    const canRotate=()=>hero&&!reduced.matches&&visible&&!hovered&&!drag&&!document.hidden&&!disposed&&gallery.isConnected&&
+      !gallery.contains(document.activeElement);
     const syncRotation=()=>{
-      if(!rotation)return;
+      if(!hero)return;
       stopTimer();
-      rotationLabel.textContent=wanted?rotation.dataset.pauseLabel:rotation.dataset.playLabel;
       // Automatic changes must not announce over the reader's current task.
       count?.setAttribute('aria-live',canRotate()?'off':'polite');
       if(canRotate())timer=setTimeout(()=>{timer=0;if(canRotate()){updateNative();select((current+1)%items.length);}syncRotation();},6000);
     };
-    if(rotation){
+    if(hero){
       const originalLive=count?.getAttribute('aria-live');
       disposers.push(()=>{stopTimer();if(count){if(originalLive===null)count.removeAttribute('aria-live');else count.setAttribute('aria-live',originalLive);}});
-      listen(rotation,'click',()=>{wanted=!wanted;allowFocusedToggle=wanted;syncRotation();});
       listen(gallery,'pointerenter',event=>{if(event.pointerType==='mouse'||event.pointerType==='pen'){hovered=true;syncRotation();}});
       listen(gallery,'pointerleave',event=>{if(event.pointerType==='mouse'||event.pointerType==='pen'){hovered=false;syncRotation();}});
-      listen(gallery,'focusin',event=>{allowFocusedToggle=false;if(event.target!==rotation)wanted=false;syncRotation();});
+      listen(gallery,'focusin',syncRotation);
       listen(gallery,'focusout',()=>{queueMicrotask(()=>{if(!disposed)syncRotation();});});
       listen(document,'visibilitychange',syncRotation);
       listen(window,'pagehide',()=>{visible=false;syncRotation();});
       listen(window,'pageshow',()=>{visible=gallery.getBoundingClientRect().bottom>0&&gallery.getBoundingClientRect().top<innerHeight;syncRotation();});
-      listen(reduced,'change',()=>{if(reduced.matches)wanted=false;syncRotation();});
+      listen(reduced,'change',syncRotation);
       if(typeof IntersectionObserver!=='undefined'){
         const observer=new IntersectionObserver(entries=>{visible=entries.some(entry=>entry.isIntersecting&&entry.intersectionRatio>=.5);syncRotation();},{threshold:[0,.5]});
         observer.observe(gallery);disposers.push(()=>observer.disconnect());
@@ -90,7 +85,7 @@
     }
     if(previous)listen(previous,'click',()=>select(current-1));
     if(next)listen(next,'click',()=>select(current+1));
-    listen(track,'scroll',()=>{if(!frame)frame=requestAnimationFrame(updateNative);if(rotation)syncRotation();},{passive:true});
+    listen(track,'scroll',()=>{if(!frame)frame=requestAnimationFrame(updateNative);if(hero)syncRotation();},{passive:true});
     const endDrag=(event,cancelled=false)=>{
       if(!drag||(event&&event.pointerId!==drag.id))return;
       const state=drag;drag=null;

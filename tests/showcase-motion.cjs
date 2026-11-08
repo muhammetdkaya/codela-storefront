@@ -18,13 +18,12 @@ function target(extra={}){
 function fixture({hero=true,reduced=false,total=3,rtl=false}={}){
  let now=0,id=0;const timers=new Map(),frames=new Map(),mutations=[],intersections=[];
  const win=target(),doc=target({hidden:false,activeElement:null,documentElement:{}}),media=target({matches:reduced});
- const toggle=target({textContent:'Pause slideshow',dataset:{pauseLabel:'Pause slideshow',playLabel:'Start slideshow'}});
  const count=target({textContent:''});count.setAttribute('aria-live','polite');
- const controls=target({hidden:true,querySelector:s=>s==='[data-gallery-count]'?count:s==='[data-gallery-rotation]'&&hero?toggle:null,querySelectorAll:()=>[]});
+ const controls=target({hidden:true,querySelector:s=>s==='[data-gallery-count]'?count:null,querySelectorAll:()=>[]});
  const track=target({children:[],scrollLeft:0,clientWidth:1000,capture:null,getBoundingClientRect:()=>({left:0}),
   scrollTo({left}){this.scrollLeft=left;this.emit('scroll')},setPointerCapture(id){this.capture=id},hasPointerCapture(id){return this.capture===id},releasePointerCapture(){this.capture=null}});
  track.children=Array.from({length:total},(_,i)=>target({querySelector:()=>null,getBoundingClientRect:()=>({left:(rtl?-1:1)*i*1000-track.scrollLeft}),dispatchEvent(){}}));
- const gallery=target({isConnected:true,querySelector:s=>s==='.sf-ui-gallery-track'?track:controls,getBoundingClientRect:()=>({top:0,bottom:700}),contains:node=>[track,toggle,...track.children].includes(node)});
+ const gallery=target({isConnected:true,querySelector:s=>s==='.sf-ui-gallery-track'?track:controls,getBoundingClientRect:()=>({top:0,bottom:700}),contains:node=>[track,...track.children].includes(node)});
  if(hero)gallery.classList.add('sf-section--hero');doc.querySelectorAll=()=>gallery.isConnected?[gallery]:[];
  const context={window:win,document:doc,innerHeight:900,matchMedia:q=>q.includes('reduced')?media:target({matches:false}),getComputedStyle:()=>({direction:rtl?'rtl':'ltr'}),
   setTimeout(fn,delay){const key=++id;timers.set(key,{fn,at:now+delay});return key},clearTimeout:key=>timers.delete(key),
@@ -34,7 +33,7 @@ function fixture({hero=true,reduced=false,total=3,rtl=false}={}){
  };
  const flush=()=>{for(const [key,fn] of frames){frames.delete(key);fn()}};
  vm.runInNewContext(source,context);
- const api={win,doc,media,toggle,count,controls,track,gallery,timers,
+ const api={win,doc,media,count,controls,track,gallery,timers,
   visible(value){intersections[0]?.fn([{isIntersecting:value,intersectionRatio:value?1:0}]);},
   tick(ms){const end=now+ms;while(true){const next=[...timers].sort((a,b)=>a[1].at-b[1].at)[0];if(!next||next[1].at>end)break;now=next[1].at;timers.delete(next[0]);next[1].fn();flush()}now=end;flush()},
   focus(node){doc.activeElement=node;gallery.emit('focusin',{target:node})},
@@ -48,9 +47,9 @@ let f=fixture();assert.equal(f.timers.size,1);f.tick(5999);assert.equal(f.count.
 f.gallery.emit('pointerenter',{pointerType:'mouse'});f.tick(12000);assert.equal(f.count.textContent,'01 / 03');f.gallery.emit('pointerleave',{pointerType:'mouse'});f.tick(6000);assert.equal(f.count.textContent,'02 / 03');
 f.visible(false);f.tick(12000);assert.equal(f.count.textContent,'02 / 03');f.visible(true);f.tick(5999);assert.equal(f.count.textContent,'02 / 03');f.tick(1);assert.equal(f.count.textContent,'03 / 03');
 f.doc.hidden=true;f.doc.emit('visibilitychange');f.tick(6000);assert.equal(f.count.textContent,'03 / 03');f.doc.hidden=false;f.doc.emit('visibilitychange');f.tick(6000);assert.equal(f.count.textContent,'01 / 03');
-f.focus(f.track);f.blur();f.tick(12000);assert.equal(f.count.textContent,'01 / 03');assert.equal(f.toggle.textContent,'Start slideshow');assert.equal(f.count.getAttribute('aria-live'),'polite');
-f.focus(f.toggle);f.toggle.emit('click');f.tick(6000);assert.equal(f.count.textContent,'02 / 03');f.toggle.emit('click');f.tick(6000);assert.equal(f.count.textContent,'02 / 03');
-f=fixture({reduced:true});f.tick(12000);assert.equal(f.count.textContent,'01 / 03');assert.equal(f.toggle.textContent,'Start slideshow');f.toggle.emit('click');f.tick(6000);assert.equal(f.count.textContent,'02 / 03','Explicit reduced-motion opt-in is allowed without smooth motion');f.media.emit('change');assert.equal(f.timers.size,0);
+f.focus(f.track);f.tick(12000);assert.equal(f.count.textContent,'01 / 03');assert.equal(f.count.getAttribute('aria-live'),'polite');
+f.blur();f.tick(5999);assert.equal(f.count.textContent,'01 / 03');f.tick(1);assert.equal(f.count.textContent,'02 / 03','Autoplay resumes after focus leaves without any start button');
+f=fixture({reduced:true});f.tick(12000);assert.equal(f.count.textContent,'01 / 03');assert.equal(f.timers.size,0);f.media.matches=false;f.media.emit('change');f.tick(6000);assert.equal(f.count.textContent,'02 / 03','Motion preference is followed without a manual toggle');f.media.matches=true;f.media.emit('change');assert.equal(f.timers.size,0);
 f=fixture({hero:false});f.tick(12000);assert.equal(f.timers.size,0);assert.equal(f.count.textContent,'1 / 3');
 f=fixture({total:1});assert.equal(f.timers.size,0);assert.equal(f.controls.hidden,true);
 for(const rtl of [false,true]){

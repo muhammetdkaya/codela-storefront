@@ -31,13 +31,13 @@ const child=height=>({height,getBoundingClientRect(){return{height:this.height}}
 const copies=[{children:[child(64),child(42),child(44)]},{children:[child(64),child(44)]}];
 const items=copies.map((copy,i)=>({querySelector:s=>s==='.sf-section-copy'?copy:null,getBoundingClientRect:()=>({left:i*390}),dispatchEvent(){}}));
 const track=attributes(eventTarget({children:items,style:style(),classList:{remove(){}},getBoundingClientRect:()=>({left:0})}));
-const count={};
+const count=attributes({children:[]});
 const controls=eventTarget({hidden:true,querySelector:s=>s==='[data-gallery-count]'?count:null,querySelectorAll:()=>[]});
-const gallery={isConnected:true,dataset:{},classList:{contains:s=>s==='sf-section--hero'},querySelector:s=>s==='.sf-ui-gallery-track'?track:controls,style:style(values)};
-const context={document:{documentElement:{},activeElement:null,querySelectorAll:()=>gallery.isConnected?[gallery]:[]},window:eventTarget(),
+const gallery=eventTarget({isConnected:true,dataset:{},classList:{contains:s=>s==='sf-section--hero'},querySelector:s=>s==='.sf-ui-gallery-track'?track:controls,style:style(values)});
+const context={document:eventTarget({documentElement:{},activeElement:null,querySelectorAll:()=>gallery.isConnected?[gallery]:[]}),window:eventTarget(),
  matchMedia:query=>eventTarget({matches:query.includes('max-width')?mobile:false}),
  getComputedStyle:el=>copies.includes(el)?{paddingTop:'18px',paddingBottom:bottom+'px',rowGap:'8px'}:{display:'block',direction:'ltr'},
- MutationObserver:mutationDouble(mutations),
+ MutationObserver:mutationDouble(mutations),IntersectionObserver:class{observe(){}disconnect(){}},
  ResizeObserver:class{constructor(fn){observers.push(fn);resizeInstances.push(this);this.disconnected=false}observe(el){observed.push(el)}disconnect(){this.disconnected=true}},
  Event:class{},clearTimeout(){},requestAnimationFrame(fn){const id=++frame;queue.push({id,fn});return id},cancelAnimationFrame(id){cancelled.add(id)}};
 vm.runInNewContext(source,context);
@@ -57,12 +57,12 @@ vm.runInNewContext(source,context);assert.equal(observers.length,1,'Repeated ada
 // Counter and keyboard regression: zero padding is hero-only and total is not
 // hard-coded to the five-slide reference. These are DOM contracts, not layout.
 function counterFixture(hero,total){
- const queue=[],count={},prev=eventTarget(),next=eventTarget(),mutations=[];
+ const queue=[],count=attributes({children:[]}),prev=eventTarget(),next=eventTarget(),mutations=[];
  const track=attributes(eventTarget({scrollLeft:0,style:style(),getBoundingClientRect:()=>({left:0}),scrollTo({left}){this.scrollLeft=left;this.emit('scroll')}}));
  track.children=Array.from({length:total},(_,i)=>({getBoundingClientRect:()=>({left:i*390-track.scrollLeft}),querySelector:()=>null,dispatchEvent(){}}));
  const controls=eventTarget({hidden:true,querySelector:s=>s==='[data-gallery-count]'?count:hero?null:s==='[data-gallery-prev]'?prev:next,querySelectorAll:()=>[]});
- const gallery={isConnected:true,dataset:{},classList:{contains:()=>hero},querySelector:s=>s==='.sf-ui-gallery-track'?track:controls,style:style()};
- vm.runInNewContext(source,{document:{documentElement:{},activeElement:null,querySelectorAll:()=>[gallery]},window:eventTarget(),matchMedia:()=>eventTarget({matches:false}),getComputedStyle:()=>({direction:'ltr'}),MutationObserver:mutationDouble(mutations),Event:class{},requestAnimationFrame(fn){queue.push(fn);return queue.length},cancelAnimationFrame(){}});
+ const gallery=eventTarget({isConnected:true,dataset:{},classList:{contains:()=>hero},querySelector:s=>s==='.sf-ui-gallery-track'?track:controls,style:style()});
+ vm.runInNewContext(source,{document:eventTarget({documentElement:{},activeElement:null,querySelectorAll:()=>[gallery]}),window:eventTarget(),matchMedia:()=>eventTarget({matches:false}),getComputedStyle:()=>({direction:'ltr'}),MutationObserver:mutationDouble(mutations),IntersectionObserver:class{observe(){}disconnect(){}},Event:class{},clearTimeout(){},requestAnimationFrame(fn){queue.push(fn);return queue.length},cancelAnimationFrame(){}});
  return {count,prev,next,controls,key(key,target=track){let prevented=false;track.emit('keydown',{key,target,preventDefault(){prevented=true}});while(queue.length)queue.shift()();return prevented},swipe(index){track.scrollTo({left:index*390});while(queue.length)queue.shift()()}};
 }
 const hero=counterFixture(true,12);

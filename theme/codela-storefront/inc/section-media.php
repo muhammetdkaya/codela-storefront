@@ -31,7 +31,7 @@ function codela_sf_section_controls( int $count, bool $hero = false ): string {
         . ( $hero ? '' : codela_sf_ui_icon_button( 'arrow-left', __( 'Previous image', 'codela-storefront' ), [ 'attributes' => [ 'data-gallery-prev' => '' ] ] ) )
         . '<span data-gallery-count aria-live="polite" aria-atomic="true">' . ( $hero ? '01 / ' . sprintf( '%02d', $count ) : '1 / ' . $count ) . '</span>'
         . ( $hero ? '' : codela_sf_ui_icon_button( 'arrow-right', __( 'Next image', 'codela-storefront' ), [ 'attributes' => [ 'data-gallery-next' => '' ] ] ) ) . $progress
-        . ( $hero ? codela_sf_ui_button( __( 'Pause slideshow', 'codela-storefront' ), [ 'variant' => 'secondary', 'class' => 'sf-gallery-rotation', 'attributes' => [ 'data-gallery-rotation' => '', 'data-pause-label' => __( 'Pause slideshow', 'codela-storefront' ), 'data-play-label' => __( 'Start slideshow', 'codela-storefront' ) ] ] ) : '' ) . '</nav>';
+        . '</nav>';
 }
 function codela_sf_section_heading( array $data ): string {
     return ( $data['title'] ? '<h2>' . esc_html( $data['title'] ) . '</h2>' : '' ) . ( $data['description'] ? '<p class="sf-section-description">' . esc_html( $data['description'] ) . '</p>' : '' );

@@ -1,3 +1,9 @@
+## 8 Kasım 2026 — 0.1.237 düğmesiz otomatik slider adayı
+
+Kullanıcının açık düzeltmesi: görünür Slaytı Başlat/Duraklat düğmesini kaldır; slider altı saniyede bir kendiliğinden dönsün. Tema 0.1.236 → 0.1.237; güncel `3fc69b3` üzerindeki hesap ekranı ve diğer eşzamanlı işler aynen korundu. Düğme HTML, dar CSS kuralı ve iki çeviri kaldırıldı. Hero zamanlayıcısı artık düğme varlığına bağlı değil; altı saniyelik native scroll döngüsü ve masaüstü fare sürüklemesi korunur. Hover/klavye odağı/görünürlük/azaltılmış hareket korumaları devam eder; geçici engel kalkınca elle başlatma gerekmez.
+
+Yerel zamanlayıcı/pointer, caption/native yaşam döngüsü ve paket/asset testleri geçti. Eski kaynak düğmesiz fixture içinde otomatik ilerleme testini beklendiği gibi kaybediyor. Gerçek Chromium/WebKit ve tam CI bu adayın tam commitinde doğrulanacak; yerelde PHP bulunmadığından PHP/tarayıcı aşaması burada geçti diye bildirilmez. Kullanıcı bu slider düzeltmesini ve GitHub yayınını onayladı; canlı kurulum, FTP/cache/site ayarları kapsam dışı. Sıradaki: CI, GitHub tag/ZIP ve hash doğrulaması; yayın isteğinde `publish_feed:false` ile canlı otomatik kurulum teklifi yapma.
+
 ## 8 Kasım 2026 — 0.1.236 Hesabım CTA konumu ve tema renkleri yayımlandı
 
 Kullanıcı 0.1.235 iPhone ekranında E-posta ile Kayıt Ol butonunun şifre alanından hemen sonra, hatırla/sıfırla satırından ÖNCE çıktığını, %60 genişlikte kaldığını ve iki satır metne bölündüğünü gösterdi. Sebep: Woo `woocommerce_login_form_end` hook'u formun yerel layout'unda/satırında dar alan alabiliyordu. CTA, Google provider'dan önce `woocommerce_after_customer_login_form` hook'una (priority 10) taşındı; Google normalde 15. JS form içi yerine ortak `.woocommerce` kabuğundan tıklamayı dinliyor. `#customer_login` içindeki gerçek Woo login/register ve diğer form elemanları/nonce aynen korundu; back action, kayıt izin kapısı, iOS ilk focus olmama, hızlı PIN ve Google OAuth değişmedi.
