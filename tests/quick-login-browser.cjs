@@ -93,7 +93,7 @@ async function enrollFixture(page,url,visible=true) {
 
 }
 async function awaitRequest(page) {
-  await page.waitForFunction(()=>document.querySelector('.sf-quick-pin-track')?.classList.contains('is-verifying'));
+  await page.waitForFunction(()=>document.querySelector('.sf-quick-pin-track')?.classList.contains('is-checking'));
   for(let i=0;i<30 && !pending.length;i++) await page.waitForTimeout(25);
   assert.equal(pending.length,1,'One verification request for six digits');
   assert.equal(pending[0].body.pin,'381905','Native input sends six digits to Woo REST');
@@ -117,23 +117,29 @@ function release(ok) {
       assert.equal(await page.locator('.sf-quick-email').innerText(),'ayse@example.test','Saved account includes email as a secondary line');
       assert(await page.locator('.sf-quick-email-login').isVisible(),'Email/password fallback is visible on first screen');
       assert(await page.locator('.sf-quick-or').isVisible(),'Reference divider is visible');
-      assert.equal(await page.locator('.sf-quick-sheet').isVisible(),false,'Bottom sheet closed at first paint');
-      assert.equal(await page.locator('.sf-quick-slot').count(),6,'Six visually aligned PIN cells');
+      assert.equal(await page.locator('.sf-quick-account').getAttribute('aria-expanded'),'false','Account card starts collapsed');
+      assert.equal(await page.locator('.sf-quick-inline-pin').getAttribute('aria-hidden'),'true','Inline PIN starts hidden');
+      assert.equal(await page.locator('.sf-quick-slot').count(),6,'Six square PIN cells remain mounted in the card');
       assert.equal(await page.getByText('Welcome',{exact:false}).count(),1,
         'Reference welcome heading is present');
-      assert.equal(await page.locator('.sf-quick-sheet').evaluate(el=>getComputedStyle(el).backgroundColor),
-        'rgb(255, 255, 255)','PIN sheet must be an opaque white surface');
+      assert.equal(await page.locator('.sf-quick-account-frame').evaluate(el=>getComputedStyle(el).backgroundColor),
+        'rgb(255, 255, 255)','Inline PIN uses the white remembered card surface');
+      assert.equal(await page.locator('.sf-quick-sheet').count(),0,'Old PIN bottom sheet no longer exists');
       await page.locator('.sf-quick-account').click();
-      await page.locator('.sf-quick-sheet').waitFor({state:'visible'});
+      await page.waitForFunction(()=>document.querySelector('.sf-quick-login')?.classList.contains('is-inline-open'));
+      assert.equal(await page.locator('.sf-quick-account').getAttribute('aria-expanded'),'true','Card expands with down-to-up chevron');
+      assert.equal(await page.locator('.sf-quick-scrim').isVisible(),true,'Outside content is dimmed');
       assert(await page.evaluate(()=>document.activeElement===document.querySelector('.sf-quick-native-pin')),
         'Direct account tap focuses native numeric keypad input');
       assert.equal(await page.locator('.sf-quick-native-pin').getAttribute('inputmode'),'numeric');
       assert.equal(await page.locator('#customer_login').isVisible(),false,'Native Woo login hidden until selected');
       await page.locator('.sf-quick-native-pin').fill('381905');
-      await page.locator('.sf-quick-pin-track.is-merging').waitFor({state:'visible'});
+      await page.locator('.sf-quick-pin-track.is-checking').waitFor({state:'attached'});
       await awaitRequest(page);
       assert.equal(await page.locator('.sf-quick-pin-track.is-verified').count(),0,
         'No approved check appears before server response');
+      assert.equal(await page.locator('.sf-quick-pin-track.is-merging').count(),0,
+        'Six boxes never converge before server verifies the PIN');
       release(outcome==='success');
       if(outcome==='success'){
         await page.locator('.sf-quick-pin-track.is-verified').waitFor({state:'attached'});
@@ -142,7 +148,10 @@ function release(ok) {
         // against successful navigation and hung after the page was replaced.
         await page.waitForFunction(() => {
           const box = document.querySelector('.sf-quick-result');
-          return box && getComputedStyle(box).borderColor === 'rgb(22, 132, 79)';
+          if (!box || !document.querySelector('.sf-quick-pin-track')?.classList.contains('is-verified')) return false;
+          const style=getComputedStyle(box),a=box.getBoundingClientRect(),b=document.querySelector('.sf-quick-pin-track').getBoundingClientRect();
+          return style.opacity === '1' && style.backgroundColor === 'rgb(22, 132, 79)'
+            && Math.abs(a.left+a.width/2-b.left-b.width/2)<2;
         }, null, {timeout:4000});
         await page.waitForURL(url=>url.pathname==='/account/'&&url.searchParams.has('sf_quick_auth'),{timeout:10000});
         assert(await page.getByText('WooCommerce account opened').isVisible(),'Real account redirect follows verification');
@@ -153,7 +162,10 @@ function release(ok) {
         assert.equal(await page.locator('.sf-quick-pin-track.is-verified').count(),0,'Error never shows success check');
         assert.equal(await page.locator('.sf-quick-status').evaluate(el=>getComputedStyle(el).color),
           'rgb(197, 54, 67)','Failed PIN visibly uses red feedback');
-        await page.locator('.sf-quick-password').click();
+        await page.locator('.sf-quick-account').click();
+        assert.equal(await page.locator('.sf-quick-account').getAttribute('aria-expanded'),'false','Up chevron closes inline PIN');
+        assert.equal(await page.locator('.sf-quick-scrim').isVisible(),false,'Closing restores outside content');
+        await page.locator('.sf-quick-email-login').click();
         assert(await page.locator('#customer_login').isVisible(),'Native Woo password login remains available');
       }
       console.log('Quick-login '+outcome+' browser animation '+(process.env.TEST_WEBKIT?'webkit':'chromium')+' passed');
