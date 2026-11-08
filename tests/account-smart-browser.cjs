@@ -91,7 +91,20 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Continue securely w
    assert.equal(await page.locator('.u-column2').isVisible(),false,'Native registration stays folded');
    assert.equal(await page.locator('.sf-auth-register-cta').isVisible(),false,'No extra registration CTA');
    await uid.fill('existing@example.test');
-   await page.waitForFunction(()=>document.querySelector('.woocommerce')?.classList.contains('sf-smart-existing'));
+   await page.waitForFunction(()=>document.querySelector('.woocommerce')?.classList.contains('sf-smart-existing'),
+     null,{timeout:6500}).catch(async error=>{
+       const details=await page.evaluate(()=>({
+         className:document.querySelector('.woocommerce')?.className,
+         identity:document.querySelector('.sf-smart-identity')?.value,
+         hint:document.querySelector('.sf-smart-message')?.textContent,
+         token:document.querySelector('.sf-account-intro')?.dataset.authLookupNonce,
+         screen:document.querySelector('#customer_login')?.dataset.authView,
+         pending:!document.querySelector('.sf-smart-progress')?.hidden,
+         smartLoaded:!!document.querySelector('.sf-smart-auth')
+       }));
+       console.error('SMART_AUTH_DIAGNOSTICS',JSON.stringify(details));
+       throw error;
+     });
    assert(await page.locator('#password').isVisible(),'Existing account opens password');
    assert.equal(await page.locator('.woocommerce-form-login__submit').isVisible(),false,'Submit hidden before password');
    await page.locator('#password').fill('correct horse');
