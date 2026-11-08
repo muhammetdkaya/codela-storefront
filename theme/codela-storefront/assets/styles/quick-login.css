@@ -348,7 +348,7 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
 #sf-panel.is-account-panel .sf-pin-active .sf-auth-register-cta,
 html.sf-quick-checking body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
  .woocommerce .sf-auth-register-cta,
-html.sf-quick-checking #sf-account #sf-panel.is-account-panel
+html.sf-quick-checking #sf-panel.is-account-panel #sf-account
  .woocommerce .sf-auth-register-cta{
   display:none!important;
 }
