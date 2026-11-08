@@ -6,10 +6,8 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Kayıtlı iPhone'da hızlı giriş kartı, eşleşen geçiş anahtarına öncelik vererek sistem Face ID doğrulamasını daha kısa akışla başlatır.",
-    "Normal kullanıcı adı/şifre giriş sayfasına eklenen gereksiz Telefonla hızlı giriş satırı kaldırıldı.",
-    "Tanımlı hızlı giriş ekranında E-posta ile Kayıt Ol butonu gizleniyor; normal girişte kayıt seçeneği korunuyor.",
-    "Sunucu seçilen geçiş anahtarının etkinliğini doğruluyor ve tek kullanımlık challenge ile eşleştiriyor; başka anahtarla oturum açılamıyor.",
-    "WooCommerce, Google ile giriş, PIN alternatifi ve diğer hesap işlemleri korunuyor."
+    "Alt menüden açılan ve doğrudan açılan Hesabım biyometrik giriş ekranlarının başlıkları sola hizalandı; alternatif giriş butonu aynı tam genişlik ve koyu renkte.",
+    "Normal girişte odak karartması header ve alt gezinmeyi de kapsar; kullanıcı adı, şifre ve Giriş Yap butonu önde kalır.",
+    "Klavye kapandığında karartma kalkar; Face ID, geçiş anahtarı, PIN ve WooCommerce oturum doğrulaması değişmedi."
   ]
 }

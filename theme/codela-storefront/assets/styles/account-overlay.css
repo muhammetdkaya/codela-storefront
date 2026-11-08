@@ -460,3 +460,14 @@
 @media(prefers-reduced-motion:reduce){
   #sf-panel.is-account-panel .woocommerce > .sf-auth-focus-scrim{transition:none}
 }
+
+/* 0.1.245 — The instant Account toolbar/dock must not stay bright during
+   native credential focus; both are siblings of the Woo account scroll body. */
+#sf-panel.is-account-panel > :is(.sf-panel-top,.sf-mobile-dock){transition:filter .22s ease}
+#sf-panel.is-account-panel:has(.woocommerce.sf-auth-focus-mode)
+ > :is(.sf-panel-top,.sf-mobile-dock){
+  filter:brightness(.72) blur(2px);pointer-events:none;
+}
+@media(prefers-reduced-motion:reduce){
+ #sf-panel.is-account-panel > :is(.sf-panel-top,.sf-mobile-dock){transition:none}
+}

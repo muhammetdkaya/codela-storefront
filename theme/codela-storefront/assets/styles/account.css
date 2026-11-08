@@ -555,3 +555,15 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
   body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
    .woocommerce > .sf-auth-focus-scrim{transition:none}
 }
+
+/* 0.1.245 — Dim fixed header and dock during standalone Woo login focus. */
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .sf-shell > :is(.sf-header,.sf-mobile-dock){transition:filter .22s ease}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout):has(.woocommerce.sf-auth-focus-mode)
+ .sf-shell > :is(.sf-header,.sf-mobile-dock){
+  filter:brightness(.72) blur(2px);pointer-events:none;
+}
+@media(prefers-reduced-motion:reduce){
+ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+  .sf-shell > :is(.sf-header,.sf-mobile-dock){transition:none}
+}
