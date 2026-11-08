@@ -75,7 +75,7 @@ const form='<div class="woocommerce"><header class="sf-account-intro"><h1>Welcom
    });
    assert.equal(focusedStyle.buttonBg,'rgb(255, 255, 255)',
      mode+' focus alone keeps native Login white until both values are entered');
-   assert(Math.max(...(focusedStyle.buttonColor.match(/\\d+/g)||[]).map(Number))<=65,
+   assert(Math.max(...(focusedStyle.buttonColor.match(/\d+/g)||[]).map(Number))<=65,
      mode+' untouched Login button retains legible dark theme text');
    assert.equal(focusedStyle.borderWidth,'2px',mode+' focused field has a continuous 2px border');
    assert.equal(focusedStyle.outline,'none',mode+' focused field has no detached outer outline');
