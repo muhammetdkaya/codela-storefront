@@ -133,7 +133,7 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
        assert.equal(actionSize.min,'54px','Theme button height remains scoped to guest Account');
        assert.equal(actionSize.font,'15px','Compact guest CTA type uses shared Button font token');
 
-      assert.equal(controls.fieldRadius,'12px','Inputs use the UI Kit control radius');
+      assert.equal(controls.fieldRadius,'999px','Native login credentials match the shared fully oval action radius');
       assert.equal(await page.locator('#username').evaluate(el=>getComputedStyle(el).backgroundColor),
         'rgb(255, 255, 255)','Guest input is a clean outlined white field, not a bulky gray surface');
       assert(controls.fieldHeight>=54&&controls.fieldHeight<=55,'Guest input uses theme-standard 54px geometry');

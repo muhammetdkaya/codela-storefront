@@ -6,9 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Normal WooCommerce girişinde Beni hatırla ve Şifremi unuttum sade, eşit hizalı yardımcı satırda; native checkbox ve şifre sıfırlama bağlantısı korunuyor.",
-    "Kullanıcı adı veya şifre odaklandığında yardımcı satır gizleniyor; alanlar eşit aralıklı tek sütuna dönüşüyor, siyah odak çizgisindeki dış boşluk kaldırılıyor.",
-    "Yalnız odak sırasında Giriş Yap, temanın kendi --sf-ui-ink koyu rengine ve beyaz metne geçiyor; normal girişte beyaz buton kalıyor.",
-    "Normal Hesabım ve anında açılan Hesabım paneli ortak stilleri kullanıyor; mevcut PIN karartması, Safari klavye davranışı, Woo native submit ve Google giriş değiştirilmedi."
+    "Normal Hesabım ve hızlı Hesabım girişlerinde e-posta ile kayıt ol butonu Google ile giriş yap butonunun üzerinde kalıyor; görünürlük ve gerçek kayıt akışı korunuyor.",
+    "Gerçek WooCommerce kullanıcı adı/e-posta ve şifre alanları butonlarla aynı tam oval (999px) radius kullanıyor; odak kenarlığı çevresinde boşluk bulunmuyor.",
+    "Giriş Yap yalnız iki alanın ikisi de dolu olduğunda temanın --sf-ui-ink koyu rengine geçiyor. Sadece odaklanmak düğmeyi koyulaştırmıyor.",
+    "Hazır duruma ilk geçişte hafif, bir kerelik 330ms animasyon kullanılıyor; sürekli nabız yok ve azaltılmış hareket ayarına saygı gösteriliyor.",
+    "Beni hatırla, parola sıfırlama, mevcut PIN karartması, WooCommerce gerçek oturum doğrulaması, nonce güvenliği ve Google OAuth değiştirilmedi."
   ]
 }
