@@ -12,6 +12,7 @@ const css=['tokens.css','components.css','quick-login.css','account.css','accoun
   await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body class="woocommerce-account">'
     +'<div class="woocommerce"><button class="sf-quick-google" disabled>Google</button>'
     +'<form class="woocommerce-form-login"><button type="submit">Log in</button></form>'
+    +'<a class="sf-auth-register-cta" href="#sf-auth-register">Register with email</a>'
     +'<div class="sf-auth-social"><button class="sf-auth-google" disabled>Google</button></div></div>'
     +'<div id="sf-panel" class="is-account-panel"><div class="woocommerce">'
     +'<form class="woocommerce-form-login"><button type="submit">Log in</button></form>'
@@ -33,6 +34,17 @@ const css=['tokens.css','components.css','quick-login.css','account.css','accoun
     assert.equal(result.background,'rgb(255, 255, 255)',selector+' uses the normal white Login CTA');
     assert.equal(result.ink,'rgb(32, 32, 32)',selector+' uses dark UI Kit label text');
   }
+  // The same remembered/initial-check suppression also works on /hesabim/.
+  await page.locator('body > .woocommerce').evaluate(el=>el.classList.add('sf-pin-active'));
+  assert.equal(await page.locator('body > .woocommerce > .sf-auth-register-cta').isVisible(),false,
+    'Remembered login hides standalone registration even against important flex rules');
+  await page.locator('body > .woocommerce').evaluate(el=>el.classList.remove('sf-pin-active'));
+  assert.equal(await page.locator('body > .woocommerce > .sf-auth-register-cta').isVisible(),true,
+    'Native standalone login keeps its registration link');
+  await page.evaluate(()=>document.documentElement.classList.add('sf-quick-checking'));
+  assert.equal(await page.locator('body > .woocommerce > .sf-auth-register-cta').isVisible(),false,
+    'Standalone quick status preflight never flashes registration');
+  await page.evaluate(()=>document.documentElement.classList.remove('sf-quick-checking'));
   // Homepage/shop enqueues account-overlay.css WITHOUT account.css.
   // Reproduce genuine nested form order, register CTA and Google sibling.
   const overlayOnly=['tokens.css','components.css','quick-login.css','account-overlay.css']
