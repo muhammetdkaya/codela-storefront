@@ -8,7 +8,7 @@ assert(fns.includes("require_once get_template_directory() . '/inc/quick-login.p
 assert(js.includes("crypto.subtle.generateKey(") && js.includes("false, ['sign','verify']"),'Private keys are not extractable');
 assert(js.includes("indexedDB.open(") && js.includes("tx.objectStore('keys').put(key, deviceId)"),'Private key only stored via IndexedDB');
 assert(!js.includes("localStorage.setItem(savedKey, pin"),'PIN is never stored as a plaintext browser hint');
-assert(js.includes("host.classList.add('sf-pin-active')") && js.includes("sf-quick-password"),'Native Woo login fallback remains available');
+assert(js.includes("host.classList.add('sf-pin-active')") && js.includes("sf-quick-switch") && js.includes("showNativeLogin('login')"),'Native Woo login fallback remains available outside inline PIN card');
 assert(js.includes("if (input.value.length === 6) void submit()"),'Sixth digit automatically submits native numeric input');
 assert(js.includes("choose.addEventListener('click', () => {") && js.includes('openInline()'),'Remembered account expands the existing card');
 assert(js.includes("input.focus({preventScroll:true})"),'A direct account tap opens the operating system numeric keyboard');
