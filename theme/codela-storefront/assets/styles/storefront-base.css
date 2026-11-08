@@ -1983,6 +1983,11 @@ body.woocommerce-account:not(.codela-my-account-layout) .sf-content .wc-block-co
 }
 :is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
     #sf-panel.is-account-panel .woocommerce).sf-auth-focus-mode
+  form.woocommerce-form-login > .form-row:has(> .woocommerce-form-login__rememberme):not(:has(button[type="submit"])){
+    display:none!important;
+}
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
+    #sf-panel.is-account-panel .woocommerce).sf-auth-focus-mode
   form.woocommerce-form-login .woocommerce-form-login__rememberme,
 :is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
     #sf-panel.is-account-panel .woocommerce).sf-auth-focus-mode
