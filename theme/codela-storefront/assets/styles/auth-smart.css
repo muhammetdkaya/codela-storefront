@@ -27,14 +27,33 @@
 .woocommerce.sf-smart-auth-active .sf-smart-label{
   font-size:0;color:transparent
 }
+/* The email field alone communicates lookup progress and completion.
+   Keep lookup status available to screen readers without an extra visual row. */
 .woocommerce.sf-smart-auth-active .sf-smart-progress{
-  position:absolute;top:19px;right:21px;
-  width:16px;height:16px;border-radius:50%;
-  border:1.5px solid rgba(37,38,40,.18);border-top-color:#252628;
-  animation:sf-smart-spin .75s linear infinite;pointer-events:none
+  position:absolute;top:50%;right:18px;transform:translateY(-50%);
+  width:24px;height:24px;box-sizing:border-box;border-radius:50%;
+  display:grid;place-items:center;pointer-events:none
 }
 .woocommerce.sf-smart-auth-active .sf-smart-progress[hidden]{display:none!important}
+.woocommerce.sf-smart-auth-active .sf-smart-progress[data-state="checking"]::before{
+  content:"";display:block;width:19px;height:19px;box-sizing:border-box;
+  border:2px solid rgba(37,38,40,.16);border-top-color:#252628;
+  border-radius:50%;animation:sf-smart-spin .72s linear infinite
+}
+.woocommerce.sf-smart-auth-active .sf-smart-progress[data-state="done"]{
+  background:#ecedee;animation:sf-smart-finish .24s ease-out both
+}
+.woocommerce.sf-smart-auth-active .sf-smart-progress[data-state="done"]::before{
+  content:"";position:absolute;width:6px;height:10px;top:5px;left:8px;
+  border-right:2px solid #252628;border-bottom:2px solid #252628;
+  transform:rotate(45deg)
+}
 @keyframes sf-smart-spin{to{transform:rotate(360deg)}}
+@keyframes sf-smart-finish{from{opacity:.35;scale:.82}to{opacity:1;scale:1}}
+.woocommerce.sf-smart-auth-active.sf-smart-checking .sf-smart-message{
+  position:absolute!important;width:1px;height:1px;padding:0!important;
+  margin:0!important;overflow:hidden;clip-path:inset(50%);white-space:nowrap
+}
 .woocommerce.sf-smart-auth-active .sf-smart-message{
   font-size:12px;color:#7f8188;line-height:1.55;margin:7px 3px 0;
 }
@@ -48,6 +67,11 @@
   text-underline-offset:3px
 }
 .woocommerce.sf-smart-auth-active :is(.sf-smart-change,.sf-smart-manual-register)[hidden]{display:none!important}
+/* The otherwise empty native Woo wrapper must not reserve vertical space
+   below the single email field before lookup resolves. */
+.woocommerce.sf-smart-auth-active:is(.sf-smart-start,.sf-smart-checking,.sf-smart-closed) > #customer_login{
+  display:none!important;min-height:0!important;padding:0!important;margin:0!important
+}
 .woocommerce.sf-smart-auth-active #customer_login{width:100%;max-width:480px;margin:0 auto}
 .woocommerce.sf-smart-auth-active #customer_login > :is(.u-column1,.u-column2),
 .woocommerce.sf-smart-auth-active > form.woocommerce-form-login{
@@ -114,6 +138,33 @@
 .woocommerce.sf-smart-auth-active .woocommerce-form-register .sf-smart-register-username{margin-top:9px}
 .woocommerce.sf-smart-auth-active .sf-smart-password-help{
   font-size:12px;line-height:1.55;color:#85868c;margin:0 0 12px
+}
+/* Password strength feedback belongs directly below its own input.
+   It does not replace WooCommerce's server-side password rules. */
+.woocommerce.sf-smart-auth-active .sf-smart-strength{
+  display:flex;align-items:center;gap:10px;
+  min-height:18px;margin:-3px 3px 12px;
+  color:#74777e;font-size:12px;line-height:1.35
+}
+.woocommerce.sf-smart-auth-active .sf-smart-strength[hidden]{display:none!important}
+.woocommerce.sf-smart-auth-active .sf-smart-strength-bars{
+  display:inline-flex;align-items:center;gap:3px;flex:none
+}
+.woocommerce.sf-smart-auth-active .sf-smart-strength-bars > span{
+  display:block;width:16px;height:3px;border-radius:4px;
+  background:#dedfe3;transition:background .2s ease
+}
+.woocommerce.sf-smart-auth-active .sf-smart-strength[data-level="1"] .sf-smart-strength-bars > span:first-child{
+  background:#ae8a70
+}
+.woocommerce.sf-smart-auth-active .sf-smart-strength[data-level="2"] .sf-smart-strength-bars > span:nth-child(-n+2){
+  background:#64666c
+}
+.woocommerce.sf-smart-auth-active .sf-smart-strength[data-level="3"] .sf-smart-strength-bars > span{
+  background:#252628
+}
+.woocommerce.sf-smart-auth-active .sf-smart-strength[data-level="3"]{
+  color:#303238
 }
 .woocommerce.sf-smart-auth-active #customer_login .woocommerce-form-login .sf-smart-password-row input,
 .woocommerce.sf-smart-auth-active #customer_login .woocommerce-form-register :is(input[type=password],input[type=text],input[type=email]){
@@ -183,7 +234,7 @@
 /* Registration is a single focused flow, not another login-provider menu.
    The original provider controls return when the email is edited to a
    recognized address or the field is cleared. */
-.woocommerce.sf-smart-auth-active.sf-smart-new > :is(.sf-auth-social,.sf-quick-return,.sf-google-error){
+.woocommerce.sf-smart-auth-active:is(.sf-smart-new,.sf-smart-existing) > :is(.sf-auth-social,.sf-quick-return,.sf-google-error){
   display:none!important
 }
 /* When WooCommerce asks for a username, the email is submitted natively as
@@ -228,7 +279,7 @@ body.woocommerce-account .woocommerce.sf-smart-auth-active .sf-auth-back-login{
 
 /* Native and instant Account layouts previously force-shown social
    actions in register view. Override both specifically for smart sign-up. */
-#sf-panel.is-account-panel .woocommerce.sf-smart-auth-active.sf-smart-new > :is(.sf-auth-social,.sf-quick-return,.sf-google-error),
+#sf-panel.is-account-panel .woocommerce.sf-smart-auth-active:is(.sf-smart-new,.sf-smart-existing) > :is(.sf-auth-social,.sf-quick-return,.sf-google-error),
 body.woocommerce-account:not(.logged-in) .woocommerce.sf-smart-auth-active.sf-smart-new > :is(.sf-auth-social,.sf-quick-return,.sf-google-error){
  display:none!important;visibility:hidden!important
 }
