@@ -409,3 +409,14 @@ html.sf-quick-checking #sf-panel.is-account-panel #sf-account
 
 .sf-pk-glyph svg,.sf-pk-symbol svg,.sf-pk-avatar svg{width:25px;height:25px;display:block}
 .sf-pk-symbol{display:grid;place-items:center}
+
+
+/* 0.1.244 — Quick Passkey view is a separate authenticated-account choice.
+   Signup is a sibling of #customer_login; account.css and account-overlay.css
+   explicitly display it with !important, so the stateful override must have
+   greater specificity. The ordinary Woo form retains its registration CTA. */
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce.sf-passkey-active > .sf-auth-register-cta,
+#sf-panel.is-account-panel .woocommerce.sf-passkey-active > .sf-auth-register-cta{
+  display:none!important;
+}
