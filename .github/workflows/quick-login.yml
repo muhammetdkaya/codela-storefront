@@ -6,6 +6,7 @@ on:
       - 'theme/codela-storefront/inc/passkeys.php'
       - 'theme/codela-storefront/assets/scripts/passkeys.js'
       - 'tests/passkeys.php'
+      - 'tests/passkeys-ui.cjs'
       - 'theme/codela-storefront/assets/scripts/quick-login.js'
       - 'theme/codela-storefront/assets/styles/quick-login.css'
       - 'theme/codela-storefront/languages/tr_TR.l10n.php'
@@ -44,6 +45,7 @@ jobs:
         run: |
           node --check theme/codela-storefront/assets/scripts/quick-login.js
           node --check theme/codela-storefront/assets/scripts/passkeys.js
+          node tests/passkeys-ui.cjs
           node tests/quick-login-ui.cjs
           node --check tests/quick-login-browser.cjs
   browser:
