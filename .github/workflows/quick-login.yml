@@ -40,7 +40,7 @@ jobs:
           node tests/quick-login-ui.cjs
           node --check tests/quick-login-browser.cjs
   browser:
-    name: Native PIN sheet (Chromium / WebKit)
+    name: Inline native PIN card (Chromium / WebKit)
     runs-on: ubuntu-24.04
     timeout-minutes: 12
     steps:
