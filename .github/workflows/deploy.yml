@@ -57,6 +57,10 @@ jobs:
           node tests/cart-sync.cjs
           node tests/cart-design.cjs
           php tests/quick-login.php
+          php tests/passkeys.php
+          node --check theme/codela-storefront/assets/scripts/passkeys.js
+          node tests/passkeys-ui.cjs
+          node --check tests/passkeys-views-browser.cjs
           php tests/quick-login-markup.php
           node --check theme/codela-storefront/assets/scripts/quick-login.js
           node tests/quick-login-ui.cjs
@@ -94,6 +98,8 @@ jobs:
           node tests/product-sheet-browser.cjs
           # Verify shared logged-out Account chrome and instantaneous real
           # header SVGs before the unrelated broad search navigation suite.
+          node tests/passkeys-views-browser.cjs
+          TEST_WEBKIT=1 node tests/passkeys-views-browser.cjs
           node tests/quick-login-browser.cjs
           TEST_WEBKIT=1 node tests/quick-login-browser.cjs
           node tests/account-keyboard-style-browser.cjs
