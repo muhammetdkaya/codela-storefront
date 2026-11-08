@@ -651,16 +651,44 @@
       }
       if(alternatives){
         group.append(alternatives);
+        const nativeForm=host.querySelector('#customer_login');
+        let returnButton=host.querySelector('.sf-quick-return');
+        if(nativeForm && !returnButton){
+          returnButton=document.createElement('button');
+          returnButton.type='button';
+          returnButton.className='sf-quick-return';
+          returnButton.hidden=true;
+          returnButton.setAttribute('aria-label','Hızlı giriş ekranına dön');
+          const arrow=document.createElement('span');
+          arrow.className='sf-quick-return-arrow';
+          arrow.setAttribute('aria-hidden','true');
+          arrow.textContent='←';
+          returnButton.append(arrow,document.createTextNode('Hızlı girişe dön'));
+          nativeForm.before(returnButton);
+        }
         const showNative=()=>{
           for(const child of group.querySelectorAll('.sf-quick-login.is-inline-open')){
             child.dispatchEvent(new CustomEvent('codela:quick-pin-close'));
           }
           group.hidden=true;
           host.classList.remove('sf-pin-active','sf-passkey-active');
-          host.querySelector('#customer_login')?.dispatchEvent(new CustomEvent(
+          if(returnButton)returnButton.hidden=false;
+          nativeForm?.dispatchEvent(new CustomEvent(
             'codela:auth-select',{detail:{view:'login'}}
           ));
         };
+        returnButton?.addEventListener('click',()=>{
+          // Reuse only the trusted, already verified cards. No reload,
+          // no new authentication and no stale WordPress session restore.
+          if(![...group.querySelectorAll('.sf-quick-login')].some(card=>!card.hidden))return;
+          if(host.contains(document.activeElement) && document.activeElement instanceof HTMLElement){
+            document.activeElement.blur();
+          }
+          host.classList.remove('sf-auth-focus-mode','sf-auth-register-view');
+          returnButton.hidden=true;
+          group.hidden=false;
+          host.classList.add('sf-pin-active');
+        });
         alternatives.querySelector('.sf-quick-switch')?.addEventListener('click',showNative);
         alternatives.querySelector('.sf-quick-native-alt')?.addEventListener('click',showNative);
       }
