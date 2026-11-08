@@ -21,6 +21,8 @@ data-auth-smart-last="Last name" data-auth-smart-checking="Checking account…"
 data-auth-smart-error="Check unavailable" data-auth-smart-closed="Registration closed"
 data-auth-smart-continue="Continue with email"
 data-auth-smart-password-link="Password link emailed" data-auth-smart-register-password="Password (at least 8 characters)"
+data-auth-smart-strength-min="At least 8 characters" data-auth-smart-strength-mix="Include letters and a number or symbol"
+data-auth-smart-strength-ok="Password meets requirements" data-auth-smart-strength-strong="Strong password"
 data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or create an account with your email.">
 <h1><span class="sf-auth-heading-text">Welcome back</span>
 <span class="sf-auth-heading-wave">👋</span></h1>
@@ -96,6 +98,15 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or create a
    assert.equal(await uid.getAttribute('type'),'email','Only email addresses can initiate account lookup');
    assert.equal(await uid.getAttribute('autocomplete'),'email','Native email autofill stays available');
    assert.equal(await page.locator('.sf-smart-change').count(),0,'There is no change-email action');
+   assert.equal(await page.locator('#customer_login').isVisible(),false,'Empty native form container must not reserve vertical space');
+   const firstGap=await page.evaluate(()=>{
+     const email=document.querySelector('.sf-smart-identity').getBoundingClientRect();
+     const quick=document.querySelector('.sf-quick-return').getBoundingClientRect();
+     return quick.top-email.bottom;
+   });
+   assert(firstGap>=0 && firstGap<=40,'Initial quick return follows the email field closely, gap='+firstGap);
+   assert.equal(await page.locator('.sf-quick-return').isVisible(),true,'Quick return remains on the initial screen');
+   assert.equal(await page.locator('.sf-auth-google').isVisible(),true,'Google remains on the initial screen');
    // A real gesture releases the iOS/WebKit initial-autofocus guard.
    await uid.click();
    await uid.fill('test');
@@ -103,6 +114,9 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or create a
    assert.equal(await page.locator('.u-column2').isVisible(),false,'Bare text never opens registration');
    assert.equal(requests,0,'Bare text does not reach the existence endpoint');
    await uid.fill('existing@example.test');
+   assert.equal(await page.locator('.sf-smart-progress').getAttribute('data-state'),'checking','Email field owns lookup spinner');
+   assert.equal(await page.locator('.sf-smart-progress').isVisible(),true,'Animated lookup indicator is inside the email field');
+   assert.equal(await page.locator('.sf-smart-message').evaluate(e=>getComputedStyle(e).position),'absolute','Lookup text does not add another visual row');
    await page.waitForFunction(()=>document.querySelector('.woocommerce')?.classList.contains('sf-smart-existing'),
      null,{timeout:6500}).catch(async error=>{
        const details=await page.evaluate(()=>({
@@ -118,6 +132,9 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or create a
        throw error;
      });
    assert(await page.locator('#password').isVisible(),'Existing account opens password');
+   assert.equal(await page.locator('.sf-smart-progress').getAttribute('data-state'),'done','Lookup completion changes spinner to a check icon');
+   assert.equal(await page.locator('.sf-auth-google').isVisible(),false,'Google disappears when password stage starts');
+   assert.equal(await page.locator('.sf-quick-return').isVisible(),false,'Quick sign-in disappears when password stage starts');
    assert.equal(await page.locator('.woocommerce-form-login__submit').isVisible(),false,'Submit hidden before password');
    await page.locator('#password').fill('correct horse');
    assert(await page.locator('.woocommerce-form-login__submit').isVisible(),'Button appears after password');
@@ -147,11 +164,19 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or create a
    assert.equal(await page.locator('.woocommerce-form-register button[type=submit]').isVisible(),true,'Register CTA is discoverable as soon as the new email is recognized');
    assert.equal(await page.locator('.woocommerce-form-register button[type=submit]').isDisabled(),true,'Register remains disabled until required details are complete');
    assert.equal(await page.locator('#reg_password').getAttribute('minlength'),'8','Registration password requirement is clear');
+   assert.equal(await page.locator('.sf-smart-strength').isVisible(),true,'Password includes its own quality indicator');
+   await page.locator('#reg_password').fill('test..');
+   assert.equal(await page.locator('.sf-smart-strength-feedback').innerText(),'At least 8 characters','Short password explains why it is insufficient');
+   assert.equal(await page.locator('.woocommerce-form-register button[type=submit]').isDisabled(),true,'Insufficient password cannot submit');
+   await page.locator('#reg_password').fill('abcdefgh');
+   assert.equal(await page.locator('.sf-smart-strength-feedback').innerText(),'Add a number or symbol','Weak single-category password explains remedy');
    await page.locator('#sf-smart-first').fill('Ada');
    await page.locator('#sf-smart-last').fill('Yılmaz');
    await page.locator('#reg_password').fill('StrongP4ss!Good');
    assert(await page.locator('.woocommerce-form-register button[type=submit]').isVisible(),'Register remains visible after required details');
    assert.equal(await page.locator('.woocommerce-form-register button[type=submit]').isEnabled(),true,'Completed form enables Register');
+   assert.equal(await page.locator('.sf-smart-strength-feedback').innerText(),'Strong password','Password field confirms adequate strength without relying on button');
+   assert.equal(await page.locator('.sf-smart-strength').getAttribute('data-level'),'3','Three strength bars activate for strong password');
    assert.equal(await page.locator('.woocommerce-form-register button[type=submit]').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(37, 38, 40)','Register darkens when ready');
    assert.equal(await page.locator('.sf-auth-google').isVisible(),false,'Google remains hidden after registration is ready');
    assert.equal(await page.locator('.sf-quick-return').isVisible(),false,'Quick login remains hidden after registration is ready');
@@ -165,8 +190,8 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or create a
    assert(await page.locator('#sf-smart-first').isVisible(),'Fallback creates no separate registration page');
    await uid.fill('existing@example.test');
    await page.waitForFunction(()=>document.querySelector('.woocommerce')?.classList.contains('sf-smart-existing'));
-   assert.equal(await page.locator('.sf-auth-google').isVisible(),true,'Google returns on the sign-in screen');
-   assert.equal(await page.locator('.sf-quick-return').isVisible(),true,'Quick sign-in returns outside registration');
+   assert.equal(await page.locator('.sf-auth-google').isVisible(),false,'Google stays hidden on the sign-in password screen');
+   assert.equal(await page.locator('.sf-quick-return').isVisible(),false,'Quick sign-in stays hidden on the sign-in password screen');
    assert.equal(await page.locator('.sf-smart-actions').isVisible(),false,'No empty action row on login');
    await uid.fill('username123');
    assert.equal(await page.locator('#password').isVisible(),false,'Username-like text cannot reach sign-in');
@@ -174,6 +199,8 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or create a
    const before=requests;
    await page.waitForTimeout(850);
    assert.equal(requests,before,'Username-like text is never probed');
+   assert.equal(await page.locator('.sf-auth-google').isVisible(),true,'Secondary Google option returns when email is cleared or invalid');
+   assert.equal(await page.locator('.sf-quick-return').isVisible(),true,'Quick sign-in returns when email is cleared or invalid');
    await page.close();
    console.log('Email-only staged login/registration, native Woo forms, focus and alternate-action hiding passed');
  }finally{

@@ -6,11 +6,11 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Giriş ve kayıt için tek e-posta alanı: kullanıcı adıyla giriş önerilmez ve geçersiz e-posta parola alanını açmaz.",
-    "Mevcut e-posta otomatik giriş adımına, yeni e-posta tek sayfada kayıt adımına yönlendirilir.",
-    "Kayıt sırasında ad-soyad, gerektiğinde parola istenir; WooCommerce kullanıcı adı otomatik olarak e-postadan doldurulur.",
-    "Kayıt Ol butonu kayıt adımıyla görünür; zorunlu bilgiler tamamlanınca koyu renkte etkinleşir.",
-    "E-posta değiştir bağlantısı kaldırıldı; kayıt adımında Hızlı girişe dön, Google ile Giriş Yap ve ayırıcı gizlendi.",
-    "Yerleşik WooCommerce nonce, doğrulama, şifre sıfırlama ve parola ile giriş işlemleri korunur."
+    "İlk giriş ekranında e-posta alanı ile hızlı giriş butonu arasındaki gereksiz boşluk kaldırıldı.",
+    "E-posta hesabı kontrol edilirken kutu içindeki sağ simge animasyonlu yükleme işareti gösterir; işlem sonrası onay simgesine dönüşür.",
+    "Hesap kontrol ediliyor yazısı ayrı satırda görünmez; ekran okuyucu erişimi korunur.",
+    "Parola alanı açıldığı anda Google ile Giriş Yap ve Hızlı girişe dön seçenekleri gizlenir.",
+    "Yeni hesap parolasının altında üç seviyeli yeterlilik göstergesi bulunur; kısa ve zayıf şifreye nedenini gösterir, yeterli şifreyi doğrular.",
+    "WooCommerce yerleşik kayıt, parola ve giriş doğrulamaları ile mobil odak karartması korunur."
   ]
 }

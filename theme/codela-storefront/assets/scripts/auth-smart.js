@@ -23,10 +23,34 @@
     const last = registerForm && query(registerForm,'input[name="last_name"]');
     const registerAllowed = !!(registerForm && registerEmail && first && last);
     const registerSubmit=registerForm && query(registerForm,'button[type="submit"],input[type="submit"]');
+    let strength=null;
     if(registerPassword){
       registerPassword.placeholder=intro.dataset.authSmartRegisterPassword||'Password (8+ characters)';
       registerPassword.minLength=Math.max(registerPassword.minLength||0,8);
+      strength=document.createElement('div');
+      strength.className='sf-smart-strength';
+      strength.hidden=true;
+      strength.dataset.level='0';
+      const bars=document.createElement('span');
+      bars.className='sf-smart-strength-bars';
+      bars.setAttribute('aria-hidden','true');
+      for(let i=0;i<3;i++)bars.append(document.createElement('span'));
+      const feedback=document.createElement('span');
+      feedback.className='sf-smart-strength-feedback';
+      feedback.setAttribute('role','status');
+      feedback.setAttribute('aria-live','polite');
+      strength.append(bars,feedback);
+      registerPassword.closest('.form-row,.woocommerce-form-row')?.after(strength);
     }
+    const passwordQuality=value=>{
+      if(!value)return {level:0,eligible:false,message:intro.dataset.authSmartStrengthMin||'At least 8 characters'};
+      if(value.length<8)return {level:1,eligible:false,message:intro.dataset.authSmartStrengthMin||'At least 8 characters'};
+      const variety=Number(/[a-zA-Z]/.test(value))+Number(/[0-9]/.test(value))+Number(/[^a-zA-Z0-9]/.test(value));
+      const common=/^(?:password|12345678|qwerty|abcdefgh|11111111)/i.test(value)||/^(.)\1{7,}$/.test(value);
+      if(variety<2||common)return {level:1,eligible:false,message:intro.dataset.authSmartStrengthMix||'Add a number or symbol'};
+      const strong=value.length>=12&&variety>=3;
+      return {level:strong?3:2,eligible:true,message:strong?(intro.dataset.authSmartStrengthStrong||'Strong password'):(intro.dataset.authSmartStrengthOk||'Password meets requirements')};
+    };
 
     const shell=document.createElement('div');
     shell.className='sf-smart-auth';
@@ -99,7 +123,8 @@
       root.classList.remove('sf-smart-start','sf-smart-checking','sf-smart-existing','sf-smart-new','sf-smart-closed','sf-smart-password-ready','sf-smart-register-ready');
       root.classList.add('sf-smart-'+next);
       status(message);
-      indicator.hidden=next!=='checking';
+      indicator.hidden=!['checking','existing','new'].includes(next);
+      indicator.dataset.state=next==='checking'?'checking':'done';
       // The fallback appears only when an actual email lookup fails.
       // A new address opens the same native Woo registration form automatically.
       manual.hidden=!registerAllowed || !(next==='unavailable' && emailPattern.test(active));
@@ -125,7 +150,13 @@
       }else root.classList.remove('sf-smart-password-ready');
       if(stage==='new' && registerAllowed){
         const hasNames=first.value.trim().length>0 && last.value.trim().length>0;
-        const hasPassword=!registerPassword || registerPassword.value.length>=8;
+        const quality=registerPassword?passwordQuality(registerPassword.value):null;
+        const hasPassword=!quality || quality.eligible;
+        if(strength){
+          strength.hidden=false;
+          strength.dataset.level=String(quality.level);
+          strength.querySelector('.sf-smart-strength-feedback').textContent=quality.message;
+        }
         const hasUsername=!registerUsername || registerUsername.value.trim()===active;
         const ready=hasNames&&hasPassword&&hasUsername;
         root.classList.toggle('sf-smart-register-ready',ready);
@@ -133,6 +164,7 @@
       }else{
         root.classList.remove('sf-smart-register-ready');
         if(registerSubmit)registerSubmit.disabled=false;
+        if(strength)strength.hidden=true;
       }
     };
     const abort=()=>{
