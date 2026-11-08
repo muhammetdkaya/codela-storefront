@@ -6,10 +6,11 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Tanınan cihazın hızlı Hesabım ekranında E-posta ile Kayıt Ol seçeneği gizlendi; hızlı PIN, Google ve e-posta/şifreyle giriş seçenekleri korunuyor. Cihaz doğrulanırken butonun anlık görünmesi de engellendi.",
-    "Normal WooCommerce e-posta/şifre giriş ekranında Giriş Yap butonu temanın standart beyaz yüzeyine, koyu yazıya ve nötr kenarlığa döndü.",
-    "Normal giriş ekranındaki Google ile Giriş Yap, mevcut Codela koyu UI Kit yüzeyi ve beyaz yazıyla gösteriliyor; renkli Google simgesi ve gerçek OAuth etkin/devre dışı durumu korunuyor.",
-    "Hızlı Hesabım ve normal Hesabım hem doğrudan sayfada hem hızlı hesap panelinde birbirinden ayrılıyor. Kayıt işlemi normal giriş ekranında erişilebilir; PIN, şifre kurtarma, giriş/kayıt nonceleri ve otomatik odak davranışı değişmedi.",
-    "Chromium/WebKit görünüm testleri; hızlı girişte kayıt gizliliği, normal girişte beyaz buton/koyu Google, kayıt paneli geri dönüşü ve mobil yerleşimi kapsayacak şekilde güncellendi."
+    "Tanınan hesabın 6 haneli PIN girişi artık ayrı alttan açılan popup yerine hesap kartının içinde yumuşak animasyonla genişliyor; çevre içerik hafif kararıyor ve kart odakta kalıyor.",
+    "İlk tıklamada telefonun kendi sayısal klavyesi açılır; özel/sahte tuş takımı kullanılmaz. Sağdaki ok kapalıda aşağı, açıkta yukarıyı gösterir.",
+    "Altı kare PIN kutusu girilen rakamları gizli noktalarla gösterir. Sunucudan başarılı doğrulama gelmeden yeşil onay veya birleşme gerçekleşmez; doğru PIN'de kareler merkeze akıp tek yeşil tikli kareye dönüşür.",
+    "Başarı için yeni Giriş yapıldı metin satırı oluşturulmaz. Hatalı PIN'de alan kısa kırmızı geri bildirimle sıfırlanır; WooCommerce oturumu ve mevcut cache-bypass yönlendirmesi korunur.",
+    "Google, normal e-posta/şifreyle giriş, kayıt ekranı, Woo doğrulama, ECDSA cihaz imzası, PIN hız sınırları ve hesap değiştirme işlevleri korunur.",
+    "Chromium/WebKit hızlı giriş, kare geometrisi, inline genişleme, yerel klavye ve doğrulama sonrası animasyon testleri güncellendi."
   ]
 }
