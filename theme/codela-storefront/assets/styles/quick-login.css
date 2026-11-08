@@ -29,30 +29,36 @@ html.sf-quick-checking #sf-account .sf-auth-social,
 html.sf-quick-checking #sf-account .sf-google-error{display:none!important}
 html.sf-quick-checking body.woocommerce-account .sf-quick-login[hidden],
 html.sf-quick-checking #sf-account .sf-quick-login[hidden]{display:block!important}
-html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account{
-  position:relative;pointer-events:none;
+/* Skeleton uses the SAME outer frame as the loaded compact card.
+   The old button+frame borders made an extra second card. */
+html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account-frame{
+  position:relative;pointer-events:none;overflow:hidden;
   background:#fff!important;border:1px solid #e5e6e9!important;
   box-shadow:0 9px 26px rgba(36,38,43,.045)!important;
 }
-html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account>*{visibility:hidden}
-html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account::before,
-html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account::after{
-  content:"";position:absolute;left:18px;top:50%;
+html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account-frame .sf-quick-account{
+  background:transparent!important;border:0!important;box-shadow:none!important;
+}
+html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account-frame .sf-quick-account>*{visibility:hidden}
+html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-inline-pin{display:none!important}
+html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account-frame::before,
+html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account-frame::after{
+  content:"";position:absolute;left:18px;top:50%;z-index:2;
   pointer-events:none;background:#e8e9ec;
   animation:sf-quick-preflight 1.15s ease-in-out infinite alternate;
 }
-html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account::before{
-  width:50px;height:50px;transform:translateY(-50%);border-radius:50%;
+html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account-frame::before{
+  width:48px;height:48px;transform:translateY(-50%);border-radius:50%;
 }
-html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account::after{
+html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account-frame::after{
   left:82px;top:calc(50% - 15px);width:min(44%,165px);height:13px;
   border-radius:6px;box-shadow:0 23px 0 -2px #eeeff1;
 }
 html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-choice-alternatives{visibility:hidden}
 @keyframes sf-quick-preflight{to{opacity:.48}}
 @media(prefers-reduced-motion:reduce){
-  html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account::before,
-  html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account::after{animation:none}
+  html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account-frame::before,
+  html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account-frame::after{animation:none}
 }
 .sf-quick-login *{box-sizing:border-box}
 .sf-quick-login button,.sf-quick-login input{font-family:inherit}
@@ -166,7 +172,8 @@ html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-choice-alternatives{vis
   position:relative;z-index:6;box-sizing:border-box;width:100%;min-width:0;
   background:#fff;border:1px solid #e7e7ea;border-radius:20px;
   box-shadow:0 7px 22px rgba(0,0,0,.055);
-  transition:box-shadow .3s ease,border-color .3s ease;
+  transform:translate3d(0,var(--sf-quick-keyboard-lift,0px),0);
+  transition:box-shadow .3s ease,border-color .3s ease,transform .25s ease;
 }
 .sf-quick-account-frame .sf-quick-account,
 .sf-quick-account-frame .sf-quick-account:hover{
@@ -194,7 +201,7 @@ html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-choice-alternatives{vis
 .sf-quick-login.is-inline-open .sf-quick-inline-pin{
   grid-template-rows:1fr;opacity:1;pointer-events:auto;
 }
-.sf-quick-login.is-inline-open .sf-quick-inline-inner{visibility:visible}
+.sf-quick-login.is-inline-open .sf-quick-inline-inner{visibility:visible;padding-bottom:18px}
 .sf-quick-inline-divider{height:1px;background:#eeeef1;margin:0 0 17px}
 .sf-quick-inline-label{
   text-align:center!important;margin:0 0 15px!important;
@@ -272,7 +279,8 @@ html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-choice-alternatives{vis
   font-size:12px!important;line-height:1.5!important;
   color:var(--sf-quick-error)!important;font-weight:550!important;
 }
-.sf-quick-inline-inner{padding-bottom:18px}
+/* The collapsed inline panel must not leave any bottom padding.
+   Keep its expanded padding only under .is-inline-open above. */
 .sf-quick-pin-track.is-error .sf-quick-slot{
   border-color:var(--sf-quick-error)!important;
   background:#fff0f0!important;animation:sf-quick-error-shake .28s ease;
@@ -290,7 +298,7 @@ html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-choice-alternatives{vis
   .sf-quick-inline-label{font-size:12px!important}
 }
 @media(prefers-reduced-motion:reduce){
-  .sf-quick-account,.sf-quick-slot,.sf-quick-slot i,.sf-quick-result,
+  .sf-quick-account,.sf-quick-account-frame,.sf-quick-slot,.sf-quick-slot i,.sf-quick-result,
   .sf-quick-check,.sf-quick-chevron svg,.sf-quick-inline-pin{transition:none!important}
   .sf-quick-pin-track.is-error .sf-quick-slot,
   .sf-quick-pin-track.is-verified .sf-quick-check{animation-duration:.01ms!important}
