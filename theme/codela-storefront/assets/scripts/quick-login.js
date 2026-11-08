@@ -155,6 +155,7 @@
       freshAccountDocument();
       return;
     }
+    if (browserStatus.active && browserStatus.paused) return; // Pause keeps the local key for later reactivation.
     if (!browserStatus.active) {
       await forgetRemembered(profile);
       return;
@@ -458,6 +459,18 @@
         if (deviceId) try { await forgetKey(deviceId); } catch (_) {}
         status.textContent = error.message || t('enableFailed','Could not enable quick sign-in.');
       } finally { button.disabled = false; }
+    });
+    settings.querySelectorAll('.sf-quick-toggle').forEach(toggle => {
+      toggle.addEventListener('click', async () => {
+        toggle.disabled = true;
+        try {
+          await request('toggle', {device_id:toggle.dataset.deviceId, paused:toggle.dataset.paused !== '1'});
+          window.location.reload();
+        } catch (error) {
+          status.textContent = error.message || 'Could not update this browser.';
+          toggle.disabled = false;
+        }
+      });
     });
     settings.querySelectorAll('.sf-quick-revoke').forEach(button => {
       button.addEventListener('click', async () => {
