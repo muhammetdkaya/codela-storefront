@@ -73,6 +73,7 @@
     const nativeRegisterCTA=query(root,'.sf-auth-register-cta');
     if(nativeRegisterCTA)nativeRegisterCTA.setAttribute('tabindex','-1');
     let stage='start',active='',sequence=0,timer=0,controller=null;
+    let lastProcessedIdentity='';
     const cache=new Map();
     const status=message=>{hint.textContent=message||'';};
     const chooseForm=view=>{
@@ -133,10 +134,16 @@
       abort();
       active=input.value.trim();
       loginUser.value=active;
-      // Changing the identity must never display credentials typed for an
-      // entirely different customer in the same browser session.
-      loginPassword.value='';
-      if(registerPassword)registerPassword.value='';
+      // Clear fields only on an actual identity change, never merely because
+      // iOS fires "change" when tapping the inline registration action.
+      if(active!==lastProcessedIdentity){
+        loginPassword.value='';
+        if(registerPassword)registerPassword.value='';
+        if(first)first.value='';
+        if(last)last.value='';
+        if(registerUsername)registerUsername.value='';
+        lastProcessedIdentity=active;
+      }
       if(registerEmail && emailPattern.test(active))registerEmail.value=active;
       if(!active){setStage('start');return;}
       if(!active.includes('@')){
@@ -179,7 +186,11 @@
       },680);
     };
     input.addEventListener('input',check);
-    input.addEventListener('change',check);
+    input.addEventListener('change',()=>{
+      // Autofill can update without input events; blur after an ordinary
+      // keystroke must NOT restart lookup or undo a chosen registration stage.
+      if(input.value.trim()!==lastProcessedIdentity)check();
+    });
     input.addEventListener('keydown',event=>{
       if(event.key==='Enter'){
         event.preventDefault();
