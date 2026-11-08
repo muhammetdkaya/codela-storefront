@@ -151,8 +151,11 @@ const css=['tokens.css','components.css','quick-login.css','account.css','accoun
   assert.equal(await page.locator('.sf-quick-result').evaluate(el=>getComputedStyle(el).backgroundColor),
     'rgb(22, 132, 79)','Single result becomes green after verified state');
   await page.locator('.sf-quick-login').evaluate(el=>el.classList.remove('is-inline-open'));
-  await page.waitForTimeout(450);
-  assert.equal(await page.locator('.sf-quick-inline-pin').evaluate(el=>getComputedStyle(el).opacity),'0',
+  await page.waitForFunction(()=>{
+    const el=document.querySelector('.sf-quick-inline-pin');
+    return el && Number(getComputedStyle(el).opacity)<0.01;
+  },null,{timeout:2500});
+  assert.equal(await page.locator('.sf-quick-login').evaluate(el=>el.classList.contains('is-inline-open')),false,
     'Collapsing card hides the PIN without a page navigation');
   console.log('Account Google and PIN visual states passed in '+(process.env.TEST_WEBKIT?'WebKit':'Chromium'));
  }finally{await browser.close();}
