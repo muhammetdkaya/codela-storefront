@@ -174,3 +174,12 @@ html.sf-quick-checking .woocommerce.sf-smart-auth-active > .sf-smart-auth{
   box-shadow:none!important;min-height:54px!important;
   display:flex!important;align-items:center;justify-content:center;
 }
+
+/* Override the formerly permanent email-register action from both native
+   Account stylesheets (their rules have ID selectors and !important). */
+#sf-panel.is-account-panel .woocommerce.sf-smart-auth-active > .sf-auth-register-cta,
+body.woocommerce-account .woocommerce.sf-smart-auth-active > .sf-auth-register-cta,
+#sf-panel.is-account-panel .woocommerce.sf-smart-auth-active .sf-auth-back-login,
+body.woocommerce-account .woocommerce.sf-smart-auth-active .sf-auth-back-login{
+ display:none!important;visibility:hidden!important
+}
