@@ -1,0 +1,36 @@
+name: Smart Account Auth Regression
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/auth-smart-check.yml'
+      - 'theme/codela-storefront/inc/account.php'
+      - 'theme/codela-storefront/assets/scripts/auth.js'
+      - 'theme/codela-storefront/assets/scripts/auth-smart.js'
+      - 'theme/codela-storefront/assets/styles/auth-smart.css'
+      - 'tests/account-smart.php'
+      - 'tests/account-smart-browser.cjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smart-auth:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify PHP and browser script syntax
+        run: |
+          php -l theme/codela-storefront/inc/account.php
+          php tests/account-smart.php
+          node --check theme/codela-storefront/assets/scripts/auth.js
+          node --check theme/codela-storefront/assets/scripts/auth-smart.js
+          node --check tests/account-smart-browser.cjs
+      - name: Install browser runtimes
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium webkit
+      - name: Verify staged login and registration on Chromium and WebKit
+        run: |
+          node tests/account-smart-browser.cjs
+          TEST_WEBKIT=1 node tests/account-smart-browser.cjs
