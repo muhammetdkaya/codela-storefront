@@ -6,11 +6,12 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Tanınan hesabın 6 haneli PIN girişi artık ayrı alttan açılan popup yerine hesap kartının içinde yumuşak animasyonla genişliyor; çevre içerik hafif kararıyor ve kart odakta kalıyor.",
-    "İlk tıklamada telefonun kendi sayısal klavyesi açılır; özel/sahte tuş takımı kullanılmaz. Sağdaki ok kapalıda aşağı, açıkta yukarıyı gösterir.",
-    "Altı kare PIN kutusu girilen rakamları gizli noktalarla gösterir. Sunucudan başarılı doğrulama gelmeden yeşil onay veya birleşme gerçekleşmez; doğru PIN'de kareler merkeze akıp tek yeşil tikli kareye dönüşür.",
-    "Başarı için yeni Giriş yapıldı metin satırı oluşturulmaz. Hatalı PIN'de alan kısa kırmızı geri bildirimle sıfırlanır; WooCommerce oturumu ve mevcut cache-bypass yönlendirmesi korunur.",
-    "Google, normal e-posta/şifreyle giriş, kayıt ekranı, Woo doğrulama, ECDSA cihaz imzası, PIN hız sınırları ve hesap değiştirme işlevleri korunur.",
-    "Chromium/WebKit hızlı giriş, kare geometrisi, inline genişleme, yerel klavye ve doğrulama sonrası animasyon testleri güncellendi."
+    "Hızlı girişte kapalı hesap kartının altında kalan gereksiz boşluk düzeltildi; alt padding yalnız altı kare PIN alanı açıkken uygulanıyor.",
+    "Hızlı hesap yükleme skeleton'u yeni gerçek hesap kartının tek dış çerçevesini kullanacak şekilde güncellendi; ikinci beyaz kart görünümü giderildi.",
+    "iPhone Safari'de kendi sayısal klavyesi ve tarayıcı adres/araç çubuğu açıldığında PIN kartı visualViewport güvenli görünür alanına göre ölçülüp gerektiği kadar yukarı taşınıyor; klavye kapanınca kaydırma kaldırılıyor.",
+    "Kullanıcının beğendiği mevcut hızlı PIN karartmasının rengi ve bulanıklığı hiç değiştirilmedi; altı kare/tek yeşil tikli kare animasyonu ve sunucu doğrulaması korundu.",
+    "Normal WooCommerce girişinde kullanıcı adı veya şifreye dokunulunca hızlı PIN ile aynı karartma açılıyor; kullanıcı adı, şifre, Beni hatırla, şifre sıfırlama ve Giriş Yap butonu önde kalıyor. Google/kayıt ve diğer içerikler kararıyor.",
+    "Normal girişte alandan çıkınca veya iPhone klavyesi kapandığında karartma kapanıyor; otomatik odak, nonce, gerçek Woo giriş/kayıt ve Google OAuth değişmedi.",
+    "Chromium/WebKit odak karartması, hızlı kart/skeleton ölçüleri ve Safari klavye görünür alanı testleri genişletildi."
   ]
 }
