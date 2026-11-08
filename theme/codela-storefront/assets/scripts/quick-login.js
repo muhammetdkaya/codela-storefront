@@ -261,6 +261,10 @@
       inline.setAttribute('aria-hidden','false');
       inline.inert = false;
       scrim.hidden = false;
+      // Commit the expanded layout synchronously before focusing. This keeps
+      // Safari from treating the formerly collapsed child as invisible; the
+      // focus still runs inside the real user-tap activation.
+      void inline.offsetHeight;
       // This focus must occur directly in the user's tap event for iOS to
       // display the system numeric keypad. No custom keyboard is created.
       input.focus({preventScroll:true});
