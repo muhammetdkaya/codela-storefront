@@ -11,6 +11,9 @@ assert(js.includes("post('/assert-options', selectedId ? {credential_id:selected
   'Native passkey call uses a single known key when possible');
 assert(js.includes('navigator.credentials.get({') && js.includes("mediation:'optional'"),
   'User gesture still invokes the platform authenticator');
+assert(js.includes("button.classList.add('is-verifying')") && js.includes("button.classList.remove('is-verifying')") &&
+  !js.includes("notify(node,'Telefon doğrulaması açılıyor…')"),
+  'Face ID icon animates while platform verification is pending, without the progress row');
 assert(!js.includes("document.createElement('button');\n    button.type='button'; button.className='sf-pk-discover'"),
   'Normal WooCommerce login never gains an unsolicited phone CTA');
 assert(!js.includes("button.textContent='Telefonla hızlı giriş'"),
@@ -19,7 +22,7 @@ assert(js.includes("host.classList.remove('sf-passkey-active','sf-pin-active')")
   'Email and Google fallback releases the fast sign in state');
 assert(js.includes("section.querySelector('.sf-pk-use-email')?.addEventListener"),
   'Native Woo login can be deliberately selected');
-assert(js.includes("const legacy = JSON.parse(localStorage.getItem('codela_sf_quick_profile_v1')"),
+assert(js.includes("legacy = JSON.parse(localStorage.getItem('codela_sf_quick_profile_v1')") && js.includes("host.addEventListener('codela:quick-status', onQuickStatus)") && js.includes("quick.classList.add('has-passkey')"),
   'Original native PIN login remains available');
 assert(php.includes("isset( $stored[ $hint ] )") && php.includes("empty( $stored[ $hint ]['paused'] )"),
   'Credential hint cannot bypass server-side registration and paused status');

@@ -47,7 +47,7 @@ check( ! str_contains( $html, 'Welcome back' ), 'No redundant welcome heading' )
 check( str_contains( $html, 'Welcome' ) && str_contains( $html, 'Continue quickly with your account.' ), 'Welcome heading and succinct copy are visible' );
 check( str_contains( $html, 'sf-quick-wave' ), 'Waving-hand emoji follows the heading' );
 check( str_contains( $html, 'sf-quick-email' ), 'Saved account email line is present' );
-check( str_contains( $html, 'sf-quick-chevron' ) && str_contains( $html, 'aria-expanded="false"' ) && str_contains( $html, 'm5 9 7 7 7-7' ), 'Account card has a downward chevron that rotates upward on expand' );
+check( str_contains( $html, 'sf-quick-method--pin' ) && str_contains( $html, 'sf-quick-method--passkey' ) && str_contains( $html, 'aria-expanded="false"' ), 'Account card has a downward chevron that rotates upward on expand' );
 check( str_contains( $html, 'sf-quick-or' ) && str_contains( $html, 'sf-quick-email-login' ), 'Alternative password login remains available beneath or separator' );
 check( ! str_contains( $html, 'sf-quick-remove' ) && ! str_contains( $html, 'Remove this account' ), 'Remembered account removal is absent from guest UI' );
 check( str_contains( $html, 'sf-quick-google' ) && str_contains( $html, 'disabled aria-label=' ), 'Google entry renders as safely disabled if OAuth is not configured' );

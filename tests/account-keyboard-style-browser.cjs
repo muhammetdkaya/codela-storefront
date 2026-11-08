@@ -106,9 +106,9 @@ const css=['tokens.css','components.css','quick-login.css','account.css','accoun
   await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head>'
     +'<body><section class="sf-quick-login"><div class="sf-quick-choice">'
     +'<div class="sf-quick-account-frame">'
-    +'<button class="sf-quick-account" aria-expanded="false"><span class="sf-quick-monogram">A</span>'
+    +'<div class="sf-quick-account"><span class="sf-quick-monogram">A</span>'
     +'<span class="sf-quick-account-text">Ayşe Yılmaz</span>'
-    +'<span class="sf-quick-chevron"><svg viewBox="0 0 24 24"><path d="m5 9 7 7 7-7"/></svg></span></button>'
+    +'<span class="sf-quick-methods"><button class="sf-quick-method sf-quick-method--pin" aria-expanded="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></svg></button></span></div>'
     +'<div class="sf-quick-inline-pin" aria-hidden="true"><div class="sf-quick-inline-inner">'
     +'<div class="sf-quick-inline-divider"></div><p class="sf-quick-inline-label">6-digit code</p>'
     +'<div class="sf-quick-pin-track">'
@@ -136,8 +136,11 @@ const css=['tokens.css','components.css','quick-login.css','account.css','accoun
     assert(square.w>20,'PIN square can be tapped on mobile');
   }
   assert(geometry.trackWidth<geometry.cardWidth,'PIN remains inside card padding');
-  const chevron=await page.locator('.sf-quick-chevron svg').evaluate(el=>getComputedStyle(el).transform);
-  assert(chevron!=='none','Chevron rotates upward while card is expanded');
+  const pin=await page.locator('.sf-quick-method--pin').evaluate(el=>({
+    bg:getComputedStyle(el).backgroundColor,expanded:el.getAttribute('aria-expanded')
+  }));
+  assert.equal(pin.expanded,'true','PIN method indicates expanded state');
+  assert.equal(pin.bg,'rgb(240, 240, 242)','Active PIN icon uses subtle tonal feedback');
   const shade=await page.locator('.sf-quick-scrim').evaluate(el=>getComputedStyle(el));
   assert(await page.locator('.sf-quick-scrim').isVisible(),'The rest of the screen dims when inline PIN opens');
   assert.equal(await page.locator('.sf-quick-native-pin').getAttribute('inputmode'),'numeric','System numeric keyboard is used');

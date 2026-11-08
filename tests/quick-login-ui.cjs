@@ -26,7 +26,7 @@ assert(js.includes("displayName:settings.dataset.displayName"),'New remembered a
 assert(js.includes("email:settings.dataset.email"),'Enrollment stores only a display email alongside remembered account');
 assert(js.includes("email.textContent = rememberedEmail"),'Guest card reads the remembered email');
 assert(php.includes("class=\"sf-quick-email\""),'Saved-account markup has an optional email line');
-assert(php.includes('aria-expanded="false"') && php.includes('m5 9 7 7 7-7'),'Account card uses a downward chevron with accessible expanded state');
+assert(php.includes('aria-expanded="false"') && php.includes('sf-quick-method--pin') && php.includes('sf-quick-method--passkey'),'Account card uses a downward chevron with accessible expanded state');
 assert(php.includes('sf-quick-choice-alternatives') && php.includes('sf-quick-email-login'),'Reference actions belong below the account card');
 assert(php.includes('sf-quick-google') && php.includes('disabled aria-label='),'Google button stays visible but safely disabled without configured OAuth');
 assert(css.includes('.sf-quick-or') && css.includes('.sf-quick-google'),'Divider and Google CTA have dedicated styles');
@@ -75,6 +75,8 @@ assert(css.includes('#16844f'),'Verified state uses distinct green');
 assert(css.includes('#c53643'),'Failed state uses distinct red');
 assert(css.includes('.sf-quick-status.is-error'),'Errors have distinct warning hue');
 assert(css.includes('.sf-quick-choice-intro'),'Remembered account has concise heading and supporting description');
+assert(js.includes("host.dispatchEvent(new CustomEvent('codela:quick-status'"),'Quick status coordinates the saved account view');
+assert(js.includes("const choose = section.querySelector('.sf-quick-method--pin')"),'Only the PIN icon opens its numeric input');
 assert(css.includes('.sf-quick-account-frame') && css.includes('background:#fff') && css.includes('sf-quick-inline-inner'),'Inline PIN remains on the account card white surface');
 assert(css.includes('.sf-quick-status.is-error') && css.includes('position:absolute;width:1px'),'Only errors have visible status text; success is accessible without extra row');
 assert(php.includes('sf-quick-email-login') && !php.includes('sf-quick-sheet-links'),'Email/password fallback remains below the card rather than duplicated in a popup');

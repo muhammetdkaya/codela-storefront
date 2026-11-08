@@ -58,14 +58,14 @@ const form='<div class="woocommerce"><header class="sf-account-intro"><h1>Welcom
      : ['.sf-shell > .sf-header','.sf-shell > .sf-mobile-dock'];
    await page.waitForFunction(selectors=>selectors.every(selector=>{
      const el=document.querySelector(selector);
-     return el && getComputedStyle(el).filter.includes('blur(2px)');
+     return el && getComputedStyle(el).visibility === 'hidden';
    }),chrome);
    for(const selector of chrome){
      const style=await page.locator(selector).evaluate(el=>({
-       filter:getComputedStyle(el).filter,
+       visibility:getComputedStyle(el).visibility,
        pointerEvents:getComputedStyle(el).pointerEvents
      }));
-     assert(style.filter.includes('brightness('),mode+' dims header and dock: '+selector);
+     assert.equal(style.visibility,'hidden',mode+' hides header and dock on input focus: '+selector);
      assert.equal(style.pointerEvents,'none',mode+' keeps chrome outside credential focus: '+selector);
    }
    assert.equal(await rememberLabel.isVisible(),false,mode+' hides helper row during credential focus');
@@ -173,6 +173,10 @@ const form='<div class="woocommerce"><header class="sf-account-intro"><h1>Welcom
      mode+' stays in focus mode when switching between username/password');
    await page.evaluate(()=>document.activeElement.blur());
    await page.waitForFunction(()=>!document.querySelector('.woocommerce')?.classList.contains('sf-auth-focus-mode'));
+   for(const selector of chrome){
+     assert.equal(await page.locator(selector).evaluate(el=>getComputedStyle(el).visibility),
+       'visible',mode+' restores header and dock on keyboard dismissal: '+selector);
+   }
    assert.equal(await rememberLabel.isVisible(),true,mode+' restores helper row when keyboard closes');
    assert.equal(await forgot.isVisible(),true,mode+' restores password reset when keyboard closes');
    assert.equal(await remember.isChecked(),true,mode+' native remembered state persists after keyboard closes');

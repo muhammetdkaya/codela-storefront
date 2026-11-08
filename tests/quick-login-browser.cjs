@@ -117,7 +117,7 @@ function release(ok) {
       assert.equal(await page.locator('.sf-quick-email').innerText(),'ayse@example.test','Saved account includes email as a secondary line');
       assert(await page.locator('.sf-quick-email-login').isVisible(),'Email/password fallback is visible on first screen');
       assert(await page.locator('.sf-quick-or').isVisible(),'Reference divider is visible');
-      assert.equal(await page.locator('.sf-quick-account').getAttribute('aria-expanded'),'false','Account card starts collapsed');
+      assert.equal(await page.locator('.sf-quick-method--pin').getAttribute('aria-expanded'),'false','Account card starts collapsed');
       assert.equal(await page.locator('.sf-quick-inline-pin').getAttribute('aria-hidden'),'true','Inline PIN starts hidden');
       assert.equal(await page.locator('.sf-quick-slot').count(),6,'Six square PIN cells remain mounted in the card');
       assert.equal(await page.getByText('Welcome',{exact:false}).count(),1,
@@ -125,9 +125,9 @@ function release(ok) {
       assert.equal(await page.locator('.sf-quick-account-frame').evaluate(el=>getComputedStyle(el).backgroundColor),
         'rgb(255, 255, 255)','Inline PIN uses the white remembered card surface');
       assert.equal(await page.locator('.sf-quick-sheet').count(),0,'Old PIN bottom sheet no longer exists');
-      await page.locator('.sf-quick-account').click();
+      await page.locator('.sf-quick-method--pin').click();
       await page.waitForFunction(()=>document.querySelector('.sf-quick-login')?.classList.contains('is-inline-open'));
-      assert.equal(await page.locator('.sf-quick-account').getAttribute('aria-expanded'),'true','Card expands with down-to-up chevron');
+      assert.equal(await page.locator('.sf-quick-method--pin').getAttribute('aria-expanded'),'true','Card expands with down-to-up chevron');
       assert.equal(await page.locator('.sf-quick-scrim').isVisible(),true,'Outside content is dimmed');
       assert(await page.evaluate(()=>document.activeElement===document.querySelector('.sf-quick-native-pin')),
         'Direct account tap focuses native numeric keypad input');
@@ -163,8 +163,8 @@ function release(ok) {
         assert.equal(await page.locator('.sf-quick-pin-track.is-verified').count(),0,'Error never shows success check');
         assert.equal(await page.locator('.sf-quick-status').evaluate(el=>getComputedStyle(el).color),
           'rgb(197, 54, 67)','Failed PIN visibly uses red feedback');
-        await page.locator('.sf-quick-account').click();
-        assert.equal(await page.locator('.sf-quick-account').getAttribute('aria-expanded'),'false','Up chevron closes inline PIN');
+        await page.locator('.sf-quick-method--pin').click();
+        assert.equal(await page.locator('.sf-quick-method--pin').getAttribute('aria-expanded'),'false','Up chevron closes inline PIN');
         assert.equal(await page.locator('.sf-quick-scrim').isVisible(),false,'Closing restores outside content');
         await page.locator('.sf-quick-email-login').click();
         assert(await page.locator('#customer_login').isVisible(),'Native Woo password login remains available');
