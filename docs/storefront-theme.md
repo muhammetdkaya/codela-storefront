@@ -1,3 +1,11 @@
+## 8 Kasım 2026 — 0.1.242 tam oval giriş ve dolu alanlara bağlı Giriş Yap
+
+Onaylanan tasarım: mevcut native `E-posta ile Kayıt Ol` tam genişlik butonu **Google ile Giriş Yap'ın üzerinde** kalıyor. Normal Hesabım ve hızlı Hesabım panelinde yalnız Woo girişindeki kullanıcı adı/e-posta ve şifre kutuları `--sf-ui-button-radius` (999px) ile tam oval. Kayıt, şifre sıfırlama, diğer hesap kutuları ve ürün/arama formlarının radius'u değişmiyor.
+
+`auth.js` giriş alanlarında değer bulunduğunda `sf-auth-submit-ready` sınıfını form üzerinde güncelliyor; ön koşul yalnız `username.value.trim()` ve boş olmayan `password.value`. Bu bir **görsel hazır göstergesi** olup kullanıcı adı doğruluğu, parola geçerliliği, oturum veya sunucu başarısı iddiasında bulunmaz. Klavye/odak tek başına rengi değiştirmez. Hazır durumda tema `--sf-ui-ink` koyu düğme + beyaz metin; boş durumda önceki beyaz düğme. Sadece sınıfa geçişte bir kez 330ms düşük genlikli scale animasyonu; sürekli pulse yok; `prefers-reduced-motion` animasyonu kapatır. `input`, `change`, `pageshow` ve hızlı hesap paneli açılışı ile senkronize edilir, otomatik odak veya özel auth akışı yok.
+
+Mevcut sade hatırla/şifremi unuttum satırı ve odak karartması aynen korunur. Test kapsamı `tests/account-focus-browser.cjs`: her iki giriş görünümünde normal/odak/tek alan/iki alan/dolu-kaldı/temizlendi, border-radius, animasyon tekrar sayısı, Safari WebKit ve Chromium.
+
 ## 8 Kasım 2026 — Codela Storefront 0.1.241 odaklı normal giriş (yayın adayı)
 
 Kullanıcı onayı: normal Hesabım ekranında **sade satır**: Woo native `Beni hatırla` kutusu ve sağa hizalı küçük `Şifremi unuttum` bağlantısı, yalnızca temanın mevcut UI Kit değişkenleriyle yeniden biçimlendirildi. Odaklanırken yardımcı satır geçici olarak gizlenir (değer ve gerçek bağlantı değiştirilmez); kullanıcı adı, şifre ve Giriş Yap tek sütun, 9px boşlukla kompakt yerleşir. Input odağında dışarı taşan `outline-offset:1px` yerine alan sınırında 2px `--sf-ui-ink` koyu kenarlık kullanılır. Odak sırasında giriş butonu temanın `--sf-ui-ink` koyu yüzeyine/beyaz metne geçer; odak yoksa önceki beyaz buton korunur. Kurallar ortak `components.css` içinde, doğrudan Hesabım ve anında açılan Hesabım panelini birlikte kapsar. PIN karartma, hızlı PIN doğrulaması, Woo yerel login/nonce, Google OAuth ve native klavye olayları değiştirilmedi.
