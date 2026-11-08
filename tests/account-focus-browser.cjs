@@ -73,8 +73,10 @@ const form='<div class="woocommerce"><header class="sf-account-intro"><h1>Welcom
        betweenFields:second.top-first.bottom,betweenAction:action.top-second.bottom
      };
    });
-   assert.equal(focusedStyle.buttonBg,focusedStyle.ink,mode+' uses the actual theme dark token for focused submit');
-   assert.equal(focusedStyle.buttonColor,'rgb(255, 255, 255)',mode+' focused button has readable white type');
+   assert.equal(focusedStyle.buttonBg,'rgb(255, 255, 255)',
+     mode+' focus alone keeps native Login white until both values are entered');
+   assert.equal(focusedStyle.buttonColor,focusedStyle.ink,
+     mode+' untouched Login button keeps theme ink type');
    assert.equal(focusedStyle.borderWidth,'2px',mode+' focused field has a continuous 2px border');
    assert.equal(focusedStyle.outline,'none',mode+' focused field has no detached outer outline');
    assert.equal(focusedStyle.outlineOffset,'0px',mode+' focused field has no outline gap');
@@ -84,6 +86,41 @@ const form='<div class="woocommerce"><header class="sf-account-intro"><h1>Welcom
      mode+' credentials maintain compact 9px internal spacing');
    assert(focusedStyle.betweenAction>=8&&focusedStyle.betweenAction<=18,
      mode+' submit stays compact below credentials');
+
+   // Fully oval input shape does not affect WooCommerce nonces, helper controls,
+   // or the focused continuous border.
+   for(const selector of ['#username','#password']){
+     const radius=await page.locator(selector).evaluate(el=>getComputedStyle(el).borderRadius);
+     assert.equal(radius,'999px',mode+' '+selector+' is fully pill-shaped');
+   }
+   const getButtonColors=()=>submit.evaluate(el=>{
+     const style=getComputedStyle(el);
+     return {bg:style.backgroundColor,ink:style.color,
+       animation:style.animationName,iterations:style.animationIterationCount};
+   });
+   await page.locator('#password').fill('example-password');
+   assert.equal(await submit.evaluate(el=>getComputedStyle(el).backgroundColor),
+     'rgb(255, 255, 255)',mode+' password alone never marks sign-in ready');
+   assert.equal(await submit.evaluate(el=>el.closest('form').classList.contains('sf-auth-submit-ready')),
+     false,mode+' a single field is not ready');
+   await page.locator('#username').fill('person@example.com');
+   await page.waitForFunction(()=>{
+     const button=document.querySelector('.woocommerce-form-login__submit');
+     return button?.closest('form')?.classList.contains('sf-auth-submit-ready')
+       && getComputedStyle(button).backgroundColor!== 'rgb(255, 255, 255)';
+   });
+   const ready=await getButtonColors();
+   assert.equal(ready.bg,focusedStyle.ink,mode+' both nonempty fields use theme dark, not green');
+   assert.equal(ready.ink,'rgb(255, 255, 255)',mode+' ready Login keeps readable white type');
+   assert.equal(ready.animation,'sf-auth-submit-ready-enter',mode+' readiness animates once');
+   assert.equal(ready.iterations,'1',mode+' readiness never pulses indefinitely');
+   await page.locator('#password').fill('');
+   await page.waitForFunction(()=>!document.querySelector('.woocommerce-form-login')?.classList.contains('sf-auth-submit-ready'));
+   assert.equal(await submit.evaluate(el=>getComputedStyle(el).backgroundColor),
+     'rgb(255, 255, 255)',mode+' clearing either field restores the white button');
+   await page.locator('#password').fill('example-password');
+   assert.equal(await submit.evaluate(el=>getComputedStyle(el).backgroundColor),
+     focusedStyle.ink,mode+' refilling restores dark readiness');
    const dim=await page.locator('.sf-auth-focus-scrim').evaluate(el=>{
      const st=getComputedStyle(el);return {bg:st.backgroundColor,blur:st.backdropFilter,z:st.zIndex};
    });
@@ -111,8 +148,17 @@ const form='<div class="woocommerce"><header class="sf-account-intro"><h1>Welcom
    assert.equal(await rememberLabel.isVisible(),true,mode+' restores helper row when keyboard closes');
    assert.equal(await forgot.isVisible(),true,mode+' restores password reset when keyboard closes');
    assert.equal(await remember.isChecked(),true,mode+' native remembered state persists after keyboard closes');
+   assert.equal(await submit.evaluate(el=>getComputedStyle(el).backgroundColor),focusedStyle.ink,
+     mode+' completed credentials stay ready after keyboard dismissal');
+   // Autofilled/restored values are also reflected without fabricating auth.
+   await page.evaluate(()=>{
+     const user=document.querySelector('#username');
+     user.value='';
+     window.dispatchEvent(new Event('pageshow'));
+   });
+   await page.waitForFunction(()=>!document.querySelector('.woocommerce-form-login')?.classList.contains('sf-auth-submit-ready'));
    assert.equal(await submit.evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(255, 255, 255)',
-     mode+' returns to white Login action after keyboard dismissal');
+     mode+' page restore recalculates native form readiness');
    await page.locator('#password').click();
    await page.locator('.sf-auth-focus-scrim').click({position:{x:5,y:5}});
    await page.waitForFunction(()=>!document.querySelector('.woocommerce')?.classList.contains('sf-auth-focus-mode'));
