@@ -345,7 +345,7 @@ html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-choice-alternatives{vis
    declarations in account.css and account-overlay.css. */
 body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
  .woocommerce.sf-pin-active .sf-auth-register-cta,
-#sf-panel.is-account-panel .sf-pin-active .sf-auth-register-cta,
+#sf-panel.is-account-panel .woocommerce.sf-pin-active .sf-auth-register-cta,
 html.sf-quick-checking body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
  .woocommerce .sf-auth-register-cta,
 html.sf-quick-checking #sf-panel.is-account-panel #sf-account
