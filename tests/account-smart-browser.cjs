@@ -98,7 +98,9 @@ data-auth-smart-password-link="Password link emailed">
    assert.equal(await page.locator('#username').inputValue(),'existing@example.test','Woo login has exact username');
    const primary=await page.locator('.woocommerce-form-login__submit').evaluate(e=>getComputedStyle(e).backgroundColor);
    assert.equal(primary,'rgb(37, 38, 40)','Filled password produces dark primary action');
-   await page.locator('#password').focus();
+   // Use a genuine pointer gesture: the site deliberately suppresses
+   // unwanted PROGRAMMATIC autofocus until the first real user interaction.
+   await page.locator('#password').click();
    await page.waitForFunction(()=>document.querySelector('.woocommerce')?.classList.contains('sf-auth-focus-mode'));
    // Visibility intentionally transitions for 160 ms; wait for the final
    // hidden state instead of reading the property mid-transition.
