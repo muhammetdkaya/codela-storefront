@@ -505,3 +505,27 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
   body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
    .woocommerce .sf-auth-register-cta{transition:none}
 }
+
+/* 0.1.238 — normal Woo sign-in only: white Log in / dark Google.
+   Reuse the existing UI Kit palette. Registration remains tonal and
+   remembered-account quick action colors are intentionally unaffected. */
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce form.woocommerce-form-login button[type=submit]{
+  background:var(--sf-ui-surface)!important;
+  background-image:none!important;
+  color:var(--sf-ui-control-ink)!important;
+  border:1px solid var(--sf-ui-border)!important;
+  box-shadow:var(--sf-ui-glass-control-shadow)!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce .sf-auth-social .sf-auth-google,
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce .sf-auth-social .sf-auth-google:disabled{
+  background:var(--sf-ui-ink)!important;
+  background-image:none!important;
+  border:1px solid var(--sf-ui-ink)!important;
+  color:#fff!important;
+  opacity:1!important;
+  box-shadow:var(--sf-ui-action-shadow)!important;
+}
