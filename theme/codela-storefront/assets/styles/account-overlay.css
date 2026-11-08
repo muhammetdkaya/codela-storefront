@@ -440,3 +440,23 @@
   color:#fff!important;opacity:1!important;
   box-shadow:var(--sf-ui-action-shadow)!important;
 }
+
+/* 0.1.240 — The instant Account panel loads account-overlay.css separately.
+   Its real Woo login has exactly the standalone focus/keyboard behavior. */
+#sf-panel.is-account-panel .woocommerce > .sf-auth-focus-scrim{
+  position:fixed;inset:0;z-index:9;
+  background:rgba(20,21,25,.30);
+  -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+  opacity:0;pointer-events:none;
+  transition:opacity .22s ease;
+}
+#sf-panel.is-account-panel .woocommerce.sf-auth-focus-mode > .sf-auth-focus-scrim{
+  opacity:1;pointer-events:auto;
+}
+#sf-panel.is-account-panel .woocommerce.sf-auth-focus-mode > #customer_login,
+#sf-panel.is-account-panel .woocommerce.sf-auth-focus-mode > form.woocommerce-form-login{
+  position:relative;z-index:10;isolation:isolate;
+}
+@media(prefers-reduced-motion:reduce){
+  #sf-panel.is-account-panel .woocommerce > .sf-auth-focus-scrim{transition:none}
+}
