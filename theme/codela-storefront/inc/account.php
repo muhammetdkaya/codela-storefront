@@ -33,6 +33,7 @@ function codela_sf_account_intro(): void {
         data-auth-smart-closed="<?php esc_attr_e( 'New account registration is currently unavailable.', 'codela-storefront' ); ?>"
         data-auth-smart-confirm="<?php esc_attr_e( 'Please enter a valid email address.', 'codela-storefront' ); ?>"
         data-auth-smart-continue="<?php esc_attr_e( 'Continue with email', 'codela-storefront' ); ?>"
+        data-auth-smart-register-password="<?php esc_attr_e( 'Password (at least 8 characters)', 'codela-storefront' ); ?>"
         data-auth-smart-password-link="<?php esc_attr_e( 'Your password setup link will be sent by email.', 'codela-storefront' ); ?>"
         data-auth-smart-name-required="<?php esc_attr_e( 'Enter your first and last name.', 'codela-storefront' ); ?>"
         data-auth-smart-first="<?php esc_attr_e( 'First name', 'codela-storefront' ); ?>"
