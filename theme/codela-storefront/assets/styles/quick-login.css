@@ -1,5 +1,5 @@
 /* Codela quick sign-in: native forms remain the fully functional fallback. */
-.sf-quick-login[hidden],.sf-quick-settings[hidden],.sf-quick-scrim[hidden],.sf-quick-sheet[hidden]{display:none!important}
+.sf-quick-login[hidden],.sf-quick-settings[hidden],.sf-quick-scrim[hidden]{display:none!important}
 .sf-pin-active .sf-account-intro,
 .sf-pin-active #customer_login,
 .sf-pin-active .sf-auth-social,
@@ -60,11 +60,11 @@ html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-choice-alternatives{vis
 .sf-quick-choice{
   min-height:clamp(420px,56svh,590px);
   width:100%;max-width:480px;margin-inline:auto;
-  padding:34px 0 50px;
+  padding:clamp(54px,8svh,94px) 0 50px;
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:center;
+  justify-content:flex-start;
   text-align:left;
   gap:0;
 }
@@ -118,7 +118,8 @@ html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-choice-alternatives{vis
 }
 .sf-quick-email[hidden]{display:none!important}
 .sf-quick-chevron{display:grid;place-items:center;flex:none;color:#252529!important}
-.sf-quick-chevron svg{width:19px;height:19px;transform:none!important}
+.sf-quick-chevron svg{width:23px;height:23px;transform:rotate(0deg);transition:transform .32s ease}
+.sf-quick-login.is-inline-open .sf-quick-chevron svg{transform:rotate(180deg)}
 .sf-quick-choice-alternatives{
   width:100%;display:flex;flex-direction:column;gap:11px;
 }
@@ -158,154 +159,141 @@ html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-choice-alternatives{vis
 .sf-quick-action-divider{height:24px;width:1px;background:rgba(255,255,255,.38)}
 .sf-quick-email-login .sf-quick-action-divider{background:#dadade}
 .sf-quick-action-label{text-align:center;min-width:0;white-space:normal}
-.sf-quick-modal-open{overflow:hidden!important}
+/* 0.1.239 — Expand PIN INSIDE the selected account card; no bottom sheet,
+   custom keypad, fixed panel or extra success text row. */
+.sf-quick-login.is-inline-open{position:relative;z-index:99999;isolation:isolate}
+.sf-quick-account-frame{
+  position:relative;z-index:6;box-sizing:border-box;width:100%;min-width:0;
+  background:#fff;border:1px solid #e7e7ea;border-radius:20px;
+  box-shadow:0 7px 22px rgba(0,0,0,.055);
+  transition:box-shadow .3s ease,border-color .3s ease;
+}
+.sf-quick-account-frame .sf-quick-account,
+.sf-quick-account-frame .sf-quick-account:hover{
+  border:0!important;background:transparent!important;
+  box-shadow:none!important;transform:none!important;
+}
+.sf-quick-login.is-inline-open .sf-quick-account-frame{
+  box-shadow:0 18px 48px rgba(0,0,0,.20);border-color:#fff;
+}
+.sf-quick-login.is-inline-open .sf-quick-account:active{transform:none}
 .sf-quick-scrim{
-  position:fixed;inset:0;z-index:99998;
-  background:rgba(19,19,22,.37);
-  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+  position:fixed;inset:0;z-index:5;
+  background:rgba(20,21,25,.30);
+  -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
 }
-.sf-quick-sheet{
-  position:fixed;bottom:0;left:0;right:0;
-  width:100%;max-width:540px;margin:0 auto;
-  z-index:99999;
-  padding:11px 22px max(18px,env(safe-area-inset-bottom));
-  box-sizing:border-box!important;
-  height:auto!important;min-height:0!important;
-  max-height:calc(100dvh - 24px);overflow-y:auto;
-  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
-  isolation:isolate;
-  border-radius:27px 27px 0 0;
-  background:#fff!important;color:#252527!important;
-  border:1px solid #e6e6e8!important;
-  border-bottom:0;
-  box-shadow:0 -12px 44px rgba(0,0,0,.09);
+.sf-quick-inline-pin{
+  display:grid;grid-template-rows:0fr;
+  opacity:0;pointer-events:none;
+  transition:grid-template-rows .40s cubic-bezier(.2,.8,.2,1),opacity .27s;
 }
-/* A focused native keyboard is not a CSS bottom inset on iOS: the visual
-   viewport can itself be scrolled. JS supplies the actual visible top. */
-.sf-quick-sheet.has-keyboard{
-  top:var(--sf-quick-visual-top,auto);bottom:auto;
-  max-height:var(--sf-quick-visual-height,calc(100dvh - 24px));
-  padding-bottom:18px;
+.sf-quick-inline-inner{
+  overflow:hidden;min-height:0;padding:0 16px;
+  visibility:hidden;
 }
-.sf-quick-handle{width:35px;height:4px;border-radius:99px;background:#d9d9db;margin:0 auto 16px}
-.sf-quick-sheet-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0}
-.sf-quick-sheet-head h2{
-  font-size:21px!important;font-weight:650!important;line-height:1.25!important;
-  letter-spacing:-.45px;color:#242426!important;margin:0!important;
+.sf-quick-login.is-inline-open .sf-quick-inline-pin{
+  grid-template-rows:1fr;opacity:1;pointer-events:auto;
 }
-.sf-quick-close{
-  width:34px;height:34px;flex:none;padding:0!important;
-  display:grid;place-items:center;
-  border:0!important;border-radius:50%!important;
-  box-shadow:none!important;background:#f1f1f2!important;
-  color:#46464b!important;font-size:23px!important;font-weight:350!important;
-}
-.sf-quick-description{
-  margin:7px 0 23px!important;
-  color:#6b6b70!important;
-  font-size:13px!important;line-height:1.45!important;
+.sf-quick-login.is-inline-open .sf-quick-inline-inner{visibility:visible}
+.sf-quick-inline-divider{height:1px;background:#eeeef1;margin:0 0 17px}
+.sf-quick-inline-label{
+  text-align:center!important;margin:0 0 15px!important;
+  font-size:12.5px!important;font-weight:600!important;line-height:1.4!important;
+  color:#4b4b50!important;
 }
 .sf-quick-pin-track{
-  position:relative;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));
-  gap:9px;width:100%;height:53px;isolation:isolate;
+  position:relative;display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  align-items:center;gap:6px;width:100%;
+  min-height:38px;isolation:isolate;
 }
 .sf-quick-slot{
-  position:relative;z-index:1;
+  position:relative;z-index:1;min-width:0;aspect-ratio:1;
   display:grid;place-items:center;
-  background:#fafafa;border:1px solid #dedee1;border-radius:12px;
+  background:#f8f8f9;border:1.5px solid #dedee1;border-radius:8px;
   will-change:transform,opacity;
-  transition:transform .46s cubic-bezier(.2,.8,.2,1),
-    opacity .25s ease .12s,border-color .16s ease,background .16s ease;
+  transition:transform .58s cubic-bezier(.25,.75,.2,1),
+    opacity .25s ease,border-color .23s,background .23s;
 }
 .sf-quick-slot i{
   display:block;width:9px;height:9px;border-radius:50%;background:#29292d;
   opacity:0;transform:scale(.7);
   transition:opacity .13s ease,transform .13s ease;
 }
-.sf-quick-slot.is-filled{border-color:#d2d2d5;background:#f6f6f7}
+.sf-quick-slot.is-filled{border-color:#d2d2d5;background:#efeff1}
 .sf-quick-slot.is-filled i{opacity:1;transform:scale(1)}
-.sf-quick-pin-track:focus-within:not(.is-merging) .sf-quick-slot.is-current{
-  border-color:#4b4b51;background:#fff;
+.sf-quick-pin-track:focus-within:not(.is-merging):not(.is-verified) .sf-quick-slot.is-current{
+  border-color:#343437;background:#fff;
   box-shadow:0 0 0 1px rgba(52,52,58,.07);
 }
-.sf-quick-pin-track.is-merging .sf-quick-slot{
-  transform:translateX(var(--sf-quick-shift,0px)) scale(.90);
-  opacity:0;pointer-events:none;
+.sf-quick-pin-track.is-checking .sf-quick-slot{border-color:#c7c8cc}
+.sf-quick-pin-track.is-merging .sf-quick-slot,
+.sf-quick-pin-track.is-verified .sf-quick-slot{
+  transform:translateX(var(--sf-quick-shift,0px)) scale(.80);
+  background:var(--sf-quick-success);border-color:var(--sf-quick-success);
+  opacity:.78;
 }
+.sf-quick-pin-track.is-verified .sf-quick-slot{opacity:0;pointer-events:none}
 .sf-quick-native-pin{
-  position:absolute;inset:0;z-index:4;
-  width:100%;height:100%;
+  position:absolute;inset:0;z-index:2;
+  width:100%;height:100%;font-size:16px!important;
   border:0!important;outline:0!important;box-shadow:none!important;
   background:transparent!important;color:transparent!important;
-  opacity:.015;font-size:16px!important;
-  caret-color:transparent;cursor:text;
+  opacity:.015;caret-color:transparent;cursor:text;
 }
-.sf-quick-native-pin:disabled{pointer-events:none}
 .sf-quick-result{
-  position:absolute;z-index:3;left:50%;top:0;
-  width:53px;height:53px;border:1.5px solid #424247;
-  border-radius:13px;background:#fff;
-  transform:translateX(-50%) scale(.70);opacity:0;
+  position:absolute;z-index:3;left:50%;top:50%;
+  width:min(15%,52px);aspect-ratio:1;
+  border:1.5px solid var(--sf-quick-success);
+  border-radius:9px;background:var(--sf-quick-success);
+  transform:translate(-50%,-50%) scale(.56);opacity:0;
   display:grid;place-items:center;pointer-events:none;
-  transition:opacity .25s ease,transform .35s cubic-bezier(.2,1.3,.3,1),
-    border-color .24s ease,background .24s ease;
-}
-.sf-quick-pin-track.is-verifying .sf-quick-result,
-.sf-quick-pin-track.is-verified .sf-quick-result{
-  transform:translateX(-50%) scale(1);opacity:1;
-}
-.sf-quick-spinner{
-  display:block;width:19px;height:19px;
-  border-radius:50%;border:2px solid #dddddf;border-top-color:#424247;
-  animation:sf-quick-spinning .75s linear infinite;
+  transition:opacity .23s ease,transform .35s cubic-bezier(.18,1.65,.35,1);
 }
 .sf-quick-check{
-  display:none;width:26px;height:26px;
-  color:var(--sf-quick-success);stroke-dasharray:35;stroke-dashoffset:35;
-  transition:stroke-dashoffset .38s ease .05s;
+  display:block;width:65%;height:65%;
+  color:#fff;stroke-dasharray:35;stroke-dashoffset:35;
 }
 .sf-quick-pin-track.is-verified .sf-quick-result{
-  border-color:var(--sf-quick-success);background:#edf9f1;
-  box-shadow:0 0 0 4px rgba(22,132,79,.09);
+  transform:translate(-50%,-50%) scale(1);opacity:1;
 }
-.sf-quick-pin-track.is-verified .sf-quick-spinner{display:none}
-.sf-quick-pin-track.is-verified .sf-quick-check{display:block;animation:sf-quick-draw .40s ease forwards}
-@keyframes sf-quick-draw{from{stroke-dashoffset:35}to{stroke-dashoffset:0}}
+.sf-quick-pin-track.is-verified .sf-quick-check{
+  animation:sf-quick-inline-check .36s ease .15s both;
+}
+@keyframes sf-quick-inline-check{to{stroke-dashoffset:0}}
 .sf-quick-status{
-  text-align:center!important;min-height:20px;
-  margin:15px 0 17px!important;
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+.sf-quick-status.is-error{
+  display:block;position:static;width:auto;height:auto;
+  min-height:20px;margin:13px 0 0!important;overflow:visible;
+  clip:auto;white-space:normal;text-align:center!important;
   font-size:12px!important;line-height:1.5!important;
-  color:#76767a!important;
+  color:var(--sf-quick-error)!important;font-weight:550!important;
 }
-.sf-quick-status.is-success{color:var(--sf-quick-success)!important}
-.sf-quick-status.is-error{color:var(--sf-quick-error)!important;font-weight:550!important}
-.sf-quick-pin-track.is-error .sf-quick-slot{border-color:var(--sf-quick-error)!important;background:#fff4f4!important;animation:sf-quick-error-shake .28s ease}
-@keyframes sf-quick-error-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
-.sf-quick-sheet-links{
-  display:flex;align-items:center;justify-content:center;
-  gap:13px;padding:10px 7px;margin-top:7px;
-  border:1px solid #eeeff0;border-radius:14px;
-  background:#f8f8f9!important;
+.sf-quick-inline-inner{padding-bottom:18px}
+.sf-quick-pin-track.is-error .sf-quick-slot{
+  border-color:var(--sf-quick-error)!important;
+  background:#fff0f0!important;animation:sf-quick-error-shake .28s ease;
 }
-.sf-quick-sheet-links button,.sf-quick-sheet-links a{
-  border:0!important;background:transparent!important;box-shadow:none!important;
-  color:#39393d!important;font-size:12px!important;font-weight:540!important;
-  white-space:nowrap;
-  text-decoration:none!important;padding:7px 0!important;
-  min-height:34px;
+@keyframes sf-quick-error-shake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-3px)}75%{transform:translateX(3px)}
 }
-.sf-quick-sheet-links .sf-quick-lost-password{color:#74747a!important;font-weight:450!important}
-.sf-quick-link-divider{width:1px;height:15px;background:#dcdcdf}
-@keyframes sf-quick-spinning{to{transform:rotate(360deg)}}
 @media(max-width:480px){
-  .sf-quick-sheet{padding-inline:20px}
-  .sf-quick-pin-track{gap:8px}
+  .sf-quick-pin-track{gap:5px}
   .sf-quick-choice{min-height:clamp(395px,55svh,590px);padding-inline:0}
 }
+@media(max-width:360px){
+  .sf-quick-inline-inner{padding-inline:11px}
+  .sf-quick-inline-label{font-size:12px!important}
+}
 @media(prefers-reduced-motion:reduce){
-  .sf-quick-account,.sf-quick-slot,.sf-quick-slot i,.sf-quick-result,.sf-quick-check{transition:none!important}
-  .sf-quick-pin-track.is-error .sf-quick-slot{animation:none!important}
-  .sf-quick-spinner{animation:none!important}
+  .sf-quick-account,.sf-quick-slot,.sf-quick-slot i,.sf-quick-result,
+  .sf-quick-check,.sf-quick-chevron svg,.sf-quick-inline-pin{transition:none!important}
+  .sf-quick-pin-track.is-error .sf-quick-slot,
+  .sf-quick-pin-track.is-verified .sf-quick-check{animation-duration:.01ms!important}
 }
 
 .sf-quick-onboarding{margin:20px 0;padding:20px;border:1px solid var(--sf-ui-border,#e7e7ea);border-radius:18px;background:var(--sf-ui-surface,#fbfbfc)}
