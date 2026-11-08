@@ -202,7 +202,7 @@
     // One face icon belongs to its own local customer card. Never duplicate
     // the welcome page or promote a saved hint to an authenticated session.
     const connectCards=()=>{
-      for(const quick of host.querySelectorAll('.sf-quick-login[data-sf-user-id]')){
+      for(const quick of host.querySelectorAll('.sf-quick-login[data-sf-quick-user-id]')){
         const hint=hints.find(item=>item.userId===Number(quick.dataset.sfQuickUserId));
         if(!hint)continue;
         const button=quick.querySelector('.sf-quick-method--passkey');

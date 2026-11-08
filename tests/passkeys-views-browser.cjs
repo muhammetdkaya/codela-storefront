@@ -68,7 +68,7 @@ ${overlay?'</div></div>':''}</body></html>`;
       +'<div class="sf-account-intro">Normal login</div>'
       +'<div id="customer_login">Woo login</div>'
       +'<div class="sf-quick-accounts"><div class="sf-quick-choice-intro">Welcome</div>'
-      +'<section class="sf-quick-login" data-sf-user-id="17" hidden>'
+      +'<section class="sf-quick-login" data-sf-quick-user-id="17" hidden>'
       +'<div class="sf-quick-choice"><div class="sf-quick-account-frame"><div class="sf-quick-account">'
       +'<span class="sf-quick-account-text">Customer</span>'
       +'<span class="sf-quick-methods"><button type="button" class="sf-quick-method sf-quick-method--passkey" hidden>'
