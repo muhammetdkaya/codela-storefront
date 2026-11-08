@@ -116,6 +116,21 @@ ${overlay?'</div></div>':''}</body></html>`;
     assert.equal(await combined.locator('.sf-quick-login').isVisible(),true,'One combined card visible');
     assert.equal(await combined.locator('.sf-pk-guest').isVisible(),false,'Duplicate passkey card stays hidden');
     assert.equal(await combined.locator('.sf-quick-method--pin').isVisible(),true,'PIN icon remains available');
+    const combinedDiagnostics=await combined.evaluate(()=>{
+      const host=document.querySelector('.woocommerce');
+      const biometric=host?.querySelector('.sf-quick-method--passkey');
+      return {
+        secure:window.isSecureContext,credentialType:typeof window.PublicKeyCredential,
+        hasCredentials:!!navigator.credentials,config:!!window.CodelaSFPasskey,
+        hasPasskeyHint:!!localStorage.getItem('codela_sf_passkey_hint_v1'),
+        hasPinHint:!!localStorage.getItem('codela_sf_quick_profile_v1'),
+        hostClass:host?.className,
+        quickStatus:host?.dataset.sfQuickStatus,
+        biometricHidden:biometric?.hidden,biometricDisplay:biometric&&getComputedStyle(biometric).display,
+        guestHidden:host?.querySelector('.sf-pk-guest')?.hidden
+      };
+    });
+    console.log('COMBINED_AUTH_DIAGNOSTICS',JSON.stringify(combinedDiagnostics));
     assert.equal(await combined.locator('.sf-quick-method--passkey').isVisible(),true,'Face ID icon added to same card');
     assert.equal(await combined.locator('.sf-quick-native-alt').isVisible(),true,
       'Combined card has one standard email/Google fallback');
