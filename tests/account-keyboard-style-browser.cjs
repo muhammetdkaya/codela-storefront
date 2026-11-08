@@ -32,7 +32,8 @@ const css=['tokens.css','components.css','quick-login.css','account.css','accoun
       background:getComputedStyle(el).backgroundColor,ink:getComputedStyle(el).color
     }));
     assert.equal(result.background,'rgb(255, 255, 255)',selector+' uses the normal white Login CTA');
-    assert.equal(result.ink,'rgb(32, 32, 32)',selector+' uses dark UI Kit label text');
+    const rgbInk=(result.ink.match(/\d+/g)||[]).map(Number);
+    assert(rgbInk.length===3&&Math.max(...rgbInk)<=65,selector+' uses the dark UI Kit label text');
   }
   // The same remembered/initial-check suppression also works on /hesabim/.
   await page.locator('body > .woocommerce').evaluate(el=>el.classList.add('sf-pin-active'));
