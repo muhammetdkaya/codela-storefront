@@ -3,6 +3,9 @@ on:
   pull_request:
     paths:
       - 'theme/codela-storefront/inc/quick-login.php'
+      - 'theme/codela-storefront/inc/passkeys.php'
+      - 'theme/codela-storefront/assets/scripts/passkeys.js'
+      - 'tests/passkeys.php'
       - 'theme/codela-storefront/assets/scripts/quick-login.js'
       - 'theme/codela-storefront/assets/styles/quick-login.css'
       - 'theme/codela-storefront/languages/tr_TR.l10n.php'
@@ -31,6 +34,8 @@ jobs:
       - name: PHP syntax and native WordPress security contracts
         run: |
           php -l theme/codela-storefront/inc/quick-login.php
+          php -l theme/codela-storefront/inc/passkeys.php
+          php tests/passkeys.php
           php -l theme/codela-storefront/languages/tr_TR.l10n.php
           php tests/quick-login.php
           php tests/quick-login-markup.php
@@ -38,6 +43,7 @@ jobs:
       - name: WebCrypto integration and browser contract
         run: |
           node --check theme/codela-storefront/assets/scripts/quick-login.js
+          node --check theme/codela-storefront/assets/scripts/passkeys.js
           node tests/quick-login-ui.cjs
           node --check tests/quick-login-browser.cjs
   browser:
