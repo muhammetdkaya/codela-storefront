@@ -153,7 +153,7 @@ function codela_sf_quick_verify( WP_REST_Request $request ) {
     $valid = is_string( $stored_challenge )
         && hash_equals( $stored_challenge, hash( 'sha256', $challenge ) )
         && $user && codela_sf_quick_customer( $user ) && is_array( $data )
-        && ( $data['expires'] ?? 0 ) > time()
+        && ( $data['expires'] ?? 0 ) > time() && empty( $data['paused'] )
         && codela_sf_quick_signature_valid( (string) $data['public_key'],
             'codela-pin-login:v1:' . $user_id . ':' . $device . ':' . $challenge, $signature )
         && wp_check_password( codela_sf_quick_pin_secret( $pin ), (string) $data['pin_hash'], $user_id );
@@ -223,17 +223,33 @@ function codela_sf_quick_browser_status(): void {
     wp_send_json( [
         'authenticated' => is_user_logged_in(),
         'active' => codela_sf_quick_status_active( $user_id, $device, $challenge, $signature ),
+        'paused' => ! empty( codela_sf_quick_devices( $user_id )[ $device ]['paused'] ),
     ] );
 }
 add_action( 'wp_ajax_codela_sf_quick_status', 'codela_sf_quick_browser_status' );
 add_action( 'wp_ajax_nopriv_codela_sf_quick_status', 'codela_sf_quick_browser_status' );
 
+
+/** Pause/resume PIN without deleting its local browser key. */
+function codela_sf_quick_toggle( WP_REST_Request $request ) {
+    $user = wp_get_current_user();
+    if ( ! codela_sf_quick_customer( $user ) ) { return codela_sf_quick_failure( __( 'Permission denied.', 'codela-storefront' ), 403 ); }
+    $device = codela_sf_quick_input( $request, 'device_id', 64 );
+    $devices = codela_sf_quick_devices( $user->ID );
+    if ( ! codela_sf_quick_device_id( $device ) || ! isset( $devices[ $device ] ) ) {
+        return codela_sf_quick_failure( __( 'Unknown browser.', 'codela-storefront' ), 404 );
+    }
+    $devices[ $device ]['paused'] = (bool) $request->get_param( 'paused' );
+    update_user_meta( $user->ID, '_codela_sf_quick_devices', $devices );
+    return rest_ensure_response( [ 'ok' => true ] );
+}
 add_action( 'rest_api_init', static function(): void {
     $routes = [
         'enroll' => [ 'callback' => 'codela_sf_quick_enroll', 'permission_callback' => 'is_user_logged_in' ],
         'challenge' => [ 'callback' => 'codela_sf_quick_challenge', 'permission_callback' => '__return_true' ],
         'verify' => [ 'callback' => 'codela_sf_quick_verify', 'permission_callback' => '__return_true' ],
         'revoke' => [ 'callback' => 'codela_sf_quick_revoke', 'permission_callback' => 'is_user_logged_in' ],
+        'toggle' => [ 'callback' => 'codela_sf_quick_toggle', 'permission_callback' => 'is_user_logged_in' ],
     ];
     foreach ( $routes as $path => $route ) {
         register_rest_route( 'codela-storefront/v1', '/quick-login/' . $path, [
@@ -421,6 +437,7 @@ function codela_sf_quick_settings(): void {
             <?php foreach ( $devices as $id => $data ) : ?>
                 <div class="sf-quick-device">
                     <span><?php echo esc_html( sprintf( __( 'Browser added on %s', 'codela-storefront' ), wp_date( get_option( 'date_format' ), (int) ( $data['created'] ?? time() ) ) ) ); ?></span>
+                    <button type="button" class="sf-quick-toggle" data-device-id="<?php echo esc_attr( (string) $id ); ?>" data-paused="<?php echo ! empty( $data['paused'] ) ? '1' : '0'; ?>"><?php echo esc_html( ! empty( $data['paused'] ) ? __( 'Resume', 'codela-storefront' ) : __( 'Pause', 'codela-storefront' ) ); ?></button>
                     <button type="button" class="sf-quick-revoke" data-device-id="<?php echo esc_attr( (string) $id ); ?>"><?php esc_html_e( 'Remove', 'codela-storefront' ); ?></button>
                 </div>
             <?php endforeach; ?>
@@ -429,7 +446,7 @@ function codela_sf_quick_settings(): void {
     </section>
     <?php
 }
-add_action( 'woocommerce_edit_account_form', 'codela_sf_quick_settings', 20 );
+// PIN settings are rendered inside the dedicated Security and sign-in endpoint.
 
 /** Keep the optional quick-login setting discoverable on the Codela account home.
  * WooCommerce and Codela's existing dashboard hooks both reach this action.
@@ -457,7 +474,7 @@ function codela_sf_quick_dashboard_entry(): void {
             : esc_html__( 'Enable quick sign in', 'codela-storefront' ) )
         . '</a></section>';
 }
-add_action( 'woocommerce_account_dashboard', 'codela_sf_quick_dashboard_entry', 20 );
+// Dashboard no longer renders the permanent quick-login onboarding card.
 
 
 /**
