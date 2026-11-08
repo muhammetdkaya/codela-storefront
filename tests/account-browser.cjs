@@ -160,16 +160,19 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
       await input.click();
       const ring=await input.evaluate(el=>{
         const css=getComputedStyle(el);
-        return {width:css.outlineWidth,offset:css.outlineOffset,color:css.outlineColor,borderColor:css.borderTopColor};
+        const probe=document.createElement('span');
+        probe.style.color='var(--sf-ui-ink)';
+        el.parentElement.appendChild(probe);
+        const themeInk=getComputedStyle(probe).color;
+        probe.remove();
+        return {style:css.outlineStyle,offset:css.outlineOffset,
+          borderWidth:css.borderTopWidth,borderColor:css.borderTopColor,themeInk};
       });
-      assert.equal(ring.width,'2px','Standalone guest input has the same single focus ring');
-      assert.equal(ring.offset,'2px','Standalone guest input matches Search focus offset');
-      assert.equal(ring.color,'rgb(28, 28, 30)','Standalone guest ring uses shared glass ink');
-      const borderRGB=(ring.borderColor.match(/\d+/g)||[]).slice(0,3).map(Number);
-      assert(ring.borderColor === 'rgba(0, 0, 0, 0)'
-          || (borderRGB.length===3 && Math.min(...borderRGB)>=215
-              && Math.max(...borderRGB)-Math.min(...borderRGB)<=10),
-        'Standalone Woo field keeps only a pale neutral edge: '+JSON.stringify(ring));
+      assert.equal(ring.style,'none','Focused Woo input removes the detached native outline');
+      assert.equal(ring.offset,'0px','Focused Woo input has no outside outline gap');
+      assert.equal(ring.borderWidth,'2px','Focused Woo input carries one contiguous 2px border');
+      assert.equal(ring.borderColor,ring.themeInk,
+        'Focused Woo border uses the existing theme dark token: '+JSON.stringify(ring));
       assert(fieldAlignment.sameLine,'Remember me and lost-password share the same row');
       assert(fieldAlignment.rememberBeforeLost,'Remember me stays left, password reset right');
       assert.equal(controls.registerPresent,type==='register','Registration follows native Woo setting');
