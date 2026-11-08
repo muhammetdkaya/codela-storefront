@@ -106,8 +106,10 @@ const form='<div class="woocommerce"><header class="sf-account-intro"><h1>Welcom
    await page.locator('#username').fill('person@example.com');
    await page.waitForFunction(()=>{
      const button=document.querySelector('.woocommerce-form-login__submit');
-     return button?.closest('form')?.classList.contains('sf-auth-submit-ready')
-       && getComputedStyle(button).backgroundColor!== 'rgb(255, 255, 255)';
+     if(!button?.closest('form')?.classList.contains('sf-auth-submit-ready'))return false;
+     const probe=document.createElement('span');probe.style.color='var(--sf-ui-ink)';
+     button.appendChild(probe);const expected=getComputedStyle(probe).color;probe.remove();
+     return getComputedStyle(button).backgroundColor===expected;
    });
    const ready=await getButtonColors();
    assert.equal(ready.bg,focusedStyle.ink,mode+' both nonempty fields use theme dark, not green');
@@ -115,10 +117,21 @@ const form='<div class="woocommerce"><header class="sf-account-intro"><h1>Welcom
    assert.equal(ready.animation,'sf-auth-submit-ready-enter',mode+' readiness animates once');
    assert.equal(ready.iterations,'1',mode+' readiness never pulses indefinitely');
    await page.locator('#password').fill('');
-   await page.waitForFunction(()=>!document.querySelector('.woocommerce-form-login')?.classList.contains('sf-auth-submit-ready'));
+   await page.waitForFunction(()=>{
+     const form=document.querySelector('.woocommerce-form-login');
+     const submit=form.querySelector('button[type=submit]');
+     return !form.classList.contains('sf-auth-submit-ready')
+       && getComputedStyle(submit).backgroundColor==='rgb(255, 255, 255)';
+   });
    assert.equal(await submit.evaluate(el=>getComputedStyle(el).backgroundColor),
      'rgb(255, 255, 255)',mode+' clearing either field restores the white button');
    await page.locator('#password').fill('example-password');
+   await page.waitForFunction(()=>{
+     const button=document.querySelector('.woocommerce-form-login__submit');
+     const probe=document.createElement('span');probe.style.color='var(--sf-ui-ink)';
+     button.appendChild(probe);const expected=getComputedStyle(probe).color;probe.remove();
+     return getComputedStyle(button).backgroundColor===expected;
+   });
    assert.equal(await submit.evaluate(el=>getComputedStyle(el).backgroundColor),
      focusedStyle.ink,mode+' refilling restores dark readiness');
    const dim=await page.locator('.sf-auth-focus-scrim').evaluate(el=>{
@@ -156,7 +169,11 @@ const form='<div class="woocommerce"><header class="sf-account-intro"><h1>Welcom
      user.value='';
      window.dispatchEvent(new Event('pageshow'));
    });
-   await page.waitForFunction(()=>!document.querySelector('.woocommerce-form-login')?.classList.contains('sf-auth-submit-ready'));
+   await page.waitForFunction(()=>{
+     const form=document.querySelector('.woocommerce-form-login');
+     return !form.classList.contains('sf-auth-submit-ready')
+       && getComputedStyle(form.querySelector('button[type=submit]')).backgroundColor==='rgb(255, 255, 255)';
+   });
    assert.equal(await submit.evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(255, 255, 255)',
      mode+' page restore recalculates native form readiness');
    await page.locator('#password').click();
