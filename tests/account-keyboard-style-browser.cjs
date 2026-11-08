@@ -21,7 +21,7 @@ const css=['tokens.css','components.css','quick-login.css','account.css','accoun
     const result=await page.locator(selector).evaluate(el=>{
       const st=getComputedStyle(el);return {background:st.backgroundColor,ink:st.color,opacity:st.opacity};
     });
-    const rgb=(result.background.match(/\\d+/g)||[]).map(Number);
+    const rgb=(result.background.match(/\d+/g)||[]).map(Number);
     assert(rgb.length===3&&Math.max(...rgb)<=65,selector+' is dark at full opacity');
     assert.equal(result.ink,'rgb(255, 255, 255)',selector+' keeps readable white text');
     assert.equal(result.opacity,'1',selector+' never fades whole-button colors');
@@ -65,9 +65,8 @@ const css=['tokens.css','components.css','quick-login.css','account.css','accoun
     assert(layout.nowrap==='nowrap' && layout.textHeight<25,'Register label stays in one line on '+width);
     assert.equal(layout.bg,'rgb(237, 237, 237)','Signup inherits the standard UI Kit tonal color');
     assert.equal(layout.insideForm,false,'Signup is not trapped in a Woo form row');
-    const overlayGoogle=await page.locator('.sf-auth-google').evaluate(el=>getComputedStyle(el));
     const darkGoogle=await page.locator('.sf-auth-google').evaluate(el=>getComputedStyle(el).backgroundColor);
-    assert(Math.max(...(darkGoogle.match(/\\d+/g)||[]).map(Number))<=65,
+    assert(Math.max(...(darkGoogle.match(/\d+/g)||[]).map(Number))<=65,
       'Native overlay-only Google CTA uses theme dark');
     assert.equal(await page.locator('.woocommerce-form-login button[type=submit]').evaluate(el=>getComputedStyle(el).backgroundColor),
       'rgb(255, 255, 255)','Native overlay-only Login uses white UI Kit surface');
