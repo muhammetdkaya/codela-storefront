@@ -25,8 +25,8 @@ const form='<div class="woocommerce"><header class="sf-account-intro"><h1>Welcom
   for(const mode of ['standalone','instant']){
    const page=await browser.newPage({viewport:{width:390,height:844}});
    const wrapped=mode==='instant'
-     ?'<div id="sf-panel" class="is-account-panel"><section id="sf-account">'+form+'</section></div>'
-     :'<main class="sf-content">'+form+'</main>';
+     ?'<div id="sf-panel" class="is-account-panel"><div class="sf-panel-top">Hesabım</div><section id="sf-account">'+form+'</section><nav class="sf-mobile-dock">Dock</nav></div>'
+     :'<div class="sf-shell"><header class="sf-header">Hesabım</header><nav class="sf-mobile-dock">Dock</nav></div><main class="sf-content">'+form+'</main>';
    await page.setContent('<!doctype html><html><head>'
      +'<meta name="viewport" content="width=device-width,initial-scale=1">'
      +'<style>'+css+'</style></head><body class="woocommerce-account">'+wrapped+'</body></html>');
@@ -53,6 +53,21 @@ const form='<div class="woocommerce"><header class="sf-account-intro"><h1>Welcom
    assert.equal(await remember.isChecked(),true,mode+' native remember checkbox is checkable');
    await page.locator('#username').click();
    await page.waitForFunction(()=>document.querySelector('.woocommerce')?.classList.contains('sf-auth-focus-mode'));
+   const chrome=mode==='instant'
+     ? ['#sf-panel > .sf-panel-top','#sf-panel > .sf-mobile-dock']
+     : ['.sf-shell > .sf-header','.sf-shell > .sf-mobile-dock'];
+   await page.waitForFunction(selectors=>selectors.every(selector=>{
+     const el=document.querySelector(selector);
+     return el && getComputedStyle(el).filter.includes('blur(2px)');
+   }),chrome);
+   for(const selector of chrome){
+     const style=await page.locator(selector).evaluate(el=>({
+       filter:getComputedStyle(el).filter,
+       pointerEvents:getComputedStyle(el).pointerEvents
+     }));
+     assert(style.filter.includes('brightness('),mode+' dims header and dock: '+selector);
+     assert.equal(style.pointerEvents,'none',mode+' keeps chrome outside credential focus: '+selector);
+   }
    assert.equal(await rememberLabel.isVisible(),false,mode+' hides helper row during credential focus');
    assert.equal(await forgot.isVisible(),false,mode+' hides reset option during credential focus');
    assert.equal(await remember.isChecked(),true,mode+' focus mode never clears the native remembered choice');

@@ -8,7 +8,7 @@ const markup=(overlay,active)=>`<!doctype html><html><head><meta name="viewport"
 <body class="${overlay?'':'woocommerce-account'}">
 ${overlay?'<div id="sf-panel" class="is-account-panel"><div id="sf-account">':''}
 <div class="woocommerce${active?' sf-passkey-active':''}">
-<section class="sf-pk-guest" ${active?'':'hidden'}>Passkey</section>
+<section class="sf-pk-guest" ${active?'':'hidden'}><header class="sf-pk-hello"><h2>Hoş geldin 👋</h2><p>Hesabınla güvenli ve hızlı giriş yap.</p></header><button type="button" class="sf-pk-choice">Demo Demo</button><p class="sf-pk-divider">veya</p><button type="button" class="sf-pk-use-email">E-posta veya Google ile giriş yap</button></section>
 <div class="sf-account-intro">Welcome</div>
 <div id="customer_login">Native login</div>
 <a class="sf-auth-register-cta">Register with email</a>
@@ -28,6 +28,27 @@ ${overlay?'</div></div>':''}</body></html>`;
           `Registration visibility wrong for ${overlay?'instant overlay':'account page'} in ${active?'passkey':'native'} mode: ${display}`);
         const passkey=await page.locator('.sf-pk-guest').evaluate(el=>getComputedStyle(el).display);
         assert.equal(passkey!=='none',active,'Passkey only appears when recognized');
+         if(active){
+           const heading=await page.locator('.sf-pk-hello').evaluate(el=>({
+             title:getComputedStyle(el.querySelector('h2')).textAlign,
+             copy:getComputedStyle(el.querySelector('p')).textAlign
+           }));
+           assert.equal(heading.title,'left','Passkey heading is left aligned: '+overlay);
+           assert.equal(heading.copy,'left','Passkey subheading is left aligned: '+overlay);
+           const alternative=await page.locator('.sf-pk-use-email').evaluate(el=>({
+             bg:getComputedStyle(el).backgroundColor,
+             ink:getComputedStyle(el).color,
+             radius:getComputedStyle(el).borderRadius,
+             width:el.getBoundingClientRect().width,
+             height:el.getBoundingClientRect().height,
+             container:el.closest('.sf-pk-guest').getBoundingClientRect().width
+           }));
+           assert.equal(alternative.bg,'rgb(37, 38, 40)','Email/Google remains dark: '+overlay);
+           assert.equal(alternative.ink,'rgb(255, 255, 255)','Email/Google text remains white: '+overlay);
+           assert.equal(alternative.radius,'999px','Email/Google remains pill-shaped: '+overlay);
+           assert(alternative.height>=52,'Alternative action has accessible tap height: '+overlay);
+           assert(Math.abs(alternative.width-alternative.container)<2,'Alternative action fills the card width: '+overlay);
+         }
       }
     }
     await page.close();
