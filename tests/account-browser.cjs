@@ -111,8 +111,17 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
        shell.remove();
        return result;
       });
-      assert.equal(controls.sameBackground,true,'Login and registration reuse the existing primary UI Kit palette');
+      assert.equal(controls.sameBackground,false,'Native login intentionally uses white instead of primary dark fill');
       assert.equal(controls.sameRadius,true,'Native Woo actions retain theme button radius');
+      const loginColors=await page.locator('.woocommerce-form-login__submit').evaluate(el=>{
+        const st=getComputedStyle(el);
+        return {bg:st.backgroundColor,ink:st.color,border:st.borderTopColor,height:el.getBoundingClientRect().height};
+      });
+      assert.equal(loginColors.bg,'rgb(255, 255, 255)','Normal login is white, not the primary dark surface');
+      const loginInkRGB=(loginColors.ink.match(/\d+/g)||[]).map(Number);
+      assert(loginInkRGB.length===3&&Math.max(...loginInkRGB)<=65,'Normal login label uses readable theme dark ink');
+      assert.notEqual(loginColors.border,loginColors.bg,'White login has visible neutral button edge');
+      assert(loginColors.height>=54&&loginColors.height<=55,'White login preserves 54px touch target');
       assert.equal(controls.samePadding,true,'Native Woo button keeps the shared touch padding');
       assert.equal(controls.sameMotion,true,'Native Woo and UI Kit button share press feedback');
        const actionSize=await page.locator('.woocommerce-form-login__submit').evaluate(el=>{
@@ -191,7 +200,7 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
         const social=await page.locator('.sf-auth-google').evaluate(el=>{
           const style=getComputedStyle(el);
           return {width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height,
-            background:style.backgroundColor,radius:style.borderRadius,display:style.display,
+            background:style.backgroundColor,color:style.color,radius:style.borderRadius,display:style.display,
             border:style.borderTopWidth,borderColor:style.borderTopColor,
             textCenter:el.querySelector('.sf-ui-button-label').getBoundingClientRect().left+
               el.querySelector('.sf-ui-button-label').getBoundingClientRect().width/2,
@@ -202,8 +211,10 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
         const parent=await page.locator('.sf-auth-social').boundingBox();
         assert(social.width>=parent.width-2,'Google Button fills same form width');
         assert(social.height>=54&&social.height<=55,'Google uses theme-standard 54px action height');
-        assert.equal(social.background,'rgb(255, 255, 255)','Google uses the official white provider surface');
+        assert.deepEqual((social.background.match(/\d+/g)||[]).map(Number).every(x=>x<=65),true,
+          'Normal Google sign-in uses the theme dark surface');
         assert.equal(social.radius,'999px','Google uses standard UI Kit capsule radius');
+        assert.equal(social.color,'rgb(255, 255, 255)','Dark Google action retains white readable text');
         if(social.border!=='1px')console.error('Secondary Button computed styles',social,await page.locator('.sf-auth-google').evaluate(el=>({
          classes:el.className, borderStyle:getComputedStyle(el).borderTopStyle,
          borderToken:getComputedStyle(el).getPropertyValue('--sf-ui-border'),
@@ -212,7 +223,7 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
           .map(rule=>rule.cssText.slice(0,450)).slice(-12)
         })));
         assert.equal(social.border,'1px','Google secondary UI Kit Button must retain its visible border');
-        assert.notEqual(social.borderColor,social.background,"Google uses the theme neutral outline border");
+        assert.equal(social.borderColor,social.background,'Dark Google CTA has a matching dark border');
         assert.equal(social.display,'flex','Google uses centered text plus a positioned multicolor icon');
         assert(Math.abs(social.textCenter-social.buttonCenter)<1,
           'Google label is centered in the complete Button regardless of glyph width');

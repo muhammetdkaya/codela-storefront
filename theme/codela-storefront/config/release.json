@@ -6,9 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Vitrine eklenen görünür Slaytı Başlat/Duraklat düğmesi kaldırıldı.",
-    "Vitrin düğmeye basılmasını beklemeden altı saniyede bir otomatik ilerler; son slayttan ilkine döner.",
-    "Masaüstünde fareyle sağa/sola sürükleme, native dokunma/tekerlek ve normal bağlantı tıklaması korunur.",
-    "Klavye odağı, fareyle etkileşim, görünmeyen sekme/vitrin ve azaltılmış hareket tercihleri korunur; geçici durma koşulu kalkınca yeniden düğmeye gerek kalmadan devam eder."
+    "Tanınan cihazın hızlı Hesabım ekranında E-posta ile Kayıt Ol seçeneği gizlendi; hızlı PIN, Google ve e-posta/şifreyle giriş seçenekleri korunuyor. Cihaz doğrulanırken butonun anlık görünmesi de engellendi.",
+    "Normal WooCommerce e-posta/şifre giriş ekranında Giriş Yap butonu temanın standart beyaz yüzeyine, koyu yazıya ve nötr kenarlığa döndü.",
+    "Normal giriş ekranındaki Google ile Giriş Yap, mevcut Codela koyu UI Kit yüzeyi ve beyaz yazıyla gösteriliyor; renkli Google simgesi ve gerçek OAuth etkin/devre dışı durumu korunuyor.",
+    "Hızlı Hesabım ve normal Hesabım hem doğrudan sayfada hem hızlı hesap panelinde birbirinden ayrılıyor. Kayıt işlemi normal giriş ekranında erişilebilir; PIN, şifre kurtarma, giriş/kayıt nonceleri ve otomatik odak davranışı değişmedi.",
+    "Chromium/WebKit görünüm testleri; hızlı girişte kayıt gizliliği, normal girişte beyaz buton/koyu Google, kayıt paneli geri dönüşü ve mobil yerleşimi kapsayacak şekilde güncellendi."
   ]
 }

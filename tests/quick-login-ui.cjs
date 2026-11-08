@@ -57,6 +57,7 @@ assert(php.includes("after_password_reset") && php.includes("wp_set_password"),'
 assert(php.includes("woocommerce_before_customer_login_form"),'Native WooCommerce registration is preserved');
 assert(php.includes("woocommerce_edit_account_form"),'Quick enrollment is available inside native account');
 assert(css.includes(".sf-pin-active .sf-account-intro"),'Native form hidden only while remembered-account selection active');
+assert(css.includes('.woocommerce.sf-pin-active .sf-auth-register-cta') && css.includes('html.sf-quick-checking'),'Signup is hidden with sufficient specificity during remembered choice and preflight');
 assert(css.includes('.sf-quick-sheet') && css.includes('.sf-quick-scrim'),'PIN lives in a responsive accessible bottom sheet');
 assert(css.includes('.sf-quick-slot.is-filled') && css.includes('.sf-quick-slot.is-current'),'PIN fill and current-slot colors defined');
 assert(css.includes('.sf-quick-pin-track.is-verified .sf-quick-result'),'Verified-state color remains separate from typing/loading');
