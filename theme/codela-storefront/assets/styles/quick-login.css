@@ -509,3 +509,65 @@ html.sf-quick-checking.sf-quick-passkey-hint .sf-quick-choice-intro p{font-weigh
 html.sf-quick-checking.sf-quick-passkey-hint .woocommerce.sf-passkey-active .sf-quick-login[hidden]{
   display:none!important;
 }
+
+/* Animated Face ID — vector choreography instead of a heavy Lottie player.
+   During real platform authentication the four corners trace in sequence,
+   a soft optical scan travels across the face, and a signed-in success
+   becomes a short drawn check. Idle state always retains the static glyph. */
+.sf-bio-icon{display:block;overflow:visible}
+.sf-bio-corner,.sf-bio-feature{opacity:1}
+.sf-bio-scanline{opacity:0;stroke:#6c91c7;stroke-width:1.25}
+.sf-bio-verified{opacity:0;stroke:#16844f;stroke-width:2.5;stroke-dasharray:22;stroke-dashoffset:22}
+.sf-quick-method--passkey.is-verifying::before,
+.sf-pk-choice.is-verifying .sf-pk-symbol::before{
+  content:none!important;animation:none!important
+}
+.sf-quick-method--passkey.is-verifying .sf-bio-icon,
+.sf-pk-choice.is-verifying .sf-bio-icon{animation:none!important;transform:none!important;opacity:1!important}
+:is(.sf-quick-method--passkey.is-verifying,.sf-pk-choice.is-verifying) .sf-bio-corner{
+  stroke-dasharray:13;stroke-dashoffset:0;
+  animation:sf-bio-trace 1.55s cubic-bezier(.33,.1,.22,1) infinite
+}
+:is(.sf-quick-method--passkey.is-verifying,.sf-pk-choice.is-verifying) .sf-bio-corner-tr{animation-delay:.11s}
+:is(.sf-quick-method--passkey.is-verifying,.sf-pk-choice.is-verifying) .sf-bio-corner-br{animation-delay:.22s}
+:is(.sf-quick-method--passkey.is-verifying,.sf-pk-choice.is-verifying) .sf-bio-corner-bl{animation-delay:.33s}
+:is(.sf-quick-method--passkey.is-verifying,.sf-pk-choice.is-verifying) .sf-bio-feature{
+  animation:sf-bio-face-breathe 1.55s ease-in-out infinite
+}
+:is(.sf-quick-method--passkey.is-verifying,.sf-pk-choice.is-verifying) .sf-bio-scanline{
+  opacity:1;animation:sf-bio-optic-scan 1.55s cubic-bezier(.26,.12,.24,1) infinite
+}
+:is(.sf-quick-method--passkey.is-verified,.sf-pk-choice.is-verified) .sf-bio-face{
+  opacity:0;transition:opacity .15s ease
+}
+:is(.sf-quick-method--passkey.is-verified,.sf-pk-choice.is-verified) .sf-bio-verified{
+  opacity:1;stroke-dashoffset:0;
+  transition:stroke-dashoffset .38s cubic-bezier(.22,.68,.23,1),opacity .12s ease
+}
+:is(.sf-quick-method--passkey.is-rejected,.sf-pk-choice.is-rejected) .sf-bio-icon{
+  animation:sf-bio-denied .35s cubic-bezier(.25,.5,.25,1) 1!important
+}
+@keyframes sf-bio-trace{
+  0%{stroke-dashoffset:13;opacity:.28}
+  27%{stroke-dashoffset:0;opacity:1}
+  72%{stroke-dashoffset:0;opacity:1}
+  100%{stroke-dashoffset:-13;opacity:.28}
+}
+@keyframes sf-bio-face-breathe{
+  0%,100%{opacity:.5}40%,60%{opacity:1}
+}
+@keyframes sf-bio-optic-scan{
+  0%,12%{opacity:0;transform:translateY(-1px)}
+  23%{opacity:.7}
+  65%{opacity:.7;transform:translateY(9px)}
+  82%,100%{opacity:0;transform:translateY(9px)}
+}
+@keyframes sf-bio-denied{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-2px)}75%{transform:translateX(2px)}
+}
+@media(prefers-reduced-motion:reduce){
+  .sf-bio-icon,.sf-bio-icon *{animation:none!important;transition:none!important}
+  :is(.sf-quick-method--passkey.is-verifying,.sf-pk-choice.is-verifying) .sf-bio-scanline{opacity:0!important}
+  :is(.sf-quick-method--passkey.is-verified,.sf-pk-choice.is-verified) .sf-bio-verified{opacity:1;stroke-dashoffset:0}
+}

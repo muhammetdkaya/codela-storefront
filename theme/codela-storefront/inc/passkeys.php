@@ -247,6 +247,27 @@ function codela_sf_pk_glyph(): string {
         . '<path d="M9 9h.01M15 9h.01M12 9v4M8.5 16c2 2 5 2 7 0"/></svg>';
 }
 
+/**
+ * Native-looking micro-interaction for the Codela Face ID action. This is
+ * only a UI indicator; the device handles biometrics, and the server verifies
+ * WebAuthn before the check animation can play.
+ */
+function codela_sf_pk_animated_glyph(): string {
+    return '<svg class="sf-bio-icon" viewBox="0 0 24 24" width="27" height="27"'
+        . ' fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"'
+        . ' stroke-linejoin="round" aria-hidden="true" focusable="false">'
+        . '<g class="sf-bio-face">'
+        . '<path class="sf-bio-corner sf-bio-corner-tl" d="M8 3H6a3 3 0 0 0-3 3v2"/>'
+        . '<path class="sf-bio-corner sf-bio-corner-tr" d="M16 3h2a3 3 0 0 1 3 3v2"/>'
+        . '<path class="sf-bio-corner sf-bio-corner-bl" d="M3 16v2a3 3 0 0 0 3 3h2"/>'
+        . '<path class="sf-bio-corner sf-bio-corner-br" d="M21 16v2a3 3 0 0 1-3 3h-2"/>'
+        . '<path class="sf-bio-feature" d="M9 9h.01M15 9h.01M12 9v4M8.5 16c2 2 5 2 7 0"/>'
+        . '<path class="sf-bio-scanline" d="M6 7h12"/>'
+        . '</g>'
+        . '<path class="sf-bio-verified" d="M5 12l4.5 4.5L19 7"/>'
+        . '</svg>';
+}
+
 /** WooCommerce account sidebar contains a single Security destination. */
 add_action( 'init', static function(): void { add_rewrite_endpoint( 'guvenlik', EP_ROOT | EP_PAGES ); }, 9 );
 add_filter( 'woocommerce_get_query_vars', static function( array $vars ): array {
@@ -297,7 +318,7 @@ add_action( 'woocommerce_account_guvenlik_endpoint', static function(): void {
 /** Guest passkey choice is independent of the old PIN card. */
 function codela_sf_pk_guest_markup(): void {
     if ( is_user_logged_in() || ( empty( $GLOBALS['codela_sf_auth_overlay'] ) && ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) ) ) { return; }
-    echo '<section class="sf-pk-guest" hidden aria-label="' . esc_attr__( 'Passkey sign-in', 'codela-storefront' ) . '"><header class="sf-pk-hello"><h2>' . esc_html__( 'Welcome', 'codela-storefront' ) . ' 👋</h2><p>' . esc_html__( 'Sign in securely with your account.', 'codela-storefront' ) . '</p></header><button class="sf-pk-choice" type="button"><span class="sf-pk-avatar" aria-hidden="true">' . codela_sf_pk_glyph() . '</span><span class="sf-pk-identity"><strong class="sf-pk-name">' . esc_html__( 'Sign in with passkey', 'codela-storefront' ) . '</strong><small class="sf-pk-detail">' . esc_html__( 'Use your phone or device', 'codela-storefront' ) . '</small></span><span class="sf-pk-symbol" aria-hidden="true">' . codela_sf_pk_glyph() . '</span></button><p class="sf-pk-divider">' . esc_html__( 'or', 'codela-storefront' ) . '</p><button class="sf-pk-use-email" type="button">' . esc_html__( 'Sign in with email or Google', 'codela-storefront' ) . '</button></section>';
+    echo '<section class="sf-pk-guest" hidden aria-label="' . esc_attr__( 'Passkey sign-in', 'codela-storefront' ) . '"><header class="sf-pk-hello"><h2>' . esc_html__( 'Welcome', 'codela-storefront' ) . ' 👋</h2><p>' . esc_html__( 'Sign in securely with your account.', 'codela-storefront' ) . '</p></header><button class="sf-pk-choice" type="button"><span class="sf-pk-avatar" aria-hidden="true">' . codela_sf_pk_glyph() . '</span><span class="sf-pk-identity"><strong class="sf-pk-name">' . esc_html__( 'Sign in with passkey', 'codela-storefront' ) . '</strong><small class="sf-pk-detail">' . esc_html__( 'Use your phone or device', 'codela-storefront' ) . '</small></span><span class="sf-pk-symbol" aria-hidden="true">' . codela_sf_pk_animated_glyph() . '</span></button><p class="sf-pk-divider">' . esc_html__( 'or', 'codela-storefront' ) . '</p><button class="sf-pk-use-email" type="button">' . esc_html__( 'Sign in with email or Google', 'codela-storefront' ) . '</button></section>';
 }
 add_action( 'woocommerce_before_customer_login_form', 'codela_sf_pk_guest_markup', 4 );
 

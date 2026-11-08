@@ -332,7 +332,7 @@ function codela_sf_quick_guest_markup(): void {
                     <span class="sf-quick-methods" role="group" aria-label="<?php esc_attr_e( 'Quick sign-in methods', 'codela-storefront' ); ?>">
                         <button type="button" class="sf-quick-method sf-quick-method--passkey" hidden
                             aria-label="<?php esc_attr_e( 'Sign in with Face ID or device verification', 'codela-storefront' ); ?>">
-                            <?php echo function_exists( 'codela_sf_pk_glyph' ) ? codela_sf_pk_glyph() : ''; ?>
+                            <?php echo function_exists( 'codela_sf_pk_animated_glyph' ) ? codela_sf_pk_animated_glyph() : ''; ?>
                         </button>
                         <button type="button" class="sf-quick-method sf-quick-method--pin"
                             aria-label="<?php esc_attr_e( 'Sign in with your 6-digit code', 'codela-storefront' ); ?>"
