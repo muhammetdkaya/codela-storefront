@@ -100,6 +100,10 @@ data-auth-smart-password-link="Password link emailed">
    assert.equal(primary,'rgb(37, 38, 40)','Filled password produces dark primary action');
    await page.locator('#password').focus();
    await page.waitForFunction(()=>document.querySelector('.woocommerce')?.classList.contains('sf-auth-focus-mode'));
+   // Visibility intentionally transitions for 160 ms; wait for the final
+   // hidden state instead of reading the property mid-transition.
+   await page.waitForFunction(()=>
+     getComputedStyle(document.querySelector('.sf-panel-top')).visibility==='hidden');
    assert.equal(await page.locator('.sf-panel-top').evaluate(e=>getComputedStyle(e).visibility),'hidden',
      'App header hidden during credential focus');
    await uid.fill('new@example.test');
