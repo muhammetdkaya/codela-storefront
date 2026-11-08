@@ -149,7 +149,26 @@ function preventInitialAccountAutoFocus() {
             const credentials = [...loginForm.querySelectorAll(
                 'input[name="username"],input[name="password"],input#username,input#password'
             )];
-            if (!credentials.length) continue;
+            const username = loginForm.querySelector('input[name="username"],input#username');
+            const password = loginForm.querySelector('input[name="password"],input#password');
+            if (!username || !password) continue;
+
+            // Visual readiness means BOTH native fields contain text, never
+            // that WooCommerce has authenticated or validated those values.
+            // Preserve the real form, remembered checkbox and submit action.
+            const updateSubmitReadiness = () => {
+                loginForm.classList.toggle('sf-auth-submit-ready',
+                    username.value.trim().length > 0 && password.value.length > 0);
+            };
+            loginForm.addEventListener('input', updateSubmitReadiness);
+            loginForm.addEventListener('change', updateSubmitReadiness);
+            loginForm.addEventListener('focusin', () => {
+                window.requestAnimationFrame(updateSubmitReadiness);
+            });
+            window.addEventListener('pageshow', updateSubmitReadiness);
+            root.closest('#sf-account')?.addEventListener('codela:account-open', updateSubmitReadiness);
+            updateSubmitReadiness();
+
             const scrim = document.createElement('div');
             scrim.className = 'sf-auth-focus-scrim';
             scrim.setAttribute('aria-hidden', 'true');
