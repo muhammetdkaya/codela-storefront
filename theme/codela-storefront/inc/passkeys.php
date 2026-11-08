@@ -29,8 +29,20 @@ function codela_sf_pk_host(): string {
 function codela_sf_pk_error( int $status = 400 ): WP_Error {
     return new WP_Error( 'sf_passkey_failed', __( 'Passkey verification failed. Use your password or try again.', 'codela-storefront' ), [ 'status' => $status ] );
 }
+/**
+ * Passkeys are phishing-resistant, user-verified credentials. Permit the two
+ * privileged WooCommerce roles only through WebAuthn. Never broaden the
+ * lower-assurance six-digit PIN role check in codela_sf_quick_customer().
+ */
+function codela_sf_pk_privileged_user( $user ): bool {
+    if ( ! $user instanceof WP_User ) { return false; }
+    $roles = (array) $user->roles;
+    return in_array( 'administrator', $roles, true ) || in_array( 'shop_manager', $roles, true );
+}
 function codela_sf_pk_enabled( $user ): bool {
-    return codela_sf_pk_origin() && function_exists( 'codela_sf_quick_customer' ) && $user instanceof WP_User && codela_sf_quick_customer( $user );
+    if ( ! $user instanceof WP_User || ! codela_sf_pk_origin() ) { return false; }
+    return codela_sf_pk_privileged_user( $user )
+        || ( function_exists( 'codela_sf_quick_customer' ) && codela_sf_quick_customer( $user ) );
 }
 function codela_sf_pk_credentials( int $user_id ): array {
     $stored = get_user_meta( $user_id, '_codela_sf_passkeys', true );
@@ -188,7 +200,10 @@ function codela_sf_pk_assert( WP_REST_Request $request ) {
     $credentials[ $id ]['last_used'] = time();
     update_user_meta( $user_id, '_codela_sf_passkeys', $credentials );
     wp_set_current_user( $user_id );
-    wp_set_auth_cookie( $user_id, true, is_ssl() );
+    // A privileged account is never remembered beyond the browser session.
+    // User verification, the origin-bound signature and one-time challenge
+    // are still required before WordPress creates its real auth cookie.
+    wp_set_auth_cookie( $user_id, ! codela_sf_pk_privileged_user( $user ), is_ssl() );
     do_action( 'wp_login', $user->user_login, $user );
     return rest_ensure_response( [ 'ok' => true, 'account_url' => wc_get_page_permalink( 'myaccount' ) ] );
 }
@@ -292,7 +307,7 @@ add_action( 'init', static function(): void {
 add_action( 'woocommerce_account_guvenlik_endpoint', static function(): void {
     $user = wp_get_current_user();
     if ( ! codela_sf_pk_enabled( $user ) ) {
-        echo '<p>' . esc_html__( 'Quick sign-in is available only for customer accounts on HTTPS.', 'codela-storefront' ) . '</p>';
+        echo '<p>' . esc_html__( 'Device sign-in is available for eligible customer, administrator and shop manager accounts over HTTPS.', 'codela-storefront' ) . '</p>';
         return;
     }
     $records = codela_sf_pk_credentials( $user->ID );
@@ -310,9 +325,16 @@ add_action( 'woocommerce_account_guvenlik_endpoint', static function(): void {
         echo '</div>';
     }
     echo '<p class="sf-pk-result" role="status" aria-live="polite"></p></div>';
-    echo '<div class="sf-pk-legacy"><button type="button" class="sf-pk-legacy-toggle" aria-expanded="false">' . esc_html__( '6-digit PIN (optional legacy sign-in)', 'codela-storefront' ) . ' <span aria-hidden="true">⌄</span></button><div class="sf-pk-legacy-content" hidden>';
-    codela_sf_quick_settings();
-    echo '</div></div></section>';
+    if ( codela_sf_pk_privileged_user( $user ) ) {
+        echo '<p class="sf-quick-role-notice" role="note">'
+            . esc_html__( 'For administrator and shop manager accounts, only secure device verification (Face ID, fingerprint or screen lock) is enabled. Six-digit PIN sign-in remains unavailable.', 'codela-storefront' )
+            . '</p>';
+    } else {
+        echo '<div class="sf-pk-legacy"><button type="button" class="sf-pk-legacy-toggle" aria-expanded="false">' . esc_html__( '6-digit PIN (optional legacy sign-in)', 'codela-storefront' ) . ' <span aria-hidden="true">⌄</span></button><div class="sf-pk-legacy-content" hidden>';
+        codela_sf_quick_settings();
+        echo '</div></div>';
+    }
+    echo '</section>';
 }, 20 );
 
 /** Guest passkey choice is independent of the old PIN card. */

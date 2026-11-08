@@ -100,6 +100,10 @@ a(codela_sf_quick_verify($request($payload)) instanceof WP_Error,'successful cha
 $GLOBALS['admin']=true;
 a(codela_sf_quick_enroll($request(['device_id'=>$device])) instanceof WP_Error,'admin account forbidden');
 $GLOBALS['admin']=false;
+$GLOBALS['user']=new WP_User(18,'siteadmin','Administrator','admin@example.test',['administrator']);
+a(codela_sf_quick_enroll($request(['device_id'=>$device])) instanceof WP_Error,
+    'administrator role is still barred from 6-digit PIN registration');
+$GLOBALS['user']=new WP_User(17);
 codela_sf_quick_revoke($request(['device_id'=>$device]));
 a(codela_sf_quick_devices(17)===[],'revocation deletes browser credential');
 a(!codela_sf_quick_status_active(17,$device,$nonce,$status_signature), 'Revoked credential is rejected by guest status');

@@ -18,7 +18,15 @@ function __($s,$d=''){return $s;}function home_url($p=''){return 'https://shop.t
 function wp_parse_url($url,$part=-1){return parse_url($url,$part);}
 function get_bloginfo($k){return 'Test Shop';}
 function wp_get_current_user(){return $GLOBALS['u'];}
-function get_user_by($field,$id){return (int)$id===17?new WP_User():false;}
+function get_user_by($field,$id){
+    return match ((int)$id) {
+        17 => new WP_User(),
+        18 => new WP_User(18,'siteadmin','admin@shop.test',['administrator']),
+        19 => new WP_User(19,'shopmanager','manager@shop.test',['shop_manager']),
+        20 => new WP_User(20,'editor','editor@shop.test',['editor']),
+        default => false
+    };
+}
 function codela_sf_quick_customer($u){return $u instanceof WP_User && in_array('customer',$u->roles,true);}
 function codela_sf_quick_display_name($u){return 'Test Customer';}
 function codela_sf_quick_ip_limit($record=false){return true;}
@@ -46,6 +54,15 @@ $GLOBALS['u']=new WP_User();
 $enc='codela_sf_pk_encode';
 $pair=openssl_pkey_new(['private_key_type'=>OPENSSL_KEYTYPE_EC,'curve_name'=>'prime256v1']);
 check((bool)$pair,'openssl P256 supported');
+$admin=get_user_by('id',18);
+$manager=get_user_by('id',19);
+$editor=get_user_by('id',20);
+check(codela_sf_pk_privileged_user($admin),'administrator is recognized as privileged');
+check(codela_sf_pk_privileged_user($manager),'shop manager is recognized as privileged');
+check(codela_sf_pk_enabled($admin),'administrator may enroll a passkey on HTTPS');
+check(codela_sf_pk_enabled($manager),'shop manager may enroll a passkey on HTTPS');
+check(!codela_sf_pk_enabled($editor),'editor does not gain a privileged passkey bypass');
+check(!codela_sf_quick_customer($admin),'administrator must remain ineligible for PIN');
 $details=openssl_pkey_get_details($pair);
 $der=base64_decode(preg_replace('/-----BEGIN PUBLIC KEY-----|-----END PUBLIC KEY-----|\s+/','',$details['key']));
 $credential=$enc(random_bytes(32));
@@ -113,4 +130,42 @@ codela_sf_pk_revoke_all(17);
 check(codela_sf_pk_credentials(17)===[],'all credentials revoked');
 check(get_option(codela_sf_pk_option($credential),false)===false,'credential index removed');
 check(codela_sf_pk_assert(req(assertion($credential,$pair,$auth))) instanceof WP_Error,'revoked credential denied');
+// A privileged administrator can enroll a dedicated origin-bound passkey,
+// then sign in without making a permanent remembered administrator session.
+// This does not add PIN enrollment to privileged accounts.
+$GLOBALS['u']=$admin;
+$adminPair=openssl_pkey_new(['private_key_type'=>OPENSSL_KEYTYPE_EC,'curve_name'=>'prime256v1']);
+$adminDetails=openssl_pkey_get_details($adminPair);
+$adminDer=base64_decode(preg_replace('/-----BEGIN PUBLIC KEY-----|-----END PUBLIC KEY-----|\\s+/','',$adminDetails['key']));
+$adminCredential=codela_sf_pk_encode(random_bytes(32));
+$adminOpts=codela_sf_pk_registration_options(req());
+check(is_array($adminOpts) && isset($adminOpts['challenge']),'administrator can request WebAuthn registration');
+$adminCreate=json_encode(['type'=>'webauthn.create','challenge'=>$adminOpts['challenge'],'origin'=>'https://shop.test']);
+$adminRegistered=codela_sf_pk_register(req(['id'=>$adminCredential,'response'=>[
+    'clientDataJSON'=>codela_sf_pk_encode($adminCreate),
+    'authenticatorData'=>codela_sf_pk_encode($auth),
+    'publicKey'=>codela_sf_pk_encode($adminDer),
+]]));
+check(($adminRegistered['ok']??false)===true,'administrator credential enrolled');
+check(get_option(codela_sf_pk_option($adminCredential))==='18','administrator credential owner is unique');
+$adminRequest=codela_sf_pk_assertion_options(req(['credential_id'=>$adminCredential]));
+check($adminRequest['publicKey']['allowCredentials'][0]['id']===$adminCredential,
+    'administrator targeted login must use own credential');
+$adminClient=json_encode(['type'=>'webauthn.get','challenge'=>$adminRequest['publicKey']['challenge'],'origin'=>'https://shop.test']);
+openssl_sign($auth.hash('sha256',$adminClient,true),$adminSig,$adminPair,OPENSSL_ALGO_SHA256);
+$GLOBALS['login']=[];
+$adminLogin=codela_sf_pk_assert(req(['requestId'=>$adminRequest['requestId'],'id'=>$adminCredential,'response'=>[
+    'clientDataJSON'=>codela_sf_pk_encode($adminClient),
+    'authenticatorData'=>codela_sf_pk_encode($auth),
+    'signature'=>codela_sf_pk_encode($adminSig),
+    'userHandle'=>get_user_meta(18,'_codela_sf_pk_handle',true),
+]]));
+check(($adminLogin['ok']??false)===true,'administrator WebAuthn assertion logs into real WordPress');
+check($GLOBALS['login']['cookie']===[18,false,true],
+    'administrator passkey creates a secure session cookie, not persistent remember-me');
+check(($GLOBALS['login']['hook'][0]??'')==='siteadmin','WordPress admin login hook fires');
+check(codela_sf_pk_assert(req(['requestId'=>$adminRequest['requestId'],'id'=>$adminCredential,'response'=>[]]))
+    instanceof WP_Error,'administrator challenge cannot be replayed');
+check(codela_sf_pk_assert(req(assertion($credential,$pair,$auth))) instanceof WP_Error,
+    'revoked customer key remains denied after admin authorization');
 echo "Passkey ES256 WebAuthn functional checks passed\n";

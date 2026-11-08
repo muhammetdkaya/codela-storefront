@@ -423,7 +423,7 @@ function codela_sf_quick_settings(): void {
         if ( $user instanceof WP_User ) {
             echo '<div class="sf-quick-role-notice" id="sf-quick-settings" role="note"><strong>'
                 . esc_html__( 'Quick sign-in', 'codela-storefront' ) . '</strong><p>'
-                . esc_html__( 'For security, 6-digit quick sign-in is available only to customer accounts on HTTPS. Administrator and staff accounts must use their normal WordPress login.', 'codela-storefront' )
+                . esc_html__( 'Six-digit PIN sign-in is reserved for customers. Administrators and shop managers can enable Face ID, fingerprint or device passkeys from Security and sign-in.', 'codela-storefront' )
                 . '</p></div>';
         }
         return;
@@ -473,7 +473,7 @@ function codela_sf_quick_dashboard_entry(): void {
     echo '<section class="sf-quick-onboarding" aria-labelledby="sf-quick-onboarding-title">'
         . '<h3 id="sf-quick-onboarding-title">' . esc_html__( 'Quick sign-in', 'codela-storefront' ) . '</h3><p>';
     if ( ! $eligible ) {
-        echo esc_html__( 'For security, 6-digit quick sign-in is available only to customer accounts on HTTPS. Administrator and staff accounts must use their normal WordPress login.', 'codela-storefront' );
+        echo esc_html__( 'Six-digit PIN sign-in is reserved for customers. Administrators and shop managers can enable Face ID, fingerprint or device passkeys from Security and sign-in.', 'codela-storefront' );
         echo '</p></section>';
         return;
     }
