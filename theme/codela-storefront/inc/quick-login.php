@@ -323,7 +323,7 @@ function codela_sf_quick_guest_markup(): void {
         <div class="sf-quick-choice">
             <div class="sf-quick-choice-intro">
                 <h2><?php esc_html_e( 'Welcome', 'codela-storefront' ); ?> <span class="sf-quick-wave" aria-hidden="true">👋</span></h2>
-                <p><?php esc_html_e( 'Continue quickly with your account.', 'codela-storefront' ); ?></p>
+                <p><?php esc_html_e( 'Sign in securely with your account.', 'codela-storefront' ); ?></p>
             </div>
             <div class="sf-quick-account-frame">
                 <div class="sf-quick-account">
@@ -500,7 +500,7 @@ add_action( 'wp_head', static function(): void {
     // Prepaint protection also covers the instant Account panel on other
     // storefront pages. Only the visible view is masked; no navigation waits.
     if ( is_user_logged_in() ) { return; }
-    echo '<script>(function(){try{var p=JSON.parse(localStorage.getItem("codela_sf_quick_profile_v1")||"null");if(p&&Number.isSafeInteger(p.userId)&&/^[0-9a-f]{32}$/.test(p.deviceId||"")){document.documentElement.classList.add("sf-quick-checking");window.setTimeout(function(){document.documentElement.classList.remove("sf-quick-checking")},7000)}}catch(e){}})();</script>';
+    echo '<script>(function(){try{var p=JSON.parse(localStorage.getItem("codela_sf_quick_profile_v1")||"null");if(p&&Number.isSafeInteger(p.userId)&&/^[0-9a-f]{32}$/.test(p.deviceId||"")){document.documentElement.classList.add("sf-quick-checking");var k=JSON.parse(localStorage.getItem("codela_sf_passkey_hint_v1")||"null");if(k&&k.userId===p.userId&&!k.paused&&typeof k.credentialId==="string"){document.documentElement.classList.add("sf-quick-passkey-hint");}window.setTimeout(function(){document.documentElement.classList.remove("sf-quick-checking")},7000)}}catch(e){}})();</script>';
 }, 1 );
 
 add_action( 'wp_enqueue_scripts', static function(): void {

@@ -44,7 +44,7 @@ if ( '1' === getenv( 'CODELA_RENDER_ONLY' ) ) {
 check( str_contains( $html, 'class="sf-quick-account' ), 'Remembered account is a single primary action' );
 check( str_contains( $html, 'sf-quick-user' ), 'Account name placeholder exists' );
 check( ! str_contains( $html, 'Welcome back' ), 'No redundant welcome heading' );
-check( str_contains( $html, 'Welcome' ) && str_contains( $html, 'Continue quickly with your account.' ), 'Welcome heading and succinct copy are visible' );
+check( str_contains( $html, 'Welcome' ) && str_contains( $html, 'Sign in securely with your account.' ), 'Welcome heading and succinct copy are visible' );
 check( str_contains( $html, 'sf-quick-wave' ), 'Waving-hand emoji follows the heading' );
 check( str_contains( $html, 'sf-quick-email' ), 'Saved account email line is present' );
 check( str_contains( $html, 'sf-quick-method--pin' ) && str_contains( $html, 'sf-quick-method--passkey' ) && str_contains( $html, 'aria-expanded="false"' ), 'Account card has a downward chevron that rotates upward on expand' );

@@ -499,3 +499,13 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
   .sf-quick-method--passkey.is-verifying svg,
   .sf-pk-choice.is-verifying .sf-pk-symbol svg{animation:none!important}
 }
+
+/* During server verification the remembered PIN skeleton and subsequent
+   combined PIN/passkey card use identical welcome typography and copy. */
+html.sf-quick-checking.sf-quick-passkey-hint .sf-quick-choice-intro h2{
+  font-size:clamp(32px,5vw,42px)!important;font-weight:500!important;letter-spacing:-.045em;
+}
+html.sf-quick-checking.sf-quick-passkey-hint .sf-quick-choice-intro p{font-weight:400!important}
+html.sf-quick-checking.sf-quick-passkey-hint .woocommerce.sf-passkey-active .sf-quick-login[hidden]{
+  display:none!important;
+}
