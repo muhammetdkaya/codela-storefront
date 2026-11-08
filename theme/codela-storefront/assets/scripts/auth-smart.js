@@ -22,6 +22,11 @@
     const first = registerForm && query(registerForm,'input[name="first_name"]');
     const last = registerForm && query(registerForm,'input[name="last_name"]');
     const registerAllowed = !!(registerForm && registerEmail && first && last);
+    const registerSubmit=registerForm && query(registerForm,'button[type="submit"],input[type="submit"]');
+    if(registerPassword){
+      registerPassword.placeholder=intro.dataset.authSmartRegisterPassword||'Password (8+ characters)';
+      registerPassword.minLength=Math.max(registerPassword.minLength||0,8);
+    }
 
     const shell=document.createElement('div');
     shell.className='sf-smart-auth';
@@ -122,8 +127,13 @@
         const hasNames=first.value.trim().length>0 && last.value.trim().length>0;
         const hasPassword=!registerPassword || registerPassword.value.length>=8;
         const hasUsername=!registerUsername || registerUsername.value.trim()===active;
-        root.classList.toggle('sf-smart-register-ready',hasNames&&hasPassword&&hasUsername);
-      }else root.classList.remove('sf-smart-register-ready');
+        const ready=hasNames&&hasPassword&&hasUsername;
+        root.classList.toggle('sf-smart-register-ready',ready);
+        if(registerSubmit)registerSubmit.disabled=!ready;
+      }else{
+        root.classList.remove('sf-smart-register-ready');
+        if(registerSubmit)registerSubmit.disabled=false;
+      }
     };
     const abort=()=>{
       sequence++;clearTimeout(timer);
