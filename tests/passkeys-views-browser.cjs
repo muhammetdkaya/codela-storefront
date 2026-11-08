@@ -80,7 +80,11 @@ ${overlay?'</div></div>':''}</body></html>`;
           rpId:'storefront-auth.test',userVerification:'required'}})});
       return route.fulfill({status:404,contentType:'text/plain',body:'Not found'});
     });
-    await combined.addInitScript(()=>{
+    await combined.goto(origin+'/account');
+    // Install the fixture explicitly on the navigated document. A storage
+    // bootstrap on about:blank can be suppressed by WebKit and never reach
+    // the fake passkey code below.
+    await combined.evaluate(()=>{
       localStorage.setItem('codela_sf_quick_profile_v1',JSON.stringify({
         deviceId:'a'.repeat(32),userId:17,displayName:'Demo Demo'
       }));
@@ -94,7 +98,6 @@ ${overlay?'</div></div>':''}</body></html>`;
       }});
       window.CodelaSFPasskey={rest:'/api',identity:null};
     });
-    await combined.goto(origin+'/account');
     await combined.addStyleTag({content:cssAccount+'\n'+cssOverlay+'\n'+cssQuick});
     const passkeysScript=fs.readFileSync('theme/codela-storefront/assets/scripts/passkeys.js','utf8');
     await combined.addScriptTag({content:passkeysScript});
