@@ -2010,6 +2010,14 @@ body.woocommerce-account:not(.codela-my-account-layout) .sf-content .wc-block-co
     border-radius:var(--sf-ui-button-radius,999px)!important;
 }
 
+/* The compact focused composition is unchanged from 0.1.241 even while
+   the button remains white pending both credentials. */
+:is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
+    #sf-panel.is-account-panel .woocommerce).sf-auth-focus-mode
+  form.woocommerce-form-login button[type="submit"]{
+    grid-column:1/-1;margin:3px 0 0!important;
+}
+
 /* Dark means both fields are nonempty; focus alone never switches color.
    Use the existing theme ink, not a new green/brand-specific hex value. */
 :is(body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce,
