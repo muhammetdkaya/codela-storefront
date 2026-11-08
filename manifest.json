@@ -1,1 +1,20 @@
-{"changes": ["Normal Hesab\u0131m ve h\u0131zl\u0131 Hesab\u0131m giri\u015flerinde e-posta ile kay\u0131t ol butonu Google ile giri\u015f yap butonunun \u00fczerinde kal\u0131yor; g\u00f6r\u00fcn\u00fcrl\u00fck ve ger\u00e7ek kay\u0131t ak\u0131\u015f\u0131 korunuyor.", "Ger\u00e7ek WooCommerce kullan\u0131c\u0131 ad\u0131/e-posta ve \u015fifre alanlar\u0131 butonlarla ayn\u0131 tam oval (999px) radius kullan\u0131yor; odak kenarl\u0131\u011f\u0131 \u00e7evresinde bo\u015fluk bulunmuyor.", "Giri\u015f Yap yaln\u0131z iki alan\u0131n ikisi de dolu oldu\u011funda teman\u0131n --sf-ui-ink koyu rengine ge\u00e7iyor. Sadece odaklanmak d\u00fc\u011fmeyi koyula\u015ft\u0131rm\u0131yor.", "Haz\u0131r duruma ilk ge\u00e7i\u015fte hafif, bir kerelik 330ms animasyon kullan\u0131l\u0131yor; s\u00fcrekli nab\u0131z yok ve azalt\u0131lm\u0131\u015f hareket ayar\u0131na sayg\u0131 g\u00f6steriliyor.", "Beni hat\u0131rla, parola s\u0131f\u0131rlama, mevcut PIN karartmas\u0131, WooCommerce ger\u00e7ek oturum do\u011frulamas\u0131, nonce g\u00fcvenli\u011fi ve Google OAuth de\u011fi\u015ftirilmedi."], "package": "https://github.com/muhammetdkaya/codela-storefront/releases/download/v0.1.243/codela-storefront-0.1.243.zip", "requires": {"codela": "1.2.5", "php": "8.0", "woocommerce": "9.0", "wordpress": "6.5"}, "sha256": "90ff3e268ec896859d9cea0d3c722c932cd08c5d5249ec6810a65f8a8c747947", "source_sha": "a935d4b150946705f79f997ec4aa35f3d52f58f2", "theme": "codela-storefront", "version": "0.1.243"}
+{
+  "changes": [
+    "Telefonun Face ID, parmak izi veya ekran kilidiyle 6 haneli PIN oluşturmadan güvenli giriş sağlayan WebAuthn Passkey desteği eklendi.",
+    "Hesabım ana sayfasındaki sürekli hızlı giriş kurulum kartı kaldırıldı; Güvenlik ve giriş ekranı oluşturuldu.",
+    "Giriş anahtarları duraklatılabilir, yeniden etkinleştirilebilir veya silinebilir; eskiden oluşturulan 6 haneli PIN kodları korunur.",
+    "WooCommerce e-posta/şifre ve Google ile giriş yöntemleri çalışmaya devam eder.",
+    "ES256 imza, origin/RP doğrulaması ve tek kullanımlık challenge kontrolleri eklendi."
+  ],
+  "package": "https://github.com/muhammetdkaya/codela-storefront/releases/download/v0.1.243/codela-storefront-0.1.243.zip",
+  "requires": {
+    "codela": "1.2.5",
+    "php": "8.0",
+    "woocommerce": "9.0",
+    "wordpress": "6.5"
+  },
+  "sha256": "90ff3e268ec896859d9cea0d3c722c932cd08c5d5249ec6810a65f8a8c747947",
+  "source_sha": "a935d4b150946705f79f997ec4aa35f3d52f58f2",
+  "theme": "codela-storefront",
+  "version": "0.1.243"
+}
