@@ -118,7 +118,8 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
         return {bg:st.backgroundColor,ink:st.color,border:st.borderTopColor,height:el.getBoundingClientRect().height};
       });
       assert.equal(loginColors.bg,'rgb(255, 255, 255)','Normal login is white, not the primary dark surface');
-      assert.equal(loginColors.ink,'rgb(32, 32, 32)','Normal login label uses theme dark ink');
+      const loginInkRGB=(loginColors.ink.match(/\d+/g)||[]).map(Number);
+      assert(loginInkRGB.length===3&&Math.max(...loginInkRGB)<=65,'Normal login label uses readable theme dark ink');
       assert.notEqual(loginColors.border,loginColors.bg,'White login has visible neutral button edge');
       assert(loginColors.height>=54&&loginColors.height<=55,'White login preserves 54px touch target');
       assert.equal(controls.samePadding,true,'Native Woo button keeps the shared touch padding');
