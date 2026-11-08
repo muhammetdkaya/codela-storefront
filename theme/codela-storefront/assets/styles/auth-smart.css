@@ -156,3 +156,21 @@
 html.sf-quick-checking .woocommerce.sf-smart-auth-active > .sf-smart-auth{
  display:none!important
 }
+
+/* Both the standalone Woo template and the instant Account panel define an
+   older white native submit with high-specificity !important declarations.
+   The progressive ready state MUST take precedence in either host. */
+:is(body.woocommerce-account:not(.logged-in),#sf-panel.is-account-panel)
+ .woocommerce.sf-smart-existing.sf-smart-password-ready
+ .woocommerce-form-login button.woocommerce-form-login__submit,
+:is(body.woocommerce-account:not(.logged-in),#sf-panel.is-account-panel)
+ .woocommerce.sf-smart-unavailable.sf-smart-password-ready
+ .woocommerce-form-login button.woocommerce-form-login__submit,
+:is(body.woocommerce-account:not(.logged-in),#sf-panel.is-account-panel)
+ .woocommerce.sf-smart-new.sf-smart-register-ready
+ .woocommerce-form-register button[type="submit"]{
+  background:#252628!important;background-image:none!important;
+  color:#fff!important;border-color:#252628!important;
+  box-shadow:none!important;min-height:54px!important;
+  display:flex!important;align-items:center;justify-content:center;
+}
