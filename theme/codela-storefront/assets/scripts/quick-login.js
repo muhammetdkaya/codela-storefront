@@ -659,11 +659,12 @@
           returnButton.className='sf-quick-return';
           returnButton.hidden=true;
           returnButton.setAttribute('aria-label','Hızlı giriş ekranına dön');
-          const arrow=document.createElement('span');
-          arrow.className='sf-quick-return-arrow';
-          arrow.setAttribute('aria-hidden','true');
-          arrow.textContent='←';
-          returnButton.append(arrow,document.createTextNode('Hızlı girişe dön'));
+          const icon=document.createElement('span');
+          icon.className='sf-quick-return-icon';
+          icon.setAttribute('aria-hidden','true');
+          // A platform-neutral Face ID scan icon also represents PIN/passkey.
+          icon.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M4 9V6a2 2 0 0 1 2-2h3M15 4h3a2 2 0 0 1 2 2v3M20 15v3a2 2 0 0 1-2 2h-3M9 20H6a2 2 0 0 1-2-2v-3"/><path d="M9 9h.01M15 9h.01M12 9v4M9 16c1.5 1.5 4.5 1.5 6 0"/></svg>';
+          returnButton.append(icon,document.createTextNode('Hızlı girişe dön'));
           const social=host.querySelector('.sf-auth-social');
           if(social)social.before(returnButton);
           else nativeForm.before(returnButton);
