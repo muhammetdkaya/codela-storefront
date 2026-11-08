@@ -278,6 +278,7 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'Use your phone or device' => 'Telefonunun güvenliğini kullan',
 'Sign in with email or Google' => 'E-posta veya Google ile giriş yap',
 'Sign in securely with your account.' => 'Hesabınla güvenli ve hızlı giriş yap.',
+'Continue securely with your account.' => 'Hesabınla güvenli ve kolayca devam et.',
 'Sign in with your device verification. Your password and Google sign-in remain available.' => 'Telefonunla hızlı giriş yap. E-posta, şifre ve Google seçenekleri çalışmaya devam eder.',
 'Passkey verification failed. Use your password or try again.' => 'Cihaz doğrulaması başarısız. Tekrar dene veya şifreyle giriş yap.',
 'Checking account…' => 'Hesap kontrol ediliyor…',

@@ -37,7 +37,9 @@ function codela_sf_account_intro(): void {
         data-auth-smart-password-link="<?php esc_attr_e( 'Your password setup link will be sent by email.', 'codela-storefront' ); ?>"
         data-auth-smart-name-required="<?php esc_attr_e( 'Enter your first and last name.', 'codela-storefront' ); ?>"
         data-auth-smart-first="<?php esc_attr_e( 'First name', 'codela-storefront' ); ?>"
-        data-auth-smart-last="<?php esc_attr_e( 'Last name', 'codela-storefront' ); ?>">
+        data-auth-smart-last="<?php esc_attr_e( 'Last name', 'codela-storefront' ); ?>"
+        data-auth-smart-title="<?php esc_attr_e( 'Welcome', 'codela-storefront' ); ?>"
+        data-auth-smart-description="<?php esc_attr_e( 'Continue securely with your account.', 'codela-storefront' ); ?>">
         <h1 id="sf-auth-view-title"><span class="sf-auth-heading-text"><?php esc_html_e( 'Welcome back', 'codela-storefront' ); ?></span> <span class="sf-auth-heading-wave" aria-hidden="true">👋</span></h1>
         <p class="sf-auth-description"><?php esc_html_e( 'Sign in to your account.', 'codela-storefront' ); ?></p>
     </header>

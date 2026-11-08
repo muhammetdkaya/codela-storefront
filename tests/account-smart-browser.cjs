@@ -20,7 +20,8 @@ data-auth-smart-label="Email or username" data-auth-smart-first="First name"
 data-auth-smart-last="Last name" data-auth-smart-checking="Checking account…"
 data-auth-smart-error="Check unavailable" data-auth-smart-closed="Registration closed"
 data-auth-smart-change="Change email" data-auth-smart-register="Create account"
-data-auth-smart-password-link="Password link emailed">
+data-auth-smart-password-link="Password link emailed"
+data-auth-smart-title="Welcome" data-auth-smart-description="Continue securely with your account.">
 <h1><span class="sf-auth-heading-text">Welcome back</span>
 <span class="sf-auth-heading-wave">👋</span></h1>
 <p class="sf-auth-description">Sign in to your account.</p></header>
@@ -120,7 +121,7 @@ data-auth-smart-password-link="Password link emailed">
    assert(await page.locator('.woocommerce-form-register button[type=submit]').isVisible(),'Register appears after required details');
    assert.equal(await page.locator('.sf-auth-google').isVisible(),true,'Google remains available in same screen');
    assert.equal(await page.locator('.sf-auth-register-cta').isVisible(),false,'Old separate registration action remains absent');
-   assert.equal(await page.locator('.sf-auth-heading-text').innerText(),'Welcome back','Welcome header remains on one unified page');
+   assert.equal(await page.locator('.sf-auth-heading-text').innerText(),'Welcome','Welcome header remains on one unified page');
    await uid.fill('limited@example.test');
    await page.waitForFunction(()=>document.querySelector('.woocommerce')?.classList.contains('sf-smart-unavailable'));
    assert(await page.locator('.sf-smart-manual-register').isVisible(),'Throttled lookup has native fallback');

@@ -84,9 +84,9 @@
       }));
       // A single welcome heading persists across both native form stages.
       const title=query(intro,'.sf-auth-heading-text');
-      if(title)title.textContent=intro.dataset.authLoginTitle||'Welcome';
+      if(title)title.textContent=intro.dataset.authSmartTitle||intro.dataset.authLoginTitle||'Welcome';
       const sub=query(intro,'.sf-auth-description');
-      if(sub)sub.textContent=intro.dataset.authLoginDescription||'Sign in securely.';
+      if(sub)sub.textContent=intro.dataset.authSmartDescription||intro.dataset.authLoginDescription||'Sign in securely.';
       const wave=query(intro,'.sf-auth-heading-wave');
       if(wave)wave.hidden=false;
     };
@@ -233,6 +233,7 @@
         registerEmail.value=active;
       },true);
     }
+    setStage('start');
     // When password manager/autofill has filled a native username, reflect it
     // without triggering an account lookup before user interaction.
     if(loginUser.value && !input.value){
