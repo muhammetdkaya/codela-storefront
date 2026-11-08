@@ -22,8 +22,13 @@ assert(js.includes("host.classList.remove('sf-passkey-active','sf-pin-active')")
   'Email and Google fallback releases the fast sign in state');
 assert(js.includes("section.querySelector('.sf-pk-use-email')?.addEventListener"),
   'Native Woo login can be deliberately selected');
-assert(js.includes("legacy = JSON.parse(localStorage.getItem('codela_sf_quick_profile_v1')") && js.includes("host.addEventListener('codela:quick-status', onQuickStatus)") && js.includes("quick.classList.add('has-passkey')"),
-  'Original native PIN login remains available');
+assert(js.includes("host.addEventListener('codela:quick-status',connectCards)") &&
+  js.includes("quick.classList.add('has-passkey')") &&
+  js.includes("quick.dataset.sfQuickUserId"),
+  'The remembered passkey attaches to its own account card, with PIN available independently');
+assert(js.includes("const remembered = selectedHint || getHint()") &&
+  js.includes("store.storePasskey(saved)"),
+  'Native passkey requests target selected accounts and registration preserves other local users');
 assert(php.includes("isset( $stored[ $hint ] )") && php.includes("empty( $stored[ $hint ]['paused'] )"),
   'Credential hint cannot bypass server-side registration and paused status');
 assert(php.includes("'allowed_id' => $allowed_id") &&

@@ -38,8 +38,16 @@ assert(js.includes("currentBrowserStatus(profile, privateKey)") &&
   js.includes("await forgetRemembered(profile)"),'Saved browser is verified server-side and revoked devices are removed');
 assert(js.includes("browserStatus.authenticated") && js.includes("freshAccountDocument()"),
   'Cached anonymous HTML is replaced when actual WordPress cookie is present');
-assert(js.includes("Number(config.identity.userId) !== profile.userId") &&
-  js.includes("await forgetRemembered(profile)"),'Different Google/password account clears previous remembered identity');
+assert(js.includes("const signedInPin=identity && accountStore.pins().find(") &&
+  !js.includes("Number(config.identity.userId) !== profile.userId"),
+  'Other remembered customer profiles remain after signing into a different account');
+assert(js.includes("accountStore.storePin({") && js.includes("accountStore.forgetPin(profile.deviceId)"),
+  'PIN enrollment and revocation are scoped to one account/device');
+assert(js.includes("const handleDigits = () =>") && js.includes("input.blur();") &&
+  js.includes("if (input.value.length === 6) {"),
+  'Six digits immediately auto-submit and dismiss the native iOS keyboard');
+assert(js.includes("renderGuestAccountGroups()") && js.includes("showPasskeyOnly(section,account.passkey)"),
+  'Quick login renders several saved customer cards with independent methods');
 assert(php.includes("wp_ajax_nopriv_codela_sf_quick_status") &&
   php.includes("codela_sf_quick_status_active"),'Read-only device status uses real WordPress cookie context');
 assert(php.includes("woocommerce_logout_default_redirect_url") &&
