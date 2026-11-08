@@ -242,7 +242,9 @@
       return;
     }
     // A parallel tab may have disabled quick login while status was in flight.
-    if (log()?.deviceId !== profile.deviceId) { report(false); return; }
+    if (!accountStore.pins().some(x=>x.deviceId===profile.deviceId && x.userId===profile.userId)) {
+      report(false); return;
+    }
     const host = section.closest('.sf-overlay-auth') || section.closest('.woocommerce');
     if (!host) return;
     const choose = section.querySelector('.sf-quick-method--pin');
@@ -490,10 +492,11 @@
 
     // Another tab may revoke the recognized device while the card is open.
     window.addEventListener('storage', event => {
-      if (event.key !== savedKey || log()?.deviceId === profile.deviceId) return;
-      closeInline(false, true);
-      section.hidden = true;
-      host.classList.remove('sf-pin-active');
+      if(![savedKey,savedListKey].includes(event.key))return;
+      if(accountStore.pins().some(x=>x.deviceId===profile.deviceId))return;
+      closeInline(false,true);
+      section.hidden=true;
+      if(!host.querySelector('.sf-quick-login:not([hidden])'))host.classList.remove('sf-pin-active');
     });
   }
 
@@ -506,11 +509,12 @@
     const status = settings.querySelector('.sf-quick-enroll-status');
     // Previous devices stored a username only. Refresh their display label
     // whenever the customer visits WooCommerce Account Information again.
-    const remembered = log();
-    if (remembered && remembered.userId === userId) {
-      remembered.displayName = settings.dataset.displayName || remembered.username || '';
-      remembered.email = settings.dataset.email || remembered.email || '';
-      localStorage.setItem(savedKey, JSON.stringify(remembered));
+    const remembered = accountStore.pins().find(x=>x.userId===userId);
+    if (remembered) {
+      accountStore.storePin({...remembered,
+        displayName:settings.dataset.displayName || remembered.username || '',
+        email:settings.dataset.email || remembered.email || ''
+      });
     }
     button?.addEventListener('click', async () => {
       const pin = pinInput.value;
@@ -532,11 +536,11 @@
         await request('enroll', {
           device_id:deviceId, public_key:publicKey, signature:signed, pin
         });
-        localStorage.setItem(savedKey, JSON.stringify({
+        accountStore.storePin({
           deviceId, userId, username:settings.dataset.username || '',
           displayName:settings.dataset.displayName || settings.dataset.username || '',
           email:settings.dataset.email || ''
-        }));
+        });
         pinInput.value = '';
         confirm.value = '';
         status.textContent = t('enabled','Quick sign-in is enabled for this browser.');
@@ -564,11 +568,8 @@
         const deviceId = button.dataset.deviceId;
         try {
           await request('revoke', {device_id:deviceId});
-          const profile = log();
-          if (profile && profile.deviceId === deviceId) {
-            localStorage.removeItem(savedKey);
-            await forgetKey(deviceId);
-          }
+          const profile = accountStore.pins().find(x=>x.deviceId===deviceId);
+          if(profile) await forgetRemembered(profile);
           window.location.reload();
         } catch (error) {
           status.textContent = error.message || t('revokeFailed','Could not remove browser.');
@@ -579,30 +580,25 @@
   }
   async function init() {
     try {
-    const profile = log();
-    // A previously enrolled browser may have saved only "demo". On the next
-    // normal Woo sign-in, replace that hint with the actual customer name.
-    if (profile && Number.isSafeInteger(Number(config.identity?.userId))
-      && Number(config.identity.userId) > 0 && Number(config.identity.userId) !== profile.userId) {
-      // Google or password signed into a DIFFERENT customer. Never suggest
-      // the previous account on subsequent logout; discard its local key.
-      await forgetRemembered(profile);
-    } else if (profile && config.identity?.userId === profile.userId) {
-      // A signed-in account refreshes its *own* display metadata only.
-      if (typeof config.identity.displayName === 'string' && config.identity.displayName.trim()) {
-        profile.displayName = config.identity.displayName.trim();
-      }
-      profile.email = typeof config.identity.email === 'string' ? config.identity.email.trim() : (profile.email || '');
-      localStorage.setItem(savedKey, JSON.stringify(profile));
+    const identity=config.identity;
+    // A different real Woo/Google login must NOT discard trusted devices for
+    // other local customer accounts. Only refresh the signed-in user's hint.
+    const signedInPin=identity && accountStore.pins().find(
+      item=>item.userId===Number(identity.userId)
+    );
+    if(signedInPin){
+      accountStore.storePin({...signedInPin,
+        displayName:typeof identity.displayName==='string' && identity.displayName.trim()
+          ? identity.displayName.trim():signedInPin.displayName,
+        email:typeof identity.email==='string'?identity.email.trim():signedInPin.email
+      });
     }
-    if (log()) {
-      // All login surfaces refer to the same browser key but are independent dialogs.
-      for (const section of document.querySelectorAll('.sf-quick-login')) {
-        try { await initGuest(section,log()); }
-        catch (_) {
-          announceQuickStatus(section, log() || profile, false);
-          // Always preserve the native Woo login fallback.
-        }
+    if(!identity){
+      for(const section of document.querySelectorAll('.sf-quick-login')){
+        const profile=log();
+        if(!profile)continue;
+        try { await initGuest(section,profile); }
+        catch (_){ announceQuickStatus(section,profile,false); }
       }
     }
     for (const settings of document.querySelectorAll('.sf-quick-settings')) {
