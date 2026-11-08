@@ -183,3 +183,10 @@ body.woocommerce-account .woocommerce.sf-smart-auth-active > .sf-auth-register-c
 body.woocommerce-account .woocommerce.sf-smart-auth-active .sf-auth-back-login{
  display:none!important;visibility:hidden!important
 }
+
+/* The former standalone registration view hides Google. Smart registration
+   is not another page: keep the same Google alternative beneath both stages. */
+#sf-panel.is-account-panel .woocommerce.sf-smart-auth-active.sf-auth-register-view > .sf-auth-social,
+body.woocommerce-account:not(.logged-in) .woocommerce.sf-smart-auth-active.sf-auth-register-view > .sf-auth-social{
+ display:flex!important;visibility:visible!important
+}
