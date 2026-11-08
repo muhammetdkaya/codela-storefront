@@ -69,9 +69,17 @@
       }
     };
   }
-  async function signIn(node) {
+  async function signIn(node, button) {
+    if (button?.disabled) return;
     if (!available) { notify(node,'Bu cihazda geçiş anahtarı desteklenmiyor. E-posta ile devam edebilirsiniz.'); return; }
-    notify(node,'Telefon doğrulaması açılıyor…');
+    // Only the selected Face ID glyph animates while the real iOS/Android
+    // authenticator is pending. No visible "Telefon doğrulaması açılıyor" row.
+    notify(node,'');
+    if (button) {
+      button.disabled = true;
+      button.classList.add('is-verifying');
+      button.setAttribute('aria-busy','true');
+    }
     try {
       // Target this exact saved credential rather than making iOS present a
       // general passkey/account picker before its system verification.
@@ -94,6 +102,12 @@
     } catch (error) {
       notify(node, error?.name === 'NotAllowedError' ? 'Doğrulama iptal edildi.' :
         (error?.message || 'Giriş tamamlanamadı.'));
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.classList.remove('is-verifying');
+        button.removeAttribute('aria-busy');
+      }
     }
   }
   async function register(settings, button, status) {
@@ -161,55 +175,99 @@
   }
   function initGuest(section) {
     const host = section.closest('.sf-overlay-auth') || section.closest('.woocommerce');
-    if(!host || !available)return;
+    if (!host || !available) return;
     const remembered = getHint();
-    if (remembered && !remembered.paused) {
-      const name = section.querySelector('.sf-pk-name');
-      const detail = section.querySelector('.sf-pk-detail');
-      const avatar = section.querySelector('.sf-pk-avatar');
-      if (remembered.displayName) {
-        name.textContent=remembered.displayName;
-        avatar.textContent=Array.from(remembered.displayName)[0]?.toUpperCase()||'◉';
-      }
-      if (remembered.email) detail.textContent=remembered.email;
-      section.hidden=false;
+    if (!remembered || remembered.paused) return;
+
+    const name = section.querySelector('.sf-pk-name');
+    const detail = section.querySelector('.sf-pk-detail');
+    const avatar = section.querySelector('.sf-pk-avatar');
+    if (remembered.displayName) {
+      name.textContent = remembered.displayName;
+      avatar.textContent = Array.from(remembered.displayName)[0]?.toUpperCase() || '◉';
+    }
+    if (remembered.email) detail.textContent = remembered.email;
+
+    const standalone = () => {
+      section.hidden = false;
+      host.classList.remove('sf-pin-active');
       host.classList.add('sf-passkey-active');
-      const btn = section.querySelector('.sf-pk-choice');
+      const button = section.querySelector('.sf-pk-choice');
       const result = document.createElement('p');
-      result.className='sf-pk-guest-status';
-      result.setAttribute('role','status');result.setAttribute('aria-live','polite');
-      btn.after(result);
-      btn.addEventListener('click',()=>signIn(result));
-      // Preserve the existing six-digit PIN account card as an explicit fallback.
-      // Only offer it if the old non-exportable browser credential is present.
-      try {
-        const legacy = JSON.parse(localStorage.getItem('codela_sf_quick_profile_v1') || 'null');
-        if (legacy?.userId === remembered.userId) {
-          const alternative = document.createElement('button');
-          alternative.type='button';
-          alternative.className='sf-pk-use-pin';
-          alternative.textContent='6 haneli kod ile giriş';
-          section.querySelector('.sf-pk-use-email')?.before(alternative);
-          alternative.addEventListener('click',()=>{
-            const card=host.querySelector('.sf-quick-login');
-            if (card && !card.hidden) {
-              host.classList.remove('sf-passkey-active');
-              host.classList.add('sf-pin-active');
-              section.hidden=true;
-            } else notify(result,'Eski giriş bu tarayıcıda kullanılamıyor. E-posta ile giriş yapabilirsiniz.');
-          });
-        }
-      } catch (_) { /* No legacy credential hint. */ }
-      section.querySelector('.sf-pk-use-email')?.addEventListener('click',()=>{
-        host.classList.remove('sf-passkey-active','sf-pin-active');
-        host.querySelectorAll('.sf-quick-login').forEach(node=>node.hidden=true);
-        section.hidden=true;
-      });
+      result.className = 'sf-pk-guest-status';
+      result.setAttribute('role','status');
+      result.setAttribute('aria-live','polite');
+      button.after(result);
+      button.addEventListener('click', () => void signIn(result, button));
+    };
+
+    const useNative = () => {
+      host.classList.remove('sf-passkey-active','sf-pin-active');
+      host.querySelectorAll('.sf-quick-login').forEach(node => { node.hidden = true; });
+      section.hidden = true;
+    };
+    section.querySelector('.sf-pk-use-email')?.addEventListener('click', useNative);
+
+    // A verified PIN and a remembered passkey for this SAME customer share
+    // ONE identity card. Wait for the PIN server check before deciding which
+    // view to paint; independent script startup used to flash both surfaces.
+    let legacy = null;
+    try {
+      legacy = JSON.parse(localStorage.getItem('codela_sf_quick_profile_v1') || 'null');
+    } catch (_) { /* No valid browser PIN hint. */ }
+    const matchingPin = legacy?.userId === remembered.userId
+      && /^[0-9a-f]{32}$/.test(legacy.deviceId || '');
+    if (!matchingPin) {
+      standalone();
       return;
     }
-    // Without a saved local passkey hint this is the ordinary Woo login.
-    // Do not inject another CTA or disrupt the native registration flow.
-    // Synced credentials can be enabled after standard account sign-in.
+
+    let resolved = false;
+    let safetyTimer = null;
+    const onQuickStatus = event => {
+      const data = event.detail;
+      if (resolved || !data || Number(data.userId) !== remembered.userId) return;
+      resolved = true;
+      if (safetyTimer) clearTimeout(safetyTimer);
+      host.removeEventListener('codela:quick-status', onQuickStatus);
+      const quick = host.querySelector('.sf-quick-login');
+      const bio = quick?.querySelector('.sf-quick-method--passkey');
+      if (!data.active || !quick || quick.hidden || !bio) {
+        standalone();
+        return;
+      }
+      // PIN is already trusted by the server. Preserve its expanded inline
+      // code interface and add a separate native biometric gesture target.
+      quick.classList.add('has-passkey');
+      bio.hidden = false;
+      section.hidden = true;
+      host.classList.remove('sf-passkey-active');
+      const error = document.createElement('p');
+      error.className = 'sf-quick-passkey-error';
+      error.setAttribute('role','status');
+      error.setAttribute('aria-live','polite');
+      quick.querySelector('.sf-quick-account-frame')?.after(error);
+      bio.addEventListener('click', () => {
+        if (bio.disabled) return;
+        if (quick.querySelector('.sf-quick-pin-track.is-checking')) return;
+        if (quick.classList.contains('is-inline-open')) {
+          quick.dispatchEvent(new CustomEvent('codela:quick-pin-close'));
+        }
+        void signIn(error, bio);
+      });
+    };
+
+    host.addEventListener('codela:quick-status', onQuickStatus);
+    if (host.dataset.sfQuickStatus && Number(host.dataset.sfQuickUserId) === remembered.userId) {
+      onQuickStatus({detail:{active:host.dataset.sfQuickStatus === 'active',
+        userId:remembered.userId}});
+    } else {
+      // If a browser's PIN module is unavailable, never trap the visitor
+      // behind the preflight skeleton; show the working passkey alone.
+      safetyTimer = window.setTimeout(() => onQuickStatus({
+        detail:{active:false,userId:remembered.userId}
+      }), 13500);
+    }
   }
   function init(){
     document.querySelectorAll('[data-pk-settings]').forEach(initSettings);

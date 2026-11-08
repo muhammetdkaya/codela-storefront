@@ -137,10 +137,21 @@
     window.location.replace(destination.href);
   }
 
+  function announceQuickStatus(section, profile, active) {
+    const host = section.closest('.sf-overlay-auth') || section.closest('.woocommerce');
+    if (!host) return;
+    host.dataset.sfQuickStatus = active ? 'active' : 'inactive';
+    host.dataset.sfQuickUserId = String(profile.userId);
+    host.dispatchEvent(new CustomEvent('codela:quick-status', {
+      detail:{active, userId:profile.userId}
+    }));
+  }
   async function initGuest(section, profile) {
+    const report = active => announceQuickStatus(section, profile, active);
     const privateKey = await getKey(profile.deviceId);
     if (!privateKey) {
       await forgetRemembered(profile);
+      report(false);
       return;
     }
     let browserStatus;
@@ -148,6 +159,7 @@
     catch (_) {
       // The network may be unavailable: keep normal Woo/Google login, never
       // present an unverified remembered account as usable.
+      report(false);
       return;
     }
     if (browserStatus.authenticated) {
@@ -155,16 +167,17 @@
       freshAccountDocument();
       return;
     }
-    if (browserStatus.active && browserStatus.paused) return; // Pause keeps the local key for later reactivation.
+    if (browserStatus.active && browserStatus.paused) { report(false); return; } // Pause keeps the local key for later reactivation.
     if (!browserStatus.active) {
       await forgetRemembered(profile);
+      report(false);
       return;
     }
     // A parallel tab may have disabled quick login while status was in flight.
-    if (log()?.deviceId !== profile.deviceId) return;
+    if (log()?.deviceId !== profile.deviceId) { report(false); return; }
     const host = section.closest('.sf-overlay-auth') || section.closest('.woocommerce');
     if (!host) return;
-    const choose = section.querySelector('.sf-quick-account');
+    const choose = section.querySelector('.sf-quick-method--pin');
     const frame = section.querySelector('.sf-quick-account-frame');
     const inline = section.querySelector('.sf-quick-inline-pin');
     const changeAccount = section.querySelector('.sf-quick-switch');
@@ -189,6 +202,9 @@
     section.hidden = false;
     host.classList.add('sf-pin-active');
     inline.inert = true;
+    // The passkey module may now enrich this SAME verified card with a Face ID
+    // icon; no second welcome/identity card may be rendered beside it.
+    report(true);
 
     let pending = false;
     let challengePromise = null;
@@ -375,6 +391,8 @@
       else openInline();
     });
     changeAccount?.addEventListener('click', () => showNativeLogin('login'));
+    section.querySelector('.sf-quick-native-alt')?.addEventListener('click', () => showNativeLogin('login'));
+    section.addEventListener('codela:quick-pin-close', () => closeInline(false));
     scrim.addEventListener('click', () => closeInline());
     track.addEventListener('click', () => {
       if (!pending && section.classList.contains('is-inline-open')) input.focus({preventScroll:true});
@@ -513,7 +531,10 @@
       // All login surfaces refer to the same browser key but are independent dialogs.
       for (const section of document.querySelectorAll('.sf-quick-login')) {
         try { await initGuest(section,log()); }
-        catch (_) { /* Always preserve the native Woo login fallback. */ }
+        catch (_) {
+          announceQuickStatus(section, log() || profile, false);
+          // Always preserve the native Woo login fallback.
+        }
       }
     }
     for (const settings of document.querySelectorAll('.sf-quick-settings')) {

@@ -439,3 +439,63 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
   font-size:14px!important;font-weight:600!important;line-height:1.3!important;
   text-align:center!important;cursor:pointer;
 }
+
+/* 0.1.246 — One verified identity card with explicitly selectable passkey
+   and PIN icons. No nested button, duplicate account card or inline method
+   switch below the shared passkey/PIN card. */
+.sf-quick-account{cursor:default!important}
+.sf-quick-account:active{transform:none!important}
+.sf-quick-methods{display:flex;align-items:center;gap:3px;flex:none;margin-left:auto}
+.sf-quick-method{
+  position:relative;display:grid;place-items:center;box-sizing:border-box;
+  width:43px;height:44px;flex:none;border:0!important;border-radius:14px!important;
+  padding:9px!important;background:transparent!important;color:#252529!important;
+  box-shadow:none!important;-webkit-appearance:none;appearance:none;cursor:pointer;
+}
+.sf-quick-method[hidden]{display:none!important}
+.sf-quick-method svg{display:block;width:25px;height:25px;position:relative;z-index:1}
+.sf-quick-method--passkey svg{width:27px;height:27px}
+.sf-quick-method:focus-visible{outline:2px solid #252628!important;outline-offset:2px}
+.sf-quick-method:active,.sf-quick-method:hover{background:#f0f0f2!important}
+.sf-quick-method--pin[aria-expanded="true"]{background:#f0f0f2!important}
+.sf-quick-native-alt{display:none}
+.sf-quick-login.has-passkey .sf-quick-choice-intro h2{
+  font-size:clamp(32px,5vw,42px)!important;font-weight:500!important;letter-spacing:-.045em
+}
+.sf-quick-login.has-passkey .sf-quick-choice-intro p{font-weight:400!important}
+.sf-quick-login.has-passkey .sf-quick-choice-alternatives > :is(.sf-quick-google,.sf-quick-switch){display:none!important}
+.sf-quick-login.has-passkey .sf-quick-choice-alternatives .sf-quick-native-alt{
+  display:flex!important;justify-content:center;align-items:center;
+  width:100%;min-height:54px;margin:4px 0 0;padding:12px 18px;
+  border:1px solid #252628!important;border-radius:999px!important;
+  background:#252628!important;color:#fff!important;box-shadow:none!important;
+  font:inherit;font-size:14px;font-weight:600;text-align:center;cursor:pointer;
+}
+.sf-quick-passkey-error:empty,.sf-pk-guest-status:empty{display:none!important}
+.sf-quick-passkey-error:not(:empty){margin:9px 0 0;text-align:center;color:#a64a4a;font-size:12px}
+.sf-quick-method--passkey.is-verifying,
+.sf-pk-choice.is-verifying .sf-pk-symbol{position:relative;isolation:isolate}
+.sf-quick-method--passkey.is-verifying::before,
+.sf-pk-choice.is-verifying .sf-pk-symbol::before{
+  content:"";position:absolute;inset:3px;border-radius:50%;
+  border:1.5px solid rgba(40,45,54,.26);
+  animation:sf-bio-halo 1.35s cubic-bezier(.25,.65,.25,1) infinite;
+  pointer-events:none
+}
+.sf-quick-method--passkey.is-verifying svg,
+.sf-pk-choice.is-verifying .sf-pk-symbol svg{
+  animation:sf-bio-breathe 1.35s ease-in-out infinite;transform-origin:center
+}
+.sf-quick-method--passkey:disabled,.sf-pk-choice:disabled{opacity:1!important;cursor:progress}
+@keyframes sf-bio-halo{
+  0%{opacity:0;transform:scale(.78)}
+  32%{opacity:.8}
+  100%{opacity:0;transform:scale(1.4)}
+}
+@keyframes sf-bio-breathe{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.66;transform:scale(.92)}}
+@media(prefers-reduced-motion:reduce){
+  .sf-quick-method--passkey.is-verifying::before,
+  .sf-pk-choice.is-verifying .sf-pk-symbol::before,
+  .sf-quick-method--passkey.is-verifying svg,
+  .sf-pk-choice.is-verifying .sf-pk-symbol svg{animation:none!important}
+}

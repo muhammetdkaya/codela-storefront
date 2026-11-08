@@ -326,16 +326,28 @@ function codela_sf_quick_guest_markup(): void {
                 <p><?php esc_html_e( 'Continue quickly with your account.', 'codela-storefront' ); ?></p>
             </div>
             <div class="sf-quick-account-frame">
-                <button type="button" class="sf-quick-account sf-ui-pressable"
-                    aria-expanded="false" aria-controls="sf-quick-inline-pin">
+                <div class="sf-quick-account">
                     <span class="sf-quick-monogram" aria-hidden="true"></span>
                     <span class="sf-quick-account-text"><strong class="sf-quick-user"></strong><small class="sf-quick-email" hidden></small></span>
-                    <span class="sf-quick-chevron" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" focusable="false">
-                            <path d="m5 9 7 7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                    <span class="sf-quick-methods" role="group" aria-label="<?php esc_attr_e( 'Quick sign-in methods', 'codela-storefront' ); ?>">
+                        <button type="button" class="sf-quick-method sf-quick-method--passkey" hidden
+                            aria-label="<?php esc_attr_e( 'Sign in with Face ID or device verification', 'codela-storefront' ); ?>">
+                            <?php echo function_exists( 'codela_sf_pk_glyph' ) ? codela_sf_pk_glyph() : ''; ?>
+                        </button>
+                        <button type="button" class="sf-quick-method sf-quick-method--pin"
+                            aria-label="<?php esc_attr_e( 'Sign in with your 6-digit code', 'codela-storefront' ); ?>"
+                            aria-expanded="false" aria-controls="sf-quick-inline-pin">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor"
+                                stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="3.5" y="3.5" width="17" height="17" rx="5"/>
+                                <circle cx="9" cy="9" r="1" fill="currentColor" stroke="none"/>
+                                <circle cx="15" cy="9" r="1" fill="currentColor" stroke="none"/>
+                                <circle cx="9" cy="15" r="1" fill="currentColor" stroke="none"/>
+                                <circle cx="15" cy="15" r="1" fill="currentColor" stroke="none"/>
+                            </svg>
+                        </button>
                     </span>
-                </button>
+                </div>
                 <div class="sf-quick-inline-pin" id="sf-quick-inline-pin" aria-hidden="true">
                     <div class="sf-quick-inline-inner">
                         <div class="sf-quick-inline-divider" aria-hidden="true"></div>
@@ -359,6 +371,7 @@ function codela_sf_quick_guest_markup(): void {
             </div>
             <div class="sf-quick-choice-alternatives">
                 <div class="sf-quick-or"><span><?php esc_html_e( 'or', 'codela-storefront' ); ?></span></div>
+                <button type="button" class="sf-quick-native-alt"><?php esc_html_e( 'Sign in with email or Google', 'codela-storefront' ); ?></button>
                 <?php $google_available = function_exists( 'codela_sf_google_enabled' ) && codela_sf_google_enabled(); ?>
                 <?php if ( $google_available ) : ?>
                     <a class="sf-quick-google" href="<?php echo esc_url( codela_sf_google_auth_url() ); ?>">
