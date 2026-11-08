@@ -7,17 +7,85 @@
   'use strict';
   const config = window.CodelaQuickLogin;
   if (!config || !window.isSecureContext || !crypto?.subtle || !window.indexedDB) return;
-  const savedKey = 'codela_sf_quick_profile_v1';
+  const savedKey = 'codela_sf_quick_profile_v1'; // Migrated legacy single-account hint.
+  const savedListKey = 'codela_sf_quick_profiles_v2';
+  const passkeyLegacyKey = 'codela_sf_passkey_hint_v1';
+  const passkeyListKey = 'codela_sf_passkey_hints_v2';
+  const selectedAccountKey = 'codela_sf_selected_account_v2';
   const databaseName = 'codela_sf_quick_keys_v1';
   const encoding = new TextEncoder();
   const t = (key, fallback) => config.strings?.[key] || fallback;
-  const log = () => {
-    try {
-      const profile = JSON.parse(localStorage.getItem(savedKey) || 'null');
-      return profile && Number.isSafeInteger(profile.userId)
-        && /^[a-f0-9]{32}$/.test(profile.deviceId || '') ? profile : null;
-    } catch (_) { return null; }
+  // Local storage holds ONLY account names and public device/credential IDs.
+  // Private ECDSA keys stay non-exportable in IndexedDB; neither a saved row
+  // nor an old WordPress session can log in without server-side verification.
+  const readJSON = (name, fallback) => {
+    try { const value=JSON.parse(localStorage.getItem(name) || 'null');return value ?? fallback; }
+    catch (_) { return fallback; }
   };
+  const validPin = item => item && Number.isSafeInteger(item.userId) && item.userId>0
+    && typeof item.deviceId === 'string' && /^[a-f0-9]{32}$/.test(item.deviceId);
+  const validPasskey = item => item && Number.isSafeInteger(item.userId) && item.userId>0
+    && typeof item.credentialId === 'string' && item.credentialId.length>8
+    && item.credentialId.length<4096;
+  const preferredUser = () => Number(localStorage.getItem(selectedAccountKey)) || 0;
+  const ordered = items => {
+    const preferred=preferredUser();
+    return [...items].sort((a,b)=>Number(b.userId===preferred)-Number(a.userId===preferred));
+  };
+  function readHints(listName, legacyName, valid, uniqueField) {
+    const stored=readJSON(listName,[]);
+    const list=Array.isArray(stored)?stored.filter(valid).slice(0,12):[];
+    const legacy=readJSON(legacyName,null);
+    if(valid(legacy) && !list.some(item=>item.userId===legacy.userId || item[uniqueField]===legacy[uniqueField])){
+      list.push(legacy);
+    }
+    const seen=new Set();
+    return ordered(list.filter(item=>{
+      if(seen.has(item.userId)) return false;
+      seen.add(item.userId);
+      return true;
+    })).slice(0,8);
+  }
+  const pins=()=>readHints(savedListKey,savedKey,validPin,'deviceId');
+  const passkeys=()=>readHints(passkeyListKey,passkeyLegacyKey,validPasskey,'credentialId');
+  const select=userId=>{
+    if(Number.isSafeInteger(Number(userId)) && Number(userId)>0){
+      localStorage.setItem(selectedAccountKey,String(userId));
+    }
+  };
+  const storePin=profile=>{
+    if(!validPin(profile))return;
+    const updated=[profile,...pins().filter(x=>x.userId!==profile.userId)].slice(0,8);
+    localStorage.setItem(savedListKey,JSON.stringify(updated));
+    localStorage.removeItem(savedKey);
+    select(profile.userId);
+  };
+  const forgetPin=deviceId=>{
+    localStorage.setItem(savedListKey,JSON.stringify(pins().filter(item=>item.deviceId!==deviceId)));
+    const old=readJSON(savedKey,null);
+    if(old?.deviceId===deviceId)localStorage.removeItem(savedKey);
+  };
+  const storePasskey=hint=>{
+    if(!validPasskey(hint))return;
+    localStorage.setItem(passkeyListKey,JSON.stringify(
+      [hint,...passkeys().filter(item=>item.userId!==hint.userId)].slice(0,8)
+    ));
+    localStorage.removeItem(passkeyLegacyKey);
+    select(hint.userId);
+  };
+  const forgetPasskey=credentialId=>{
+    localStorage.setItem(passkeyListKey,JSON.stringify(passkeys().filter(x=>x.credentialId!==credentialId)));
+    const old=readJSON(passkeyLegacyKey,null);
+    if(old?.credentialId===credentialId)localStorage.removeItem(passkeyLegacyKey);
+  };
+  const accountStore={pins,passkeys,select,preferredUser,storePin,forgetPin,storePasskey,forgetPasskey,
+    setPasskeyPaused:(credentialId,paused)=>{
+      const profile=passkeys().find(item=>item.credentialId===credentialId);
+      if(profile)storePasskey({...profile,paused:!!paused});
+    }
+  };
+  window.CodelaSFRemembered=accountStore;
+  const log = () => pins()[0] || null;
   function openDB() {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(databaseName, 1);
@@ -125,7 +193,7 @@
   }
 
   async function forgetRemembered(profile) {
-    if (log()?.deviceId === profile.deviceId) localStorage.removeItem(savedKey);
+    accountStore.forgetPin(profile.deviceId);
     try { await forgetKey(profile.deviceId); } catch (_) { /* Already unavailable. */ }
   }
 
