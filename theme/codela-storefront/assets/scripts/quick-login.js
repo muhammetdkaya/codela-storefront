@@ -651,7 +651,7 @@
       }
       if(alternatives){
         group.append(alternatives);
-        const nativeForm=host.querySelector('#customer_login');
+        const nativeForm=host.querySelector('#customer_login') || host.querySelector('form.woocommerce-form-login');
         let returnButton=host.querySelector('.sf-quick-return');
         if(nativeForm && !returnButton){
           returnButton=document.createElement('button');
