@@ -6,11 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Tek cihazda birden fazla müşteri hesabının PIN ve WebAuthn geçiş anahtarı bilgileri bağımsız saklanır; başka hesaba giriş/çıkış eskisini silmez.",
-    "Her kayıtlı kullanıcı hızlı girişte ayrı kart olarak görünür; yalnız kayıtlı giriş yöntemlerinin ikonları gösterilir.",
-    "Altı haneli PIN tamamlanınca otomatik doğrulama başlar ve iPhone sayısal klavyesi kapanır; onay okuna dokunmak gerekmez.",
-    "Face ID için animasyon, dört köşeyi sırayla çizer ve yüz üzerinde ince optik tarama yapar; yeşil tik yalnız sunucu doğrulamasından sonra görünür.",
-    "Yerel depolama yalnız görüntüleme metadatasını saklar; özel anahtarlar IndexedDB içinde non-exportable, PIN doğrulaması ve WebAuthn sunucuda zorunlu.",
-    "Önceki tek hesap kayıtları otomatik olarak yeni çoklu hesaba uyumlu hale getirilir."
+    "Administrator ve mağaza yöneticisi hesapları için HTTPS üzerinde cihaz biyometrisi/geçiş anahtarıyla hızlı giriş etkin.",
+    "Yüksek yetkili hesaplarda 6 haneli PIN kaydı ve girişine izin verilmez; yalnız mevcut müşterilerde PIN kullanılabilir.",
+    "Yönetici geçiş anahtarı doğrulamasında imza, origin, kullanıcı doğrulaması ve tek kullanımlık challenge kontrolleri korunur.",
+    "Yönetici ve mağaza yöneticisi geçiş anahtarı oturumları kalıcı beni-hatırla çerezi oluşturmaz.",
+    "Hesabım / Güvenlik ve giriş ekranında yönetici yalnız Face ID/parmak izi/cihaz doğrulaması seçeneklerini görür."
   ]
 }
