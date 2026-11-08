@@ -7,14 +7,19 @@
   'use strict';
   const config = window.CodelaSFPasskey;
   if (!config) return;
-  const key = 'codela_sf_passkey_hint_v1';
+  const key = 'codela_sf_passkey_hint_v1'; // Legacy single-account hint.
+  const store = window.CodelaSFRemembered;
   const available = !!(window.isSecureContext && window.PublicKeyCredential && navigator.credentials);
-  const getHint = () => {
+  const getHints = () => {
+    if(store)return store.passkeys();
     try {
-      const value = JSON.parse(localStorage.getItem(key) || 'null');
-      return value && Number.isSafeInteger(value.userId) && typeof value.credentialId === 'string' ? value : null;
-    } catch (_) { return null; }
+      const value=JSON.parse(localStorage.getItem(key)||'null');
+      return value && Number.isSafeInteger(value.userId) && typeof value.credentialId==='string'
+        ? [value]:[];
+    }catch(_){return []}
   };
+  const getHint = userId => getHints().find(x=>x.userId===Number(userId)) ||
+    (!userId ? getHints()[0] : null);
   const encode = input => {
     const bytes = input instanceof ArrayBuffer ? new Uint8Array(input) : new Uint8Array(input || []);
     let text = '';
@@ -38,10 +43,9 @@
       allowCredentials:(data.allowCredentials||[]).map(item=>({...item,id:decode(item.id)}))};
   };
   const identity = config.identity;
-  const hint = getHint();
-  if (hint && identity && identity.userId !== hint.userId) {
-    localStorage.removeItem(key); // Different signed-in customer: do not show old name.
-  }
+  // Multiple remembered customers are intentional. Switching the real
+  // WordPress account does not revoke other local passkeys or PIN devices.
+  // Old entries are removed only through an explicit revoke or server denial.
   async function post(path, data = {}) {
     const headers = {'Content-Type':'application/json'};
     if (config.nonce) headers['X-WP-Nonce'] = config.nonce;
@@ -69,7 +73,7 @@
       }
     };
   }
-  async function signIn(node, button) {
+  async function signIn(node, button, selectedHint = null) {
     if (button?.disabled) return;
     if (!available) { notify(node,'Bu cihazda geçiş anahtarı desteklenmiyor. E-posta ile devam edebilirsiniz.'); return; }
     // Only the selected Face ID glyph animates while the real iOS/Android
@@ -84,8 +88,9 @@
       // Target this exact saved credential rather than making iOS present a
       // general passkey/account picker before its system verification.
       // The server independently confirms it is active and challenge-binds it.
-      const remembered = getHint();
+      const remembered = selectedHint || getHint();
       const selectedId = remembered && !remembered.paused ? remembered.credentialId : '';
+      if(remembered?.userId)store?.select(remembered.userId);
       const options = await post('/assert-options', selectedId ? {credential_id:selectedId} : {});
       const credential = await navigator.credentials.get({
         publicKey:toRequestOptions(options.publicKey), mediation:'optional',
@@ -96,12 +101,24 @@
       if (!result.ok || typeof result.account_url !== 'string') throw Error('Sunucu girişe izin vermedi.');
       const url = new URL(result.account_url,location.href);
       if (url.origin !== location.origin) throw Error('Geçersiz yönlendirme.');
-      // Real WordPress auth cookie has already been set by the server.
+      // Never draw the success check before the server has issued the real
+      // WordPress authentication cookie. Animate the SVG check, then navigate.
+      if(button){
+        button.classList.remove('is-verifying');
+        button.classList.add('is-verified');
+        button.setAttribute('aria-label','Doğrulandı');
+      }
+      await new Promise(resolve=>window.setTimeout(resolve,
+        window.matchMedia?.('(prefers-reduced-motion:reduce)').matches?0:390));
       url.searchParams.set('sf_quick_auth',Date.now().toString(36));
       window.location.replace(url.href);
     } catch (error) {
       notify(node, error?.name === 'NotAllowedError' ? 'Doğrulama iptal edildi.' :
         (error?.message || 'Giriş tamamlanamadı.'));
+      if(button){
+        button.classList.add('is-rejected');
+        window.setTimeout(()=>button.classList.remove('is-rejected'),470);
+      }
     } finally {
       if (button) {
         button.disabled = false;
@@ -127,10 +144,10 @@
       const body = responseJSON(credential);
       const result = await post('/register', {id:body.id,response:body.response});
       if (!result.ok) throw Error('Anahtar sunucuya kaydedilemedi.');
-      localStorage.setItem(key,JSON.stringify({
-        credentialId:body.id,userId:identity.userId,
-        displayName:identity.displayName,email:identity.email,paused:false,
-      }));
+      const saved={credentialId:body.id,userId:identity.userId,
+        displayName:identity.displayName,email:identity.email,paused:false};
+      if(store)store.storePasskey(saved);
+      else localStorage.setItem(key,JSON.stringify(saved));
       notify(status,'Giriş anahtarı etkinleştirildi.');
       window.location.reload();
     } catch (error) {
@@ -154,9 +171,12 @@
         target.disabled = true;
         try {
           await post('/manage',{id,action});
-          const stored = getHint();
-          if(stored?.credentialId===id){
-            if(action==='revoke') localStorage.removeItem(key);
+          const stored=getHints().find(item=>item.credentialId===id);
+          if(stored){
+            if(store){
+              if(action==='revoke')store.forgetPasskey(id);
+              else store.setPasskeyPaused(id,action==='pause');
+            } else if(action==='revoke')localStorage.removeItem(key);
             else localStorage.setItem(key,JSON.stringify({...stored,paused:action==='pause'}));
           }
           window.location.reload();
@@ -174,100 +194,66 @@
     });
   }
   function initGuest(section) {
-    const host = section.closest('.sf-overlay-auth') || section.closest('.woocommerce');
-    if (!host || !available) return;
-    const remembered = getHint();
-    if (!remembered || remembered.paused) return;
+    const host=section.closest('.sf-overlay-auth')||section.closest('.woocommerce');
+    if(!host||!available)return;
+    const hints=getHints().filter(h=>!h.paused);
+    if(!hints.length)return;
 
-    const name = section.querySelector('.sf-pk-name');
-    const detail = section.querySelector('.sf-pk-detail');
-    const avatar = section.querySelector('.sf-pk-avatar');
-    if (remembered.displayName) {
-      name.textContent = remembered.displayName;
-      avatar.textContent = Array.from(remembered.displayName)[0]?.toUpperCase() || '◉';
-    }
-    if (remembered.email) detail.textContent = remembered.email;
-
-    const standalone = () => {
-      section.hidden = false;
-      host.classList.remove('sf-pin-active');
-      host.classList.add('sf-passkey-active');
-      const button = section.querySelector('.sf-pk-choice');
-      const result = document.createElement('p');
-      result.className = 'sf-pk-guest-status';
-      result.setAttribute('role','status');
-      result.setAttribute('aria-live','polite');
-      button.after(result);
-      button.addEventListener('click', () => void signIn(result, button));
-    };
-
-    const useNative = () => {
-      host.classList.remove('sf-passkey-active','sf-pin-active');
-      host.querySelectorAll('.sf-quick-login').forEach(node => { node.hidden = true; });
-      section.hidden = true;
-    };
-    section.querySelector('.sf-pk-use-email')?.addEventListener('click', useNative);
-
-    // A verified PIN and a remembered passkey for this SAME customer share
-    // ONE identity card. Wait for the PIN server check before deciding which
-    // view to paint; independent script startup used to flash both surfaces.
-    let legacy = null;
-    try {
-      legacy = JSON.parse(localStorage.getItem('codela_sf_quick_profile_v1') || 'null');
-    } catch (_) { /* No valid browser PIN hint. */ }
-    const matchingPin = legacy?.userId === remembered.userId
-      && /^[0-9a-f]{32}$/.test(legacy.deviceId || '');
-    if (!matchingPin) {
-      standalone();
-      return;
-    }
-
-    let resolved = false;
-    let safetyTimer = null;
-    const onQuickStatus = event => {
-      const data = event.detail;
-      if (resolved || !data || Number(data.userId) !== remembered.userId) return;
-      resolved = true;
-      if (safetyTimer) clearTimeout(safetyTimer);
-      host.removeEventListener('codela:quick-status', onQuickStatus);
-      const quick = host.querySelector('.sf-quick-login');
-      const bio = quick?.querySelector('.sf-quick-method--passkey');
-      if (!data.active || !quick || quick.hidden || !bio) {
-        standalone();
-        return;
+    // One face icon belongs to its own local customer card. Never duplicate
+    // the welcome page or promote a saved hint to an authenticated session.
+    const connectCards=()=>{
+      for(const quick of host.querySelectorAll('.sf-quick-login[data-sf-user-id]')){
+        const hint=hints.find(item=>item.userId===Number(quick.dataset.sfQuickUserId));
+        if(!hint)continue;
+        const button=quick.querySelector('.sf-quick-method--passkey');
+        if(!button||button.dataset.sfBioBound==='yes')continue;
+        button.dataset.sfBioBound='yes';
+        button.hidden=false;
+        quick.classList.add('has-passkey');
+        quick.closest('.sf-quick-accounts')?.classList.add('has-passkey');
+        section.hidden=true;
+        const error=document.createElement('p');
+        error.className='sf-quick-passkey-error';
+        error.setAttribute('role','status');
+        error.setAttribute('aria-live','polite');
+        quick.querySelector('.sf-quick-account-frame')?.after(error);
+        button.addEventListener('click',()=>{
+          if(button.disabled)return;
+          if(quick.querySelector('.sf-quick-pin-track.is-checking'))return;
+          if(quick.classList.contains('is-inline-open')){
+            quick.dispatchEvent(new CustomEvent('codela:quick-pin-close'));
+          }
+          void signIn(error,button,hint);
+        });
       }
-      // PIN is already trusted by the server. Preserve its expanded inline
-      // code interface and add a separate native biometric gesture target.
-      quick.classList.add('has-passkey');
-      bio.hidden = false;
-      section.hidden = true;
-      host.classList.remove('sf-passkey-active');
-      const error = document.createElement('p');
-      error.className = 'sf-quick-passkey-error';
-      error.setAttribute('role','status');
-      error.setAttribute('aria-live','polite');
-      quick.querySelector('.sf-quick-account-frame')?.after(error);
-      bio.addEventListener('click', () => {
-        if (bio.disabled) return;
-        if (quick.querySelector('.sf-quick-pin-track.is-checking')) return;
-        if (quick.classList.contains('is-inline-open')) {
-          quick.dispatchEvent(new CustomEvent('codela:quick-pin-close'));
-        }
-        void signIn(error, bio);
-      });
     };
+    host.addEventListener('codela:quick-status',connectCards);
+    connectCards();
+    if(host.querySelector('.sf-quick-accounts'))return;
 
-    host.addEventListener('codela:quick-status', onQuickStatus);
-    if (host.dataset.sfQuickStatus && Number(host.dataset.sfQuickUserId) === remembered.userId) {
-      onQuickStatus({detail:{active:host.dataset.sfQuickStatus === 'active',
-        userId:remembered.userId}});
-    } else {
-      // If a browser's PIN module is unavailable, never trap the visitor
-      // behind the preflight skeleton; show the working passkey alone.
-      safetyTimer = window.setTimeout(() => onQuickStatus({
-        detail:{active:false,userId:remembered.userId}
-      }), 13500);
+    // Defensive native fallback if the PIN/UI module cannot initialize.
+    const remembered=getHint();
+    if(!remembered||remembered.paused)return;
+    const name=section.querySelector('.sf-pk-name');
+    const detail=section.querySelector('.sf-pk-detail');
+    const avatar=section.querySelector('.sf-pk-avatar');
+    if(remembered.displayName && name && avatar){
+      name.textContent=remembered.displayName;
+      avatar.textContent=Array.from(remembered.displayName)[0]?.toUpperCase()||'◉';
     }
+    if(remembered.email && detail)detail.textContent=remembered.email;
+    section.hidden=false;
+    host.classList.add('sf-passkey-active');
+    const button=section.querySelector('.sf-pk-choice');
+    const status=document.createElement('p');
+    status.className='sf-pk-guest-status';
+    status.setAttribute('role','status');status.setAttribute('aria-live','polite');
+    button.after(status);
+    button.addEventListener('click',()=>void signIn(status,button,remembered));
+    section.querySelector('.sf-pk-use-email')?.addEventListener('click',()=>{
+      host.classList.remove('sf-passkey-active','sf-pin-active');
+      section.hidden=true;
+    });
   }
   function init(){
     document.querySelectorAll('[data-pk-settings]').forEach(initSettings);
