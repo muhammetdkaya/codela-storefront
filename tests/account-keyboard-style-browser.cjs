@@ -40,14 +40,14 @@ const css=['tokens.css','components.css','quick-login.css','account.css','accoun
   for (const width of [320,390]) {
     await page.setViewportSize({width,height:844});
     const markup='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+overlayOnly+'</style></head>'
-      +'<body><section id="sf-account"><div id="sf-panel" class="is-account-panel"><div class="woocommerce">'
+      +'<body><div id="sf-panel" class="is-account-panel"><section id="sf-account"><div class="woocommerce">'
       +'<div id="customer_login" class="sf-auth-ready"><div class="u-column1"><form class="woocommerce-form-login">'
       +'<p class="form-row"><input class="input-text" placeholder="E-posta"></p>'
       +'<p class="form-row"><label class="woocommerce-form-login__rememberme">Beni hatırla</label><button type="submit">Giriş Yap</button></p>'
       +'</form></div></div>'
       +'<a class="sf-auth-register-cta" href="#sf-auth-register"><span class="sf-auth-register-glyph">✉</span><span>E-posta ile Kayıt Ol</span></a>'
       +'<div class="sf-auth-social"><div class="sf-auth-divider">veya</div><button class="sf-auth-google" disabled>Google</button></div>'
-      +'</div></div></section></body></html>';
+      +'</div></section></div></body></html>';
     await page.setContent(markup);
     const layout=await page.locator('.sf-auth-register-cta').evaluate(el=>{
       const b=el.getBoundingClientRect(),form=document.querySelector('#customer_login').getBoundingClientRect(),
