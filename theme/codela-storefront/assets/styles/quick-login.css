@@ -341,8 +341,14 @@ html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-choice-alternatives{vis
 /* Recognized-device quick entrance never offers direct registration.
    The native Woo registration remains available after choosing email sign-in.
    During preflight, suppress the CTA to avoid a one-frame flash. */
-.sf-pin-active > .sf-auth-register-cta,
-html.sf-quick-checking body.woocommerce-account .woocommerce > .sf-auth-register-cta,
-html.sf-quick-checking #sf-account .woocommerce > .sf-auth-register-cta{
+/* More specific than the 0.1.236 `display:flex!important` signup
+   declarations in account.css and account-overlay.css. */
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce.sf-pin-active .sf-auth-register-cta,
+#sf-panel.is-account-panel .sf-pin-active .sf-auth-register-cta,
+html.sf-quick-checking body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce .sf-auth-register-cta,
+html.sf-quick-checking #sf-account #sf-panel.is-account-panel
+ .woocommerce .sf-auth-register-cta{
   display:none!important;
 }
