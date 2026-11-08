@@ -166,8 +166,11 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
         const themeInk=getComputedStyle(probe).color;
         probe.remove();
         return {style:css.outlineStyle,offset:css.outlineOffset,
+          active:document.activeElement===el,focusMode:!!el.closest('.woocommerce.sf-auth-focus-mode'),
+          inputInk:css.getPropertyValue('--sf-ui-ink').trim(),
           borderWidth:css.borderTopWidth,borderColor:css.borderTopColor,themeInk};
       });
+      assert(ring.active && ring.focusMode,'Real tap activates native credential focus mode: '+JSON.stringify(ring));
       assert.equal(ring.style,'none','Focused Woo input removes the detached native outline');
       assert.equal(ring.offset,'0px','Focused Woo input has no outside outline gap');
       assert.equal(ring.borderWidth,'2px','Focused Woo input carries one contiguous 2px border');
