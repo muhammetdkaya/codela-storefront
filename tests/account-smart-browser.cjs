@@ -96,13 +96,12 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or create a
    assert.equal(await uid.getAttribute('type'),'email','Only email addresses can initiate account lookup');
    assert.equal(await uid.getAttribute('autocomplete'),'email','Native email autofill stays available');
    assert.equal(await page.locator('.sf-smart-change').count(),0,'There is no change-email action');
+   // A real gesture releases the iOS/WebKit initial-autofocus guard.
+   await uid.click();
    await uid.fill('test');
    assert.equal(await page.locator('#password').isVisible(),false,'Bare username-like text never opens a password field');
    assert.equal(await page.locator('.u-column2').isVisible(),false,'Bare text never opens registration');
    assert.equal(requests,0,'Bare text does not reach the existence endpoint');
-   // iOS/WebKit honors the intentional initial-autofocus guard more
-   // strictly than Chromium. A real tap releases it before typing.
-   await uid.click();
    await uid.fill('existing@example.test');
    await page.waitForFunction(()=>document.querySelector('.woocommerce')?.classList.contains('sf-smart-existing'),
      null,{timeout:6500}).catch(async error=>{
