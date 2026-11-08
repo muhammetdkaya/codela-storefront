@@ -234,7 +234,14 @@ function preventInitialAccountAutoFocus() {
             root.addEventListener('click', event => {
                 if (event.target.closest('.sf-auth-register-cta,.sf-auth-back-login')) stop();
             });
-            root.querySelector('#customer_login')?.addEventListener('codela:auth-select', stop);
+            root.querySelector('#customer_login')?.addEventListener('codela:auth-select', () => {
+                // The smart single-page screen changes its native Woo panel
+                // while the shared identity field is still genuinely focused.
+                // That is not keyboard dismissal; preserve its focus scrim.
+                if (root.classList.contains('sf-smart-auth-active')
+                    && isCredential(document.activeElement)) return;
+                stop();
+            });
         }
     }
     function init() {
