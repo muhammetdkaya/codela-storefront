@@ -73,7 +73,12 @@
     if (!available) { notify(node,'Bu cihazda geçiş anahtarı desteklenmiyor. E-posta ile devam edebilirsiniz.'); return; }
     notify(node,'Telefon doğrulaması açılıyor…');
     try {
-      const options = await post('/assert-options');
+      // Target this exact saved credential rather than making iOS present a
+      // general passkey/account picker before its system verification.
+      // The server independently confirms it is active and challenge-binds it.
+      const remembered = getHint();
+      const selectedId = remembered && !remembered.paused ? remembered.credentialId : '';
+      const options = await post('/assert-options', selectedId ? {credential_id:selectedId} : {});
       const credential = await navigator.credentials.get({
         publicKey:toRequestOptions(options.publicKey), mediation:'optional',
       });
@@ -202,19 +207,9 @@
       });
       return;
     }
-    // A synced passkey may exist on a new phone without a local hint.
-    // Keep the native Woo login fully visible and add an optional action.
-    const button = document.createElement('button');
-    button.type='button'; button.className='sf-pk-discover';
-    button.textContent='Telefonla hızlı giriş';
-    const result=document.createElement('p');result.className='sf-pk-guest-status';
-    result.setAttribute('role','status');result.setAttribute('aria-live','polite');
-    const login = host.querySelector('#customer_login');
-    if (login) {
-      login.parentNode.insertBefore(button, login);
-      button.after(result);
-      button.addEventListener('click',()=>signIn(result));
-    }
+    // Without a saved local passkey hint this is the ordinary Woo login.
+    // Do not inject another CTA or disrupt the native registration flow.
+    // Synced credentials can be enabled after standard account sign-in.
   }
   function init(){
     document.querySelectorAll('[data-pk-settings]').forEach(initSettings);
