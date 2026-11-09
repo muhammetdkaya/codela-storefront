@@ -107,7 +107,7 @@
         // A touch/click on the photograph REVEALS the separate fullscreen
         // control; it never unexpectedly opens PhotoSwipe on the first tap.
         event.preventDefault();event.stopImmediatePropagation();
-        revealExpand();
+        revealRail();revealExpand();
         return;
       }
       // Keyboard activation remains directly usable for accessibility.
@@ -168,6 +168,34 @@
     const currentIndex=()=>Math.max(0,[...nav.children].findIndex(node=>node.getAttribute('aria-current')==='true'));
     rail.append(previous,nav,count,next);
     gallery.appendChild(rail);
+    // Glass and arrows are a temporary interaction hint, while previews and
+    // count remain visible. Repeated movement resets the fade delay.
+    let railTimer=0;
+    const hideRail=()=>{
+      clearTimeout(railTimer);
+      rail.classList.remove('is-active');
+      previous.tabIndex=-1;next.tabIndex=-1;
+    };
+    const revealRail=()=>{
+      if (!mobileMedia.matches || rail.hidden ||
+          document.body.classList.contains('sf-product-sheet-open') ||
+          gallery.classList.contains('is-discovering')) return;
+      rail.classList.add('is-active');
+      previous.tabIndex=0;next.tabIndex=0;
+      clearTimeout(railTimer);
+      railTimer=setTimeout(hideRail, 1800);
+    };
+    rail.addEventListener('pointerdown',revealRail,{passive:true});
+    rail.addEventListener('focusin',revealRail);
+    // Native document scrolling is the mobile gallery's actual motion.
+    window.addEventListener('scroll',()=>{
+      const photo=items[currentIndex()];
+      const bounds=photo?.getBoundingClientRect();
+      if (bounds && bounds.bottom>0 && bounds.top<innerHeight &&
+          !gallery.classList.contains('is-discovering') &&
+          !document.body.classList.contains('sf-product-sheet-open')) revealRail();
+      else hideRail();
+    },{passive:true});
     // Independent fullscreen affordance; gallery navigation remains intact.
     expand=document.createElement('button');
     expand.type='button';
@@ -206,12 +234,16 @@
     function prepareAdjacent(index){activate(imageAt(index-1));activate(imageAt(index+1));}
     function beginBrowsing(){
       browsing=true;
+      revealRail();
       const index=[...nav.children].findIndex(button=>button.getAttribute('aria-current')==='true');
       prepareAdjacent(Math.max(0,index));
     }
     ['touchstart','pointerdown','wheel'].forEach(type=>track.addEventListener(type,beginBrowsing,{passive:true}));
     track.addEventListener('keydown',event=>{if(['ArrowDown','ArrowUp','ArrowLeft','ArrowRight'].includes(event.key))beginBrowsing();});
+    let lastRailIndex=-1;
     function update(index){
+      if(lastRailIndex>=0 && lastRailIndex!==index) revealRail();
+      lastRailIndex=index;
       count.textContent=(index+1)+' / '+items.length;
       if(arrows)arrows.hidden=items.length<2;
       rail.hidden=items.length<2||nav.hidden;
@@ -276,10 +308,10 @@
       select(0);
     });
     mobileMedia.addEventListener('change',()=>{
-      closeZoom();hideExpand();
+      closeZoom();hideExpand();hideRail();lastRailIndex=-1;
       items=slides();syncAlt();buildNav();observe();update(0);track.scrollTo(0,0);
     });
-    matchMedia('(max-width:700px)').addEventListener('change',()=>{track.scrollTo(0,0);window.scrollTo({top:0,behavior:'instant'});observe();update(0);});
+    matchMedia('(max-width:700px)').addEventListener('change',()=>{hideRail();lastRailIndex=-1;track.scrollTo(0,0);window.scrollTo({top:0,behavior:'instant'});observe();update(0);});
     update(0);
     return;
   }
