@@ -18,18 +18,15 @@ const root = 'theme/codela-storefront/';
   await page.locator('.cdl-de-line strong').first().evaluate(el=>el.textContent='Wednesday');
   await page.waitForFunction(()=>document.querySelector('.sf-product-shipping-summary').textContent==='Ships Wednesday');
   const images=page.locator('.sf-product-gallery-thumb:not([hidden])');
-  // CSS scroll snapping may return a programmatic 300px move to the first frame;
-  // exercise an actual gallery wheel gesture to observe the material pulse.
-  await page.mouse.move(190,350);
-  await page.mouse.wheel(0,450);
-  await page.waitForFunction(()=>document.querySelector('.sf-product-gallery-glass')?.classList.contains('is-visible'),null,{timeout:6000}).catch(async error => {
-   const diagnosis=await page.evaluate(()=>({scrollY,navHidden:document.querySelector('.sf-product-gallery-nav')?.hidden,navRect:document.querySelector('.sf-product-gallery-nav')?.getBoundingClientRect().toJSON(),glass:document.querySelector('.sf-product-gallery-glass')?.className,ready:document.body.classList.contains('sf-product-sheet-ready')}));
-   throw new Error('Gallery glass did not pulse after wheel: '+JSON.stringify(diagnosis),{cause:error});
-  });
+  const rail=page.locator('.sf-product-gallery-rail');
   assert.equal(await images.count(),3);
-  // Allow the two-second hold AND its existing CSS opacity transition to finish.
-  await page.waitForFunction(()=>Number(getComputedStyle(document.querySelector('.sf-product-gallery-glass')).opacity)<0.001,{},{timeout:5500});
-  assert(Number(await page.locator('.sf-product-gallery-glass').evaluate(el=>getComputedStyle(el).opacity))<0.001);
+  assert(await rail.isVisible(),'Persistent dark-glass rail is visible before scrolling');
+  assert.equal(await page.locator('.sf-product-gallery-rail .sf-product-gallery-count').count(),1);
+  assert.equal(await page.locator('.sf-product-gallery-rail-arrow').count(),2);
+  assert(await page.locator('.sf-product-gallery-expand').isVisible(),'Dedicated fullscreen action exists');
+  assert.notEqual(await rail.evaluate(el=>getComputedStyle(el).backgroundColor),'rgba(0, 0, 0, 0)');
+  await page.mouse.move(190,350);await page.mouse.wheel(0,450);
+  assert(await rail.isVisible(),'Glass background persists on scroll rather than fading');
   assert(await images.first().isVisible());
   assert(await page.locator('.sf-product-gallery-count').isVisible());
   await page.evaluate(()=>window.scrollTo(0,document.querySelector('.sf-product-discovery').offsetTop));
@@ -53,7 +50,7 @@ const root = 'theme/codela-storefront/';
    window.PhotoSwipeUI_Default=function(){};
    window.PhotoSwipe=function(template,ui,images,options){window.lightboxProbe={count:images.length,options};this.listen=()=>{};this.init=()=>{window.lightboxProbe.open=true;};};
   });
-  await page.locator('.woocommerce-product-gallery__image a').first().click();
+  await page.locator('.sf-product-gallery-expand').click();
   assert.equal(await page.evaluate(()=>window.lightboxProbe.open),true);
   assert.equal(await page.evaluate(()=>window.lightboxProbe.count),3);
   await page.evaluate(()=>{
@@ -80,8 +77,12 @@ const root = 'theme/codela-storefront/';
   await page.waitForFunction(()=>document.querySelector('.sf-purchase-status').textContent.includes('Stock changed'));
   assert.equal(await buy.isDisabled(),false);
   assert.equal(await buy.getAttribute('data-sf-cart-state'),'idle');
+  assert.equal(await page.locator('.sf-product-sheet-toggle').getAttribute('aria-expanded'),'false','Cart failure cannot expand product details');
+  assert(await page.locator('.sf-product-purchase .sf-purchase-status').isVisible(),'Error stays beside the CTA');
   await buy.click();await page.waitForFunction(()=>window.requests.length===2);
-  await page.evaluate(()=>window.responses.shift()({ok:true,text:async()=>'<div class="woocommerce-message"><span data-sf-cart-added hidden></span></div>'}));
+  // Woo may suppress HTML notices; the server's successful native cart hook
+  // now confirms the POST with a response header.
+  await page.evaluate(()=>window.responses.shift()({ok:true,headers:{get:()=> '1'},text:async()=>'<main>Cart added; notices filtered by blocks</main>'}));
   await page.waitForFunction(()=>document.querySelector('.single_add_to_cart_button').dataset.sfCartState==='success');
   assert.equal(await buy.textContent(),'View cart');
   await buy.click();assert.equal(await page.evaluate(()=>window.cartOpened),1);
@@ -89,6 +90,6 @@ const root = 'theme/codela-storefront/';
   await page.locator('input.qty').fill('2');await page.locator('input.qty').dispatchEvent('change');
   assert.equal(await buy.getAttribute('data-sf-cart-state'),'idle');
   assert.deepEqual(errors,[]);
-  console.log('Product flow: real page end/rearm, centered close, thumbnail material, live ETA, fullscreen mapping, server errors/success and cart action passed.');
+  console.log('Product flow: permanent glass rail, separate fullscreen, persistent dismissal, native Woo header confirmation, visible errors and cart action passed.');
  } finally {await browser.close();}
 })().catch(error=>{console.error(error);process.exit(1);});
