@@ -42,10 +42,11 @@ const root = 'theme/codela-storefront/';
   await page.waitForTimeout(350);
   await page.evaluate(()=>dispatchEvent(new Event('scroll')));
   assert.equal(await page.locator('.sf-product-sheet-toggle').getAttribute('aria-expanded'),'false');
-  await page.evaluate(()=>window.scrollTo(0,500));await page.waitForTimeout(100);
-  await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
-  await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-expanded'));
-  await page.locator('.sf-product-sheet-toggle').click();
+  await page.evaluate(()=>window.scrollTo({top:500,behavior:'instant'}));
+  await page.waitForFunction(()=>scrollY < document.documentElement.scrollHeight-innerHeight-120);
+  await page.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
+  await page.waitForTimeout(300);
+  assert.equal(await page.locator('.sf-product-sheet-toggle').getAttribute('aria-expanded'),'false','Manual close must persist on the same page visit');
   await page.evaluate(()=>window.scrollTo(0,0));await page.waitForTimeout(400);
   await page.evaluate(()=>{
    document.body.insertAdjacentHTML('beforeend','<div class="pswp"></div>');
