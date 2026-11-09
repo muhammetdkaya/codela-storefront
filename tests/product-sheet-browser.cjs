@@ -418,11 +418,13 @@ for(const width of [320,390,700]){
  const snapshot=()=>page.evaluate(()=>{
    const gallery=document.querySelector('.woocommerce-product-gallery'),host=gallery.querySelector('#codela-live-visitor-container');
    const index=gallery.querySelector('.sf-product-gallery-count'),sheet=document.querySelector('.sf-product-sheet');
-   const v=host.getBoundingClientRect(),n=index.getBoundingClientRect(),label=host.querySelector('.cdl-lv');
+   const rail=gallery.querySelector('.sf-product-gallery-rail');
+   const v=host.getBoundingClientRect(),n=index.getBoundingClientRect(),rr=rail.getBoundingClientRect(),label=host.querySelector('.cdl-lv');
    const ls=getComputedStyle(label),cs=getComputedStyle(host),panel=getComputedStyle(sheet);
    return {count:document.querySelectorAll('#codela-live-visitor-container').length,
      index:index.textContent,visitorText:host.innerText,visitorY:v.y,indexY:n.y,
-     visitorX:v.x,indexRight:n.right,position:cs.position,
+     visitorX:v.x,indexRight:n.right,position:cs.position,railContainsIndex:rail.contains(index),
+     overlapsRail:v.right>rr.left&&v.left<rr.right&&v.bottom>rr.top&&v.top<rr.bottom,
      background:ls.backgroundColor,font:ls.fontSize,line:ls.lineHeight,
      radius:panel.borderTopLeftRadius,hidden:host.hidden,
      overflow:document.documentElement.scrollWidth>innerWidth+1};
@@ -432,11 +434,11 @@ for(const width of [320,390,700]){
  assert.equal(first.index,'1 / 3','Live gallery image index remains native '+width);
  assert.equal(first.position,'fixed','Visitor follows the gallery index on the viewport '+width);
  assert.equal(first.background,'rgba(0, 0, 0, 0)','Visitor text has no background '+width);
- assert.equal(first.font,'12px','Photo index and visitor share the font size '+width);
- assert.equal(first.line,'18px','Photo index and visitor share line height '+width);
+ assert.equal(first.font,'12px','Visitor stays a quiet 12px label '+width);
+ assert.equal(first.line,'18px','Visitor retains its compact line height '+width);
  assert.equal(first.radius,'28px','Mounted panel shares the same more oval corner radius '+width);
- assert(first.visitorX>first.indexRight+8,'Visitor stays to the right of 1/N '+width);
- assert(Math.abs(first.visitorY-first.indexY)<2,'Visitor and 1/N share a baseline '+width+' '+JSON.stringify(first));
+ assert(first.railContainsIndex,'Gallery index stays inside the persistent right-hand glass capsule '+width);
+ assert(!first.overlapsRail,'Visitor remains visible without overlapping the new gallery capsule '+width);
  assert(!first.overflow,'No overflow with gallery annotations '+width);
  await page.evaluate(()=>{const e=document.querySelectorAll('.woocommerce-product-gallery__image')[1];window.scrollTo({top:scrollY+e.getBoundingClientRect().top,behavior:'instant'})});
  await page.waitForFunction(()=>document.querySelector('.sf-product-gallery-count').textContent==='2 / 3');
@@ -446,7 +448,7 @@ for(const width of [320,390,700]){
  assert(!second.hidden,'Codela count remains visible across photos '+width);
  assert.equal(second.visitorText,first.visitorText,'Gallery scroll does not alter real visitor count '+width);
  assert(Math.abs(second.visitorY-first.visitorY)<2,'Visitor never disappears or moves while scrolling photos '+width+' '+JSON.stringify({first,second}));
- assert(Math.abs(second.visitorY-second.indexY)<2,'Gallery 2/N and visitor stay in the same row '+width);
+ assert(second.railContainsIndex&&!second.overlapsRail,'2/N remains in its rail without covering visitor copy '+width);
  // The native 1/N label already disappears in discovery. The live visitor
  // must follow that SAME boundary even if a plugin repositions its single
  // host outside the gallery (which bypassed the former direct-child CSS).
