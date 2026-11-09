@@ -140,17 +140,27 @@
       return mounted && discovery.children.length > 0 && track &&
         discovery.getBoundingClientRect().top < window.innerHeight * (media.classList.contains('is-discovering') ? .65 : .55);
     }
+    function atPageEnd() {
+      // Safari's retractable toolbar / safe area makes an exact 8px boundary
+      // unreliable. An actual final viewport plus a small tolerance is enough.
+      var bottom = window.scrollY + window.innerHeight;
+      return document.documentElement.scrollHeight - bottom <= Math.max(28, window.innerHeight * .035);
+    }
+    function openAfterEndGesture() {
+      if (!mounted || expanded || !endArmed || drag ||
+          document.documentElement.classList.contains('sf-overlay-scroll-locked')) return;
+      // Do not interrupt photograph-by-photograph scrolling. Only the genuine
+      // page end (after related cards/footer), or a product without cards.
+      if (discovery.children.length && !isDiscovering()) return;
+      if (!atPageEnd()) return;
+      endArmed = false; // A manual dismissal never rearms during this visit.
+      setOpen(true, null, true);
+    }
     function updateDiscovery() {
       if (!mounted || drag || document.documentElement.classList.contains('sf-overlay-scroll-locked')) return;
-      var remaining = document.documentElement.scrollHeight - (window.scrollY + window.innerHeight);
-      var downward = window.scrollY > lastScrollY;
+      var downward = window.scrollY > lastScrollY + 1;
       lastScrollY = window.scrollY;
-      // Auto-open only once per page visit. A deliberate close must not
-      // rearm simply because the visitor browses away and returns to the end.
-      if (!expanded && endArmed && downward && remaining <= 8) {
-        endArmed = false;
-        setOpen(true, null, true);
-      }
+      if (downward) openAfterEndGesture();
       var active = isDiscovering();
       media.classList.toggle('is-discovering', active);
       var compact = active && !expanded;
@@ -163,6 +173,22 @@
     window.addEventListener('scroll', function () {
       if (!mounted || discoveryFrame) return;
       discoveryFrame = requestAnimationFrame(function () { discoveryFrame = 0; updateDiscovery(); });
+    }, {passive:true});
+    // At the actual bottom, a further wheel or upward finger swipe may not
+    // produce a scroll event. Respect that explicit intent without moving
+    // the photo rail, modifying scroll-snap, or requiring an exact last pixel.
+    window.addEventListener('wheel', function (event) {
+      if (event.deltaY > 8) openAfterEndGesture();
+    }, {passive:true});
+    var touchStartY = null;
+    window.addEventListener('touchstart', function (event) {
+      touchStartY = event.touches.length === 1 ? event.touches[0].clientY : null;
+    }, {passive:true});
+    window.addEventListener('touchend', function (event) {
+      if (touchStartY === null) return;
+      var moved = touchStartY - (event.changedTouches[0]?.clientY ?? touchStartY);
+      touchStartY = null;
+      if (moved > 24) requestAnimationFrame(openAfterEndGesture);
     }, {passive:true});
     function mount() {
       if (mounted) return;
