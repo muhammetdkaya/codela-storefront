@@ -21,7 +21,7 @@ module.exports={fixture,load};
 if(require.main===module) (async()=>{const browser=await chromium.launch();let lastPage;try{const page=await browser.newPage();lastPage=page;const errors=[];page.on('pageerror',e=>errors.push(e.message));
 for(const width of [320,390,700]){
  await page.setViewportSize({width,height:844});await load(page);
- // Three mobile preview controls must all be clipped circles with equal
+ // Three mobile preview controls are rounded-square tiles with equal
  // hit targets. Check the actual shared IconButton + gallery stylesheet,
  // not a mock class with a hand-written radius.
  const circles=await page.locator('.sf-product-gallery-thumb:not([hidden])').evaluateAll(buttons=>
@@ -35,12 +35,12 @@ for(const width of [320,390,700]){
  assert.equal(circles.length,3,'Exactly three product image previews remain visible');
  for(const circle of circles){
    assert(Math.abs(circle.width-circle.height)<.1,'Every preview is a true square');
-   assert.equal(circle.radius,'50%','Every mobile gallery preview is a clipped circle');
-   assert.equal(circle.overflow,'hidden','The entire preview image is clipped by the circular button');
-   assert.equal(circle.fit,'cover','Every thumbnail fills its circle without distortion');
-   assert(Math.abs(circle.imageWidth-circle.imageHeight)<.1,'Every preview image is square before circle clipping');
+   assert.equal(circle.radius,'14px','Every gallery thumbnail uses the reference rounded-square shape');
+   assert.equal(circle.overflow,'hidden','The preview image is clipped by its rounded-square button');
+   assert.equal(circle.fit,'cover','Every thumbnail fills its rounded tile without distortion');
+   assert(Math.abs(circle.imageWidth-circle.imageHeight)<.1,'Every preview image is square inside its rounded tile');
  }
- assert(circles.every(c=>Math.abs(c.width-circles[0].width)<.1),'All three circles have the same diameter');
+ assert(circles.every(c=>Math.abs(c.width-circles[0].width)<.1),'All three thumbnails share the same width');
  assert.equal(await page.locator('.sf-product-sheet-body > .cdl-tb').count(),1,'Mobile adopts original summary reassurance once');
  const toggle=page.locator('.sf-product-sheet-toggle');const buy=page.locator('.single_add_to_cart_button');
  assert.equal(await toggle.getAttribute('aria-expanded'),'false');assert(await buy.isVisible(),'Collapsed native purchase remains visible');
