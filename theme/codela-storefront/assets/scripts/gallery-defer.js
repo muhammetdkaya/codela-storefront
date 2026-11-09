@@ -40,7 +40,36 @@
     const syncAlt=()=>originalAlts.forEach((alt,image)=>{if(image&&!(image===initialImage&&variationActive))image.alt=mobileMedia.matches?(image.dataset.sfMobileAlt||alt):alt;});
     syncAlt();
     let lightbox = null;
+    let expand = null;
+    let expandTimer = 0;
     const closeZoom = () => { if (lightbox) lightbox.close(); };
+    // Keep fullscreen hidden until an intentional photo tap; the button then
+    // appears just under the real header menu, even with Safari chrome offsets.
+    const hideExpand = () => {
+      if (!expand) return;
+      clearTimeout(expandTimer);
+      expand.classList.remove('is-visible');
+      expand.tabIndex = -1;
+      expand.setAttribute('aria-hidden','true');
+    };
+    const revealExpand = () => {
+      if (!expand || !matchMedia('(max-width:700px)').matches ||
+          document.body.classList.contains('sf-product-sheet-open') ||
+          gallery.classList.contains('is-discovering')) return;
+      const menu = document.querySelector('.sf-header .sf-menu-trigger');
+      if (menu) {
+        const rect = menu.getBoundingClientRect();
+        if (rect.width && rect.height && rect.right > innerWidth * .5) {
+          expand.style.top = Math.round(rect.bottom + 12) + 'px';
+          expand.style.right = Math.round(Math.max(12,innerWidth - rect.right + (rect.width - 46) / 2)) + 'px';
+        }
+      }
+      expand.classList.add('is-visible');
+      expand.tabIndex = 0;
+      expand.setAttribute('aria-hidden','false');
+      clearTimeout(expandTimer);
+      expandTimer = setTimeout(hideExpand, 3200);
+    };
     // The image itself and the dedicated expand control open ONE native
     // PhotoSwipe instance. Woo image URLs and variation attributes are reused.
     function openFullScreen(index, trigger) {
@@ -68,7 +97,15 @@
       const link = event.target.closest('.woocommerce-product-gallery__image a');
       if (!link) return;
       const index = items.indexOf(link.closest('.woocommerce-product-gallery__image'));
-      if (openFullScreen(index,link)) { event.preventDefault(); event.stopImmediatePropagation(); }
+      if (matchMedia('(max-width:700px)').matches && event.detail !== 0) {
+        // A touch/click on the photograph REVEALS the separate fullscreen
+        // control; it never unexpectedly opens PhotoSwipe on the first tap.
+        event.preventDefault();event.stopImmediatePropagation();
+        revealExpand();
+        return;
+      }
+      // Keyboard activation remains directly usable for accessibility.
+      if (openFullScreen(index,link)) { event.preventDefault();event.stopImmediatePropagation(); }
     }, true);
     const nav=document.createElement('nav');
     nav.className='sf-ui-gallery-nav sf-product-gallery-nav';
@@ -126,16 +163,26 @@
     rail.append(previous,nav,count,next);
     gallery.appendChild(rail);
     // Independent fullscreen affordance; gallery navigation remains intact.
-    const expand=document.createElement('button');
+    expand=document.createElement('button');
     expand.type='button';
     expand.className='sf-ui-icon-button sf-product-gallery-expand';
+    expand.tabIndex=-1;
+    expand.setAttribute('aria-hidden','true');
     expand.setAttribute('aria-label',document.getElementById('sf-product-sheet-template')?.dataset.fullscreenLabel||'Open fullscreen gallery');
     expand.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H3v5M3 3l7 7M16 3h5v5m0-5-7 7M3 16v5h5m-5 0 7-7m11 2v5h-5m5 0-7-7"/></svg>';
     expand.addEventListener('click',()=>{
+      if (!expand.classList.contains('is-visible')) return;
       const index=currentIndex();
-      if (!openFullScreen(index,expand)) items[index]?.querySelector('a')?.click();
+      if (openFullScreen(index,expand)) hideExpand();
+      else {
+        hideExpand();
+        // Native Woo link is the graceful fallback when PhotoSwipe is absent.
+        location.assign(items[index]?.querySelector('a')?.href || location.href);
+      }
     });
     gallery.appendChild(expand);
+    window.addEventListener('scroll',hideExpand,{passive:true});
+    window.addEventListener('resize',hideExpand,{passive:true});
     // Shared IconButtons use this adapter's existing select/IO state. No second
     // gallery engine, slide clones or separate index is introduced.
     const controlsTemplate=document.getElementById('sf-product-gallery-controls-template');
@@ -219,10 +266,11 @@
       if(portraitSource)portraitSource.media=variationActive?'not all':'(max-width:900px)';
       syncAlt();
       closeZoom();
+      hideExpand();
       select(0);
     });
     mobileMedia.addEventListener('change',()=>{
-      closeZoom();
+      closeZoom();hideExpand();
       items=slides();syncAlt();buildNav();observe();update(0);track.scrollTo(0,0);
     });
     matchMedia('(max-width:700px)').addEventListener('change',()=>{track.scrollTo(0,0);window.scrollTo({top:0,behavior:'instant'});observe();update(0);});
