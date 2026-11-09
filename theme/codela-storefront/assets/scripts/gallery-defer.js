@@ -89,7 +89,13 @@
         showAnimationDuration:matchMedia('(prefers-reduced-motion:reduce)').matches ? 0 : 160,
         hideAnimationDuration:matchMedia('(prefers-reduced-motion:reduce)').matches ? 0 : 160
       });
-      lightbox.listen('destroy', () => { lightbox = null; (trigger || link).focus({preventScroll:true}); });
+      lightbox.listen('destroy', () => {
+        lightbox = null;
+        // The transient expand button hides after opening. Return keyboard
+        // focus to its real Woo image link, never a hidden control.
+        const returnTarget = trigger?.classList.contains('sf-product-gallery-expand') ? link : (trigger || link);
+        returnTarget.focus({preventScroll:true});
+      });
       lightbox.init();
       return true;
     }
