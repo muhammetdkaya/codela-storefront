@@ -358,11 +358,12 @@ body.sf-auth-chrome-hidden .sf-shell > :is(.sf-header,.sf-mobile-dock){
 }
 
 /* The initial email login and remembered-device landing share the usable
-   Account viewport. Center the native progressive composition vertically
-   rather than pinning it below the toolbar. On short screens and whenever
-   a credential field is focused, fall back to the normal scrollable top
-   flow so iOS Safari's keyboard never pushes fields off-screen. */
-@media (max-width:700px) and (min-height:760px){
+   Account viewport. The earlier min-height:760px media query matched the
+   synthetic 844px browser fixture but NOT iPhone Safari's smaller CSS viewport
+   when its bottom browser chrome was present. Use available *panel* space,
+   with safe centering for short screens. Credential focus still returns to
+   normal scrolling so the iOS keyboard never traps the fields. */
+@media (max-width:700px){
   #sf-panel.is-account-panel .sf-account-body:has(
     .woocommerce.sf-smart-auth-active:not(.sf-pin-active):not(.sf-passkey-active):not(.sf-auth-focus-mode)
   ){
