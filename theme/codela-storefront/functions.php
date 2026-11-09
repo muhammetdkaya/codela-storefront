@@ -218,6 +218,9 @@ add_action( 'wp_enqueue_scripts', function() {
     }
     if ( function_exists( 'is_account_page' ) && is_account_page() ) {
         wp_enqueue_style( 'codela-storefront-account', $root_uri . 'styles/account.css', [ 'codela-storefront-components' ], $style_version );
+        if ( is_user_logged_in() ) {
+            wp_enqueue_script( 'codela-storefront-account-notice', $root_uri . 'scripts/account-notice.js', [], codela_sf_script_module_version( 'scripts/account-notice.js' ), true );
+        }
     }
     if ( ! is_user_logged_in() ) {
         // Guest account opens inside the existing panel on store pages. Reuse the
