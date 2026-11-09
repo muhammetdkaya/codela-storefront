@@ -6,9 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "iPhone Safari'de tarayıcı alt çubuğu nedeniyle 760px altında kalan görünür CSS ekranlarında normal girişin dikey ortalanmaması düzeltildi.",
-    "Normal giriş, hızlı girişin bulunduğu hesap panelinin kullanılabilir yüksekliğinde güvenli şekilde ortalanır; başlık, e-posta ve butonlar tek blok olarak kalır.",
-    "Klavye veya parola alanı odaklandığında ve kısa ekranlarda mevcut güvenli kaydırma davranışı korunur.",
-    "Mobil WebKit ve Chromium testleri artık gerçek yüksekliğiyle hesaplanan formu 700px ve 844px ekranlarda ölçer; geçmişteki sabit yükseklikli yanlış pozitif test kaldırıldı."
+    "Başarılı giriş ve kayıtlarda Hesabım’a yönlendirme; yönetici/şifre kurtarma akışları korundu.",
+    "İndirmeler sekmesinin menüde görünürlüğünü değiştiren tema ayarı eklendi.",
+    "Hesabım menüsü sağ okları yeni ince chevron simgesiyle değiştirildi.",
+    "Codela adres defteri etkinken standart WooCommerce adres kartları gizlendi.",
+    "Siparişler boş ekranındaki mağaza butonu kaldırıldı; WooCommerce doğrulama hatırlatması Hesabım sayfasına ince, kapatılabilir satır olarak taşındı."
   ]
 }
