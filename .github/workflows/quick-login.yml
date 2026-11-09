@@ -42,6 +42,11 @@ jobs:
           php tests/quick-login.php
           php tests/quick-login-markup.php
           php tests/account-registration-discovery.php
+          php tests/account-enhancements.php
+          php -l theme/codela-storefront/inc/account.php
+          php -l theme/codela-storefront/woocommerce/myaccount/my-address.php
+          php -l theme/codela-storefront/woocommerce/myaccount/dashboard.php
+          node --check theme/codela-storefront/assets/scripts/account-notice.js
       - name: WebCrypto integration and browser contract
         run: |
           node --check theme/codela-storefront/assets/scripts/quick-login.js
