@@ -356,3 +356,25 @@ body.sf-auth-chrome-hidden .sf-shell > :is(.sf-header,.sf-mobile-dock){
   box-shadow:0 0 0 3px rgba(35,36,40,.055)!important;
   background:#fff!important
 }
+
+/* The initial email login and remembered-device landing share the usable
+   Account viewport. Center the native progressive composition vertically
+   rather than pinning it below the toolbar. On short screens and whenever
+   a credential field is focused, fall back to the normal scrollable top
+   flow so iOS Safari's keyboard never pushes fields off-screen. */
+@media (max-width:700px) and (min-height:760px){
+  #sf-panel.is-account-panel .sf-account-body:has(
+    .woocommerce.sf-smart-auth-active:not(.sf-pin-active):not(.sf-passkey-active):not(.sf-auth-focus-mode)
+  ){
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    justify-content:safe center;
+    align-items:stretch
+  }
+  #sf-panel.is-account-panel .sf-account-body:has(
+    .woocommerce.sf-smart-auth-active:not(.sf-pin-active):not(.sf-passkey-active):not(.sf-auth-focus-mode)
+  ) > .woocommerce{
+    flex:0 0 auto;width:100%
+  }
+}
