@@ -53,7 +53,12 @@ const root = 'theme/codela-storefront/';
    document.querySelector('.sf-header').appendChild(menu);
   });
   await page.locator('.woocommerce-product-gallery__image a').first().click();
-  await page.waitForFunction(()=>document.querySelector('.sf-product-gallery-expand').classList.contains('is-visible'));
+  await page.waitForFunction(()=>{
+    const expand=document.querySelector('.sf-product-gallery-expand');
+    const menu=document.querySelector('.sf-menu-trigger');
+    return expand.classList.contains('is-visible') &&
+      Math.abs(expand.getBoundingClientRect().top-menu.getBoundingClientRect().bottom-12)<2;
+  });
   const expandPosition=await page.evaluate(()=>({
     menu:document.querySelector('.sf-menu-trigger').getBoundingClientRect().bottom,
     expand:document.querySelector('.sf-product-gallery-expand').getBoundingClientRect().top
