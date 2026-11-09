@@ -238,7 +238,7 @@ add_action( 'wp_head', 'codela_sf_product_sheet_bootstrap', 1 );
 /** Progressive mobile sheet: the script moves existing nodes, never copies a form. */
 function codela_sf_product_sheet_template(): void {
     ?>
-    <template id="sf-product-sheet-template" data-open-label="<?php esc_attr_e( 'Options and details', 'codela-storefront' ); ?>" data-close-label="<?php esc_attr_e( 'Close product details', 'codela-storefront' ); ?>" data-shipping-label="<?php esc_attr_e( 'Ships %s', 'codela-storefront' ); ?>" data-gallery-label="<?php esc_attr_e( 'Product images', 'codela-storefront' ); ?>" data-delivery-label="<?php esc_attr_e( 'Delivery and shipping', 'codela-storefront' ); ?>">
+    <template id="sf-product-sheet-template" data-open-label="<?php esc_attr_e( 'Options and details', 'codela-storefront' ); ?>" data-close-label="<?php esc_attr_e( 'Close product details', 'codela-storefront' ); ?>" data-shipping-label="<?php esc_attr_e( 'Ships %s', 'codela-storefront' ); ?>" data-gallery-label="<?php esc_attr_e( 'Product images', 'codela-storefront' ); ?>" data-previous-image-label="<?php esc_attr_e( 'Previous image', 'codela-storefront' ); ?>" data-next-image-label="<?php esc_attr_e( 'Next image', 'codela-storefront' ); ?>" data-fullscreen-label="<?php esc_attr_e( 'Open fullscreen gallery', 'codela-storefront' ); ?>" data-delivery-label="<?php esc_attr_e( 'Delivery and shipping', 'codela-storefront' ); ?>">
         <section class="sf-product-sheet sf-ui-surface sf-ui-surface--glass-panel" aria-label="<?php esc_attr_e( 'Product details', 'codela-storefront' ); ?>">
             <header class="sf-product-sheet-header">
                 <div class="sf-product-sheet-heading"></div>
@@ -269,3 +269,29 @@ add_action( 'woocommerce_after_single_product_summary', 'codela_sf_product_sheet
 add_filter( 'wc_add_to_cart_message_html', static function( $message ) {
     return '<span data-sf-cart-added hidden></span>';
 } );
+
+
+/**
+ * Confirm a successful ORIGINAL WooCommerce form POST independently of theme
+ * notices, which plugins and Woo blocks may filter out. The form handler
+ * still owns stock validation, variation choices, extra fields, and cookies.
+ * This only adds a response header to our same-origin progressive request.
+ */
+add_action( 'woocommerce_add_to_cart', static function() {
+    if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' )
+        || empty( $_POST['codela_sf_cart_async'] )
+        || empty( $_POST['add-to-cart'] )
+        || headers_sent() ) {
+        return;
+    }
+    header( 'X-Codela-Sf-Cart-Added: 1' );
+}, 10, 0 );
+
+// Keep this in-page progressive request in place even when the store normally
+// sends traditional add-to-cart forms to the cart immediately.
+add_filter( 'woocommerce_add_to_cart_redirect', static function( $url ) {
+    return ! empty( $_POST['codela_sf_cart_async'] ) ? false : $url;
+}, 999 );
+add_filter( 'option_woocommerce_cart_redirect_after_add', static function( $value ) {
+    return ! empty( $_POST['codela_sf_cart_async'] ) ? 'no' : $value;
+}, 999 );

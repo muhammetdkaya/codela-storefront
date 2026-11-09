@@ -96,10 +96,14 @@ html[data-sf-navigation-pending] .sf-shell > .sf-mobile-dock .sf-dock-surface{tr
     box-shadow:var(--sf-ui-glass-shadow);
   }
   .sf-navigation-purchase .sf-ui-button{
-    flex:0 1 200px;width:auto;min-width:0;margin-inline-start:auto;
-    --sf-ui-button-height:44px;
-    --sf-ui-button-font-size:14px;
-    --sf-ui-button-padding-y:8px;--sf-ui-button-padding-x:var(--sf-ui-product-button-padding-x);--sf-ui-control-radius:var(--sf-ui-pill);cursor:default;
+    /* Match the REAL expanded tonal CTA width/height from product.css.
+       No 200px cap or auto left margin while its native source is loading. */
+    flex:1 1 0;width:auto;min-width:0;margin-inline-start:0;
+    height:44px;min-height:44px;padding-block:0;box-sizing:border-box;
+    --sf-ui-button-height:44px;--sf-ui-button-font-size:14px;
+    --sf-ui-button-padding-y:0px;--sf-ui-button-padding-x:var(--sf-ui-product-button-padding-x);
+    --sf-ui-control-radius:var(--sf-ui-pill);border-radius:999px;
+    background:var(--sf-ui-button-tonal);color:var(--sf-ui-ink);cursor:default;
   }
   html[data-sf-navigation-target="product"] .sf-skeleton-gallery{position:absolute;inset:0;width:100%;height:calc(var(--sf-product-viewport-large,100lvh) - var(--sf-ui-product-photo-inset,116px) - env(safe-area-inset-bottom,0px));border-radius:0}
   html[data-sf-navigation-pending]:not([data-sf-navigation-target="product"]) .sf-skeleton-layout{max-height:max(0px,calc(var(--sf-feedback-gallery-height,100dvh) - 100px - var(--sf-header-offset,0px)));overflow:hidden}
