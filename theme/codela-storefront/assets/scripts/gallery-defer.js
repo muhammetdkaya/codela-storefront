@@ -41,12 +41,13 @@
     syncAlt();
     let lightbox = null;
     const closeZoom = () => { if (lightbox) lightbox.close(); };
-    track.addEventListener('click', event => {
-      const link = event.target.closest('.woocommerce-product-gallery__image a');
-      if (!link || !window.PhotoSwipe || !window.PhotoSwipeUI_Default) return;
+    // The image itself and the dedicated expand control open ONE native
+    // PhotoSwipe instance. Woo image URLs and variation attributes are reused.
+    function openFullScreen(index, trigger) {
       const template = document.querySelector('.pswp');
-      if (!template) return; // Native image link is the no-runtime fallback.
-      event.preventDefault(); event.stopImmediatePropagation();
+      if (!template || !window.PhotoSwipe || !window.PhotoSwipeUI_Default) return false;
+      const link = items[index]?.querySelector('a');
+      if (!link) return false;
       const images = items.map(item => {
         const image = item.querySelector('a img');
         const portrait = mobileMedia.matches && image.dataset.sfMobileUrl && !(item === items[0] && variationActive);
@@ -55,13 +56,19 @@
           h:Number(portrait ? image.dataset.sfMobileHeight : image.dataset.large_image_height) || image.naturalHeight || 1200};
       });
       lightbox = new window.PhotoSwipe(template, window.PhotoSwipeUI_Default, images, {
-        index:Math.max(0, items.indexOf(link.closest('.woocommerce-product-gallery__image'))),
-        history:false, shareEl:false, closeOnScroll:false,
+        index:Math.max(0,index),history:false,shareEl:false,closeOnScroll:false,
         showAnimationDuration:matchMedia('(prefers-reduced-motion:reduce)').matches ? 0 : 160,
         hideAnimationDuration:matchMedia('(prefers-reduced-motion:reduce)').matches ? 0 : 160
       });
-      lightbox.listen('destroy', () => { lightbox = null; link.focus({preventScroll:true}); });
+      lightbox.listen('destroy', () => { lightbox = null; (trigger || link).focus({preventScroll:true}); });
       lightbox.init();
+      return true;
+    }
+    track.addEventListener('click', event => {
+      const link = event.target.closest('.woocommerce-product-gallery__image a');
+      if (!link) return;
+      const index = items.indexOf(link.closest('.woocommerce-product-gallery__image'));
+      if (openFullScreen(index,link)) { event.preventDefault(); event.stopImmediatePropagation(); }
     }, true);
     const nav=document.createElement('nav');
     nav.className='sf-ui-gallery-nav sf-product-gallery-nav';
@@ -97,23 +104,38 @@
     });
     nav.hidden=items.length<2||gallery.classList.contains('sf-ui-gallery--no-thumbs');
     };
-    buildNav();gallery.appendChild(nav);
-    // Fade only a shared glass material layer, never the preview images/count.
-    const glass = document.createElement('span');
-    glass.className = 'sf-product-gallery-glass sf-ui-surface sf-ui-surface--glass-panel';
-    glass.setAttribute('aria-hidden', 'true');
-    gallery.appendChild(glass);
-    let glassTimer = 0;
-    const showGlass = () => {
-      const rect = nav.getBoundingClientRect();
-      glass.style.cssText = `left:${rect.left - 4}px;top:${rect.top - 4}px;width:${rect.width + 8}px;height:${rect.height + 8}px`;
-      glass.classList.toggle('is-visible', !nav.hidden && rect.height > 0);
-      clearTimeout(glassTimer);
-      glassTimer = setTimeout(() => glass.classList.remove('is-visible'), 2000);
+    buildNav();
+    // The glass material is the PERSISTENT rail containing the real native
+    // preview controls, not a fading fixed overlay that disappears on scroll.
+    const rail = document.createElement('div');
+    rail.className = 'sf-product-gallery-rail sf-ui-surface sf-ui-surface--glass-panel';
+    rail.setAttribute('role','group');
+    rail.setAttribute('aria-label',track.getAttribute('aria-label'));
+    const control = (direction, label) => {
+      const button=document.createElement('button');
+      button.type='button';
+      button.className='sf-ui-icon-button sf-product-gallery-rail-arrow';
+      button.setAttribute('aria-label',label);
+      button.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(direction<0?'m6 15 6-6 6 6':'m6 9 6 6 6-6')+'"/></svg>';
+      button.addEventListener('click',()=>select(Math.max(0,Math.min(items.length-1,currentIndex()+direction))));
+      return button;
     };
-    window.addEventListener('scroll', showGlass, {passive:true});
-    track.addEventListener('scroll', showGlass, {passive:true});
-    window.addEventListener('resize', () => glass.classList.remove('is-visible'), {passive:true});
+    const previous=control(-1,document.getElementById('sf-product-sheet-template')?.dataset.previousImageLabel||'Previous image');
+    const next=control(1,document.getElementById('sf-product-sheet-template')?.dataset.nextImageLabel||'Next image');
+    const currentIndex=()=>Math.max(0,[...nav.children].findIndex(node=>node.getAttribute('aria-current')==='true'));
+    rail.append(previous,nav,count,next);
+    gallery.appendChild(rail);
+    // Independent fullscreen affordance; gallery navigation remains intact.
+    const expand=document.createElement('button');
+    expand.type='button';
+    expand.className='sf-ui-icon-button sf-product-gallery-expand';
+    expand.setAttribute('aria-label',document.getElementById('sf-product-sheet-template')?.dataset.fullscreenLabel||'Open fullscreen gallery');
+    expand.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H3v5M3 3l7 7M16 3h5v5m0-5-7 7M3 16v5h5m-5 0 7-7m11 2v5h-5m5 0-7-7"/></svg>';
+    expand.addEventListener('click',()=>{
+      const index=currentIndex();
+      if (!openFullScreen(index,expand)) items[index]?.querySelector('a')?.click();
+    });
+    gallery.appendChild(expand);
     // Shared IconButtons use this adapter's existing select/IO state. No second
     // gallery engine, slide clones or separate index is introduced.
     const controlsTemplate=document.getElementById('sf-product-gallery-controls-template');
@@ -139,6 +161,8 @@
     function update(index){
       count.textContent=(index+1)+' / '+items.length;
       if(arrows)arrows.hidden=items.length<2;
+      rail.hidden=items.length<2||nav.hidden;
+      previous.disabled=index===0;next.disabled=index===items.length-1;
       arrows?.querySelectorAll('[data-product-gallery-step]').forEach(button=>{button.disabled=Number(button.dataset.productGalleryStep)<0?index===0:index===items.length-1;});
       const first=Math.max(0,Math.min(index-1,items.length-3));
       [...nav.children].forEach((button,i)=>{
