@@ -27,8 +27,9 @@ const root = 'theme/codela-storefront/';
    throw new Error('Gallery glass did not pulse after wheel: '+JSON.stringify(diagnosis),{cause:error});
   });
   assert.equal(await images.count(),3);
-  await page.waitForTimeout(2300);
-  assert.equal(await page.locator('.sf-product-gallery-glass').evaluate(el=>getComputedStyle(el).opacity),'0');
+  // Allow the two-second hold AND its existing CSS opacity transition to finish.
+  await page.waitForFunction(()=>Number(getComputedStyle(document.querySelector('.sf-product-gallery-glass')).opacity)<0.001,{},{timeout:5500});
+  assert(Number(await page.locator('.sf-product-gallery-glass').evaluate(el=>getComputedStyle(el).opacity))<0.001);
   assert(await images.first().isVisible());
   assert(await page.locator('.sf-product-gallery-count').isVisible());
   await page.evaluate(()=>window.scrollTo(0,document.querySelector('.sf-product-discovery').offsetTop));
