@@ -6,11 +6,9 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Giriş ekranındaki açıklama sadeleştirildi: Hoş geldin başlığı altında yalnızca Giriş yap veya kayıt ol. gösterilir.",
-    "Kayıtlı veya yeni e-posta doğrulandıktan sonra açılan alanların arasına ikinci başlık, hesap durumu açıklaması veya yönlendirme satırı eklenmez.",
-    "E-posta yazarken eksik @ ve tamamlanmamış adres, alanın sağındaki uyarı ikonu ve kısa bağlamsal metinle anında belirtilir.",
-    "Geçerli e-posta kontrolünde yükleniyor animasyonu, hesap sonucu geldiğinde onay simgesi korunur; başarılı aşamalarda ara açıklama görünmez.",
-    "WooCommerce yerleşik kayıt butonu otomatik kayıt aşamasında Kayıt Ol etiketini taşır.",
-    "Şifre yeterlilik denetimi, form güvenliği, Google ve hızlı girişin aşamalı görünürlüğü korunur."
+    "iOS Safari odak karartmasında e-posta doğrulama simgesi alanın üzerinde görünür kalır; uyarı, sorgulama ve onay durumları korunur.",
+    "Mobil Hesabım penceresine taşınan sağ üst menü butonu yalnız e-posta/parola girilirken gizlenir, odak kapanınca geri gelir.",
+    "Giriş, kayıt, WooCommerce nonce ve mevcut şifre güvenliği akışları değiştirilmedi.",
+    "Chromium/WebKit regresyonu: odakta simge katmanı, menü gizleme ve odak kapandıktan sonra geri dönüş kontrol edildi."
   ]
 }

@@ -32,7 +32,10 @@
 .woocommerce.sf-smart-auth-active .sf-smart-progress{
   position:absolute;top:50%;right:18px;transform:translateY(-50%);
   width:24px;height:24px;box-sizing:border-box;border-radius:50%;
-  display:grid;place-items:center;pointer-events:none
+  display:grid;place-items:center;pointer-events:none;
+  /* The focused input is z-index:1. Keep status glyph above its white paint
+     without allowing it to intercept touch/keyboard input. */
+  z-index:2
 }
 .woocommerce.sf-smart-auth-active .sf-smart-progress[hidden]{display:none!important}
 .woocommerce.sf-smart-auth-active .sf-smart-progress[data-state="checking"]::before{
@@ -311,7 +314,13 @@ body.woocommerce-account:not(.logged-in) .woocommerce.sf-smart-new.sf-smart-regi
 
 /* Direct focus state for browsers where :has() and independently animated
    mobile chrome disagree for a frame. No header/dock while typing. */
-#sf-panel.is-account-panel.sf-auth-chrome-hidden > :is(.sf-panel-top,.sf-mobile-dock),
+#sf-panel.is-account-panel.sf-auth-chrome-hidden > :is(.sf-panel-top,.sf-mobile-dock,.sf-menu-trigger.is-in-panel),
 body.sf-auth-chrome-hidden .sf-shell > :is(.sf-header,.sf-mobile-dock){
+  opacity:0!important;visibility:hidden!important;pointer-events:none!important
+}
+/* On mobile, the navigation controller moves the menu control directly into
+   the Account dialog. It is not inside .sf-panel-top, so hide it explicitly
+   only during credential focus and restore it on blur. */
+#sf-panel.is-account-panel:has(.woocommerce.sf-auth-focus-mode) > .sf-menu-trigger.is-in-panel{
   opacity:0!important;visibility:hidden!important;pointer-events:none!important
 }
