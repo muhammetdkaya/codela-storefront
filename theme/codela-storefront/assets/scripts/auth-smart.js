@@ -23,6 +23,13 @@
     const last = registerForm && query(registerForm,'input[name="last_name"]');
     const registerAllowed = !!(registerForm && registerEmail && first && last);
     const registerSubmit=registerForm && query(registerForm,'button[type="submit"],input[type="submit"]');
+    // Keep WooCommerce's native button/nonce, but give the automatic signup
+    // step an unmistakable action label instead of the default "Join".
+    if(registerSubmit){
+      const registerLabel=intro.dataset.authSmartRegisterAction||'Register';
+      if(registerSubmit.tagName==='INPUT')registerSubmit.value=registerLabel;
+      else registerSubmit.textContent=registerLabel;
+    }
     let strength=null;
     if(registerPassword){
       registerPassword.placeholder=intro.dataset.authSmartRegisterPassword||'Password (8+ characters)';
@@ -120,7 +127,7 @@
     };
     const setStage=(next,message='')=>{
       stage=next;
-      root.classList.remove('sf-smart-start','sf-smart-checking','sf-smart-existing','sf-smart-new','sf-smart-closed','sf-smart-password-ready','sf-smart-register-ready');
+      root.classList.remove('sf-smart-start','sf-smart-checking','sf-smart-existing','sf-smart-new','sf-smart-closed','sf-smart-unavailable','sf-smart-partial','sf-smart-password-ready','sf-smart-register-ready');
       root.classList.add('sf-smart-'+next);
       status(message);
       indicator.hidden=!['checking','existing','new'].includes(next);
@@ -190,7 +197,16 @@
       // Only complete email addresses enter the account discovery flow.
       // Arbitrary text such as "test" must never open a password field.
       if(!emailPattern.test(active) || active.length>254){
-        setStage('start');return;
+        // Incomplete emails get a lightweight, immediate hint; never open
+        // a password or register form from unverified input.
+        const message=!active.includes('@')
+          ? intro.dataset.authSmartMissingAt||'Add @ to your email address.'
+          : intro.dataset.authSmartIncomplete||'Complete your email address.';
+        setStage('start',message);
+        root.classList.add('sf-smart-partial');
+        indicator.hidden=false;
+        indicator.dataset.state='invalid';
+        return;
       }
       if(cache.has(active.toLowerCase())){setStage(cache.get(active.toLowerCase()));return;}
       setStage('checking',intro.dataset.authSmartChecking||'Checking account…');
