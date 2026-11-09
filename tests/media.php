@@ -16,10 +16,10 @@ require __DIR__ . '/../theme/codela-storefront/inc/media.php';
 function check( $result, $message ) { if ( ! $result ) { throw new RuntimeException( $message ); } }
 foreach ($actions['after_setup_theme'][10] as $callback) { $callback(); }
 check($filters['current_theme_supports-wc-product-gallery-slider'](true)===false, 'Unused slider assets are not requested on the native scrolling product');
-check($filters['current_theme_supports-wc-product-gallery-lightbox'](true)===false, 'Unused lightbox assets are not requested');
+check($filters['current_theme_supports-wc-product-gallery-lightbox'](true)===true, 'Native fullscreen assets are available');
 check($filters['woocommerce_gallery_image_size']('woocommerce_gallery_thumbnail')==='woocommerce_single', 'Secondary full-frame photos use uncropped single size even without FlexSlider');
-check($filters['woocommerce_single_product_zoom_enabled'](true)===false, 'Native auto-zoom stays off; the adapter initializes Woo zoom on user request');
-check($filters['woocommerce_single_product_photoswipe_enabled'](true)===false, 'Product never opens a separate PhotoSwipe popup');
+check($filters['woocommerce_single_product_zoom_enabled'](true)===false, 'Inline zoom stays off; native fullscreen owns enlargement');
+check($filters['woocommerce_single_product_photoswipe_enabled'](true)===true, 'Product uses native PhotoSwipe fullscreen');
 $product_page=false;
 check($filters['current_theme_supports-wc-product-gallery-slider'](true)===true, 'Other image contexts retain their support');
 check($filters['woocommerce_single_product_photoswipe_enabled'](true)===true, 'Other contexts retain their lightbox setting');
@@ -50,11 +50,11 @@ ob_start();$actions['woocommerce_before_add_to_cart_button'][0][0]();echo '<butt
 check(ob_get_clean()==='<div class="sf-product-purchase"><button type="submit">Native</button></div>', 'One wrapper retains native form control');
 
 function doing_action( $hook ) { return $GLOBALS['stock_in_tab'] ?? false; }
-class TestStockProduct { public function __construct( public string $type ) {} public function is_type( $type ) { return $type === $this->type; } }
+class TestStockProduct { public function __construct( public string $type ) {} public function is_in_stock() { return true; } public function is_type( $type ) { return $type === $this->type; } }
 $tabs=codela_sf_product_information_tabs(['description'=>['title'=>'Existing']]);
 check($tabs['description']['title']==='Existing' && $tabs['additional_information']['callback']==='woocommerce_product_additional_information_tab', 'Native extra-info tab added without losing tabs');
 $custom=['additional_information'=>['title'=>'Custom','callback'=>'custom']];
-check(codela_sf_product_information_tabs($custom)===$custom, 'Existing extra-info tab preserved');
+check(codela_sf_product_information_tabs($custom)['additional_information']['callback']==='custom', 'Existing technical callback preserved');
 check($removed===['woocommerce_single_product_summary','woocommerce_template_single_meta',40], 'Metadata leaves summary');
 check(codela_sf_product_stock_placement('Native stock',new TestStockProduct('simple'))==='', 'General stock leaves summary');
 check(codela_sf_product_stock_placement('Variation stock',new TestStockProduct('variation'))==='Variation stock', 'Variation availability remains live');

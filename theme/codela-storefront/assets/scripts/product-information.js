@@ -75,6 +75,10 @@
     var photoWidth = 0;
     var discoveryFrame = 0;
     var delivery = null;
+    var shippingSummary = null;
+    var shippingObserver = null;
+    var endArmed = true;
+    var lastScrollY = window.scrollY;
     var openSections = [];
     function move(node, target) {
       if (!node) return;
@@ -106,6 +110,7 @@
     function setOpen(open, focusTarget, preservePhoto) {
       cancelPendingFocus();
       if (!mounted) return;
+      if (!open && expanded) endArmed = false;
       expanded = open;
       if (open && !preservePhoto && !sheet.classList.contains('is-discovering')) {
         var photos = Array.from(media.querySelectorAll('.woocommerce-product-gallery__image,.woocommerce-product-gallery__image--placeholder')).filter(node=>node.getClientRects().length);
@@ -115,6 +120,7 @@
       sheet.classList.toggle('is-expanded', open);
       document.body.classList.toggle('sf-product-sheet-open', open);
       toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? template.dataset.closeLabel : template.dataset.openLabel);
       media.inert = open;
       sheet.classList.toggle('is-discovering', !open && isDiscovering());
       if (!open && content.contains(document.activeElement) && !purchase?.contains(document.activeElement)) toggle.focus({preventScroll:true});
@@ -136,6 +142,15 @@
     }
     function updateDiscovery() {
       if (!mounted || drag || document.documentElement.classList.contains('sf-overlay-scroll-locked')) return;
+      var remaining = document.documentElement.scrollHeight - (window.scrollY + window.innerHeight);
+      var downward = window.scrollY > lastScrollY;
+      lastScrollY = window.scrollY;
+      // Auto-open only once per page visit. A deliberate close must not
+      // rearm simply because the visitor browses away and returns to the end.
+      if (!expanded && endArmed && downward && remaining <= 8) {
+        endArmed = false;
+        setOpen(true, null, true);
+      }
       var active = isDiscovering();
       media.classList.toggle('is-discovering', active);
       var compact = active && !expanded;
@@ -155,6 +170,9 @@
       sheet.classList.add('is-mounting');
       move(title, heading);
       move(price, heading);
+      // Only an unavailable product needs an availability row in the purchase summary.
+      var unavailable = summary.querySelector(':scope > .stock.out-of-stock');
+      if (unavailable) move(unavailable, heading);
       var notices = document.querySelector('.woocommerce-notices-wrapper');
       if (notices && !product.contains(notices)) move(notices, content);
       // Keep the original summary/form hierarchy, extension inputs, native
@@ -186,6 +204,21 @@
           information.insertBefore(delivery, next);
         } else content.appendChild(delivery);
         shipping.forEach(function (node) { move(node, body); });
+        var eta = body.querySelector('.cdl-de');
+        if (eta) {
+          shippingSummary = document.createElement('p');
+          shippingSummary.className = 'sf-product-shipping-summary';
+          heading.appendChild(shippingSummary);
+          var syncShipping = function () {
+            var day = eta.querySelector('.cdl-de-line strong:not(.cdl-de-timer)');
+            shippingSummary.textContent = day ? template.dataset.shippingLabel.replace('%s', day.textContent.trim()) : '';
+            shippingSummary.hidden = !day;
+            measure();
+          };
+          shippingObserver = new MutationObserver(syncShipping);
+          shippingObserver.observe(eta, {childList:true, subtree:true, characterData:true});
+          syncShipping();
+        }
       }
       // Desktop owns the original reassurance inside summary; the SAME node
       // joins the mobile information panel and returns to its exact marker.
@@ -221,6 +254,8 @@
       originals = [];
       openSections.forEach(function (section) { section.open = true; });
       openSections = [];
+      if (shippingObserver) { shippingObserver.disconnect(); shippingObserver = null; }
+      if (shippingSummary) { shippingSummary.remove(); shippingSummary = null; }
       if (delivery) { delivery.remove(); delivery = null; }
       discovery.remove();
       media.classList.remove('is-discovering');

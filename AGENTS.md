@@ -1,3 +1,13 @@
+## 9 Kasım 2026 — 0.1.260 → 0.1.261 ürün akışı (yayın adayı)
+
+Mevcut cam renkleri, panel konumu ve ortak malzeme korunur. Mobil panel gerçek belge sonunda (öneriler/footer sonrasında) açılır; elle kapatma yeniden açılmayı sayfadan uzaklaşıp dönene kadar engeller. Ortadaki 70×44 kontrol kapalıyken çizgi, açıkken aşağı chevron'dur. Önizleme resimleri/sayaç görünür kalır; yalnız mevcut panel malzemeli arka katman scroll sonrası iki saniyede söner. Woo PhotoSwipe yerel tam ekran görüntüleyicisi, native görseller ve varyasyon kaynakları kullanılır.
+
+Kısa gönderim özeti yalnız etkin DeliveryEta'nın gerçek gün metninden gelir ve eklenti güncellemesini izler. Ücretsiz kargo detaylarda kalır. Normal stok satırı gizli, stoksuzluk görünürdür; seçenekler native detay formunda kalır. Teknik veri kaybolmadan Ek bilgi adı Ürün özellikleri olur.
+
+Tek sepet controller'ı native ürün POST alanlarını koruyarak yüklenme/hata/sunucudan onaylanan başarı durumunu sunar; başarıdan sonra Sepete git aynı sepeti açar. Miktar/varyasyon değişimi sıfırlar. Catalog Woo AJAX olayları aynı geri bildirimi kullanır. Woo sunucusu fiyat/stok/eklenti validasyonunun sahibidir; ekleme tekrar gönderilmez. Eklenti kodu değişmedi.
+
+Yerel: JS syntax, 3 asset/24 paket, cart-race/cart-sync/cart-design/cart-free-shipping kontrolleri geçti. Yerelde PHP ve tarayıcı indirimi kullanılamadı; yeni Chromium/WebKit product-flow CI testi yayın öncesi çalıştırılacak. Fiziksel iPhone ve gerçek mağaza sipariş kabulü yapılmadı. GitHub/stable henüz yayımlanmadı; canlı FTP kurulum yok. Sıradaki: CI sonucunu doğrula, adayı birleştir, tag/ZIP/stable hash doğrulamasını bu kayda ekle.
+
 ## 8 Kasım 2026 — Codela Storefront 0.1.239 kart içinde PIN (GitHub + stable yayımlandı)
 
 [PR #132](https://github.com/muhammetdkaya/codela-storefront/pull/132) ana dala [e8bac24](https://github.com/muhammetdkaya/codela-storefront/commit/e8bac242ce0c5748aaa9b17fbaac240d3ab96e2e) olarak birleştirildi. Kullanıcının onayladığı hızlı giriş: tanınan hesabın kartına tıklayınca ayrı alt popup yerine kart içinde native telefon sayısal klavyesi ile 6 kare PIN açılır. Chevron aşağı/yukarı döner, arka plan hafif kararır. Altıncı rakama kadar yalnız gizli noktalar görülür; hiçbir rakam için ayrı başarı bilgisi verilmez. Sunucunun REST/cihaz-ECDSA verify cevabı doğru geldikten sonra 6 kare aynı merkezde yeşil kutuya birleşir, tek beyaz tik çizilir; ilave 'Giriş yapıldı' metin kartı yok. Hatalı kod kırmızı uyarı verir, sıfırlanır. Woo gerçek cookie, PIN güvenliği/hız sınırları, kayıt/Google/password, hesap değiştirme ve cache-bypass yönlendirme korunur. Safari için inline layout giriş dokunuşunda senkron hesaplanır, sonra native PIN input focus edilir. Popup markupu ve sabit popup viewport yönetimi kaldırıldı.

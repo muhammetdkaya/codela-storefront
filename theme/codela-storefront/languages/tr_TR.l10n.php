@@ -1,5 +1,12 @@
 <?php
 return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR', 'plural-forms' => 'nplurals=2; plural=(n > 1);', 'messages' => [
+'Adding…' => 'Ekleniyor…',
+'View cart' => 'Sepete git',
+'Add to cart' => 'Sepete ekle',
+'Could not confirm the addition. Check your cart before trying again.' => 'Ekleme doğrulanamadı. Tekrar denemeden önce sepetinizi kontrol edin.',
+'Close product details' => 'Ürün detaylarını kapat',
+'Product specifications' => 'Ürün özellikleri',
+'Ships %s' => '%s kargoda',
 'Mobile product images' => 'Mobil ürün görselleri',
 'Mobile featured image' => 'Mobil öne çıkan görsel',
 'Mobile gallery' => 'Mobil galeri',

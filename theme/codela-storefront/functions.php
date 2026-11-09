@@ -6,7 +6,7 @@ function codela_sf_ready(): bool {
 add_action( 'after_setup_theme', function() {
     load_theme_textdomain( 'codela-storefront', get_template_directory() . '/languages' );
     add_theme_support( 'woocommerce' );
-    add_theme_support( 'wc-product-gallery-zoom' );
+    add_theme_support( 'wc-product-gallery-lightbox' );
     add_theme_support( 'wc-product-gallery-slider' );
     add_theme_support( 'codela-storefront', [ 'api' => '1.0.0' ] );
     add_theme_support( 'title-tag' );
@@ -208,9 +208,8 @@ add_action( 'wp_enqueue_scripts', function() {
         wp_enqueue_style( 'codela-storefront-product', $root_uri . 'styles/product.css', [ 'codela-storefront-components', 'codela-storefront-gallery' ], $style_version );
         wp_enqueue_script( 'codela-storefront-product-information', $root_uri . 'scripts/product-information.js', [], codela_sf_script_module_version( 'scripts/product-information.js' ), true );
         // The adapter removes the prepaint state after mounting; the head bootstrap owns failure fallback.
-        // Reuse Woo's zoom plugin on demand; keep native responsive photo loading.
-        $zoom_handle = wp_script_is( 'wc-zoom', 'registered' ) ? 'wc-zoom' : 'zoom';
-        wp_enqueue_script( 'codela-storefront-gallery-defer', $root_uri . 'scripts/gallery-defer.js', [ 'wc-single-product', $zoom_handle ], $style_version, true );
+        // Reuse Woo's PhotoSwipe; preserve native responsive photo loading.
+        wp_enqueue_script( 'codela-storefront-gallery-defer', $root_uri . 'scripts/gallery-defer.js', [ 'wc-single-product', 'photoswipe-ui-default' ], $style_version, true );
     }
     if ( function_exists( 'is_checkout' ) && is_checkout() ) {
         // Presentation adapter only; no Woo checkout/gateway logic is changed.

@@ -5,17 +5,18 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 function codela_sf_product_information_tabs( array $tabs ): array {
     if ( ! isset( $tabs['additional_information'] ) ) {
         $tabs['additional_information'] = [
-            'title' => __( 'Additional information', 'woocommerce' ),
+            'title' => __( 'Product specifications', 'codela-storefront' ),
             'priority' => 20,
             'callback' => 'woocommerce_product_additional_information_tab',
         ];
     }
+    if ( isset( $tabs['additional_information'] ) ) { $tabs['additional_information']['title'] = __( 'Product specifications', 'codela-storefront' ); }
     return $tabs;
 }
 
 function codela_sf_product_stock_placement( string $html, $product ): string {
     // Keep variation availability in Woo's live selection data and AJAX responses.
-    if ( ! is_product() || $product->is_type( 'variation' ) || doing_action( 'woocommerce_product_additional_information' ) ) {
+    if ( ! is_product() || ! $product->is_in_stock() || $product->is_type( 'variation' ) || doing_action( 'woocommerce_product_additional_information' ) ) {
         return $html;
     }
     return '';
@@ -237,13 +238,13 @@ add_action( 'wp_head', 'codela_sf_product_sheet_bootstrap', 1 );
 /** Progressive mobile sheet: the script moves existing nodes, never copies a form. */
 function codela_sf_product_sheet_template(): void {
     ?>
-    <template id="sf-product-sheet-template" data-gallery-label="<?php esc_attr_e( 'Product images', 'codela-storefront' ); ?>" data-delivery-label="<?php esc_attr_e( 'Delivery and shipping', 'codela-storefront' ); ?>">
+    <template id="sf-product-sheet-template" data-open-label="<?php esc_attr_e( 'Options and details', 'codela-storefront' ); ?>" data-close-label="<?php esc_attr_e( 'Close product details', 'codela-storefront' ); ?>" data-shipping-label="<?php esc_attr_e( 'Ships %s', 'codela-storefront' ); ?>" data-gallery-label="<?php esc_attr_e( 'Product images', 'codela-storefront' ); ?>" data-delivery-label="<?php esc_attr_e( 'Delivery and shipping', 'codela-storefront' ); ?>">
         <section class="sf-product-sheet sf-ui-surface sf-ui-surface--glass-panel" aria-label="<?php esc_attr_e( 'Product details', 'codela-storefront' ); ?>">
             <header class="sf-product-sheet-header">
                 <div class="sf-product-sheet-heading"></div>
                 <?php echo codela_sf_ui_button( __( 'Options and details', 'codela-storefront' ), [
                     'variant' => 'quiet', 'class' => 'sf-product-sheet-toggle',
-                    'attributes' => [ 'aria-expanded' => 'false', 'aria-controls' => 'sf-product-sheet-body' ],
+                    'attributes' => [ 'aria-label' => __( 'Options and details', 'codela-storefront' ), 'aria-expanded' => 'false', 'aria-controls' => 'sf-product-sheet-body' ],
                 ] ); ?>
             </header>
             <div class="sf-product-sheet-body" id="sf-product-sheet-body"></div>
@@ -266,5 +267,5 @@ add_action( 'woocommerce_after_single_product_summary', 'codela_sf_product_sheet
 
 /** Purchase confirmation stays in the existing cart badge/control, not a Woo banner. */
 add_filter( 'wc_add_to_cart_message_html', static function( $message ) {
-    return '';
+    return '<span data-sf-cart-added hidden></span>';
 } );

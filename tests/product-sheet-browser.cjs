@@ -113,6 +113,16 @@ for(const width of [320,390,700]){
  // by the scoped overscroll policy; a desktop wheel cannot emulate that paint.
  await page.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
  await page.waitForFunction(()=>Math.abs(scrollY-(document.documentElement.scrollHeight-innerHeight))<1);
+ // The new end-of-document action opens details. Dismiss it to continue
+ // checking the unchanged native recommendation/footer scroll geometry.
+ await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-expanded'));
+ await toggle.click();
+ await page.waitForFunction(()=>{
+   const sheet=document.querySelector('.sf-product-sheet');
+   const closed=parseFloat(getComputedStyle(sheet).getPropertyValue('--sf-product-closed-height'));
+   return sheet.querySelector('.sf-product-sheet-toggle').getAttribute('aria-expanded')==='false' &&
+      Math.abs(sheet.getBoundingClientRect().height-closed)<2;
+ });
  const bottom=await page.evaluate(()=>({y:scrollY,height:document.documentElement.scrollHeight}));
  assert.equal(await page.locator('body').evaluate(e=>getComputedStyle(e).paddingBottom),'0px','Hidden navigation dock adds no second bottom reserve to product document');
  const footerGap=await page.evaluate(()=>document.querySelector('.sf-product-sheet').getBoundingClientRect().top-document.querySelector('.sf-footer-inner').getBoundingClientRect().bottom);
@@ -166,7 +176,7 @@ for(const width of [320,390,700]){
  const beforeDrag=(await page.locator('.sf-product-sheet').boundingBox()).height;
  await page.mouse.move(handle.x+handle.width/2,handle.y+20);await page.mouse.down();
  await page.waitForFunction(()=>{
-   const grip=document.querySelector('.sf-product-sheet-header');
+   const grip=document.querySelector('.sf-product-sheet-toggle');
    return new DOMMatrix(getComputedStyle(grip,'::before').transform).a>1.02;
  });
  await page.mouse.move(handle.x+handle.width/2,handle.y-80,{steps:8});

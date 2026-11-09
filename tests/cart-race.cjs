@@ -14,7 +14,7 @@ function setup(extend = () => {}, getCurrent = () => 'cart') {
  const element=()=>({innerHTML:'',textContent:'',hidden:false,inert:false,dataset:{},disabled:false,setAttribute(){},querySelectorAll(){return []},focus(){}});
  for(const id of ['#sf-cart-items','.sf-cart-bottom','#sf-subtotal','#sf-status','#sf-cart','.sf-close'])nodes[id]=element();
  const context={console,AbortController,Promise,queueMicrotask,fetch:(url,options)=>{const d=deferred();requests.push({url,options,...d});return d.promise;},
- document:{querySelectorAll:()=>[],body:{addEventListener:(name,fn)=>{listeners[name]??=[];listeners[name].push(fn);}}},
+ document:{addEventListener:()=>{},querySelectorAll:()=>[],body:{addEventListener:(name,fn)=>{listeners[name]??=[];listeners[name].push(fn);}}},
  window:{addEventListener:()=>{}},escape:x=>x,decode:x=>x,safeURL:x=>x,money:x=>String(x)};
  extend(context, nodes);
  vm.createContext(context);vm.runInContext(source+'\nthis.createCartController=createCartController;',context);

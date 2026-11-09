@@ -4,7 +4,7 @@
  */
 import { escape, decode, safeURL, money } from 'codela-storefront/format';
 
-export function createCartController({ $, config, t, getCurrent, getDialog }) {
+export function createCartController({ $, config, t, getCurrent, getDialog, openCart }) {
     let cartNonce = '', cartData = null, cartPending = null, mutating = false, cartRevision = 0;
     let dirty = false, externalRevision = 0, readAbort = null, bound = false, refreshScheduled = false;
     let wooStore = null, wooSnapshot = '', wooRefresh = null, wooRefreshDirty = false;
@@ -249,9 +249,124 @@ export function createCartController({ $, config, t, getCurrent, getDialog }) {
         if (!cartPending) scheduleRefresh();
     }
 
+    const feedbackOriginal = new WeakMap();
+    function feedback(button, phase) {
+        if (!button) return;
+        if (!feedbackOriginal.has(button)) feedbackOriginal.set(button, {
+            html:button.innerHTML, label:button.getAttribute('aria-label')
+        });
+        const original = feedbackOriginal.get(button);
+        button.classList.add('sf-cart-feedback');
+        button.dataset.sfCartState = phase;
+        button.setAttribute('aria-busy', String(phase === 'loading'));
+        const label = phase === 'loading' ? t('Adding…') : phase === 'success' ? t('View cart') : null;
+        // Icon cards keep their geometry; their accessible label changes too.
+        if (button.classList.contains('sf-ui-icon-button')) {
+            button.querySelector('.screen-reader-text')?.replaceChildren(document.createTextNode(label || original.label || t('Add to cart')));
+        } else button.innerHTML = label ? escape(label) : original.html;
+        if (label) button.setAttribute('aria-label', label);
+        else if (original.label) button.setAttribute('aria-label', original.label);
+        else button.removeAttribute('aria-label');
+    }
+    function purchaseStatus(form, message) {
+        let status = form.querySelector('.sf-purchase-status');
+        if (!status) {
+            status = document.createElement('p'); status.className = 'sf-purchase-status';
+            status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
+            form.appendChild(status);
+        }
+        status.classList.toggle('screen-reader-text', message === t('Item added to cart.'));
+        status.textContent = message;
+        status.hidden = !message;
+    }
+    async function submitProduct(form, button) {
+        if (mutating) return;
+        // Preserve ALL Woo/plugin fields and native validation. The existing
+        // server form handler remains the only writer for product additions.
+        const payload = new FormData(form);
+        if (button.name) payload.set(button.name, button.value);
+        mutating = true; cartRevision++; readAbort?.abort(); dirty = false;
+        const externalAtStart = externalRevision;
+        feedback(button, 'loading'); purchaseStatus(form, ''); updateCartBusy();
+        const controls = [...form.querySelectorAll('input,select,button,textarea')].map(node => [node,node.disabled]);
+        controls.forEach(([node]) => { node.disabled = true; });
+        try {
+            const response = await fetch(form.action || location.href, {
+                method:'POST', body:payload, credentials:'same-origin', cache:'no-store'
+            });
+            const html = new DOMParser().parseFromString(await response.text(), 'text/html');
+            const errors = html.querySelector('.woocommerce-error,[role="alert"].wc-block-components-notice-banner');
+            if (!response.ok || errors || !html.querySelector('[data-sf-cart-added]')) {
+                throw new Error(errors?.textContent.trim() || t('Could not confirm the addition. Check your cart before trying again.'));
+            }
+            if (window.jQuery) {
+                try { window.jQuery(document.body).trigger('added_to_cart', [{}, '', window.jQuery(button)]); } catch (_) { /* A consumer must not retry a successful write. */ }
+            }
+            feedback(button, 'success');
+            purchaseStatus(form, t('Item added to cart.'));
+            // Never repeat the POST if the secondary session read fails.
+            dirty = true;
+            notifyWooConsumers();
+            document.body.dispatchEvent(new CustomEvent('wc-blocks_added_to_cart', {bubbles:true}));
+        } catch (error) {
+            feedback(button, 'idle');
+            purchaseStatus(form, error.message || t('Something went wrong. Please try again.'));
+            // Reveal errors that would otherwise remain inside a closed sheet.
+            const sheet = form.closest('.sf-product-sheet');
+            const toggle = sheet?.querySelector('.sf-product-sheet-toggle');
+            if (toggle?.getAttribute('aria-expanded') === 'false') toggle.click();
+        } finally {
+            controls.forEach(([node, disabled]) => { node.disabled = disabled; });
+            mutating = false; updateCartBusy();
+            if (externalRevision !== externalAtStart || dirty) { dirty = true; scheduleRefresh(); }
+        }
+    }
+    function bindPurchaseFeedback() {
+        document.addEventListener('click', event => {
+            const button = event.target.closest('.single_add_to_cart_button,.ajax_add_to_cart');
+            if (!button) return;
+            if (button.dataset.sfCartState === 'loading') { event.preventDefault(); event.stopImmediatePropagation(); return; }
+            if (button.dataset.sfCartState !== 'success') return;
+            event.preventDefault(); event.stopImmediatePropagation();
+            if (openCart) openCart(event); else location.assign(config().cart);
+        }, true);
+        document.addEventListener('submit', event => {
+            const form = event.target;
+            if (!form.matches('form.cart') || form.classList.contains('grouped_form')) return;
+            const button = event.submitter || form.querySelector('.single_add_to_cart_button');
+            if (!button || button.disabled || button.classList.contains('disabled') || new URL(form.action || location.href).origin !== location.origin) return;
+            // External/extension-only actions without a Woo product ID stay native.
+            if (!form.querySelector('[name="add-to-cart"]')) return;
+            event.preventDefault();
+            if (button.dataset.sfCartState === 'success') { if (openCart) openCart(event); return; }
+            if (!mutating) void submitProduct(form, button);
+        });
+        document.addEventListener('change', event => {
+            const form = event.target.closest('form.cart');
+            if (!form || mutating) return;
+            const button = form.querySelector('.single_add_to_cart_button');
+            if (button && feedbackOriginal.has(button)) { feedback(button, 'idle'); purchaseStatus(form, ''); }
+        });
+        if (window.jQuery) {
+            const body = window.jQuery(document.body);
+            body.on('adding_to_cart', (event, button) => feedback(button?.[0], 'loading'));
+            body.on('added_to_cart', (event, fragments, hash, button) => feedback(button?.[0], 'success'));
+            // Woo owns catalog AJAX errors/navigation. Remove pending feedback
+            // when its request fails, without claiming the item was added.
+            window.jQuery(document).ajaxError((event, xhr, settings) => {
+                if (!String(settings?.url).includes('wc-ajax=add_to_cart')) return;
+                document.querySelectorAll('.ajax_add_to_cart[data-sf-cart-state="loading"]').forEach(button => {
+                    button.classList.remove('loading'); feedback(button, 'idle');
+                    button.setAttribute('aria-label', t('Something went wrong. Please try again.'));
+                });
+            });
+        }
+    }
+
     function bind() {
         if (bound) return;
         bound = true;
+        bindPurchaseFeedback();
         document.body.addEventListener('wc-blocks_added_to_cart', invalidate);
         document.body.addEventListener('wc-blocks_removed_from_cart', invalidate);
         if (window.jQuery) {

@@ -1,0 +1,30 @@
+name: Product purchase flow (no deployment)
+on:
+  pull_request:
+    paths:
+      - 'theme/codela-storefront/**'
+      - 'tests/product-flow-browser.cjs'
+      - '.github/workflows/product-flow.yml'
+permissions:
+  contents: read
+jobs:
+  product-flow:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci --ignore-scripts
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Native adapters and shared cart contracts
+        run: |
+          php tests/product-composition.php
+          php tests/render-product-sheet.php >/dev/null
+          php tests/render-product-information.php >/dev/null
+          node tests/cart-race.cjs
+          node tests/cart-sync.cjs
+          python3 tests/build-assets.py
+          # Existing mobile sheet geometry must remain unchanged after the new close/end behavior.
+          node tests/product-sheet-browser.cjs
+          node tests/gallery-defer-browser.cjs
+          node tests/product-flow-browser.cjs
+          TEST_WEBKIT=1 node tests/product-flow-browser.cjs

@@ -1,4 +1,4 @@
-// WooCommerce owns variation updates and its existing inline zoom plugin.
+// WooCommerce owns variation updates and its native fullscreen PhotoSwipe.
 // This adapter promotes native images and keeps a three-item preview window.
 (()=>{
   const gallery=document.querySelector('.woocommerce-product-gallery.sf-ui-gallery');
@@ -39,69 +39,30 @@
     let variationActive=false;
     const syncAlt=()=>originalAlts.forEach((alt,image)=>{if(image&&!(image===initialImage&&variationActive))image.alt=mobileMedia.matches?(image.dataset.sfMobileAlt||alt):alt;});
     syncAlt();
-    const zoomStates=new Map();
-    const closeZoom=()=>{
-      if(jq&&gallery.querySelector('.is-zoomed'))jq(document).triggerHandler('click.zoom');
-    };
-    if(jq?.fn.zoom){
-      allSlides().forEach(item=>{
-        const link=item.querySelector('a');
-        if(!link)return;
-        link.setAttribute('role','button');
-        link.setAttribute('aria-pressed','false');
-        link.removeAttribute('aria-haspopup');
-        zoomStates.set(item,{ready:false,pending:false,wanted:false});
-        link.addEventListener('keydown',event=>{
-          if(['Enter',' '].includes(event.key)){event.preventDefault();link.click();}
-        });
+    let lightbox = null;
+    const closeZoom = () => { if (lightbox) lightbox.close(); };
+    track.addEventListener('click', event => {
+      const link = event.target.closest('.woocommerce-product-gallery__image a');
+      if (!link || !window.PhotoSwipe || !window.PhotoSwipeUI_Default) return;
+      const template = document.querySelector('.pswp');
+      if (!template) return; // Native image link is the no-runtime fallback.
+      event.preventDefault(); event.stopImmediatePropagation();
+      const images = items.map(item => {
+        const image = item.querySelector('a img');
+        const portrait = mobileMedia.matches && image.dataset.sfMobileUrl && !(item === items[0] && variationActive);
+        return {src:portrait ? image.dataset.sfMobileUrl : (image.dataset.large_image || item.querySelector('a').href),
+          w:Number(portrait ? image.dataset.sfMobileWidth : image.dataset.large_image_width) || image.naturalWidth || 1200,
+          h:Number(portrait ? image.dataset.sfMobileHeight : image.dataset.large_image_height) || image.naturalHeight || 1200};
       });
-      track.addEventListener('click',event=>{
-        const item=event.target.closest('.woocommerce-product-gallery__image');
-        const state=zoomStates.get(item);
-        if(!state)return;
-        event.preventDefault();
-        if(state.ready)return; // The same native plugin handles subsequent taps.
-        if(state.pending){state.wanted=!state.wanted;return;}
-        closeZoom();activate(item.querySelector('a img:not(.zoomImg)'));
-        state.pending=true;state.wanted=true;
-        const link=item.querySelector('a'),image=link.querySelector('img');
-        const bounds=item.getBoundingClientRect();
-        const portrait=mobileMedia.matches&&image.dataset.sfMobileUrl&&!(item===items[0]&&variationActive);
-        const width=Number(portrait?image.dataset.sfMobileWidth:image.dataset.large_image_width)||image.naturalWidth||bounds.width;
-        const height=Number(portrait?image.dataset.sfMobileHeight:image.dataset.large_image_height)||image.naturalHeight||bounds.height;
-        const magnify=Math.max(1,2*Math.max(bounds.width,bounds.height*width/height)/width);
-        const pageX=event.clientX?event.pageX:scrollX+bounds.left+bounds.width/2;
-        const pageY=event.clientY?event.pageY:scrollY+bounds.top+bounds.height/2;
-        jq(item).zoom({url:portrait?image.dataset.sfMobileUrl:(image.dataset.large_image||link.href),on:'click',touch:false,magnify,
-          duration:matchMedia('(prefers-reduced-motion:reduce)').matches?0:120,
-          callback:function(){
-            this.alt='';this.setAttribute('aria-hidden','true');
-            state.ready=true;state.pending=false;
-            if(state.wanted&&!gallery.inert)jq(item).trigger(jq.Event('click',{pageX,pageY}));
-          },
-          onZoomIn:function(){item.classList.add('is-zoomed');link.setAttribute('aria-pressed','true');},
-          onZoomOut:function(){item.classList.remove('is-zoomed');link.setAttribute('aria-pressed','false');}
-        });
-      },true);
-      const dismissZoom=()=>{
-        zoomStates.forEach(state=>{state.wanted=false;});closeZoom();
-      };
-      // On wide screens the original gallery is a sticky horizontal
-      // scrollport. Browser focus/scroll-into-view can move the *document*
-      // while a desktop link is being activated; that synthetic movement must
-      // not cancel a pending zoom load. Real wheel gestures and gallery
-      // scrolling still dismiss it. Mobile continues to follow page scrolling.
-      window.addEventListener('scroll',()=>{
-        if(matchMedia('(max-width:700px)').matches) dismissZoom();
-      },{passive:true});
-      track.addEventListener('scroll',dismissZoom,{passive:true});
-      window.addEventListener('wheel',()=>{
-        if(matchMedia('(min-width:701px)').matches) dismissZoom();
-      },{passive:true});
-      track.addEventListener('keydown',event=>{
-        if(event.key==='Escape'){zoomStates.forEach(state=>{state.wanted=false;});closeZoom();}
+      lightbox = new window.PhotoSwipe(template, window.PhotoSwipeUI_Default, images, {
+        index:Math.max(0, items.indexOf(link.closest('.woocommerce-product-gallery__image'))),
+        history:false, shareEl:false, closeOnScroll:false,
+        showAnimationDuration:matchMedia('(prefers-reduced-motion:reduce)').matches ? 0 : 160,
+        hideAnimationDuration:matchMedia('(prefers-reduced-motion:reduce)').matches ? 0 : 160
       });
-    }
+      lightbox.listen('destroy', () => { lightbox = null; link.focus({preventScroll:true}); });
+      lightbox.init();
+    }, true);
     const nav=document.createElement('nav');
     nav.className='sf-ui-gallery-nav sf-product-gallery-nav';
     nav.setAttribute('aria-label',track.getAttribute('aria-label'));
@@ -137,6 +98,22 @@
     nav.hidden=items.length<2||gallery.classList.contains('sf-ui-gallery--no-thumbs');
     };
     buildNav();gallery.appendChild(nav);
+    // Fade only a shared glass material layer, never the preview images/count.
+    const glass = document.createElement('span');
+    glass.className = 'sf-product-gallery-glass sf-ui-surface sf-ui-surface--glass-panel';
+    glass.setAttribute('aria-hidden', 'true');
+    gallery.appendChild(glass);
+    let glassTimer = 0;
+    const showGlass = () => {
+      const rect = nav.getBoundingClientRect();
+      glass.style.cssText = `left:${rect.left - 4}px;top:${rect.top - 4}px;width:${rect.width + 8}px;height:${rect.height + 8}px`;
+      glass.classList.toggle('is-visible', !nav.hidden && rect.height > 0);
+      clearTimeout(glassTimer);
+      glassTimer = setTimeout(() => glass.classList.remove('is-visible'), 2000);
+    };
+    window.addEventListener('scroll', showGlass, {passive:true});
+    track.addEventListener('scroll', showGlass, {passive:true});
+    window.addEventListener('resize', () => glass.classList.remove('is-visible'), {passive:true});
     // Shared IconButtons use this adapter's existing select/IO state. No second
     // gallery engine, slide clones or separate index is introduced.
     const controlsTemplate=document.getElementById('sf-product-gallery-controls-template');
@@ -218,15 +195,10 @@
       if(portraitSource)portraitSource.media=variationActive?'not all':'(max-width:900px)';
       syncAlt();
       closeZoom();
-      zoomStates.forEach((state,item)=>{
-        jq(item).trigger('zoom.destroy');Object.assign(state,{ready:false,pending:false,wanted:false});
-        item.classList.remove('is-zoomed');item.querySelector('a').setAttribute('aria-pressed','false');
-      });
       select(0);
     });
     mobileMedia.addEventListener('change',()=>{
       closeZoom();
-      zoomStates.forEach((state,item)=>{jq(item).trigger('zoom.destroy');Object.assign(state,{ready:false,pending:false,wanted:false});item.classList.remove('is-zoomed');item.querySelector('a').setAttribute('aria-pressed','false');});
       items=slides();syncAlt();buildNav();observe();update(0);track.scrollTo(0,0);
     });
     matchMedia('(max-width:700px)').addEventListener('change',()=>{track.scrollTo(0,0);window.scrollTo({top:0,behavior:'instant'});observe();update(0);});

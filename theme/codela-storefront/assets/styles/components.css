@@ -109,6 +109,7 @@ body:not(.codela-my-account-layout) .sf-content .sf-ui-icon-button--soft{
    Unlike pills and icon controls, both are panels, not generic soft buttons. */
 .sf-navigation-purchase,
 .sf-product-sheet,
+.sf-product-gallery-glass,
 html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary{
   /* No invisible 1px borders: they inflate intrinsic first-paint height
      but were omitted by the final sheet's content-based measurement. */
@@ -152,6 +153,7 @@ body:not(.codela-my-account-layout) .sf-content .sf-ui-icon-button--soft .sf-ico
   body.single-product div.product .sf-product-overview > .onsale,
 .sf-navigation-purchase,
 .sf-product-sheet,
+.sf-product-gallery-glass,
 html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary .quantity,
 body.single-product.sf-product-sheet-ready div.product .sf-product-quantity.sf-ui-surface,
 .sf-product-purchase,
@@ -418,6 +420,7 @@ body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button--secondary,.co
 body.single-product div.product .sf-product-overview > .onsale,
 .sf-navigation-purchase,
 .sf-product-sheet,
+.sf-product-gallery-glass,
 html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary .quantity,
 body.single-product.sf-product-sheet-ready div.product .sf-product-quantity.sf-ui-surface,
 .sf-product-purchase,
@@ -447,6 +450,7 @@ body:not(.codela-my-account-layout) .sf-content :is(.sf-ui-button--secondary,.co
 body.single-product div.product .sf-product-overview > .onsale,
 .sf-navigation-purchase,
 .sf-product-sheet,
+.sf-product-gallery-glass,
 html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary .quantity,
 body.single-product.sf-product-sheet-ready div.product .sf-product-quantity.sf-ui-surface,
 .sf-product-purchase,
@@ -747,3 +751,15 @@ body.woocommerce-account:not(.codela-my-account-layout) .sf-content .wc-block-co
         animation:none!important;transition:none!important;
     }
 }
+
+/* Commerce feedback stays in the shared Button layer. */
+.sf-cart-feedback[aria-busy="true"]{pointer-events:none}
+.sf-cart-feedback[aria-busy="true"]::after{content:'';display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:sf-ui-spin .7s linear infinite;margin-inline-start:8px}
+.sf-cart-feedback[data-sf-cart-state="success"]::after{content:'✓';display:inline-block;margin-inline-start:8px}
+@media(prefers-reduced-motion:reduce){.sf-cart-feedback[aria-busy="true"]::after{animation:none}}
+
+.woocommerce-message:has(> [data-sf-cart-added]){display:none}
+.sf-purchase-status{font-size:12px;line-height:1.5}
+.sf-purchase-status:empty{display:none}
+body:not(.codela-my-account-layout) .sf-content a.sf-ui-icon-button.sf-cart-feedback[data-sf-cart-state="success"]::after{content:'✓'!important;position:absolute;inset:0;display:grid;place-items:center;margin:0}
+a.sf-ui-icon-button.sf-cart-feedback[data-sf-cart-state="success"] .sf-icon{visibility:hidden}
