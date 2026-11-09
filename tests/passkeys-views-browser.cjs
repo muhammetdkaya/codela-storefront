@@ -62,7 +62,7 @@ ${overlay?'</div></div>':''}</body></html>`;
     // coded 844px viewport + a 300px block and therefore missed iPhone
     // Safari's ~700px CSS viewport behind the browser bottom controls.
     const layout=await browser.newPage({viewport:{width:390,height:700}});
-    await layout.setContent(\`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+    await layout.setContent(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head>
       <body style="margin:0"><div id="sf-panel" class="is-account-panel"
         style="display:flex;flex-direction:column;width:100%;height:700px;max-height:none;margin:0;padding:0">
         <div class="sf-panel-top" style="flex:none;height:68px">Toolbar</div>
@@ -78,7 +78,7 @@ ${overlay?'</div></div>':''}</body></html>`;
               <button class="sf-auth-google" type="button">Google ile Giriş Yap</button>
             </div>
           </div>
-        </section></div></body></html>\`);
+        </section></div></body></html>`);
     await layout.addStyleTag({content:cssAccount+'\n'+cssOverlay+'\n'+cssQuick+'\n'+cssSmart});
     for (const height of [700,844]) {
       await layout.setViewportSize({width:390,height});
