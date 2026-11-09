@@ -612,7 +612,8 @@ body.single-product .stock.in-stock{display:none}
     box-shadow:var(--sf-ui-glass-shadow);
     opacity:0;visibility:hidden;pointer-events:none;
     transform:translateY(-6px) scale(.96);
-    transition:opacity 180ms ease,transform 180ms ease,visibility 180ms;
+    /* Visibility changes immediately on close; opacity/scale soften entrance. */
+    transition:opacity 180ms ease,transform 180ms ease;
   }
   body.sf-product-sheet-ready .sf-product-gallery-expand.sf-ui-icon-button.is-visible{
     opacity:1;visibility:visible;pointer-events:auto;
