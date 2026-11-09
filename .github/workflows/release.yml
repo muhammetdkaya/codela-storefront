@@ -114,7 +114,18 @@ jobs:
             git checkout -b stable
           fi
           cp "$GITHUB_WORKSPACE/dist/manifest.json" manifest.json
-          git add manifest.json
+          # The signed-off release ZIP is also mirrored over GitHub's raw CDN.
+          # This remains hash-pinned to manifest.sha256 by Codela's updater,
+          # and provides an alternate transport when hosts block GitHub's
+          # dynamically signed release-assets redirect.
+          mkdir -p packages
+          MIRROR="packages/codela-storefront-$VERSION.zip"
+          if test -f "$MIRROR"; then
+            cmp "$GITHUB_WORKSPACE/dist/codela-storefront-$VERSION.zip" "$MIRROR"
+          else
+            cp "$GITHUB_WORKSPACE/dist/codela-storefront-$VERSION.zip" "$MIRROR"
+          fi
+          git add manifest.json "$MIRROR"
           if git diff --cached --quiet; then exit 0; fi
           git commit -m "Publish Storefront $VERSION stable manifest"
           git push origin HEAD:stable
