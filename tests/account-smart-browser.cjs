@@ -180,7 +180,7 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or register
    assert.equal(await page.locator('.sf-smart-strength-feedback').innerText(),'At least 8 characters','Short password explains why it is insufficient');
    assert.equal(await page.locator('.woocommerce-form-register button[type=submit]').isDisabled(),true,'Insufficient password cannot submit');
    await page.locator('#reg_password').fill('abcdefgh');
-   assert.equal(await page.locator('.sf-smart-strength-feedback').innerText(),'Add a number or symbol','Weak single-category password explains remedy');
+   assert.equal(await page.locator('.sf-smart-strength-feedback').innerText(),'Include letters and a number or symbol','Weak single-category password explains remedy');
    await page.locator('#sf-smart-first').fill('Ada');
    await page.locator('#sf-smart-last').fill('Yılmaz');
    await page.locator('#reg_password').fill('StrongP4ss!Good');
