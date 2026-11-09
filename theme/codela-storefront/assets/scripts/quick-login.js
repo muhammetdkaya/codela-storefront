@@ -254,7 +254,6 @@
     const inline = section.querySelector('.sf-quick-inline-pin');
     const changeAccount = section.querySelector('.sf-quick-switch');
     const name = section.querySelector('.sf-quick-user');
-    const email = section.querySelector('.sf-quick-email');
     const monogram = section.querySelector('.sf-quick-monogram');
     const scrim = section.querySelector('.sf-quick-scrim');
     const input = section.querySelector('.sf-quick-native-pin');
@@ -263,14 +262,12 @@
     const status = section.querySelector('.sf-quick-status');
     if (!choose || !frame || !inline || !scrim || !input || !track || !status || slots.length !== 6) return;
 
-    const displayName = String(profile.displayName || profile.username || t('account','Your account')).trim();
-    name.textContent = displayName;
+    const displayName = String(profile.displayName || profile.username || '').trim();
     const rememberedEmail = String(profile.email || '').trim();
-    if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rememberedEmail)) {
-      email.textContent = rememberedEmail;
-      email.hidden = false;
-    }
-    monogram.textContent = Array.from(displayName)[0]?.toLocaleUpperCase() || '?';
+    // Email is the sole visible identity; keep the saved name only for the avatar.
+    name.textContent = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rememberedEmail)
+      ? rememberedEmail : t('account','Your account');
+    monogram.textContent = Array.from(displayName || rememberedEmail)[0]?.toLocaleUpperCase() || '?';
     section.hidden = false;
     host.classList.add('sf-pin-active');
     inline.inert = true;
@@ -702,12 +699,13 @@
 
   function showPasskeyOnly(section,hint) {
     const host=section.closest('.sf-overlay-auth')||section.closest('.woocommerce');
-    const name=String(hint.displayName||hint.email||'Hesabım').trim();
-    section.querySelector('.sf-quick-user').textContent=name;
-    const mail=section.querySelector('.sf-quick-email');
-    if(mail && hint.email){mail.textContent=hint.email;mail.hidden=false}
+    const name=String(hint.displayName||'').trim();
+    const rememberedEmail=String(hint.email||'').trim();
+    section.querySelector('.sf-quick-user').textContent=
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(rememberedEmail)
+        ? rememberedEmail : t('account','Your account');
     section.querySelector('.sf-quick-monogram').textContent=
-      Array.from(name)[0]?.toLocaleUpperCase()||'?';
+      Array.from(name||rememberedEmail)[0]?.toLocaleUpperCase()||'?';
     const pin=section.querySelector('.sf-quick-method--pin');
     if(pin)pin.hidden=true;
     section.classList.add('is-passkey-only');
