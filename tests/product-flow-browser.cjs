@@ -18,8 +18,14 @@ const root = 'theme/codela-storefront/';
   await page.locator('.cdl-de-line strong').first().evaluate(el=>el.textContent='Wednesday');
   await page.waitForFunction(()=>document.querySelector('.sf-product-shipping-summary').textContent==='Ships Wednesday');
   const images=page.locator('.sf-product-gallery-thumb:not([hidden])');
-  await page.evaluate(()=>window.scrollTo(0,300));
-  await page.waitForFunction(()=>document.querySelector('.sf-product-gallery-glass').classList.contains('is-visible'));
+  // CSS scroll snapping may return a programmatic 300px move to the first frame;
+  // exercise an actual gallery wheel gesture to observe the material pulse.
+  await page.mouse.move(190,350);
+  await page.mouse.wheel(0,450);
+  await page.waitForFunction(()=>document.querySelector('.sf-product-gallery-glass')?.classList.contains('is-visible'),null,{timeout:6000}).catch(async error => {
+   const diagnosis=await page.evaluate(()=>({scrollY,navHidden:document.querySelector('.sf-product-gallery-nav')?.hidden,navRect:document.querySelector('.sf-product-gallery-nav')?.getBoundingClientRect().toJSON(),glass:document.querySelector('.sf-product-gallery-glass')?.className,ready:document.body.classList.contains('sf-product-sheet-ready')}));
+   throw new Error('Gallery glass did not pulse after wheel: '+JSON.stringify(diagnosis),{cause:error});
+  });
   assert.equal(await images.count(),3);
   await page.waitForTimeout(2300);
   assert.equal(await page.locator('.sf-product-gallery-glass').evaluate(el=>getComputedStyle(el).opacity),'0');
