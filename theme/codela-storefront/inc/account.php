@@ -177,7 +177,7 @@ add_action( 'wp_ajax_nopriv_codela_sf_auth_lookup', 'codela_sf_auth_lookup' );
 /** WordPress admin login and recovery are intentionally preserved. */
 function codela_sf_login_is_admin_destination( $redirect ): bool {
     if ( ! is_string( $redirect ) || '' === $redirect ) { return false; }
-    $path = wp_parse_url( $redirect, PHP_URL_PATH );
+    $path = parse_url( $redirect, PHP_URL_PATH );
     return is_string( $path ) && ( str_contains( $path, '/wp-admin/' ) || str_ends_with( $path, '/wp-admin' ) );
 }
 
