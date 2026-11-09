@@ -6,7 +6,7 @@ const auth=fs.readFileSync('theme/codela-storefront/assets/scripts/auth.js','utf
 const smart=fs.readFileSync('theme/codela-storefront/assets/scripts/auth-smart.js','utf8');
 const css=['theme/codela-storefront/assets/styles/account-overlay.css',
   'theme/codela-storefront/assets/styles/auth-smart.css'].map(f=>fs.readFileSync(f,'utf8')).join('\n');
-const html=`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1">
+const html=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <style>body{margin:0;font:16px -apple-system,system-ui}#sf-panel{max-width:430px;margin:auto;padding:16px}#customer_login{display:block}.u-column1,.u-column2{width:100%}.sf-auth-focus-scrim{position:fixed}</style>
 <style>${css}</style></head>
 <body><div id="sf-panel" class="is-account-panel">
@@ -64,7 +64,7 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or register
    const send=(status,body,type='application/json')=>{
      res.writeHead(status,{'Content-Type':type,'Cache-Control':'no-store'});res.end(body);
    };
-   if(req.url==='/'&&req.method==='GET')return send(200,html,'text/html');
+   if(req.url==='/'&&req.method==='GET')return send(200,html,'text/html; charset=utf-8');
    if(req.url==='/auth.js')return send(200,auth,'text/javascript');
    if(req.url==='/auth-smart.js')return send(200,smart,'text/javascript');
    if(req.url==='/state'&&req.method==='POST')
