@@ -21,6 +21,7 @@ const t = key => config().labels[key] || key;
 const searchFeature = createSearchController({ $, config, t, getCurrent: () => overlay.getCurrent() });
 const cartFeature = createCartController({
     $, config, t, getCurrent: () => overlay.getCurrent(), getDialog: () => overlay.getDialog(),
+    openCart: event => overlay.open('cart', event),
 });
 const dock = createDockController({
     getDialog: () => overlay.getDialog(),

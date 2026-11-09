@@ -1,3 +1,13 @@
+## 9 Kasım 2026 — 0.1.260 → 0.1.261 ürün akışı (yayın adayı)
+
+Mevcut cam renkleri, panel konumu ve ortak malzeme korunur. Mobil panel gerçek belge sonunda (öneriler/footer sonrasında) açılır; elle kapatma yeniden açılmayı sayfadan uzaklaşıp dönene kadar engeller. Ortadaki 70×44 kontrol kapalıyken çizgi, açıkken aşağı chevron'dur. Önizleme resimleri/sayaç görünür kalır; yalnız mevcut panel malzemeli arka katman scroll sonrası iki saniyede söner. Woo PhotoSwipe yerel tam ekran görüntüleyicisi, native görseller ve varyasyon kaynakları kullanılır.
+
+Kısa gönderim özeti yalnız etkin DeliveryEta'nın gerçek gün metninden gelir ve eklenti güncellemesini izler. Ücretsiz kargo detaylarda kalır. Normal stok satırı gizli, stoksuzluk görünürdür; seçenekler native detay formunda kalır. Teknik veri kaybolmadan Ek bilgi adı Ürün özellikleri olur.
+
+Tek sepet controller'ı native ürün POST alanlarını koruyarak yüklenme/hata/sunucudan onaylanan başarı durumunu sunar; başarıdan sonra Sepete git aynı sepeti açar. Miktar/varyasyon değişimi sıfırlar. Catalog Woo AJAX olayları aynı geri bildirimi kullanır. Woo sunucusu fiyat/stok/eklenti validasyonunun sahibidir; ekleme tekrar gönderilmez. Eklenti kodu değişmedi.
+
+Yerel: JS syntax, 3 asset/24 paket, cart-race/cart-sync/cart-design/cart-free-shipping kontrolleri geçti. Yerelde PHP ve tarayıcı indirimi kullanılamadı; yeni Chromium/WebKit product-flow CI testi yayın öncesi çalıştırılacak. Fiziksel iPhone ve gerçek mağaza sipariş kabulü yapılmadı. GitHub/stable henüz yayımlanmadı; canlı FTP kurulum yok. Sıradaki: CI sonucunu doğrula, adayı birleştir, tag/ZIP/stable hash doğrulamasını bu kayda ekle.
+
 ## 8 Kasım 2026 — 0.1.242 tam oval giriş ve dolu alanlara bağlı Giriş Yap
 
 Onaylanan tasarım: mevcut native `E-posta ile Kayıt Ol` tam genişlik butonu **Google ile Giriş Yap'ın üzerinde** kalıyor. Normal Hesabım ve hızlı Hesabım panelinde yalnız Woo girişindeki kullanıcı adı/e-posta ve şifre kutuları `--sf-ui-button-radius` (999px) ile tam oval. Kayıt, şifre sıfırlama, diğer hesap kutuları ve ürün/arama formlarının radius'u değişmiyor.

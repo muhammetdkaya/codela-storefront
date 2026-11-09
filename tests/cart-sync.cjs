@@ -27,6 +27,7 @@ function setupWoo({classic = false, late = false, failRefresh = false, holdRefre
         ctx.window.jQuery = () => ({
             on: (names, fn) => names.split(' ').forEach(name => events[name] = fn),
             trigger: name => outgoing.push(name),
+            ajaxError: () => {},
         });
         if (classic) {
             nodes['.woocommerce-cart-form'] = {};

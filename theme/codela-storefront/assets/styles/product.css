@@ -499,18 +499,11 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
 
 /* Progressive mobile composition. Without JS the native document stays usable. */
 .sf-product-sheet-header{position:relative;flex:none;min-height:64px;padding:28px 16px 8px}
-.sf-product-sheet-header::before{
-  content:'';position:absolute;top:12px;left:calc(50% - 22px);width:44px;height:4px;
-  border-radius:var(--sf-ui-pill);background:var(--sf-ui-border);
-  /* Same touch feedback token as the shared dock; rest geometry is unchanged. */
-  transform:scaleX(1);
-  transition:transform var(--sf-ui-motion-press) var(--sf-ui-ease-press);
-}
-@media(max-width:700px){
-  body.sf-product-sheet-ready .sf-product-sheet.is-holding .sf-product-sheet-header::before{
-    transform:scaleX(var(--sf-ui-scale-icon));
-  }
-}
+/* One centered control: the existing handle becomes a down chevron when open. */
+.sf-product-sheet-toggle::before{content:'';position:absolute;width:44px;height:4px;top:12px;left:13px;border-radius:var(--sf-ui-pill);background:var(--sf-ui-border);transition:transform var(--sf-ui-motion-press) var(--sf-ui-ease-press)}
+.sf-product-sheet.is-expanded .sf-product-sheet-toggle::before{width:12px;height:12px;left:28px;top:8px;background:transparent;border-right:2px solid currentColor;border-bottom:2px solid currentColor;border-radius:1px;transform:rotate(45deg)}
+.sf-product-sheet-heading > :is(.sf-product-shipping-summary,.out-of-stock){grid-column:1/-1;margin:4px 0 0;font-size:12px;line-height:1.4}
+body.single-product .stock.in-stock{display:none}
 .sf-product-sheet-heading{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,42%);grid-template-rows:minmax(28px,max-content);grid-auto-rows:max-content;align-items:center;column-gap:10px;row-gap:0}
 /* Price and urgency are laid out as peers to the native title, without
    moving or cloning plugin nodes. The mobile rules below also apply prepaint. */
@@ -862,3 +855,11 @@ html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:
   .sf-product-gallery-arrows{display:flex;justify-content:space-between;position:absolute;inset:calc(var(--sf-gallery-height) / 2 - 22px) 12px auto;pointer-events:none}
   .sf-product-gallery-arrows > button{pointer-events:auto}
 }
+
+.sf-product-gallery-glass{display:none;pointer-events:none;position:fixed;z-index:2;opacity:0;transition:opacity var(--sf-ui-motion-panel);border-radius:var(--sf-ui-pill)}
+@media(max-width:700px){
+  body.sf-product-sheet-ready .sf-product-gallery-glass{display:block}
+  body.sf-product-sheet-ready .sf-product-gallery-glass.is-visible{opacity:1}
+  body.sf-product-sheet-open .sf-product-gallery-glass,body.single-product:has(.pswp--open,#sf-panel[open]) .sf-product-gallery-glass,.woocommerce-product-gallery.is-discovering > .sf-product-gallery-glass{visibility:hidden}
+}
+@media(prefers-reduced-motion:reduce){.sf-product-gallery-glass{transition:none}}

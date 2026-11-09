@@ -128,10 +128,9 @@ add_action( 'after_setup_theme', function() {
         return function_exists( 'is_product' ) && is_product() ? false : $enabled;
     }, 100 );
     // ClassicTemplate installs __return_true at priority 10 during render.
-    // The existing Woo zoom plugin is initialized on demand by the adapter.
-    // Do not auto-download zoom images or open a second fullscreen gallery.
+    // Woo supplies the fullscreen PhotoSwipe assets; the adapter uses the visible native images.
     add_filter( 'woocommerce_single_product_photoswipe_enabled', function( $enabled ) {
-        return function_exists( 'is_product' ) && is_product() ? false : $enabled;
+        return function_exists( 'is_product' ) && is_product() ? true : $enabled;
     }, 100 );
     add_filter( 'woocommerce_single_product_zoom_enabled', function( $enabled ) {
         return function_exists( 'is_product' ) && is_product() ? false : $enabled;
