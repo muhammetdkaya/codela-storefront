@@ -116,6 +116,10 @@ function release(ok) {
       assert.equal(await page.locator('.sf-quick-user').innerText(),'Ayşe Yılmaz','Full name, not remembered-account label');
       assert.equal(await page.locator('.sf-quick-email').innerText(),'ayse@example.test','Saved account includes email as a secondary line');
       assert(await page.locator('.sf-quick-email-login').isVisible(),'Email/password fallback is visible on first screen');
+      assert.equal(await page.locator('.sf-quick-native-alt .sf-alt-login-icon svg').count(),1,
+        'Combined email/Google fallback renders its native login glyph');
+      assert.equal(await page.locator('.sf-quick-native-alt .sf-alt-login-icon').getAttribute('aria-hidden'),'true',
+        'Decorative login glyph does not repeat the accessible button name');
       assert(await page.locator('.sf-quick-or').isVisible(),'Reference divider is visible');
       assert.equal(await page.locator('.sf-quick-method--pin').getAttribute('aria-expanded'),'false','Account card starts collapsed');
       assert.equal(await page.locator('.sf-quick-inline-pin').getAttribute('aria-hidden'),'true','Inline PIN starts hidden');
