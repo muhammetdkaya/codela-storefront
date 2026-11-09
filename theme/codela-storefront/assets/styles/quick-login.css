@@ -43,16 +43,16 @@ html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account-frame .sf-quick
 html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-inline-pin{display:none!important}
 html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account-frame::before,
 html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account-frame::after{
-  content:"";position:absolute;left:18px;top:50%;z-index:2;
+  content:"";position:absolute;left:12px;top:50%;z-index:2;
   pointer-events:none;background:#e8e9ec;
   animation:sf-quick-preflight 1.15s ease-in-out infinite alternate;
 }
 html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account-frame::before{
-  width:48px;height:48px;transform:translateY(-50%);border-radius:50%;
+  width:44px;height:44px;transform:translateY(-50%);border-radius:50%;
 }
 html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-account-frame::after{
-  left:82px;top:calc(50% - 15px);width:min(44%,165px);height:13px;
-  border-radius:6px;box-shadow:0 23px 0 -2px #eeeff1;
+  left:66px;top:calc(50% - 7px);width:min(44%,165px);height:14px;
+  border-radius:6px;box-shadow:none;
 }
 html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-choice-alternatives{visibility:hidden}
 @keyframes sf-quick-preflight{to{opacity:.48}}
@@ -85,14 +85,14 @@ html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-choice-alternatives{vis
   font-size:14px!important;color:#73737a!important;
 }
 .sf-quick-account{
-  display:flex;align-items:center;gap:14px;
-  width:100%;min-height:84px;
-  padding:14px 18px;
+  display:flex;align-items:center;gap:10px;
+  width:100%;min-height:62px;
+  padding:9px 10px 9px 12px;
   color:var(--sf-quick-ink)!important;
   background:#fff!important;
   border:1px solid #e7e7ea!important;
-  border-radius:20px!important;
-  box-shadow:0 7px 22px rgba(0,0,0,.055)!important;
+  border-radius:24px!important;
+  box-shadow:0 5px 16px rgba(0,0,0,.035)!important;
   text-align:left;cursor:pointer;
   -webkit-tap-highlight-color:transparent;
   transition:background .18s ease,transform .18s ease,box-shadow .18s ease;
@@ -108,21 +108,15 @@ html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-choice-alternatives{vis
 }
 .sf-quick-monogram{
   display:grid;place-items:center;
-  flex:none;width:48px;height:48px;
+  flex:none;width:44px;height:44px;
   border-radius:50%;background:#eeedef;color:#29292d!important;
   font-size:18px;font-weight:650;
 }
 .sf-quick-account-text{display:block;flex:1;min-width:0}
 .sf-quick-user{
-  display:block;font-size:16px;font-weight:660;line-height:1.35;
-  color:#202023!important;overflow-wrap:anywhere;
+  display:block;font-size:14px;font-weight:550;line-height:1.35;
+  color:#202023!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.sf-quick-email{
-  display:block;margin-top:3px;
-  font-size:12.5px;line-height:1.3;font-weight:400;
-  color:#73737a!important;overflow-wrap:anywhere;
-}
-.sf-quick-email[hidden]{display:none!important}
 .sf-quick-chevron{display:grid;place-items:center;flex:none;color:#252529!important}
 .sf-quick-chevron svg{width:23px;height:23px;transform:rotate(0deg);transition:transform .32s ease}
 .sf-quick-login.is-inline-open .sf-quick-chevron svg{transform:rotate(180deg)}
@@ -170,8 +164,8 @@ html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-choice-alternatives{vis
 .sf-quick-login.is-inline-open{position:relative;z-index:99999;isolation:isolate}
 .sf-quick-account-frame{
   position:relative;z-index:6;box-sizing:border-box;width:100%;min-width:0;
-  background:#fff;border:1px solid #e7e7ea;border-radius:20px;
-  box-shadow:0 7px 22px rgba(0,0,0,.055);
+  background:#fff;border:1px solid #e7e7ea;border-radius:24px;
+  box-shadow:0 5px 16px rgba(0,0,0,.035);
   transform:translate3d(0,var(--sf-quick-keyboard-lift,0px),0);
   transition:box-shadow .3s ease,border-color .3s ease,transform .25s ease;
 }
@@ -445,16 +439,17 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocomm
    switch below the shared passkey/PIN card. */
 .sf-quick-account{cursor:default!important}
 .sf-quick-account:active{transform:none!important}
-.sf-quick-methods{display:flex;align-items:center;gap:3px;flex:none;margin-left:auto}
+.sf-quick-methods{display:flex;align-items:center;gap:0;flex:none;margin-left:auto}
 .sf-quick-method{
   position:relative;display:grid;place-items:center;box-sizing:border-box;
-  width:43px;height:44px;flex:none;border:0!important;border-radius:14px!important;
-  padding:9px!important;background:transparent!important;color:#252529!important;
+  width:44px;height:44px;flex:none;border:0!important;border-radius:14px!important;
+  padding:0!important;background:transparent!important;color:#252529!important;
   box-shadow:none!important;-webkit-appearance:none;appearance:none;cursor:pointer;
 }
 .sf-quick-method[hidden]{display:none!important}
-.sf-quick-method svg{display:block;width:25px;height:25px;position:relative;z-index:1}
-.sf-quick-method--passkey svg{width:27px;height:27px}
+.sf-quick-method svg{display:block;position:relative;z-index:1}
+.sf-quick-method--passkey svg{width:28px;height:28px}
+.sf-quick-method--pin svg{width:23px;height:23px;stroke-width:1.8}
 .sf-quick-method:focus-visible{outline:2px solid #252628!important;outline-offset:2px}
 .sf-quick-method:active,.sf-quick-method:hover{background:#f0f0f2!important}
 .sf-quick-method--pin[aria-expanded="true"]{background:#f0f0f2!important}
@@ -589,7 +584,7 @@ html.sf-quick-checking.sf-quick-passkey-hint .woocommerce.sf-passkey-active .sf-
 .sf-quick-accounts > .sf-quick-choice-alternatives{margin:0;padding:0 0 50px}
 .sf-quick-accounts > .sf-quick-choice-alternatives .sf-quick-or{margin-top:24px}
 .sf-quick-accounts .sf-quick-account-frame .sf-quick-account{
-  min-height:84px;
+  min-height:62px;
 }
 .sf-quick-accounts.has-passkey > .sf-quick-choice-alternatives >
   :is(.sf-quick-google,.sf-quick-switch){display:none!important}
@@ -606,7 +601,7 @@ html.sf-quick-checking.sf-quick-passkey-hint .woocommerce.sf-passkey-active .sf-
   outline:2px solid #252628;outline-offset:3px
 }
 @media(max-width:400px){
-  .sf-quick-accounts .sf-quick-account{gap:10px;padding-inline:13px}
+  .sf-quick-accounts .sf-quick-account{gap:10px;padding-inline:10px}
   .sf-quick-accounts .sf-quick-methods{gap:0}
 }
 
