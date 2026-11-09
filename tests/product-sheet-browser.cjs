@@ -117,7 +117,12 @@ for(const width of [320,390,700]){
  // checking the unchanged native recommendation/footer scroll geometry.
  await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-expanded'));
  await toggle.click();
- await page.waitForFunction(()=>document.querySelector('.sf-product-sheet-toggle').getAttribute('aria-expanded')==='false');
+ await page.waitForFunction(()=>{
+   const sheet=document.querySelector('.sf-product-sheet');
+   const closed=parseFloat(getComputedStyle(sheet).getPropertyValue('--sf-product-closed-height'));
+   return sheet.querySelector('.sf-product-sheet-toggle').getAttribute('aria-expanded')==='false' &&
+      Math.abs(sheet.getBoundingClientRect().height-closed)<2;
+ });
  const bottom=await page.evaluate(()=>({y:scrollY,height:document.documentElement.scrollHeight}));
  assert.equal(await page.locator('body').evaluate(e=>getComputedStyle(e).paddingBottom),'0px','Hidden navigation dock adds no second bottom reserve to product document');
  const footerGap=await page.evaluate(()=>document.querySelector('.sf-product-sheet').getBoundingClientRect().top-document.querySelector('.sf-footer-inner').getBoundingClientRect().bottom);
