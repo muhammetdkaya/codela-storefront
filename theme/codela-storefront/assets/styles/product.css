@@ -559,19 +559,36 @@ body.single-product .stock.in-stock{display:none}
   /* A single glass capsule owns arrows, real thumbnails and index. */
   /* Compact capsule: 3 accessible previews, narrow spacing, same light
      Apple-glass material as the existing product sheet (never dark). */
+  /* Center inside the visible PHOTO zone above the collapsed purchase sheet,
+     rather than the entire viewport that includes the lower sheet. */
   body.sf-product-sheet-ready .sf-product-gallery-rail{
-    position:fixed;z-index:12;right:12px;top:50%;left:auto;bottom:auto;
+    position:fixed;z-index:12;right:12px;
+    top:calc((100svh - var(--sf-product-collapsed-height,190px) - var(--sf-ui-bottom-bar-gap,12px) - env(safe-area-inset-bottom,0px))/2);
+    left:auto;bottom:auto;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     gap:4px;width:54px;max-height:calc(100svh - var(--sf-product-collapsed-height,190px) - 100px);
     padding:7px 4px;transform:translateY(-50%);
-    border-radius:999px;
-    background:var(--sf-ui-glass-panel-surface)!important;
-    color:var(--sf-ui-glass-ink);
-    border:1px solid var(--sf-ui-glass-border);
+    border-radius:999px;isolation:isolate;
+    background:transparent!important;color:var(--sf-ui-glass-ink);
+    border:1px solid transparent;
+    -webkit-backdrop-filter:none;backdrop-filter:none;
+    box-shadow:none!important;
+    transition:border-color 650ms ease,box-shadow 650ms ease;
+  }
+  /* The glass itself fades, while the three thumbnails and the image count
+     stay in place and remain legible throughout navigation. */
+  body.sf-product-sheet-ready .sf-product-gallery-rail::before{
+    content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
+    border-radius:inherit;background:var(--sf-ui-glass-panel-surface);
     -webkit-backdrop-filter:blur(24px) saturate(140%);
     backdrop-filter:blur(24px) saturate(140%);
-    box-shadow:var(--sf-ui-glass-shadow);
+    opacity:0;transition:opacity 650ms ease;
   }
+  body.sf-product-sheet-ready .sf-product-gallery-rail.is-active{
+    border-color:var(--sf-ui-glass-border);
+    box-shadow:var(--sf-ui-glass-shadow)!important;
+  }
+  body.sf-product-sheet-ready .sf-product-gallery-rail.is-active::before{opacity:1}
   body.sf-product-sheet-ready .sf-product-gallery-rail[hidden]{display:none!important}
   body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-nav{
     position:static;display:flex;flex-direction:column;align-items:center;gap:2px;
@@ -598,8 +615,18 @@ body.single-product .stock.in-stock{display:none}
   body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-rail-arrow.sf-ui-icon-button{
     width:44px;height:29px;min-height:29px;flex:none;display:grid;place-items:center;
     padding:0;color:inherit;background:transparent!important;border:0;box-shadow:none;
+    opacity:0;visibility:hidden;pointer-events:none;
+    transition:opacity 650ms ease,visibility 650ms ease;
   }
-  body.sf-product-sheet-ready .sf-product-gallery-rail-arrow[disabled]{opacity:.35;cursor:default}
+  body.sf-product-sheet-ready .sf-product-gallery-rail.is-active .sf-product-gallery-rail-arrow.sf-ui-icon-button{
+    opacity:1;visibility:visible;pointer-events:auto;
+  }
+  body.sf-product-sheet-ready .sf-product-gallery-rail.is-active .sf-product-gallery-rail-arrow[disabled]{opacity:.35;cursor:default}
+  @media(prefers-reduced-motion:reduce){
+    body.sf-product-sheet-ready .sf-product-gallery-rail,
+    body.sf-product-sheet-ready .sf-product-gallery-rail::before,
+    body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-rail-arrow.sf-ui-icon-button{transition:none}
+  }
   body.sf-product-sheet-ready .sf-product-gallery-expand.sf-ui-icon-button{
     display:grid;place-items:center;position:fixed;z-index:12;
     top:calc(92px + var(--sf-header-offset,0px));right:16px;
