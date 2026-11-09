@@ -42,11 +42,11 @@ if ( '1' === getenv( 'CODELA_RENDER_ONLY' ) ) {
     exit;
 }
 check( str_contains( $html, 'class="sf-quick-account' ), 'Remembered account is a single primary action' );
-check( str_contains( $html, 'sf-quick-user' ), 'Account name placeholder exists' );
+check( str_contains( $html, 'sf-quick-user' ), 'Single-line account email placeholder exists' );
 check( ! str_contains( $html, 'Welcome back' ), 'No redundant welcome heading' );
 check( str_contains( $html, 'Welcome' ) && str_contains( $html, 'Sign in securely with your account.' ), 'Welcome heading and succinct copy are visible' );
 check( str_contains( $html, 'sf-quick-wave' ), 'Waving-hand emoji follows the heading' );
-check( str_contains( $html, 'sf-quick-email' ), 'Saved account email line is present' );
+check( ! str_contains( $html, 'class="sf-quick-email"' ), 'No duplicate email line in compact account card' );
 check( str_contains( $html, 'sf-quick-method--pin' ) && str_contains( $html, 'sf-quick-method--passkey' ) && str_contains( $html, 'aria-expanded="false"' ), 'Account card has a downward chevron that rotates upward on expand' );
 check( str_contains( $html, 'sf-quick-or' ) && str_contains( $html, 'sf-quick-email-login' ), 'Alternative password login remains available beneath or separator' );
 check( ! str_contains( $html, 'sf-quick-remove' ) && ! str_contains( $html, 'Remove this account' ), 'Remembered account removal is absent from guest UI' );

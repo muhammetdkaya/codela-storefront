@@ -328,7 +328,7 @@ function codela_sf_quick_guest_markup(): void {
             <div class="sf-quick-account-frame">
                 <div class="sf-quick-account">
                     <span class="sf-quick-monogram" aria-hidden="true"></span>
-                    <span class="sf-quick-account-text"><strong class="sf-quick-user"></strong><small class="sf-quick-email" hidden></small></span>
+                    <span class="sf-quick-account-text"><strong class="sf-quick-user"></strong></span>
                     <span class="sf-quick-methods" role="group" aria-label="<?php esc_attr_e( 'Quick sign-in methods', 'codela-storefront' ); ?>">
                         <button type="button" class="sf-quick-method sf-quick-method--passkey" hidden
                             aria-label="<?php esc_attr_e( 'Sign in with Face ID or device verification', 'codela-storefront' ); ?>">

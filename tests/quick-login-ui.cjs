@@ -27,8 +27,19 @@ assert(js.includes("accountStore.storePin({...remembered,") &&
   'An existing customer profile refreshes only its own remembered name and email');
 assert(js.includes("displayName:settings.dataset.displayName"),'New remembered accounts store display name');
 assert(js.includes("email:settings.dataset.email"),'Enrollment stores only a display email alongside remembered account');
-assert(js.includes("email.textContent = rememberedEmail"),'Guest card reads the remembered email');
-assert(php.includes("class=\"sf-quick-email\""),'Saved-account markup has an optional email line');
+assert(js.includes("name.textContent = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(rememberedEmail)"),
+  'Remembered PIN card shows only the email when available');
+assert(js.includes("section.querySelector('.sf-quick-user').textContent="),
+  'Passkey-only card uses the same single-line identity');
+assert(!php.includes('class="sf-quick-email"'),
+  'Quick card does not render a redundant second line for the email');
+assert(css.includes('min-height:62px') && css.includes('border-radius:24px'),
+  'Compact quick card retains a 64px outer frame and 24px corners');
+assert(css.includes('width:44px;height:44px;flex:none') && css.includes('.sf-quick-methods{display:flex;align-items:center;gap:0'),
+  'PIN and passkey have two adjacent 44px tap targets without extra gap');
+assert(css.includes('.sf-quick-method--passkey svg{width:28px;height:28px}')
+  && css.includes('.sf-quick-method--pin svg{width:23px;height:23px;stroke-width:1.8}'),
+  'Passkey 28px and PIN 23px icons retain distinct visual weights');
 assert(php.includes('aria-expanded="false"') && php.includes('sf-quick-method--pin') && php.includes('sf-quick-method--passkey'),'Account card uses a downward chevron with accessible expanded state');
 assert(php.includes('sf-quick-choice-alternatives') && php.includes('sf-quick-email-login'),'Reference actions belong below the account card');
 assert(php.includes('sf-quick-google') && php.includes('disabled aria-label='),'Google button stays visible but safely disabled without configured OAuth');

@@ -113,8 +113,8 @@ function release(ok) {
       const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:2});
       const page=await context.newPage();
       await enrollFixture(page,url);
-      assert.equal(await page.locator('.sf-quick-user').innerText(),'Ayşe Yılmaz','Full name, not remembered-account label');
-      assert.equal(await page.locator('.sf-quick-email').innerText(),'ayse@example.test','Saved account includes email as a secondary line');
+      assert.equal(await page.locator('.sf-quick-user').innerText(),'ayse@example.test','Single-line quick account label is the email only');
+      assert.equal(await page.locator('.sf-quick-email').count(),0,'No redundant second identity line');
       assert(await page.locator('.sf-quick-email-login').isVisible(),'Email/password fallback is visible on first screen');
       assert.equal(await page.locator('.sf-quick-native-alt .sf-alt-login-icon svg').count(),1,
         'Combined email/Google fallback renders its native login glyph');
@@ -128,6 +128,21 @@ function release(ok) {
         'Reference welcome heading is present');
       assert.equal(await page.locator('.sf-quick-account-frame').evaluate(el=>getComputedStyle(el).backgroundColor),
         'rgb(255, 255, 255)','Inline PIN uses the white remembered card surface');
+      const compact=await page.locator('.sf-quick-account-frame').evaluate(el=>{
+        const a=el.querySelector('.sf-quick-monogram');
+        const pin=el.querySelector('.sf-quick-method--pin');
+        const label=el.querySelector('.sf-quick-user');
+        return {height:el.getBoundingClientRect().height,radius:getComputedStyle(el).borderRadius,
+          avatar:a.getBoundingClientRect().width,pinTarget:pin.getBoundingClientRect().width,
+          pinIcon:pin.querySelector('svg').getBoundingClientRect().width,
+          singleLine:getComputedStyle(label).whiteSpace};
+      });
+      assert(Math.abs(compact.height-64)<2,'Collapsed outer card is 64px');
+      assert.equal(compact.radius,'24px','Card corners are 24px');
+      assert.equal(compact.avatar,44,'Avatar remains 44px');
+      assert.equal(compact.pinTarget,44,'PIN target is touch-friendly');
+      assert.equal(compact.pinIcon,23,'PIN glyph is visually smaller than Face ID');
+      assert.equal(compact.singleLine,'nowrap','Email never adds a second line');
       assert.equal(await page.locator('.sf-quick-sheet').count(),0,'Old PIN bottom sheet no longer exists');
       await page.locator('.sf-quick-method--pin').click();
       await page.waitForFunction(()=>document.querySelector('.sf-quick-login')?.classList.contains('is-inline-open'));
@@ -205,7 +220,7 @@ function release(ok) {
         'Signed-in pages do not display guest account switching UI');
       await page.goto(url,{waitUntil:'load'});
       await page.locator('.sf-quick-login').waitFor({state:'visible'});
-      assert.equal(await page.locator('.sf-quick-user').first().innerText(),'Ayşe Yılmaz',
+      assert.equal(await page.locator('.sf-quick-user').first().innerText(),'ayse@example.test',
         'A is selectable again after signing out of B');
       await context.close();
     }
@@ -243,7 +258,7 @@ function release(ok) {
       assert.equal(await page.locator('.sf-quick-account-frame').count(),2,'Two account cards are available');
       assert.equal(await page.locator('.sf-quick-choice-intro').count(),1,'One shared welcome heading');
       assert.equal(await page.locator('.sf-quick-choice-alternatives').count(),1,'One shared native-login fallback');
-      assert.deepEqual(await page.locator('.sf-quick-user').allInnerTexts(),['Ayşe Yılmaz','Mehmet Demir']);
+      assert.deepEqual(await page.locator('.sf-quick-user').allInnerTexts(),['ayse@example.test','mehmet@example.test']);
       await page.locator('.sf-quick-method--pin').nth(1).click();
       await page.locator('.sf-quick-native-pin').nth(1).fill('381905');
       await page.waitForFunction(()=>document.querySelectorAll('.sf-quick-pin-track.is-checking').length===1);
