@@ -916,6 +916,7 @@ html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:
   :is(body.single-product.sf-product-sheet-ready,html.sf-product-sheet-pending body.single-product) div.product form.cart .sf-product-purchase .single_add_to_cart_button{
     display:inline-flex;align-items:center;justify-content:center;gap:10px;
     flex:1 1 0;min-width:0;margin-inline-start:0;
+    height:44px;min-height:44px;padding-block:0!important;box-sizing:border-box;
     border-radius:999px!important;background:var(--sf-ui-button-tonal)!important;
     color:var(--sf-ui-ink)!important;font-size:14px;font-weight:500;
   }
