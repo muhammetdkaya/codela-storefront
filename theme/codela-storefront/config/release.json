@@ -6,10 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Progressive giriş ekranında WooCommerce şifre alanının arka planı, yüksekliği, oval kenarı ve ince bordürü e-posta alanıyla eşitlendi.",
-    "Şifre alanına odaklanıldığında eski kalın siyah çerçeve ve gri cam zemini yerine e-posta alanındaki hafif odak efekti uygulanır.",
-    "Kayıt formundaki yeni şifre alanı da aynı beyaz yüzey ve odak sistemini kullanır.",
-    "Göz ikonu, e-posta denetleyicisi, klavye açılınca uygulanan karartma ve WooCommerce giriş/kayıt doğrulamaları değiştirilmedi.",
-    "Chromium ve WebKit otomatik kontrollerinde alan zeminleri, radius, kenarlık ve odak görünümü karşılaştırılır."
+    "Mobil Hesabım panelinde normal e-posta girişinin karşılama ve form bölümü uzun ekranlarda hızlı girişle aynı dikey merkezleme mantığına alındı.",
+    "Klavye odağı sırasında ve kısa ekranlarda giriş formu otomatik üstten akış/scroll düzenine dönerek alanların erişilebilirliğini korur.",
+    "Hızlı girişteki 'E-posta veya Google ile giriş yap' butonuna Codela'nın koyu oval butonlarıyla uyumlu bir giriş ikonu eklendi; metin yatay merkezde tutuldu.",
+    "Yalnız geçiş anahtarı bulunan hesapların alternatif e-posta/Google butonunda da aynı ikon gösterilir.",
+    "Kimlik doğrulama, Face ID, PIN, Google OAuth, e-posta sorgulama ve kayıt mantığı değiştirilmedi."
   ]
 }

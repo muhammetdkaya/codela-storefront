@@ -371,7 +371,7 @@ function codela_sf_quick_guest_markup(): void {
             </div>
             <div class="sf-quick-choice-alternatives">
                 <div class="sf-quick-or"><span><?php esc_html_e( 'or', 'codela-storefront' ); ?></span></div>
-                <button type="button" class="sf-quick-native-alt"><?php esc_html_e( 'Sign in with email or Google', 'codela-storefront' ); ?></button>
+                <button type="button" class="sf-quick-native-alt"><span class="sf-alt-login-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M12 3h5a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4h-5"/></svg></span><?php esc_html_e( 'Sign in with email or Google', 'codela-storefront' ); ?></button>
                 <?php $google_available = function_exists( 'codela_sf_google_enabled' ) && codela_sf_google_enabled(); ?>
                 <?php if ( $google_available ) : ?>
                     <a class="sf-quick-google" href="<?php echo esc_url( codela_sf_google_auth_url() ); ?>">

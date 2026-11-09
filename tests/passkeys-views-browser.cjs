@@ -4,6 +4,10 @@ const {chromium,webkit}=require('playwright');
 const cssAccount=fs.readFileSync('theme/codela-storefront/assets/styles/account.css','utf8');
 const cssOverlay=fs.readFileSync('theme/codela-storefront/assets/styles/account-overlay.css','utf8');
 const cssQuick=fs.readFileSync('theme/codela-storefront/assets/styles/quick-login.css','utf8');
+const cssSmart=fs.readFileSync('theme/codela-storefront/assets/styles/auth-smart.css','utf8');
+const passkeysSource=fs.readFileSync('theme/codela-storefront/inc/passkeys.php','utf8');
+assert(passkeysSource.includes('class="sf-alt-login-icon"'),
+  'The standalone passkey fallback also renders the combined login glyph');
 const markup=(overlay,active)=>`<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"></head>
 <body class="${overlay?'':'woocommerce-account'}">
 ${overlay?'<div id="sf-panel" class="is-account-panel"><div id="sf-account">':''}
@@ -52,6 +56,45 @@ ${overlay?'</div></div>':''}</body></html>`;
       }
     }
     await page.close();
+
+    // Responsive regression: the native staged login is vertically centered
+    // within the same account viewport used by remembered-device login.
+    // Do not pin the form to the top on tall phones. Return to top flow when
+    // the iOS keyboard is active or the phone is short.
+    const layout=await browser.newPage({viewport:{width:390,height:844}});
+    await layout.setContent(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+      <body style="margin:0"><div id="sf-panel" class="is-account-panel"
+        style="display:flex;flex-direction:column;width:100%;height:844px;max-height:none;margin:0;padding:0">
+        <div class="sf-panel-top" style="flex:none;height:68px">Toolbar</div>
+        <section class="sf-panel-body sf-account-body" style="flex:1;min-height:0;box-sizing:border-box">
+          <div class="woocommerce sf-overlay-auth sf-smart-auth-active sf-smart-start"
+            style="height:300px"><header class="sf-account-intro">Welcome</header>
+            <div class="sf-smart-auth">Email</div></div>
+        </section></div></body></html>`);
+    await layout.addStyleTag({content:cssAccount+'\n'+cssOverlay+'\n'+cssSmart});
+    const centered=await layout.evaluate(()=>{
+      const body=document.querySelector('.sf-account-body');
+      const content=body.querySelector('.woocommerce');
+      const box=body.getBoundingClientRect(),inner=content.getBoundingClientRect();
+      const style=getComputedStyle(body);
+      return {
+        alignment:style.justifyContent,
+        above:inner.top-box.top-parseFloat(style.paddingTop),
+        below:box.bottom-inner.bottom-parseFloat(style.paddingBottom)
+      };
+    });
+    assert(centered.alignment.includes('center'),'Normal login uses vertical centering on tall phones');
+    assert(Math.abs(centered.above-centered.below)<6,
+      'Normal login is centered in usable account space, not offset from top: '+JSON.stringify(centered));
+    await layout.locator('.woocommerce').evaluate(el=>el.classList.add('sf-auth-focus-mode'));
+    assert.equal(await layout.locator('.sf-account-body').evaluate(el=>getComputedStyle(el).justifyContent),'normal',
+      'Focusing login fields releases centering so the keyboard can scroll naturally');
+    await layout.setViewportSize({width:390,height:650});
+    await layout.locator('#sf-panel').evaluate(el=>el.style.height='650px');
+    await layout.locator('.woocommerce').evaluate(el=>el.classList.remove('sf-auth-focus-mode'));
+    assert.equal(await layout.locator('.sf-account-body').evaluate(el=>getComputedStyle(el).justifyContent),'normal',
+      'Short phones keep normal top-aligned scrolling');
+    await layout.close();
 
     // Regression: when the same customer has BOTH trusted PIN and WebAuthn,
     // the passkey module waits for the PIN server status. It must enrich one
