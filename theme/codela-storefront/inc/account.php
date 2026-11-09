@@ -28,6 +28,9 @@ function codela_sf_account_intro(): void {
         data-auth-lookup-url="<?php echo function_exists( 'admin_url' ) && function_exists( 'esc_attr' ) ? esc_attr( admin_url( 'admin-ajax.php' ) ) : ''; ?>"
         data-auth-lookup-nonce="<?php echo function_exists( 'wp_create_nonce' ) && function_exists( 'esc_attr' ) ? esc_attr( wp_create_nonce( 'codela_sf_auth_lookup' ) ) : ''; ?>"
         data-auth-smart-label="<?php esc_attr_e( 'Email address', 'codela-storefront' ); ?>"
+        data-auth-smart-missing-at="<?php esc_attr_e( 'Add @ to your email address.', 'codela-storefront' ); ?>"
+        data-auth-smart-incomplete="<?php esc_attr_e( 'Complete your email address.', 'codela-storefront' ); ?>"
+        data-auth-smart-register-action="<?php esc_attr_e( 'Register', 'codela-storefront' ); ?>"
         data-auth-smart-checking="<?php esc_attr_e( 'Checking account…', 'codela-storefront' ); ?>"
         data-auth-smart-error="<?php esc_attr_e( 'Account check is unavailable. You can still sign in or create an account.', 'codela-storefront' ); ?>"
         data-auth-smart-closed="<?php esc_attr_e( 'New account registration is currently unavailable.', 'codela-storefront' ); ?>"
@@ -43,7 +46,7 @@ function codela_sf_account_intro(): void {
         data-auth-smart-first="<?php esc_attr_e( 'First name', 'codela-storefront' ); ?>"
         data-auth-smart-last="<?php esc_attr_e( 'Last name', 'codela-storefront' ); ?>"
         data-auth-smart-title="<?php esc_attr_e( 'Welcome', 'codela-storefront' ); ?>"
-        data-auth-smart-description="<?php esc_attr_e( 'Sign in or create an account with your email.', 'codela-storefront' ); ?>">
+        data-auth-smart-description="<?php esc_attr_e( 'Sign in or register.', 'codela-storefront' ); ?>">
         <h1 id="sf-auth-view-title"><span class="sf-auth-heading-text"><?php esc_html_e( 'Welcome back', 'codela-storefront' ); ?></span> <span class="sf-auth-heading-wave" aria-hidden="true">👋</span></h1>
         <p class="sf-auth-description"><?php esc_html_e( 'Sign in to your account.', 'codela-storefront' ); ?></p>
     </header>

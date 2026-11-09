@@ -16,14 +16,14 @@ const html=`<!doctype html><html><head><meta name="viewport" content="width=devi
 data-auth-initial="login" data-auth-login-title="Welcome back"
 data-auth-login-description="Sign in to your account."
 data-auth-register-title="Create an account" data-auth-register-description="Join us in a few steps."
-data-auth-smart-label="Email address" data-auth-smart-first="First name"
+data-auth-smart-label="Email address" data-auth-smart-missing-at="Add @ to your email address." data-auth-smart-incomplete="Complete your email address." data-auth-smart-register-action="Kayıt Ol" data-auth-smart-first="First name"
 data-auth-smart-last="Last name" data-auth-smart-checking="Checking account…"
 data-auth-smart-error="Check unavailable" data-auth-smart-closed="Registration closed"
 data-auth-smart-continue="Continue with email"
 data-auth-smart-password-link="Password link emailed" data-auth-smart-register-password="Password (at least 8 characters)"
 data-auth-smart-strength-min="At least 8 characters" data-auth-smart-strength-mix="Include letters and a number or symbol"
 data-auth-smart-strength-ok="Password meets requirements" data-auth-smart-strength-strong="Strong password"
-data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or create an account with your email.">
+data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or register.">
 <h1><span class="sf-auth-heading-text">Welcome back</span>
 <span class="sf-auth-heading-wave">👋</span></h1>
 <p class="sf-auth-description">Sign in to your account.</p></header>
@@ -113,6 +113,11 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or create a
    assert.equal(await page.locator('#password').isVisible(),false,'Bare username-like text never opens a password field');
    assert.equal(await page.locator('.u-column2').isVisible(),false,'Bare text never opens registration');
    assert.equal(requests,0,'Bare text does not reach the existence endpoint');
+   assert.equal(await page.locator('.sf-smart-progress').getAttribute('data-state'),'invalid','Incomplete email has an inline warning icon');
+   assert.equal(await page.locator('.sf-smart-message').innerText(),'Add @ to your email address.','Missing @ guidance is short and actionable');
+   await uid.fill('person@domain');
+   assert.equal(await page.locator('.sf-smart-message').innerText(),'Complete your email address.','Missing domain suffix is explained before lookup');
+   assert.equal(requests,0,'Incomplete emails never call the account endpoint');
    await uid.fill('existing@example.test');
    assert.equal(await page.locator('.sf-smart-progress').getAttribute('data-state'),'checking','Email field owns lookup spinner');
    assert.equal(await page.locator('.sf-smart-progress').isVisible(),true,'Animated lookup indicator is inside the email field');
@@ -132,6 +137,9 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or create a
        throw error;
      });
    assert(await page.locator('#password').isVisible(),'Existing account opens password');
+   assert.equal(await page.locator('.sf-auth-description').innerText(),'Sign in or register.','One short unified subtitle stays above the email field');
+   assert.equal(await page.locator('.sf-smart-message').isVisible(),false,'No status headline divides email and password');
+   assert.equal(await page.locator('.sf-smart-stage-title').count(),0,'No duplicate login heading appears between fields');
    assert.equal(await page.locator('.sf-smart-progress').getAttribute('data-state'),'done','Lookup completion changes spinner to a check icon');
    assert.equal(await page.locator('.sf-auth-google').isVisible(),false,'Google disappears when password stage starts');
    assert.equal(await page.locator('.sf-quick-return').isVisible(),false,'Quick sign-in disappears when password stage starts');
@@ -154,6 +162,9 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or create a
    await uid.fill('new@example.test');
    await page.waitForFunction(()=>document.querySelector('.woocommerce')?.classList.contains('sf-smart-new'));
    assert(await page.locator('#sf-smart-first').isVisible(),'New email opens first name');
+   assert.equal(await page.locator('.sf-smart-message').isVisible(),false,'New-account discovery does not add a copy block between inputs');
+   assert.equal(await page.locator('.sf-auth-description').innerText(),'Sign in or register.','Subtitle stays unchanged across registration');
+   assert.equal(await page.locator('.woocommerce-form-register button[type=submit]').innerText(),'Kayıt Ol','Native Woo registration button is clearly labeled in Turkish');
    assert(await page.locator('#sf-smart-last').isVisible(),'New email opens last name');
    assert.equal(await page.locator('#reg_email').inputValue(),'new@example.test','Woo native registration email synchronized');
    assert.equal(await page.locator('#reg_username').inputValue(),'new@example.test','Woo native username is derived from email');
@@ -169,7 +180,7 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or create a
    assert.equal(await page.locator('.sf-smart-strength-feedback').innerText(),'At least 8 characters','Short password explains why it is insufficient');
    assert.equal(await page.locator('.woocommerce-form-register button[type=submit]').isDisabled(),true,'Insufficient password cannot submit');
    await page.locator('#reg_password').fill('abcdefgh');
-   assert.equal(await page.locator('.sf-smart-strength-feedback').innerText(),'Add a number or symbol','Weak single-category password explains remedy');
+   assert.equal(await page.locator('.sf-smart-strength-feedback').innerText(),'Include letters and a number or symbol','Weak single-category password explains remedy');
    await page.locator('#sf-smart-first').fill('Ada');
    await page.locator('#sf-smart-last').fill('Yılmaz');
    await page.locator('#reg_password').fill('StrongP4ss!Good');
@@ -199,6 +210,7 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or create a
    const before=requests;
    await page.waitForTimeout(850);
    assert.equal(requests,before,'Username-like text is never probed');
+   assert.equal(await page.locator('.sf-smart-progress').getAttribute('data-state'),'invalid','Invalid email retains warning instead of success');
    assert.equal(await page.locator('.sf-auth-google').isVisible(),true,'Secondary Google option returns when email is cleared or invalid');
    assert.equal(await page.locator('.sf-quick-return').isVisible(),true,'Quick sign-in returns when email is cleared or invalid');
    await page.close();
