@@ -552,15 +552,54 @@ body.single-product .stock.in-stock{display:none}
        Toolbar animation can then change the viewport without moving photos. */
     scroll-margin-bottom:calc(var(--sf-product-viewport-small,100svh) - var(--sf-product-viewport-large,100lvh));
   }
-  body.sf-product-sheet-ready .sf-product-gallery-nav{
-    position:fixed;display:flex;flex-direction:column;gap:4px;left:auto;right:8px;top:35%;bottom:auto;
-    max-height:calc(50svh - 100px);max-width:44px;overflow-y:auto;overflow-x:hidden;
-    padding:0;transform:none;background:transparent!important;box-shadow:none!important;
-    border:0;-webkit-backdrop-filter:none;backdrop-filter:none;
+  /* A single glass capsule owns arrows, real thumbnails and index. */
+  body.sf-product-sheet-ready .sf-product-gallery-rail{
+    position:fixed;z-index:12;right:12px;top:50%;left:auto;bottom:auto;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:12px;width:64px;max-height:calc(100svh - var(--sf-product-collapsed-height,190px) - 100px);
+    padding:10px 6px;transform:translateY(-50%);
+    border-radius:999px;
+    background:color-mix(in srgb,var(--sf-ui-ink) 90%,transparent);
+    color:var(--sf-ui-page);
+    border:1px solid color-mix(in srgb,var(--sf-ui-page) 12%,transparent);
+    -webkit-backdrop-filter:blur(24px) saturate(140%);
+    backdrop-filter:blur(24px) saturate(140%);
+    box-shadow:0 8px 30px rgba(0,0,0,.12);
   }
-  body.sf-product-sheet-ready .sf-product-gallery-thumb.sf-ui-icon-button{width:44px;height:44px}
-  body.sf-product-sheet-ready .sf-product-gallery-thumb img{display:block}
-  body.sf-product-sheet-ready .sf-product-gallery-count{position:fixed;bottom:calc(var(--sf-product-collapsed-height,210px) + var(--sf-ui-bottom-bar-gap) + 10px + env(safe-area-inset-bottom,0px))}
+  body.sf-product-sheet-ready .sf-product-gallery-rail[hidden]{display:none!important}
+  body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-nav{
+    position:static;display:flex;flex-direction:column;align-items:center;gap:10px;
+    width:48px;max-width:48px;max-height:none;min-height:0;
+    margin:0;padding:2px;overflow:visible;transform:none;
+    border:0;box-shadow:none!important;background:transparent!important;
+    -webkit-backdrop-filter:none;backdrop-filter:none;
+  }
+  body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-thumb.sf-ui-icon-button{
+    width:44px;height:44px;border-radius:14px;background:transparent;
+  }
+  body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-thumb[aria-current="true"]{
+    outline:2px solid var(--sf-ui-page);outline-offset:3px;
+  }
+  body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-count{
+    position:static;margin:4px 0;color:inherit;font-size:14px;font-weight:500;
+    line-height:24px;letter-spacing:.04em;font-variant-numeric:tabular-nums;
+  }
+  body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-rail-arrow.sf-ui-icon-button{
+    width:44px;height:44px;min-height:44px;flex:none;display:grid;place-items:center;
+    padding:0;color:inherit;background:transparent!important;border:0;box-shadow:none;
+  }
+  body.sf-product-sheet-ready .sf-product-gallery-rail-arrow[disabled]{opacity:.35;cursor:default}
+  body.sf-product-sheet-ready .sf-product-gallery-expand.sf-ui-icon-button{
+    display:grid;place-items:center;position:fixed;z-index:12;
+    top:calc(146px + var(--sf-header-offset,0px));right:16px;
+    width:48px;height:48px;min-height:48px;padding:0;border-radius:999px;
+    color:var(--sf-ui-page);background:color-mix(in srgb,var(--sf-ui-ink) 90%,transparent);
+    border:1px solid color-mix(in srgb,var(--sf-ui-page) 12%,transparent);
+    -webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
+  }
+  body.sf-product-sheet-ready :is(.sf-product-gallery-expand,.sf-product-gallery-rail) :is(button,a):focus-visible{
+    outline:2px solid var(--sf-ui-page);outline-offset:3px;
+  }
   /* Match the native gallery counter's one stable viewport baseline.
      Both annotations remain together as the real photo index changes. */
   body.sf-product-sheet-ready .sf-product-visitor{
@@ -789,7 +828,7 @@ body.single-product div.product .sf-product-quantity .sf-product-quantity-step[d
      vertically scrolling product discovery it is redundant after the last card. */
   body.single-product.sf-product-sheet-ready .sf-product-discovery :is(.related,.upsells) ul.products{margin-bottom:0}
   body.sf-product-sheet-ready:has(.woocommerce-product-gallery.is-discovering) div.product .sf-product-overview > .onsale{visibility:hidden}
-  body.sf-product-sheet-ready .woocommerce-product-gallery.is-discovering > :is(.sf-product-gallery-nav,.sf-product-gallery-count,.sf-product-visitor,.woocommerce-product-gallery__trigger){visibility:hidden}
+  body.sf-product-sheet-ready .woocommerce-product-gallery.is-discovering > :is(.sf-product-gallery-rail,.sf-product-gallery-expand,.sf-product-visitor,.woocommerce-product-gallery__trigger){visibility:hidden}
   /* Match the gallery index's discovery boundary even if the Codela plugin
      has reparented its original live host outside the gallery frame.
      Scoped to product discovery only: the plugin still controls [hidden]
@@ -856,12 +895,13 @@ html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:
   .sf-product-gallery-arrows > button{pointer-events:auto}
 }
 
-.sf-product-gallery-glass{display:none;pointer-events:none;position:fixed;z-index:2;opacity:0;transition:opacity var(--sf-ui-motion-panel);border-radius:var(--sf-ui-pill)}
+/* The rail is one persistent shared glass surface; photos and index do not fade. */
+.sf-product-gallery-rail,.sf-product-gallery-expand{display:none}
 @media(max-width:700px){
-  body.sf-product-sheet-ready .sf-product-gallery-glass{display:block}
-  body.sf-product-sheet-ready .sf-product-gallery-glass.is-visible{opacity:1}
-  body.sf-product-sheet-open .sf-product-gallery-glass,body.single-product:has(.pswp--open,#sf-panel[open]) .sf-product-gallery-glass,.woocommerce-product-gallery.is-discovering > .sf-product-gallery-glass{visibility:hidden}
+  body.sf-product-sheet-ready .sf-product-gallery-rail:not([hidden]){display:flex}
+  body.sf-product-sheet-ready .sf-product-gallery-expand{display:grid}
+  body.sf-product-sheet-open :is(.sf-product-gallery-rail,.sf-product-gallery-expand),
+  body.single-product:has(.pswp--open,#sf-panel[open]) :is(.sf-product-gallery-rail,.sf-product-gallery-expand){visibility:hidden}
 }
-@media(prefers-reduced-motion:reduce){.sf-product-gallery-glass{transition:none}}
 
 .sf-product-sheet.is-holding:not(.is-expanded) .sf-product-sheet-toggle::before{transform:scaleX(var(--sf-ui-scale-icon))}
