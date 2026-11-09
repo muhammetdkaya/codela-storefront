@@ -6,10 +6,9 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Mobil Hesabım panelinde normal e-posta girişinin karşılama ve form bölümü uzun ekranlarda hızlı girişle aynı dikey merkezleme mantığına alındı.",
-    "Klavye odağı sırasında ve kısa ekranlarda giriş formu otomatik üstten akış/scroll düzenine dönerek alanların erişilebilirliğini korur.",
-    "Hızlı girişteki 'E-posta veya Google ile giriş yap' butonuna Codela'nın koyu oval butonlarıyla uyumlu bir giriş ikonu eklendi; metin yatay merkezde tutuldu.",
-    "Yalnız geçiş anahtarı bulunan hesapların alternatif e-posta/Google butonunda da aynı ikon gösterilir.",
-    "Kimlik doğrulama, Face ID, PIN, Google OAuth, e-posta sorgulama ve kayıt mantığı değiştirilmedi."
+    "iPhone Safari'de tarayıcı alt çubuğu nedeniyle 760px altında kalan görünür CSS ekranlarında normal girişin dikey ortalanmaması düzeltildi.",
+    "Normal giriş, hızlı girişin bulunduğu hesap panelinin kullanılabilir yüksekliğinde güvenli şekilde ortalanır; başlık, e-posta ve butonlar tek blok olarak kalır.",
+    "Klavye veya parola alanı odaklandığında ve kısa ekranlarda mevcut güvenli kaydırma davranışı korunur.",
+    "Mobil WebKit ve Chromium testleri artık gerçek yüksekliğiyle hesaplanan formu 700px ve 844px ekranlarda ölçer; geçmişteki sabit yükseklikli yanlış pozitif test kaldırıldı."
   ]
 }
