@@ -220,12 +220,24 @@ function codela_sf_signed_in_account_url( $redirect ) {
     if ( ! function_exists( 'wc_get_page_permalink' ) ) { return $redirect; }
     $account = (string) wc_get_page_permalink( 'myaccount' );
     if ( '' === $account ) { return $redirect; }
+    // A WooCommerce confirmation email opened while signed out needs its
+    // one-time key preserved through login, otherwise verification cannot finish.
+    // This is still the My Account URL; core validates and consumes the key.
+    if ( isset( $_REQUEST['wc_verify_email_key'], $_REQUEST['wc_verify_email_user'] )
+        && is_string( $_REQUEST['wc_verify_email_key'] ) ) {
+        $key = sanitize_text_field( wp_unslash( $_REQUEST['wc_verify_email_key'] ) );
+        $id = absint( $_REQUEST['wc_verify_email_user'] );
+        if ( '' !== $key && $id > 0 ) {
+            return add_query_arg( [ 'wc_verify_email_key' => $key, 'wc_verify_email_user' => $id ], $account );
+        }
+    }
     return function_exists( 'codela_sf_quick_fresh_account_redirect' )
         ? codela_sf_quick_fresh_account_redirect( $account ) : $account;
 }
 add_filter( 'woocommerce_login_redirect', 'codela_sf_signed_in_account_url', 5 );
 add_filter( 'woocommerce_registration_redirect', 'codela_sf_signed_in_account_url', 5 );
 add_filter( 'login_redirect', static function( $redirect, $requested, $user ) {
+    if ( is_wp_error( $user ) ) { return $redirect; }
     // A privileged, intentional wp-admin login must continue to reach wp-admin.
     if ( is_object( $user ) && ! is_wp_error( $user )
         && user_can( $user, 'manage_options' ) && codela_sf_login_is_admin_destination( $requested ) ) {
