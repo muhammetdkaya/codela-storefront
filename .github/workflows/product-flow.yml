@@ -23,5 +23,8 @@ jobs:
           node tests/cart-race.cjs
           node tests/cart-sync.cjs
           python3 tests/build-assets.py
+          # Existing mobile sheet geometry must remain unchanged after the new close/end behavior.
+          node tests/product-sheet-browser.cjs
+          node tests/gallery-defer-browser.cjs
           node tests/product-flow-browser.cjs
           TEST_WEBKIT=1 node tests/product-flow-browser.cjs
