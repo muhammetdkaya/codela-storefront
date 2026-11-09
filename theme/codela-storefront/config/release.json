@@ -6,9 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "iOS Safari odak karartmasında e-posta doğrulama simgesi alanın üzerinde görünür kalır; uyarı, sorgulama ve onay durumları korunur.",
-    "Mobil Hesabım penceresine taşınan sağ üst menü butonu yalnız e-posta/parola girilirken gizlenir, odak kapanınca geri gelir.",
-    "Giriş, kayıt, WooCommerce nonce ve mevcut şifre güvenliği akışları değiştirilmedi.",
-    "Chromium/WebKit regresyonu: odakta simge katmanı, menü gizleme ve odak kapandıktan sonra geri dönüş kontrol edildi."
+    "Progressive giriş ekranında WooCommerce şifre alanının arka planı, yüksekliği, oval kenarı ve ince bordürü e-posta alanıyla eşitlendi.",
+    "Şifre alanına odaklanıldığında eski kalın siyah çerçeve ve gri cam zemini yerine e-posta alanındaki hafif odak efekti uygulanır.",
+    "Kayıt formundaki yeni şifre alanı da aynı beyaz yüzey ve odak sistemini kullanır.",
+    "Göz ikonu, e-posta denetleyicisi, klavye açılınca uygulanan karartma ve WooCommerce giriş/kayıt doğrulamaları değiştirilmedi.",
+    "Chromium ve WebKit otomatik kontrollerinde alan zeminleri, radius, kenarlık ve odak görünümü karşılaştırılır."
   ]
 }

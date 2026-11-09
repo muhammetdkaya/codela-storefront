@@ -151,6 +151,19 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or register
        throw error;
      });
    assert(await page.locator('#password').isVisible(),'Existing account opens password');
+   const unfocusedFieldStyles=await page.evaluate(()=>{
+     const email=getComputedStyle(document.querySelector('.sf-smart-identity'));
+     const password=getComputedStyle(document.querySelector('#password'));
+     return {
+       email:{bg:email.backgroundColor,radius:email.borderRadius,height:email.height,border:email.borderTopWidth},
+       password:{bg:password.backgroundColor,radius:password.borderRadius,height:password.height,border:password.borderTopWidth,outline:password.outlineStyle}
+     };
+   });
+   assert.equal(unfocusedFieldStyles.password.bg,unfocusedFieldStyles.email.bg,'Password and email have matching white surfaces');
+   assert.equal(unfocusedFieldStyles.password.radius,unfocusedFieldStyles.email.radius,'Password and email share the same pill radius');
+   assert.equal(unfocusedFieldStyles.password.height,unfocusedFieldStyles.email.height,'Password and email fields are the same height');
+   assert.equal(unfocusedFieldStyles.password.border,unfocusedFieldStyles.email.border,'Password and email share thin borders');
+   assert.equal(unfocusedFieldStyles.password.outline,'none','Legacy detached password outline is not painted');
    assert.equal(await page.locator('.sf-auth-description').innerText(),'Sign in or register.','One short unified subtitle stays above the email field');
    assert.equal(await page.locator('.sf-smart-message').isVisible(),false,'No status headline divides email and password');
    assert.equal(await page.locator('.sf-smart-stage-title').count(),0,'No duplicate login heading appears between fields');
@@ -167,6 +180,15 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or register
    // unwanted PROGRAMMATIC autofocus until the first real user interaction.
    await page.locator('#password').click();
    await page.waitForFunction(()=>document.querySelector('.woocommerce')?.classList.contains('sf-auth-focus-mode'));
+   const passwordFocused=await page.locator('#password').evaluate(el=>{
+     const s=getComputedStyle(el);
+     return {bg:s.backgroundColor,border:s.borderTopWidth,outline:s.outlineStyle,
+       outlineWidth:s.outlineWidth,shadow:s.boxShadow};
+   });
+   assert.equal(passwordFocused.bg,'rgb(255, 255, 255)','Focused password retains the email white fill');
+   assert.equal(passwordFocused.border,'1px','Focused password retains the one-pixel email border');
+   assert.equal(passwordFocused.outline,'none','Focused password has no double dark outline');
+   assert(passwordFocused.shadow.includes('rgba(35, 36, 40, 0.055)'),'Focused password uses the subtle email focus halo');
    // Visibility intentionally transitions for 160 ms; wait for the final
    // hidden state instead of reading the property mid-transition.
    await page.waitForFunction(()=>
@@ -189,6 +211,14 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or register
    assert.equal(await page.locator('.woocommerce-form-register button[type=submit]').isVisible(),true,'Register CTA is discoverable as soon as the new email is recognized');
    assert.equal(await page.locator('.woocommerce-form-register button[type=submit]').isDisabled(),true,'Register remains disabled until required details are complete');
    assert.equal(await page.locator('#reg_password').getAttribute('minlength'),'8','Registration password requirement is clear');
+   const registerPasswordStyle=await page.locator('#reg_password').evaluate(el=>({
+     bg:getComputedStyle(el).backgroundColor,
+     radius:getComputedStyle(el).borderRadius,
+     outline:getComputedStyle(el).outlineStyle
+   }));
+   assert.equal(registerPasswordStyle.bg,'rgb(255, 255, 255)','Registration password matches white email surface');
+   assert.equal(registerPasswordStyle.radius,'999px','Registration password matches email pill radius');
+   assert.equal(registerPasswordStyle.outline,'none','Registration password has no legacy detached outline');
    assert.equal(await page.locator('.sf-smart-strength').isVisible(),true,'Password includes its own quality indicator');
    await page.locator('#reg_password').fill('test..');
    assert.equal(await page.locator('.sf-smart-strength-feedback').innerText(),'At least 8 characters','Short password explains why it is insufficient');

@@ -324,3 +324,35 @@ body.sf-auth-chrome-hidden .sf-shell > :is(.sf-header,.sf-mobile-dock){
 #sf-panel.is-account-panel:has(.woocommerce.sf-auth-focus-mode) > .sf-menu-trigger.is-in-panel{
   opacity:0!important;visibility:hidden!important;pointer-events:none!important
 }
+
+/* 0.1.255 — one visual input system for progressive email, login password
+   and registration password. The password inputs are native WooCommerce
+   controls; scope overrides to smart auth so other account forms are intact.
+   In particular, neutralize the legacy translucent glass input and 2px
+   detached outline used by account-overlay.css on focused passwords. */
+:is(#sf-panel.is-account-panel,body.woocommerce-account:not(.logged-in))
+ .woocommerce.sf-smart-auth-active #customer_login
+ :is(.woocommerce-form-login .sf-smart-password-row,.woocommerce-form-register .form-row)
+ input[name="password"]{
+  appearance:none!important;-webkit-appearance:none!important;
+  box-sizing:border-box!important;display:block;
+  width:100%!important;max-width:100%!important;height:54px!important;min-height:54px!important;
+  padding:0 54px 0 18px!important;
+  border:1px solid var(--sf-smart-line,#dedee2)!important;
+  border-radius:999px!important;
+  background:#fff!important;background-image:none!important;
+  color:var(--sf-smart-ink,#252628)!important;
+  font:inherit;font-size:16px!important;line-height:1.35!important;
+  outline:none!important;outline-offset:0!important;box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  transition:border-color .18s,box-shadow .18s
+}
+:is(#sf-panel.is-account-panel,body.woocommerce-account:not(.logged-in))
+ .woocommerce.sf-smart-auth-active #customer_login
+ :is(.woocommerce-form-login .sf-smart-password-row,.woocommerce-form-register .form-row)
+ input[name="password"]:focus{
+  border-color:#74777f!important;
+  outline:none!important;outline-offset:0!important;
+  box-shadow:0 0 0 3px rgba(35,36,40,.055)!important;
+  background:#fff!important
+}
