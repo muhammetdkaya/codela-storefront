@@ -273,7 +273,7 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
         if (!status) {
             status = document.createElement('p'); status.className = 'sf-purchase-status';
             status.setAttribute('role', 'status'); status.setAttribute('aria-live', 'polite');
-            form.appendChild(status);
+            (form.querySelector('.sf-product-purchase') || form).appendChild(status);
         }
         status.classList.toggle('screen-reader-text', message === t('Item added to cart.'));
         status.textContent = message;
@@ -285,6 +285,7 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
         // server form handler remains the only writer for product additions.
         const payload = new FormData(form);
         if (button.name) payload.set(button.name, button.value);
+        payload.set('codela_sf_cart_async', '1');
         mutating = true; cartRevision++; readAbort?.abort(); dirty = false;
         const externalAtStart = externalRevision;
         feedback(button, 'loading'); purchaseStatus(form, ''); updateCartBusy();
@@ -296,7 +297,11 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
             });
             const html = new DOMParser().parseFromString(await response.text(), 'text/html');
             const errors = html.querySelector('.woocommerce-error,[role="alert"].wc-block-components-notice-banner');
-            if (!response.ok || errors || !html.querySelector('[data-sf-cart-added]')) {
+            // Native Woo adds to the server-side cart BEFORE rendering a page.
+            // Checkout blocks or other plugins may suppress/replace its notice.
+            const confirmed = response.headers?.get?.('X-Codela-Sf-Cart-Added') === '1'
+                || Boolean(html.querySelector('[data-sf-cart-added]'));
+            if (!response.ok || errors || !confirmed) {
                 throw new Error(errors?.textContent.trim() || t('Could not confirm the addition. Check your cart before trying again.'));
             }
             if (window.jQuery) {
@@ -311,10 +316,9 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
         } catch (error) {
             feedback(button, 'idle');
             purchaseStatus(form, error.message || t('Something went wrong. Please try again.'));
-            // Reveal errors that would otherwise remain inside a closed sheet.
-            const sheet = form.closest('.sf-product-sheet');
-            const toggle = sheet?.querySelector('.sf-product-sheet-toggle');
-            if (toggle?.getAttribute('aria-expanded') === 'false') toggle.click();
+            // Keep the compact purchase sheet closed on network/stock errors.
+            // The status belongs to the visible purchase surface above the CTA;
+            // only actual missing variations/native validation open details.
         } finally {
             controls.forEach(([node, disabled]) => { node.disabled = disabled; });
             mutating = false; updateCartBusy();
