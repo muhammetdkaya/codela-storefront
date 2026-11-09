@@ -57,43 +57,66 @@ ${overlay?'</div></div>':''}</body></html>`;
     }
     await page.close();
 
-    // Responsive regression: the native staged login is vertically centered
-    // within the same account viewport used by remembered-device login.
-    // Do not pin the form to the top on tall phones. Return to top flow when
-    // the iOS keyboard is active or the phone is short.
-    const layout=await browser.newPage({viewport:{width:390,height:844}});
-    await layout.setContent(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+    // Reproduce the actual account dialog hierarchy and a natural-sized
+    // welcome/email/quick-login/Google composition. The former fixture hard-
+    // coded 844px viewport + a 300px block and therefore missed iPhone
+    // Safari's ~700px CSS viewport behind the browser bottom controls.
+    const layout=await browser.newPage({viewport:{width:390,height:700}});
+    await layout.setContent(\`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head>
       <body style="margin:0"><div id="sf-panel" class="is-account-panel"
-        style="display:flex;flex-direction:column;width:100%;height:844px;max-height:none;margin:0;padding:0">
+        style="display:flex;flex-direction:column;width:100%;height:700px;max-height:none;margin:0;padding:0">
         <div class="sf-panel-top" style="flex:none;height:68px">Toolbar</div>
-        <section class="sf-panel-body sf-account-body" style="flex:1;min-height:0;box-sizing:border-box">
-          <div class="woocommerce sf-overlay-auth sf-smart-auth-active sf-smart-start"
-            style="height:300px"><header class="sf-account-intro">Welcome</header>
-            <div class="sf-smart-auth">Email</div></div>
-        </section></div></body></html>`);
-    await layout.addStyleTag({content:cssAccount+'\n'+cssOverlay+'\n'+cssSmart});
-    const centered=await layout.evaluate(()=>{
-      const body=document.querySelector('.sf-account-body');
-      const content=body.querySelector('.woocommerce');
-      const box=body.getBoundingClientRect(),inner=content.getBoundingClientRect();
-      const style=getComputedStyle(body);
-      return {
-        alignment:style.justifyContent,
-        above:inner.top-box.top-parseFloat(style.paddingTop),
-        below:box.bottom-inner.bottom-parseFloat(style.paddingBottom)
-      };
-    });
-    assert(centered.alignment.includes('center'),'Normal login uses vertical centering on tall phones');
-    assert(Math.abs(centered.above-centered.below)<6,
-      'Normal login is centered in usable account space, not offset from top: '+JSON.stringify(centered));
+        <section id="sf-account" class="sf-panel-body sf-account-body" style="flex:1;min-height:0;box-sizing:border-box">
+          <div class="woocommerce sf-overlay-auth sf-smart-auth-active sf-smart-start">
+            <header class="sf-account-intro"><h1>Hoş geldin 👋</h1><p>Giriş yap veya kayıt ol.</p></header>
+            <div class="sf-smart-auth"><label class="sf-smart-label">
+              <input class="sf-smart-identity" placeholder="E-posta adresi"></label></div>
+            <div id="customer_login"></div>
+            <button class="sf-quick-return" type="button">Hızlı girişe dön</button>
+            <div class="sf-auth-social">
+              <div class="sf-auth-divider">veya</div>
+              <button class="sf-auth-google" type="button">Google ile Giriş Yap</button>
+            </div>
+          </div>
+        </section></div></body></html>\`);
+    await layout.addStyleTag({content:cssAccount+'\n'+cssOverlay+'\n'+cssQuick+'\n'+cssSmart});
+    for (const height of [700,844]) {
+      await layout.setViewportSize({width:390,height});
+      await layout.locator('#sf-panel').evaluate((el,h)=>{el.style.height=h+'px'},height);
+      const centered=await layout.evaluate(()=>{
+        const body=document.querySelector('.sf-account-body');
+        const content=body.querySelector('.woocommerce');
+        const box=body.getBoundingClientRect(),inner=content.getBoundingClientRect();
+        const style=getComputedStyle(body);
+        return {
+          alignment:style.justifyContent,
+          naturalHeight:inner.height,
+          above:inner.top-box.top-parseFloat(style.paddingTop),
+          below:box.bottom-inner.bottom-parseFloat(style.paddingBottom)
+        };
+      });
+      assert(centered.naturalHeight>=190&&centered.naturalHeight<=480,
+        'Fixture must represent an intrinsic real login composition, not a fixed block: '+JSON.stringify(centered));
+      assert(centered.alignment.includes('center'),
+        'Normal login centers on actual Safari CSS viewport height '+height+': '+JSON.stringify(centered));
+      assert(Math.abs(centered.above-centered.below)<6,
+        'Visible login block is vertically centered in usable panel height '+height+': '+JSON.stringify(centered));
+    }
     await layout.locator('.woocommerce').evaluate(el=>el.classList.add('sf-auth-focus-mode'));
     assert.equal(await layout.locator('.sf-account-body').evaluate(el=>getComputedStyle(el).justifyContent),'normal',
-      'Focusing login fields releases centering so the keyboard can scroll naturally');
-    await layout.setViewportSize({width:390,height:650});
-    await layout.locator('#sf-panel').evaluate(el=>el.style.height='650px');
+      'Focusing email/password releases centering so the keyboard can scroll naturally');
     await layout.locator('.woocommerce').evaluate(el=>el.classList.remove('sf-auth-focus-mode'));
-    assert.equal(await layout.locator('.sf-account-body').evaluate(el=>getComputedStyle(el).justifyContent),'normal',
-      'Short phones keep normal top-aligned scrolling');
+    await layout.setViewportSize({width:390,height:440});
+    await layout.locator('#sf-panel').evaluate(el=>el.style.height='440px');
+    await layout.locator('.woocommerce').evaluate(el=>el.style.minHeight='560px');
+    const overflow=await layout.evaluate(()=>{
+      const body=document.querySelector('.sf-account-body');
+      const content=body.querySelector('.woocommerce');
+      return {top:content.getBoundingClientRect().top,
+        minimum:body.getBoundingClientRect().top+parseFloat(getComputedStyle(body).paddingTop)};
+    });
+    assert(overflow.top>=overflow.minimum-2,
+      'Safe centering top-aligns content when the viewport is too short: '+JSON.stringify(overflow));
     await layout.close();
 
     // Regression: when the same customer has BOTH trusted PIN and WebAuthn,
