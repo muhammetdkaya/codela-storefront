@@ -303,4 +303,8 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'Please enter your first and last name.' => 'Lütfen adını ve soyadını gir.',
 'First name' => 'Ad',
 'Last name' => 'Soyad',
+'Email verification' => 'E-posta doğrulaması',
+'Confirm your email to link past orders to your account.' => 'Geçmiş siparişlerini hesabına bağlamak için e-posta adresini doğrula.',
+'Send confirmation email' => 'Doğrulama e-postası gönder',
+'Dismiss reminder' => 'Hatırlatmayı kapat',
 ] ];
