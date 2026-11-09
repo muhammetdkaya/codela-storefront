@@ -59,6 +59,7 @@ jobs:
           node --check tests/passkeys-views-browser.cjs
           php tests/quick-login-markup.php
           php tests/account-registration-discovery.php
+          php tests/account-enhancements.php
           node --check theme/codela-storefront/assets/scripts/quick-login.js
           node --check theme/codela-storefront/assets/scripts/passkeys.js
           node tests/quick-login-ui.cjs

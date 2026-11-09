@@ -7,6 +7,7 @@ $menu = wc_get_account_menu_items();
 $orders = isset( $menu['orders'] ) ? wc_get_orders( [ 'customer_id' => get_current_user_id(), 'limit' => 1, 'orderby' => 'date', 'order' => 'DESC' ] ) : [];
 $order = $orders[0] ?? null;
 ?>
+<?php codela_sf_account_verification_banner(); ?>
 <div class="sf-account-overview">
     <?php if ( isset( $menu['orders'] ) ) : ?>
     <section class="sf-account-card sf-ui-card sf-account-order" aria-labelledby="sf-recent-order">

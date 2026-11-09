@@ -174,6 +174,13 @@ function codela_sf_auth_lookup(): void {
 add_action( 'wp_ajax_nopriv_codela_sf_auth_lookup', 'codela_sf_auth_lookup' );
 
 
+/** WordPress admin login and recovery are intentionally preserved. */
+function codela_sf_login_is_admin_destination( $redirect ): bool {
+    if ( ! is_string( $redirect ) || '' === $redirect ) { return false; }
+    $path = parse_url( $redirect, PHP_URL_PATH );
+    return is_string( $path ) && ( str_contains( $path, '/wp-admin/' ) || str_ends_with( $path, '/wp-admin' ) );
+}
+
 /** Storefront authentication lives on WooCommerce My Account, not wp-login.php.
  * Keep WordPress's administrative login, reauthentication, password recovery,
  * logout and external identity callbacks fully operational.
@@ -182,8 +189,9 @@ function codela_sf_public_login_destination( array $query, string $method = 'GET
     if ( 'GET' !== strtoupper( $method ) || ! function_exists( 'wc_get_page_permalink' ) ) { return ''; }
     $action = $query['action'] ?? 'login';
     if ( ! is_string( $action ) || ! in_array( $action, [ '', 'login', 'register' ], true ) ) { return ''; }
-    foreach ( [ 'redirect_to', 'reauth', 'interim-login', 'checkemail', 'key', 'login', 'action' ] as $param ) {
-        if ( in_array( $param, [ 'action' ], true ) ) { continue; }
+    // Keep administrative wp-login requests native, but not ordinary storefront redirects.
+    if ( isset( $query['redirect_to'] ) && codela_sf_login_is_admin_destination( $query['redirect_to'] ) ) { return ''; }
+    foreach ( [ 'reauth', 'interim-login', 'checkemail', 'key', 'login' ] as $param ) {
         if ( isset( $query[ $param ] ) ) { return ''; }
     }
     return (string) wc_get_page_permalink( 'myaccount' );
@@ -202,10 +210,41 @@ add_action( 'login_init', static function(): void {
  * URLs are deliberately left alone, including WP-CLI and password reset flows.
  */
 add_filter( 'login_url', static function( $url, $redirect, $force_reauth ) {
-    if ( is_admin() || $force_reauth || $redirect ) { return $url; }
+    if ( is_admin() || $force_reauth || codela_sf_login_is_admin_destination( $redirect ) ) { return $url; }
     $account = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'myaccount' ) : '';
     return $account ?: $url;
 }, 20, 3 );
+
+/** Keep successful public logins on My Account, with cache-safe session URLs. */
+function codela_sf_signed_in_account_url( $redirect ) {
+    if ( ! function_exists( 'wc_get_page_permalink' ) ) { return $redirect; }
+    $account = (string) wc_get_page_permalink( 'myaccount' );
+    if ( '' === $account ) { return $redirect; }
+    // A WooCommerce confirmation email opened while signed out needs its
+    // one-time key preserved through login, otherwise verification cannot finish.
+    // This is still the My Account URL; core validates and consumes the key.
+    if ( isset( $_REQUEST['wc_verify_email_key'], $_REQUEST['wc_verify_email_user'] )
+        && is_string( $_REQUEST['wc_verify_email_key'] ) ) {
+        $key = sanitize_text_field( wp_unslash( $_REQUEST['wc_verify_email_key'] ) );
+        $id = absint( $_REQUEST['wc_verify_email_user'] );
+        if ( '' !== $key && $id > 0 ) {
+            return add_query_arg( [ 'wc_verify_email_key' => $key, 'wc_verify_email_user' => $id ], $account );
+        }
+    }
+    return function_exists( 'codela_sf_quick_fresh_account_redirect' )
+        ? codela_sf_quick_fresh_account_redirect( $account ) : $account;
+}
+add_filter( 'woocommerce_login_redirect', 'codela_sf_signed_in_account_url', 5 );
+add_filter( 'woocommerce_registration_redirect', 'codela_sf_signed_in_account_url', 5 );
+add_filter( 'login_redirect', static function( $redirect, $requested, $user ) {
+    if ( is_wp_error( $user ) ) { return $redirect; }
+    // A privileged, intentional wp-admin login must continue to reach wp-admin.
+    if ( is_object( $user ) && ! is_wp_error( $user )
+        && user_can( $user, 'manage_options' ) && codela_sf_login_is_admin_destination( $requested ) ) {
+        return $redirect;
+    }
+    return codela_sf_signed_in_account_url( $redirect );
+}, 25, 3 );
 
 // Keep WooCommerce endpoint navigation and all registered plugin destinations.
 
@@ -260,6 +299,11 @@ add_filter( 'woocommerce_account_menu_items', function ( array $items ): array {
     // Keep WooCommerce's real edit-account endpoint; only improve the label
     // shown by both the native menu and the Codela account appearance.
     if ( isset( $items['edit-account'] ) ) { $items['edit-account'] = __( 'Account information', 'codela-storefront' ); }
+    // Menu visibility only, never revoke native WooCommerce download permissions.
+    $settings = function_exists( 'codela_theme_settings' ) ? codela_theme_settings() : [];
+    if ( is_array( $settings ) && in_array( $settings['account_downloads_enabled'] ?? true, [ false, 0, '0', '' ], true ) ) {
+        unset( $items['downloads'] );
+    }
     return $items;
 }, 20 );
 add_filter( 'body_class', function ( array $classes ): array {
@@ -268,6 +312,57 @@ add_filter( 'body_class', function ( array $classes ): array {
     }
     return $classes;
 } );
+
+/**
+ * WooCommerce 11+ retains ownership of sending and validating verification.
+ * Relocate only its full-size Orders prompt to the account overview.
+ */
+function codela_sf_verification_controller() {
+    $hook = $GLOBALS['wp_filter']['woocommerce_before_account_orders'] ?? null;
+    if ( ! is_object( $hook ) || ! isset( $hook->callbacks ) || ! is_array( $hook->callbacks ) ) { return null; }
+    foreach ( $hook->callbacks as $callbacks ) {
+        foreach ( $callbacks as $callback ) {
+            $handler = $callback['function'] ?? null;
+            if ( is_array( $handler ) && isset( $handler[0], $handler[1] )
+                && is_object( $handler[0] ) && 'render_prompt' === $handler[1]
+                && is_a( $handler[0], 'Automattic\\WooCommerce\\Internal\\CustomerEmailVerification\\VerificationController' ) ) {
+                return $handler[0];
+            }
+        }
+    }
+    return null;
+}
+add_action( 'template_redirect', static function(): void {
+    if ( ! is_user_logged_in() || ! function_exists( 'is_wc_endpoint_url' )
+        || ! is_account_page() || ! is_wc_endpoint_url( 'orders' ) ) { return; }
+    $controller = codela_sf_verification_controller();
+    if ( $controller ) {
+        remove_action( 'woocommerce_before_account_orders', [ $controller, 'render_prompt' ], 10 );
+    }
+}, 15 );
+
+function codela_sf_account_verification_banner(): void {
+    if ( ! is_user_logged_in() || ! is_account_page() ) { return; }
+    $controller = codela_sf_verification_controller();
+    if ( ! $controller || ! $controller->should_show_prompt() ) { return; }
+    $send_url = wp_nonce_url(
+        add_query_arg( 'wc_send_verification', '1', wc_get_account_endpoint_url( 'orders' ) ),
+        'woocommerce-send-verification-email'
+    );
+    ?>
+    <aside class="sf-account-verify-banner" data-sf-verify-banner
+        data-sf-verify-dismiss-key="sf-account-verify-<?php echo (int) get_current_user_id(); ?>"
+        aria-label="<?php esc_attr_e( 'Email verification', 'codela-storefront' ); ?>">
+        <span class="sf-account-verify-copy"><?php esc_html_e( 'Confirm your email to link past orders to your account.', 'codela-storefront' ); ?></span>
+        <a class="sf-account-verify-action" href="<?php echo esc_url( $send_url ); ?>"><?php esc_html_e( 'Send confirmation email', 'codela-storefront' ); ?></a>
+        <button type="button" class="sf-account-verify-dismiss" data-sf-verify-dismiss
+            aria-label="<?php esc_attr_e( 'Dismiss reminder', 'codela-storefront' ); ?>">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"
+                stroke-linecap="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+    </aside>
+    <?php
+}
 
 /** Shared local icon vocabulary; unknown plugin destinations remain real links. */
 function codela_sf_account_icon( string $endpoint ): string {

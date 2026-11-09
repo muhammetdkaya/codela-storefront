@@ -173,6 +173,12 @@ const form='<div class="woocommerce"><header class="sf-account-intro"><h1>Welcom
      mode+' stays in focus mode when switching between username/password');
    await page.evaluate(()=>document.activeElement.blur());
    await page.waitForFunction(()=>!document.querySelector('.woocommerce')?.classList.contains('sf-auth-focus-mode'));
+   // The native 160ms visibility transition can outlive the focus class change.
+   // Assert settled, visible chrome rather than sampling a mid-transition frame.
+   await page.waitForFunction(selectors=>selectors.every(selector=>{
+     const node=document.querySelector(selector);
+     return node && getComputedStyle(node).visibility==='visible';
+   }),chrome);
    for(const selector of chrome){
      assert.equal(await page.locator(selector).evaluate(el=>getComputedStyle(el).visibility),
        'visible',mode+' restores header and dock on keyboard dismissal: '+selector);

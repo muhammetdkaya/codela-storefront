@@ -30,6 +30,20 @@
       ]
     },
     {
+      "id": "account",
+      "label": "My Account",
+      "description": "Choose which optional account destinations appear in the menu.",
+      "fields": [
+        {
+          "id": "account_downloads_enabled",
+          "type": "checkbox",
+          "default": true,
+          "label": "Show Downloads in account menu",
+          "description": "Only hide the menu entry; downloads and existing permissions remain available."
+        }
+      ]
+    },
+    {
       "id": "footer",
       "label": "Footer",
       "description": "Compact, one-line copyright and legal links.",

@@ -53,7 +53,7 @@ const render=env=>execFileSync(process.env.PHP_BIN||'php',['tests/render-account
    assert(await page.locator('.sf-account-empty-orders').isVisible());
    assert(await page.locator('body').evaluate(e=>e.matches('.woocommerce-account.logged-in')),'Endpoint fixture retains account scope');
    if(width<=800)assert(!await page.locator('.woocommerce-MyAccount-navigation').isVisible(),'Endpoint uses header back rather than repeating hub navigation');
-   assert.equal(await page.locator('.sf-account-empty-orders a').getAttribute('href'),'/shop/');
+   assert.equal(await page.locator('.sf-account-empty-orders a').count(),0,'Empty orders has no shopping action');
    assert(!await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1),'Empty orders fit narrow screen');
    if([390,1280].includes(width)){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:`qa/storefront-ui-kit-empty-orders-${process.env.TEST_WEBKIT?'webkit':'chromium'}-${width}.png`});}
    const wooNoticeCSS='.wc-block-components-notice-banner>.wc-block-components-notice-banner__content .wc-forward{appearance:none;background:transparent!important;border:0;color:#2f2f2f!important;float:right;margin:0 0 0 20px;opacity:.7;padding:0!important;text-decoration-line:underline;transition:all .2s ease-in-out}';
