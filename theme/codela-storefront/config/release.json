@@ -6,11 +6,11 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "İlk giriş ekranında e-posta alanı ile hızlı giriş butonu arasındaki gereksiz boşluk kaldırıldı.",
-    "E-posta hesabı kontrol edilirken kutu içindeki sağ simge animasyonlu yükleme işareti gösterir; işlem sonrası onay simgesine dönüşür.",
-    "Hesap kontrol ediliyor yazısı ayrı satırda görünmez; ekran okuyucu erişimi korunur.",
-    "Parola alanı açıldığı anda Google ile Giriş Yap ve Hızlı girişe dön seçenekleri gizlenir.",
-    "Yeni hesap parolasının altında üç seviyeli yeterlilik göstergesi bulunur; kısa ve zayıf şifreye nedenini gösterir, yeterli şifreyi doğrular.",
-    "WooCommerce yerleşik kayıt, parola ve giriş doğrulamaları ile mobil odak karartması korunur."
+    "Giriş ekranındaki açıklama sadeleştirildi: Hoş geldin başlığı altında yalnızca Giriş yap veya kayıt ol. gösterilir.",
+    "Kayıtlı veya yeni e-posta doğrulandıktan sonra açılan alanların arasına ikinci başlık, hesap durumu açıklaması veya yönlendirme satırı eklenmez.",
+    "E-posta yazarken eksik @ ve tamamlanmamış adres, alanın sağındaki uyarı ikonu ve kısa bağlamsal metinle anında belirtilir.",
+    "Geçerli e-posta kontrolünde yükleniyor animasyonu, hesap sonucu geldiğinde onay simgesi korunur; başarılı aşamalarda ara açıklama görünmez.",
+    "WooCommerce yerleşik kayıt butonu otomatik kayıt aşamasında Kayıt Ol etiketini taşır.",
+    "Şifre yeterlilik denetimi, form güvenliği, Google ve hızlı girişin aşamalı görünürlüğü korunur."
   ]
 }
