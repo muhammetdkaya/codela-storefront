@@ -14,11 +14,11 @@ class Tests(unittest.TestCase):
         schema=json.loads(schema_path.read_text(encoding="utf-8"))
         self.assertEqual(schema["schema_version"],1)
         sections={section["id"]:section for section in schema["sections"]}
-        self.assertEqual(set(sections),{"header","product","footer"})
+        self.assertEqual(set(sections),{"header","product","account","footer"})
         fields=[field["id"] for section in schema["sections"] for field in section["fields"]]
         self.assertEqual(len(fields),len(set(fields)))
         self.assertTrue({"accent_color","corner_style"}.isdisjoint(fields),"Shared appearance has a single plugin owner")
-        self.assertTrue({"footer_text","mobile_footer_hidden","mobile_dock_enabled","product_gallery_thumbnails"}.issubset(set(fields)))
+        self.assertTrue({"footer_text","mobile_footer_hidden","mobile_dock_enabled","product_gallery_thumbnails","account_downloads_enabled"}.issubset(set(fields)))
         mobile_footer=next(field for field in sections["footer"]["fields"] if field["id"]=="mobile_footer_hidden")
         self.assertEqual(mobile_footer["type"],"checkbox")
         self.assertIs(mobile_footer["default"],False)
