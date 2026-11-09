@@ -900,9 +900,13 @@ html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:
 }
 
 /* The rail is one persistent shared glass surface; photos and index do not fade. */
-.sf-product-gallery-rail,.sf-product-gallery-expand{display:none}
+/* Outside the mobile sheet, the wrapper yields to the ORIGINAL Woo
+   desktop/tablet thumbnail and counter positioning. No hidden gallery nav. */
+.sf-product-gallery-rail{display:contents}
+.sf-product-gallery-expand,.sf-product-gallery-rail-arrow{display:none}
 @media(max-width:700px){
   body.sf-product-sheet-ready .sf-product-gallery-rail:not([hidden]){display:flex}
+  body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-rail-arrow{display:grid}
   body.sf-product-sheet-ready .sf-product-gallery-expand{display:grid}
   body.sf-product-sheet-open :is(.sf-product-gallery-rail,.sf-product-gallery-expand),
   body.single-product:has(.pswp--open,#sf-panel[open]) :is(.sf-product-gallery-rail,.sf-product-gallery-expand){visibility:hidden}
