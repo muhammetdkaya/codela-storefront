@@ -27,7 +27,7 @@ function codela_sf_account_intro(): void {
         data-auth-register-description="<?php esc_attr_e( 'Join us in a few steps.', 'codela-storefront' ); ?>"
         data-auth-lookup-url="<?php echo function_exists( 'admin_url' ) && function_exists( 'esc_attr' ) ? esc_attr( admin_url( 'admin-ajax.php' ) ) : ''; ?>"
         data-auth-lookup-nonce="<?php echo function_exists( 'wp_create_nonce' ) && function_exists( 'esc_attr' ) ? esc_attr( wp_create_nonce( 'codela_sf_auth_lookup' ) ) : ''; ?>"
-        data-auth-smart-label="<?php esc_attr_e( 'Email address', 'codela-storefront' ); ?>"
+        data-auth-smart-label="<?php esc_attr_e( 'Your email address', 'codela-storefront' ); ?>"
         data-auth-smart-missing-at="<?php esc_attr_e( 'Add @ to your email address.', 'codela-storefront' ); ?>"
         data-auth-smart-incomplete="<?php esc_attr_e( 'Complete your email address.', 'codela-storefront' ); ?>"
         data-auth-smart-register-action="<?php esc_attr_e( 'Register', 'codela-storefront' ); ?>"

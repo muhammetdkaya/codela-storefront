@@ -63,12 +63,12 @@
     shell.className='sf-smart-auth';
     const label=document.createElement('label');
     label.className='sf-smart-label';
-    label.textContent=intro.dataset.authSmartLabel||'Email address';
+    label.textContent=intro.dataset.authSmartLabel||'Your email address';
     const input=document.createElement('input');
     input.className='sf-smart-identity';
     input.type='email';input.inputMode='email';input.maxLength=254;input.autocomplete='email';
     input.autocapitalize='none';input.spellcheck=false;
-    input.placeholder=intro.dataset.authSmartLabel||'Email address';
+    input.placeholder=intro.dataset.authSmartLabel||'Your email address';
     input.setAttribute('aria-label',input.placeholder);
     input.setAttribute('aria-describedby','sf-smart-message');
     label.append(input);
@@ -76,6 +76,12 @@
     indicator.className='sf-smart-progress';
     indicator.setAttribute('aria-hidden','true');indicator.hidden=true;
     label.append(indicator);
+    // The envelope is decorative and yields to the existing lookup/status glyph.
+    const mailIcon=document.createElement('span');
+    mailIcon.className='sf-smart-mail-icon';
+    mailIcon.setAttribute('aria-hidden','true');
+    mailIcon.innerHTML='<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>';
+    label.append(mailIcon);
     const hint=document.createElement('p');
     hint.className='sf-smart-message';hint.id='sf-smart-message';
     hint.setAttribute('role','status');hint.setAttribute('aria-live','polite');

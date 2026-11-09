@@ -17,7 +17,7 @@ const html=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewpor
 data-auth-initial="login" data-auth-login-title="Welcome back"
 data-auth-login-description="Sign in to your account."
 data-auth-register-title="Create an account" data-auth-register-description="Join us in a few steps."
-data-auth-smart-label="Email address" data-auth-smart-missing-at="Add @ to your email address." data-auth-smart-incomplete="Complete your email address." data-auth-smart-register-action="Kayıt Ol" data-auth-smart-first="First name"
+data-auth-smart-label="Your email address" data-auth-smart-missing-at="Add @ to your email address." data-auth-smart-incomplete="Complete your email address." data-auth-smart-register-action="Kayıt Ol" data-auth-smart-first="First name"
 data-auth-smart-last="Last name" data-auth-smart-checking="Checking account…"
 data-auth-smart-error="Check unavailable" data-auth-smart-closed="Registration closed"
 data-auth-smart-continue="Continue with email"
@@ -98,6 +98,27 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or register
    assert.equal(await page.locator('.sf-auth-register-cta').isVisible(),false,'No extra registration CTA');
    assert.equal(await uid.getAttribute('type'),'email','Only email addresses can initiate account lookup');
    assert.equal(await uid.getAttribute('autocomplete'),'email','Native email autofill stays available');
+  assert.equal(await uid.getAttribute('placeholder'),'Your email address',
+    'Smart email input uses the approved placeholder');
+  const envelope=page.locator('.sf-smart-mail-icon');
+  assert.equal(await envelope.count(),1,'Exactly one envelope adorns the email field');
+  const mailLayout=await envelope.evaluate(el=>{
+    const icon=el.getBoundingClientRect();
+    const input=el.parentElement.querySelector('input').getBoundingClientRect();
+    return {width:icon.width,height:icon.height,
+      inset:input.right-icon.right,
+      center:Math.abs((icon.top+icon.bottom)-(input.top+input.bottom))/2,
+      pointer:getComputedStyle(el).pointerEvents,
+      opacity:getComputedStyle(el).opacity,
+      aria:el.getAttribute('aria-hidden')};
+  });
+  assert.equal(mailLayout.width,21,'Envelope is 21px wide');
+  assert.equal(mailLayout.height,21,'Envelope is 21px tall');
+  assert(Math.abs(mailLayout.inset-18)<1 && mailLayout.center<1,
+    'Envelope stays vertically centered at the right of the 54px pill');
+  assert.equal(mailLayout.pointer,'none','Envelope cannot intercept taps');
+  assert.equal(mailLayout.opacity,'1','Envelope displays when account lookup is idle');
+  assert.equal(mailLayout.aria,'true','Decorative icon is not read out by screen readers');
    assert.equal(await page.locator('.sf-smart-change').count(),0,'There is no change-email action');
    assert.equal(await page.locator('#customer_login').isVisible(),false,'Empty native form container must not reserve vertical space');
    const firstGap=await page.evaluate(()=>{
@@ -124,6 +145,9 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or register
    assert.equal(await page.locator('.u-column2').isVisible(),false,'Bare text never opens registration');
    assert.equal(requests,0,'Bare text does not reach the existence endpoint');
    assert.equal(await page.locator('.sf-smart-progress').getAttribute('data-state'),'invalid','Incomplete email has an inline warning icon');
+  await page.waitForFunction(()=>Number(getComputedStyle(document.querySelector('.sf-smart-mail-icon')).opacity)<.05);
+  assert.equal(await page.locator('.sf-smart-progress').isVisible(),true,
+    'The existing warning glyph replaces the envelope without overlapping');
    assert.equal(await page.locator('.sf-smart-message').innerText(),'Add @ to your email address.','Missing @ guidance is short and actionable');
    await uid.fill('person@domain');
    assert.equal(await page.locator('.sf-smart-message').innerText(),'Complete your email address.','Missing domain suffix is explained before lookup');

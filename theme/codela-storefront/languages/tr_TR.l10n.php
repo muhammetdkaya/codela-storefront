@@ -13,6 +13,7 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'Email or username' => 'E-posta veya kullanıcı adı',
 'Username' => 'Kullanıcı adı',
 'Email address' => 'E-posta adresi',
+'Your email address' => 'E-posta adresiniz',
 'Password' => 'Şifre',
 'New here?' => 'Hesabınız yok mu?',
 'Already registered?' => 'Zaten hesabınız var mı?',
