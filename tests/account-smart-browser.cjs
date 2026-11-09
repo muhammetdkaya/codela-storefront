@@ -7,10 +7,11 @@ const smart=fs.readFileSync('theme/codela-storefront/assets/scripts/auth-smart.j
 const css=['theme/codela-storefront/assets/styles/account-overlay.css',
   'theme/codela-storefront/assets/styles/auth-smart.css'].map(f=>fs.readFileSync(f,'utf8')).join('\n');
 const html=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<style>body{margin:0;font:16px -apple-system,system-ui}#sf-panel{max-width:430px;margin:auto;padding:16px}#customer_login{display:block}.u-column1,.u-column2{width:100%}.sf-auth-focus-scrim{position:fixed}</style>
+<style>body{margin:0;font:16px -apple-system,system-ui}#sf-panel{max-width:430px;margin:auto;padding:16px}#customer_login{display:block}.u-column1,.u-column2{width:100%}.sf-auth-focus-scrim{position:fixed}#sf-panel>.sf-menu-trigger.is-in-panel{position:fixed;right:14px;top:14px;z-index:30}</style>
 <style>${css}</style></head>
 <body><div id="sf-panel" class="is-account-panel">
 <div class="sf-panel-top">Account header</div>
+<button type="button" class="sf-menu-trigger is-in-panel" aria-label="Menu">☰</button>
 <div class="woocommerce sf-overlay-auth" data-auth-state-url="/state">
 <header class="sf-account-intro" data-auth-lookup-url="/lookup" data-auth-lookup-nonce="token123"
 data-auth-initial="login" data-auth-login-title="Welcome back"
@@ -107,9 +108,18 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or register
    assert(firstGap>=0 && firstGap<=40,'Initial quick return follows the email field closely, gap='+firstGap);
    assert.equal(await page.locator('.sf-quick-return').isVisible(),true,'Quick return remains on the initial screen');
    assert.equal(await page.locator('.sf-auth-google').isVisible(),true,'Google remains on the initial screen');
+   assert.equal(await page.locator('.sf-menu-trigger.is-in-panel').isVisible(),true,'Reparented menu remains available before email focus');
    // A real gesture releases the iOS/WebKit initial-autofocus guard.
    await uid.click();
    await uid.fill('test');
+   await page.waitForFunction(()=>document.querySelector('#sf-panel')?.classList.contains('sf-auth-chrome-hidden'));
+   assert.equal(await page.locator('.sf-menu-trigger.is-in-panel').isVisible(),false,'Reparented menu is hidden during email focus');
+   assert.equal(await page.locator('.sf-smart-progress').isVisible(),true,'Incomplete-email icon remains visible while focused');
+   const glyphLayers=await page.evaluate(()=>({
+     indicator:Number(getComputedStyle(document.querySelector('.sf-smart-progress')).zIndex),
+     input:Number(getComputedStyle(document.querySelector('.sf-smart-identity')).zIndex)
+   }));
+   assert(glyphLayers.indicator>glyphLayers.input,'Status icon renders above the focused input paint');
    assert.equal(await page.locator('#password').isVisible(),false,'Bare username-like text never opens a password field');
    assert.equal(await page.locator('.u-column2').isVisible(),false,'Bare text never opens registration');
    assert.equal(requests,0,'Bare text does not reach the existence endpoint');
@@ -118,6 +128,10 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or register
    await uid.fill('person@domain');
    assert.equal(await page.locator('.sf-smart-message').innerText(),'Complete your email address.','Missing domain suffix is explained before lookup');
    assert.equal(requests,0,'Incomplete emails never call the account endpoint');
+   await uid.blur();
+   await page.waitForFunction(()=>!document.querySelector('#sf-panel')?.classList.contains('sf-auth-chrome-hidden'));
+   assert.equal(await page.locator('.sf-menu-trigger.is-in-panel').isVisible(),true,'Menu restores when keyboard/input focus ends');
+   await uid.click();
    await uid.fill('existing@example.test');
    assert.equal(await page.locator('.sf-smart-progress').getAttribute('data-state'),'checking','Email field owns lookup spinner');
    assert.equal(await page.locator('.sf-smart-progress').isVisible(),true,'Animated lookup indicator is inside the email field');
