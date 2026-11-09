@@ -145,7 +145,8 @@
       var remaining = document.documentElement.scrollHeight - (window.scrollY + window.innerHeight);
       var downward = window.scrollY > lastScrollY;
       lastScrollY = window.scrollY;
-      if (remaining > 120) endArmed = true;
+      // Auto-open only once per page visit. A deliberate close must not
+      // rearm simply because the visitor browses away and returns to the end.
       if (!expanded && endArmed && downward && remaining <= 8) {
         endArmed = false;
         setOpen(true, null, true);
