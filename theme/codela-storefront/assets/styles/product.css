@@ -863,3 +863,5 @@ html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:
   body.sf-product-sheet-open .sf-product-gallery-glass,body.single-product:has(.pswp--open,#sf-panel[open]) .sf-product-gallery-glass,.woocommerce-product-gallery.is-discovering > .sf-product-gallery-glass{visibility:hidden}
 }
 @media(prefers-reduced-motion:reduce){.sf-product-gallery-glass{transition:none}}
+
+.sf-product-sheet.is-holding:not(.is-expanded) .sf-product-sheet-toggle::before{transform:scaleX(var(--sf-ui-scale-icon))}

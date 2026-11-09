@@ -166,7 +166,7 @@ for(const width of [320,390,700]){
  const beforeDrag=(await page.locator('.sf-product-sheet').boundingBox()).height;
  await page.mouse.move(handle.x+handle.width/2,handle.y+20);await page.mouse.down();
  await page.waitForFunction(()=>{
-   const grip=document.querySelector('.sf-product-sheet-header');
+   const grip=document.querySelector('.sf-product-sheet-toggle');
    return new DOMMatrix(getComputedStyle(grip,'::before').transform).a>1.02;
  });
  await page.mouse.move(handle.x+handle.width/2,handle.y-80,{steps:8});

@@ -299,6 +299,9 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
             if (!response.ok || errors || !html.querySelector('[data-sf-cart-added]')) {
                 throw new Error(errors?.textContent.trim() || t('Could not confirm the addition. Check your cart before trying again.'));
             }
+            if (window.jQuery) {
+                try { window.jQuery(document.body).trigger('added_to_cart', [{}, '', window.jQuery(button)]); } catch (_) { /* A consumer must not retry a successful write. */ }
+            }
             feedback(button, 'success');
             purchaseStatus(form, t('Item added to cart.'));
             // Never repeat the POST if the secondary session read fails.

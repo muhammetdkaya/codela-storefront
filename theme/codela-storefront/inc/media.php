@@ -108,11 +108,10 @@ function codela_sf_gallery_options( array $options ): array {
 }
 
 add_action( 'after_setup_theme', function() {
-    // Native scrolling and inline zoom are the active product presentation.
-    // Prevent Woo's classic block from enqueueing unused slider/lightbox assets.
+    // Native scrolling retains the gallery track; Woo owns fullscreen assets.
     foreach ( [ 'slider', 'lightbox' ] as $feature ) {
-        add_filter( 'current_theme_supports-wc-product-gallery-' . $feature, static function( $supported ) {
-            return function_exists( 'is_product' ) && is_product() ? false : $supported;
+        add_filter( 'current_theme_supports-wc-product-gallery-' . $feature, static function( $supported ) use ( $feature ) {
+            return function_exists( 'is_product' ) && is_product() ? 'lightbox' === $feature : $supported;
         } );
     }
     add_filter( 'woocommerce_single_product_image_gallery_classes', 'codela_sf_gallery_classes' );
