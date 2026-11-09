@@ -20,11 +20,13 @@ const root = 'theme/codela-storefront/';
   const images=page.locator('.sf-product-gallery-thumb:not([hidden])');
   const rail=page.locator('.sf-product-gallery-rail');
   assert.equal(await images.count(),3);
-  assert(await rail.isVisible(),'Persistent dark-glass rail is visible before scrolling');
+  assert(await rail.isVisible(),'Compact light-glass rail is visible before scrolling');
   assert.equal(await page.locator('.sf-product-gallery-rail .sf-product-gallery-count').count(),1);
   assert.equal(await page.locator('.sf-product-gallery-rail-arrow').count(),2);
-  assert(await page.locator('.sf-product-gallery-expand').isVisible(),'Dedicated fullscreen action exists');
-  assert.notEqual(await rail.evaluate(el=>getComputedStyle(el).backgroundColor),'rgba(0, 0, 0, 0)');
+  const railMaterial=await rail.evaluate(el=>({h:el.getBoundingClientRect().height,w:el.getBoundingClientRect().width,bg:getComputedStyle(el).backgroundColor,panel:getComputedStyle(document.querySelector('.sf-product-sheet')).backgroundColor}));
+  assert(railMaterial.h < 280 && railMaterial.w <= 55,'Three-thumb glass rail is compact: '+JSON.stringify(railMaterial));
+  assert.equal(railMaterial.bg,railMaterial.panel,'Right rail reuses the light sheet glass color');
+  assert(!(await page.locator('.sf-product-gallery-expand').isVisible()),'Fullscreen button is hidden until photo tap');
   await page.mouse.move(190,350);await page.mouse.wheel(0,450);
   assert(await rail.isVisible(),'Glass background persists on scroll rather than fading');
   assert(await images.first().isVisible());
@@ -46,6 +48,23 @@ const root = 'theme/codela-storefront/';
   assert.equal(await page.locator('.sf-product-sheet-toggle').getAttribute('aria-expanded'),'false','Manual close must persist on the same page visit');
   await page.evaluate(()=>window.scrollTo(0,0));await page.waitForTimeout(400);
   await page.evaluate(()=>{
+   const menu=document.createElement('button');menu.className='sf-menu-trigger';
+   menu.style.cssText='position:fixed;right:14px;top:16px;width:44px;height:44px;z-index:20';
+   document.querySelector('.sf-header').appendChild(menu);
+  });
+  await page.locator('.woocommerce-product-gallery__image a').first().click();
+  await page.waitForFunction(()=>{
+    const expand=document.querySelector('.sf-product-gallery-expand');
+    const menu=document.querySelector('.sf-menu-trigger');
+    return expand.classList.contains('is-visible') &&
+      Math.abs(expand.getBoundingClientRect().top-menu.getBoundingClientRect().bottom-12)<2;
+  });
+  const expandPosition=await page.evaluate(()=>({
+    menu:document.querySelector('.sf-menu-trigger').getBoundingClientRect().bottom,
+    expand:document.querySelector('.sf-product-gallery-expand').getBoundingClientRect().top
+  }));
+  assert(Math.abs(expandPosition.expand-expandPosition.menu-12)<2,'Tap-revealed fullscreen sits immediately below menu');
+  await page.evaluate(()=>{
    document.body.insertAdjacentHTML('beforeend','<div class="pswp"></div>');
    window.PhotoSwipeUI_Default=function(){};
    window.PhotoSwipe=function(template,ui,images,options){window.lightboxProbe={count:images.length,options};this.listen=()=>{};this.init=()=>{window.lightboxProbe.open=true;};};
@@ -53,6 +72,7 @@ const root = 'theme/codela-storefront/';
   await page.locator('.sf-product-gallery-expand').click();
   assert.equal(await page.evaluate(()=>window.lightboxProbe.open),true);
   assert.equal(await page.evaluate(()=>window.lightboxProbe.count),3);
+  assert(!(await page.locator('.sf-product-gallery-expand').isVisible()),'Fullscreen affordance hides after opening native lightbox');
   await page.evaluate(()=>{
    window.requests=[];window.responses=[];window.cartOpened=0;
    window.fetch=(url,options={})=>{
@@ -90,6 +110,6 @@ const root = 'theme/codela-storefront/';
   await page.locator('input.qty').fill('2');await page.locator('input.qty').dispatchEvent('change');
   assert.equal(await buy.getAttribute('data-sf-cart-state'),'idle');
   assert.deepEqual(errors,[]);
-  console.log('Product flow: permanent glass rail, separate fullscreen, persistent dismissal, native Woo header confirmation, visible errors and cart action passed.');
+  console.log('Product flow: compact light glass rail, tap-to-reveal fullscreen, persistent dismissal, native Woo header confirmation, visible errors and cart action passed.');
  } finally {await browser.close();}
 })().catch(error=>{console.error(error);process.exit(1);});
