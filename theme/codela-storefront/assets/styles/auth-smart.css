@@ -38,6 +38,16 @@
   z-index:2
 }
 .woocommerce.sf-smart-auth-active .sf-smart-progress[hidden]{display:none!important}
+/* A small, non-interactive envelope identifies the email field at rest.
+   Existing warning, lookup spinner and success check take precedence. */
+.woocommerce.sf-smart-auth-active .sf-smart-mail-icon{
+  position:absolute;top:50%;right:18px;transform:translateY(-50%);
+  display:grid;place-items:center;width:21px;height:21px;
+  z-index:2;pointer-events:none;color:#777980;
+  opacity:1;transition:opacity .14s ease;
+}
+.woocommerce.sf-smart-auth-active .sf-smart-mail-icon svg{display:block;width:21px;height:21px}
+.woocommerce.sf-smart-auth-active .sf-smart-progress:not([hidden]) + .sf-smart-mail-icon{opacity:0}
 .woocommerce.sf-smart-auth-active .sf-smart-progress[data-state="checking"]::before{
   content:"";display:block;width:19px;height:19px;box-sizing:border-box;
   border:2px solid rgba(37,38,40,.16);border-top-color:#252628;
