@@ -40,6 +40,15 @@
   border:2px solid rgba(37,38,40,.16);border-top-color:#252628;
   border-radius:50%;animation:sf-smart-spin .72s linear infinite
 }
+/* Partial-email feedback uses a subtle icon inside the existing pill. */
+.woocommerce.sf-smart-auth-active .sf-smart-progress[data-state="invalid"]{
+  color:#9a7666
+}
+.woocommerce.sf-smart-auth-active .sf-smart-progress[data-state="invalid"]::before{
+  content:"!";width:19px;height:19px;display:grid;place-items:center;
+  box-sizing:border-box;border:1.5px solid #bca99f;border-radius:50%;
+  font-size:12px;font-weight:750;line-height:1
+}
 .woocommerce.sf-smart-auth-active .sf-smart-progress[data-state="done"]{
   background:#ecedee;animation:sf-smart-finish .24s ease-out both
 }
@@ -58,6 +67,13 @@
   font-size:12px;color:#7f8188;line-height:1.55;margin:7px 3px 0;
 }
 .woocommerce.sf-smart-auth-active .sf-smart-message:empty{display:none}
+.woocommerce.sf-smart-auth-active.sf-smart-partial .sf-smart-message{
+  margin:5px 4px 0;font-size:11px;line-height:1.35;
+  color:#9a7666
+}
+.woocommerce.sf-smart-auth-active:is(.sf-smart-existing,.sf-smart-new) .sf-smart-message:empty{
+  display:none!important
+}
 .woocommerce.sf-smart-auth-active .sf-smart-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:3px}
 .woocommerce.sf-smart-auth-active .sf-smart-actions[hidden]{display:none!important}
 .woocommerce.sf-smart-auth-active :is(.sf-smart-change,.sf-smart-manual-register){
