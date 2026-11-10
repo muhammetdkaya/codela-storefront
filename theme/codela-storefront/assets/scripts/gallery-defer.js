@@ -210,7 +210,9 @@
     const hideRail=()=>{
       clearTimeout(railTimer);
       rail.classList.remove('is-active');
-      previous.tabIndex=-1;next.tabIndex=-1;
+      // Chevrons remain subtly visible and keyboard reachable between
+      // interactions, matching the reference capsule without a dead zone.
+      previous.tabIndex=0;next.tabIndex=0;
     };
     // Native recommendations are inside the gallery's scroll document.
     // Stop advertising photo arrows as soon as those cards enter view,
