@@ -12,7 +12,7 @@ const feedbackCss=fs.readFileSync(root+'styles/navigation-feedback.css','utf8');
  const browser=await (process.env.TEST_WEBKIT?webkit:chromium).launch();
  try{
   const page=await browser.newPage();
-  for(const width of [320,390,430,700]){
+  for(const width of [320,390,402,430,700]){
    for(const short of [false,true]){
     await page.setViewportSize({width,height:844});
     await load(page,{noUrgency:true,longTitle:true,short});
@@ -39,6 +39,9 @@ const feedbackCss=fs.readFileSync(root+'styles/navigation-feedback.css','utf8');
      }
      assert.equal(await page.locator('.sf-navigation-preview form').count(),0);
      assert(await page.locator('.sf-navigation-preview button').isDisabled());
+     assert.equal(await page.locator('.sf-navigation-purchase .sf-product-sheet-handle path').count(),1,'Destination uses the identical one-path handle');
+     assert.equal(await page.locator('.sf-navigation-purchase .sf-navigation-heading-title .sf-navigation-heading-placeholder').count(),2,'Two neutral title rows share the heading reserve');
+     assert.equal(await page.locator('.sf-navigation-purchase .sf-navigation-buy-button').evaluate(e=>getComputedStyle(e).color),'rgb(255, 255, 255)','Skeleton CTA matches dark primary paint');
      assert.equal(await page.locator('.sf-skeleton-gallery').evaluate(el=>getComputedStyle(el).animationName),'sf-skeleton-product-pulse','Product photo uses the slightly stronger pulse');
      if(width===390&&!short&&productSource){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:'qa/storefront-ui-kit-product-skeleton-geometry.png'});}
      await page.evaluate(()=>codelaSFFeedback.end());

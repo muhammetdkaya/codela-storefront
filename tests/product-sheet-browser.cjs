@@ -63,7 +63,8 @@ for(const width of [320,390,700]){
  assert.equal(await page.locator('.sf-product-sheet .sf-footer').count(),0,'Footer is outside both panel states');
  assert.equal(await page.locator('body > .sf-footer').count(),1,'Native footer remains at the end of the document');
  assert.equal(await page.locator('.sf-product-sheet .sf-product-purchase').evaluate(e=>getComputedStyle(e).backgroundColor),'rgba(0, 0, 0, 0)','One sheet material');
- assert.equal(await toggle.evaluate(e=>getComputedStyle(e,'::after').content),'""','Two handle strokes support a morph instead of swapping icons');
+ assert.equal(await toggle.locator('.sf-product-sheet-handle path').count(),1,'Only one continuous SVG path owns the handle');
+ assert.equal(await toggle.evaluate(e=>getComputedStyle(e,'::after').content),'none','No duplicate pseudo-element handle');
  assert.equal(await page.locator('.sf-product-sheet-scrim').count(),1,'Exactly one backdrop is mounted');
  const spacing=await page.locator('.sf-product-purchase').evaluate(e=>{const s=getComputedStyle(e);return [s.paddingTop,s.paddingBottom]});assert.deepEqual(spacing,['12px','12px'],'Balanced purchase edge spacing');
  assert.equal(Math.round((await buy.boundingBox()).height),44,'Smaller CTA retains a 44px touch target');
@@ -546,12 +547,13 @@ await endSwipe('touchMove',185);
 await touchPage.waitForFunction(h=>document.querySelector('.sf-product-sheet').getBoundingClientRect().height>h+90,endStart.height);
 assert(Math.abs((await touchPage.evaluate(()=>scrollY))-endScroll)<2,'Overscroll holds the document while moving the sheet');
 const morph=await touchPage.locator('.sf-product-sheet-toggle').evaluate(e=>{
- const before=getComputedStyle(e,'::before'),after=getComputedStyle(e,'::after');
- return {leftWidth:before.width,rightWidth:after.width,leftTransform:before.transform};
+ const paths=e.querySelectorAll('.sf-product-sheet-handle path');
+ const d=paths[0]?.getAttribute('d')||'';
+ return {count:paths.length,midpoint:Number(d.match(/L14 ([0-9.]+)/)?.[1]),width:getComputedStyle(e.querySelector('.sf-product-sheet-handle')).width};
 });
-assert.equal(morph.leftWidth,'14px','Left grip half keeps its width');
-assert.equal(morph.rightWidth,'14px','Right grip half keeps its width');
-assert.notEqual(morph.leftTransform,'none','Grip morphs during the swipe');
+assert.equal(morph.count,1,'One connected SVG path replaces two rounded halves');
+assert.equal(morph.width,'28px','Handle never grows during drag');
+assert(morph.midpoint>7&&morph.midpoint<=15,'SVG midpoint tracks swipe progress without a seam');
 await endSwipe('touchEnd');
 assert.equal(await touchToggle.getAttribute('aria-expanded'),'true','End swipe settles the sheet open');
 await touchContext.close();
