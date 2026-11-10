@@ -694,7 +694,7 @@ body.single-product .stock.in-stock{display:none}
     display:flex;flex-direction:column;width:auto;max-width:var(--sf-ui-bottom-bar-max-width);
     max-height:calc(100svh - 84px - var(--sf-header-offset,0px) - var(--sf-ui-bottom-bar-gap) - env(safe-area-inset-bottom,0px));
     height:var(--sf-product-closed-height,190px);
-    transition:height 420ms cubic-bezier(.22,1,.36,1);
+    transition:height 320ms cubic-bezier(.22,1,.36,1);
     margin:0 auto;padding:0 0 calc(var(--sf-product-footer-height,0px) + 8px);
     /* The shared product-panel surface owns its corner radius and material.
        Only layout positioning belongs to the product page stylesheet. */
@@ -719,7 +719,7 @@ body.single-product .stock.in-stock{display:none}
     transition:none;
   }
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary::before{
-    content:'';position:absolute;top:12px;left:calc(50% - 22px);
+    content:'';position:absolute;top:13px;left:calc(50% - 14px);
     width:28px;height:2.5px;border-radius:var(--sf-ui-pill);background:var(--sf-ui-glass-ink);
   }
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary > :not(.product_title):not(.sf-product-price-row):not(.price):not(form.cart):not(.stock){display:none!important}
@@ -1048,3 +1048,9 @@ html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:
  @media(prefers-reduced-motion:reduce){body.single-product.sf-product-sheet-ready div.product .sf-product-gallery-rail .sf-product-gallery-thumb img{transition:none}}
 }
 @media(prefers-reduced-motion:reduce){body.sf-product-sheet-ready .sf-product-sheet{transition:none!important}}
+
+/* Keep detail text layout stable while the panel follows a finger. */
+@media(max-width:700px){
+ body.sf-product-sheet-ready .sf-product-sheet.is-dragging{overflow:hidden}
+ body.sf-product-sheet-ready .sf-product-sheet.is-dragging .sf-product-sheet-body{flex:none;height:var(--sf-product-drag-body-height);overflow:hidden}
+}
