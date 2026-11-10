@@ -30,11 +30,11 @@ function codela_sf_document_continuity_allowed(): bool {
 /** Destination preview shares the native closed-sheet geometry, never Woo product data. */
 function codela_sf_navigation_purchase_preview(): string {
     return '<section class="sf-navigation-purchase sf-ui-surface sf-ui-surface--glass-panel">'
-        . '<header class="sf-product-sheet-header"><div class="sf-product-sheet-heading">'
-        . '<span class="sf-navigation-heading-placeholder sf-navigation-heading-placeholder--title"></span>'
+        . '<header class="sf-product-sheet-header">' . codela_sf_product_sheet_handle_svg() . '<div class="sf-product-sheet-heading">'
+        . '<span class="sf-navigation-heading-title"><span class="sf-navigation-heading-placeholder sf-navigation-heading-placeholder--title"></span><span class="sf-navigation-heading-placeholder sf-navigation-heading-placeholder--title-tail"></span></span>'
         . '<span class="sf-navigation-heading-placeholder sf-navigation-heading-placeholder--price"></span>'
         . '</div></header><div class="sf-navigation-controls">'
-        . '<span class="sf-navigation-quantity"><span>−</span><span>1</span><span>+</span></span>'
-        . codela_sf_ui_button( __( 'Add to cart', 'woocommerce' ), [ 'disabled' => true ] )
+        . '<span class="sf-navigation-quantity sf-product-quantity sf-ui-surface"><span class="sf-navigation-quantity-step">−</span><span class="sf-navigation-quantity-value">1</span><span class="sf-navigation-quantity-step">+</span></span>'
+        . codela_sf_ui_button( __( 'Add to cart', 'woocommerce' ), [ 'disabled' => true, 'class' => 'sf-navigation-buy-button' ] )
         . '</div></section>';
 }

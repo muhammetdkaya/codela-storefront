@@ -242,10 +242,10 @@ function codela_sf_product_sheet_template(): void {
         <section class="sf-product-sheet sf-ui-surface sf-ui-surface--glass-panel" aria-label="<?php esc_attr_e( 'Product details', 'codela-storefront' ); ?>">
             <header class="sf-product-sheet-header">
                 <div class="sf-product-sheet-heading"></div>
-                <?php echo codela_sf_ui_button( __( 'Options and details', 'codela-storefront' ), [
-                    'variant' => 'quiet', 'class' => 'sf-product-sheet-toggle',
-                    'attributes' => [ 'aria-label' => __( 'Options and details', 'codela-storefront' ), 'aria-expanded' => 'false', 'aria-controls' => 'sf-product-sheet-body' ],
-                ] ); ?>
+                <button type="button" class="sf-product-sheet-toggle sf-ui-button sf-ui-button--quiet" aria-label="<?php esc_attr_e( 'Options and details', 'codela-storefront' ); ?>" aria-expanded="false" aria-controls="sf-product-sheet-body">
+                    <span class="sf-ui-button-label"><?php echo esc_html( __( 'Options and details', 'codela-storefront' ) ); ?></span>
+                    <?php echo codela_sf_product_sheet_handle_svg(); ?>
+                </button>
             </header>
             <div class="sf-product-sheet-body" id="sf-product-sheet-body"></div>
         </section>

@@ -56,6 +56,9 @@
     var heading = sheet.querySelector('.sf-product-sheet-heading');
     var content = sheet.querySelector('.sf-product-sheet-body');
     var toggle = sheet.querySelector('.sf-product-sheet-toggle');
+    var handlePath = toggle.querySelector('.sf-product-sheet-handle path');
+    var handleFrame = 0;
+    var handleProgress = 0;
     var title = summary.querySelector('.product_title');
     var price = summary.querySelector('.sf-product-price-row, :scope > .price');
     var purchase = summary.querySelector('.sf-product-purchase');
@@ -111,6 +114,25 @@
       focusFrame = 0;
       focusGeneration++;
     }
+    function paintHandle(progress) {
+      handleProgress = Math.max(0, Math.min(1, progress));
+      if (handlePath) handlePath.setAttribute('d', 'M2 7 L14 ' + (7 + 8 * handleProgress).toFixed(2) + ' L26 7');
+    }
+    function animateHandle(target) {
+      cancelAnimationFrame(handleFrame);
+      handleFrame = 0;
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches || Math.abs(handleProgress - target) < .001) {
+        paintHandle(target);
+        return;
+      }
+      var from = handleProgress, started = performance.now();
+      function tick(now) {
+        var t = Math.min(1, (now - started) / 280);
+        paintHandle(from + (target - from) * (1 - Math.pow(1 - t, 3)));
+        handleFrame = t < 1 ? requestAnimationFrame(tick) : 0;
+      }
+      handleFrame = requestAnimationFrame(tick);
+    }
     function setOpen(open, focusTarget, preservePhoto, fromDrag) {
       cancelPendingFocus();
       if (!mounted) return;
@@ -121,6 +143,7 @@
         if (nearest) window.scrollTo({top:window.scrollY + nearest.getBoundingClientRect().top, behavior:'instant'});
       }
       sheet.classList.toggle('is-expanded', open);
+      animateHandle(open ? 1 : 0);
       document.body.classList.toggle('sf-product-sheet-open', open);
       scrim.classList.toggle('is-visible', open);
       if (!fromDrag) scrim.style.removeProperty('opacity');
@@ -327,8 +350,9 @@
       finishDrag(true);
       cancelAnimationFrame(settleFrame);
       sheet.style.removeProperty('height');
-      sheet.style.removeProperty('--sf-product-morph-left');
-      sheet.style.removeProperty('--sf-product-morph-right');
+      cancelAnimationFrame(handleFrame);
+      handleFrame = 0;
+      paintHandle(0);
       media.inert = false;
       // Restore containers before their children using the exact anchor nodes.
       originals.slice().reverse().forEach(function (entry) { entry[1].replaceWith(entry[0]); });
@@ -389,6 +413,8 @@
       suppressClickUntil=0;
       var height = sheet.getBoundingClientRect().height;
       cancelAnimationFrame(settleFrame);
+      cancelAnimationFrame(handleFrame);
+      handleFrame = 0;
       sheet.style.setProperty('--sf-product-drag-body-height', content.getBoundingClientRect().height+'px');
       sheet.classList.add('is-holding');
       sheet.style.height = height + 'px';
@@ -444,8 +470,7 @@
       sheet.style.height=drag.height+'px';
       var progress=Math.max(0,Math.min(1,(drag.height-drag.min)/(drag.max-drag.min)));
       scrim.style.opacity=String(progress);
-      sheet.style.setProperty('--sf-product-morph-left',(32*progress)+'deg');
-      sheet.style.setProperty('--sf-product-morph-right',(-32*progress)+'deg');
+      paintHandle(progress);
     }
     function finishDrag(cancelled){
       if(!drag)return;
@@ -457,9 +482,8 @@
       sheet.style.removeProperty('--sf-product-drag-body-height');
       if(!gesture.active){
         sheet.style.removeProperty('height');
-        sheet.style.removeProperty('--sf-product-morph-left');
-        sheet.style.removeProperty('--sf-product-morph-right');
-        scrim.style.removeProperty('opacity');return;
+        scrim.style.removeProperty('opacity');
+        animateHandle(expanded ? 1 : 0);return;
       }
       suppressClickUntil=performance.now()+700;
       var dy=gesture.lastY-gesture.y;
@@ -474,8 +498,6 @@
       settleFrame=requestAnimationFrame(function(){
         sheet.style.removeProperty('height');
         scrim.style.removeProperty('opacity');
-        sheet.style.removeProperty('--sf-product-morph-left');
-        sheet.style.removeProperty('--sf-product-morph-right');
       });
     }
     window.addEventListener('pointerup',function(event){

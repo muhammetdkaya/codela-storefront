@@ -52,6 +52,11 @@ function codela_sf_ui_icon_button( string $icon, string $label, array $options =
     return '<button type="button"' . $html . '>' . $content . '</button>';
 }
 
+/** Shared unbroken product-sheet handle for native sheet and destination preview. */
+function codela_sf_product_sheet_handle_svg(): string {
+    return '<svg class="sf-product-sheet-handle" viewBox="0 0 28 18" width="28" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 7 L14 7 L26 7"></path></svg>';
+}
+
 /**
  * Full Button component — same design for actions and navigation.
  *
