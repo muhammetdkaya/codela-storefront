@@ -2,13 +2,13 @@
 
 Mobil ürün header padding 20px → mevcut --sf-ui-bottom-bar-inset (16px). Doğrudan ürün girişindeki Home konumu, galeri ve büyütme düğmesi de alt panelin aynı değişkenini kullanır. 0.1.269 seçili görsel çerçevesi korunur.
 
-0.1.269 GitHub ZIP yayını doğrulandı: kaynak b1c40c938672586e1940b16c6b5ac9631223d82f; 317095 bayt, SHA256 950b5f3d0afd3314c97d695d6f54188305a8e04f171102335252b9015fbdb907. 0.1.270: 3 build-assets ve 24 paket testi geçti; ortak kenar değişkenine göre mevcut paket testi güncellendi. Yayın sonucu bekleniyor; canlı kurulum ve fiziksel iPhone kabulü yapılmadı. Sıradaki: yayın ZIP'ini doğrula ve iPhone'da ortak sağ/sol hizayı kontrol et.
+0.1.269 GitHub ZIP yayını doğrulandı: kaynak b1c40c938672586e1940b16c6b5ac9631223d82f; 317095 bayt, SHA256 950b5f3d0afd3314c97d695d6f54188305a8e04f171102335252b9015fbdb907. 0.1.270: 3 build-assets ve 24 paket testi geçti; ortak kenar değişkenine göre mevcut paket testi güncellendi. [0.1.270 GitHub ZIP](https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.270) yayımlandı; kaynak 41fc442939b10b3cb4589c4412bb12f1ff1c1b98, 317202 bayt, sha256:72fd6084858a863e21c036769298b3b651ea40e19c141992a8024719e3229fc7. Stable feed yayın isteği gönderildi; canlı kurulum ve fiziksel iPhone kabulü yapılmadı. Sıradaki: iPhone'da ortak sağ/sol hizayı ve geçici koyu seçili çerçevesini kontrol et.
 
 ## 10 Kasım 2026 — 0.1.268 → 0.1.269 seçili galeri görseli
 
 Sağ kapsül 12px → 16px ile büyütme düğmesine hizalandı. Seçili küçük görsel mevcut is-active süresince 2px tema koyu mürekkep rengi çerçeve gösterir. Çerçeve 330ms sürede şeffaflaşır, geometri değişmez; reduced-motion korunur. Galeri dışı gizleme korunur.
 
-Doğrulama: 3 build-assets ve 24 paket testi geçti; canlı FTP kurulumu ve fiziksel iPhone kabulü yapılmadı. GitHub sürüm kaynağı ve yayın isteği hazırlanıyor; yayın sonucu bekleniyor. Sıradaki: ZIP yayınını doğrula, iPhone'da hizayı ve kaydırma sırasında seçili görsel çerçevesini kontrol et.
+Doğrulama: 3 build-assets ve 24 paket testi geçti; canlı FTP kurulumu ve fiziksel iPhone kabulü yapılmadı. 0.1.269 yayını doğrulandı; kaynak ve ZIP özeti yukarıdaki 0.1.270 kaydında. Sıradaki: ZIP yayınını doğrula, iPhone'da hizayı ve kaydırma sırasında seçili görsel çerçevesini kontrol et.
 
 ## 10 Kasım 2026 — 0.1.267 → 0.1.268 galeri görünürlüğü
 
