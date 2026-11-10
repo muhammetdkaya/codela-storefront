@@ -386,6 +386,7 @@
     // Native body scrolling wins unless a downward swipe begins at its top.
     function beginDrag(x, y, id, capture) {
       if (!mounted || drag) return false;
+      suppressClickUntil=0;
       var height = sheet.getBoundingClientRect().height;
       cancelAnimationFrame(settleFrame);
       sheet.style.setProperty('--sf-product-drag-body-height', content.getBoundingClientRect().height+'px');
@@ -430,7 +431,7 @@
       if(!mounted||!expanded||drag||event.pointerType==='touch'||event.button!==0||
          content.scrollTop>2||
          event.target.closest('input,select,textarea,[contenteditable="true"]'))return;
-      beginDrag(event.clientX,event.clientY,event.pointerId,content);
+      beginDrag(event.clientX,event.clientY,event.pointerId,event.target.closest('a,button,summary,[role="button"]')||content);
     });
     window.addEventListener('pointermove',function(event){
       if(!drag||event.pointerId!==drag.id)return;
