@@ -510,7 +510,9 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
 .sf-product-sheet-scrim{
   position:fixed;inset:0;z-index:999;pointer-events:none;
   background:rgba(0,0,0,.32);opacity:0;
-  transition:opacity 340ms cubic-bezier(.22,1,.36,1);
+  /* Gesture release and taps use the SAME rAF timeline as the sheet/handle.
+     Avoid CSS transitions fighting the JS progress on the first release frame. */
+  transition:none;
 }
 .sf-product-sheet-scrim.is-visible{opacity:1}
 .sf-product-sheet-scrim.is-dragging{transition:none}
@@ -683,7 +685,9 @@ body.single-product .stock.in-stock{display:none}
     display:flex;flex-direction:column;width:auto;max-width:var(--sf-ui-bottom-bar-max-width);
     max-height:calc(100svh - 84px - var(--sf-header-offset,0px) - var(--sf-ui-bottom-bar-gap) - env(safe-area-inset-bottom,0px));
     height:var(--sf-product-closed-height,190px);
-    transition:height 320ms cubic-bezier(.22,1,.36,1);
+    /* The JS motion controller alone interpolates height and scrim opacity.
+       Child body geometry stays locked until a settle has completed. */
+    transition:none;
     margin:0 auto;padding:0 0 calc(var(--sf-product-footer-height,0px) + 8px);
     /* The shared product-panel surface owns its corner radius and material.
        Only layout positioning belongs to the product page stylesheet. */
@@ -811,14 +815,15 @@ body.single-product .stock.in-stock{display:none}
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
   }
   body.single-product.sf-product-sheet-ready div.product .sf-product-sheet-heading .price{font-size:clamp(16px,4.2vw,20px)}
-  body.sf-product-sheet-ready .sf-product-sheet.is-expanded .product_title{-webkit-line-clamp:3}
+  /* Product heading keeps identical line reserve in BOTH states; expanding
+     the clamp during a gesture changed header height before sheet settlement. */
   body.sf-product-sheet-ready .sf-product-sheet-heading .price del{display:block;font-size:12px}
   body.sf-product-sheet-ready .sf-product-sheet-body{height:0;flex:0 1 auto;visibility:hidden}
   body.single-product.sf-product-sheet-ready div.product > .sf-product-sheet.is-expanded{height:calc(100dvh - 84px - var(--sf-header-offset,0px) - var(--sf-ui-bottom-bar-gap) - env(safe-area-inset-bottom,0px))}
-  body.sf-product-sheet-ready .sf-product-sheet:is(.is-expanded,.is-dragging) .sf-product-sheet-body{
+  body.sf-product-sheet-ready .sf-product-sheet:is(.is-expanded,.is-dragging,.is-holding,.is-settling) .sf-product-sheet-body{
     height:auto;flex:1 1 auto;visibility:visible;padding-bottom:20px;
   }
-  body.sf-product-sheet-ready div.product > .sf-product-sheet:is(.is-dragging,.is-holding,.is-mounting){transition:none}
+  body.sf-product-sheet-ready div.product > .sf-product-sheet:is(.is-dragging,.is-holding,.is-mounting,.is-settling){transition:none}
   body.sf-product-sheet-ready .sf-product-sheet-body > .summary{
     width:100%!important;margin:0!important;padding:0 20px;max-width:none;float:none;
   }
@@ -975,7 +980,8 @@ html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:
   body.sf-product-sheet-ready .sf-product-gallery-rail:not([hidden]){display:flex}
   body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-rail-arrow{display:grid}
   body.sf-product-sheet-ready .sf-product-gallery-expand{display:grid}
-  body.sf-product-sheet-ready .sf-product-sheet.is-expanded .sf-product-sheet-header{padding-top:36px}
+  /* Header top padding remains 28px through open/drag/close. An 8px change
+     mid-gesture used to resize the title and disturb the purchase baseline. */
   body.sf-product-sheet-ready .sf-product-sheet.is-expanded .sf-product-sheet-body > .sf-product-information{margin-top:12px}
   body.sf-product-sheet-open :is(.sf-product-gallery-rail,.sf-product-gallery-expand),
   body.single-product:has(.pswp--open,#sf-panel[open]) :is(.sf-product-gallery-rail,.sf-product-gallery-expand){visibility:hidden}
@@ -1038,8 +1044,11 @@ html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:
 }
 @media(prefers-reduced-motion:reduce){body.sf-product-sheet-ready .sf-product-sheet{transition:none!important}}
 
-/* Keep detail text layout stable while the panel follows a finger. */
+/* The fixed-height content remains allocated during drag AND release easing.
+   Closing hides it only after the sheet is at its compact resting height. */
 @media(max-width:700px){
- body.sf-product-sheet-ready .sf-product-sheet.is-dragging{overflow:hidden}
- body.sf-product-sheet-ready .sf-product-sheet.is-dragging .sf-product-sheet-body{flex:none;height:var(--sf-product-drag-body-height);overflow:hidden}
+ body.sf-product-sheet-ready .sf-product-sheet:is(.is-dragging,.is-holding,.is-settling){overflow:hidden}
+ body.sf-product-sheet-ready .sf-product-sheet:is(.is-dragging,.is-holding,.is-settling) .sf-product-sheet-body{
+   flex:none;height:var(--sf-product-drag-body-height);overflow:hidden;visibility:visible;
+ }
 }
