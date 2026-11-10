@@ -5,7 +5,7 @@ const {chromium, webkit} = require('playwright');
 const {fixture} = require('./product-sheet-browser.cjs');
 const root = 'theme/codela-storefront/';
 (async () => {
- const browser = await (process.env.TEST_WEBKIT ? webkit : chromium).launch();
+ const browser = await (process.env.TEST_WEBKIT ? webkit : chromium).launch(process.env.CHROMIUM_PATH && !process.env.TEST_WEBKIT ? {executablePath:process.env.CHROMIUM_PATH} : {});
  try {
   const page = await browser.newPage({viewport:{width:390,height:844}});
   const errors=[];page.on('pageerror', e=>errors.push(e.message));
@@ -25,7 +25,10 @@ const root = 'theme/codela-storefront/';
   assert.equal(await page.locator('.sf-product-gallery-rail-arrow').count(),2);
   const railMaterial=await rail.evaluate(el=>({h:el.getBoundingClientRect().height,w:el.getBoundingClientRect().width,bg:getComputedStyle(el).backgroundColor,panel:getComputedStyle(document.querySelector('.sf-product-sheet')).backgroundColor}));
   assert(railMaterial.h < 280 && railMaterial.w <= 55,'Three-thumb glass rail is compact: '+JSON.stringify(railMaterial));
-  assert.equal(railMaterial.bg,railMaterial.panel,'Right rail reuses the light sheet glass color');
+  assert.equal(await rail.evaluate(el=>getComputedStyle(el,'::before').backgroundColor),railMaterial.panel,'Rail pseudo-surface uses identical glass color');
+  assert.equal(await images.first().evaluate(el=>getComputedStyle(el).outlineWidth),'0px','No dark selected outline at rest');
+  const centered=await rail.evaluate(el=>{const r=el.getBoundingClientRect(),h=document.querySelector('.sf-header').getBoundingClientRect(),p=document.querySelector('.sf-product-sheet').getBoundingClientRect();return Math.abs((r.top+r.bottom)/2-(Math.max(12,h.bottom)+p.top)/2);});
+  assert(centered<2,'Rail is centered between actual header and purchase panel');
   assert(!(await page.locator('.sf-product-gallery-expand').isVisible()),'Fullscreen button is hidden until photo tap');
   await page.mouse.move(190,350);await page.mouse.wheel(0,450);
   assert(await rail.isVisible(),'Glass background persists on scroll rather than fading');
@@ -44,8 +47,8 @@ const root = 'theme/codela-storefront/';
   await page.evaluate(()=>window.scrollTo({top:500,behavior:'instant'}));
   await page.waitForFunction(()=>scrollY < document.documentElement.scrollHeight-innerHeight-120);
   await page.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
-  await page.waitForTimeout(300);
-  assert.equal(await page.locator('.sf-product-sheet-toggle').getAttribute('aria-expanded'),'false','Manual close must persist on the same page visit');
+  await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-expanded'));
+  await page.locator('.sf-product-sheet-toggle').click();
   await page.evaluate(()=>window.scrollTo(0,0));await page.waitForTimeout(400);
   await page.evaluate(()=>{
    const menu=document.createElement('button');menu.className='sf-menu-trigger';
@@ -93,7 +96,7 @@ const root = 'theme/codela-storefront/';
   await page.waitForFunction(()=>window.requests.length===1);
   assert.equal(await buy.textContent(),'Adding…');assert(await buy.isDisabled());
   assert.equal(await page.evaluate(()=>window.requests[0].find(([key])=>key==='add-to-cart')[1]),'42');
-  await page.evaluate(()=>window.responses.shift()({ok:true,text:async()=>'<div class="woocommerce-error">Stock changed. Try another quantity.</div>'}));
+  await page.evaluate(()=>window.responses.shift()({ok:false,text:async()=>JSON.stringify({codela_cart_result:true,added:false,message:'Stock changed. Try another quantity.'})}));
   await page.waitForFunction(()=>document.querySelector('.sf-purchase-status').textContent.includes('Stock changed'));
   assert.equal(await buy.isDisabled(),false);
   assert.equal(await buy.getAttribute('data-sf-cart-state'),'idle');
@@ -101,8 +104,8 @@ const root = 'theme/codela-storefront/';
   assert(await page.locator('.sf-product-purchase .sf-purchase-status').isVisible(),'Error stays beside the CTA');
   await buy.click();await page.waitForFunction(()=>window.requests.length===2);
   // Woo may suppress HTML notices; the server's successful native cart hook
-  // now confirms the POST with a response header.
-  await page.evaluate(()=>window.responses.shift()({ok:true,headers:{get:()=> '1'},text:async()=>'<main>Cart added; notices filtered by blocks</main>'}));
+  // now confirms the POST as JSON before any page template/redirect.
+  await page.evaluate(()=>window.responses.shift()({ok:true,headers:{get:()=>null},text:async()=>JSON.stringify({codela_cart_result:true,added:true,message:''})}));
   await page.waitForFunction(()=>document.querySelector('.single_add_to_cart_button').dataset.sfCartState==='success');
   assert.equal(await buy.textContent(),'View cart');
   await buy.click();assert.equal(await page.evaluate(()=>window.cartOpened),1);

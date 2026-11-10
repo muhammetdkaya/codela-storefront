@@ -1,3 +1,11 @@
+## 10 Kasım 2026 — 0.1.264 → 0.1.265 ürün düzeltmeleri (aday)
+
+Native Woo form handler sonrasında, sayfa HTML'i/redirect/notice render edilmeden JSON başarı ve hata sonucu döndürülür. Aynı POST yalnız bir kez işlenir; eklenti alanları ve Woo validasyonu korunur. Başarılı eklemede yanlış belirsizlik uyarısı önlenir. Panel gerçek sayfa sonunda 450ms bekleme ve 420ms geçişle açılır; ayrılıp dönünce veya kapatmadan 900ms sonraki yeni aşağı hareketle tekrar açılabilir. Merkezdeki kapatma işareti küçük ince chevron, gri dairesiz ve mevcut 70×44 hit alanında kalır.
+
+Galeri gerçek header altı ve satın alma paneli üstü arasında merkezlenir. Cam ortak blur/saturation/contrast/brightness değişkenlerini kullanır. Hareketsiz seçili küçük resimde siyah outline yok; hareket sırasında yalnız ince nötr vurgu vardır. Okların hedefi 44px, küçük resimler ve sayaç sürekli görünürdür. Yayın notları ürün değişikliklerine güncellendi.
+
+Yerel cart-race, cart-sync, paket 24 kontrolü geçti. Native PHP JSON ve Chromium/WebKit ürün akış testleri adayda güncelleniyor; henüz yayın/cihaz kabulü doğrulanmadı. Sıradaki: ilgili testler, GitHub PR birleşmesi, 0.1.265 tag/ZIP ve stable hash doğrulaması. Canlı siteye FTP kurulum yok.
+
 ## 9 Kasım 2026 — 0.1.260 → 0.1.261 ürün akışı (yayın adayı)
 
 Mevcut cam renkleri, panel konumu ve ortak malzeme korunur. Mobil panel gerçek belge sonunda (öneriler/footer sonrasında) açılır; elle kapatma yeniden açılmayı sayfadan uzaklaşıp dönene kadar engeller. Ortadaki 70×44 kontrol kapalıyken çizgi, açıkken aşağı chevron'dur. Önizleme resimleri/sayaç görünür kalır; yalnız mevcut panel malzemeli arka katman scroll sonrası iki saniyede söner. Woo PhotoSwipe yerel tam ekran görüntüleyicisi, native görseller ve varyasyon kaynakları kullanılır.

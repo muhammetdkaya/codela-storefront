@@ -168,6 +168,33 @@
     const currentIndex=()=>Math.max(0,[...nav.children].findIndex(node=>node.getAttribute('aria-current')==='true'));
     rail.append(previous,nav,count,next);
     gallery.appendChild(rail);
+    // Center between the actual header and purchase surface, including Safari's
+    // visual viewport. Hidden arrow slots have symmetric height around previews.
+    let railFrame = 0;
+    function positionRail() {
+      railFrame = 0;
+      if (!matchMedia('(max-width:700px)').matches || document.body.classList.contains('sf-product-sheet-open')) return;
+      const viewport = window.visualViewport;
+      const top = viewport?.offsetTop || 0;
+      const bottom = top + (viewport?.height || innerHeight);
+      const header = document.querySelector('.sf-header')?.getBoundingClientRect();
+      const sheet = document.querySelector('.sf-product-sheet')?.getBoundingClientRect();
+      const start = Math.max(top + 12, header?.bottom || top + 80);
+      const end = Math.min(bottom - 12, sheet?.top || bottom - 190);
+      rail.style.setProperty('--sf-gallery-rail-center', ((start + end) / 2) + 'px');
+    }
+    const queueRailPosition = () => { if (!railFrame) railFrame = requestAnimationFrame(positionRail); };
+    window.addEventListener('resize', queueRailPosition, {passive:true});
+    window.addEventListener('scroll', queueRailPosition, {passive:true});
+    window.visualViewport?.addEventListener('resize', queueRailPosition, {passive:true});
+    if ('ResizeObserver' in window) {
+      const observer = new ResizeObserver(queueRailPosition);
+      const sheet = document.querySelector('.sf-product-sheet');
+      if (sheet) observer.observe(sheet);
+      const header = document.querySelector('.sf-header');
+      if (header) observer.observe(header);
+    }
+    queueRailPosition();
     // Glass and arrows are a temporary interaction hint, while previews and
     // count remain visible. Repeated movement resets the fade delay.
     let railTimer=0;

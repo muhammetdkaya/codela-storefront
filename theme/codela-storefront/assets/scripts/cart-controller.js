@@ -295,14 +295,22 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
             const response = await fetch(form.action || location.href, {
                 method:'POST', body:payload, credentials:'same-origin', cache:'no-store'
             });
-            const html = new DOMParser().parseFromString(await response.text(), 'text/html');
-            const errors = html.querySelector('.woocommerce-error,[role="alert"].wc-block-components-notice-banner');
-            // Native Woo adds to the server-side cart BEFORE rendering a page.
-            // Checkout blocks or other plugins may suppress/replace its notice.
-            const confirmed = response.headers?.get?.('X-Codela-Sf-Cart-Added') === '1'
-                || Boolean(html.querySelector('[data-sf-cart-added]'));
-            if (!response.ok || errors || !confirmed) {
-                throw new Error(errors?.textContent.trim() || t('Could not confirm the addition. Check your cart before trying again.'));
+            const body = await response.text();
+            let result = null;
+            try { result = JSON.parse(body); } catch (_) { /* Cached older theme fallback below. */ }
+            let confirmed = false, errorMessage = '';
+            if (result?.codela_cart_result === true) {
+                confirmed = result.added === true;
+                errorMessage = result.message || '';
+            } else {
+                const html = new DOMParser().parseFromString(body, 'text/html');
+                const errors = html.querySelector('.woocommerce-error,[role="alert"].wc-block-components-notice-banner');
+                confirmed = response.headers?.get?.('X-Codela-Sf-Cart-Added') === '1'
+                    || Boolean(html.querySelector('[data-sf-cart-added]'));
+                errorMessage = errors?.textContent.trim() || '';
+            }
+            if (!response.ok || !confirmed) {
+                throw new Error(errorMessage || t('Could not confirm the addition. Check your cart before trying again.'));
             }
             if (window.jQuery) {
                 try { window.jQuery(document.body).trigger('added_to_cart', [{}, '', window.jQuery(button)]); } catch (_) { /* A consumer must not retry a successful write. */ }
