@@ -58,3 +58,14 @@ Kaynaklar: inc/ui.php, inc/product.php, inc/document-continuity.php, assets/styl
 
 GitHub Actions ve fiziksel iPhone kabulü ayrı doğrulanmalıdır. Bu kayıt yalnız kod güncellemesinin kapsamını belgeler; otomatik testin tamamlandığı veya canlı FTP kurulumunun yapıldığı iddia edilmez.
 
+
+---
+
+## 10 Kasım 2026 — 0.1.274 → 0.1.275 panel karartma / CTA renk eşitliği
+
+Mobil panel açıldığında karartmanın açık cam panel üzerinde görünmesi giderildi: ürün scrim'i 1001 yerine 999 katmanına alındı; gerçek Woo paneli 1002, ürün header'ı sabit 998 katmanında tutuldu. Panelin beyaz/cam görünümü, doğal sürükleme, mevcut %32 nötr karartma ve sepet/menü top-layer davranışı değiştirilmedi. Header panel kapanışındaki opacity geçişinde anlık aydınlanmaz.
+
+Destination skeleton'daki Sepete Ekle butonuna doğrudan verilen koyu dolgu ve shadow silindi. İkisi de components.css içindeki aynı sf-ui-button--primary çizimiyle (%90 saydam koyu tema mürekkebi, ışık gradyanı, gölge ve blur) render edilir; yalnızca skeleton'a ait boyut, font/ikon ve tıklanmazlık korunur. navigation-feedback.css kaynak, document-navigation.css kaynaklardan yeniden üretildi. product-sheet-browser katman/z-index testini; product-skeleton-geometry-browser native ve skeleton CTA backgroundColor/backgroundImage/boxShadow/backdropFilter/color/fontWeight karşılaştırmasını içerir.
+
+Kod main'e aktarıldı. Fiziksel iPhone/Safari görsel kabulü ayrıca yapılmalıdır; GitHub Actions ve GitHub stable release durumu bağımsız teyit edilir.
+

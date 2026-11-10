@@ -1,3 +1,11 @@
+## 10 Kasım 2026 — 0.1.274 → 0.1.275 panel karartma / CTA renk eşitliği
+
+Mobil panel açıldığında karartmanın açık cam panel üzerinde görünmesi giderildi: ürün scrim'i 1001 yerine 999 katmanına alındı; gerçek Woo paneli 1002, ürün header'ı sabit 998 katmanında tutuldu. Panelin beyaz/cam görünümü, doğal sürükleme, mevcut %32 nötr karartma ve sepet/menü top-layer davranışı değiştirilmedi. Header panel kapanışındaki opacity geçişinde anlık aydınlanmaz.
+
+Destination skeleton'daki Sepete Ekle butonuna doğrudan verilen koyu dolgu ve shadow silindi. İkisi de components.css içindeki aynı sf-ui-button--primary çizimiyle (%90 saydam koyu tema mürekkebi, ışık gradyanı, gölge ve blur) render edilir; yalnızca skeleton'a ait boyut, font/ikon ve tıklanmazlık korunur. navigation-feedback.css kaynak, document-navigation.css kaynaklardan yeniden üretildi. product-sheet-browser katman/z-index testini; product-skeleton-geometry-browser native ve skeleton CTA backgroundColor/backgroundImage/boxShadow/backdropFilter/color/fontWeight karşılaştırmasını içerir.
+
+Kod main'e aktarıldı. Fiziksel iPhone/Safari görsel kabulü ayrıca yapılmalıdır; GitHub Actions ve GitHub stable release durumu bağımsız teyit edilir.
+
 ## 10 Kasım 2026 — 0.1.273 → 0.1.274 ürün paneli / skeleton görsel uyumu
 
 Ürün panelinin iki ayrı pseudo-element parçasından oluşan tutamağı, native ürün şablonu ve destination preview tarafından kullanılan tek 28px SVG path ile değiştirildi; rAF sürükleme orta noktasını kesintisiz hareket ettirir. Dokunmatik sürükleme, klavye, reduced-motion, aria-expanded ve native Woo form sahipliği korunur. Açık panel scrim'i tam ilerlemede tek nötr rgba(0,0,0,.32) renge çıkarıldı; header arka planda kararır, mevcut açık cam panel ve satın alma kontrolü önde kalır. Ek blur yoktur.
