@@ -57,7 +57,6 @@
     var content = sheet.querySelector('.sf-product-sheet-body');
     var toggle = sheet.querySelector('.sf-product-sheet-toggle');
     var handlePath = toggle.querySelector('.sf-product-sheet-handle path');
-    var handleFrame = 0;
     var handleProgress = 0;
     var title = summary.querySelector('.product_title');
     var price = summary.querySelector('.sf-product-price-row, :scope > .price');
@@ -75,6 +74,7 @@
     var drag = null;
     var dragFrame = 0;
     var settleFrame = 0;
+    var settling = false;
     var focusFrame = 0;
     var focusGeneration = 0;
     var suppressClickUntil = 0;
@@ -95,7 +95,7 @@
       target.appendChild(node);
     }
     function measure() {
-      if (!mounted || drag) return;
+      if (!mounted || drag || settling) return;
       var footerHeight = purchase ? purchase.getBoundingClientRect().height : 0;
       sheet.style.setProperty('--sf-product-footer-height', footerHeight + 'px');
       sheet.style.setProperty('--sf-product-closed-height', (sheet.querySelector('.sf-product-sheet-header').getBoundingClientRect().height + footerHeight + 8) + 'px');
@@ -118,24 +118,75 @@
       handleProgress = Math.max(0, Math.min(1, progress));
       if (handlePath) handlePath.setAttribute('d', 'M2 7 L14 ' + (7 + 8 * handleProgress).toFixed(2) + ' L26 7');
     }
-    function animateHandle(target) {
-      cancelAnimationFrame(handleFrame);
-      handleFrame = 0;
-      if (matchMedia('(prefers-reduced-motion: reduce)').matches || Math.abs(handleProgress - target) < .001) {
-        paintHandle(target);
+    /* The sheet, scrim and SVG are all painted from ONE progress value.
+       Keep the Woo form in place: its fixed purchase button must never
+       acquire a new transformed containing block. */
+    function sheetLimits() {
+      var style = getComputedStyle(sheet);
+      var min = parseFloat(style.getPropertyValue('--sf-product-closed-height'));
+      if (!Number.isFinite(min)) min = heading.parentElement.getBoundingClientRect().height + parseFloat(style.paddingBottom);
+      var max = parseFloat(style.maxHeight);
+      if (!Number.isFinite(max)) max = innerHeight - 84;
+      return {min:min, max:Math.max(min + 1,max)};
+    }
+    function paintSheet(height, limits) {
+      var value = Math.max(limits.min,Math.min(limits.max,height));
+      var progress = (value - limits.min) / (limits.max - limits.min);
+      sheet.style.height = value + 'px';
+      scrim.style.opacity = String(progress);
+      paintHandle(progress);
+    }
+    function cancelSettle() {
+      cancelAnimationFrame(settleFrame);
+      settleFrame = 0;
+      settling = false;
+    }
+    function finishSettle(open, limits) {
+      cancelSettle();
+      paintSheet(open ? limits.max : limits.min, limits);
+      sheet.classList.remove('is-settling','is-holding','is-dragging');
+      sheet.style.removeProperty('--sf-product-drag-body-height');
+      sheet.style.removeProperty('height');
+      scrim.style.removeProperty('opacity');
+      if (!open) document.body.classList.remove('sf-product-sheet-open');
+      media.inert = open;
+      measure();
+    }
+    function settleSheet(open, limits, from) {
+      cancelSettle();
+      settling = true;
+      sheet.classList.add('is-settling');
+      /* The body is allotted its final open space from the FIRST frame.
+         No scroll height, heading or form geometry is destroyed on release. */
+      sheet.style.setProperty('--sf-product-drag-body-height',Math.max(0,limits.max - limits.min) + 'px');
+      sheet.classList.remove('is-holding','is-dragging');
+      scrim.classList.remove('is-dragging');
+      var target = open ? limits.max : limits.min;
+      paintSheet(from,limits);
+      var distance = Math.abs(target - from) / (limits.max - limits.min);
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches || distance < .002) {
+        finishSettle(open,limits);
         return;
       }
-      var from = handleProgress, started = performance.now();
-      function tick(now) {
-        var t = Math.min(1, (now - started) / 280);
-        paintHandle(from + (target - from) * (1 - Math.pow(1 - t, 3)));
-        handleFrame = t < 1 ? requestAnimationFrame(tick) : 0;
+      var duration = 320 * Math.max(.32,Math.min(1,distance));
+      var start = performance.now();
+      function frame(now) {
+        var time = Math.min(1,(now - start) / duration);
+        var eased = 1 - Math.pow(1 - time,3);
+        paintSheet(from + (target - from) * eased,limits);
+        if (time < 1) settleFrame = requestAnimationFrame(frame);
+        else finishSettle(open,limits);
       }
-      handleFrame = requestAnimationFrame(tick);
+      settleFrame = requestAnimationFrame(frame);
     }
     function setOpen(open, focusTarget, preservePhoto, fromDrag) {
       cancelPendingFocus();
       if (!mounted) return;
+      /* Capture geometry BEFORE changing semantic classes; a swipe release
+         therefore continues at the exact pixel last painted by the finger. */
+      var limits = sheetLimits();
+      var from = sheet.getBoundingClientRect().height;
+      cancelSettle();
       expanded = open;
       if (open && !preservePhoto && !sheet.classList.contains('is-discovering')) {
         var photos = Array.from(media.querySelectorAll('.woocommerce-product-gallery__image,.woocommerce-product-gallery__image--placeholder')).filter(node=>node.getClientRects().length);
@@ -143,13 +194,12 @@
         if (nearest) window.scrollTo({top:window.scrollY + nearest.getBoundingClientRect().top, behavior:'instant'});
       }
       sheet.classList.toggle('is-expanded', open);
-      animateHandle(open ? 1 : 0);
-      document.body.classList.toggle('sf-product-sheet-open', open);
+      /* Lock document scrolling until the CLOSE animation actually ends. */
+      if (open || fromDrag || sheet.classList.contains('is-settling')) document.body.classList.add('sf-product-sheet-open');
       scrim.classList.toggle('is-visible', open);
-      if (!fromDrag) scrim.style.removeProperty('opacity');
       toggle.setAttribute('aria-expanded', String(open));
       toggle.setAttribute('aria-label', open ? template.dataset.closeLabel : template.dataset.openLabel);
-      media.inert = open;
+      media.inert = true;
       sheet.classList.toggle('is-discovering', !open && isDiscovering());
       if (!open && content.contains(document.activeElement) && !purchase?.contains(document.activeElement)) toggle.focus({preventScroll:true});
       if (open && focusTarget) {
@@ -162,7 +212,16 @@
           focusTarget.focus({preventScroll:true});
         });
       }
-      measure();
+      if (sheet.classList.contains('is-mounting')) {
+        /* First paint is already the correct collapsed native geometry.
+           Never animate an empty skeleton into the real Woo product. */
+        paintHandle(open ? 1 : 0);
+        document.body.classList.toggle('sf-product-sheet-open',open);
+        media.inert = open;
+        measure();
+      } else {
+        settleSheet(open, limits, from);
+      }
     }
     function isDiscovering() {
       return mounted && discovery.children.length > 0 && track &&
@@ -348,10 +407,10 @@
       cancelPendingFocus();
       if (!mounted) return;
       finishDrag(true);
-      cancelAnimationFrame(settleFrame);
+      cancelSettle();
       sheet.style.removeProperty('height');
-      cancelAnimationFrame(handleFrame);
-      handleFrame = 0;
+      sheet.style.removeProperty('--sf-product-drag-body-height');
+      sheet.classList.remove('is-settling','is-holding','is-dragging');
       paintHandle(0);
       media.inert = false;
       // Restore containers before their children using the exact anchor nodes.
@@ -412,9 +471,7 @@
       if (!mounted || drag) return false;
       suppressClickUntil=0;
       var height = sheet.getBoundingClientRect().height;
-      cancelAnimationFrame(settleFrame);
-      cancelAnimationFrame(handleFrame);
-      handleFrame = 0;
+      cancelSettle();
       sheet.style.setProperty('--sf-product-drag-body-height', content.getBoundingClientRect().height+'px');
       sheet.classList.add('is-holding');
       sheet.style.height = height + 'px';
@@ -467,23 +524,19 @@
     function paintDrag(){
       dragFrame=0;
       if(!drag?.active)return;
-      sheet.style.height=drag.height+'px';
-      var progress=Math.max(0,Math.min(1,(drag.height-drag.min)/(drag.max-drag.min)));
-      scrim.style.opacity=String(progress);
-      paintHandle(progress);
+      paintSheet(drag.height,drag);
     }
     function finishDrag(cancelled){
       if(!drag)return;
       cancelAnimationFrame(dragFrame);paintDrag();
       var gesture=drag;drag=null;
-      if(gesture.capture&&gesture.capture.hasPointerCapture(gesture.id))
+      if(gesture.capture&&gesture.id!==null&&gesture.capture.hasPointerCapture(gesture.id))
         gesture.capture.releasePointerCapture(gesture.id);
-      sheet.classList.remove('is-holding');
-      sheet.style.removeProperty('--sf-product-drag-body-height');
       if(!gesture.active){
-        sheet.style.removeProperty('height');
-        scrim.style.removeProperty('opacity');
-        animateHandle(expanded ? 1 : 0);return;
+        /* Even an interrupted settle resumes from its exact current height;
+           no early body collapse or height property removal. */
+        setOpen(gesture.open,null,true,true);
+        return;
       }
       suppressClickUntil=performance.now()+700;
       var dy=gesture.lastY-gesture.y;
@@ -491,14 +544,7 @@
       var progress=(gesture.height-gesture.min)/(gesture.max-gesture.min);
       var open=cancelled?gesture.open:
         (Math.abs(dy)>35&&speed>.35?dy<0:progress>(gesture.open?.65:.18));
-      sheet.classList.remove('is-dragging');
-      sheet.getBoundingClientRect();
       setOpen(open,null,true,true);
-      scrim.classList.remove('is-dragging');
-      settleFrame=requestAnimationFrame(function(){
-        sheet.style.removeProperty('height');
-        scrim.style.removeProperty('opacity');
-      });
     }
     window.addEventListener('pointerup',function(event){
       if(drag&&event.pointerId===drag.id)finishDrag(false);
