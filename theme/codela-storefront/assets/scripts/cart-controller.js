@@ -252,10 +252,10 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
     const feedbackOriginal = new WeakMap();
     const feedbackTimers = new WeakMap();
     function feedback(button, phase) {
+        if (!button) return;
         // A quantity/variation change must cancel the delayed confirmation.
         const pending = feedbackTimers.get(button);
         if (pending) { clearTimeout(pending); feedbackTimers.delete(button); }
-        if (!button) return;
         if (!feedbackOriginal.has(button)) feedbackOriginal.set(button, {
             html:button.innerHTML, label:button.getAttribute('aria-label')
         });
