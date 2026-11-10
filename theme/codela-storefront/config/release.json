@@ -6,9 +6,9 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Sepete ekleme sonucu native WooCommerce işleminden sonra doğrudan JSON ile doğrulanır; başarılı ekleme yanlış uyarı vermez.",
-    "Ürün paneli sayfa sonunda kısa bekleme ve yumuşak geçişle açılır; kapatıldıktan sonra yeniden açılabilir.",
-    "Ortadaki kapatma kontrolü sadeleştirildi; galeri gerçek header ve panel arasında ortalanır.",
-    "Galeri ortak cam değişkenlerini kullanır; hareketsizken siyah seçim çerçevesi kaldırıldı, okların dokunma alanı büyütüldü."
+    "Tek ürün sepete eklemede WooCommerce'in ikinci Sepetim bağlantısı artık oluşmaz; mevcut sepete git butonu tek kalır.",
+    "Ürün satın alma butonu tema UI Kit tonal yüzeyini kullanır; gereksiz işaret kaldırıldı ve metnin satır kırması önlendi.",
+    "Sağ galeri cam kapsülü inceltildi; küçük resimler korunurken 44px dokunma okları dışarı taşınarak yüksekliği azaltıldı.",
+    "Safari kaydırmalarında galeri kapsülü zıplamaz; ilgili ürünlere geçildiğinde oklar ve galeri kontrolü hemen gizlenir."
   ]
 }
