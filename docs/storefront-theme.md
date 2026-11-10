@@ -1,3 +1,7 @@
+## 10 Kasım 2026 — 0.1.278 yayın doğrulandı
+
+[Kaynak 51ddfc3](https://github.com/muhammetdkaya/codela-storefront/commit/51ddfc39940a0267aa83659b5bf456542126d5ba). Yerel 3 asset ve 24 paket testi geçti. [Yayın CI 42892823523](https://github.com/muhammetdkaya/codela-storefront/actions/runs/42892823523) başarılı; [v0.1.278 ZIP](https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.278) yayımlandı, publish_feed=true yayını tamamlandı. Fiziksel iPhone Safari ve canlı mağazaya kurulum doğrulanmadı. Sıradaki: cihazda panel geçişinde fiyat okunurluğu, son sayfa karartması, header geri ve PhotoSwipe kapatma hizasını kontrol et.
+
 ## 10 Kasım 2026 — 0.1.277 → 0.1.278 ürün katmanları ve kontroller
 
 Satın alma satırına ortak opak yüzey eklendi: hareketli gövde metni fiyat/CTA arkasından görünmez. Nötr scrim %32 → %48. Header geri ikonu sabit 20px yerine ortak ikon tokenını kullanır; galeri okları değişmez. PhotoSwipe kapatma düğmesi safe-area ve 16px sağ kenara sabitlenir, boş zoom/fullscreen/share yuvaları kaldırılır. Kaynak ve generated CSS birlikte güncellenir. Fiziksel iPhone görsel kabulü henüz yapılmadı. GitHub yayın sonucu takip kaydında doğrulanacak; eklenti değişmedi.
