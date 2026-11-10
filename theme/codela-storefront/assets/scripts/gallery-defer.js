@@ -194,7 +194,9 @@
       const header = document.querySelector('.sf-header');
       if (header) observer.observe(header);
     }
-    queueRailPosition();
+    // Establish the visible-area center before the first interactive frame;
+    // subsequent header/sheet/viewport changes remain RAF-throttled.
+    positionRail();
     // Glass and arrows are a temporary interaction hint, while previews and
     // count remain visible. Repeated movement resets the fade delay.
     let railTimer=0;
