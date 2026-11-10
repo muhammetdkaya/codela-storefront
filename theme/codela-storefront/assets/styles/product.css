@@ -499,33 +499,34 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
 
 /* Progressive mobile composition. Without JS the native document stays usable. */
 .sf-product-sheet-header{position:relative;flex:none;min-height:64px;padding:28px 16px 8px}
-/* One pair of strokes morphs from a centered bar into a down chevron. */
+/* One 28px bar is built from two adjacent halves with one shared hinge.
+   Opening rotates the halves in place: no overlapping or growing strokes. */
 .sf-product-sheet-toggle.sf-ui-button::before,
 .sf-product-sheet-toggle.sf-ui-button::after{
-  content:'';position:absolute;display:block;left:50%;top:13px;
-  width:30px;height:3px;border:0;border-radius:999px;
-  background:var(--sf-ui-border);-webkit-mask:none;mask:none;
-  transform:translate(-50%,-50%);transform-origin:center;
-  transition:transform 300ms cubic-bezier(.22,1,.36,1),
-    width 300ms cubic-bezier(.22,1,.36,1),background-color 300ms ease;
+  content:'';position:absolute;display:block;top:13px;
+  width:14px;height:2.5px;border:0;border-radius:999px;
+  background:var(--sf-ui-glass-ink);-webkit-mask:none;mask:none;
+  transition:transform 280ms cubic-bezier(.22,1,.36,1);
 }
-.sf-product-sheet.is-expanded .sf-product-sheet-toggle.sf-ui-button::before{
-  width:20px;background:var(--sf-ui-glass-ink);
-  transform:translate(-50%,-50%) translateX(-7px) rotate(36deg);
+.sf-product-sheet-toggle.sf-ui-button::before{
+  left:calc(50% - 14px);transform-origin:right center;
+  transform:rotate(var(--sf-product-morph-left,0deg));
 }
-.sf-product-sheet.is-expanded .sf-product-sheet-toggle.sf-ui-button::after{
-  width:20px;background:var(--sf-ui-glass-ink);
-  transform:translate(-50%,-50%) translateX(7px) rotate(-36deg);
+.sf-product-sheet-toggle.sf-ui-button::after{
+  left:50%;transform-origin:left center;
+  transform:rotate(var(--sf-product-morph-right,0deg));
 }
-.sf-product-sheet.is-end-ready:not(.is-expanded) .sf-product-sheet-toggle.sf-ui-button::before,
-.sf-product-sheet.is-end-ready:not(.is-expanded) .sf-product-sheet-toggle.sf-ui-button::after{
-  background:var(--sf-ui-glass-ink);transform:translate(-50%,-50%) scaleX(1.12);
+.sf-product-sheet.is-expanded{
+  --sf-product-morph-left:32deg;
+  --sf-product-morph-right:-32deg;
 }
-/* A composited opacity fade follows the actual drag progress. */
+.sf-product-sheet.is-dragging .sf-product-sheet-toggle.sf-ui-button::before,
+.sf-product-sheet.is-dragging .sf-product-sheet-toggle.sf-ui-button::after{transition:none}
+/* Subtle neutral backdrop follows finger progress. */
 .sf-product-sheet-scrim{
   position:fixed;inset:0;z-index:999;pointer-events:none;
-  background:rgba(9,12,18,.24);opacity:0;
-  transition:opacity 420ms cubic-bezier(.22,1,.36,1);
+  background:rgba(18,22,29,.14);opacity:0;
+  transition:opacity 340ms cubic-bezier(.22,1,.36,1);
 }
 .sf-product-sheet-scrim.is-visible{opacity:1}
 .sf-product-sheet-scrim.is-dragging{transition:none}
@@ -719,7 +720,7 @@ body.single-product .stock.in-stock{display:none}
   }
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary::before{
     content:'';position:absolute;top:12px;left:calc(50% - 22px);
-    width:44px;height:4px;border-radius:var(--sf-ui-pill);background:var(--sf-ui-border);
+    width:28px;height:2.5px;border-radius:var(--sf-ui-pill);background:var(--sf-ui-glass-ink);
   }
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary > :not(.product_title):not(.sf-product-price-row):not(.price):not(form.cart):not(.stock){display:none!important}
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary > .product_title{
@@ -991,7 +992,6 @@ html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:
   body.single-product:has(.pswp--open,#sf-panel[open]) :is(.sf-product-gallery-rail,.sf-product-gallery-expand){visibility:hidden}
 }
 
-.sf-product-sheet.is-holding:not(.is-expanded) .sf-product-sheet-toggle::before{transform:scaleX(var(--sf-ui-scale-icon))}
 
 /* One native Woo product button inherits the standard dark PRIMARY Button
    material. Product CSS only owns size, layout and the persistent bag glyph. */
