@@ -498,20 +498,37 @@ body.single-product .sf-product-plugin-footer .cdl-wa-float{
 body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{visibility:hidden}
 
 /* Progressive mobile composition. Without JS the native document stays usable. */
+@media(max-width:700px){
+  /* Fixed backdrop is a separate composited layer below the native Woo sheet.
+     Its opacity follows actual drag distance, not a binary open/closed class. */
+  body.single-product.sf-product-sheet-ready::before{
+    content:'';position:fixed;inset:0;z-index:999;pointer-events:none;
+    background:#0b1018;
+    opacity:calc(var(--sf-product-sheet-progress,0) * .44);
+    transition:opacity 420ms cubic-bezier(.22,1,.36,1);
+  }
+  body.single-product.sf-product-sheet-ready.sf-product-sheet-dragging::before{transition:none}
+}
 .sf-product-sheet-header{position:relative;flex:none;min-height:64px;padding:28px 16px 8px}
-/* One centered control: the existing handle becomes a down chevron when open. */
-.sf-product-sheet-toggle::before{content:'';position:absolute;width:44px;height:4px;top:12px;left:13px;border-radius:var(--sf-ui-pill);background:var(--sf-ui-border);transition:transform var(--sf-ui-motion-press) var(--sf-ui-ease-press)}
-.sf-product-sheet.is-expanded .sf-product-sheet-toggle::before{width:18px;height:18px;left:26px;top:10px;background:currentColor;border:0;border-radius:0;transform:none;-webkit-mask:url("../icons/chevron-down.svg") center/contain no-repeat;mask:url("../icons/chevron-down.svg") center/contain no-repeat}
-.sf-product-sheet.is-expanded .sf-product-sheet-toggle::after{content:none}
-.sf-product-sheet.is-expanded .sf-product-sheet-toggle{color:var(--sf-ui-glass-ink)}
-.sf-product-sheet.is-end-ready .sf-product-sheet-toggle::before{transform:scaleX(1.15);background:var(--sf-ui-glass-ink)}
+/* One 46px line made of two identical strokes; the strokes rotate into
+   the downward chevron without replacing an SVG or changing their color. */
+.sf-product-sheet-toggle{color:var(--sf-ui-glass-ink)}
+.sf-product-sheet-toggle::before,.sf-product-sheet-toggle::after{
+  content:'';position:absolute;top:12px;width:23px;height:3px;
+  border-radius:var(--sf-ui-pill);background:currentColor;opacity:.62;
+  transition:top 320ms cubic-bezier(.22,1,.36,1),transform 320ms cubic-bezier(.22,1,.36,1);
+}
+.sf-product-sheet-toggle::before{left:12px;transform-origin:right center}
+.sf-product-sheet-toggle::after{left:35px;transform-origin:left center}
+.sf-product-sheet.is-expanded .sf-product-sheet-toggle::before{top:23px;transform:rotate(34deg)}
+.sf-product-sheet.is-expanded .sf-product-sheet-toggle::after{top:23px;transform:rotate(-34deg)}
+.sf-product-sheet.is-end-ready .sf-product-sheet-toggle:is(::before,::after){transform:scaleX(1.08)}
 .sf-product-sheet-heading > :is(.sf-product-shipping-summary,.out-of-stock){grid-column:1/-1;margin:4px 0 0;font-size:12px;line-height:1.4}
 body.single-product .stock.in-stock{display:none}
 .sf-product-sheet-heading{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,42%);grid-template-rows:minmax(28px,max-content);grid-auto-rows:max-content;align-items:center;column-gap:10px;row-gap:0}
 /* Price and urgency are laid out as peers to the native title, without
    moving or cloning plugin nodes. The mobile rules below also apply prepaint. */
 .sf-product-sheet-toggle.sf-ui-button{position:absolute;left:calc(50% - 35px);top:0;width:70px;min-width:70px;min-height:44px;padding:0;--sf-ui-button-height:44px;--sf-ui-button-font-size:0px;--sf-ui-button-padding-y:0px;gap:0}
-.sf-product-sheet-toggle::after{content:none}
 .sf-product-sheet-body{min-height:0;overscroll-behavior:contain;overflow:auto;overflow-x:hidden;scrollbar-width:thin}
 @media(max-width:700px){
   /* Root scrolling preserves native browser pull-to-refresh at the top. */
@@ -964,7 +981,8 @@ html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:
   body.single-product:has(.pswp--open,#sf-panel[open]) :is(.sf-product-gallery-rail,.sf-product-gallery-expand){visibility:hidden}
 }
 
-.sf-product-sheet.is-holding:not(.is-expanded) .sf-product-sheet-toggle::before{transform:scaleX(var(--sf-ui-scale-icon))}
+.sf-product-sheet.is-holding:not(.is-expanded) .sf-product-sheet-toggle::before,
+.sf-product-sheet.is-holding:not(.is-expanded) .sf-product-sheet-toggle::after{transform:scaleX(var(--sf-ui-scale-icon))}
 
 /* One native Woo product button inherits the standard dark PRIMARY Button
    material. Product CSS only owns size, layout and the persistent bag glyph. */
@@ -1020,4 +1038,8 @@ html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:
  body.single-product.sf-product-sheet-ready div.product .sf-product-gallery-rail.is-active .sf-product-gallery-thumb[aria-current="true"] img{outline-color:var(--sf-ui-ink)}
  @media(prefers-reduced-motion:reduce){body.single-product.sf-product-sheet-ready div.product .sf-product-gallery-rail .sf-product-gallery-thumb img{transition:none}}
 }
-@media(prefers-reduced-motion:reduce){body.sf-product-sheet-ready .sf-product-sheet{transition:none!important}}
+@media(prefers-reduced-motion:reduce){
+  body.sf-product-sheet-ready .sf-product-sheet,
+  body.single-product.sf-product-sheet-ready::before,
+  .sf-product-sheet-toggle::before,.sf-product-sheet-toggle::after{transition:none!important}
+}
