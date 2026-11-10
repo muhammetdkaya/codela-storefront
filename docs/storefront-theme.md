@@ -1,3 +1,9 @@
+## 10 Kasım 2026 — 0.1.272 → 0.1.273 panel hareket devri (aday)
+
+Başlık/bağlantı yüzeylerinden sürükleme ve sürükleme sonrası tıklama bastırma eklendi. İçerik başa ulaşınca aynı aşağı hareket kalan mesafeyle paneli kapatır. Son ekran içinde başlayan yukarı hareket kalan belge mesafesini tüketip paneli açar. Native input/select korunur. İlk çizgi 28px genişliğine göre ortalandı. Sürüklemede metin gövdesi sabit yüksekliğe alınır, kare başına yazım requestAnimationFrame ile sürer; fiziksel cihazda FPS garantisi yok.
+
+Yerel JS syntax, 3 build-assets ve 24 paket testi başarılı. Gerçek dokunmalı yeni geçiş testi ve mevcut Chromium/WebKit regresyonları CI'da doğrulanacak. Yayın henüz yok; canlı FTP kurulum yok. Sıradaki: CI bulgularını çöz, 0.1.273 ZIP/stable yayınını doğrula.
+
 ## 10 Kasım 2026 — 0.1.269 → 0.1.270 ortak ürün kenar hizası
 
 Mobil ürün header padding 20px → mevcut --sf-ui-bottom-bar-inset (16px). Doğrudan ürün girişindeki Home konumu, galeri ve büyütme düğmesi de alt panelin aynı değişkenini kullanır. 0.1.269 seçili görsel çerçevesi korunur.

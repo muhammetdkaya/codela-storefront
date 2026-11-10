@@ -6,9 +6,9 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Sayfanın sonuna gelmek artık paneli zamanlayıcıyla açmaz; kullanıcı kaydırmaya devam ettiğinde panel parmağı veya trackpad hareketini takip eder.",
-    "28 piksellik tutamak büyümeden, tek çizgiden aynı iki bitişik yarımla aşağı oka dönüşür.",
-    "Arka plan karartması daha hafif ve nötrdür; panelin gerçek açılma ilerlemesine eşlik eder.",
-    "Mevcut WooCommerce satın alma formu, galeri ve panel içi kaydırma korunur."
+    "Panel bölüm başlıkları ve bağlantılar üzerinden sürüklenebilir; sürükleme sonrası yanlış tıklama engellenir.",
+    "Panel içeriği başa geldiğinde aynı aşağı hareket paneli kapatmaya devam eder.",
+    "Son ekranın kaydırması kalan mesafeyi tüketip aynı hareketle paneli açar.",
+    "İlk yüklemedeki çizgi hizası düzeltildi; sürüklemede içerik yerleşimi sabit tutulur."
   ]
 }

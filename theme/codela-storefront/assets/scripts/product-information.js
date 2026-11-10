@@ -175,7 +175,7 @@
       endTouch = null;
       if (event.touches.length !== 1 || !endPullAllowed(event.target)) return;
       var t = event.touches[0];
-      endTouch = {id:t.identifier, lastY:t.clientY, active:false};
+      endTouch = {id:t.identifier, x:t.clientX, y:t.clientY, lastY:t.clientY, active:false, tail:document.documentElement.scrollHeight-scrollY-innerHeight < innerHeight*.7};
     }, {passive:true});
     window.addEventListener('touchmove', function (event) {
       if (!endTouch || event.touches.length !== 1) return;
@@ -184,7 +184,21 @@
       var previousY = endTouch.lastY;
       endTouch.lastY = t.clientY;
       if (!endTouch.active) {
-        if (previousY - t.clientY <= 1 || !atPageEnd() || !endPullAllowed(event.target)) return;
+        var dy = previousY - t.clientY;
+        if (Math.abs(t.clientX-endTouch.x)>Math.abs(t.clientY-endTouch.y)) {endTouch=null;return;}
+        if (dy <= 1 || !endPullAllowed(event.target)) return;
+        // Own the final viewport from its first move, so Safari cannot take
+        // the same vertical gesture away before it reaches the sheet.
+        if (endTouch.tail && event.cancelable) {
+          event.preventDefault();
+          var remaining=Math.max(0,document.documentElement.scrollHeight-scrollY-innerHeight);
+          var consumed=Math.min(remaining,dy);
+          if(consumed) window.scrollTo({top:scrollY+consumed,behavior:'instant'});
+          dy-=consumed;
+          if(dy<=0)return;
+          previousY=t.clientY+dy;
+        }
+        if (!atPageEnd() || !event.cancelable) return;
         // Inherit the LAST touch position, not the initial scroll position.
         if (!beginDrag(t.clientX, previousY, null, null)) return;
         endTouch.active = true;
@@ -372,8 +386,10 @@
     // Native body scrolling wins unless a downward swipe begins at its top.
     function beginDrag(x, y, id, capture) {
       if (!mounted || drag) return false;
+      suppressClickUntil=0;
       var height = sheet.getBoundingClientRect().height;
       cancelAnimationFrame(settleFrame);
+      sheet.style.setProperty('--sf-product-drag-body-height', content.getBoundingClientRect().height+'px');
       sheet.classList.add('is-holding');
       sheet.style.height = height + 'px';
       var style = getComputedStyle(sheet);
@@ -381,6 +397,7 @@
       if (!Number.isFinite(min)) min = header.getBoundingClientRect().height + parseFloat(style.paddingBottom);
       var max = parseFloat(style.maxHeight);
       if (!Number.isFinite(max)) max = innerHeight - 84;
+      sheet.style.setProperty('--sf-product-drag-body-height', Math.max(0,max-min)+'px');
       drag = {id:id, x:x, y:y, lastY:y, start:height, height:height,
         min:min, max:Math.max(min+1,max), open:expanded,
         time:performance.now(), active:false, width:innerWidth, capture:capture||null};
@@ -413,8 +430,8 @@
     content.addEventListener('pointerdown',function(event){
       if(!mounted||!expanded||drag||event.pointerType==='touch'||event.button!==0||
          content.scrollTop>2||
-         event.target.closest('a,button,input,select,textarea,summary,[role="button"],[contenteditable="true"]'))return;
-      beginDrag(event.clientX,event.clientY,event.pointerId,content);
+         event.target.closest('input,select,textarea,[contenteditable="true"]'))return;
+      beginDrag(event.clientX,event.clientY,event.pointerId,event.target.closest('a,button,summary,[role="button"]')||content);
     });
     window.addEventListener('pointermove',function(event){
       if(!drag||event.pointerId!==drag.id)return;
@@ -437,6 +454,7 @@
       if(gesture.capture&&gesture.capture.hasPointerCapture(gesture.id))
         gesture.capture.releasePointerCapture(gesture.id);
       sheet.classList.remove('is-holding');
+      sheet.style.removeProperty('--sf-product-drag-body-height');
       if(!gesture.active){
         sheet.style.removeProperty('height');
         sheet.style.removeProperty('--sf-product-morph-left');
@@ -469,8 +487,13 @@
     content.addEventListener('touchstart',function(event){
       bodyTouch=null;
       if(!mounted||!expanded||drag||event.touches.length!==1||
-        event.target.closest('a,button,input,select,textarea,summary,[role="button"],[contenteditable="true"]'))return;
-      var t=event.touches[0];bodyTouch={id:t.identifier,x:t.clientX,y:t.clientY};
+        event.target.closest('input,select,textarea,[contenteditable="true"]'))return;
+      var t=event.touches[0],scrollers=[];
+      for(var node=event.target;node&&content.contains(node);node=node.parentElement){
+        if(node.scrollHeight>node.clientHeight+1&&/auto|scroll/.test(getComputedStyle(node).overflowY))scrollers.push(node);
+      }
+      bodyTouch={id:t.identifier,x:t.clientX,y:t.clientY,lastY:t.clientY,scrollers:scrollers};
+      suppressClickUntil=0;
     },{passive:true});
     content.addEventListener('touchmove',function(event){
       if(!bodyTouch||event.touches.length!==1)return;
@@ -478,10 +501,19 @@
       if(!drag){
         var dy=t.clientY-bodyTouch.y,dx=t.clientX-bodyTouch.x;
         if(Math.max(Math.abs(dx),Math.abs(dy))<10)return;
-        if(dy<=0||Math.abs(dx)>Math.abs(dy)||content.scrollTop>2){
+        if(dy<=0||Math.abs(dx)>Math.abs(dy)){
           bodyTouch=null;return;
         }
-        if(!beginDrag(bodyTouch.x,bodyTouch.y,null,null))return;
+        if(!event.cancelable){bodyTouch=null;return;}
+        event.preventDefault();
+        var remaining=t.clientY-bodyTouch.lastY;
+        bodyTouch.scrollers.forEach(function(node){
+          var consumed=Math.min(Math.max(0,node.scrollTop),Math.max(0,remaining));
+          node.scrollTop-=consumed;remaining-=consumed;
+        });
+        bodyTouch.lastY=t.clientY;
+        if(remaining<=0)return;
+        if(!beginDrag(bodyTouch.x,t.clientY-remaining,null,null))return;
       }
       if(drag.id!==null)return;
       event.preventDefault();
@@ -504,6 +536,10 @@
       if (event.key === 'Escape' && drag) { event.preventDefault(); finishDrag(true); return; }
       if (event.key === 'Escape' && expanded) { event.preventDefault(); setOpen(false); }
     });
+    // Dragging a link/disclosure must not activate the release click.
+    sheet.addEventListener('click',function(event){
+      if(event.detail!==0&&performance.now()<suppressClickUntil){event.preventDefault();event.stopImmediatePropagation();}
+    },true);
     // A disabled native variation button still receives capture-phase clicks.
     // Open the original selector instead of proxying or submitting the form.
     sheet.addEventListener('click', function (event) {
