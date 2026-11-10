@@ -1228,10 +1228,11 @@ body.admin-bar{--sf-header-offset:32px}
    It navigates directly home; the back link retains its history behavior. */
 .sf-shell .sf-header .sf-product-home{display:none}
 @media(max-width:700px){
+  .sf-shell.has-product-header .sf-header{padding-left:var(--sf-ui-bottom-bar-inset);padding-right:var(--sf-ui-bottom-bar-inset)}
   .sf-shell.has-product-header .sf-header .sf-product-home{
     display:inline-flex;
     position:absolute;
-    left:calc(20px + var(--sf-ui-hit) + 10px);
+    left:calc(var(--sf-ui-bottom-bar-inset) + var(--sf-ui-hit) + 10px);
     top:12px;
     width:var(--sf-ui-hit);
     height:var(--sf-ui-hit);
@@ -1250,7 +1251,7 @@ body.admin-bar{--sf-header-offset:32px}
 .sf-shell.has-product-header .sf-header .sf-context-brand:has([data-sf-context-back][hidden]){display:none}
 @media(max-width:700px){
   .sf-shell.has-product-header .sf-header .sf-product-home[hidden]{display:none!important}
-  .sf-shell.has-product-header .sf-header:has([data-sf-context-back][hidden]) .sf-product-home{left:20px}
+  .sf-shell.has-product-header .sf-header:has([data-sf-context-back][hidden]) .sf-product-home{left:var(--sf-ui-bottom-bar-inset)}
 }
 
 /* Single menu control morphs in place while reparented to modal top layer. */

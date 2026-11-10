@@ -186,7 +186,7 @@ class Tests(unittest.TestCase):
         self.assertIn('m15 18-6-6 6-6',(icons/'chevron-left.svg').read_text())
         nav=(build.ROOT/'assets/styles/navigation.css').read_text()
         self.assertIn('.sf-shell.has-product-header .sf-header .sf-product-home',nav)
-        self.assertIn('left:calc(20px + var(--sf-ui-hit) + 10px)',nav)
+        self.assertIn('left:calc(var(--sf-ui-bottom-bar-inset) + var(--sf-ui-hit) + 10px)',nav)
 
         self.assertIn('stroke-linecap="round"',(icons/'shopping-cart-plus.svg').read_text())
         self.assertIn("'shopping-cart-plus'",render)

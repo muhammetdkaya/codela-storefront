@@ -559,7 +559,7 @@ body.single-product .stock.in-stock{display:none}
      native preview thumbnails and the live count. Its space never changes
      during swipe, hover or Safari browser chrome movement. */
   body.sf-product-sheet-ready .sf-product-gallery-rail{
-    position:fixed;z-index:12;right:16px;
+    position:fixed;z-index:12;right:var(--sf-ui-bottom-bar-inset);
     top:var(--sf-gallery-rail-center,40svh);left:auto;bottom:auto;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     gap:1px;width:48px;max-height:calc(100svh - var(--sf-product-collapsed-height,190px) - 100px);
@@ -634,7 +634,7 @@ body.single-product .stock.in-stock{display:none}
   }
   body.sf-product-sheet-ready .sf-product-gallery-expand.sf-ui-icon-button{
     display:grid;place-items:center;position:fixed;z-index:12;
-    top:calc(92px + var(--sf-header-offset,0px));right:16px;
+    top:calc(92px + var(--sf-header-offset,0px));right:var(--sf-ui-bottom-bar-inset);
     width:46px;height:46px;min-height:46px;padding:0;border-radius:999px;
     color:var(--sf-ui-glass-ink);
     background:var(--sf-ui-glass-panel-surface)!important;

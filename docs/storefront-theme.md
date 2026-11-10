@@ -1,3 +1,9 @@
+## 10 Kasım 2026 — 0.1.269 → 0.1.270 ortak ürün kenar hizası
+
+Mobil ürün header padding 20px → mevcut --sf-ui-bottom-bar-inset (16px). Doğrudan ürün girişindeki Home konumu, galeri ve büyütme düğmesi de alt panelin aynı değişkenini kullanır. 0.1.269 seçili görsel çerçevesi korunur.
+
+0.1.269 GitHub ZIP yayını doğrulandı: kaynak b1c40c938672586e1940b16c6b5ac9631223d82f; 317095 bayt, SHA256 950b5f3d0afd3314c97d695d6f54188305a8e04f171102335252b9015fbdb907. 0.1.270: 3 build-assets ve 24 paket testi geçti; ortak kenar değişkenine göre mevcut paket testi güncellendi. Yayın sonucu bekleniyor; canlı kurulum ve fiziksel iPhone kabulü yapılmadı. Sıradaki: yayın ZIP'ini doğrula ve iPhone'da ortak sağ/sol hizayı kontrol et.
+
 ## 10 Kasım 2026 — 0.1.268 → 0.1.269 seçili galeri görseli
 
 Sağ kapsül 12px → 16px ile büyütme düğmesine hizalandı. Seçili küçük görsel mevcut is-active süresince 2px tema koyu mürekkep rengi çerçeve gösterir. Çerçeve 330ms sürede şeffaflaşır, geometri değişmez; reduced-motion korunur. Galeri dışı gizleme korunur.

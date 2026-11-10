@@ -6,6 +6,7 @@
     "codela": "1.2.5"
   },
   "changes": [
+    "Mobil ürün header sol/sağ boşluğu, alt panel, galeri ve büyütme düğmesi ortak 16px kenar ölçüsünü kullanır.",
     "Sağ galeri kapsülü büyütme butonuyla aynı 16px sağ kenar hizasına alındı.",
     "Kaydırma ve dokunmada seçili küçük görsel 2px koyu çerçeveyle belirginleşir; etkileşim durunca çerçeve yumuşakça kaybolur."
   ]
