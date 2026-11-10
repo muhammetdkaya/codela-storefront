@@ -121,15 +121,22 @@
     count.setAttribute('aria-live','polite');
     gallery.appendChild(count);
     function select(index){
-      const image=imageAt(index);
-      activate(image);
-      const vertical=matchMedia('(max-width:700px)').matches;
       const item=items[index];
-      const bounds=track.getBoundingClientRect();
-      const rect=item.getBoundingClientRect();
+      if(!item)return;
+      activate(imageAt(index));
+      const vertical=matchMedia('(max-width:700px)').matches;
       const behavior=matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth';
-      if(vertical)window.scrollTo({top:window.scrollY+rect.top,behavior});
-      else track.scrollTo({left:track.scrollLeft+rect.left-bounds.left,top:0,behavior});
+      // Update the native thumb/count state at the moment an internal arrow
+      // is pressed, not only after an IntersectionObserver threshold fires.
+      // scrollIntoView follows the same root snap targets as finger swipes,
+      // including Safari when its bottom toolbar is animating.
+      update(index);
+      if(vertical)item.scrollIntoView({block:'start',behavior});
+      else {
+        const bounds=track.getBoundingClientRect();
+        const rect=item.getBoundingClientRect();
+        track.scrollTo({left:track.scrollLeft+rect.left-bounds.left,top:0,behavior});
+      }
     }
     const buildNav=()=>{
       nav.replaceChildren();
@@ -203,7 +210,9 @@
     const hideRail=()=>{
       clearTimeout(railTimer);
       rail.classList.remove('is-active');
-      previous.tabIndex=-1;next.tabIndex=-1;
+      // Chevrons remain subtly visible and keyboard reachable between
+      // interactions, matching the reference capsule without a dead zone.
+      previous.tabIndex=0;next.tabIndex=0;
     };
     // Native recommendations are inside the gallery's scroll document.
     // Stop advertising photo arrows as soon as those cards enter view,

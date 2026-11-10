@@ -24,9 +24,22 @@ const root = 'theme/codela-storefront/';
   assert.equal(await page.locator('.sf-product-gallery-rail .sf-product-gallery-count').count(),1);
   assert.equal(await page.locator('.sf-product-gallery-rail-arrow').count(),2);
   const railMaterial=await rail.evaluate(el=>({h:el.getBoundingClientRect().height,w:el.getBoundingClientRect().width,bg:getComputedStyle(el).backgroundColor,panel:getComputedStyle(document.querySelector('.sf-product-sheet')).backgroundColor}));
-  assert(railMaterial.h < 200 && railMaterial.w <= 50,'Small, three-thumb glass rail omits arrow slots: '+JSON.stringify(railMaterial));
+  assert(railMaterial.h >= 185 && railMaterial.h <= 215 && railMaterial.w <= 48,'Three thumbnails, count and INSIDE chevrons remain a slim capsule: '+JSON.stringify(railMaterial));
   assert.equal(await rail.evaluate(el=>getComputedStyle(el,'::before').backgroundColor),railMaterial.panel,'Rail pseudo-surface uses identical glass color');
   assert.equal(await images.first().evaluate(el=>getComputedStyle(el).outlineWidth),'0px','No dark selected outline at rest');
+  await rail.dispatchEvent('pointerdown');
+  await page.waitForFunction(()=>document.querySelector('.sf-product-gallery-rail').classList.contains('is-active'));
+  const arrowGeometry=await rail.evaluate(el=>{
+    const box=el.getBoundingClientRect();
+    return [...el.querySelectorAll('.sf-product-gallery-rail-arrow')].map(arrow=>{
+      const r=arrow.getBoundingClientRect();
+      return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,railTop:box.top,railBottom:box.bottom,railLeft:box.left,railRight:box.right};
+    });
+  });
+  assert(arrowGeometry.every(a=>a.top>=a.railTop-.1 && a.bottom<=a.railBottom+.1 && a.left>=a.railLeft-.1 && a.right<=a.railRight+.1),'Both chevrons sit entirely inside the glass capsule: '+JSON.stringify(arrowGeometry));
+  await page.locator('.sf-product-gallery-rail-arrow').last().click();
+  await page.waitForFunction(()=>document.querySelector('.sf-product-gallery-rail .sf-product-gallery-count').textContent==='2 / 3');
+  assert(Math.abs((await rail.boundingBox()).height-railMaterial.h)<1,'Tap changes the image without changing capsule height');
   const centered=await rail.evaluate(el=>{const r=el.getBoundingClientRect(),h=document.querySelector('.sf-header').getBoundingClientRect(),p=document.querySelector('.sf-product-sheet').getBoundingClientRect();return Math.abs((r.top+r.bottom)/2-(Math.max(12,h.bottom)+p.top)/2);});
   assert(centered<2,'Rail is centered between actual header and purchase panel');
   assert(!(await page.locator('.sf-product-gallery-expand').isVisible()),'Fullscreen button is hidden until photo tap');
@@ -134,17 +147,25 @@ const root = 'theme/codela-storefront/';
   // Woo may suppress HTML notices; the server's successful native cart hook
   // now confirms the POST as JSON before any page template/redirect.
   await page.evaluate(()=>window.responses.shift()({ok:true,headers:{get:()=>null},text:async()=>JSON.stringify({codela_cart_result:true,added:true,message:''})}));
+  await page.waitForFunction(()=>document.querySelector('.single_add_to_cart_button').dataset.sfCartState==='confirmed');
+  assert.equal(await buy.textContent(),'Added to cart','One visible confirmation precedes the cart action');
+  assert.equal(await buy.evaluate(el=>getComputedStyle(el).color),'rgb(255, 255, 255)','Confirmation retains the shared dark primary button');
+  assert.equal(await buy.evaluate(el=>getComputedStyle(el).maskImage !== 'none'),false,'The bag glyph belongs to ::before, not a second DOM icon');
+  assert.notEqual(await buy.evaluate(el=>getComputedStyle(el,'::before').maskImage),'none','Bag icon becomes a checked-bag mask on confirmation');
+  await buy.click();
+  assert.equal(await page.evaluate(()=>window.cartOpened),1,'Confirmed button opens cart without a second POST');
+  assert.equal(await page.evaluate(()=>window.requests.length),2);
   await page.waitForFunction(()=>document.querySelector('.single_add_to_cart_button').dataset.sfCartState==='success');
-  assert.equal(await buy.textContent(),'View cart');
+  assert.equal(await buy.textContent(),'View cart','Confirmation naturally becomes persistent View cart');
   assert.equal(await buy.evaluate(el=>getComputedStyle(el).color),'rgb(255, 255, 255)','View-cart success keeps the dark primary style');
   assert.equal(await page.evaluate(()=>window.wooEventButton),null,'Native add announces cart update without handing Woo a catalog button');
   assert.equal(await page.locator('.sf-product-purchase a.added_to_cart.wc-forward').count(),0,'No duplicate Sepetim link');
   assert.equal(await buy.evaluate(el=>getComputedStyle(el).whiteSpace),'nowrap','Standard purchase pill stays on one line');
-  await buy.click();assert.equal(await page.evaluate(()=>window.cartOpened),1);
+  await buy.click();assert.equal(await page.evaluate(()=>window.cartOpened),2);
   assert.equal(await page.evaluate(()=>window.requests.length),2,'Success click opens existing cart without another POST');
   await page.locator('input.qty').fill('2');await page.locator('input.qty').dispatchEvent('change');
   assert.equal(await buy.getAttribute('data-sf-cart-state'),'idle');
   assert.deepEqual(errors,[]);
-  console.log('Product flow: compact fixed gallery, hidden related-section arrows, single Woo success CTA, native cart confirmation and fullscreen passed.');
+  console.log('Product flow: in-capsule chevrons, stable dimensions, transient checked-bag confirmation, permanent View cart and native Woo updates passed.');
  } finally {await browser.close();}
 })().catch(error=>{console.error(error);process.exit(1);});
