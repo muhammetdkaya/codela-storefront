@@ -527,6 +527,29 @@ await touchToggle.evaluate(e=>e.dispatchEvent(new MouseEvent('click',{bubbles:tr
 assert.equal(await touchToggle.getAttribute('aria-expanded'),'true','Delayed synthetic release click cannot toggle the sheet back');
 // A fresh intentional press can still close it immediately.
 await touchToggle.click();assert.equal(await touchToggle.getAttribute('aria-expanded'),'false');
+// Continue the final native scroll as one upward finger pull, not a timed jump.
+await touchPage.waitForFunction(()=>!document.querySelector('.sf-product-sheet').classList.contains('is-expanded'));
+await touchPage.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
+await touchPage.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-discovering'));
+await touchPage.waitForTimeout(500);
+assert.equal(await touchToggle.getAttribute('aria-expanded'),'false','No delayed page-end opening on touch');
+const endStart=await touchPage.locator('.sf-product-sheet').boundingBox();
+const endScroll=await touchPage.evaluate(()=>scrollY);
+const endSwipe=(type,y)=>touchSession.send('Input.dispatchTouchEvent',{type,touchPoints:type==='touchEnd'?[]:[{x:190,y,id:2}]});
+await endSwipe('touchStart',310);
+await endSwipe('touchMove',275);
+await endSwipe('touchMove',185);
+await touchPage.waitForFunction(h=>document.querySelector('.sf-product-sheet').getBoundingClientRect().height>h+90,endStart.height);
+assert(Math.abs((await touchPage.evaluate(()=>scrollY))-endScroll)<2,'Overscroll holds the document while moving the sheet');
+const morph=await touchPage.locator('.sf-product-sheet-toggle').evaluate(e=>{
+ const before=getComputedStyle(e,'::before'),after=getComputedStyle(e,'::after');
+ return {leftWidth:before.width,rightWidth:after.width,leftTransform:before.transform};
+});
+assert.equal(morph.leftWidth,'14px','Left grip half keeps its width');
+assert.equal(morph.rightWidth,'14px','Right grip half keeps its width');
+assert.notEqual(morph.leftTransform,'none','Grip morphs during the swipe');
+await endSwipe('touchEnd');
+assert.equal(await touchToggle.getAttribute('aria-expanded'),'true','End swipe settles the sheet open');
 await touchContext.close();
 const noScriptContext=await browser.newContext({viewport:{width:390,height:844},javaScriptEnabled:false});
 const noScript=await noScriptContext.newPage();await noScript.setContent(fixture({pending:true}));
