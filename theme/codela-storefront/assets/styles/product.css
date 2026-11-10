@@ -559,7 +559,7 @@ body.single-product .stock.in-stock{display:none}
      native preview thumbnails and the live count. Its space never changes
      during swipe, hover or Safari browser chrome movement. */
   body.sf-product-sheet-ready .sf-product-gallery-rail{
-    position:fixed;z-index:12;right:12px;
+    position:fixed;z-index:12;right:16px;
     top:var(--sf-gallery-rail-center,40svh);left:auto;bottom:auto;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     gap:1px;width:48px;max-height:calc(100svh - var(--sf-product-collapsed-height,190px) - 100px);
@@ -1016,6 +1016,8 @@ html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:
 
 @media(max-width:700px){
  body.single-product.sf-product-sheet-ready div.product .sf-product-gallery-rail .sf-product-gallery-thumb[aria-current="true"]{outline:0;box-shadow:none}
- body.single-product.sf-product-sheet-ready div.product .sf-product-gallery-rail.is-active .sf-product-gallery-thumb[aria-current="true"] img{outline:1px solid var(--sf-ui-border);outline-offset:2px}
+ body.single-product.sf-product-sheet-ready div.product .sf-product-gallery-rail .sf-product-gallery-thumb img{outline:2px solid transparent;outline-offset:2px;transition:outline-color 330ms ease}
+ body.single-product.sf-product-sheet-ready div.product .sf-product-gallery-rail.is-active .sf-product-gallery-thumb[aria-current="true"] img{outline-color:var(--sf-ui-ink)}
+ @media(prefers-reduced-motion:reduce){body.single-product.sf-product-sheet-ready div.product .sf-product-gallery-rail .sf-product-gallery-thumb img{transition:none}}
 }
 @media(prefers-reduced-motion:reduce){body.sf-product-sheet-ready .sf-product-sheet{transition:none!important}}

@@ -1,3 +1,9 @@
+## 10 Kasım 2026 — 0.1.268 → 0.1.269 seçili galeri görseli
+
+Sağ kapsül 12px → 16px ile büyütme düğmesine hizalandı. Seçili küçük görsel mevcut is-active süresince 2px tema koyu mürekkep rengi çerçeve gösterir. Çerçeve 330ms sürede şeffaflaşır, geometri değişmez; reduced-motion korunur. Galeri dışı gizleme korunur.
+
+Doğrulama: 3 build-assets ve 24 paket testi geçti; canlı FTP kurulumu ve fiziksel iPhone kabulü yapılmadı. GitHub sürüm kaynağı ve yayın isteği hazırlanıyor; yayın sonucu bekleniyor. Sıradaki: ZIP yayınını doğrula, iPhone'da hizayı ve kaydırma sırasında seçili görsel çerçevesini kontrol et.
+
 ## 10 Kasım 2026 — 0.1.267 → 0.1.268 galeri görünürlüğü
 
 Cam katman opaklığı pasif .62 → .40, aktif .92 → .72. Sayaç pasif .42, etkileşimde 1; mevcut 1100ms etkinlik süresi ve 330ms geçiş kullanılır. Galeri dışındayken üst kapsül opacity:0 ve tüm alt kontroller visibility:hidden/pointer-events:none; okların kendi visibility:visible kuralının ilgili ürünlerde görünür kalması giderildi. Reduced-motion sayaç geçişini de kapatır.
