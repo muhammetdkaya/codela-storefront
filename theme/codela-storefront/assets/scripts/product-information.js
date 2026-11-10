@@ -122,7 +122,7 @@
         if (nearest) window.scrollTo({top:window.scrollY + nearest.getBoundingClientRect().top, behavior:'instant'});
       }
       sheet.classList.toggle('is-expanded', open);
-      document.body.style.setProperty('--sf-product-sheet-progress', open ? '1' : '0');
+      document.body.style.setProperty('--sf-product-sheet-backdrop-opacity', open ? '.44' : '0');
       document.body.classList.toggle('sf-product-sheet-open', open);
       toggle.setAttribute('aria-expanded', String(open));
       toggle.setAttribute('aria-label', open ? template.dataset.closeLabel : template.dataset.openLabel);
@@ -292,7 +292,7 @@
       finishDrag(true);
       cancelAnimationFrame(settleFrame);
       sheet.style.removeProperty('height');
-      document.body.style.removeProperty('--sf-product-sheet-progress');
+      document.body.style.removeProperty('--sf-product-sheet-backdrop-opacity');
       document.body.classList.remove('sf-product-sheet-dragging');
       media.inert = false;
       // Restore containers before their children using the exact anchor nodes.
@@ -389,7 +389,7 @@
       if (!drag || !drag.active) return;
       sheet.style.height = drag.height + 'px';
       var progress = (drag.height - drag.min) / Math.max(1, drag.max - drag.min);
-      document.body.style.setProperty('--sf-product-sheet-progress', String(Math.max(0, Math.min(1, progress))));
+      document.body.style.setProperty('--sf-product-sheet-backdrop-opacity', String(Math.max(0, Math.min(.44, progress * .44))));
     }
     function finishDrag(cancelled) {
       if (!drag) return;
@@ -400,7 +400,7 @@
       if (gesture.active) {
         sheet.style.height = gesture.height + 'px';
         var progress = (gesture.height - gesture.min) / Math.max(1, gesture.max - gesture.min);
-        document.body.style.setProperty('--sf-product-sheet-progress', String(Math.max(0, Math.min(1, progress))));
+        document.body.style.setProperty('--sf-product-sheet-backdrop-opacity', String(Math.max(0, Math.min(.44, progress * .44))));
       }
       drag = null;
       if (gesture.capture && gesture.capture.hasPointerCapture(gesture.id)) gesture.capture.releasePointerCapture(gesture.id);
