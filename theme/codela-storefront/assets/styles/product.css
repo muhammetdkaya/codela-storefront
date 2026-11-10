@@ -555,78 +555,72 @@ body.single-product .stock.in-stock{display:none}
        Toolbar animation can then change the viewport without moving photos. */
     scroll-margin-bottom:calc(var(--sf-product-viewport-small,100svh) - var(--sf-product-viewport-large,100lvh));
   }
-  /* A single glass capsule owns arrows, real thumbnails and index. */
-  /* Compact capsule: 3 accessible previews, narrow spacing, same light
-     Apple-glass material as the existing product sheet (never dark). */
-  /* Center inside the visible PHOTO zone above the collapsed purchase sheet,
-     rather than the entire viewport that includes the lower sheet. */
+  /* One reference-inspired light glass capsule owns both chevrons, all
+     native preview thumbnails and the live count. Its space never changes
+     during swipe, hover or Safari browser chrome movement. */
   body.sf-product-sheet-ready .sf-product-gallery-rail{
     position:fixed;z-index:12;right:12px;
-    top:var(--sf-gallery-rail-center,40svh);
-    left:auto;bottom:auto;
+    top:var(--sf-gallery-rail-center,40svh);left:auto;bottom:auto;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:2px;width:50px;max-height:calc(100svh - var(--sf-product-collapsed-height,190px) - 100px);
-    padding:6px 2px;transform:translateY(-50%);
+    gap:1px;width:48px;max-height:calc(100svh - var(--sf-product-collapsed-height,190px) - 100px);
+    padding:5px 2px;transform:translateY(-50%);
     border-radius:999px;isolation:isolate;
     background:transparent!important;color:var(--sf-ui-glass-ink);
-    border:1px solid transparent;
+    border:1px solid var(--sf-ui-glass-border);
     -webkit-backdrop-filter:none;backdrop-filter:none;
-    box-shadow:none!important;
-    transition:border-color 650ms ease,box-shadow 650ms ease;
+    box-shadow:0 2px 8px rgba(0,0,0,.045)!important;
+    transition:border-color 330ms ease,box-shadow 330ms ease;
   }
-  /* The glass itself fades, while the three thumbnails and the image count
-     stay in place and remain legible throughout navigation. */
+  /* Tint remains visible at rest; only the two small arrows are transient. */
   body.sf-product-sheet-ready .sf-product-gallery-rail::before{
     content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
     border-radius:inherit;background:var(--sf-ui-glass-panel-surface);
     -webkit-backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation)) contrast(var(--sf-ui-glass-contrast)) brightness(var(--sf-ui-glass-brightness));
     backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation)) contrast(var(--sf-ui-glass-contrast)) brightness(var(--sf-ui-glass-brightness));
-    opacity:0;transition:opacity 650ms ease;
+    opacity:.62;transition:opacity 330ms ease;
   }
   body.sf-product-sheet-ready .sf-product-gallery-rail.is-active{
-    border-color:var(--sf-ui-glass-border);
     box-shadow:var(--sf-ui-glass-shadow)!important;
   }
-  body.sf-product-sheet-ready .sf-product-gallery-rail.is-active::before{opacity:1}
+  body.sf-product-sheet-ready .sf-product-gallery-rail.is-active::before{opacity:.92}
   body.sf-product-sheet-ready .sf-product-gallery-rail[hidden]{display:none!important}
   body.sf-product-sheet-ready .sf-product-gallery-rail.is-outside-photos{visibility:hidden;pointer-events:none}
   body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-nav{
     position:static;display:flex;flex-direction:column;align-items:center;gap:0;
-    width:44px;max-width:44px;max-height:none;min-height:0;
+    width:40px;max-width:40px;max-height:none;min-height:0;
     margin:0;padding:0;overflow:visible;transform:none;
     border:0;box-shadow:none!important;background:transparent!important;
     -webkit-backdrop-filter:none;backdrop-filter:none;
   }
   body.single-product.sf-product-sheet-ready div.product .sf-product-gallery-rail .sf-product-gallery-thumb.sf-ui-icon-button{
-    width:44px;height:44px;min-height:44px;padding:7px;border-radius:12px;background:transparent;
-    display:grid;place-items:center;
+    width:38px;height:38px;min-width:38px;min-height:38px;padding:3px;
+    border-radius:12px;background:transparent;display:grid;place-items:center;
   }
   body.single-product.sf-product-sheet-ready div.product .sf-product-gallery-rail .sf-product-gallery-thumb img{
-    width:30px;height:30px;max-width:none;max-height:none;object-fit:cover;
-    border-radius:9px;
+    width:32px;height:32px;max-width:none;max-height:none;object-fit:cover;border-radius:9px;
   }
-  body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-thumb[aria-current="true"]{
-    outline:0;
-  }
+  body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-thumb[aria-current="true"]{outline:0}
   body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-count{
     position:static;margin:1px 0;color:inherit;font-size:11px;font-weight:500;
-    line-height:16px;letter-spacing:.025em;font-variant-numeric:tabular-nums;
+    line-height:18px;letter-spacing:.025em;font-variant-numeric:tabular-nums;
   }
-  /* Full-size touch targets sit outside the compact glass capsule rather
-     than adding 88px to its layout height. */
+  /* Chevrons occupy FIXED internal slots. No absolute positions outside the
+     capsule, no additional button height when the transient hints fade in. */
   body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-rail-arrow.sf-ui-icon-button{
-    position:absolute;left:50%;transform:translateX(-50%);
-    width:44px;height:44px;min-height:44px;flex:none;display:grid;place-items:center;
-    padding:0;color:inherit;background:transparent!important;border:0;box-shadow:none;
+    position:static;left:auto;top:auto;bottom:auto;transform:none;
+    width:40px;height:24px;min-width:40px;min-height:24px;flex:0 0 24px;
+    display:grid;place-items:center;padding:0;
+    color:inherit;background:transparent!important;border:0;box-shadow:none;
     opacity:0;visibility:hidden;pointer-events:none;
-    transition:opacity 300ms ease,visibility 300ms ease;
+    transition:opacity 330ms ease,visibility 330ms ease;
   }
-  body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-rail-arrow:first-child{top:-40px}
-  body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-rail-arrow:last-child{bottom:-40px}
+  body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-rail-arrow svg{width:17px;height:17px}
   body.sf-product-sheet-ready .sf-product-gallery-rail.is-active .sf-product-gallery-rail-arrow.sf-ui-icon-button{
-    opacity:1;visibility:visible;pointer-events:auto;
+    opacity:.88;visibility:visible;pointer-events:auto;
   }
-  body.sf-product-sheet-ready .sf-product-gallery-rail.is-active .sf-product-gallery-rail-arrow[disabled]{opacity:.35;cursor:default}
+  body.sf-product-sheet-ready .sf-product-gallery-rail.is-active .sf-product-gallery-rail-arrow[disabled]{
+    opacity:.24;cursor:default;pointer-events:none;
+  }
   @media(prefers-reduced-motion:reduce){
     body.sf-product-sheet-ready .sf-product-gallery-rail,
     body.sf-product-sheet-ready .sf-product-gallery-rail::before,
