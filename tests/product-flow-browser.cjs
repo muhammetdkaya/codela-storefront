@@ -46,6 +46,9 @@ const root = 'theme/codela-storefront/';
   assert.equal(await page.locator('.sf-product-sheet-toggle').getAttribute('aria-expanded'),'false');
   await page.evaluate(()=>window.scrollTo({top:500,behavior:'instant'}));
   await page.waitForFunction(()=>scrollY < document.documentElement.scrollHeight-innerHeight-120 && !document.querySelector('.woocommerce-product-gallery').classList.contains('is-discovering'));
+  // Traverse the native photo snap boundary before reaching the actual footer.
+  await page.evaluate(()=>document.querySelector('.sf-product-discovery').scrollIntoView({block:'start',behavior:'instant'}));
+  await page.waitForFunction(()=>document.querySelector('.woocommerce-product-gallery').classList.contains('is-discovering'));
   await page.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
   await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-expanded'));
   await page.locator('.sf-product-sheet-toggle').click();
