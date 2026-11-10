@@ -45,3 +45,16 @@ Doğrulanan farklar:
 6. İlk HTML, skeleton, kapalı, %25/%50 sürükleme, tam açık ekranlarını görsel olarak inceleyin. Tutamak tek birleşik çizgi olmalı; yalnız DOM genişliği testi yeterli değildir.
 7. Mevcut product-sheet-handoff-browser.cjs, product-sheet-browser.cjs, product-flow-browser.cjs, product-skeleton-geometry-browser.cjs ve product-first-paint-browser.cjs ilgili beklentileri güncellenerek çalışmalı. Sayfa/panel kesintisiz hareketi, accordion dokunması, native Woo form sahipliği korunmalı.
 8. Fiziksel iPhone görsel kabulünü CI başarısından ayrı kaydedin. Kullanıcı sonraki uygulamayı yetkilendirdiğinde sürüm/yayın ve AGENTS.md + docs/storefront-theme.md kayıtlarını tamamlayın.
+
+---
+
+## 10 Kasım 2026 — 0.1.273 → 0.1.274 ürün paneli / skeleton görsel uyumu
+
+Ürün panelinin iki ayrı pseudo-element parçasından oluşan tutamağı, native ürün şablonu ve destination preview tarafından kullanılan tek 28px SVG path ile değiştirildi; rAF sürükleme orta noktasını kesintisiz hareket ettirir. Dokunmatik sürükleme, klavye, reduced-motion, aria-expanded ve native Woo form sahipliği korunur. Açık panel scrim'i tam ilerlemede tek nötr rgba(0,0,0,.32) renge çıkarıldı; header arka planda kararır, mevcut açık cam panel ve satın alma kontrolü önde kalır. Ek blur yoktur.
+
+Geçiş skeleton'ı gri 44×4 çubuğu kullanmaz; aynı SVG ve ürün sayfasının başlık rezervi, gerçek ürün header'ının 16px kenarı, özgün SVG stroke/fill çizimi ve kaynak sayfadaki doğrulanmış sepet rozetini taşıyan inert görsel düğümü kullanır. Eski açık CTA yerine ikon maskesi assets/styles/tokens.css ile ortak olan koyu birincil buton yerleştirildi. Ürün başlığı/fiyatı hedef içerik yüklenince gerçek yerel düğümlere bırakılır; bir önceki ürünün verileri kopyalanmaz.
+
+Kaynaklar: inc/ui.php, inc/product.php, inc/document-continuity.php, assets/styles/product.css, assets/scripts/product-information.js, assets/styles/navigation-feedback.css, assets/scripts/navigation-feedback.js, assets/styles/tokens.css. Generated assets: storefront-base.css, document-navigation.css, document-navigation.js. product-sheet-browser ve product-skeleton-geometry-browser koşumları tek SVG tutamak, iki nötr başlık rezervi ve 402px genişliğini doğrulayacak şekilde güncellendi.
+
+GitHub Actions ve fiziksel iPhone kabulü ayrı doğrulanmalıdır. Bu kayıt yalnız kod güncellemesinin kapsamını belgeler; otomatik testin tamamlandığı veya canlı FTP kurulumunun yapıldığı iddia edilmez.
+
