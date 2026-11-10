@@ -50,6 +50,9 @@
     var summary = product && product.querySelector('.sf-product-overview > .summary, :scope > .summary');
     if (!template || !media || !summary) return;
     var sheet = template.content.firstElementChild.cloneNode(true);
+    var scrim = document.createElement('div');
+    scrim.className = 'sf-product-sheet-scrim';
+    scrim.setAttribute('aria-hidden', 'true');
     var heading = sheet.querySelector('.sf-product-sheet-heading');
     var content = sheet.querySelector('.sf-product-sheet-body');
     var toggle = sheet.querySelector('.sf-product-sheet-toggle');
@@ -109,7 +112,7 @@
       focusFrame = 0;
       focusGeneration++;
     }
-    function setOpen(open, focusTarget, preservePhoto) {
+    function setOpen(open, focusTarget, preservePhoto, fromDrag) {
       cancelPendingFocus();
       if (!mounted) return;
       clearTimeout(endTimer);
@@ -123,6 +126,8 @@
       }
       sheet.classList.toggle('is-expanded', open);
       document.body.classList.toggle('sf-product-sheet-open', open);
+      scrim.classList.toggle('is-visible', open);
+      if (!fromDrag) scrim.style.removeProperty('opacity');
       toggle.setAttribute('aria-expanded', String(open));
       toggle.setAttribute('aria-label', open ? template.dataset.closeLabel : template.dataset.openLabel);
       media.inert = open;
@@ -274,6 +279,7 @@
       }
       if (track && discovery.children.length) track.appendChild(discovery);
       product.appendChild(sheet);
+      document.body.appendChild(scrim);
       document.body.classList.add('sf-product-sheet-ready');
       if (purchase) sheet.classList.add('has-purchase');
       measure();
@@ -304,6 +310,9 @@
       media.classList.remove('is-discovering');
       sheet.classList.remove('is-discovering');
       sheet.remove();
+      scrim.remove();
+      scrim.className = 'sf-product-sheet-scrim';
+      scrim.style.removeProperty('opacity');
       sheet.classList.remove('is-expanded');
       document.body.classList.remove('sf-product-sheet-ready', 'sf-product-sheet-open');
       media.style.removeProperty('--sf-product-collapsed-height');
@@ -342,69 +351,128 @@
       setOpen(!expanded);
     });
     var header = sheet.querySelector('.sf-product-sheet-header');
-    header.addEventListener('pointerdown', function (event) {
-      if (!mounted || drag || event.button !== 0 || event.isPrimary === false || event.target.closest('a,input,select,textarea')) return;
-      suppressClickUntil = 0; // A new deliberate press is never a stale release.
+    // Native body scrolling wins unless a downward swipe begins at its top.
+    function beginDrag(x, y, id, capture) {
+      if (!mounted || drag) return false;
       var height = sheet.getBoundingClientRect().height;
       cancelAnimationFrame(settleFrame);
-      // Catch the current visual height, including a still-settling transition.
-      // Removing its height before sampling made a rapid re-grab jump.
       sheet.classList.add('is-holding');
       sheet.style.height = height + 'px';
       var style = getComputedStyle(sheet);
-      drag = {id:event.pointerId, x:event.clientX, y:event.clientY, lastY:event.clientY,
-        start:height, height:height, min:header.getBoundingClientRect().height + parseFloat(style.paddingBottom),
-        max:parseFloat(style.maxHeight), open:expanded, time:performance.now(), active:false, width:innerWidth,
-        capture:event.target.closest('button') || header};
-      drag.capture.setPointerCapture(event.pointerId);
-    });
-    window.addEventListener('pointermove', function (event) {
-      if (!drag || event.pointerId !== drag.id) return;
-      var dy = event.clientY - drag.y, dx = event.clientX - drag.x;
-      if (!drag.active) {
-        if (Math.max(Math.abs(dy), Math.abs(dx)) < 8) return;
-        if (Math.abs(dx) > Math.abs(dy)) { finishDrag(true); return; }
-        drag.active = true;
-        sheet.classList.add('is-dragging');
-        document.body.classList.add('sf-product-sheet-open');
-        media.inert = true;
-      }
-      event.preventDefault();
-      drag.lastY = event.clientY;
-      drag.height = Math.max(drag.min, Math.min(drag.max, drag.start - dy));
-      // Input state follows every sample; layout paints only once per frame.
-      if (!dragFrame) dragFrame = requestAnimationFrame(paintDrag);
-    }, {passive:false});
-    function paintDrag() {
-      dragFrame = 0;
-      if (drag?.active) sheet.style.height = drag.height + 'px';
+      var min = parseFloat(style.getPropertyValue('--sf-product-closed-height'));
+      if (!Number.isFinite(min)) min = header.getBoundingClientRect().height + parseFloat(style.paddingBottom);
+      var max = parseFloat(style.maxHeight);
+      if (!Number.isFinite(max)) max = innerHeight - 84;
+      drag = {id:id, x:x, y:y, lastY:y, start:height, height:height,
+        min:min, max:Math.max(min+1,max), open:expanded,
+        time:performance.now(), active:false, width:innerWidth, capture:capture||null};
+      if (capture && id !== null) capture.setPointerCapture(id);
+      return true;
     }
-    function finishDrag(cancelled) {
+    function updateDrag(x, y) {
       if (!drag) return;
-      cancelAnimationFrame(dragFrame);
-      paintDrag(); // A release may arrive before the queued frame.
-      var gesture = drag;
-      drag = null;
-      if (gesture.capture.hasPointerCapture(gesture.id)) gesture.capture.releasePointerCapture(gesture.id);
-      sheet.classList.remove('is-holding');
-      if (!gesture.active) { sheet.style.removeProperty('height'); return; }
-      suppressClickUntil = performance.now() + 700;
-      var dy = gesture.lastY - gesture.y;
-      var speed = Math.abs(dy) / Math.max(1, performance.now() - gesture.time);
-      var progress = (gesture.height - gesture.min) / Math.max(1, gesture.max - gesture.min);
-      var open = cancelled ? gesture.open : (Math.abs(dy) > 35 && speed > .35 ? dy < 0 : progress > (gesture.open ? .65 : .18));
-      sheet.classList.remove('is-dragging');
-      // Establish the released height before transitioning to its snap state.
-      // No per-frame gallery measurement or document scroll correction.
-      sheet.getBoundingClientRect();
-      setOpen(open, null, true);
-      settleFrame = requestAnimationFrame(function () { sheet.style.removeProperty('height'); });
+      var dy=y-drag.y, dx=x-drag.x;
+      if (!drag.active) {
+        if (Math.max(Math.abs(dy),Math.abs(dx))<8) return;
+        if (Math.abs(dx)>Math.abs(dy)) {finishDrag(true);return;}
+        drag.active=true;
+        sheet.classList.add('is-dragging');
+        scrim.classList.add('is-dragging');
+        document.body.classList.add('sf-product-sheet-open');
+        media.inert=true;
+      }
+      drag.lastY=y;
+      drag.height=Math.max(drag.min,Math.min(drag.max,drag.start-dy));
+      if (!dragFrame) dragFrame=requestAnimationFrame(paintDrag);
     }
-    window.addEventListener('pointerup', function (event) {
-      if (drag && event.pointerId === drag.id) finishDrag(false);
+    header.addEventListener('pointerdown', function (event) {
+      if (!mounted||drag||event.button!==0||event.isPrimary===false||
+          event.target.closest('a,input,select,textarea')) return;
+      suppressClickUntil=0;
+      beginDrag(event.clientX,event.clientY,event.pointerId,event.target.closest('button')||header);
     });
+    // Desktop pointer drag works on noninteractive content too.
+    content.addEventListener('pointerdown',function(event){
+      if(!mounted||!expanded||drag||event.pointerType==='touch'||event.button!==0||
+         content.scrollTop>2||
+         event.target.closest('a,button,input,select,textarea,summary,[role="button"],[contenteditable="true"]'))return;
+      beginDrag(event.clientX,event.clientY,event.pointerId,content);
+    });
+    window.addEventListener('pointermove',function(event){
+      if(!drag||event.pointerId!==drag.id)return;
+      updateDrag(event.clientX,event.clientY);
+      if(drag?.active)event.preventDefault();
+    },{passive:false});
+    function paintDrag(){
+      dragFrame=0;
+      if(!drag?.active)return;
+      sheet.style.height=drag.height+'px';
+      scrim.style.opacity=String(Math.max(0,Math.min(1,(drag.height-drag.min)/(drag.max-drag.min))));
+    }
+    function finishDrag(cancelled){
+      if(!drag)return;
+      cancelAnimationFrame(dragFrame);paintDrag();
+      var gesture=drag;drag=null;
+      if(gesture.capture&&gesture.capture.hasPointerCapture(gesture.id))
+        gesture.capture.releasePointerCapture(gesture.id);
+      sheet.classList.remove('is-holding');
+      if(!gesture.active){
+        sheet.style.removeProperty('height');scrim.style.removeProperty('opacity');return;
+      }
+      suppressClickUntil=performance.now()+700;
+      var dy=gesture.lastY-gesture.y;
+      var speed=Math.abs(dy)/Math.max(1,performance.now()-gesture.time);
+      var progress=(gesture.height-gesture.min)/(gesture.max-gesture.min);
+      var open=cancelled?gesture.open:
+        (Math.abs(dy)>35&&speed>.35?dy<0:progress>(gesture.open?.65:.18));
+      sheet.classList.remove('is-dragging');
+      sheet.getBoundingClientRect();
+      setOpen(open,null,true,true);
+      scrim.classList.remove('is-dragging');
+      settleFrame=requestAnimationFrame(function(){
+        sheet.style.removeProperty('height');
+        scrim.style.removeProperty('opacity');
+      });
+    }
+    window.addEventListener('pointerup',function(event){
+      if(drag&&event.pointerId===drag.id)finishDrag(false);
+    });
+    // Safari: an open sheet can be grabbed from descriptive body text.
+    // Do not hijack inputs, disclosures, horizontal swipes or detail scrolling.
+    var bodyTouch=null;
+    content.addEventListener('touchstart',function(event){
+      bodyTouch=null;
+      if(!mounted||!expanded||drag||event.touches.length!==1||
+        event.target.closest('a,button,input,select,textarea,summary,[role="button"],[contenteditable="true"]'))return;
+      var t=event.touches[0];bodyTouch={id:t.identifier,x:t.clientX,y:t.clientY};
+    },{passive:true});
+    content.addEventListener('touchmove',function(event){
+      if(!bodyTouch||event.touches.length!==1)return;
+      var t=event.touches[0];if(t.identifier!==bodyTouch.id)return;
+      if(!drag){
+        var dy=t.clientY-bodyTouch.y,dx=t.clientX-bodyTouch.x;
+        if(Math.max(Math.abs(dx),Math.abs(dy))<10)return;
+        if(dy<=0||Math.abs(dx)>Math.abs(dy)||content.scrollTop>2){
+          bodyTouch=null;return;
+        }
+        if(!beginDrag(bodyTouch.x,bodyTouch.y,null,null))return;
+      }
+      if(drag.id!==null)return;
+      event.preventDefault();
+      updateDrag(t.clientX,t.clientY);
+    },{passive:false});
+    window.addEventListener('touchend',function(event){
+      if(!bodyTouch)return;
+      if(!Array.from(event.changedTouches).some(function(t){return t.identifier===bodyTouch.id;}))return;
+      bodyTouch=null;
+      if(drag&&drag.id===null)finishDrag(false);
+    },{passive:true});
+    window.addEventListener('touchcancel',function(){
+      bodyTouch=null;
+      if(drag&&drag.id===null)finishDrag(true);
+    },{passive:true});
     window.addEventListener('pointercancel', function (event) { if (drag && event.pointerId === drag.id) finishDrag(true); });
-    header.addEventListener('lostpointercapture', function (event) { if (drag && event.pointerId === drag.id) finishDrag(true); });
+    sheet.addEventListener('lostpointercapture', function (event) { if (drag && event.pointerId === drag.id) finishDrag(true); });
     window.addEventListener('blur', function () { finishDrag(true); });
     sheet.addEventListener('keydown', function (event) {
       if (event.key === 'Escape' && drag) { event.preventDefault(); finishDrag(true); return; }

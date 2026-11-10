@@ -6,8 +6,9 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Mobil ürün header sol/sağ boşluğu, alt panel, galeri ve büyütme düğmesi ortak 16px kenar ölçüsünü kullanır.",
-    "Sağ galeri kapsülü büyütme butonuyla aynı 16px sağ kenar hizasına alındı.",
-    "Kaydırma ve dokunmada seçili küçük görsel 2px koyu çerçeveyle belirginleşir; etkileşim durunca çerçeve yumuşakça kaybolur."
+    "Mobil ürün paneli başlıktan ve içerik kendi kaydırma sınırındayken içerik alanından aşağı sürüklenebilir; etkileşimli Woo alanları korunur.",
+    "Panel hareketiyle ürün galerisi arka planı kademeli kararır; bırakınca karartma ve panel birlikte yumuşakça tamamlanır.",
+    "Ortadaki tutamak aynı iki çizginin dönüşümüyle aşağı oka dönüşür; ölçü ve cam tema tutarlıdır.",
+    "Mevcut sayfa sonu otomatik açılma, tekrarlı açma ve native satın alma işleyişi korunur."
   ]
 }

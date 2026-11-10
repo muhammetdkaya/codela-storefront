@@ -499,19 +499,46 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
 
 /* Progressive mobile composition. Without JS the native document stays usable. */
 .sf-product-sheet-header{position:relative;flex:none;min-height:64px;padding:28px 16px 8px}
-/* One centered control: the existing handle becomes a down chevron when open. */
-.sf-product-sheet-toggle::before{content:'';position:absolute;width:44px;height:4px;top:12px;left:13px;border-radius:var(--sf-ui-pill);background:var(--sf-ui-border);transition:transform var(--sf-ui-motion-press) var(--sf-ui-ease-press)}
-.sf-product-sheet.is-expanded .sf-product-sheet-toggle::before{width:18px;height:18px;left:26px;top:10px;background:currentColor;border:0;border-radius:0;transform:none;-webkit-mask:url("../icons/chevron-down.svg") center/contain no-repeat;mask:url("../icons/chevron-down.svg") center/contain no-repeat}
-.sf-product-sheet.is-expanded .sf-product-sheet-toggle::after{content:none}
-.sf-product-sheet.is-expanded .sf-product-sheet-toggle{color:var(--sf-ui-glass-ink)}
-.sf-product-sheet.is-end-ready .sf-product-sheet-toggle::before{transform:scaleX(1.15);background:var(--sf-ui-glass-ink)}
+/* One pair of strokes morphs from a centered bar into a down chevron. */
+.sf-product-sheet-toggle.sf-ui-button::before,
+.sf-product-sheet-toggle.sf-ui-button::after{
+  content:'';position:absolute;display:block;left:50%;top:13px;
+  width:30px;height:3px;border:0;border-radius:999px;
+  background:var(--sf-ui-border);-webkit-mask:none;mask:none;
+  transform:translate(-50%,-50%);transform-origin:center;
+  transition:transform 300ms cubic-bezier(.22,1,.36,1),
+    width 300ms cubic-bezier(.22,1,.36,1),background-color 300ms ease;
+}
+.sf-product-sheet.is-expanded .sf-product-sheet-toggle.sf-ui-button::before{
+  width:20px;background:var(--sf-ui-glass-ink);
+  transform:translate(-50%,-50%) translateX(-7px) rotate(36deg);
+}
+.sf-product-sheet.is-expanded .sf-product-sheet-toggle.sf-ui-button::after{
+  width:20px;background:var(--sf-ui-glass-ink);
+  transform:translate(-50%,-50%) translateX(7px) rotate(-36deg);
+}
+.sf-product-sheet.is-end-ready:not(.is-expanded) .sf-product-sheet-toggle.sf-ui-button::before,
+.sf-product-sheet.is-end-ready:not(.is-expanded) .sf-product-sheet-toggle.sf-ui-button::after{
+  background:var(--sf-ui-glass-ink);transform:translate(-50%,-50%) scaleX(1.12);
+}
+/* A composited opacity fade follows the actual drag progress. */
+.sf-product-sheet-scrim{
+  position:fixed;inset:0;z-index:999;pointer-events:none;
+  background:rgba(9,12,18,.24);opacity:0;
+  transition:opacity 420ms cubic-bezier(.22,1,.36,1);
+}
+.sf-product-sheet-scrim.is-visible{opacity:1}
+.sf-product-sheet-scrim.is-dragging{transition:none}
+@media(prefers-reduced-motion:reduce){
+  .sf-product-sheet-scrim,.sf-product-sheet-toggle.sf-ui-button::before,
+  .sf-product-sheet-toggle.sf-ui-button::after{transition:none}
+}
 .sf-product-sheet-heading > :is(.sf-product-shipping-summary,.out-of-stock){grid-column:1/-1;margin:4px 0 0;font-size:12px;line-height:1.4}
 body.single-product .stock.in-stock{display:none}
 .sf-product-sheet-heading{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,42%);grid-template-rows:minmax(28px,max-content);grid-auto-rows:max-content;align-items:center;column-gap:10px;row-gap:0}
 /* Price and urgency are laid out as peers to the native title, without
    moving or cloning plugin nodes. The mobile rules below also apply prepaint. */
 .sf-product-sheet-toggle.sf-ui-button{position:absolute;left:calc(50% - 35px);top:0;width:70px;min-width:70px;min-height:44px;padding:0;--sf-ui-button-height:44px;--sf-ui-button-font-size:0px;--sf-ui-button-padding-y:0px;gap:0}
-.sf-product-sheet-toggle::after{content:none}
 .sf-product-sheet-body{min-height:0;overscroll-behavior:contain;overflow:auto;overflow-x:hidden;scrollbar-width:thin}
 @media(max-width:700px){
   /* Root scrolling preserves native browser pull-to-refresh at the top. */
