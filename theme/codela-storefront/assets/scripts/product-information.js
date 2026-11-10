@@ -80,10 +80,9 @@
     var delivery = null;
     var shippingSummary = null;
     var shippingObserver = null;
-    var endArmed = true;
-    var endTimer = 0;
-    var dismissedAt = 0;
-    var lastScrollY = window.scrollY;
+    var endTouch = null;
+    var endWheel = null;
+    var endWheelTimer = 0;
     var openSections = [];
     function move(node, target) {
       if (!node) return;
@@ -115,9 +114,6 @@
     function setOpen(open, focusTarget, preservePhoto, fromDrag) {
       cancelPendingFocus();
       if (!mounted) return;
-      clearTimeout(endTimer);
-      sheet.classList.remove('is-end-ready');
-      if (!open && expanded) { endArmed = false; dismissedAt = performance.now(); }
       expanded = open;
       if (open && !preservePhoto && !sheet.classList.contains('is-discovering')) {
         var photos = Array.from(media.querySelectorAll('.woocommerce-product-gallery__image,.woocommerce-product-gallery__image--placeholder')).filter(node=>node.getClientRects().length);
@@ -150,67 +146,84 @@
         discovery.getBoundingClientRect().top < window.innerHeight * (media.classList.contains('is-discovering') ? .65 : .55);
     }
     function atPageEnd() {
-      // Safari's retractable toolbar / safe area makes an exact 8px boundary
-      // unreliable. An actual final viewport plus a small tolerance is enough.
-      var bottom = window.scrollY + window.innerHeight;
-      return document.documentElement.scrollHeight - bottom <= Math.max(28, window.innerHeight * .035);
+      // Compensate for Safari browser chrome and safe-area changes.
+      return document.documentElement.scrollHeight - (window.scrollY + window.innerHeight) <=
+        Math.max(28, window.innerHeight * .035);
     }
-    function openAfterEndGesture(deliberate = false) {
-      if (!mounted || expanded || drag ||
-          document.documentElement.classList.contains('sf-overlay-scroll-locked')) return;
-      if (discovery.children.length && !isDiscovering()) return;
-      if (!atPageEnd()) return;
-      // A fresh downward gesture can reopen after dismissal; synthetic scroll
-      // events caused by unlocking the page cannot reopen it.
-      if (deliberate && performance.now() - dismissedAt > 900) endArmed = true;
-      if (!endArmed) return;
-      clearTimeout(endTimer);
-      sheet.classList.add('is-end-ready');
-      endTimer = setTimeout(function () {
-        sheet.classList.remove('is-end-ready');
-        if (!mounted || expanded || drag || !endArmed || !atPageEnd() ||
-            document.documentElement.classList.contains('sf-overlay-scroll-locked')) return;
-        endArmed = false;
-        setOpen(true, null, true);
-      }, 450);
+    function endPullAllowed(target) {
+      return mounted && !expanded && !drag && !endWheel &&
+        !document.documentElement.classList.contains('sf-overlay-scroll-locked') &&
+        (!discovery.children.length || isDiscovering()) &&
+        !(target instanceof Element && target.closest('.sf-product-sheet,.sf-product-gallery-rail,#sf-panel,.pswp'));
     }
     function updateDiscovery() {
       if (!mounted || drag || document.documentElement.classList.contains('sf-overlay-scroll-locked')) return;
-      var remaining = document.documentElement.scrollHeight - window.scrollY - window.innerHeight;
-      if (remaining > 120) endArmed = true;
-      if (!atPageEnd()) { clearTimeout(endTimer); sheet.classList.remove('is-end-ready'); }
-      var downward = window.scrollY > lastScrollY + 1;
-      lastScrollY = window.scrollY;
-      if (downward) openAfterEndGesture();
       var active = isDiscovering();
       media.classList.toggle('is-discovering', active);
       var compact = active && !expanded;
       var changed = sheet.classList.contains('is-discovering') !== compact;
       sheet.classList.toggle('is-discovering', compact);
-      // Padding-only changes do not resize the observer's content box.
-      // Measure this state boundary explicitly, including short product names.
       if (changed) measure();
     }
     window.addEventListener('scroll', function () {
       if (!mounted || discoveryFrame) return;
       discoveryFrame = requestAnimationFrame(function () { discoveryFrame = 0; updateDiscovery(); });
     }, {passive:true});
-    // At the actual bottom, a further wheel or upward finger swipe may not
-    // produce a scroll event. Respect that explicit intent without moving
-    // the photo rail, modifying scroll-snap, or requiring an exact last pixel.
-    window.addEventListener('wheel', function (event) {
-      if (event.deltaY > 8) openAfterEndGesture(true);
-    }, {passive:true});
-    var touchStartY = null;
+    // At the bottom, an ongoing upward swipe is passed directly to the sheet.
+    // No page-end timer or synthetic scrolling can open it.
     window.addEventListener('touchstart', function (event) {
-      touchStartY = event.touches.length === 1 ? event.touches[0].clientY : null;
+      endTouch = null;
+      if (event.touches.length !== 1 || !endPullAllowed(event.target)) return;
+      var t = event.touches[0];
+      endTouch = {id:t.identifier, lastY:t.clientY, active:false};
     }, {passive:true});
+    window.addEventListener('touchmove', function (event) {
+      if (!endTouch || event.touches.length !== 1) return;
+      var t = event.touches[0];
+      if (t.identifier !== endTouch.id) return;
+      var previousY = endTouch.lastY;
+      endTouch.lastY = t.clientY;
+      if (!endTouch.active) {
+        if (previousY - t.clientY <= 1 || !atPageEnd() || !endPullAllowed(event.target)) return;
+        // Inherit the LAST touch position, not the initial scroll position.
+        if (!beginDrag(t.clientX, previousY, null, null)) return;
+        endTouch.active = true;
+      }
+      event.preventDefault();
+      updateDrag(t.clientX, t.clientY);
+    }, {passive:false});
     window.addEventListener('touchend', function (event) {
-      if (touchStartY === null) return;
-      var moved = touchStartY - (event.changedTouches[0]?.clientY ?? touchStartY);
-      touchStartY = null;
-      if (moved > 24) requestAnimationFrame(function () { openAfterEndGesture(true); });
+      if (!endTouch || !Array.from(event.changedTouches).some(function (t) { return t.identifier === endTouch.id; })) return;
+      var active = endTouch.active;
+      endTouch = null;
+      if (active && drag && drag.id === null) finishDrag(false);
     }, {passive:true});
+    window.addEventListener('touchcancel', function () {
+      if (!endTouch) return;
+      var active = endTouch.active;
+      endTouch = null;
+      if (active && drag && drag.id === null) finishDrag(true);
+    }, {passive:true});
+    // Trackpad/mouse wheel delta is a virtual continuation of the same page.
+    // The delay here only settles the end of an ACTIVE wheel gesture.
+    window.addEventListener('wheel', function (event) {
+      if (!endWheel) {
+        if (event.deltaY <= 0 || !atPageEnd() || !endPullAllowed(event.target)) return;
+        if (!beginDrag(0, 0, null, null)) return;
+        endWheel = {distance:0};
+      }
+      event.preventDefault();
+      var unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? innerHeight : 1;
+      endWheel.distance = Math.max(0, endWheel.distance + Math.max(-180, Math.min(180, event.deltaY * unit)));
+      updateDrag(0, -endWheel.distance);
+      clearTimeout(endWheelTimer);
+      endWheelTimer = setTimeout(function () {
+        endWheelTimer = 0;
+        var active = !!endWheel;
+        endWheel = null;
+        if (active && drag && drag.id === null) finishDrag(false);
+      }, 160);
+    }, {passive:false});
     function mount() {
       if (mounted) return;
       mounted = true;
@@ -291,12 +304,17 @@
       sheet.classList.remove('is-mounting');
     }
     function unmount() {
-      clearTimeout(endTimer);
+      clearTimeout(endWheelTimer);
+      endWheelTimer = 0;
+      endWheel = null;
+      endTouch = null;
       cancelPendingFocus();
       if (!mounted) return;
       finishDrag(true);
       cancelAnimationFrame(settleFrame);
       sheet.style.removeProperty('height');
+      sheet.style.removeProperty('--sf-product-morph-left');
+      sheet.style.removeProperty('--sf-product-morph-right');
       media.inert = false;
       // Restore containers before their children using the exact anchor nodes.
       originals.slice().reverse().forEach(function (entry) { entry[1].replaceWith(entry[0]); });
@@ -407,7 +425,10 @@
       dragFrame=0;
       if(!drag?.active)return;
       sheet.style.height=drag.height+'px';
-      scrim.style.opacity=String(Math.max(0,Math.min(1,(drag.height-drag.min)/(drag.max-drag.min))));
+      var progress=Math.max(0,Math.min(1,(drag.height-drag.min)/(drag.max-drag.min)));
+      scrim.style.opacity=String(progress);
+      sheet.style.setProperty('--sf-product-morph-left',(32*progress)+'deg');
+      sheet.style.setProperty('--sf-product-morph-right',(-32*progress)+'deg');
     }
     function finishDrag(cancelled){
       if(!drag)return;
@@ -417,7 +438,10 @@
         gesture.capture.releasePointerCapture(gesture.id);
       sheet.classList.remove('is-holding');
       if(!gesture.active){
-        sheet.style.removeProperty('height');scrim.style.removeProperty('opacity');return;
+        sheet.style.removeProperty('height');
+        sheet.style.removeProperty('--sf-product-morph-left');
+        sheet.style.removeProperty('--sf-product-morph-right');
+        scrim.style.removeProperty('opacity');return;
       }
       suppressClickUntil=performance.now()+700;
       var dy=gesture.lastY-gesture.y;
@@ -432,6 +456,8 @@
       settleFrame=requestAnimationFrame(function(){
         sheet.style.removeProperty('height');
         scrim.style.removeProperty('opacity');
+        sheet.style.removeProperty('--sf-product-morph-left');
+        sheet.style.removeProperty('--sf-product-morph-right');
       });
     }
     window.addEventListener('pointerup',function(event){
