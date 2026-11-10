@@ -16,7 +16,7 @@ module.exports=async function destinationBottomBrowser(browser){
   await page.goto('https://store.test/');
   for(const width of [320,390,700,701,900,901,1280])for(const product of [false,true]){
    await page.setViewportSize({width,height:850});
-   await page.setContent(`<!doctype html><html><head><meta charset="utf-8"><style>${css}</style></head><body class="${product?'single-product woocommerce':''}"><div class="sf-shell has-mobile-dock"><header class="sf-header"><div class="sf-brand sf-ui-surface">ORIGINAL LOGO</div><nav class="sf-header-menu">ORIGINAL MENU</nav><div class="sf-actions"><a class="sf-cart-trigger">Cart</a></div></header><nav class="sf-mobile-dock" ${product?'hidden':''}><div class="sf-dock-surface"><a data-dock-view="home">Home</a></div></nav></div><main id="sf-content"><div class="product"><form class="cart"><div class="sf-product-purchase" style="position:fixed;bottom:12px;visibility:visible"><span data-old-price>42 ₺</span><input name="quantity" value="7"><button type="submit" name="add-to-cart" value="42">Old product</button></div></form></div></main><footer class="sf-footer"><a>Privacy</a></footer></body></html>`);
+   await page.setContent(`<!doctype html><html><head><meta charset="utf-8"><style>${css}</style></head><body class="${product?'single-product woocommerce':''}"><div class="sf-shell has-mobile-dock"><header class="sf-header"><div class="sf-brand sf-ui-surface">ORIGINAL LOGO</div><nav class="sf-header-menu">ORIGINAL MENU</nav><div class="sf-actions"><a class="sf-cart-trigger"><svg class="sf-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1 12H6z" fill="none" stroke="currentColor"/></svg></a></div></header><nav class="sf-mobile-dock" ${product?'hidden':''}><div class="sf-dock-surface"><a data-dock-view="home">Home</a></div></nav></div><main id="sf-content"><div class="product"><form class="cart"><div class="sf-product-purchase" style="position:fixed;bottom:12px;visibility:visible"><span data-old-price>42 ₺</span><input name="quantity" value="7"><button type="submit" name="add-to-cart" value="42">Old product</button></div></form></div></main><footer class="sf-footer"><a>Privacy</a></footer></body></html>`);
    await page.evaluate(({preview,icons})=>{window.codelaSFDocument={home:'https://store.test/',productBase:'https://store.test/product/',purchasePreview:preview,...icons};window.originalForm=document.querySelector('form.cart');window.originalDock=document.querySelector('.sf-mobile-dock');window.submits=0;originalForm.addEventListener('submit',e=>{e.preventDefault();submits++});},{preview,icons});
    await page.addScriptTag({content:script});
    for(const target of ['product','home'])for(const owner of ['document','router']){
@@ -38,7 +38,7 @@ module.exports=async function destinationBottomBrowser(browser){
         oldBrandHidden:getComputedStyle(old).visibility==='hidden',
         logo:preview?.querySelector('.sf-header-destination-capsule--logo')?.textContent,
         menuSvg:!!preview?.querySelector('.sf-header-destination-capsule--menu svg.sf-icon'),
-        cartSvg:!!preview?.querySelector('.sf-header-destination-capsule--cart svg.sf-icon'),
+        cartSvg:!!preview?.querySelector('.sf-header-destination-capsule--cart-native svg.sf-icon, .sf-header-destination-capsule--cart svg.sf-icon'),
         backSvg:!!preview?.querySelector('.sf-header-destination-capsule--back svg.sf-icon'),
         shimmer:preview?.querySelectorAll('.sf-header-destination-shape').length};
     });
