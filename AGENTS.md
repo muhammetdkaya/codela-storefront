@@ -1,3 +1,7 @@
+## 10 Kasım 2026 — 0.1.277 → 0.1.278 ürün katmanları ve kontroller
+
+Satın alma satırına ortak opak yüzey eklendi: hareketli gövde metni fiyat/CTA arkasından görünmez. Nötr scrim %32 → %48. Header geri ikonu sabit 20px yerine ortak ikon tokenını kullanır; galeri okları değişmez. PhotoSwipe kapatma düğmesi safe-area ve 16px sağ kenara sabitlenir, boş zoom/fullscreen/share yuvaları kaldırılır. Kaynak ve generated CSS birlikte güncellenir. Fiziksel iPhone görsel kabulü henüz yapılmadı. GitHub yayın sonucu takip kaydında doğrulanacak; eklenti değişmedi.
+
 ## 10 Kasım 2026 — 0.1.276 → 0.1.277 onaylı ürün alt paneli A
 
 Standart tekli WooCommerce ürününde varsayılan adet 1 ve minimum/adım uyumluysa alt panel A düzenine geçer: başlık tam genişlikte doğal satır kırılır, Codela teslimat ETA'sı varsa altında tek satır ince kamyon ikonu + kısa kargo metni görünür. Mevcut tek Woo fiyat düğümü sepete ekleme düğmesinin soluna taşınır; ek fiyat klonu oluşturulmaz. Adet kutusu yalnızca görsel olarak gizlenir, gerçek Woo quantity=1 form alanı ve native submit korunur. Varyasyonlu, gruplanmış ve zorunlu farklı miktarlı ürünlerde eski işlevsel kontrol sürer. Fiyat yanında yeni cam kart, rozet veya ikinci açıklama yoktur. Üstteki tek SVG path tutamak 28 → 38px genişler, aynı rAF progress ile ok biçimine dönüşür. Skeleton CTA ve fiyat yerleşimi güncellendi. Masaüstü ve no-JS orijinal Woo şablonu korunur.

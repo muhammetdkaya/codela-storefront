@@ -238,7 +238,7 @@ html[data-sf-navigation-pending] .sf-shell .sf-header > :not(.sf-header-destinat
 }
 .sf-header-destination-capsule :is(svg,.sf-icon){display:block;width:24px;height:24px}
 .sf-header-destination-capsule--back :is(svg,.sf-icon),
-.sf-header-destination-capsule--home :is(svg,.sf-icon){width:20px;height:20px}
+.sf-header-destination-capsule--home :is(svg,.sf-icon){width:var(--sf-ui-icon);height:var(--sf-ui-icon)}
 .sf-header-destination-capsule--title{
   padding-inline:16px;max-width:min(40vw,220px);min-width:0;overflow:hidden;
   text-overflow:ellipsis;white-space:nowrap;font-size:15px;

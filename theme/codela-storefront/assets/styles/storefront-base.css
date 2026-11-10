@@ -1293,6 +1293,11 @@ body.admin-bar{--sf-header-offset:32px}
 .sf-shell .sf-header .sf-account-context-heading{display:inline-flex;align-items:center;gap:9px;min-width:0;white-space:nowrap}
 .sf-shell .sf-header .sf-account-context-heading .sf-icon{display:block;flex:none;width:20px;height:20px}
 
+/* Match header controls without changing gallery chevrons or account labels. */
+.sf-shell .sf-header .sf-context-brand :is([data-sf-context-back],[data-sf-account-back]) .sf-icon{
+  width:var(--sf-ui-icon);height:var(--sf-ui-icon);
+}
+
 /* Source: styles/components.css */
 /* Native Woo Button adapters apply only to theme content, including account=theme. */
 /* Woo guest submit controls consume this same Button primitive without template overrides.

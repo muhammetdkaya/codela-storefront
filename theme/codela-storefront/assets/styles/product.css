@@ -509,7 +509,7 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
 .sf-product-sheet-toggle.sf-ui-button::after{content:none!important}
 .sf-product-sheet-scrim{
   position:fixed;inset:0;z-index:999;pointer-events:none;
-  background:rgba(0,0,0,.32);opacity:0;
+  background:rgba(0,0,0,.48);opacity:0;
   /* Gesture release and taps use the SAME rAF timeline as the sheet/handle.
      Avoid CSS transitions fighting the JS progress on the first release frame. */
   transition:none;
@@ -1132,3 +1132,24 @@ html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:
     body.single-product.sf-product-sheet-ready div.product form.cart .sf-product-purchase--layout-a .single_add_to_cart_button{min-width:114px;font-size:13px}
   }
 }
+
+/* 0.1.278: opaque purchase floor masks moving detail text, including gestures. */
+@media(max-width:700px){
+  body.single-product.sf-product-sheet-ready div.product form.cart .sf-product-purchase{
+    background:var(--sf-ui-surface,#fff);isolation:isolate;
+  }
+}
+/* PhotoSwipe v4 floats hidden zoom/fullscreen controls beside close; anchor
+   close independently so those reserved slots cannot push it inward. */
+body.single-product .pswp .pswp__top-bar{
+  top:env(safe-area-inset-top,0px);height:60px;
+}
+body.single-product .pswp .pswp__button--close{
+  position:absolute;float:none;top:8px;
+  right:calc(16px + env(safe-area-inset-right,0px));
+  width:44px;height:44px;margin:0;z-index:2;
+}
+body.single-product .pswp .pswp__button--fs,
+body.single-product .pswp .pswp__button--zoom,
+body.single-product .pswp .pswp__button--share{display:none}
+body.single-product .pswp .pswp__counter{top:8px;left:16px}
