@@ -313,7 +313,12 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
                 throw new Error(errorMessage || t('Could not confirm the addition. Check your cart before trying again.'));
             }
             if (window.jQuery) {
-                try { window.jQuery(document.body).trigger('added_to_cart', [{}, '', window.jQuery(button)]); } catch (_) { /* A consumer must not retry a successful write. */ }
+                // The native form has already added the item. Passing this
+                // product button to Woo's catalog AJAX listener makes Woo
+                // append an extra .added_to_cart.wc-forward link ("Sepetim")
+                // beside our single stateful purchase button. Signal cart
+                // consumers without a catalog button; do not issue a second POST.
+                try { window.jQuery(document.body).trigger('added_to_cart', [{}, '', null]); } catch (_) { /* A consumer must not retry a successful write. */ }
             }
             feedback(button, 'success');
             purchaseStatus(form, t('Item added to cart.'));
