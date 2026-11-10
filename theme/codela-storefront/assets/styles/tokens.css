@@ -54,6 +54,8 @@
   --sf-ui-bottom-bar-gap:4px;
   --sf-ui-product-panel-gap:12px;
   --sf-ui-product-button-padding-x:16px;
+  /* Shared original bag glyph for native Woo and inert destination CTA. */
+  --sf-ui-product-bag-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='1.9' stroke-linejoin='round' stroke-linecap='round' d='M5 7h14l1 13H4L5 7Zm3 0V5a4 4 0 0 1 8 0v2m-7 5a3 3 0 0 0 6 0'/%3E%3C/svg%3E");
   --sf-ui-product-photo-inset:116px;
   /* Showcase and its destination skeleton share one 25%-shorter frame. */
   --sf-ui-showcase-height:clamp(510px,64.5svh,675px);
