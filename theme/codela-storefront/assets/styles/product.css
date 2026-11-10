@@ -966,18 +966,16 @@ html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:
 
 .sf-product-sheet.is-holding:not(.is-expanded) .sf-product-sheet-toggle::before{transform:scaleX(var(--sf-ui-scale-icon))}
 
-/* Mobile purchase uses the existing button and shared tonal pill, not a
-   second checkout trigger. The bag icon remains visible in all JS states. */
+/* One native Woo product button inherits the standard dark PRIMARY Button
+   material. Product CSS only owns size, layout and the persistent bag glyph. */
 @media(max-width:700px){
   :is(body.single-product.sf-product-sheet-ready,html.sf-product-sheet-pending body.single-product) div.product form.cart .sf-product-purchase .single_add_to_cart_button{
     display:inline-flex;align-items:center;justify-content:center;gap:10px;
     flex:1 1 0;min-width:0;margin-inline-start:0;
     height:44px;min-height:44px;padding-block:0!important;box-sizing:border-box;
     border-radius:var(--sf-ui-button-radius)!important;
-    /* Reuse shared UI Kit tonal material instead of bespoke white/shadow. */
-    background:var(--sf-ui-button-tonal)!important;background-image:none!important;
-    border:1px solid transparent!important;box-shadow:none!important;
-    color:var(--sf-ui-control-ink)!important;font-size:14px;font-weight:600;
+    /* Color, glass highlight and shadow come from components.css primary. */
+    font-size:14px;font-weight:600;
     white-space:nowrap;
   }
   :is(body.single-product.sf-product-sheet-ready,html.sf-product-sheet-pending body.single-product) div.product form.cart .sf-product-purchase .single_add_to_cart_button::before{
@@ -985,9 +983,6 @@ html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:
     background:currentColor;
     -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='1.9' stroke-linejoin='round' stroke-linecap='round' d='M5 7h14l1 13H4L5 7Zm3 0V5a4 4 0 0 1 8 0v2m-7 5a3 3 0 0 0 6 0'/%3E%3C/svg%3E") center / contain no-repeat;
     mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='1.9' stroke-linejoin='round' stroke-linecap='round' d='M5 7h14l1 13H4L5 7Zm3 0V5a4 4 0 0 1 8 0v2m-7 5a3 3 0 0 0 6 0'/%3E%3C/svg%3E") center / contain no-repeat;
-  }
-  :is(body.single-product.sf-product-sheet-ready,html.sf-product-sheet-pending body.single-product) div.product form.cart .sf-product-purchase .single_add_to_cart_button:active:not(:disabled){
-    background:var(--sf-ui-button-tonal-pressed)!important;
   }
   /* Shared catalog success checkmark is redundant on the single product CTA. */
   body.single-product div.product form.cart .sf-product-purchase .single_add_to_cart_button.sf-cart-feedback[data-sf-cart-state="success"]::after{content:none}
