@@ -7,7 +7,7 @@
   },
   "changes": [
     "Tek ürün sepete eklemede WooCommerce'in ikinci Sepetim bağlantısı artık oluşmaz; mevcut sepete git butonu tek kalır.",
-    "Ürün satın alma butonu tema UI Kit tonal yüzeyini kullanır; gereksiz işaret kaldırıldı ve metnin satır kırması önlendi.",
+    "Sepete ekle ve sepete git aynı koyu renkli UI Kit birincil butonunu kullanır; beyaz çanta ikonu korunur, gereksiz ikinci onay işareti ve satır kırılması kaldırılır.",
     "Sağ galeri cam kapsülü inceltildi; küçük resimler korunurken 44px dokunma okları dışarı taşınarak yüksekliği azaltıldı.",
     "Safari kaydırmalarında galeri kapsülü zıplamaz; ilgili ürünlere geçildiğinde oklar ve galeri kontrolü hemen gizlenir."
   ]
