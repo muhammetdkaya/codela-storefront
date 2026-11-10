@@ -60,6 +60,9 @@
     var handleProgress = 0;
     var title = summary.querySelector('.product_title');
     var price = summary.querySelector('.sf-product-price-row, :scope > .price');
+    // The A layout moves the existing Woo price, never a cloned price label.
+    // Quantity stays native and is only visually omitted when it can submit 1.
+    var layoutA = false;
     var purchase = summary.querySelector('.sf-product-purchase');
     var mobile = matchMedia('(max-width:700px)');
     var description = summary.querySelector('#sf-product-section-description');
@@ -116,7 +119,7 @@
     }
     function paintHandle(progress) {
       handleProgress = Math.max(0, Math.min(1, progress));
-      if (handlePath) handlePath.setAttribute('d', 'M2 7 L14 ' + (7 + 8 * handleProgress).toFixed(2) + ' L26 7');
+      if (handlePath) handlePath.setAttribute('d', 'M2 7 L19 ' + (7 + 8 * handleProgress).toFixed(2) + ' L36 7');
     }
     /* The sheet, scrim and SVG are all painted from ONE progress value.
        Keep the Woo form in place: its fixed purchase button must never
@@ -331,7 +334,21 @@
       mounted = true;
       sheet.classList.add('is-mounting');
       move(title, heading);
-      move(price, heading);
+      var input = purchase && purchase.querySelector('input.qty');
+      var min = input ? Number(input.getAttribute('min') || '1') : 1;
+      var step = input ? Number(input.getAttribute('step') || '1') : 1;
+      layoutA = !!(price && purchase && product.classList.contains('product-type-simple') &&
+        purchase.querySelector('.single_add_to_cart_button') &&
+        (!input || (Number(input.value) === 1 && min <= 1 && step === 1 &&
+          !input.disabled && !input.readOnly)));
+      sheet.classList.toggle('is-layout-a', layoutA);
+      if (layoutA) {
+        // Preserve the live urgency host in the heading, away from the price CTA.
+        var urgency = price.querySelector('.cdl-ub');
+        if (urgency) move(urgency, heading);
+        move(price, purchase);
+        purchase.classList.add('sf-product-purchase--layout-a');
+      } else move(price, heading);
       // Only an unavailable product needs an availability row in the purchase summary.
       var unavailable = summary.querySelector(':scope > .stock.out-of-stock');
       if (unavailable) move(unavailable, heading);
@@ -422,6 +439,9 @@
       // Restore containers before their children using the exact anchor nodes.
       originals.slice().reverse().forEach(function (entry) { entry[1].replaceWith(entry[0]); });
       originals = [];
+      if (purchase) purchase.classList.remove('sf-product-purchase--layout-a');
+      sheet.classList.remove('is-layout-a');
+      layoutA = false;
       openSections.forEach(function (section) { section.open = true; });
       openSections = [];
       if (shippingObserver) { shippingObserver.disconnect(); shippingObserver = null; }

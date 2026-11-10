@@ -54,7 +54,7 @@ function codela_sf_ui_icon_button( string $icon, string $label, array $options =
 
 /** Shared unbroken product-sheet handle for native sheet and destination preview. */
 function codela_sf_product_sheet_handle_svg(): string {
-    return '<svg class="sf-product-sheet-handle" viewBox="0 0 28 18" width="28" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 7 L14 7 L26 7"></path></svg>';
+    return '<svg class="sf-product-sheet-handle" viewBox="0 0 38 18" width="38" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M2 7 L19 7 L36 7"></path></svg>';
 }
 
 /**

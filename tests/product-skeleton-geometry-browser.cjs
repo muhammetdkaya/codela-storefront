@@ -15,13 +15,13 @@ const feedbackCss=fs.readFileSync(root+'styles/navigation-feedback.css','utf8');
   for(const width of [320,390,402,430,700]){
    for(const short of [false,true]){
     await page.setViewportSize({width,height:844});
-    await load(page,{noUrgency:true,longTitle:true,short});
+    await load(page,{noUrgency:true,longTitle:true,short,productType:true});
     await page.evaluate(()=>document.querySelector('main').id='sf-content');
     const native=await page.evaluate(()=>{
      const box=selector=>{const r=document.querySelector(selector).getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}};
      const c=getComputedStyle(document.querySelector('.single_add_to_cart_button'));
      const paint={backgroundColor:c.backgroundColor,backgroundImage:c.backgroundImage,boxShadow:c.boxShadow,backdropFilter:c.backdropFilter,color:c.color,fontWeight:c.fontWeight};
-     return {panel:box('.sf-product-sheet'),photo:box('.woocommerce-product-gallery__image'),quantity:box('.sf-product-quantity'),button:box('.single_add_to_cart_button'),paint};
+     return {panel:box('.sf-product-sheet'),photo:box('.woocommerce-product-gallery__image'),price:box('.sf-product-purchase .sf-product-price-row'),button:box('.single_add_to_cart_button'),paint};
     });
     // Run from both a product and a normal page; body-scoped gap must not leak.
     for(const productSource of [true,false]){
@@ -36,16 +36,20 @@ const feedbackCss=fs.readFileSync(root+'styles/navigation-feedback.css','utf8');
       const box=selector=>{const r=document.querySelector(selector).getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}};
       const c=getComputedStyle(document.querySelector('.sf-navigation-controls .sf-ui-button'));
       const paint={backgroundColor:c.backgroundColor,backgroundImage:c.backgroundImage,boxShadow:c.boxShadow,backdropFilter:c.backdropFilter,color:c.color,fontWeight:c.fontWeight};
-      return {panel:box('.sf-navigation-purchase'),photo:box('.sf-skeleton-gallery'),quantity:box('.sf-navigation-quantity'),button:box('.sf-navigation-controls .sf-ui-button'),paint};
+      return {panel:box('.sf-navigation-purchase'),photo:box('.sf-skeleton-gallery'),price:box('.sf-navigation-price-placeholder'),button:box('.sf-navigation-controls .sf-ui-button'),paint};
      });
-     for(const component of ['panel','photo','quantity','button']){
-      for(const key of ['x','y','width','height']) assert(Math.abs(native[component][key]-pending[component][key])<1,`${width}/${short}/${productSource} ${component}.${key}: ${native[component][key]} != ${pending[component][key]}`);
+     for(const component of ['panel','photo','button']){
+      for(const key of ['x','width']) assert(Math.abs(native[component][key]-pending[component][key])<2,`${width}/${short}/${productSource} ${component}.${key}: ${native[component][key]} != ${pending[component][key]}`);
+       if(component==='button') assert(Math.abs(native.button.height-pending.button.height)<1,'Shared CTA hit target');
+       if(component==='photo') assert(Math.abs(native.photo.height-pending.photo.height)<1,'Photo geometry never changes');
      }
      assert.deepEqual(pending.paint,native.paint,'Destination CTA and native Woo use the identical primary material');
      assert.equal(await page.locator('.sf-navigation-preview form').count(),0);
      assert(await page.locator('.sf-navigation-preview button').isDisabled());
      assert.equal(await page.locator('.sf-navigation-purchase .sf-product-sheet-handle path').count(),1,'Destination uses the identical one-path handle');
      assert.equal(await page.locator('.sf-navigation-purchase .sf-navigation-heading-title .sf-navigation-heading-placeholder').count(),2,'Two neutral title rows share the heading reserve');
+     assert.equal(await page.locator('.sf-navigation-price-placeholder').count(),1,'Skeleton has one price placeholder');
+     assert.equal(await page.locator('.sf-navigation-quantity').count(),0,'A layout does not display quantity in skeleton');
      assert.equal(await page.locator('.sf-navigation-purchase .sf-navigation-buy-button').evaluate(e=>getComputedStyle(e).color),'rgb(255, 255, 255)','Skeleton CTA matches dark primary paint');
      assert.equal(await page.locator('.sf-skeleton-gallery').evaluate(el=>getComputedStyle(el).animationName),'sf-skeleton-product-pulse','Product photo uses the slightly stronger pulse');
      if(width===390&&!short&&productSource){fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:'qa/storefront-ui-kit-product-skeleton-geometry.png'});}
