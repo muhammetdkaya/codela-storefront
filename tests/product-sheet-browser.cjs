@@ -63,7 +63,11 @@ for(const width of [320,390,700]){
  assert.equal(await page.locator('.sf-product-sheet .sf-footer').count(),0,'Footer is outside both panel states');
  assert.equal(await page.locator('body > .sf-footer').count(),1,'Native footer remains at the end of the document');
  assert.equal(await page.locator('.sf-product-sheet .sf-product-purchase').evaluate(e=>getComputedStyle(e).backgroundColor),'rgba(0, 0, 0, 0)','One sheet material');
- assert.equal(await toggle.evaluate(e=>getComputedStyle(e,'::after').content),'none','Arrow is removed; accessible grip button remains');
+ const gripStrokes=await toggle.evaluate(e=>{const a=getComputedStyle(e,'::before'),b=getComputedStyle(e,'::after');return [{width:a.width,height:a.height,color:a.backgroundColor,content:a.content},{width:b.width,height:b.height,color:b.backgroundColor,content:b.content}]});
+ assert.notEqual(gripStrokes[1].content,'none','Both real handle strokes exist before the morph');
+ assert.equal(gripStrokes[0].width,gripStrokes[1].width,'Handle halves have the same geometry');
+ assert.equal(gripStrokes[0].height,gripStrokes[1].height,'Handle halves have the same thickness');
+ assert.equal(gripStrokes[0].color,gripStrokes[1].color,'Chevron and line keep exactly the same tone');
  const spacing=await page.locator('.sf-product-purchase').evaluate(e=>{const s=getComputedStyle(e);return [s.paddingTop,s.paddingBottom]});assert.deepEqual(spacing,['12px','12px'],'Balanced purchase edge spacing');
  assert.equal(Math.round((await buy.boundingBox()).height),44,'Smaller CTA retains a 44px touch target');
  const bounds=await buy.boundingBox();assert(bounds.y+bounds.height<=844&&bounds.y>700,'Purchase stays at bottom '+width);
@@ -157,6 +161,8 @@ for(const width of [320,390,700]){
  const photoOffset=await page.evaluate(()=>scrollY);
  await toggle.click();assert.equal(await toggle.getAttribute('aria-expanded'),'true');assert.equal(await page.locator('.sf-product-sheet').evaluate(e=>getComputedStyle(e).backgroundColor),panelTint,'Expanded panel keeps the same translucent material as collapsed');
  await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').getBoundingClientRect().height>700);assert(await page.locator('.woocommerce-product-gallery').evaluate(e=>e.inert),'Open details stops gallery gestures/focus');
+ const openedScrim=await page.evaluate(()=>getComputedStyle(document.body,'::before').opacity);
+ assert.equal(parseFloat(openedScrim),.44,'Expanded sheet dims the gallery with the controlled backdrop');
  await page.locator('.sf-product-delivery > summary').click();assert(await page.locator('.cdl-fsb-text').isVisible(),'Shipping visible inside open delivery section');
  const bar=await page.locator('.cdl-fsb-track').boundingBox(),text=await page.locator('.cdl-fsb-text').boundingBox();assert(Math.abs(bar.width-text.width)<1,'Full width shipping track');
  await page.locator('.sf-product-sheet-body').evaluate(e=>e.scrollTop=300);
@@ -183,6 +189,8 @@ for(const width of [320,390,700]){
  const during=(await page.locator('.sf-product-sheet').boundingBox()).height;
  assert(Math.abs(during-beforeDrag-100)<2,'Sheet follows 100px movement before release '+width+' '+during);
  assert(during<500,'Drag does not jump to fully open');
+ const dragScrim=await page.evaluate(()=>parseFloat(getComputedStyle(document.body,'::before').opacity));
+ assert(dragScrim>0 && dragScrim<.44,'Backdrop darkens proportionally while dragging');
  await page.mouse.move(handle.x+handle.width/2,handle.y-30,{steps:4});
  assert(Math.abs((await page.locator('.sf-product-sheet').boundingBox()).height-beforeDrag-50)<2,'Reversing the pointer reverses the sheet immediately');
  await page.mouse.move(handle.x+handle.width/2,handle.y-150,{steps:4});await page.mouse.up();
