@@ -35,7 +35,7 @@ for(const width of [320,390,700]){
  assert.equal(circles.length,3,'Exactly three product image previews remain visible');
  for(const circle of circles){
    assert(Math.abs(circle.width-circle.height)<.1,'Every preview is a true square');
-   assert.equal(circle.radius,'14px','Every gallery thumbnail uses the reference rounded-square shape');
+   assert.equal(circle.radius,'12px','Compact gallery keeps a consistent rounded-square hit target');
    assert.equal(circle.overflow,'hidden','The preview image is clipped by its rounded-square button');
    assert.equal(circle.fit,'cover','Every thumbnail fills its rounded tile without distortion');
    assert(Math.abs(circle.imageWidth-circle.imageHeight)<.1,'Every preview image is square inside its rounded tile');
