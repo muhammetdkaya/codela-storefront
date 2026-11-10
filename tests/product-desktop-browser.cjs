@@ -127,8 +127,8 @@ async function wheelOverPhoto(page, label) {
       assert.equal(await page.locator('.sf-product-purchase').evaluate(el => getComputedStyle(el).backgroundColor), 'rgba(0, 0, 0, 0)');
       await assertIdentity(page);
       await wheelOverPhoto(page, width);
-      const next = page.getByRole('button', {name:'Next image',exact:true});
-      const previous = page.getByRole('button', {name:'Previous image',exact:true});
+      const next = page.locator('[data-product-gallery-step="1"]');
+      const previous = page.locator('[data-product-gallery-step="-1"]');
       assert(await previous.isDisabled());
       await next.click();
       await wait(page, () => document.querySelector('.sf-product-gallery-count').textContent === '2 / 5');
