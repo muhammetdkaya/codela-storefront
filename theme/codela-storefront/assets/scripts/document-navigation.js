@@ -150,7 +150,21 @@
             copy.removeAttribute('id');
             centre.append(copy);
         }
-        if (type === 'product') capsule(right, 'cart', config.cartIcon);
+        if (type === 'product') {
+            // Reuse the exact existing icon + verified badge without a second cart controller.
+            const nativeCart = header.querySelector('.sf-actions .sf-cart-trigger');
+            if (nativeCart) {
+                const visual = capsule(right, 'cart-native');
+                const copy = nativeCart.cloneNode(true);
+                copy.removeAttribute('id');
+                copy.querySelectorAll('[id]').forEach(node => node.removeAttribute('id'));
+                copy.removeAttribute('onclick');
+                copy.setAttribute('tabindex', '-1');
+                copy.classList.remove('sf-ui-icon-button--bare');
+                copy.classList.add('sf-ui-icon-button--soft');
+                visual.append(copy);
+            } else capsule(right, 'cart', config.cartIcon);
+        }
         else if (type === 'catalog') capsule(right, 'filter', config.filterIcon);
         // Desktop gets its ordinary tools instead of an empty icon placeholder.
         capsule(right, 'desktop-action', config.searchIcon);
