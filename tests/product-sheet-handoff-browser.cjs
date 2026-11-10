@@ -25,7 +25,7 @@ const {load}=require('./product-sheet-browser.cjs');
   const max=parseFloat(style.maxHeight);
   const height=sheet.getBoundingClientRect().height;
   const progress=(height-min)/(max-min);
-  const y=Number(sheet.querySelector('.sf-product-sheet-handle path').getAttribute('d').match(/L14 ([0-9.]+)/)[1]);
+  const y=Number(sheet.querySelector('.sf-product-sheet-handle path').getAttribute('d').match(/L19 ([0-9.]+)/)[1]);
   return {settling:sheet.classList.contains('is-settling'),visibility:getComputedStyle(body).visibility,
    bodyHeight:body.getBoundingClientRect().height,cssTransition:style.transitionDuration,
    height,progress,scrim:Number(getComputedStyle(scrim).opacity),midpoint:y};

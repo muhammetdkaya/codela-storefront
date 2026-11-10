@@ -555,10 +555,10 @@ assert(Math.abs((await touchPage.evaluate(()=>scrollY))-endScroll)<2,'Overscroll
 const morph=await touchPage.locator('.sf-product-sheet-toggle').evaluate(e=>{
  const paths=e.querySelectorAll('.sf-product-sheet-handle path');
  const d=paths[0]?.getAttribute('d')||'';
- return {count:paths.length,midpoint:Number(d.match(/L14 ([0-9.]+)/)?.[1]),width:getComputedStyle(e.querySelector('.sf-product-sheet-handle')).width};
+ return {count:paths.length,midpoint:Number(d.match(/L19 ([0-9.]+)/)?.[1]),width:getComputedStyle(e.querySelector('.sf-product-sheet-handle')).width};
 });
 assert.equal(morph.count,1,'One connected SVG path replaces two rounded halves');
-assert.equal(morph.width,'28px','Handle never grows during drag');
+assert.equal(morph.width,'38px','Handle remains 38px during drag');
 assert(morph.midpoint>7&&morph.midpoint<=15,'SVG midpoint tracks swipe progress without a seam');
 await endSwipe('touchEnd');
 assert.equal(await touchToggle.getAttribute('aria-expanded'),'true','End swipe settles the sheet open');
