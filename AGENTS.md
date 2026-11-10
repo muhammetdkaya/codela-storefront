@@ -2,7 +2,7 @@
 
 Başlık/bağlantı yüzeylerinden sürükleme ve sürükleme sonrası tıklama bastırma eklendi. İçerik başa ulaşınca aynı aşağı hareket kalan mesafeyle paneli kapatır. Son ekran içinde başlayan yukarı hareket kalan belge mesafesini tüketip paneli açar. Native input/select korunur. İlk çizgi 28px genişliğine göre ortalandı. Sürüklemede metin gövdesi sabit yüksekliğe alınır, kare başına yazım requestAnimationFrame ile sürer; fiziksel cihazda FPS garantisi yok.
 
-Yerel JS syntax, 3 build-assets ve 24 paket testi başarılı. [PR #161](https://github.com/muhammetdkaya/codela-storefront/pull/161) ana dala 313b3b2edbe0b1ea32eb07fbec534d3e513cf5ab olarak birleşti. Yeni gerçek dokunmalı geçiş testi ve mevcut ürün akışı Chromium/WebKit CI 42836145104 başarılı. Genel vitrin/dağıtım CI bu kayıt anında sürüyor. 0.1.273 ZIP/stable isteği gönderildi; yayın sonucu bekleniyor. Canlı FTP kurulum yok. Sıradaki: yayın ZIP'ini doğrula; fiziksel iPhone kabulü.
+Yerel JS syntax, 3 build-assets ve 24 paket testi başarılı. [PR #161](https://github.com/muhammetdkaya/codela-storefront/pull/161) ana dala 313b3b2edbe0b1ea32eb07fbec534d3e513cf5ab olarak birleşti. Yeni gerçek dokunmalı geçiş testi ve mevcut ürün akışı Chromium/WebKit CI 42836145104 başarılı. Genel vitrin/dağıtım CI bu kayıt anında sürüyor. [0.1.273 GitHub yayını](https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.273) doğrulandı; ZIP 318569 bayt, sha256:d04407d099b7269c6a35aff322747d9ca0ed6ffa962d521c17011be1e2156750. Stable feed isteği gönderildi. Canlı FTP kurulum yok. Sıradaki: fiziksel iPhone'da kesintisiz sayfa/panel ve içerik/panel hareket devrini kontrol et.
 
 ## 10 Kasım 2026 — 0.1.269 → 0.1.270 ortak ürün kenar hizası
 
