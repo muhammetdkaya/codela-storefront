@@ -280,11 +280,11 @@ add_filter( 'wc_add_to_cart_message_html', static function( $message ) {
 add_action( 'woocommerce_add_to_cart', static function() {
     if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' )
         || empty( $_POST['codela_sf_cart_async'] )
-        || empty( $_POST['add-to-cart'] )
-        || headers_sent() ) {
+        || empty( $_POST['add-to-cart'] ) ) {
         return;
     }
-    header( 'X-Codela-Sf-Cart-Added: 1' );
+    $GLOBALS['codela_sf_cart_added'] = true;
+    if ( ! headers_sent() ) { header( 'X-Codela-Sf-Cart-Added: 1' ); }
 }, 10, 0 );
 
 // Keep this in-page progressive request in place even when the store normally
@@ -295,3 +295,22 @@ add_filter( 'woocommerce_add_to_cart_redirect', static function( $url ) {
 add_filter( 'option_woocommerce_cart_redirect_after_add', static function( $value ) {
     return ! empty( $_POST['codela_sf_cart_async'] ) ? 'no' : $value;
 }, 999 );
+
+/** Finish after Woo's wp_loaded:20 native form handler, before page rendering.
+ * Confirmation must not depend on HTML notices or a subsequent redirect.
+ * This request never calls add_to_cart a second time.
+ */
+function codela_sf_cart_async_result(): void {
+    if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' )
+        || '1' !== ( $_POST['codela_sf_cart_async'] ?? '' )
+        || empty( $_POST['add-to-cart'] ) || ! function_exists( 'wc_get_notices' ) ) { return; }
+    $errors = array_map( static function( $notice ) {
+        return wp_strip_all_tags( is_array( $notice ) ? ( $notice['notice'] ?? '' ) : $notice );
+    }, wc_get_notices( 'error' ) );
+    $added = ! empty( $GLOBALS['codela_sf_cart_added'] );
+    wc_clear_notices();
+    nocache_headers();
+    wp_send_json( [ 'codela_cart_result' => true, 'added' => $added,
+        'message' => implode( ' ', $errors ) ], $added ? 200 : 422 );
+}
+add_action( 'wp_loaded', 'codela_sf_cart_async_result', 30 );

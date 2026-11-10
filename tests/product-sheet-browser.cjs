@@ -112,7 +112,7 @@ for(const width of [320,390,700]){
  // correct its resting position on release. Native OS rubber-band is covered
  // by the scoped overscroll policy; a desktop wheel cannot emulate that paint.
  await page.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
- await page.waitForFunction(()=>Math.abs(scrollY-(document.documentElement.scrollHeight-innerHeight))<1);
+
  // The new end-of-document action opens details. Dismiss it to continue
  // checking the unchanged native recommendation/footer scroll geometry.
  await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-expanded'));

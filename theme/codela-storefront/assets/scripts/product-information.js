@@ -78,6 +78,8 @@
     var shippingSummary = null;
     var shippingObserver = null;
     var endArmed = true;
+    var endTimer = 0;
+    var dismissedAt = 0;
     var lastScrollY = window.scrollY;
     var openSections = [];
     function move(node, target) {
@@ -110,7 +112,9 @@
     function setOpen(open, focusTarget, preservePhoto) {
       cancelPendingFocus();
       if (!mounted) return;
-      if (!open && expanded) endArmed = false;
+      clearTimeout(endTimer);
+      sheet.classList.remove('is-end-ready');
+      if (!open && expanded) { endArmed = false; dismissedAt = performance.now(); }
       expanded = open;
       if (open && !preservePhoto && !sheet.classList.contains('is-discovering')) {
         var photos = Array.from(media.querySelectorAll('.woocommerce-product-gallery__image,.woocommerce-product-gallery__image--placeholder')).filter(node=>node.getClientRects().length);
@@ -146,18 +150,30 @@
       var bottom = window.scrollY + window.innerHeight;
       return document.documentElement.scrollHeight - bottom <= Math.max(28, window.innerHeight * .035);
     }
-    function openAfterEndGesture() {
-      if (!mounted || expanded || !endArmed || drag ||
+    function openAfterEndGesture(deliberate = false) {
+      if (!mounted || expanded || drag ||
           document.documentElement.classList.contains('sf-overlay-scroll-locked')) return;
-      // Do not interrupt photograph-by-photograph scrolling. Only the genuine
-      // page end (after related cards/footer), or a product without cards.
       if (discovery.children.length && !isDiscovering()) return;
       if (!atPageEnd()) return;
-      endArmed = false; // A manual dismissal never rearms during this visit.
-      setOpen(true, null, true);
+      // A fresh downward gesture can reopen after dismissal; synthetic scroll
+      // events caused by unlocking the page cannot reopen it.
+      if (deliberate && performance.now() - dismissedAt > 900) endArmed = true;
+      if (!endArmed) return;
+      clearTimeout(endTimer);
+      sheet.classList.add('is-end-ready');
+      endTimer = setTimeout(function () {
+        sheet.classList.remove('is-end-ready');
+        if (!mounted || expanded || drag || !endArmed || !atPageEnd() ||
+            document.documentElement.classList.contains('sf-overlay-scroll-locked')) return;
+        endArmed = false;
+        setOpen(true, null, true);
+      }, 450);
     }
     function updateDiscovery() {
       if (!mounted || drag || document.documentElement.classList.contains('sf-overlay-scroll-locked')) return;
+      var remaining = document.documentElement.scrollHeight - window.scrollY - window.innerHeight;
+      if (remaining > 120) endArmed = true;
+      if (!atPageEnd()) { clearTimeout(endTimer); sheet.classList.remove('is-end-ready'); }
       var downward = window.scrollY > lastScrollY + 1;
       lastScrollY = window.scrollY;
       if (downward) openAfterEndGesture();
@@ -178,7 +194,7 @@
     // produce a scroll event. Respect that explicit intent without moving
     // the photo rail, modifying scroll-snap, or requiring an exact last pixel.
     window.addEventListener('wheel', function (event) {
-      if (event.deltaY > 8) openAfterEndGesture();
+      if (event.deltaY > 8) openAfterEndGesture(true);
     }, {passive:true});
     var touchStartY = null;
     window.addEventListener('touchstart', function (event) {
@@ -188,7 +204,7 @@
       if (touchStartY === null) return;
       var moved = touchStartY - (event.changedTouches[0]?.clientY ?? touchStartY);
       touchStartY = null;
-      if (moved > 24) requestAnimationFrame(openAfterEndGesture);
+      if (moved > 24) requestAnimationFrame(function () { openAfterEndGesture(true); });
     }, {passive:true});
     function mount() {
       if (mounted) return;
@@ -269,6 +285,7 @@
       sheet.classList.remove('is-mounting');
     }
     function unmount() {
+      clearTimeout(endTimer);
       cancelPendingFocus();
       if (!mounted) return;
       finishDrag(true);

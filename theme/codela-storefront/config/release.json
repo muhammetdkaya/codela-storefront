@@ -6,10 +6,9 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Başarılı giriş ve kayıtlarda Hesabım’a yönlendirme; yönetici/şifre kurtarma akışları korundu.",
-    "İndirmeler sekmesinin menüde görünürlüğünü değiştiren tema ayarı eklendi.",
-    "Hesabım menüsü sağ okları yeni ince chevron simgesiyle değiştirildi.",
-    "Codela adres defteri etkinken standart WooCommerce adres kartları gizlendi.",
-    "Siparişler boş ekranındaki mağaza butonu kaldırıldı; WooCommerce doğrulama hatırlatması Hesabım sayfasına ince, kapatılabilir satır olarak taşındı."
+    "Sepete ekleme sonucu native WooCommerce işleminden sonra doğrudan JSON ile doğrulanır; başarılı ekleme yanlış uyarı vermez.",
+    "Ürün paneli sayfa sonunda kısa bekleme ve yumuşak geçişle açılır; kapatıldıktan sonra yeniden açılabilir.",
+    "Ortadaki kapatma kontrolü sadeleştirildi; galeri gerçek header ve panel arasında ortalanır.",
+    "Galeri ortak cam değişkenlerini kullanır; hareketsizken siyah seçim çerçevesi kaldırıldı, okların dokunma alanı büyütüldü."
   ]
 }

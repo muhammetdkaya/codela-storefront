@@ -17,6 +17,7 @@ jobs:
       - run: npx playwright install --with-deps chromium webkit
       - name: Native adapters and shared cart contracts
         run: |
+          php tests/product-cart-result.php
           php tests/product-composition.php
           php tests/render-product-sheet.php >/dev/null
           php tests/render-product-information.php >/dev/null
