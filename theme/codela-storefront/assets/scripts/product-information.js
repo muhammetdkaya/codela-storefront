@@ -122,6 +122,7 @@
         if (nearest) window.scrollTo({top:window.scrollY + nearest.getBoundingClientRect().top, behavior:'instant'});
       }
       sheet.classList.toggle('is-expanded', open);
+      document.body.style.setProperty('--sf-product-sheet-progress', open ? '1' : '0');
       document.body.classList.toggle('sf-product-sheet-open', open);
       toggle.setAttribute('aria-expanded', String(open));
       toggle.setAttribute('aria-label', open ? template.dataset.closeLabel : template.dataset.openLabel);
@@ -291,6 +292,8 @@
       finishDrag(true);
       cancelAnimationFrame(settleFrame);
       sheet.style.removeProperty('height');
+      document.body.style.removeProperty('--sf-product-sheet-progress');
+      document.body.classList.remove('sf-product-sheet-dragging');
       media.inert = false;
       // Restore containers before their children using the exact anchor nodes.
       originals.slice().reverse().forEach(function (entry) { entry[1].replaceWith(entry[0]); });
@@ -342,50 +345,65 @@
       setOpen(!expanded);
     });
     var header = sheet.querySelector('.sf-product-sheet-header');
-    header.addEventListener('pointerdown', function (event) {
-      if (!mounted || drag || event.button !== 0 || event.isPrimary === false || event.target.closest('a,input,select,textarea')) return;
-      suppressClickUntil = 0; // A new deliberate press is never a stale release.
+    // Header gestures and non-interactive interior drags share one controller.
+    // Touch drags starting in the scrollable body use the boundary-aware path below.
+    sheet.addEventListener('pointerdown', function (event) {
+      if (!mounted || drag || event.button !== 0 || event.isPrimary === false) return;
+      var inHeader = header.contains(event.target);
+      if (event.pointerType === 'touch' && !inHeader) return;
+      if (!inHeader && event.target.closest('a,button,input,select,textarea,summary,[role="button"],[contenteditable="true"]')) return;
+      if (inHeader && event.target.closest('a,input,select,textarea,summary')) return;
+      suppressClickUntil = 0;
       var height = sheet.getBoundingClientRect().height;
       cancelAnimationFrame(settleFrame);
-      // Catch the current visual height, including a still-settling transition.
-      // Removing its height before sampling made a rapid re-grab jump.
       sheet.classList.add('is-holding');
       sheet.style.height = height + 'px';
       var style = getComputedStyle(sheet);
       drag = {id:event.pointerId, x:event.clientX, y:event.clientY, lastY:event.clientY,
         start:height, height:height, min:header.getBoundingClientRect().height + parseFloat(style.paddingBottom),
         max:parseFloat(style.maxHeight), open:expanded, time:performance.now(), active:false, width:innerWidth,
-        capture:event.target.closest('button') || header};
+        fromContent:!inHeader, capture:event.target.closest('.sf-product-sheet-toggle') || (inHeader ? header : sheet)};
       drag.capture.setPointerCapture(event.pointerId);
     });
     window.addEventListener('pointermove', function (event) {
-      if (!drag || event.pointerId !== drag.id) return;
+      if (!drag || drag.id !== event.pointerId) return;
       var dy = event.clientY - drag.y, dx = event.clientX - drag.x;
       if (!drag.active) {
         if (Math.max(Math.abs(dy), Math.abs(dx)) < 8) return;
-        if (Math.abs(dx) > Math.abs(dy)) { finishDrag(true); return; }
+        if (Math.abs(dx) > Math.abs(dy) ||
+            (drag.fromContent && drag.open && (dy < 0 || content.scrollTop > 1))) {
+          finishDrag(true); return;
+        }
         drag.active = true;
         sheet.classList.add('is-dragging');
-        document.body.classList.add('sf-product-sheet-open');
+        document.body.classList.add('sf-product-sheet-open', 'sf-product-sheet-dragging');
         media.inert = true;
       }
       event.preventDefault();
       drag.lastY = event.clientY;
       drag.height = Math.max(drag.min, Math.min(drag.max, drag.start - dy));
-      // Input state follows every sample; layout paints only once per frame.
       if (!dragFrame) dragFrame = requestAnimationFrame(paintDrag);
     }, {passive:false});
     function paintDrag() {
       dragFrame = 0;
-      if (drag?.active) sheet.style.height = drag.height + 'px';
+      if (!drag || !drag.active) return;
+      sheet.style.height = drag.height + 'px';
+      var progress = (drag.height - drag.min) / Math.max(1, drag.max - drag.min);
+      document.body.style.setProperty('--sf-product-sheet-progress', String(Math.max(0, Math.min(1, progress))));
     }
     function finishDrag(cancelled) {
       if (!drag) return;
       cancelAnimationFrame(dragFrame);
-      paintDrag(); // A release may arrive before the queued frame.
+      dragFrame = 0;
       var gesture = drag;
+      // Paint the final pointer sample before allowing the snap transition.
+      if (gesture.active) {
+        sheet.style.height = gesture.height + 'px';
+        var progress = (gesture.height - gesture.min) / Math.max(1, gesture.max - gesture.min);
+        document.body.style.setProperty('--sf-product-sheet-progress', String(Math.max(0, Math.min(1, progress))));
+      }
       drag = null;
-      if (gesture.capture.hasPointerCapture(gesture.id)) gesture.capture.releasePointerCapture(gesture.id);
+      if (gesture.capture && gesture.capture.hasPointerCapture(gesture.id)) gesture.capture.releasePointerCapture(gesture.id);
       sheet.classList.remove('is-holding');
       if (!gesture.active) { sheet.style.removeProperty('height'); return; }
       suppressClickUntil = performance.now() + 700;
@@ -394,18 +412,60 @@
       var progress = (gesture.height - gesture.min) / Math.max(1, gesture.max - gesture.min);
       var open = cancelled ? gesture.open : (Math.abs(dy) > 35 && speed > .35 ? dy < 0 : progress > (gesture.open ? .65 : .18));
       sheet.classList.remove('is-dragging');
-      // Establish the released height before transitioning to its snap state.
-      // No per-frame gallery measurement or document scroll correction.
+      document.body.classList.remove('sf-product-sheet-dragging');
       sheet.getBoundingClientRect();
       setOpen(open, null, true);
       settleFrame = requestAnimationFrame(function () { sheet.style.removeProperty('height'); });
     }
+    // In the details scroller a downward pull at scrollTop=0 drags the sheet.
+    // An upward pull (or a downward pull within scrolled content) stays native.
+    var contentTouch = null;
+    content.addEventListener('touchstart', function (event) {
+      if (!mounted || drag || event.touches.length !== 1 ||
+          event.target.closest('a,button,input,select,textarea,summary,[role="button"],[contenteditable="true"]')) return;
+      var touch = event.touches[0];
+      contentTouch = {id:touch.identifier, x:touch.clientX, y:touch.clientY};
+    }, {passive:true});
+    content.addEventListener('touchmove', function (event) {
+      if (!contentTouch || event.touches.length !== 1) return;
+      var touch = Array.from(event.touches).find(function (item) { return item.identifier === contentTouch.id; });
+      if (!touch) return;
+      var dy = touch.clientY - contentTouch.y, dx = touch.clientX - contentTouch.x;
+      if (!drag) {
+        if (Math.max(Math.abs(dy), Math.abs(dx)) < 6) return;
+        if (Math.abs(dx) > Math.abs(dy) || (expanded && (dy < 0 || content.scrollTop > 1))) {
+          contentTouch = null; return;
+        }
+        var height = sheet.getBoundingClientRect().height;
+        cancelAnimationFrame(settleFrame);
+        sheet.classList.add('is-holding', 'is-dragging');
+        sheet.style.height = height + 'px';
+        var style = getComputedStyle(sheet);
+        drag = {id:null, x:contentTouch.x, y:contentTouch.y, lastY:touch.clientY,
+          start:height, height:height, min:header.getBoundingClientRect().height + parseFloat(style.paddingBottom),
+          max:parseFloat(style.maxHeight), open:expanded, time:performance.now(), active:true, width:innerWidth,
+          capture:null};
+        document.body.classList.add('sf-product-sheet-open', 'sf-product-sheet-dragging');
+        media.inert = true;
+      }
+      event.preventDefault();
+      drag.lastY = touch.clientY;
+      drag.height = Math.max(drag.min, Math.min(drag.max, drag.start - dy));
+      if (!dragFrame) dragFrame = requestAnimationFrame(paintDrag);
+    }, {passive:false});
+    function finishContentTouch(cancelled) {
+      if (!contentTouch) return;
+      contentTouch = null;
+      if (drag && drag.id === null) finishDrag(cancelled);
+    }
+    content.addEventListener('touchend', function () { finishContentTouch(false); }, {passive:true});
+    content.addEventListener('touchcancel', function () { finishContentTouch(true); }, {passive:true});
     window.addEventListener('pointerup', function (event) {
       if (drag && event.pointerId === drag.id) finishDrag(false);
     });
     window.addEventListener('pointercancel', function (event) { if (drag && event.pointerId === drag.id) finishDrag(true); });
-    header.addEventListener('lostpointercapture', function (event) { if (drag && event.pointerId === drag.id) finishDrag(true); });
-    window.addEventListener('blur', function () { finishDrag(true); });
+    sheet.addEventListener('lostpointercapture', function (event) { if (drag && event.pointerId === drag.id) finishDrag(true); });
+    window.addEventListener('blur', function () { contentTouch = null; finishDrag(true); });
     sheet.addEventListener('keydown', function (event) {
       if (event.key === 'Escape' && drag) { event.preventDefault(); finishDrag(true); return; }
       if (event.key === 'Escape' && expanded) { event.preventDefault(); setOpen(false); }
