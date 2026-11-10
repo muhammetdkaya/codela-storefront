@@ -531,17 +531,18 @@ await touchToggle.click();assert.equal(await touchToggle.getAttribute('aria-expa
 await touchPage.waitForFunction(()=>!document.querySelector('.sf-product-sheet').classList.contains('is-expanded'));
 await touchPage.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
 await touchPage.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-discovering'));
+// Entering discovery disables photo snap and may expose additional native
+// scroll range. Move to the TRUE document end before measuring a new pull.
+await touchPage.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
+await touchPage.waitForFunction(()=>document.documentElement.scrollHeight-(scrollY+innerHeight)<=28);
 await touchPage.waitForTimeout(500);
 assert.equal(await touchToggle.getAttribute('aria-expanded'),'false','No delayed page-end opening on touch');
 const endStart=await touchPage.locator('.sf-product-sheet').boundingBox();
 const endScroll=await touchPage.evaluate(()=>scrollY);
-await touchPage.evaluate(()=>{window.__endTrace=[];['touchstart','touchmove','touchend','touchcancel','pointerdown','pointermove','pointerup'].forEach(type=>window.addEventListener(type,e=>window.__endTrace.push({type,target:e.target?.className?.baseVal||e.target?.className||e.target?.tagName,y:e.touches?.[0]?.clientY,scroll:scrollY}),{capture:true,passive:true}))});
 const endSwipe=(type,y)=>touchSession.send('Input.dispatchTouchEvent',{type,touchPoints:type==='touchEnd'?[]:[{x:190,y,id:2}]});
 await endSwipe('touchStart',310);
 await endSwipe('touchMove',275);
 await endSwipe('touchMove',185);
-await touchPage.waitForTimeout(180);
-console.log('END_PULL_DEBUG',JSON.stringify(await touchPage.evaluate(()=>({trace:window.__endTrace,sheet:document.querySelector('.sf-product-sheet')?.getBoundingClientRect().toJSON(),classes:document.querySelector('.sf-product-sheet')?.className,inlineHeight:document.querySelector('.sf-product-sheet')?.style.height,body:document.body.className,docScroll:scrollY,atEnd:document.documentElement.scrollHeight-(scrollY+innerHeight),discoveryTop:document.querySelector('.sf-product-discovery')?.getBoundingClientRect().top,viewport:innerHeight}))));
 await touchPage.waitForFunction(h=>document.querySelector('.sf-product-sheet').getBoundingClientRect().height>h+90,endStart.height);
 assert(Math.abs((await touchPage.evaluate(()=>scrollY))-endScroll)<2,'Overscroll holds the document while moving the sheet');
 const morph=await touchPage.locator('.sf-product-sheet-toggle').evaluate(e=>{
