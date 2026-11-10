@@ -1,3 +1,9 @@
+## 10 Kasım 2026 — 0.1.267 → 0.1.268 galeri görünürlüğü
+
+Cam katman opaklığı pasif .62 → .40, aktif .92 → .72. Sayaç pasif .42, etkileşimde 1; mevcut 1100ms etkinlik süresi ve 330ms geçiş kullanılır. Galeri dışındayken üst kapsül opacity:0 ve tüm alt kontroller visibility:hidden/pointer-events:none; okların kendi visibility:visible kuralının ilgili ürünlerde görünür kalması giderildi. Reduced-motion sayaç geçişini de kapatır.
+
+Doğrulama: 3 build-assets ve 24 paket testi geçti (FTP testleri mock; canlı kurulum yok). Yerel Playwright tarayıcı binary'si olmadığından cihaz/görsel kabulü yapılmadı. GitHub kaynak ve 0.1.268 stable yayın isteği hazırlanıyor; yayın sonucu henüz doğrulanmadı. Sıradaki: yayın işini ve sürüm ZIP'ini doğrula; kullanıcı iPhone'unda galeri → ilgili ürünler geçişini kontrol et.
+
 ## 10 Kasım 2026 — 0.1.264 → 0.1.265 ürün düzeltmeleri (aday)
 
 Native Woo form handler sonrasında, sayfa HTML'i/redirect/notice render edilmeden JSON başarı ve hata sonucu döndürülür. Aynı POST yalnız bir kez işlenir; eklenti alanları ve Woo validasyonu korunur. Başarılı eklemede yanlış belirsizlik uyarısı önlenir. Panel gerçek sayfa sonunda 450ms bekleme ve 420ms geçişle açılır; ayrılıp dönünce veya kapatmadan 900ms sonraki yeni aşağı hareketle tekrar açılabilir. Merkezdeki kapatma işareti küçük ince chevron, gri dairesiz ve mevcut 70×44 hit alanında kalır.

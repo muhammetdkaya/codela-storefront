@@ -6,9 +6,7 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Mobil ürün galerisinde yukarı ve aşağı okları yeniden ince açık cam kapsülün içine alındı; görseller ve sayaçla aynı dar, sabit yükseklikte hizalanır.",
-    "Galeri okları etkileşim sırasında yumuşakça belirir ve kaybolur; yerleri ayrıldığı için Safari kaydırmasında kapsül zıplamaz, ilgili ürünlere girince gizlenir.",
-    "Sepete ekle başarılı olduğunda aynı koyu buton 1,35 saniye 'Sepete eklendi' ve onaylı çanta ikonu gösterir, ardından 'Sepete git'e dönüşür.",
-    "Onay veya sepete git butonuna basıldığında tek sepet açılır; WooCommerce ikinci buton oluşturmaz ve aynı ürün tekrar gönderilmez."
+    "Sağ galeri kapsülü daha saydam; 1 / 3 sayacı kaydırma ve dokunmada belirginleşip durunca yumuşakça saydamlaşır.",
+    "Galeriden ilgili ürünlere geçince tüm galeri kontrolleri ve okları birlikte gizlenir; görünmez oklar tıklama yakalamaz."
   ]
 }

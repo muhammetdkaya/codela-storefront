@@ -577,14 +577,15 @@ body.single-product .stock.in-stock{display:none}
     border-radius:inherit;background:var(--sf-ui-glass-panel-surface);
     -webkit-backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation)) contrast(var(--sf-ui-glass-contrast)) brightness(var(--sf-ui-glass-brightness));
     backdrop-filter:blur(var(--sf-ui-glass-blur)) saturate(var(--sf-ui-glass-saturation)) contrast(var(--sf-ui-glass-contrast)) brightness(var(--sf-ui-glass-brightness));
-    opacity:.62;transition:opacity 330ms ease;
+    opacity:.40;transition:opacity 330ms ease;
   }
   body.sf-product-sheet-ready .sf-product-gallery-rail.is-active{
     box-shadow:var(--sf-ui-glass-shadow)!important;
   }
-  body.sf-product-sheet-ready .sf-product-gallery-rail.is-active::before{opacity:.92}
+  body.sf-product-sheet-ready .sf-product-gallery-rail.is-active::before{opacity:.72}
   body.sf-product-sheet-ready .sf-product-gallery-rail[hidden]{display:none!important}
-  body.sf-product-sheet-ready .sf-product-gallery-rail.is-outside-photos{visibility:hidden;pointer-events:none}
+  body.sf-product-sheet-ready .sf-product-gallery-rail.is-outside-photos{opacity:0;visibility:hidden;pointer-events:none}
+  body.sf-product-sheet-ready .sf-product-gallery-rail.is-outside-photos *{visibility:hidden!important;pointer-events:none!important}
   body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-nav{
     position:static;display:flex;flex-direction:column;align-items:center;gap:0;
     width:40px;max-width:40px;max-height:none;min-height:0;
@@ -603,7 +604,9 @@ body.single-product .stock.in-stock{display:none}
   body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-count{
     position:static;margin:1px 0;color:inherit;font-size:11px;font-weight:500;
     line-height:18px;letter-spacing:.025em;font-variant-numeric:tabular-nums;
+    opacity:.42;transition:opacity 330ms ease;
   }
+  body.sf-product-sheet-ready .sf-product-gallery-rail.is-active .sf-product-gallery-count{opacity:1}
   /* Chevrons occupy FIXED internal slots. No absolute positions outside the
      capsule, no additional button height when the transient hints fade in. */
   body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-rail-arrow.sf-ui-icon-button{
@@ -626,6 +629,7 @@ body.single-product .stock.in-stock{display:none}
   @media(prefers-reduced-motion:reduce){
     body.sf-product-sheet-ready .sf-product-gallery-rail,
     body.sf-product-sheet-ready .sf-product-gallery-rail::before,
+    body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-count,
     body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-rail-arrow.sf-ui-icon-button{transition:none}
   }
   body.sf-product-sheet-ready .sf-product-gallery-expand.sf-ui-icon-button{
