@@ -187,6 +187,12 @@
       var limits = sheetLimits();
       var from = sheet.getBoundingClientRect().height;
       cancelSettle();
+      /* Freeze body BEFORE toggling is-expanded: discovery/heading queries
+         below can flush layout synchronously on Safari. */
+      if (!sheet.classList.contains('is-mounting')) {
+        sheet.classList.add('is-settling');
+        sheet.style.setProperty('--sf-product-drag-body-height',Math.max(0,limits.max - limits.min) + 'px');
+      }
       expanded = open;
       if (open && !preservePhoto && !sheet.classList.contains('is-discovering')) {
         var photos = Array.from(media.querySelectorAll('.woocommerce-product-gallery__image,.woocommerce-product-gallery__image--placeholder')).filter(node=>node.getClientRects().length);
