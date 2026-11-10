@@ -508,14 +508,20 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
 .sf-product-sheet-toggle.sf-ui-button::before,
 .sf-product-sheet-toggle.sf-ui-button::after{content:none!important}
 .sf-product-sheet-scrim{
-  position:fixed;inset:0;z-index:1001;pointer-events:none;
+  position:fixed;inset:0;z-index:999;pointer-events:none;
   background:rgba(0,0,0,.32);opacity:0;
   transition:opacity 340ms cubic-bezier(.22,1,.36,1);
 }
 .sf-product-sheet-scrim.is-visible{opacity:1}
 .sf-product-sheet-scrim.is-dragging{transition:none}
-/* Header dims with the page; the original Woo form and glass sheet remain above it. */
-@media(max-width:700px){body.sf-product-sheet-ready div.product > .sf-product-sheet{z-index:1002}}
+/* Stable mobile stacking order across open, drag and close transitions:
+   header (998) < neutral scrim (999) < native glass sheet (1002).
+   Keep the header lowered even when the sheet is collapsed, so the fade
+   never flashes the header controls above the backdrop. */
+@media(max-width:700px){
+  body.sf-product-sheet-ready .sf-shell .sf-header{z-index:998}
+  body.sf-product-sheet-ready div.product > .sf-product-sheet{z-index:1002}
+}
 @media(prefers-reduced-motion:reduce){.sf-product-sheet-scrim{transition:none}}
 .sf-product-sheet-heading > :is(.sf-product-shipping-summary,.out-of-stock){grid-column:1/-1;margin:4px 0 0;font-size:12px;line-height:1.4}
 body.single-product .stock.in-stock{display:none}

@@ -19,7 +19,9 @@ const feedbackCss=fs.readFileSync(root+'styles/navigation-feedback.css','utf8');
     await page.evaluate(()=>document.querySelector('main').id='sf-content');
     const native=await page.evaluate(()=>{
      const box=selector=>{const r=document.querySelector(selector).getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}};
-     return {panel:box('.sf-product-sheet'),photo:box('.woocommerce-product-gallery__image'),quantity:box('.sf-product-quantity'),button:box('.single_add_to_cart_button')};
+     const c=getComputedStyle(document.querySelector('.single_add_to_cart_button'));
+     const paint={backgroundColor:c.backgroundColor,backgroundImage:c.backgroundImage,boxShadow:c.boxShadow,backdropFilter:c.backdropFilter,color:c.color,fontWeight:c.fontWeight};
+     return {panel:box('.sf-product-sheet'),photo:box('.woocommerce-product-gallery__image'),quantity:box('.sf-product-quantity'),button:box('.single_add_to_cart_button'),paint};
     });
     // Run from both a product and a normal page; body-scoped gap must not leak.
     for(const productSource of [true,false]){
@@ -32,11 +34,14 @@ const feedbackCss=fs.readFileSync(root+'styles/navigation-feedback.css','utf8');
      await page.evaluate(()=>codelaSFFeedback.begin({url:'https://store.test/product/next/'}));
      const pending=await page.evaluate(()=>{
       const box=selector=>{const r=document.querySelector(selector).getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}};
-      return {panel:box('.sf-navigation-purchase'),photo:box('.sf-skeleton-gallery'),quantity:box('.sf-navigation-quantity'),button:box('.sf-navigation-controls .sf-ui-button')};
+      const c=getComputedStyle(document.querySelector('.sf-navigation-controls .sf-ui-button'));
+      const paint={backgroundColor:c.backgroundColor,backgroundImage:c.backgroundImage,boxShadow:c.boxShadow,backdropFilter:c.backdropFilter,color:c.color,fontWeight:c.fontWeight};
+      return {panel:box('.sf-navigation-purchase'),photo:box('.sf-skeleton-gallery'),quantity:box('.sf-navigation-quantity'),button:box('.sf-navigation-controls .sf-ui-button'),paint};
      });
      for(const component of ['panel','photo','quantity','button']){
       for(const key of ['x','y','width','height']) assert(Math.abs(native[component][key]-pending[component][key])<1,`${width}/${short}/${productSource} ${component}.${key}: ${native[component][key]} != ${pending[component][key]}`);
      }
+     assert.deepEqual(pending.paint,native.paint,'Destination CTA and native Woo use the identical primary material');
      assert.equal(await page.locator('.sf-navigation-preview form').count(),0);
      assert(await page.locator('.sf-navigation-preview button').isDisabled());
      assert.equal(await page.locator('.sf-navigation-purchase .sf-product-sheet-handle path').count(),1,'Destination uses the identical one-path handle');

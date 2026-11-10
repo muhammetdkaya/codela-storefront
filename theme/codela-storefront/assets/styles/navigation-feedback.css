@@ -59,15 +59,14 @@ html[data-sf-navigation-pending] .sf-shell > .sf-mobile-dock .sf-dock-surface{tr
     box-shadow:var(--sf-ui-glass-shadow);
   }
   .sf-navigation-purchase .sf-ui-button{
-    /* Match the REAL expanded tonal CTA width/height from product.css.
-       No 200px cap or auto left margin while its native source is loading. */
+    /* Match native Woo CTA geometry only; shared primary Button owns
+       the identical color, translucent fill, highlight and elevation. */
     flex:1 1 0;width:auto;min-width:0;margin-inline-start:0;
     height:44px;min-height:44px;padding-block:0;box-sizing:border-box;
     --sf-ui-button-height:44px;--sf-ui-button-font-size:14px;
     --sf-ui-button-padding-y:0px;--sf-ui-button-padding-x:var(--sf-ui-product-button-padding-x);
     --sf-ui-control-radius:var(--sf-ui-pill);border-radius:999px;
-    background:var(--sf-ui-ink);color:#fff;cursor:default;font-weight:600;gap:10px;opacity:1;
-    box-shadow:var(--sf-ui-action-shadow);
+    cursor:default;font-weight:600;gap:10px;opacity:1;
   }
   .sf-navigation-purchase .sf-navigation-buy-button::before{
     content:'';display:inline-block;flex:none;width:20px;height:20px;
