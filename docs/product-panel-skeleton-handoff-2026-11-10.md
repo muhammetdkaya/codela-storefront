@@ -69,3 +69,12 @@ Destination skeleton'daki Sepete Ekle butonuna doğrudan verilen koyu dolgu ve s
 
 Kod main'e aktarıldı. Fiziksel iPhone/Safari görsel kabulü ayrıca yapılmalıdır; GitHub Actions ve GitHub stable release durumu bağımsız teyit edilir.
 
+
+---
+
+## 10 Kasım 2026 — 0.1.275 → 0.1.276 panel açılış/kapanış hareket sürekliliği
+
+Parmak bırakılınca panel gövdesinin sabit yüksekliği erken siliniyordu; is-expanded kapanırken gövde hemen height:0/visibility:hidden oluyordu. Mobil ürün paneli şimdi tek JavaScript rAF geçiş denetleyicisi kullanıyor: gerçek native sheet yüksekliği, scrim opaklığı ve tek path SVG tutamak aynı normalize ilerleme oranından çiziliyor. Gesture release başlangıcı son dokunma yüksekliğinden alınıyor; geri/ileri ters yönde bırakma, tıklayarak açma/kapatma ve interrupted tween aynı mekanizmaya dönüyor. Kapanırken gövde yalnız **tam kapalı yüksekliğe ulaştıktan sonra** gizleniyor; geçişte içerik alanı sabit yükseklikte kalıyor ve Woo formu yeniden ebeveynlenmiyor. Başlık genişliği, iki satır clamp'i ve 28px header padding'i tüm geçiş boyunca aynı; önceki 36px açık panel override'ı kaldırıldı. 320ms tüm mesafeye karşılık gelir, kısmi mesafe ölçeklenir; reduced-motion derhal hedefe ulaşır. CSS height ve scrim transition devre dışı, JS rAF tek zamanlayıcıdır.
+
+Gerçek Woo satın alma düğmesinin sabit konumlandırma ve form aidiyeti korunduğu için bu sürüm bütün paneli transform:scaleY ile büyütmez; metin/görsel bozulmasını önler. Bu etapta panel sınırı JS ile değişirken iç gövde yeniden akıtılmaz. Tam compositor-only surface clip/translate mimarisi ayrı donanım odaklı deney gerektirir. product-sheet-handoff-browser.cjs sürükleme bırakışında içerik görünürlüğü, tek-frame scrim/tutamak ilerleme senkronu ve kapanış bitince gizlemeyi ölçer; deploy CI bu testi çalıştıracak şekilde genişletildi. Fiziksel iPhone/Safari FPS kabulü bu testlerden ayrıdır.
+

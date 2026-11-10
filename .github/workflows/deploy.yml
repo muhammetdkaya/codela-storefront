@@ -98,6 +98,7 @@ jobs:
           node tests/product-skeleton-geometry-browser.cjs
           TEST_WEBKIT=1 node tests/product-skeleton-geometry-browser.cjs
           node tests/product-sheet-browser.cjs
+          node tests/product-sheet-handoff-browser.cjs
           # Verify shared logged-out Account chrome and instantaneous real
           # header SVGs before the unrelated broad search navigation suite.
           node tests/passkeys-views-browser.cjs
