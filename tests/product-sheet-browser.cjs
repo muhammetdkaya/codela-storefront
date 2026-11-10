@@ -163,7 +163,7 @@ for(const width of [320,390,700]){
  await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').getBoundingClientRect().height>700);assert(await page.locator('.woocommerce-product-gallery').evaluate(e=>e.inert),'Open details stops gallery gestures/focus');
  await page.waitForFunction(()=>Math.abs(parseFloat(getComputedStyle(document.body,'::before').opacity)-.44)<.001);
  const openedScrim=await page.evaluate(()=>getComputedStyle(document.body,'::before').opacity);
- assert.equal(parseFloat(openedScrim),.44,'Expanded sheet dims the gallery with the controlled backdrop');
+ assert(Math.abs(parseFloat(openedScrim)-.44)<.002,'Expanded sheet dims the gallery with the controlled backdrop');
  await page.locator('.sf-product-delivery > summary').click();assert(await page.locator('.cdl-fsb-text').isVisible(),'Shipping visible inside open delivery section');
  const bar=await page.locator('.cdl-fsb-track').boundingBox(),text=await page.locator('.cdl-fsb-text').boundingBox();assert(Math.abs(bar.width-text.width)<1,'Full width shipping track');
  await page.locator('.sf-product-sheet-body').evaluate(e=>e.scrollTop=300);
