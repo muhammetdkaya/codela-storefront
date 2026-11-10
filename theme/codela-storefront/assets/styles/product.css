@@ -978,8 +978,25 @@ html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:
     -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='1.9' stroke-linejoin='round' stroke-linecap='round' d='M5 7h14l1 13H4L5 7Zm3 0V5a4 4 0 0 1 8 0v2m-7 5a3 3 0 0 0 6 0'/%3E%3C/svg%3E") center / contain no-repeat;
     mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='1.9' stroke-linejoin='round' stroke-linecap='round' d='M5 7h14l1 13H4L5 7Zm3 0V5a4 4 0 0 1 8 0v2m-7 5a3 3 0 0 0 6 0'/%3E%3C/svg%3E") center / contain no-repeat;
   }
+  /* Native product confirmation and subsequent View cart use one dark primary
+     Button. A tick inside the existing bag replaces a second success badge. */
+  :is(body.single-product.sf-product-sheet-ready,html.sf-product-sheet-pending body.single-product) div.product form.cart .sf-product-purchase .single_add_to_cart_button:is([data-sf-cart-state="confirmed"],[data-sf-cart-state="success"])::before{
+    -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='1.9' stroke-linejoin='round' stroke-linecap='round' d='M5 7h14l1 13H4L5 7Zm3 0V5a4 4 0 0 1 8 0v2M8 14l3 3 5-6'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='1.9' stroke-linejoin='round' stroke-linecap='round' d='M5 7h14l1 13H4L5 7Zm3 0V5a4 4 0 0 1 8 0v2M8 14l3 3 5-6'/%3E%3C/svg%3E") center / contain no-repeat;
+  }
+  :is(body.single-product.sf-product-sheet-ready,html.sf-product-sheet-pending body.single-product) div.product form.cart .sf-product-purchase .single_add_to_cart_button[data-sf-cart-state="confirmed"]::before{
+    animation:sf-product-added-bag 320ms var(--sf-ui-ease-release,ease-out) both;
+  }
+  @keyframes sf-product-added-bag{
+    0%{transform:scale(.78);opacity:.6}
+    65%{transform:scale(1.09);opacity:1}
+    100%{transform:scale(1);opacity:1}
+  }
+  @media(prefers-reduced-motion:reduce){
+    body.single-product div.product form.cart .sf-product-purchase .single_add_to_cart_button[data-sf-cart-state="confirmed"]::before{animation:none}
+  }
   /* Shared catalog success checkmark is redundant on the single product CTA. */
-  body.single-product div.product form.cart .sf-product-purchase .single_add_to_cart_button.sf-cart-feedback[data-sf-cart-state="success"]::after{content:none}
+  body.single-product div.product form.cart .sf-product-purchase .single_add_to_cart_button.sf-cart-feedback:is([data-sf-cart-state="confirmed"],[data-sf-cart-state="success"])::after{content:none}
   /* Server errors stay above the purchase row; they never open the details sheet. */
   body.single-product .sf-product-purchase .sf-purchase-status:not(.screen-reader-text):not([hidden]){
     position:absolute;left:0;right:0;bottom:calc(100% + 10px);
