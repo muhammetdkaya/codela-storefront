@@ -213,6 +213,17 @@
       return !gallery.classList.contains('is-discovering') &&
         (!discovery || discovery.getBoundingClientRect().top > innerHeight - Math.max(90, innerHeight * .18));
     };
+    const syncRailPhotoZone = () => {
+      const inside = inPhotoZone();
+      rail.classList.toggle('is-outside-photos', !inside);
+      if (!inside) hideRail();
+      return inside;
+    };
+    // Discovery state is updated on the next animation frame by the product
+    // sheet. A class observer restores the rail on return to photo one even
+    // if no further scroll event fires after that frame.
+    const photoZoneObserver = new MutationObserver(syncRailPhotoZone);
+    photoZoneObserver.observe(gallery, {attributes:true,attributeFilter:['class']});
     const revealRail=()=>{
       if (!mobileMedia.matches || rail.hidden || !inPhotoZone() ||
           document.body.classList.contains('sf-product-sheet-open')) return;
@@ -226,9 +237,7 @@
     // Scroll no longer changes capsule position. It only controls the temporary
     // arrow/glass reveal and hides the entire rail at the related-product boundary.
     window.addEventListener('scroll',()=>{
-      const inside = inPhotoZone();
-      rail.classList.toggle('is-outside-photos', !inside);
-      if (!inside) { hideRail(); return; }
+      if (!syncRailPhotoZone()) return;
       const photo=items[currentIndex()];
       const bounds=photo?.getBoundingClientRect();
       if (bounds && bounds.bottom>0 && bounds.top<innerHeight &&
