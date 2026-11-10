@@ -250,7 +250,11 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
     }
 
     const feedbackOriginal = new WeakMap();
+    const feedbackTimers = new WeakMap();
     function feedback(button, phase) {
+        // A quantity/variation change must cancel the delayed confirmation.
+        const pending = feedbackTimers.get(button);
+        if (pending) { clearTimeout(pending); feedbackTimers.delete(button); }
         if (!button) return;
         if (!feedbackOriginal.has(button)) feedbackOriginal.set(button, {
             html:button.innerHTML, label:button.getAttribute('aria-label')
@@ -259,7 +263,9 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
         button.classList.add('sf-cart-feedback');
         button.dataset.sfCartState = phase;
         button.setAttribute('aria-busy', String(phase === 'loading'));
-        const label = phase === 'loading' ? t('Adding…') : phase === 'success' ? t('View cart') : null;
+        const label = phase === 'loading' ? t('Adding…')
+            : phase === 'confirmed' ? t('Added to cart')
+            : phase === 'success' ? t('View cart') : null;
         // Icon cards keep their geometry; their accessible label changes too.
         if (button.classList.contains('sf-ui-icon-button')) {
             button.querySelector('.screen-reader-text')?.replaceChildren(document.createTextNode(label || original.label || t('Add to cart')));
@@ -320,7 +326,12 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
                 // consumers without a catalog button; do not issue a second POST.
                 try { window.jQuery(document.body).trigger('added_to_cart', [{}, '', null]); } catch (_) { /* A consumer must not retry a successful write. */ }
             }
-            feedback(button, 'success');
+            // A short, visible success confirmation precedes the permanent
+            // View cart action. Neither state can POST the same item twice.
+            feedback(button, 'confirmed');
+            feedbackTimers.set(button, setTimeout(() => {
+                if (button.isConnected && button.dataset.sfCartState === 'confirmed') feedback(button, 'success');
+            }, 1350));
             purchaseStatus(form, t('Item added to cart.'));
             // Never repeat the POST if the secondary session read fails.
             dirty = true;
@@ -343,7 +354,7 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
             const button = event.target.closest('.single_add_to_cart_button,.ajax_add_to_cart');
             if (!button) return;
             if (button.dataset.sfCartState === 'loading') { event.preventDefault(); event.stopImmediatePropagation(); return; }
-            if (button.dataset.sfCartState !== 'success') return;
+            if (!['confirmed', 'success'].includes(button.dataset.sfCartState)) return;
             event.preventDefault(); event.stopImmediatePropagation();
             if (openCart) openCart(event); else location.assign(config().cart);
         }, true);
@@ -355,7 +366,10 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
             // External/extension-only actions without a Woo product ID stay native.
             if (!form.querySelector('[name="add-to-cart"]')) return;
             event.preventDefault();
-            if (button.dataset.sfCartState === 'success') { if (openCart) openCart(event); return; }
+            if (['confirmed', 'success'].includes(button.dataset.sfCartState)) {
+                if (openCart) openCart(event); else location.assign(config().cart);
+                return;
+            }
             if (!mutating) void submitProduct(form, button);
         });
         document.addEventListener('change', event => {
