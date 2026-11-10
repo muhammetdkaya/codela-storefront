@@ -63,7 +63,8 @@ for(const width of [320,390,700]){
  assert.equal(await page.locator('.sf-product-sheet .sf-footer').count(),0,'Footer is outside both panel states');
  assert.equal(await page.locator('body > .sf-footer').count(),1,'Native footer remains at the end of the document');
  assert.equal(await page.locator('.sf-product-sheet .sf-product-purchase').evaluate(e=>getComputedStyle(e).backgroundColor),'rgba(0, 0, 0, 0)','One sheet material');
- assert.equal(await toggle.evaluate(e=>getComputedStyle(e,'::after').content),'none','Arrow is removed; accessible grip button remains');
+ assert.equal(await toggle.evaluate(e=>getComputedStyle(e,'::after').content),'""','Two handle strokes support a morph instead of swapping icons');
+ assert.equal(await page.locator('.sf-product-sheet-scrim').count(),1,'Exactly one backdrop is mounted');
  const spacing=await page.locator('.sf-product-purchase').evaluate(e=>{const s=getComputedStyle(e);return [s.paddingTop,s.paddingBottom]});assert.deepEqual(spacing,['12px','12px'],'Balanced purchase edge spacing');
  assert.equal(Math.round((await buy.boundingBox()).height),44,'Smaller CTA retains a 44px touch target');
  const bounds=await buy.boundingBox();assert(bounds.y+bounds.height<=844&&bounds.y>700,'Purchase stays at bottom '+width);
@@ -177,7 +178,7 @@ for(const width of [320,390,700]){
  await page.mouse.move(handle.x+handle.width/2,handle.y+20);await page.mouse.down();
  await page.waitForFunction(()=>{
    const grip=document.querySelector('.sf-product-sheet-toggle');
-   return new DOMMatrix(getComputedStyle(grip,'::before').transform).a>1.02;
+   return grip.closest('.sf-product-sheet').classList.contains('is-holding');
  });
  await page.mouse.move(handle.x+handle.width/2,handle.y-80,{steps:8});
  const during=(await page.locator('.sf-product-sheet').boundingBox()).height;
@@ -187,9 +188,11 @@ for(const width of [320,390,700]){
  assert(Math.abs((await page.locator('.sf-product-sheet').boundingBox()).height-beforeDrag-50)<2,'Reversing the pointer reverses the sheet immediately');
  await page.mouse.move(handle.x+handle.width/2,handle.y-150,{steps:4});await page.mouse.up();
  assert.equal(await toggle.getAttribute('aria-expanded'),'true','Release settles the sheet open');
+ await page.waitForFunction(()=>getComputedStyle(document.querySelector('.sf-product-sheet-scrim')).opacity>.95);
+ assert.equal(await page.locator('.sf-product-sheet-scrim.is-visible').count(),1,'Expanded sheet shows a dimmed background');
  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No mobile horizontal overflow');
  if(width===390){await page.locator('input.qty').fill('1');await page.waitForFunction(()=>{const e=document.querySelector('.sf-product-sheet');return Math.abs(e.getBoundingClientRect().height-(innerHeight-84-parseFloat(getComputedStyle(e).getPropertyValue('--sf-ui-bottom-bar-gap'))))<1});fs.mkdirSync('qa',{recursive:true});await page.screenshot({path:'qa/storefront-ui-kit-product-sheet-open.png'});await toggle.click();await page.waitForFunction(()=>{const e=document.querySelector('.sf-product-sheet');return e.getBoundingClientRect().height<=parseFloat(getComputedStyle(e).getPropertyValue('--sf-product-closed-height'))+2});await page.screenshot({path:'qa/storefront-ui-kit-product-sheet-closed.png'});}
- await page.setViewportSize({width:1280,height:900});await page.waitForFunction(()=>!document.querySelector('.sf-product-sheet'));assert.equal(await page.locator('.sf-product-sheet').count(),0,'Desktop restores original document');assert.equal(await page.locator('div.product .sf-product-overview > .summary .product_title').count(),1);assert.equal(await page.locator('div.product > .related').count(),1,'Desktop recommendation position restored');assert.equal(await page.locator('.sf-product-discovery').count(),0);assert.equal(await page.locator('.summary > .cdl-tb').count(),1,'Desktop restores the same reassurance node to summary');assert.equal(await page.locator('.summary > .cdl-fsb--product').count(),1,'Desktop restores original live shipping node');assert.equal(await page.locator('.sf-product-delivery').count(),0,'No generated mobile sections on desktop');assert.equal(await page.locator('body > .sf-footer').count(),1);assert.equal(await page.locator('form.cart .single_add_to_cart_button').count(),1);
+ await page.setViewportSize({width:1280,height:900});await page.waitForFunction(()=>!document.querySelector('.sf-product-sheet'));assert.equal(await page.locator('.sf-product-sheet').count(),0,'Desktop restores original document');assert.equal(await page.locator('.sf-product-sheet-scrim').count(),0,'Desktop removes the backdrop');assert.equal(await page.locator('div.product .sf-product-overview > .summary .product_title').count(),1);assert.equal(await page.locator('div.product > .related').count(),1,'Desktop recommendation position restored');assert.equal(await page.locator('.sf-product-discovery').count(),0);assert.equal(await page.locator('.summary > .cdl-tb').count(),1,'Desktop restores the same reassurance node to summary');assert.equal(await page.locator('.summary > .cdl-fsb--product').count(),1,'Desktop restores original live shipping node');assert.equal(await page.locator('.sf-product-delivery').count(),0,'No generated mobile sections on desktop');assert.equal(await page.locator('body > .sf-footer').count(),1);assert.equal(await page.locator('form.cart .single_add_to_cart_button').count(),1);
  await page.setViewportSize({width,height:844});await page.waitForFunction(()=>!!document.querySelector('.sf-product-sheet'));assert.equal(await page.locator('.sf-product-sheet').count(),1,'Return to mobile mounts once');
 }
 // Native Woo title, price and purchase are the REAL initial dock before the
