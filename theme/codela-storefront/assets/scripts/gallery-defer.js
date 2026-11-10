@@ -121,15 +121,22 @@
     count.setAttribute('aria-live','polite');
     gallery.appendChild(count);
     function select(index){
-      const image=imageAt(index);
-      activate(image);
-      const vertical=matchMedia('(max-width:700px)').matches;
       const item=items[index];
-      const bounds=track.getBoundingClientRect();
-      const rect=item.getBoundingClientRect();
+      if(!item)return;
+      activate(imageAt(index));
+      const vertical=matchMedia('(max-width:700px)').matches;
       const behavior=matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth';
-      if(vertical)window.scrollTo({top:window.scrollY+rect.top,behavior});
-      else track.scrollTo({left:track.scrollLeft+rect.left-bounds.left,top:0,behavior});
+      // Update the native thumb/count state at the moment an internal arrow
+      // is pressed, not only after an IntersectionObserver threshold fires.
+      // scrollIntoView follows the same root snap targets as finger swipes,
+      // including Safari when its bottom toolbar is animating.
+      update(index);
+      if(vertical)item.scrollIntoView({block:'start',behavior});
+      else {
+        const bounds=track.getBoundingClientRect();
+        const rect=item.getBoundingClientRect();
+        track.scrollTo({left:track.scrollLeft+rect.left-bounds.left,top:0,behavior});
+      }
     }
     const buildNav=()=>{
       nav.replaceChildren();
