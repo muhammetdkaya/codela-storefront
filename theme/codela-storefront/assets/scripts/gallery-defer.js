@@ -168,24 +168,26 @@
     const currentIndex=()=>Math.max(0,[...nav.children].findIndex(node=>node.getAttribute('aria-current')==='true'));
     rail.append(previous,nav,count,next);
     gallery.appendChild(rail);
-    // Center between the actual header and purchase surface, including Safari's
-    // visual viewport. Hidden arrow slots have symmetric height around previews.
+    // Place the compact capsule once per structural geometry change. Safari
+    // collapses/expands its bars during a swipe, so scroll/visualViewport
+    // height changes must NOT keep shifting this fixed control.
     let railFrame = 0;
+    let railGeometry = null;
     function positionRail() {
       railFrame = 0;
       if (!matchMedia('(max-width:700px)').matches || document.body.classList.contains('sf-product-sheet-open')) return;
-      const viewport = window.visualViewport;
-      const top = viewport?.offsetTop || 0;
-      const bottom = top + (viewport?.height || innerHeight);
       const header = document.querySelector('.sf-header')?.getBoundingClientRect();
       const sheet = document.querySelector('.sf-product-sheet')?.getBoundingClientRect();
-      const start = Math.max(top + 12, header?.bottom || top + 80);
-      const end = Math.min(bottom - 12, sheet?.top || bottom - 190);
-      rail.style.setProperty('--sf-gallery-rail-center', ((start + end) / 2) + 'px');
+      const width = window.visualViewport?.width || innerWidth;
+      const metrics = [width, header?.height || 0, sheet?.height || 0];
+      if (railGeometry && metrics.every((value, index) => Math.abs(value - railGeometry[index]) < 1)) return;
+      railGeometry = metrics;
+      const start = Math.max(12, header?.bottom || 80);
+      const end = Math.min(innerHeight - 12, sheet?.top || innerHeight - 190);
+      rail.style.setProperty('--sf-gallery-rail-center', Math.round((start + end) / 2) + 'px');
     }
     const queueRailPosition = () => { if (!railFrame) railFrame = requestAnimationFrame(positionRail); };
     window.addEventListener('resize', queueRailPosition, {passive:true});
-    window.addEventListener('scroll', queueRailPosition, {passive:true});
     window.visualViewport?.addEventListener('resize', queueRailPosition, {passive:true});
     if ('ResizeObserver' in window) {
       const observer = new ResizeObserver(queueRailPosition);
@@ -194,8 +196,6 @@
       const header = document.querySelector('.sf-header');
       if (header) observer.observe(header);
     }
-    // Establish the visible-area center before the first interactive frame;
-    // subsequent header/sheet/viewport changes remain RAF-throttled.
     positionRail();
     // Glass and arrows are a temporary interaction hint, while previews and
     // count remain visible. Repeated movement resets the fade delay.
@@ -205,23 +205,33 @@
       rail.classList.remove('is-active');
       previous.tabIndex=-1;next.tabIndex=-1;
     };
+    // Native recommendations are inside the gallery's scroll document.
+    // Stop advertising photo arrows as soon as those cards enter view,
+    // rather than waiting for the delayed is-discovering frame or fade timer.
+    const inPhotoZone = () => {
+      const discovery = gallery.querySelector('.sf-product-discovery');
+      return !gallery.classList.contains('is-discovering') &&
+        (!discovery || discovery.getBoundingClientRect().top > innerHeight - Math.max(90, innerHeight * .18));
+    };
     const revealRail=()=>{
-      if (!mobileMedia.matches || rail.hidden ||
-          document.body.classList.contains('sf-product-sheet-open') ||
-          gallery.classList.contains('is-discovering')) return;
+      if (!mobileMedia.matches || rail.hidden || !inPhotoZone() ||
+          document.body.classList.contains('sf-product-sheet-open')) return;
       rail.classList.add('is-active');
       previous.tabIndex=0;next.tabIndex=0;
       clearTimeout(railTimer);
-      railTimer=setTimeout(hideRail, 1800);
+      railTimer=setTimeout(hideRail, 1100);
     };
     rail.addEventListener('pointerdown',revealRail,{passive:true});
     rail.addEventListener('focusin',revealRail);
-    // Native document scrolling is the mobile gallery's actual motion.
+    // Scroll no longer changes capsule position. It only controls the temporary
+    // arrow/glass reveal and hides the entire rail at the related-product boundary.
     window.addEventListener('scroll',()=>{
+      const inside = inPhotoZone();
+      rail.classList.toggle('is-outside-photos', !inside);
+      if (!inside) { hideRail(); return; }
       const photo=items[currentIndex()];
       const bounds=photo?.getBoundingClientRect();
       if (bounds && bounds.bottom>0 && bounds.top<innerHeight &&
-          !gallery.classList.contains('is-discovering') &&
           !document.body.classList.contains('sf-product-sheet-open')) revealRail();
       else hideRail();
     },{passive:true});
