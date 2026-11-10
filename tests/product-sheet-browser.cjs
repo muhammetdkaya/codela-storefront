@@ -114,8 +114,11 @@ for(const width of [320,390,700]){
  // by the scoped overscroll policy; a desktop wheel cannot emulate that paint.
  await page.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
 
- // The new end-of-document action opens details. Dismiss it to continue
- // checking the unchanged native recommendation/footer scroll geometry.
+ // Merely reaching the last pixel no longer opens details on a timer.
+ await page.waitForTimeout(500);
+ assert.equal(await toggle.getAttribute('aria-expanded'),'false','End-of-document is idle without upward overscroll');
+ await page.mouse.move(190,400);
+ await page.mouse.wheel(0,240);
  await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-expanded'));
  await toggle.click();
  await page.waitForFunction(()=>{
@@ -135,8 +138,8 @@ for(const width of [320,390,700]){
  assert.equal(await page.locator('html').evaluate(e=>getComputedStyle(e).overscrollBehaviorY),'none','No bottom boundary rubber-band in recommendations');
  assert.equal(await page.locator('body').evaluate(e=>getComputedStyle(e).overscrollBehaviorY),'none');
  assert.equal(await page.locator('html').evaluate(e=>getComputedStyle(e).scrollSnapType),'none','Long recommendations scroll without snapping back to the section heading');
- await page.mouse.move(190,400);
- for(let gesture=0;gesture<3;gesture++)await page.mouse.wheel(0,500);
+ for(let gesture=0;gesture<3;gesture++)
+   await page.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
  const settled=await page.evaluate(async()=>{const samples=[];for(let i=0;i<60;i++){await new Promise(requestAnimationFrame);samples.push({y:scrollY,height:document.documentElement.scrollHeight})}return samples});
  settled.forEach(s=>{assert(Math.abs(s.y-bottom.y)<1,'No bottom scroll correction on release');assert.equal(s.height,bottom.height,'No growing bottom whitespace')});
  await page.mouse.wheel(0,-200);
