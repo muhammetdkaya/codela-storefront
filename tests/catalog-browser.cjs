@@ -175,7 +175,12 @@ for(const width of [320,390,700,900,1280]){
     assert.equal(v.group.width,140,'Desktop retains its three-control shared island');
    }
   }
-  if(width<=700){assert(layout.brand.x<layout.menu.x,'Logo stays left');if(anchor)assert(Math.abs(layout.menu.x-anchor)<1,'Menu never changes slot');else anchor=layout.menu.x;
+  if(width<=700){assert(layout.brand.x<layout.menu.x,'Logo stays left');if(anchor){
+    // The native product header intentionally uses a 16px horizontal inset,
+    // while the standard header uses 20px. Verify each established slot.
+    const expected=anchor+(mode==='product'?4:0);
+    assert(Math.abs(layout.menu.x-expected)<1,'Menu respects the page-specific header gutter '+mode+' at '+width);
+   }else anchor=layout.menu.x;
    assert.deepEqual(layout.tools,mode==='product'?['cart']:mode==='no-dock'?['search','cart','account']:[]);
   }else{
    assert.equal(layout.tools.length,3,'Desktop keeps all tools');
