@@ -501,7 +501,7 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
 .sf-product-sheet-header{position:relative;flex:none;min-height:64px;padding:28px 16px 8px}
 /* One centered control: the existing handle becomes a down chevron when open. */
 .sf-product-sheet-toggle::before{content:'';position:absolute;width:44px;height:4px;top:12px;left:13px;border-radius:var(--sf-ui-pill);background:var(--sf-ui-border);transition:transform var(--sf-ui-motion-press) var(--sf-ui-ease-press)}
-.sf-product-sheet.is-expanded .sf-product-sheet-toggle::before{width:10px;height:10px;left:29px;top:12px;background:transparent;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;border-radius:1px;transform:rotate(45deg)}
+.sf-product-sheet.is-expanded .sf-product-sheet-toggle::before{width:18px;height:18px;left:26px;top:10px;background:currentColor;border:0;border-radius:0;transform:none;-webkit-mask:url("../icons/chevron-down.svg") center/contain no-repeat;mask:url("../icons/chevron-down.svg") center/contain no-repeat}
 .sf-product-sheet.is-expanded .sf-product-sheet-toggle::after{content:none}
 .sf-product-sheet.is-expanded .sf-product-sheet-toggle{color:var(--sf-ui-glass-ink)}
 .sf-product-sheet.is-end-ready .sf-product-sheet-toggle::before{transform:scaleX(1.15);background:var(--sf-ui-glass-ink)}
