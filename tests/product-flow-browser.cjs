@@ -45,7 +45,7 @@ const root = 'theme/codela-storefront/';
   await page.evaluate(()=>dispatchEvent(new Event('scroll')));
   assert.equal(await page.locator('.sf-product-sheet-toggle').getAttribute('aria-expanded'),'false');
   await page.evaluate(()=>window.scrollTo({top:500,behavior:'instant'}));
-  await page.waitForFunction(()=>scrollY < document.documentElement.scrollHeight-innerHeight-120);
+  await page.waitForFunction(()=>scrollY < document.documentElement.scrollHeight-innerHeight-120 && !document.querySelector('.woocommerce-product-gallery').classList.contains('is-discovering'));
   await page.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
   await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-expanded'));
   await page.locator('.sf-product-sheet-toggle').click();
