@@ -24,18 +24,22 @@ const root = 'theme/codela-storefront/';
   assert.equal(await page.locator('.sf-product-gallery-rail .sf-product-gallery-count').count(),1);
   assert.equal(await page.locator('.sf-product-gallery-rail-arrow').count(),2);
   const railMaterial=await rail.evaluate(el=>({h:el.getBoundingClientRect().height,w:el.getBoundingClientRect().width,bg:getComputedStyle(el).backgroundColor,panel:getComputedStyle(document.querySelector('.sf-product-sheet')).backgroundColor}));
-  assert(railMaterial.h < 280 && railMaterial.w <= 55,'Three-thumb glass rail is compact: '+JSON.stringify(railMaterial));
+  assert(railMaterial.h < 200 && railMaterial.w <= 50,'Small, three-thumb glass rail omits arrow slots: '+JSON.stringify(railMaterial));
   assert.equal(await rail.evaluate(el=>getComputedStyle(el,'::before').backgroundColor),railMaterial.panel,'Rail pseudo-surface uses identical glass color');
   assert.equal(await images.first().evaluate(el=>getComputedStyle(el).outlineWidth),'0px','No dark selected outline at rest');
   const centered=await rail.evaluate(el=>{const r=el.getBoundingClientRect(),h=document.querySelector('.sf-header').getBoundingClientRect(),p=document.querySelector('.sf-product-sheet').getBoundingClientRect();return Math.abs((r.top+r.bottom)/2-(Math.max(12,h.bottom)+p.top)/2);});
   assert(centered<2,'Rail is centered between actual header and purchase panel');
   assert(!(await page.locator('.sf-product-gallery-expand').isVisible()),'Fullscreen button is hidden until photo tap');
+  const centerBefore=await rail.evaluate(el=>el.style.getPropertyValue('--sf-gallery-rail-center'));
   await page.mouse.move(190,350);await page.mouse.wheel(0,450);
-  assert(await rail.isVisible(),'Glass background persists on scroll rather than fading');
+  const centerAfter=await rail.evaluate(el=>el.style.getPropertyValue('--sf-gallery-rail-center'));
+  assert.equal(centerBefore,centerAfter,'Rail stays anchored through vertical photo scroll');
+  assert(await rail.isVisible(),'Previews stay visible while transient arrow/glass paint fades');
   assert(await images.first().isVisible());
   assert(await page.locator('.sf-product-gallery-count').isVisible());
   await page.evaluate(()=>window.scrollTo(0,document.querySelector('.sf-product-discovery').offsetTop));
-  await page.waitForTimeout(300);
+  await page.waitForFunction(()=>document.querySelector('.sf-product-gallery-rail').classList.contains('is-outside-photos'));
+  assert(!(await rail.isVisible()),'Photo rail and arrows disappear as related products enter view');
   assert.equal(await page.locator('.sf-product-sheet-toggle').getAttribute('aria-expanded'),'false','Last photo does not open panel ahead of related products/footer');
   await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
   await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-expanded'));
@@ -90,11 +94,32 @@ const root = 'theme/codela-storefront/';
     nodes[selector]=document.createElement('div');document.body.appendChild(nodes[selector]);
    }
    window.cartNodes=nodes;
+   // Woo's native catalog script adds a second cart link when supplied a
+   // $button in added_to_cart; native product confirmation must pass null.
+   window.wooEventButton='unset';
+   window.jQuery=function(target){return {
+     0:target,
+     on(){return this;},ajaxError(){return this;},
+     trigger(name,args){
+       if(name!=='added_to_cart')return this;
+       window.wooEventButton=args[2];
+       if(args[2]){
+         const duplicate=document.createElement('a');
+         duplicate.className='added_to_cart wc-forward';duplicate.textContent='Sepetim';
+         document.querySelector('.sf-product-purchase').appendChild(duplicate);
+       }
+       return this;
+     }
+   };};
   });
   let source=fs.readFileSync(root+'assets/scripts/cart-controller.js','utf8').replace(/^import .*;$/m,'const escape = value => String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;"); const decode = value => value; const safeURL = value => value; const money = value => value;').replace('export function','function');
   source+='\nwindow.cartController=createCartController({$:selector=>window.cartNodes[selector]||document.querySelector(selector),config:()=>({api:"/api/",cart:"/cart"}),t:x=>x,getCurrent:()=>"",getDialog:()=>null,openCart:()=>{window.cartOpened++;}});window.cartController.bind();';
   await page.addScriptTag({content:source});
   const buy=page.locator('.single_add_to_cart_button');
+  const primaryPaint=await buy.evaluate(el=>{const css=getComputedStyle(el);return {ink:css.color,background:css.backgroundColor,backgroundImage:css.backgroundImage};});
+  assert.equal(primaryPaint.ink,'rgb(255, 255, 255)','Both purchase states use the shared primary white text, not tonal dark text');
+  assert.notEqual(primaryPaint.background,'rgb(237, 237, 237)','Purchase keeps the theme dark primary fill');
+  assert.notEqual(primaryPaint.backgroundImage,'none','Native product button retains shared primary press highlight');
   await buy.click();
   await page.waitForFunction(()=>window.requests.length===1);
   assert.equal(await buy.textContent(),'Adding…');assert(await buy.isDisabled());
@@ -111,11 +136,15 @@ const root = 'theme/codela-storefront/';
   await page.evaluate(()=>window.responses.shift()({ok:true,headers:{get:()=>null},text:async()=>JSON.stringify({codela_cart_result:true,added:true,message:''})}));
   await page.waitForFunction(()=>document.querySelector('.single_add_to_cart_button').dataset.sfCartState==='success');
   assert.equal(await buy.textContent(),'View cart');
+  assert.equal(await buy.evaluate(el=>getComputedStyle(el).color),'rgb(255, 255, 255)','View-cart success keeps the dark primary style');
+  assert.equal(await page.evaluate(()=>window.wooEventButton),null,'Native add announces cart update without handing Woo a catalog button');
+  assert.equal(await page.locator('.sf-product-purchase a.added_to_cart.wc-forward').count(),0,'No duplicate Sepetim link');
+  assert.equal(await buy.evaluate(el=>getComputedStyle(el).whiteSpace),'nowrap','Standard purchase pill stays on one line');
   await buy.click();assert.equal(await page.evaluate(()=>window.cartOpened),1);
   assert.equal(await page.evaluate(()=>window.requests.length),2,'Success click opens existing cart without another POST');
   await page.locator('input.qty').fill('2');await page.locator('input.qty').dispatchEvent('change');
   assert.equal(await buy.getAttribute('data-sf-cart-state'),'idle');
   assert.deepEqual(errors,[]);
-  console.log('Product flow: compact light glass rail, tap-to-reveal fullscreen, persistent dismissal, native Woo header confirmation, visible errors and cart action passed.');
+  console.log('Product flow: compact fixed gallery, hidden related-section arrows, single Woo success CTA, native cart confirmation and fullscreen passed.');
  } finally {await browser.close();}
 })().catch(error=>{console.error(error);process.exit(1);});

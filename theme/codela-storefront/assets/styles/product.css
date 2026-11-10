@@ -565,8 +565,8 @@ body.single-product .stock.in-stock{display:none}
     top:var(--sf-gallery-rail-center,40svh);
     left:auto;bottom:auto;
     display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:4px;width:54px;max-height:calc(100svh - var(--sf-product-collapsed-height,190px) - 100px);
-    padding:7px 4px;transform:translateY(-50%);
+    gap:2px;width:50px;max-height:calc(100svh - var(--sf-product-collapsed-height,190px) - 100px);
+    padding:6px 2px;transform:translateY(-50%);
     border-radius:999px;isolation:isolate;
     background:transparent!important;color:var(--sf-ui-glass-ink);
     border:1px solid transparent;
@@ -589,34 +589,40 @@ body.single-product .stock.in-stock{display:none}
   }
   body.sf-product-sheet-ready .sf-product-gallery-rail.is-active::before{opacity:1}
   body.sf-product-sheet-ready .sf-product-gallery-rail[hidden]{display:none!important}
+  body.sf-product-sheet-ready .sf-product-gallery-rail.is-outside-photos{visibility:hidden;pointer-events:none}
   body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-nav{
-    position:static;display:flex;flex-direction:column;align-items:center;gap:2px;
+    position:static;display:flex;flex-direction:column;align-items:center;gap:0;
     width:44px;max-width:44px;max-height:none;min-height:0;
     margin:0;padding:0;overflow:visible;transform:none;
     border:0;box-shadow:none!important;background:transparent!important;
     -webkit-backdrop-filter:none;backdrop-filter:none;
   }
   body.single-product.sf-product-sheet-ready div.product .sf-product-gallery-rail .sf-product-gallery-thumb.sf-ui-icon-button{
-    width:44px;height:44px;min-height:44px;padding:5px;border-radius:14px;background:transparent;
+    width:44px;height:44px;min-height:44px;padding:7px;border-radius:12px;background:transparent;
     display:grid;place-items:center;
   }
   body.single-product.sf-product-sheet-ready div.product .sf-product-gallery-rail .sf-product-gallery-thumb img{
-    width:34px;height:34px;max-width:none;max-height:none;object-fit:cover;
-    border-radius:10px;
+    width:30px;height:30px;max-width:none;max-height:none;object-fit:cover;
+    border-radius:9px;
   }
   body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-thumb[aria-current="true"]{
     outline:0;
   }
   body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-count{
-    position:static;margin:1px 0;color:inherit;font-size:12px;font-weight:500;
-    line-height:20px;letter-spacing:.025em;font-variant-numeric:tabular-nums;
+    position:static;margin:1px 0;color:inherit;font-size:11px;font-weight:500;
+    line-height:16px;letter-spacing:.025em;font-variant-numeric:tabular-nums;
   }
+  /* Full-size touch targets sit outside the compact glass capsule rather
+     than adding 88px to its layout height. */
   body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-rail-arrow.sf-ui-icon-button{
+    position:absolute;left:50%;transform:translateX(-50%);
     width:44px;height:44px;min-height:44px;flex:none;display:grid;place-items:center;
     padding:0;color:inherit;background:transparent!important;border:0;box-shadow:none;
     opacity:0;visibility:hidden;pointer-events:none;
-    transition:opacity 650ms ease,visibility 650ms ease;
+    transition:opacity 300ms ease,visibility 300ms ease;
   }
+  body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-rail-arrow:first-child{top:-40px}
+  body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-rail-arrow:last-child{bottom:-40px}
   body.sf-product-sheet-ready .sf-product-gallery-rail.is-active .sf-product-gallery-rail-arrow.sf-ui-icon-button{
     opacity:1;visibility:visible;pointer-events:auto;
   }
@@ -722,7 +728,7 @@ body.single-product .stock.in-stock{display:none}
     width:32px;min-width:0;min-height:44px;padding:0;appearance:textfield;-moz-appearance:textfield;text-align:center;
   }
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary form.cart .sf-product-purchase .single_add_to_cart_button{
-    flex:0 1 200px;margin-inline-start:auto;--sf-ui-button-height:44px;--sf-ui-button-padding-y:8px;--sf-ui-button-padding-x:var(--sf-ui-product-button-padding-x);
+    flex:1 1 0;margin-inline-start:0;--sf-ui-button-height:44px;--sf-ui-button-padding-y:8px;--sf-ui-button-padding-x:var(--sf-ui-product-button-padding-x);
   }
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary > .stock{grid-column:1/-1;grid-row:2;margin:0}
   /* The real native price and Codela urgency share one semantic grid in the
@@ -854,7 +860,7 @@ body.single-product div.product .sf-product-quantity .sf-product-quantity-step[d
   body.single-product.sf-product-sheet-ready div.product .sf-product-quantity input.qty::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
   body.sf-product-sheet-ready div.product form.cart .sf-product-purchase{gap:12px}
   body.single-product.sf-product-sheet-ready div.product form.cart .sf-product-purchase .single_add_to_cart_button{
-    flex:0 1 200px;margin-inline-start:auto;--sf-ui-button-height:44px;--sf-ui-button-padding-y:8px;--sf-ui-button-padding-x:var(--sf-ui-product-button-padding-x);
+    flex:1 1 0;margin-inline-start:0;--sf-ui-button-height:44px;--sf-ui-button-padding-y:8px;--sf-ui-button-padding-x:var(--sf-ui-product-button-padding-x);
   }
 }
 
@@ -960,18 +966,17 @@ html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:
 
 .sf-product-sheet.is-holding:not(.is-expanded) .sf-product-sheet-toggle::before{transform:scaleX(var(--sf-ui-scale-icon))}
 
-/* Mobile purchase uses the existing button and shared tonal pill, not a
-   second checkout trigger. The bag icon remains visible in all JS states. */
+/* One native Woo product button inherits the standard dark PRIMARY Button
+   material. Product CSS only owns size, layout and the persistent bag glyph. */
 @media(max-width:700px){
   :is(body.single-product.sf-product-sheet-ready,html.sf-product-sheet-pending body.single-product) div.product form.cart .sf-product-purchase .single_add_to_cart_button{
     display:inline-flex;align-items:center;justify-content:center;gap:10px;
     flex:1 1 0;min-width:0;margin-inline-start:0;
     height:44px;min-height:44px;padding-block:0!important;box-sizing:border-box;
-    border-radius:999px!important;
-    background:var(--sf-ui-glass-opaque,#fff)!important;
-    border:1px solid var(--sf-ui-glass-border)!important;
-    box-shadow:0 3px 14px rgba(32,32,28,.1);
-    color:var(--sf-ui-ink)!important;font-size:14px;font-weight:600;
+    border-radius:var(--sf-ui-button-radius)!important;
+    /* Color, glass highlight and shadow come from components.css primary. */
+    font-size:14px;font-weight:600;
+    white-space:nowrap;
   }
   :is(body.single-product.sf-product-sheet-ready,html.sf-product-sheet-pending body.single-product) div.product form.cart .sf-product-purchase .single_add_to_cart_button::before{
     content:'';display:inline-block;flex:none;width:20px;height:20px;
@@ -979,9 +984,8 @@ html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:
     -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='1.9' stroke-linejoin='round' stroke-linecap='round' d='M5 7h14l1 13H4L5 7Zm3 0V5a4 4 0 0 1 8 0v2m-7 5a3 3 0 0 0 6 0'/%3E%3C/svg%3E") center / contain no-repeat;
     mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='1.9' stroke-linejoin='round' stroke-linecap='round' d='M5 7h14l1 13H4L5 7Zm3 0V5a4 4 0 0 1 8 0v2m-7 5a3 3 0 0 0 6 0'/%3E%3C/svg%3E") center / contain no-repeat;
   }
-  :is(body.single-product.sf-product-sheet-ready,html.sf-product-sheet-pending body.single-product) div.product form.cart .sf-product-purchase .single_add_to_cart_button:active:not(:disabled){
-    background:var(--sf-ui-button-tonal-pressed)!important;
-  }
+  /* Shared catalog success checkmark is redundant on the single product CTA. */
+  body.single-product div.product form.cart .sf-product-purchase .single_add_to_cart_button.sf-cart-feedback[data-sf-cart-state="success"]::after{content:none}
   /* Server errors stay above the purchase row; they never open the details sheet. */
   body.single-product .sf-product-purchase .sf-purchase-status:not(.screen-reader-text):not([hidden]){
     position:absolute;left:0;right:0;bottom:calc(100% + 10px);

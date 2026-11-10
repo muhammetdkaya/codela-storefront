@@ -175,7 +175,7 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'Terms' => 'Koşullar',
 'Legal links' => 'Yasal bağlantılar',
 'Checkout' => 'Ödemeye geç',
-'View cart' => 'Sepeti görüntüle',
+'View cart' => 'Sepete git',
 'All products' => 'Tüm ürünler',
 'A considered selection' => 'Özenle seçildi',
 'Discover' => 'Keşfet',
