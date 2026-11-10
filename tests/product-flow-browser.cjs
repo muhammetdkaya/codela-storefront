@@ -55,6 +55,14 @@ const root = 'theme/codela-storefront/';
   assert(!(await rail.isVisible()),'Photo rail and arrows disappear as related products enter view');
   assert.equal(await page.locator('.sf-product-sheet-toggle').getAttribute('aria-expanded'),'false','Last photo does not open panel ahead of related products/footer');
   await page.evaluate(()=>window.scrollTo(0,document.documentElement.scrollHeight));
+  await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-discovering'));
+  // Reaching the end is intentionally passive: the next real wheel gesture
+  // takes over the stationary document and expands the product panel.
+  await page.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
+  await page.waitForFunction(()=>document.documentElement.scrollHeight-scrollY-innerHeight<=28);
+  await page.waitForTimeout(500);
+  assert.equal(await page.locator('.sf-product-sheet-toggle').getAttribute('aria-expanded'),'false');
+  await page.mouse.move(190,350);await page.mouse.wheel(0,240);
   await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-expanded'));
   assert.equal(await page.locator('.sf-product-sheet-toggle').getAttribute('aria-label'),'Close product details');
   await page.locator('.sf-product-sheet-toggle').click();
@@ -67,6 +75,9 @@ const root = 'theme/codela-storefront/';
   await page.evaluate(()=>document.querySelector('.sf-product-discovery').scrollIntoView({block:'start',behavior:'instant'}));
   await page.waitForFunction(()=>document.querySelector('.woocommerce-product-gallery').classList.contains('is-discovering'));
   await page.evaluate(()=>window.scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
+  await page.waitForFunction(()=>document.documentElement.scrollHeight-scrollY-innerHeight<=28);
+  assert.equal(await page.locator('.sf-product-sheet-toggle').getAttribute('aria-expanded'),'false');
+  await page.mouse.move(190,350);await page.mouse.wheel(0,240);
   await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').classList.contains('is-expanded'));
   await page.locator('.sf-product-sheet-toggle').click();
   await page.evaluate(()=>window.scrollTo(0,0));await page.waitForTimeout(400);
