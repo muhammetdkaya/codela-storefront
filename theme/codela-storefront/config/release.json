@@ -6,10 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Font ayarındaki marka adı kaldırıldı: Sistem / Arial seçenekleri, cihazın sistem fontunu kullanıyor; dış font isteği yok.",
-    "Ürün alt panelinde tutamak ile ürün başlığı arasındaki mesafe artırıldı; kapalı/açık panel ve geçiş skeleton'u aynı ölçüyü kullanıyor.",
-    "Bugün kargoda yanında eklentinin gerçek tahmini teslimatı tek satırda, gün adı olmadan kısa biçimde gösteriliyor; tam metin erişilebilir kalıyor.",
-    "Fotoğraflardan ilgili ürünlere geçişte scroll-snap daha erken bırakılıyor, sayfanın son 70%'lik viewport alanını sahte scrollTo ile devralan takılma kaldırılıyor.",
-    "Panel yalnız gerçek belge sonuna ulaşılıp yukarı kaydırmaya devam edildiğinde açılıyor; WooCommerce, orijinal güven kartları ve ödeme davranışı korunuyor."
+    "Ürün sayfası navigasyon skeleton'u, WordPress ilk ürün görünümü ve JavaScript ile açılan alt panel aynı satır/yükseklik hesabına bağlandı.",
+    "Codela Delivery ETA aktifse JavaScript öncesi alt panelde gerçek kargo satırının 26px yüksekliği ayrılıyor; yüklenirken panelin yukarı-aşağı sıçraması engelleniyor.",
+    "Alt panel üst tutamağı ve açılmış durumdaki ok 10px aşağı taşındı; başlık boşluğu aynı oranda artırılarak korundu.",
+    "Skeleton, JS öncesi gerçek ürün paneli ve açılıp kapanan panelde tutamak ve başlık konumları uyumlu hale getirildi.",
+    "İlave tarayıcı regresyonu: skeleton, ilk ürün boyası ve yüklenmiş panelin başlangıç konumu/yüksekliği ile aynı SVG tutamak koordinatları kontrol ediliyor."
   ]
 }
