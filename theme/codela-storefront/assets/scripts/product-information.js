@@ -83,7 +83,7 @@
     var suppressClickUntil = 0;
     var photoWidth = 0;
     var discoveryFrame = 0;
-    var delivery = null;
+    var shippingData = null;
     var shippingSummary = null;
     var shippingObserver = null;
     var endTouch = null;
@@ -362,8 +362,8 @@
         if (track && node.matches('.related,.upsells')) { move(node, discovery); return; }
         if (node !== media && node !== template && !node.classList.contains('onsale')) move(node, content);
       });
-      // Compose the existing, live plugin nodes inside a native disclosure.
-      // The collapsed sheet has no shipping text/track or contact action.
+      // Keep native Woo information closed. The plugin nodes still own all
+      // delivery data, but do not create a second delivery accordion.
       var information = content.querySelector('.sf-product-information');
       if (information) {
         openSections = Array.from(information.querySelectorAll('details[open]'));
@@ -371,27 +371,27 @@
       }
       var shipping = summary.querySelectorAll('.cdl-de,.cdl-fsb-live--product,.cdl-fsb--product:not(.cdl-fsb-live--product .cdl-fsb--product)');
       if (shipping.length) {
-        delivery = document.createElement('details');
-        delivery.className = 'sf-product-information-section sf-product-delivery';
-        var label = document.createElement('summary');
-        label.textContent = template.dataset.deliveryLabel;
-        var body = document.createElement('div');
-        body.className = 'sf-product-information-content';
-        delivery.append(label, body);
-        if (information) {
-          var next = information.querySelector('#sf-product-section-codela_taksit,#sf-product-section-reviews');
-          information.insertBefore(delivery, next);
-        } else content.appendChild(delivery);
-        shipping.forEach(function (node) { move(node, body); });
-        var eta = body.querySelector('.cdl-de');
+        shippingData = document.createElement('div');
+        shippingData.className = 'sf-product-shipping-source';
+        shippingData.hidden = true;
+        content.appendChild(shippingData);
+        shipping.forEach(function (node) { move(node, shippingData); });
+        var eta = shippingData.querySelector('.cdl-de');
         if (eta) {
           shippingSummary = document.createElement('p');
           shippingSummary.className = 'sf-product-shipping-summary';
+          var shippingText = document.createElement('span');
+          shippingText.className = 'sf-product-shipping-text';
+          shippingSummary.appendChild(shippingText);
           heading.appendChild(shippingSummary);
           var syncShipping = function () {
             var day = eta.querySelector('.cdl-de-line strong:not(.cdl-de-timer)');
-            shippingSummary.textContent = day ? template.dataset.shippingLabel.replace('%s', day.textContent.trim()) : '';
-            shippingSummary.hidden = !day;
+            var etaLine = eta.querySelector('.cdl-de-eta');
+            var dispatch = day ? template.dataset.shippingLabel.replace('%s', day.textContent.trim()) : '';
+            // Honor the configured delivery estimate; never invent a date.
+            var estimate = etaLine ? etaLine.textContent.replace(/\s+/g, ' ').trim() : '';
+            shippingText.textContent = [dispatch, estimate].filter(Boolean).join(' · ');
+            shippingSummary.hidden = !shippingText.textContent;
             measure();
           };
           shippingObserver = new MutationObserver(syncShipping);
@@ -446,7 +446,7 @@
       openSections = [];
       if (shippingObserver) { shippingObserver.disconnect(); shippingObserver = null; }
       if (shippingSummary) { shippingSummary.remove(); shippingSummary = null; }
-      if (delivery) { delivery.remove(); delivery = null; }
+      if (shippingData) { shippingData.remove(); shippingData = null; }
       discovery.remove();
       media.classList.remove('is-discovering');
       sheet.classList.remove('is-discovering');
