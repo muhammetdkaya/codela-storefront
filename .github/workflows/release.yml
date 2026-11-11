@@ -43,6 +43,7 @@ jobs:
           node --check theme/codela-storefront/assets/scripts/product-information.js
           node --check tests/product-flow-browser.cjs
           node --check tests/product-sheet-browser.cjs
+          node --check tests/product-skeleton-geometry-browser.cjs
           node --check theme/codela-storefront/assets/scripts/navigation-feedback.js
           node --check theme/codela-storefront/assets/scripts/document-continuity.js
           php tests/document-continuity.php
