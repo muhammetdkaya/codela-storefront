@@ -1,3 +1,11 @@
+## 11 Kasım 2026 — 0.1.280 → 0.1.281 tema yazı tipi seçimi (kaynak hazır, yayın CI doğrulaması bekliyor)
+
+**Tamamlandı:** Codela tema ayarlarının mevcut `config/settings.json` şemasına yeni Görünüm → Tema yazı tipi seçimi eklendi; `Apple / Sistem` yeni varsayılan, `Arial / Helvetica` önceki görünüme dönüş seçeneği. Yalnız izin verilen kimlikler kullanılır, dış font indirme/CDN yok. `theme.json` içindeki `sf-site` presetinin WP Global Styles filtresiyle aynı kaynaktan değiştirilmesi; ürün kartı, arama ve ana sayfadaki sabit fontların ortak preseti kullanması sağlandı. Plugin Store Appearance bileşenlerinin kendi manuel font tercihleri aynen korunur; otomatik mod tema fontunu devralır. Ürün paneli/skeleton, Woo giriş ve sepet iş mantığına müdahale edilmedi. Eklenti kodu/sürümü değişmedi.
+
+**Doğrulama:** `tests/theme-font.php` eklendi ve release workflow'a bağlandı; schema, tercihlerin allowlist doğrulaması, bilinmeyen değerlerin varsayılana dönmesi, WordPress theme.json güncellemesi ve CSS token kapsamı test edilir. Kaynak ile üretilmiş `storefront-base.css` eşitlendi. Yayın CI, canlı kurulum ve fiziksel iPhone/Safari görsel testi henüz bu kayıtta doğrulanmadı.
+
+**Sıradaki:** Release/tag/stable feed doğrulanınca bu belgeyi güncelle. Sonra 320/390px iPhone Safari: iki satırlı ürün başlığı, fiyat + satın alma, skeleton, cart/search/login ve Apple/Arial arasında geri dönüşü karşılaştır; varsa kullanıcı WordPress Site Editor özel font override'larını ayrıca değerlendir.
+
 ## 11 Kasım 2026 — 0.1.279 yayın doğrulandı
 
 Kaynak 67210c9569cb10f7fc5ab491fdd5e4236092cad3; yerel 3 asset ve 24 paket testi geçti. [Yayın CI](https://github.com/muhammetdkaya/codela-storefront/actions/runs/42949161253) başarılı, [v0.1.279 ZIP](https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.279) ve stable yayın akışı tamamlandı. Fiziksel iPhone kontrolü ve canlı mağaza kurulumu doğrulanmadı. Sıradaki: kısa/uzun başlıkta skeleton geçişini, fiyat fontunu ve kargo–satın alma boşluğunu cihazda doğrula.
