@@ -235,9 +235,9 @@
 #sf-search .sf-explore-card{display:flex;flex-direction:column;min-width:0;gap:0;scroll-snap-align:start;text-decoration:none;color:var(--sf-ui-ink)}
 #sf-search .sf-explore-photo{display:block;width:100%;aspect-ratio:1;overflow:hidden;border-radius:var(--sf-ui-control-radius);background:var(--sf-ui-surface-muted)}
 #sf-search .sf-explore-photo img{display:block;width:100%;height:100%;object-fit:cover}
-#sf-search .sf-explore-name{display:block;min-width:0;width:100%;margin-top:9px;font-family:var(--wp--preset--font-family--system,Arial,Helvetica,sans-serif);font-size:13px;line-height:1.45;font-weight:500;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:clip;color:var(--sf-muted,#77776d)}
+#sf-search .sf-explore-name{display:block;min-width:0;width:100%;margin-top:9px;font-family:var(--wp--preset--font-family--sf-site,Arial,Helvetica,sans-serif);font-size:13px;line-height:1.45;font-weight:500;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:clip;color:var(--sf-muted,#77776d)}
 #sf-search .sf-explore-name.is-clipped{-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 18px),transparent);mask-image:linear-gradient(to right,#000 calc(100% - 18px),transparent)}
-#sf-search .sf-explore-price{display:block;min-width:0;margin-top:4px;font-family:var(--wp--preset--font-family--system,Arial,Helvetica,sans-serif);font-size:16px;line-height:1.5;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:0;color:var(--sf-ui-control-ink)}
+#sf-search .sf-explore-price{display:block;min-width:0;margin-top:4px;font-family:var(--wp--preset--font-family--sf-site,Arial,Helvetica,sans-serif);font-size:16px;line-height:1.5;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:0;color:var(--sf-ui-control-ink)}
 /* Discovery is lazy-loaded; display honest, animated UI-shaped placeholders
    as soon as the Search panel opens, not a blank page awaiting Store API. */
 #sf-search .sf-discovery-term-skeleton{
