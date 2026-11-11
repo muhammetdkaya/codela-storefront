@@ -4,6 +4,12 @@ const fs=require('node:fs');
 const {execFileSync}=require('node:child_process');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const root='theme/codela-storefront/';
+const productGestureSource=fs.readFileSync(root+'assets/scripts/product-information.js','utf8');
+assert(!productGestureSource.includes('endTouch.tail') &&
+       !productGestureSource.includes('if(consumed) window.scrollTo'),
+       'Native document scroll cannot be replaced by synthetic per-frame touch scrolling');
+assert(productGestureSource.includes("media.classList.toggle('is-near-discovery'"),
+       'Photo snap is released before recommendations enter view');
 const template=execFileSync(process.env.PHP_BIN||'php',['tests/render-product-sheet.php'],{encoding:'utf8'});
 const information=JSON.parse(execFileSync(process.env.PHP_BIN||'php',['tests/render-product-information.php'],{encoding:'utf8'}));
 const bootstrap=execFileSync(process.env.PHP_BIN||'php',['tests/render-product-sheet.php','bootstrap'],{encoding:'utf8'});
@@ -164,6 +170,12 @@ for(const width of [320,390,700]){
  const photoOffset=await page.evaluate(()=>scrollY);
  await toggle.click();assert.equal(await toggle.getAttribute('aria-expanded'),'true');assert.equal(await page.locator('.sf-product-sheet').evaluate(e=>getComputedStyle(e).backgroundColor),panelTint,'Expanded panel keeps the same translucent material as collapsed');
  await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').getBoundingClientRect().height>700);assert(await page.locator('.woocommerce-product-gallery').evaluate(e=>e.inert),'Open details stops gallery gestures/focus');
+ const handleTitleGap=await page.locator('.sf-product-sheet-header').evaluate(el=>{
+   const handle=el.querySelector('.sf-product-sheet-handle').getBoundingClientRect();
+   const title=el.querySelector('.sf-product-sheet-heading .product_title').getBoundingClientRect();
+   return title.top-handle.bottom;
+ });
+ assert(handleTitleGap>=16,'Handle remains separated from the title in the expanded panel: '+handleTitleGap);
  assert.equal(await page.locator('.sf-product-delivery').count(),0,'No delivery accordion while expanded');
  assert(!(await page.locator('.cdl-fsb-text').isVisible()),'Free shipping widget does not repeat in open sheet');
  await page.locator('.sf-product-sheet-body').evaluate(e=>e.scrollTop=300);
