@@ -1,12 +1,12 @@
-## 11 Kasım 2026 — 0.1.281 → 0.1.282 ürün paneli kaydırma ve kargo metni (yayın adayı)
+## 11 Kasım 2026 — 0.1.281 → 0.1.282 ürün paneli kaydırma ve kargo metni (yayın doğrulandı)
 
 **Biten işler:** Tema fontu seçeneklerinde Apple markası kaldırıldı; Sistem / Arial kaldı, gerçek sistem font yığını değişmedi. Açık panelde tutamak–başlık mesafesi +10px ve bu ölçü gerçek panel, native prepaint ve destination skeleton üzerinde eşitlendi. Canlı Codela Delivery ETA kaynağından tahmini teslimat metni gün adı kaldırılarak, ay kısaltılarak ve "Tah. teslimat" başlığı korunarak kısaltıldı; tam özgün metin erişilebilir ad ve title içinde duruyor. Eklentinin hesaplayıcısı ve 2x2 güven kartları değişmedi. Ürün sonundaki eski 70% viewport'ta touchmove başına preventDefault/scrollTo devralımı kaldırıldı; önerilere girerken fotoğraf scroll-snap devreden daha erken çıkıyor ve panel yalnız gerçek belge sonunda parmak kaydırmasının devamıyla açılıyor.
 
-**Doğrulama:** Yeni TR/EN ETA ve orijinal tam açıklama browser testine; native scroll handoff ve başlık mesafesi kontrolleri ürün paneli browser regresyonuna; Sistem ayar etiketi PHP font testine eklendi. Kaynaklarla üretilen document-navigation.css ve storefront-base.css byte düzeyinde eşleşti. Tam GitHub CI, fiziksel iPhone Safari ve canlı dağıtım sonucu bu aday kaydında henüz doğrulanmadı.
+**Doğrulama:** Yeni TR/EN ETA ve orijinal tam açıklama browser testine; native scroll handoff ve başlık mesafesi kontrolleri ürün paneli browser regresyonuna; Sistem ayar etiketi PHP font testine eklendi. Kaynaklarla üretilen document-navigation.css ve storefront-base.css byte düzeyinde eşleşti. GitHub release CI doğrulama/paketleme/yayın/stable feed adımları tümüyle başarılı: https://github.com/muhammetdkaya/codela-storefront/actions/runs/42965147954. Fiziksel iPhone Safari kabulü ve ayrı FTP/deploy tamamlanma durumu henüz doğrulanmadı.
 
-**Yayın:** Tema kaynak sürümü 0.1.282, eklenti değiştirilmedi. Etiket/ZIP/stable feed CI başarıyla doğrulanınca yayın tamamlandı denebilir; aksi durumda yayın adayı olarak kalır.
+**Yayın:** v0.1.282 etiketi, ZIP ve stable manifest doğrulandı. Kaynak SHA fa18859bfde5403e8f42d553d5d67b50aa00847c; paket SHA-256 a7e48568dc6c49dc918d1bafdbf9dade37abe954d519134e3b6692180230c63f. https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.282. Eklenti sürümü değiştirilmedi.
 
-**Sıradaki:** GitHub release CI/testleri ve stable feed'i doğrula; ardından canlı 320/390px iPhone Safari'de son fotoğraf → İlgili ürünler → belgenin sonu → panel açılışı, kapalı/açık başlık ve kargo satırını ölç. İlk parmak hareketinde gerçek Safari iptali/snap davranışı regresyonunu kontrol et.
+**Sıradaki:** Canlı 320/390px iPhone Safari'de son fotoğraf → İlgili ürünler → belgenin sonu → panel açılışı test et; gerçek scroll momentumunun ve panel başlığının stabil kaldığını doğrula. Kapanmış/açılmış teslimat satırının kesilmemesini gözle.
 
 ## 11 Kasım 2026 — 0.1.280 → 0.1.281 tema yazı tipi seçimi (otomatik yayın doğrulandı)
 
