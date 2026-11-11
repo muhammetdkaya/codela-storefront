@@ -50,7 +50,7 @@ const feedbackCss=fs.readFileSync(root+'styles/navigation-feedback.css','utf8');
      assert.equal(await page.locator('.sf-navigation-preview form').count(),0);
      assert(await page.locator('.sf-navigation-preview button').isDisabled());
      assert.equal(await page.locator('.sf-navigation-purchase .sf-product-sheet-handle path').count(),1,'Destination uses the identical one-path handle');
-     assert.equal(await page.locator('.sf-navigation-purchase .sf-navigation-heading-title .sf-navigation-heading-placeholder').count(),2,'Two neutral title rows share the heading reserve');
+     assert.equal(await page.locator('.sf-navigation-purchase .sf-navigation-heading-title .sf-navigation-heading-placeholder').count(),3,'Title, shipping icon and shipping text placeholders');
      assert.equal(await page.locator('.sf-navigation-price-placeholder').count(),1,'Skeleton has one price placeholder');
      assert.equal(await page.locator('.sf-navigation-quantity').count(),0,'A layout does not display quantity in skeleton');
      assert.equal(await page.locator('.sf-navigation-purchase .sf-navigation-buy-button').evaluate(e=>getComputedStyle(e).color),'rgb(255, 255, 255)','Skeleton CTA matches dark primary paint');

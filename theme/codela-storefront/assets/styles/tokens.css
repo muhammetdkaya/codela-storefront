@@ -129,3 +129,6 @@
   --sf-ui-showcase-bottom-reserve:clamp(0px,calc(var(--sf-ui-showcase-height) + var(--sf-header-offset,0px) + var(--sf-ui-bottom-bar-height,58px) + var(--sf-ui-bottom-bar-gap,4px) + env(safe-area-inset-bottom,0px) - 100dvh),calc(var(--sf-ui-bottom-bar-height,58px) + var(--sf-ui-bottom-bar-gap,4px) + env(safe-area-inset-bottom,0px)));
  }
 }
+
+:root{--sf-ui-product-price-width:84px}
+@media(max-width:360px){:root{--sf-ui-product-price-width:76px}}

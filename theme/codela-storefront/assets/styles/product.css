@@ -1153,3 +1153,18 @@ body.single-product .pswp .pswp__button--fs,
 body.single-product .pswp .pswp__button--zoom,
 body.single-product .pswp .pswp__button--share{display:none}
 body.single-product .pswp .pswp__counter{top:8px;left:16px}
+
+/* 0.1.279: shared compact A geometry and inherited price typography. */
+@media(max-width:700px){
+ body.single-product.sf-product-sheet-ready div.product .sf-product-sheet.is-layout-a .sf-product-sheet-header{padding:28px 16px 0;min-height:0}
+ body.single-product.sf-product-sheet-ready div.product .sf-product-sheet.is-layout-a .sf-product-sheet-heading > .sf-product-shipping-summary:not([hidden]){margin-top:7px}
+ body.single-product.sf-product-sheet-ready div.product form.cart .sf-product-purchase--layout-a{
+   display:grid;grid-template-columns:minmax(var(--sf-ui-product-price-width,84px),max-content) minmax(0,1fr);padding-top:10px;
+ }
+ body.single-product.sf-product-sheet-ready div.product form.cart .sf-product-purchase--layout-a .sf-product-price-row{max-width:none}
+ body.single-product.sf-product-sheet-ready div.product form.cart .sf-product-purchase--layout-a .sf-product-price-row > .price,
+ html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product.product-type-simple .sf-product-overview > .summary > .sf-product-price-row > .price{
+   font-family:inherit;font-weight:500;letter-spacing:normal;font-variant-numeric:normal;
+ }
+ body.single-product.sf-product-sheet-ready div.product form.cart .sf-product-purchase--layout-a .price :is(.amount,bdi,.woocommerce-Price-currencySymbol){font-family:inherit;font-weight:inherit;letter-spacing:inherit;font-variant-numeric:normal}
+}

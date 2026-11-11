@@ -133,6 +133,9 @@
  }
 }
 
+:root{--sf-ui-product-price-width:84px}
+@media(max-width:360px){:root{--sf-ui-product-price-width:76px}}
+
 /* Source: storefront.css */
 :root{--sf-bg:var(--sf-ui-page);--sf-ink:#22231f;--sf-muted:#77776d;--sf-line:#deded5;--sf-ease:cubic-bezier(.22,.8,.25,1);--sf-motion:160ms}
 body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
