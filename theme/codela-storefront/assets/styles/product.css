@@ -501,7 +501,7 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
 .sf-product-sheet-header{position:relative;flex:none;min-height:64px;padding:38px 16px 8px}
 /* A single genuine SVG path morphs via JS rAF; never two rounded halves. */
 .sf-product-sheet-handle{
-  position:absolute;top:0;left:50%;width:38px;height:18px;
+  position:absolute;top:10px;left:50%;width:38px;height:18px;
   transform:translateX(-50%);display:block;pointer-events:none;
   color:var(--sf-ui-glass-ink);overflow:visible;
 }
@@ -712,7 +712,7 @@ body.single-product .stock.in-stock{display:none}
     transition:none;
   }
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary::before{
-    content:'';position:absolute;top:13px;left:calc(50% - 19px);
+    content:'';position:absolute;top:16px;left:calc(50% - 19px);
     width:38px;height:2.5px;border-radius:var(--sf-ui-pill);background:var(--sf-ui-glass-ink);
   }
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary > :not(.product_title):not(.sf-product-price-row):not(.price):not(form.cart):not(.stock){display:none!important}
@@ -1212,5 +1212,29 @@ body.single-product .pswp .pswp__counter{top:8px;left:16px}
   body.single-product.sf-product-sheet-ready .sf-product-sheet.is-layout-a
   .sf-product-shipping-summary:not([hidden])::before{
     width:17px;height:17px;flex-basis:17px;
+  }
+}
+
+/* 0.1.283 — One settled panel height across skeleton -> native prepaint ->
+   hydrated sheet. The real Codela ETA adds one 19px line with 7px offset.
+   The prepaint must reserve the SAME 26px even while plugin output is hidden;
+   do not add a fake delivery promise for products without a shipping widget. */
+@media(max-width:700px){
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready)
+  div.product.product-type-simple .sf-product-overview > .summary:has(.cdl-de){
+    grid-template-rows:auto 26px auto;
+  }
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready)
+  div.product.product-type-simple .sf-product-overview > .summary:has(.cdl-de)::after{
+    content:'';display:block;grid-column:1/-1;grid-row:2;
+    height:26px;width:100%;pointer-events:none;
+  }
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready)
+  div.product.product-type-simple .sf-product-overview > .summary:has(.cdl-de) > .sf-product-price-row{
+    grid-row:3;
+  }
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready)
+  div.product.product-type-simple .sf-product-overview > .summary:has(.cdl-de) > form.cart{
+    grid-row:3;margin-top:8px!important;
   }
 }
