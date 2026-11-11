@@ -29,8 +29,18 @@
     "typography": {
       "fontFamilies": [
         {
+          "slug": "sf-site",
+          "name": "Codela site font",
+          "fontFamily": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif"
+        },
+        {
           "slug": "system",
-          "name": "System",
+          "name": "Apple / System",
+          "fontFamily": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif"
+        },
+        {
+          "slug": "arial",
+          "name": "Arial / Helvetica",
           "fontFamily": "Arial, Helvetica, sans-serif"
         }
       ]
@@ -42,7 +52,7 @@
       "text": "var:preset|color|contrast"
     },
     "typography": {
-      "fontFamily": "var:preset|font-family|system",
+      "fontFamily": "var:preset|font-family|sf-site",
       "fontSize": "16px",
       "lineHeight": "1.6"
     },
