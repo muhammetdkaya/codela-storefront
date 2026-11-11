@@ -1,3 +1,13 @@
+## 11 Kasım 2026 — 0.1.281 → 0.1.282 ürün paneli kaydırma ve kargo metni (yayın adayı)
+
+**Biten işler:** Tema fontu seçeneklerinde Apple markası kaldırıldı; Sistem / Arial kaldı, gerçek sistem font yığını değişmedi. Açık panelde tutamak–başlık mesafesi +10px ve bu ölçü gerçek panel, native prepaint ve destination skeleton üzerinde eşitlendi. Canlı Codela Delivery ETA kaynağından tahmini teslimat metni gün adı kaldırılarak, ay kısaltılarak ve "Tah. teslimat" başlığı korunarak kısaltıldı; tam özgün metin erişilebilir ad ve title içinde duruyor. Eklentinin hesaplayıcısı ve 2x2 güven kartları değişmedi. Ürün sonundaki eski 70% viewport'ta touchmove başına preventDefault/scrollTo devralımı kaldırıldı; önerilere girerken fotoğraf scroll-snap devreden daha erken çıkıyor ve panel yalnız gerçek belge sonunda parmak kaydırmasının devamıyla açılıyor.
+
+**Doğrulama:** Yeni TR/EN ETA ve orijinal tam açıklama browser testine; native scroll handoff ve başlık mesafesi kontrolleri ürün paneli browser regresyonuna; Sistem ayar etiketi PHP font testine eklendi. Kaynaklarla üretilen document-navigation.css ve storefront-base.css byte düzeyinde eşleşti. Tam GitHub CI, fiziksel iPhone Safari ve canlı dağıtım sonucu bu aday kaydında henüz doğrulanmadı.
+
+**Yayın:** Tema kaynak sürümü 0.1.282, eklenti değiştirilmedi. Etiket/ZIP/stable feed CI başarıyla doğrulanınca yayın tamamlandı denebilir; aksi durumda yayın adayı olarak kalır.
+
+**Sıradaki:** GitHub release CI/testleri ve stable feed'i doğrula; ardından canlı 320/390px iPhone Safari'de son fotoğraf → İlgili ürünler → belgenin sonu → panel açılışı, kapalı/açık başlık ve kargo satırını ölç. İlk parmak hareketinde gerçek Safari iptali/snap davranışı regresyonunu kontrol et.
+
 ## 11 Kasım 2026 — 0.1.280 → 0.1.281 tema yazı tipi seçimi (otomatik yayın doğrulandı)
 
 **Tamamlandı:** Codela tema ayarlarına Görünüm → Tema yazı tipi seçimi eklendi: Apple / Sistem (varsayılan) ve Arial / Helvetica (önceki görünüm). WP theme.json içindeki sf-site presetini mevcut eklentinin ayar altyapısıyla bağladık; ürün, fiyat, arama, sepet ve misafir hesap ortak fontu devralıyor. Dış font/CDN eklenmedi; Codela eklenti modüllerinin manuel tercihleri korunuyor. Eklenti sürümü değişmedi.
