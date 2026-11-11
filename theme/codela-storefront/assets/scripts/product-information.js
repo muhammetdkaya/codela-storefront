@@ -704,7 +704,32 @@
     if (section) section.open = true;
   });
   window.addEventListener('hashchange', revealHash);
-  function start() { setupQuantities(); setupSheet(); revealHash(); }
+  function setupReviewForm() {
+    var section = document.getElementById('sf-product-section-reviews');
+    if (!section) return;
+    var form = section.querySelector('#review_form .comment-form');
+    var stars = form && form.querySelector('.comment-form-rating .stars');
+    if (!form || !stars || !form.querySelector('select#rating')) return;
+    var rating = form.querySelector('select#rating');
+    var fields = Array.prototype.filter.call(form.children, function (el) {
+      return !el.classList.contains('comment-form-rating');
+    });
+    // Only progressive-disclose a new review when a rating is actually required.
+    // WooCommerce remains responsible for stars, select state and submission.
+    function update() {
+      var selected = !!rating.value;
+      form.classList.toggle('sf-review-rating-chosen', selected);
+      fields.forEach(function (field) { field.hidden = !selected; });
+    }
+    update();
+    stars.addEventListener('click', function () { requestAnimationFrame(update); });
+    rating.addEventListener('change', update);
+    // WooCommerce can restore its rating selection after this adapter starts.
+    form.addEventListener('focusin', function () {
+      if (rating.value && !form.classList.contains('sf-review-rating-chosen')) update();
+    });
+  }
+  function start() { setupQuantities(); setupSheet(); setupReviewForm(); revealHash(); }
   // The production template is printed before footer scripts. Its entire
   // product subtree is already available, even while the parser is loading.
   if (document.getElementById('sf-product-sheet-template') || document.readyState !== 'loading') start();
