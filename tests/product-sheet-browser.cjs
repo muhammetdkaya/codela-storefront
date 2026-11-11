@@ -177,6 +177,8 @@ for(const width of [320,390,700]){
  });
  assert(handleTitleGap>=16,'Handle remains separated from the title in the expanded panel: '+handleTitleGap);
  assert.equal(await page.locator('.sf-product-delivery').count(),0,'No delivery accordion while expanded');
+ assert.equal(await page.locator('#sf-product-section-reviews').count(),1,'One native Woo review accordion is preserved');
+
  assert(!(await page.locator('.cdl-fsb-text').isVisible()),'Free shipping widget does not repeat in open sheet');
  await page.locator('.sf-product-sheet-body').evaluate(e=>e.scrollTop=300);
  assert.equal(await page.evaluate(()=>scrollY),photoOffset,'Sheet scroll cannot move photos');
