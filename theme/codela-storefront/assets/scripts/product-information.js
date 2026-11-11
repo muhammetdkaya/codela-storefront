@@ -394,8 +394,8 @@
             if (range) {
               var dateText = range.textContent.trim();
               var prefix = fullEstimate.slice(0, fullEstimate.indexOf(dateText)).trim();
-              var shortLabel = /^Tahmini(?:\s+teslimat)?\s*:?$/i.test(prefix) ? 'Tahmini:' :
-                /^Estimated\s+delivery\s*:?$/i.test(prefix) ? 'Est.:' : prefix;
+              var shortLabel = /^Tahmini(?:\s+teslimat)?\s*:?$/i.test(prefix) ? 'Tah. teslimat:' :
+                /^Estimated\s+delivery\s*:?$/i.test(prefix) ? 'Est. delivery:' : prefix;
               var shortRange = dateText
                 .replace(/(^|\s)(?:Pzt|Sal|Çar|Per|Cum|Cmt|Paz|Mon|Tue|Wed|Thu|Fri|Sat|Sun)[.,]?\s*/gi, '$1')
                 .replace(/(Ocak|Şubat|Mart|Nisan|Mayıs|Haziran|Temmuz|Ağustos|Eylül|Ekim|Kasım|Aralık)/g, function (month) {
