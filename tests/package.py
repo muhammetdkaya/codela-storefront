@@ -14,7 +14,11 @@ class Tests(unittest.TestCase):
         schema=json.loads(schema_path.read_text(encoding="utf-8"))
         self.assertEqual(schema["schema_version"],1)
         sections={section["id"]:section for section in schema["sections"]}
-        self.assertEqual(set(sections),{"header","product","account","footer"})
+        self.assertEqual(set(sections),{"appearance","header","product","account","footer"})
+        site_font=next(field for field in sections["appearance"]["fields"] if field["id"]=="site_font")
+        self.assertEqual(site_font["type"],"select")
+        self.assertEqual(site_font["default"],"system")
+        self.assertEqual(set(site_font["options"]),{"system","arial"})
         fields=[field["id"] for section in schema["sections"] for field in section["fields"]]
         self.assertEqual(len(fields),len(set(fields)))
         self.assertTrue({"accent_color","corner_style"}.isdisjoint(fields),"Shared appearance has a single plugin owner")
