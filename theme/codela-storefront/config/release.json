@@ -6,9 +6,9 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Panel bölüm başlıkları ve bağlantılar üzerinden sürüklenebilir; sürükleme sonrası yanlış tıklama engellenir.",
-    "Panel içeriği başa geldiğinde aynı aşağı hareket paneli kapatmaya devam eder.",
-    "Son ekranın kaydırması kalan mesafeyi tüketip aynı hareketle paneli açar.",
-    "İlk yüklemedeki çizgi hizası düzeltildi; sürüklemede içerik yerleşimi sabit tutulur."
+    "Yeni Tema Ayarları → Görünüm → Tema yazı tipi seçimi: Apple / Sistem (varsayılan), Arial / Helvetica (önceki görünüm).",
+    "Font ayarı WordPress theme.json üzerinden tek site font değişkenine bağlandı; ürün, sepet, arama ve misafir hesap aynı seçimi devralır.",
+    "Ana sayfa büyük başlıkları ile sabit Arial kullanan ürün kartı/arama metinleri ortak fonta geçirildi; dış font/CDN eklenmedi.",
+    "Mevcut WooCommerce/Google/üçüncü taraf bileşen mantığı korunur; eklenti ve açık panel içerikleri değiştirilmedi."
   ]
 }
