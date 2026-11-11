@@ -40,7 +40,7 @@ html[data-sf-navigation-pending] .sf-shell > .sf-mobile-dock .sf-dock-surface{tr
   /* Reproduce the real native collapsed Woo sheet, not an isolated CTA strip.
      Only the heading is intentionally blank until the destination HTML arrives. */
   .sf-navigation-purchase{display:flex;flex-direction:column;padding:0;box-sizing:border-box;overflow:hidden}
-  .sf-navigation-purchase .sf-product-sheet-header{position:relative;flex:none;min-height:64px;margin-bottom:8px;padding:28px 16px 8px;box-sizing:border-box}
+  .sf-navigation-purchase .sf-product-sheet-header{position:relative;flex:none;min-height:64px;margin-bottom:8px;padding:38px 16px 8px;box-sizing:border-box}
   .sf-navigation-purchase .sf-product-sheet-handle{
     position:absolute;top:6px;left:50%;width:38px;height:18px;display:block;
     transform:translateX(-50%);color:var(--sf-ui-glass-ink);pointer-events:none;
@@ -257,7 +257,7 @@ html[data-sf-navigation-bottom="product"] .sf-shell .sf-header .sf-header-destin
 
 /* Match the native A header, shipping row and purchase track. */
 @media(max-width:700px){
- .sf-navigation-purchase .sf-product-sheet-header{padding:28px 16px 0;min-height:0;margin-bottom:8px}
+ .sf-navigation-purchase .sf-product-sheet-header{padding:38px 16px 0;min-height:0;margin-bottom:8px}
  .sf-navigation-purchase .sf-product-sheet-heading{min-height:0;grid-template-rows:auto}
  .sf-navigation-purchase .sf-navigation-heading-title{min-height:0;gap:0;align-content:start}
  .sf-navigation-purchase .sf-navigation-heading-placeholder--title{height:calc(clamp(17px,4.6vw,21px)*1.24);width:85%}
