@@ -1,3 +1,7 @@
+## 11 Kasım 2026 — 0.1.279 yayın doğrulandı
+
+Kaynak 67210c9569cb10f7fc5ab491fdd5e4236092cad3; yerel 3 asset ve 24 paket testi geçti. [Yayın CI](https://github.com/muhammetdkaya/codela-storefront/actions/runs/42949161253) başarılı, [v0.1.279 ZIP](https://github.com/muhammetdkaya/codela-storefront/releases/tag/v0.1.279) ve stable yayın akışı tamamlandı. Fiziksel iPhone kontrolü ve canlı mağaza kurulumu doğrulanmadı. Sıradaki: kısa/uzun başlıkta skeleton geçişini, fiyat fontunu ve kargo–satın alma boşluğunu cihazda doğrula.
+
 ## 11 Kasım 2026 — 0.1.278 → 0.1.279 panel boşlukları ve skeleton
 
 A panelinde başlık altı kargo aralığı 7px; header alt dolgusu kaldırıldı, satın alma üst dolgusu 10px. Fiyat ortak fontu 500 kalınlık, normal rakam ve harf aralığıyla miras alır; amount/bdi kalınlıkları da eşitlenir. Native/skeleton ortak 84px (dar ekranda 76px) minimum fiyat izi kullanır; uzun fiyatlar native tarafta genişleyebilir. Skeleton başlık ve ikonlu kısa kargo satırına geçti. Bilinmeyen uzun ürün başlıklarında skeleton kesin yükseklik garanti edemez. Karartma zaten panel hareket ilerlemesini izliyor; yalnız sayfa sonuna varınca başlamıyor, bu davranış korundu. Fiziksel cihaz kontrolü yapılmadı. Yayın doğrulaması bekleniyor.
