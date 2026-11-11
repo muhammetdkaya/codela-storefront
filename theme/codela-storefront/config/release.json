@@ -6,9 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Yeni Tema Ayarları → Görünüm → Tema yazı tipi seçimi: Apple / Sistem (varsayılan), Arial / Helvetica (önceki görünüm).",
-    "Font ayarı WordPress theme.json üzerinden tek site font değişkenine bağlandı; ürün, sepet, arama ve misafir hesap aynı seçimi devralır.",
-    "Ana sayfa büyük başlıkları ile sabit Arial kullanan ürün kartı/arama metinleri ortak fonta geçirildi; dış font/CDN eklenmedi.",
-    "Mevcut WooCommerce/Google/üçüncü taraf bileşen mantığı korunur; eklenti ve açık panel içerikleri değiştirilmedi."
+    "Font ayarındaki marka adı kaldırıldı: Sistem / Arial seçenekleri, cihazın sistem fontunu kullanıyor; dış font isteği yok.",
+    "Ürün alt panelinde tutamak ile ürün başlığı arasındaki mesafe artırıldı; kapalı/açık panel ve geçiş skeleton'u aynı ölçüyü kullanıyor.",
+    "Bugün kargoda yanında eklentinin gerçek tahmini teslimatı tek satırda, gün adı olmadan kısa biçimde gösteriliyor; tam metin erişilebilir kalıyor.",
+    "Fotoğraflardan ilgili ürünlere geçişte scroll-snap daha erken bırakılıyor, sayfanın son 70%'lik viewport alanını sahte scrollTo ile devralan takılma kaldırılıyor.",
+    "Panel yalnız gerçek belge sonuna ulaşılıp yukarı kaydırmaya devam edildiğinde açılıyor; WooCommerce, orijinal güven kartları ve ödeme davranışı korunuyor."
   ]
 }
