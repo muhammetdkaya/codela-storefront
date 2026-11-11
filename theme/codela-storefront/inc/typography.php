@@ -32,7 +32,7 @@ function codela_sf_theme_font_json( $theme_json ) {
         'version'  => 2,
         'settings' => [ 'typography' => [ 'fontFamilies' => [
             [ 'slug' => 'sf-site', 'name' => 'Codela site font', 'fontFamily' => $family ],
-            [ 'slug' => 'system', 'name' => 'Apple / System', 'fontFamily' => codela_sf_font_families()['system'] ],
+            [ 'slug' => 'system', 'name' => 'System', 'fontFamily' => codela_sf_font_families()['system'] ],
             [ 'slug' => 'arial', 'name' => 'Arial / Helvetica', 'fontFamily' => codela_sf_font_families()['arial'] ],
         ] ] ],
         'styles'   => [ 'typography' => [ 'fontFamily' => 'var:preset|font-family|sf-site' ] ],
