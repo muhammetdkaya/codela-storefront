@@ -236,19 +236,27 @@
       return mounted && discovery.children.length > 0 && track &&
         discovery.getBoundingClientRect().top < window.innerHeight * (media.classList.contains('is-discovering') ? .65 : .55);
     }
+    function nearDiscovery() {
+      // Release photo scroll-snap BEFORE recommendations enter view.
+      // WebKit otherwise keeps seeking a photo while the user swipes onward.
+      return mounted && discovery.children.length > 0 && track &&
+        discovery.getBoundingClientRect().top < innerHeight *
+          (media.classList.contains('is-near-discovery') ? 1.18 : 1.02);
+    }
     function atPageEnd() {
-      // Compensate for Safari browser chrome and safe-area changes.
+      // Native document scroll must finish BEFORE the sheet takes the gesture.
       return document.documentElement.scrollHeight - (window.scrollY + window.innerHeight) <=
-        Math.max(28, window.innerHeight * .035);
+        Math.max(3, window.innerHeight * .006);
     }
     function endPullAllowed(target) {
       return mounted && !expanded && !drag && !endWheel &&
         !document.documentElement.classList.contains('sf-overlay-scroll-locked') &&
-        (!discovery.children.length || isDiscovering()) &&
+        (!discovery.children.length || nearDiscovery() || isDiscovering()) &&
         !(target instanceof Element && target.closest('.sf-product-sheet,.sf-product-gallery-rail,#sf-panel,.pswp'));
     }
     function updateDiscovery() {
       if (!mounted || drag || document.documentElement.classList.contains('sf-overlay-scroll-locked')) return;
+      media.classList.toggle('is-near-discovery', nearDiscovery());
       var active = isDiscovering();
       media.classList.toggle('is-discovering', active);
       var compact = active && !expanded;
@@ -266,7 +274,7 @@
       endTouch = null;
       if (event.touches.length !== 1 || !endPullAllowed(event.target)) return;
       var t = event.touches[0];
-      endTouch = {id:t.identifier, x:t.clientX, y:t.clientY, lastY:t.clientY, active:false, tail:document.documentElement.scrollHeight-scrollY-innerHeight < innerHeight*.7};
+      endTouch = {id:t.identifier, x:t.clientX, y:t.clientY, lastY:t.clientY, active:false};
     }, {passive:true});
     window.addEventListener('touchmove', function (event) {
       if (!endTouch || event.touches.length !== 1) return;
@@ -278,17 +286,8 @@
         var dy = previousY - t.clientY;
         if (Math.abs(t.clientX-endTouch.x)>Math.abs(t.clientY-endTouch.y)) {endTouch=null;return;}
         if (dy <= 1 || !endPullAllowed(event.target)) return;
-        // Own the final viewport from its first move, so Safari cannot take
-        // the same vertical gesture away before it reaches the sheet.
-        if (endTouch.tail && event.cancelable) {
-          event.preventDefault();
-          var remaining=Math.max(0,document.documentElement.scrollHeight-scrollY-innerHeight);
-          var consumed=Math.min(remaining,dy);
-          if(consumed) window.scrollTo({top:scrollY+consumed,behavior:'instant'});
-          dy-=consumed;
-          if(dy<=0)return;
-          previousY=t.clientY+dy;
-        }
+        // Never hijack the final viewport with preventDefault + scrollTo.
+        // Native WebKit momentum owns the page until its real scroll limit.
         if (!atPageEnd() || !event.cancelable) return;
         // Inherit the LAST touch position, not the initial scroll position.
         if (!beginDrag(t.clientX, previousY, null, null)) return;
@@ -388,9 +387,26 @@
             var day = eta.querySelector('.cdl-de-line strong:not(.cdl-de-timer)');
             var etaLine = eta.querySelector('.cdl-de-eta');
             var dispatch = day ? template.dataset.shippingLabel.replace('%s', day.textContent.trim()) : '';
-            // Honor the configured delivery estimate; never invent a date.
-            var estimate = etaLine ? etaLine.textContent.replace(/\s+/g, ' ').trim() : '';
+            // The plugin owns the real dates; only shorten the visible copy.
+            var fullEstimate = etaLine ? etaLine.textContent.replace(/\s+/g, ' ').trim() : '';
+            var estimate = fullEstimate;
+            var range = etaLine && etaLine.querySelector('strong');
+            if (range) {
+              var dateText = range.textContent.trim();
+              var prefix = fullEstimate.slice(0, fullEstimate.indexOf(dateText)).trim();
+              var shortLabel = /^Tahmini(?:\s+teslimat)?\s*:?$/i.test(prefix) ? 'Tahmini:' :
+                /^Estimated\s+delivery\s*:?$/i.test(prefix) ? 'Est.:' : prefix;
+              var shortRange = dateText
+                .replace(/(^|\s)(?:Pzt|Sal|Çar|Per|Cum|Cmt|Paz|Mon|Tue|Wed|Thu|Fri|Sat|Sun)[.,]?\s*/gi, '$1')
+                .replace(/(Ocak|Şubat|Mart|Nisan|Mayıs|Haziran|Temmuz|Ağustos|Eylül|Ekim|Kasım|Aralık)/g, function (month) {
+                  return ({Ocak:'Oca',Şubat:'Şub',Mart:'Mar',Nisan:'Nis',Mayıs:'May',Haziran:'Haz',Temmuz:'Tem',Ağustos:'Ağu',Eylül:'Eyl',Ekim:'Eki',Kasım:'Kas',Aralık:'Ara'})[month] || month;
+                })
+                .replace(/\s*[–—]\s*/g, '–').replace(/\s+/g, ' ').trim();
+              estimate = [shortLabel, shortRange].filter(Boolean).join(' ');
+            }
             shippingText.textContent = [dispatch, estimate].filter(Boolean).join(' · ');
+            shippingSummary.setAttribute('aria-label', [dispatch, fullEstimate].filter(Boolean).join(' · '));
+            shippingSummary.title = [dispatch, fullEstimate].filter(Boolean).join(' · ');
             shippingSummary.hidden = !shippingText.textContent;
             measure();
           };
@@ -448,7 +464,7 @@
       if (shippingSummary) { shippingSummary.remove(); shippingSummary = null; }
       if (shippingData) { shippingData.remove(); shippingData = null; }
       discovery.remove();
-      media.classList.remove('is-discovering');
+      media.classList.remove('is-discovering','is-near-discovery');
       sheet.classList.remove('is-discovering');
       sheet.remove();
       scrim.remove();
