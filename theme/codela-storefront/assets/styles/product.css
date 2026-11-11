@@ -498,7 +498,7 @@ body.single-product .sf-product-plugin-footer .cdl-wa-float{
 body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{visibility:hidden}
 
 /* Progressive mobile composition. Without JS the native document stays usable. */
-.sf-product-sheet-header{position:relative;flex:none;min-height:64px;padding:28px 16px 8px}
+.sf-product-sheet-header{position:relative;flex:none;min-height:64px;padding:38px 16px 8px}
 /* A single genuine SVG path morphs via JS rAF; never two rounded halves. */
 .sf-product-sheet-handle{
   position:absolute;top:0;left:50%;width:38px;height:18px;
@@ -542,10 +542,10 @@ body.single-product .stock.in-stock{display:none}
      photo snapping only after entering it; otherwise the browser can snap a
      bottomward scroll back to its sole discovery snap point. Photo snapping
      and the native top-refresh path return on leaving discovery. */
-  html:has(body.sf-product-sheet-ready .woocommerce-product-gallery.is-discovering){
+  html:has(body.sf-product-sheet-ready .woocommerce-product-gallery:is(.is-near-discovery,.is-discovering)){
     overscroll-behavior-y:none;scroll-snap-type:none;
   }
-  body.sf-product-sheet-ready:has(.woocommerce-product-gallery.is-discovering){overscroll-behavior-y:none}
+  body.sf-product-sheet-ready:has(.woocommerce-product-gallery:is(.is-near-discovery,.is-discovering)){overscroll-behavior-y:none}
   html:has(body.sf-product-sheet-open),body.sf-product-sheet-open{overflow:hidden;overscroll-behavior-y:contain;scroll-snap-type:none}
   body.sf-product-sheet-ready .sf-content{padding-bottom:0!important}
   body.sf-product-sheet-ready div.product{margin:0}
@@ -707,7 +707,7 @@ body.single-product .stock.in-stock{display:none}
        a test product with extra price/urgency lines. */
     grid-template-rows:minmax(var(--sf-ui-product-heading-height),max-content);grid-auto-rows:max-content;align-content:start;align-items:center;
     column-gap:10px;row-gap:0;overflow:hidden;box-sizing:border-box;
-    padding:28px 16px 0;margin:0 auto!important;width:calc(100% - var(--sf-ui-bottom-bar-inset) - var(--sf-ui-bottom-bar-inset))!important;max-width:var(--sf-ui-bottom-bar-max-width);
+    padding:38px 16px 0;margin:0 auto!important;width:calc(100% - var(--sf-ui-bottom-bar-inset) - var(--sf-ui-bottom-bar-inset))!important;max-width:var(--sf-ui-bottom-bar-max-width);
     height:max-content;
     transition:none;
   }
@@ -1156,7 +1156,7 @@ body.single-product .pswp .pswp__counter{top:8px;left:16px}
 
 /* 0.1.279: shared compact A geometry and inherited price typography. */
 @media(max-width:700px){
- body.single-product.sf-product-sheet-ready div.product .sf-product-sheet.is-layout-a .sf-product-sheet-header{padding:28px 16px 0;min-height:0}
+ body.single-product.sf-product-sheet-ready div.product .sf-product-sheet.is-layout-a .sf-product-sheet-header{padding:38px 16px 0;min-height:0}
  body.single-product.sf-product-sheet-ready div.product .sf-product-sheet.is-layout-a .sf-product-sheet-heading > .sf-product-shipping-summary:not([hidden]){margin-top:7px}
  body.single-product.sf-product-sheet-ready div.product form.cart .sf-product-purchase--layout-a{
    display:grid;grid-template-columns:minmax(var(--sf-ui-product-price-width,84px),max-content) minmax(0,1fr);padding-top:10px;
@@ -1201,4 +1201,16 @@ body.single-product .pswp .pswp__counter{top:8px;left:16px}
 }
 @media(prefers-reduced-motion:reduce){
  body.single-product .sf-product-information-section > summary::after{transition:none}
+}
+
+/* 0.1.282: compact delivery presentation, original source/ARIA stay complete. */
+@media(max-width:700px){
+  body.single-product.sf-product-sheet-ready .sf-product-sheet.is-layout-a
+  .sf-product-sheet-heading > .sf-product-shipping-summary:not([hidden]){
+    font-size:12px;gap:6px;
+  }
+  body.single-product.sf-product-sheet-ready .sf-product-sheet.is-layout-a
+  .sf-product-shipping-summary:not([hidden])::before{
+    width:17px;height:17px;flex-basis:17px;
+  }
 }
