@@ -72,7 +72,9 @@ for(const width of [320,390,700]){
  assert(!(await page.locator('.variations,.sf-product-information').last().isVisible()),'Details hidden while collapsed');
  assert(!(await page.locator('.cdl-fsb-text').isVisible()),'No free-shipping message while collapsed');
  assert(!(await page.locator('.cdl-fsb-track').isVisible()),'No free-shipping bar while collapsed');
- assert.equal(await page.locator('.sf-product-delivery .cdl-fsb--product').count(),1,'Original shipping node in one native disclosure');
+ assert.equal(await page.locator('.sf-product-delivery').count(),0,'No duplicate delivery accordion');
+  assert.equal(await page.locator('.sf-product-shipping-source .cdl-fsb--product').count(),1,'Original shipping widget stays connected');
+  assert(!(await page.locator('.sf-product-shipping-source').isVisible()),'Shipping data is not displayed twice');
  const plus=page.locator('[data-quantity-step="1"]'),minus=page.locator('[data-quantity-step="-1"]');
  assert(await minus.isDisabled(),'Quantity cannot go below minimum');
  await plus.click();assert.equal(await page.locator('input.qty').inputValue(),'2');
@@ -162,8 +164,8 @@ for(const width of [320,390,700]){
  const photoOffset=await page.evaluate(()=>scrollY);
  await toggle.click();assert.equal(await toggle.getAttribute('aria-expanded'),'true');assert.equal(await page.locator('.sf-product-sheet').evaluate(e=>getComputedStyle(e).backgroundColor),panelTint,'Expanded panel keeps the same translucent material as collapsed');
  await page.waitForFunction(()=>document.querySelector('.sf-product-sheet').getBoundingClientRect().height>700);assert(await page.locator('.woocommerce-product-gallery').evaluate(e=>e.inert),'Open details stops gallery gestures/focus');
- await page.locator('.sf-product-delivery > summary').click();assert(await page.locator('.cdl-fsb-text').isVisible(),'Shipping visible inside open delivery section');
- const bar=await page.locator('.cdl-fsb-track').boundingBox(),text=await page.locator('.cdl-fsb-text').boundingBox();assert(Math.abs(bar.width-text.width)<1,'Full width shipping track');
+ assert.equal(await page.locator('.sf-product-delivery').count(),0,'No delivery accordion while expanded');
+ assert(!(await page.locator('.cdl-fsb-text').isVisible()),'Free shipping widget does not repeat in open sheet');
  await page.locator('.sf-product-sheet-body').evaluate(e=>e.scrollTop=300);
  assert.equal(await page.evaluate(()=>scrollY),photoOffset,'Sheet scroll cannot move photos');
  assert.equal(await page.locator('html').evaluate(e=>getComputedStyle(e).overflowY),'hidden','Only open details lock document scrolling');
