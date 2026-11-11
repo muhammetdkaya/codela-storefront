@@ -1238,3 +1238,69 @@ body.single-product .pswp .pswp__counter{top:8px;left:16px}
     grid-row:3;margin-top:8px!important;
   }
 }
+
+
+/* 0.1.284 — Review accordion: retain WooCommerce's native review form and
+   submission semantics; eliminate duplicated headings and empty-state copy. */
+body.single-product #sf-product-section-reviews .woocommerce-Reviews-title,
+body.single-product #sf-product-section-reviews .woocommerce-noreviews,
+body.single-product #sf-product-section-reviews #reply-title,
+body.single-product #sf-product-section-reviews .comment-notes,
+body.single-product #sf-product-section-reviews .required-field-message{display:none!important}
+body.single-product #sf-product-section-reviews .sf-review-summary-score{
+  display:inline-flex;align-items:center;gap:5px;margin-left:auto;
+  font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--sf-ui-ink);
+}
+body.single-product #sf-product-section-reviews .sf-review-summary-score::before{
+  content:'★';font-size:16px;color:#b38c46;
+}
+body.single-product #sf-product-section-reviews > summary:has(.sf-review-summary-score){
+  justify-content:flex-start;gap:10px;
+}
+body.single-product #sf-product-section-reviews .sf-review-summary-score + *{margin-left:0}
+body.single-product #sf-product-section-reviews .sf-product-information-content{
+  line-height:1.5;color:var(--sf-ui-ink);
+}
+body.single-product #sf-product-section-reviews #reviews,
+body.single-product #sf-product-section-reviews #comments,
+body.single-product #sf-product-section-reviews #review_form_wrapper{margin:0;padding:0}
+body.single-product #sf-product-section-reviews #review_form_wrapper{margin-top:14px}
+body.single-product #sf-product-section-reviews #review_form .comment-form{display:grid;gap:12px;margin:0}
+body.single-product #sf-product-section-reviews #review_form .comment-form > p{margin:0;min-width:0}
+body.single-product #sf-product-section-reviews #review_form .comment-form-rating{display:flex;flex-wrap:wrap;align-items:center;gap:9px}
+body.single-product #sf-product-section-reviews #review_form .comment-form-rating > label{
+  font-size:13px;font-weight:500;color:var(--sf-ui-ink);
+}
+body.single-product #sf-product-section-reviews #review_form .stars{margin:0!important;line-height:1.2}
+body.single-product #sf-product-section-reviews #review_form .stars a{color:#b38c46}
+body.single-product #sf-product-section-reviews #review_form :is(.comment-form-comment,.comment-form-author,.comment-form-email) label{
+  display:block;margin-bottom:6px;font-size:12px;font-weight:500;color:var(--sf-ui-ink);
+}
+body.single-product #sf-product-section-reviews #review_form :is(textarea,input[type=text],input[type=email]){
+  width:100%;max-width:100%;min-height:44px;padding:12px 13px;
+  background:rgba(255,255,255,.72);color:var(--sf-ui-ink);
+  border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-radius,12px);
+  font:inherit;font-size:16px;box-sizing:border-box;
+}
+body.single-product #sf-product-section-reviews #review_form textarea{min-height:106px;resize:vertical}
+body.single-product #sf-product-section-reviews #review_form .comment-form-cookies-consent{
+  display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--sf-muted);
+}
+body.single-product #sf-product-section-reviews #review_form .comment-form-cookies-consent input{
+  margin:2px 0 0;flex:none;width:18px;height:18px;accent-color:var(--sf-ui-ink);
+}
+body.single-product #sf-product-section-reviews #review_form .comment-form-cookies-consent label{margin:0}
+body.single-product #sf-product-section-reviews #review_form .form-submit input[type=submit]{
+  border:0;border-radius:999px;min-height:46px;padding:0 24px;
+  background:var(--sf-ui-ink);color:#fff;font:inherit;font-weight:600;cursor:pointer;
+}
+body.single-product #sf-product-section-reviews ol.commentlist{padding:0;margin:0 0 18px;list-style:none}
+body.single-product #sf-product-section-reviews ol.commentlist > li{
+  list-style:none;margin:0;padding:16px 0;border-bottom:1px solid var(--sf-ui-border);
+}
+body.single-product #sf-product-section-reviews ol.commentlist .comment_container{display:flow-root}
+body.single-product #sf-product-section-reviews ol.commentlist .avatar{float:left;width:36px;height:36px;margin-right:12px;border-radius:50%}
+body.single-product #sf-product-section-reviews ol.commentlist .comment-text{margin:0;min-width:0}
+body.single-product #sf-product-section-reviews ol.commentlist .star-rating{float:none;margin:0 0 6px;color:#b38c46}
+body.single-product #sf-product-section-reviews ol.commentlist .meta{margin:0 0 7px;font-size:12px;color:var(--sf-muted)}
+body.single-product #sf-product-section-reviews ol.commentlist .description p{margin:0;font-size:13px;line-height:1.65}
