@@ -6,10 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Ürün sayfası navigasyon skeleton'u, WordPress ilk ürün görünümü ve JavaScript ile açılan alt panel aynı satır/yükseklik hesabına bağlandı.",
-    "Codela Delivery ETA aktifse JavaScript öncesi alt panelde gerçek kargo satırının 26px yüksekliği ayrılıyor; yüklenirken panelin yukarı-aşağı sıçraması engelleniyor.",
-    "Alt panel üst tutamağı ve açılmış durumdaki ok 10px aşağı taşındı; başlık boşluğu aynı oranda artırılarak korundu.",
-    "Skeleton, JS öncesi gerçek ürün paneli ve açılıp kapanan panelde tutamak ve başlık konumları uyumlu hale getirildi.",
-    "İlave tarayıcı regresyonu: skeleton, ilk ürün boyası ve yüklenmiş panelin başlangıç konumu/yüksekliği ile aynı SVG tutamak koordinatları kontrol ediliyor."
+    "Ürün değerlendirme accordion'unda tekrar eden WooCommerce başlıkları ve boş yorum metinleri kaldırıldı.",
+    "Gerçek WooCommerce ortalama puanı, yalnız değerlendirme varsa accordion başlığında yıldız ve puan olarak gösteriliyor.",
+    "Mevcut yorumlarda WooCommerce yıldızları, yazar, tarih ve metin daha kompakt Codela stilinde görüntüleniyor.",
+    "Yorum formunda önce WooCommerce yıldız seçimi gösteriliyor; puan seçildikten sonra yorum ve zorunlu iletişim alanları açılıyor.",
+    "Yorumların kaydedilmesi, yıldız doğrulaması, oturum ve WooCommerce izin kuralları değiştirilmedi."
   ]
 }
