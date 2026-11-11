@@ -132,7 +132,21 @@ function &codela_sf_product_information_state(): array {
 function codela_sf_product_information_section( string $key, array $tab ): void {
     ?>
     <details class="sf-product-information-section" id="sf-product-section-<?php echo esc_attr( $key ); ?>" <?php echo 'description' === $key ? 'open' : ''; ?>>
-        <summary><?php echo wp_kses_post( apply_filters( 'woocommerce_product_' . $key . '_tab_title', $tab['title'], $key ) ); ?></summary>
+        <summary>
+            <?php echo wp_kses_post( apply_filters( 'woocommerce_product_' . $key . '_tab_title', $tab['title'], $key ) ); ?>
+            <?php
+            if ( 'reviews' === $key && function_exists( 'wc_review_ratings_enabled' ) && wc_review_ratings_enabled() ) {
+                $review_product = $GLOBALS['product'] ?? null;
+                if ( $review_product instanceof WC_Product && $review_product->get_rating_count() > 0 ) {
+                    printf(
+                        '<span class="sf-review-summary-score" aria-label="%s">%s</span>',
+                        esc_attr( sprintf( __( 'Average rating: %s out of 5', 'codela-storefront' ), wc_format_decimal( $review_product->get_average_rating(), 1 ) ) ),
+                        esc_html( wc_format_decimal( $review_product->get_average_rating(), 1 ) )
+                    );
+                }
+            }
+            ?>
+        </summary>
         <div class="sf-product-information-content" id="tab-<?php echo esc_attr( $key ); ?>">
             <?php
             if ( isset( $tab['callback'] ) && is_callable( $tab['callback'] ) ) {
