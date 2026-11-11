@@ -501,7 +501,7 @@ body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{v
 .sf-product-sheet-header{position:relative;flex:none;min-height:64px;padding:28px 16px 8px}
 /* A single genuine SVG path morphs via JS rAF; never two rounded halves. */
 .sf-product-sheet-handle{
-  position:absolute;top:6px;left:50%;width:38px;height:18px;
+  position:absolute;top:0;left:50%;width:38px;height:18px;
   transform:translateX(-50%);display:block;pointer-events:none;
   color:var(--sf-ui-glass-ink);overflow:visible;
 }
@@ -1167,4 +1167,38 @@ body.single-product .pswp .pswp__counter{top:8px;left:16px}
    font-family:inherit;font-weight:500;letter-spacing:normal;font-variant-numeric:normal;
  }
  body.single-product.sf-product-sheet-ready div.product form.cart .sf-product-purchase--layout-a .price :is(.amount,bdi,.woocommerce-Price-currencySymbol){font-family:inherit;font-weight:inherit;letter-spacing:inherit;font-variant-numeric:normal}
+}
+
+/* 0.1.280: mobile accordion chevrons, single live dispatch + ETA line.
+   Trust cards remain the configured original Codela plugin's 2x2 grid. */
+@media(max-width:700px){
+ body.single-product .sf-product-information-section > summary{
+   position:relative;padding-right:42px;
+ }
+ body.single-product .sf-product-information-section > summary::before{
+   content:'';position:absolute;right:0;top:50%;transform:translateY(-50%);
+   width:30px;height:30px;box-sizing:border-box;border:1px solid var(--sf-ui-border);
+   border-radius:50%;background:color-mix(in srgb,var(--sf-ui-surface) 65%,transparent);
+   pointer-events:none;
+ }
+ body.single-product .sf-product-information-section > summary::after{
+   content:'';position:absolute;right:11px;top:50%;width:8px;height:8px;
+   box-sizing:border-box;flex:none;border:0;
+   border-right:1.8px solid currentColor;border-bottom:1.8px solid currentColor;
+   transform:translateY(-70%) rotate(45deg);transition:transform 180ms ease;
+   pointer-events:none;
+ }
+ body.single-product .sf-product-information-section[open] > summary::after{
+   content:'';transform:translateY(-30%) rotate(225deg);
+ }
+ body.single-product .sf-product-shipping-source{display:none!important}
+ body.single-product.sf-product-sheet-ready .sf-product-sheet-heading > .sf-product-shipping-summary:not([hidden]){
+   min-width:0;max-width:100%;overflow:hidden;white-space:nowrap;
+ }
+ body.single-product .sf-product-shipping-text{
+   flex:1 1 auto;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ body.single-product .sf-product-information-section > summary::after{transition:none}
 }
