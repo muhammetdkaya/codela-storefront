@@ -2,8 +2,8 @@
 return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR', 'plural-forms' => 'nplurals=2; plural=(n > 1);', 'messages' => [
 'Adding…' => 'Ekleniyor…',
 'Arial / Helvetica' => 'Arial / Helvetica',
-'Apple / System' => 'Apple / Sistem',
-'Apple / System follows each visitor\'s device. Arial restores the previous storefront font. No external fonts are downloaded.' => 'Apple / Sistem, ziyaretçinin cihaz yazı tipini kullanır. Arial, önceki mağaza yazı tipini geri getirir. Dışarıdan font indirilmez.',
+'System' => 'Sistem',
+'System uses each visitor\'s device font. Arial restores the previous storefront font. No external fonts are downloaded.' => 'Sistem, ziyaretçinin cihaz yazı tipini kullanır. Arial önceki mağaza fontunu geri getirir. Dışarıdan font indirilmez.',
 'Site-wide font for the storefront, product panels, cart and guest account.' => 'Mağaza, ürün panelleri, sepet ve misafir hesap alanları için ortak yazı tipi.',
 'Appearance' => 'Görünüm',
 'Added to cart' => 'Sepete eklendi',
