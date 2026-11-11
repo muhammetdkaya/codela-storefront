@@ -3,6 +3,8 @@ on:
   push:
     branches: [main]
     paths: ['.releases/storefront.json']
+  # Manual fallback when GitHub App/API-authored pushes do not initiate Actions.
+  workflow_dispatch:
 permissions:
   contents: write
   actions: read
