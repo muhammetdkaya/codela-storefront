@@ -11,9 +11,9 @@
           "type": "select",
           "default": "system",
           "label": "Theme font",
-          "description": "Apple / System follows each visitor's device. Arial restores the previous storefront font. No external fonts are downloaded.",
+          "description": "System uses each visitor's device font. Arial restores the previous storefront font. No external fonts are downloaded.",
           "options": {
-            "system": "Apple / System",
+            "system": "System",
             "arial": "Arial / Helvetica"
           }
         }
