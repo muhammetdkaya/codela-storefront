@@ -2,6 +2,24 @@
   "schema_version": 1,
   "sections": [
     {
+      "id": "appearance",
+      "label": "Appearance",
+      "description": "Site-wide font for the storefront, product panels, cart and guest account.",
+      "fields": [
+        {
+          "id": "site_font",
+          "type": "select",
+          "default": "system",
+          "label": "Theme font",
+          "description": "Apple / System follows each visitor's device. Arial restores the previous storefront font. No external fonts are downloaded.",
+          "options": {
+            "system": "Apple / System",
+            "arial": "Arial / Helvetica"
+          }
+        }
+      ]
+    },
+    {
       "id": "header",
       "label": "Header",
       "description": "Mobile navigation behavior. Site identity and menus are managed by WordPress.",
