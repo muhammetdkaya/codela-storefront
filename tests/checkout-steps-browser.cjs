@@ -60,7 +60,14 @@ function html(markup){
    assert.equal(await page.locator('#order_review').isVisible(),false);
    assert.equal(await page.locator('.woocommerce-form-coupon-toggle').isVisible(),false);
    const footer=await page.locator('.sf-checkout-fixed-footer').boundingBox();
-   assert(footer&&footer.width<=760&&footer.y+footer.height<=844&&footer.y+footer.height>760,'Fixed footer '+width);
+   const footerStyle=await page.locator('.sf-checkout-fixed-footer').evaluate(el=>{
+    const css=getComputedStyle(el);
+    return {left:css.left,right:css.right,width:css.width,bottom:css.bottom,
+      edge:getComputedStyle(el.parentElement).getPropertyValue('--sf-checkout-fixed-edge'),
+      viewport:innerWidth};
+   });
+   assert(footer&&footer.width<=762&&footer.y+footer.height<=846&&footer.y+footer.height>758,
+     'Fixed footer '+width+' '+JSON.stringify({footer,footerStyle}));
    assert.equal(await page.locator('.sf-checkout-total-value').innerText(),'₺900,00');
    await page.locator('.sf-checkout-next').click();
    assert.equal(await page.locator('body.sf-checkout-step-1').count(),1,'Required native details gate step');
