@@ -207,10 +207,16 @@ function codela_sf_header(): string {
             <?php if ( $catalog_page ) : ?><section class="sf-panel-body" id="sf-filters" hidden><?php echo codela_sf_catalog_filters(); ?></section><?php endif; ?>
             <section class="sf-panel-body" id="sf-cart" hidden>
                 <p class="sf-cart-count" id="sf-cart-count" hidden></p>
-                <div id="sf-cart-progress" hidden></div>
                 <div id="sf-cart-items"></div>
             </section>
-            <div class="sf-cart-bottom" hidden><div class="sf-subtotal"><span><?php esc_html_e( 'Subtotal', 'codela-storefront' ); ?></span><strong id="sf-subtotal"></strong></div><p><?php esc_html_e( 'Shipping and discounts are calculated at checkout.', 'codela-storefront' ); ?></p><?php echo codela_sf_ui_primary_link( wc_get_checkout_url(), __( 'Checkout', 'codela-storefront' ) ); ?></div>
+            <div class="sf-cart-bottom" hidden>
+                <?php // One plugin-owned shipping message, relocated to the purchasing area. ?>
+                <div id="sf-cart-progress" class="sf-cart-progress" hidden></div>
+                <a class="sf-cart-checkout-command sf-ui-button sf-ui-button--primary sf-primary sf-ui-pressable" href="<?php echo esc_url( wc_get_checkout_url() ); ?>">
+                    <span class="sf-cart-checkout-total"><span><?php esc_html_e( 'Subtotal', 'codela-storefront' ); ?></span><strong id="sf-subtotal"></strong></span>
+                    <span class="sf-cart-checkout-label"><?php esc_html_e( 'Checkout', 'codela-storefront' ); ?><?php echo codela_sf_icon( 'arrow-right' ); ?></span>
+                </a>
+            </div>
             <p class="sf-status" id="sf-status" role="status" aria-live="polite"></p>
         </dialog>
         <noscript><style>#sf-filters{display:block!important}#sf-panel:not([open]):has(#sf-filters){display:block;position:static;height:auto}#sf-panel:not([open])>:not(#sf-filters){display:none}</style><nav id="sf-menu-fallback"><?php echo codela_sf_menu(); ?></nav></noscript>
