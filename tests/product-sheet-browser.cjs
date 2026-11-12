@@ -107,7 +107,9 @@ for(const width of [320,390,700]){
  const purchaseGap=()=>page.evaluate(()=>document.querySelector('.single_add_to_cart_button').getBoundingClientRect().top-document.querySelector('.sf-product-sheet-heading').getBoundingClientRect().bottom);
  const closedGap=await purchaseGap();
  // Two-line title reserve now matches the destination skeleton; urgency remains an extra row.
- assert(closedHeight<200,'Compact two-line collapsed panel '+width+' '+closedHeight);
+ // Balanced A layout reserves the native delivery and checkout gap; its
+ // two-line intrinsic collapsed height is approximately 202px at 390px wide.
+ assert(closedHeight<208,'Balanced two-line collapsed panel '+width+' '+closedHeight);
  assert.equal(await page.locator('.sf-product-sheet .related').count(),0,'Recommendations are outside product details');
  assert.equal(await page.locator('.sf-product-discovery > .related a').getAttribute('href'),'/related','Native related anchor preserved');
  await page.locator('.woocommerce-product-gallery__wrapper').focus();await page.keyboard.press('End');
