@@ -159,6 +159,21 @@
             if (step < 3 && canAdvance()) showStep(step + 1);
         });
         back.addEventListener('click', function () { showStep(step - 1); });
+        // If an address field becomes required after Woo changes the customer
+        // type or shipping destination, native constraint validation must
+        // reveal its original phase instead of targeting a hidden control.
+        form.addEventListener('invalid', function (event) {
+            const invalid = event.target;
+            const phase = invalid.closest('#customer_details .col-1') ? 1 :
+                invalid.closest('#customer_details .col-2') ? 2 : 3;
+            if (phase !== step) {
+                event.preventDefault();
+                showStep(phase);
+                requestAnimationFrame(function () {
+                    if (invalid.isConnected) invalid.focus({preventScroll:false});
+                });
+            }
+        }, true);
 
         // Woo fragments replace #order_review without replacing the form.
         // Re-read totals and classify native hook output after each refresh.
