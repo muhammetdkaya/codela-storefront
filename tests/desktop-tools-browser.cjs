@@ -83,15 +83,18 @@ const cart={items_count:1,items:[{key:'one',name:'Deneme ürünü',permalink:'/p
   await page.screenshot({path:'qa/storefront-ui-kit-mobile-menu.png'});
  }
  await page.keyboard.press('Escape');await dialog.waitFor({state:'hidden'});
- // On a product, the SAME cart becomes a compact header sheet with no dock.
+ // A product uses the SAME full-screen mobile cart and original dock.
  await page.evaluate(()=>document.body.classList.add('single-product'));
  for(const width of [320,390,768,900]){
   await page.setViewportSize({width,height:844});
   await page.evaluate(()=>window.sfActions.cart());await page.waitForTimeout(200);
-  const compact=await dialog.boundingBox();
-  assert(compact.width<=440 && compact.height<744 && compact.y>=76,'Product cart stays compact '+width);
-  assert.equal(await dialog.locator('.sf-mobile-dock').isVisible(),false,'Product cart has no navigation dock');
-  assert.equal(await dialog.locator('.sf-cart-bottom').evaluate(el=>parseFloat(getComputedStyle(el).paddingBottom)),16,'Hidden dock reserves no footer space');
+  const full=await dialog.boundingBox();
+  assert(!await dialog.evaluate(el=>el.classList.contains('is-product-cart')),'No compact product-only cart '+width);
+  assert(Math.abs(full.width-width)<2,'Product cart uses the normal full-width dialog '+width);
+  assert.equal(await dialog.locator('.sf-mobile-dock').isVisible(),width<=700,
+    'Original dock is available on the product cart at mobile widths '+width);
+  if(width<=700)assert(await dialog.locator('.sf-cart-bottom').evaluate(el=>parseFloat(getComputedStyle(el).paddingBottom))>=80,
+    'Footer clears the existing mobile dock');
   assert(await page.locator('#sf-cart').innerText().then(t=>t.includes('Deneme ürünü')),'Same live cart rows');
   await page.screenshot({path:'qa/storefront-ui-kit-product-cart-'+width+'.png'});
   await page.keyboard.press('Escape');await dialog.waitFor({state:'hidden'});
