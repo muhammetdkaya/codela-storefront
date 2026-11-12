@@ -85,14 +85,30 @@
             }
             link.textContent = read('coupon', 'Add discount code');
             link.setAttribute('aria-label', read('coupon', 'Add discount code'));
-            if (!notice.querySelector('.sf-checkout-coupon-hint')) {
-                const hint = document.createElement('span');
-                hint.className = 'sf-checkout-coupon-hint';
-                hint.textContent = read('couponHint', 'Have a code? Apply it here.');
-                link.after(hint);
+            // A single, legible disclosure row is enough: the hint made a
+            // two-line card before the customer had even opened the coupon.
+            notice.querySelector('.sf-checkout-coupon-hint')?.remove();
+            const coupon = woo.querySelector('form.checkout_coupon');
+            const field = coupon?.querySelector('input[name="coupon_code"]');
+            if (field) {
+                field.placeholder = read('couponField', 'Discount code');
+                field.setAttribute('aria-label', read('couponField', 'Discount code'));
             }
-            const field = woo.querySelector('form.checkout_coupon input[name="coupon_code"]');
-            if (field) field.placeholder = read('couponField', 'Discount code');
+            const apply = coupon?.querySelector('button[name="apply_coupon"],button[type="submit"],button.button');
+            if (apply) {
+                apply.textContent = read('couponApply', 'Apply');
+                // Keep button name, type and the original Woo AJAX handler.
+            }
+            // jQuery toggles the original coupon form inline, sometimes with
+            // animation frames. Observe only the display state for connected
+            // corners: no duplicate toggle, form or custom coupon request.
+            if (coupon && toggle && !coupon.dataset.sfCheckoutDisclosureObserved) {
+                coupon.dataset.sfCheckoutDisclosureObserved = '1';
+                const sync = () => toggle.classList.toggle('sf-checkout-coupon-open',
+                    getComputedStyle(coupon).display !== 'none');
+                new MutationObserver(sync).observe(coupon, {attributes:true,attributeFilter:['style','class']});
+                sync();
+            }
         }
 
         // The free-shipping extension already supplies threshold, progress,
