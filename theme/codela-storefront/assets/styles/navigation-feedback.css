@@ -257,7 +257,7 @@ html[data-sf-navigation-bottom="product"] .sf-shell .sf-header .sf-header-destin
 
 /* Match the native A header, shipping row and purchase track. */
 @media(max-width:700px){
- .sf-navigation-purchase .sf-product-sheet-header{padding:44px 16px 4px;min-height:0;margin-bottom:8px}
+ .sf-navigation-purchase .sf-product-sheet-header{padding:36px 16px 0;min-height:0;margin-bottom:14px}
  .sf-navigation-purchase .sf-product-sheet-heading{min-height:0;grid-template-rows:auto}
  .sf-navigation-purchase .sf-navigation-heading-title{min-height:0;gap:0;align-content:start}
  .sf-navigation-purchase .sf-navigation-heading-placeholder--title{height:calc(clamp(17px,4.6vw,21px)*1.24);width:85%}
