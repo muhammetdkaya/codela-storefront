@@ -116,7 +116,10 @@
             // Conditional invoice fields, collapsed saved addresses and the
             // native 'ship to a different address' wrapper remain authoritative.
             const target = row || control;
-            return !!target.getClientRects().length && getComputedStyle(target).visibility !== 'hidden';
+            const controlVisible = !!control.getClientRects().length ||
+                control.classList.contains('select2-hidden-accessible');
+            return controlVisible && !!target.getClientRects().length &&
+                getComputedStyle(target).visibility !== 'hidden';
         }
 
         function validateContainer(root) {
