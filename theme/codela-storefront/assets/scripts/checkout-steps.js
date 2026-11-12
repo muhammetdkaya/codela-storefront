@@ -191,18 +191,23 @@
             });
         }
 
-        // The fixed control yields to the software keyboard, never concealing
-        // inputs or the native Select2 country/state selector.
-        form.addEventListener('focusin', function (e) {
-            if (e.target.matches('input:not([type="checkbox"]):not([type="radio"]),textarea,select'))
-                document.body.classList.add('sf-checkout-editing');
-        });
-        form.addEventListener('focusout', function () {
-            window.setTimeout(function () {
-                if (!form.contains(document.activeElement) || !document.activeElement.matches('input:not([type="checkbox"]):not([type="radio"]),textarea,select'))
-                    document.body.classList.remove('sf-checkout-editing');
-            }, 0);
-        });
+        // Yield ONLY to a real mobile software keyboard, not ordinary focus.
+        // A desktop/touch-automation focused field must not make the fixed
+        // checkout button untappable. Safari reports keyboard occlusion via
+        // visualViewport; normal page scrolling does not meet this threshold.
+        const keyboardField = 'input:not([type="checkbox"]):not([type="radio"]),textarea,select';
+        function syncKeyboard() {
+            const active = document.activeElement;
+            const focused = form.contains(active) && active.matches(keyboardField);
+            const view = window.visualViewport;
+            const occluded = view && window.innerHeight - view.height - view.offsetTop > 140;
+            document.body.classList.toggle('sf-checkout-editing',
+                !!(focused && occluded && window.matchMedia('(max-width:900px)').matches));
+        }
+        form.addEventListener('focusin', syncKeyboard);
+        form.addEventListener('focusout', function () { window.setTimeout(syncKeyboard, 0); });
+        window.visualViewport?.addEventListener('resize', syncKeyboard, {passive:true});
+        window.visualViewport?.addEventListener('scroll', syncKeyboard, {passive:true});
         // The fields' own change handlers continue to drive Woo checkout AJAX.
         categorizeExtras();
         showStep(1, false);
