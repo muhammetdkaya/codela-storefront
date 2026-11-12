@@ -213,8 +213,23 @@ add_action( 'wp_enqueue_scripts', function() {
         wp_enqueue_script( 'codela-storefront-gallery-defer', $root_uri . 'scripts/gallery-defer.js', [ 'wc-single-product', 'photoswipe-ui-default' ], $style_version, true );
     }
     if ( function_exists( 'is_checkout' ) && is_checkout() ) {
-        // Presentation adapter only; no Woo checkout/gateway logic is changed.
+        // Native Woo keeps the only checkout form, AJAX, coupon and gateway.
         wp_enqueue_style( 'codela-storefront-checkout', $root_uri . 'styles/checkout.css', [ 'codela-storefront-components' ], $style_version );
+        wp_enqueue_script( 'codela-storefront-checkout-steps', $root_uri . 'scripts/checkout-steps.js', [ 'jquery' ], codela_sf_script_module_version( 'scripts/checkout-steps.js' ), true );
+        wp_add_inline_script( 'codela-storefront-checkout-steps', 'window.codelaSFCheckoutSteps=' . wp_json_encode( [
+            'details' => __( 'Customer details', 'codela-storefront' ),
+            'delivery' => __( 'Delivery preferences', 'codela-storefront' ),
+            'payment' => __( 'Payment', 'codela-storefront' ),
+            'steps' => __( 'Checkout progress', 'codela-storefront' ),
+            'step' => __( 'Step', 'codela-storefront' ),
+            'back' => __( 'Previous step', 'codela-storefront' ),
+            'continue' => __( 'Continue', 'codela-storefront' ),
+            'toPayment' => __( 'Continue to payment', 'codela-storefront' ),
+            'next' => __( 'Checkout action', 'codela-storefront' ),
+            'total' => __( 'Total', 'woocommerce' ),
+            'estimated' => __( 'Estimated total', 'codela-storefront' ),
+            'required' => __( 'Please complete the required fields before continuing.', 'codela-storefront' ),
+        ] ) . ';', 'before' );
     }
     if ( function_exists( 'is_account_page' ) && is_account_page() ) {
         wp_enqueue_style( 'codela-storefront-account', $root_uri . 'styles/account.css', [ 'codela-storefront-components' ], $style_version );
