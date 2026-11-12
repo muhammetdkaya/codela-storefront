@@ -196,10 +196,9 @@ export function createOverlayController({
         if (!opening && current === name && !wasClosing) return;
         surfaceMotion?.cancel(); surfaceMotion = null;
         const previous = current;
-        const appPanel = mobileHeader.matches && (name === 'search' || name === 'account' ||
-            (name === 'cart' && !document.body.classList.contains('single-product')));
-        if (name === 'menu' && mobileHeader.matches && ['search','cart','account'].includes(previous)
-            && !dialog.classList.contains('is-product-cart')) returnToPanel = previous;
+        // Cart has one presentation on every page, including single products.
+        const appPanel = mobileHeader.matches && ['search','account','cart'].includes(name);
+        if (name === 'menu' && mobileHeader.matches && ['search','cart','account'].includes(previous)) returnToPanel = previous;
         else if (name !== 'menu') returnToPanel = null;
         if (opening) {
             cancelAnimationFrame(restoreScrollFrame);
@@ -235,11 +234,11 @@ export function createOverlayController({
         dialog.classList.toggle('is-menu-panel', name === 'menu');
         dialog.classList.toggle('is-search-panel', name === 'search');
         dialog.classList.toggle('is-cart-panel', name === 'cart');
-        dialog.classList.toggle('is-product-cart', name === 'cart' && document.body.classList.contains('single-product'));
+        // No product-only compact cart variant; the native dialog remains full-screen.
         dialog.classList.toggle('is-account-panel', name === 'account');
         dialog.classList.toggle('is-filters-panel', name === 'filters');
         const dock = mobileDock();
-        if (dock && dock.parentElement === dialog) dock.hidden = name === 'menu' || (name === 'cart' && document.body.classList.contains('single-product'));
+        if (dock && dock.parentElement === dialog) dock.hidden = name === 'menu';
         markDockActive(name);
         const menuTrigger = findMenuTrigger();
         dialog.setAttribute('aria-label', name === 'menu' ? menuLabel : name === 'search' ? t('Search products') : name === 'account' ? t('My account') : name === 'filters' ? t('Filters') : t('Your cart'));
@@ -418,7 +417,7 @@ export function createOverlayController({
         };
         dialog.addEventListener('pointerdown', event => { backdropDown = outsideDrawer(event); });
         dialog.addEventListener('click', event => {
-            if (current === 'cart' && (desktop.matches || dialog.classList.contains('is-product-cart')) && backdropDown && outsideDrawer(event)) close();
+            if (current === 'cart' && desktop.matches && backdropDown && outsideDrawer(event)) close();
             backdropDown = false;
         });
         adminOffset();
