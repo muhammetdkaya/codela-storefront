@@ -229,6 +229,9 @@ add_action( 'wp_enqueue_scripts', function() {
             'total' => __( 'Total', 'woocommerce' ),
             'estimated' => __( 'Estimated total', 'codela-storefront' ),
             'required' => __( 'Please complete the required fields before continuing.', 'codela-storefront' ),
+            'coupon' => __( 'Add discount code', 'codela-storefront' ),
+            'couponHint' => __( 'Have a code? Apply it here.', 'codela-storefront' ),
+            'couponField' => __( 'Discount code', 'codela-storefront' ),
         ] ) . ';', 'before' );
     }
     if ( function_exists( 'is_account_page' ) && is_account_page() ) {
