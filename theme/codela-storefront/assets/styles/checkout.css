@@ -253,3 +253,207 @@ body.sf-checkout-steps-active.sf-checkout-editing .sf-checkout-page #place_order
  body.sf-checkout-steps-active .sf-checkout-stepper,
  body.sf-checkout-steps-active .sf-checkout-fixed-footer{scroll-behavior:auto;transition:none}
 }
+
+
+/* Checkout steps refinement: shipping is ONE delivery-only summary, not a
+   repeated order-review promotion. The live extension slot remains mounted
+   for WooCommerce fragment updates even when its presentation is hidden. */
+body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page #order_review .cdl-fsb-slot{
+ display:none!important;
+}
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #order_review{
+ background:transparent;border:0;padding:0!important;box-shadow:none;
+}
+body.sf-checkout-step-2 .sf-checkout-page #order_review .cdl-fsb-slot{
+ margin:0;padding:0;
+}
+body.sf-checkout-step-2 .sf-checkout-page #order_review .cdl-fsb{
+ display:block;margin:0;padding:0;border:0;border-radius:0;
+ box-shadow:none;background:transparent;
+}
+body.sf-checkout-step-2 .sf-checkout-page #order_review .cdl-fsb-text{
+ display:flex;align-items:center;gap:12px;min-height:40px;
+ color:var(--sf-ui-ink);font-size:13px;font-weight:500;line-height:1.45;
+}
+body.sf-checkout-step-2 .sf-checkout-page #order_review .cdl-fsb-text>span:last-child{
+ flex:1;min-width:0;overflow-wrap:anywhere;
+}
+body.sf-checkout-step-2 .sf-checkout-page #order_review .cdl-fsb-track{display:none!important}
+body.sf-checkout-step-2 .sf-checkout-page #order_review .sf-checkout-shipping-ring{
+ position:relative;display:grid;place-items:center;
+ flex:0 0 40px;width:40px;height:40px;color:var(--sf-ui-ink);
+ --sf-checkout-ring:#52a777;
+}
+body.sf-checkout-step-2 .sf-checkout-page #order_review .sf-checkout-shipping-ring>svg{
+ position:absolute;inset:0;width:40px;height:40px;
+ fill:none;stroke-width:2.7;overflow:visible;
+}
+body.sf-checkout-step-2 .sf-checkout-page #order_review .sf-checkout-shipping-track{
+ stroke:rgba(0,0,0,.10);
+}
+body.sf-checkout-step-2 .sf-checkout-page #order_review .sf-checkout-shipping-arc{
+ stroke:var(--sf-checkout-ring);stroke-linecap:round;
+ stroke-dasharray:106.814;stroke-dashoffset:var(--sf-checkout-shipping-offset,106.814);
+ transform:rotate(-90deg);transform-origin:center;
+ transition:stroke-dashoffset .28s ease;
+}
+body.sf-checkout-step-2 .sf-checkout-page #order_review .sf-checkout-shipping-ring .cdl-fsb-ico{
+ position:relative;display:grid;place-items:center;
+ width:19px;height:19px;flex:none;color:inherit;
+}
+body.sf-checkout-step-2 .sf-checkout-page #order_review .sf-checkout-shipping-ring .cdl-fsb-ico svg{
+ display:block;width:18px;height:18px;
+}
+body.sf-checkout-step-2 .sf-checkout-page #order_review .cdl-fsb.is-done .sf-checkout-shipping-ring{
+ color:#358960;
+}
+body.sf-checkout-step-2 .sf-checkout-page #order_review .cdl-fsb.is-warn .sf-checkout-shipping-ring{
+ --sf-checkout-ring:#b77e57;color:#a36c44;
+}
+/* Shipping rates stay selectable Woo form inputs, including multiple rates.
+   Only the surrounding row becomes the compact cart-like delivery summary. */
+body.sf-checkout-step-2 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table{
+ border:0;border-collapse:collapse;width:100%;margin:12px 0 0;
+ background:transparent;
+}
+body.sf-checkout-step-2 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table tfoot tr.shipping,
+body.sf-checkout-step-2 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table tfoot tr.woocommerce-shipping-totals{
+ display:table-row;
+}
+body.sf-checkout-step-2 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table tfoot tr:is(.shipping,.woocommerce-shipping-totals)>:is(th,td){
+ border:0;border-top:1px solid var(--sf-ui-border);
+ padding:15px 0 4px;vertical-align:middle;
+ font-size:13px;line-height:1.5;
+}
+body.sf-checkout-step-2 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table tfoot tr:is(.shipping,.woocommerce-shipping-totals)>th{
+ color:var(--sf-muted);font-weight:500;width:38%;
+}
+body.sf-checkout-step-2 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table tfoot tr:is(.shipping,.woocommerce-shipping-totals)>td{
+ font-weight:600;color:var(--sf-ui-ink);text-align:end;
+}
+body.sf-checkout-step-2 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table #shipping_method,
+body.sf-checkout-step-2 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table .woocommerce-shipping-methods{
+ margin:0;padding:0;list-style:none;
+}
+body.sf-checkout-step-2 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table #shipping_method li,
+body.sf-checkout-step-2 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table .woocommerce-shipping-methods li{
+ margin:0;padding:2px 0;line-height:1.55;
+}
+body.sf-checkout-step-2 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table #shipping_method label,
+body.sf-checkout-step-2 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table .woocommerce-shipping-methods label{
+ cursor:pointer;font-weight:600;
+}
+body.sf-checkout-step-2 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table input[type="radio"]{
+ accent-color:var(--sf-ui-ink);vertical-align:middle;
+}
+/* Default Woo has one shipping rate. If more exist, let native rate options
+   wrap without fixing any price or suppressing method instructions. */
+
+/* Discount code is the existing Woo coupon toggle, now a legible compact
+   disclosure rather than the old two-sentence Woo notice. */
+body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .woocommerce-form-coupon-toggle{
+ margin:0 0 14px;
+}
+body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .woocommerce-form-coupon-toggle .woocommerce-info.sf-checkout-coupon-ready{
+ display:flex;align-items:center;justify-content:space-between;gap:10px;
+ padding:14px 17px!important;
+ border:1px solid var(--sf-ui-border);border-radius:17px;
+ background:var(--sf-ui-surface);box-shadow:none;
+ font-size:0!important;line-height:1.35;
+}
+body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .woocommerce-form-coupon-toggle .showcoupon{
+ display:inline-flex;align-items:center;gap:8px;
+ min-height:44px;max-width:100%;margin:0;padding:0;
+ font-size:14px!important;font-weight:650;line-height:1.35;
+ text-decoration:none;color:var(--sf-ui-ink);
+}
+body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .woocommerce-form-coupon-toggle .showcoupon:before{
+ content:'＋';font-size:18px;font-weight:400;line-height:1;
+ color:var(--sf-ui-ink);
+}
+body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .sf-checkout-coupon-hint{
+ display:block;flex:0 1 45%;min-width:0;
+ font-size:11px;line-height:1.4;font-weight:400;text-align:end;color:var(--sf-muted);
+}
+body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page form.checkout_coupon{
+ /* Woo's own show/hide inline style stays authoritative. */
+ max-width:none;margin:0 0 15px;padding:13px 15px 16px;
+ border:1px solid var(--sf-ui-border);border-radius:17px;
+ background:var(--sf-ui-surface);box-shadow:none;
+}
+/* Woo toggles the form's own inline display property, not a theme control.
+   Do not overrule its display:none or submit handler. */
+body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page form.checkout_coupon[style*="display: none"]{
+ display:none!important;
+}
+body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page form.checkout_coupon>p:first-child{
+ margin:0 0 10px;color:var(--sf-muted);font-size:12px;line-height:1.4;
+}
+body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page form.checkout_coupon .form-row-first{
+ width:calc(100% - 125px);min-width:0;
+}
+body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page form.checkout_coupon .form-row-last{
+ width:115px;min-width:0;
+}
+body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page form.checkout_coupon input{
+ width:100%;min-height:48px;border-radius:13px;font-size:14px;
+}
+body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page form.checkout_coupon button{
+ min-height:48px;border-radius:13px;font-size:13px;
+}
+
+/* Step 3: native order review remains the AJAX-updated Woo table, but is
+   visually split into compact product lines and an arithmetic summary. */
+body.sf-checkout-step-3 .sf-checkout-page #order_review{
+ padding:clamp(16px,3vw,23px);border-radius:20px;
+}
+body.sf-checkout-step-3 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table{
+ margin:0 0 16px;border-collapse:collapse;font-size:13px;
+}
+body.sf-checkout-step-3 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table thead{
+ display:none;
+}
+body.sf-checkout-step-3 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table :is(th,td){
+ padding:10px 0;border-bottom:0;line-height:1.45;
+}
+body.sf-checkout-step-3 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table :is(th,td):last-child{
+ padding-inline-start:10px;
+}
+body.sf-checkout-step-3 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table tbody tr.cart_item td{
+ padding:10px 0 12px;vertical-align:top;
+ border-bottom:1px solid color-mix(in srgb,var(--sf-ui-border) 60%,transparent);
+}
+body.sf-checkout-step-3 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table .product-name{
+ width:66%;font-size:13px;font-weight:520;color:var(--sf-ui-ink);
+}
+body.sf-checkout-step-3 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table .product-quantity{
+ display:block;margin-top:3px;color:var(--sf-muted);font-size:11px;font-weight:400;
+}
+body.sf-checkout-step-3 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table .product-total{
+ font-variant-numeric:tabular-nums;white-space:nowrap;
+ font-weight:550;text-align:end;
+}
+body.sf-checkout-step-3 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table tfoot tr:first-child>:is(th,td){
+ padding-top:17px;
+}
+body.sf-checkout-step-3 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table tfoot tr:not(.order-total)>:is(th,td){
+ font-size:13px;color:var(--sf-muted);font-weight:450;
+}
+body.sf-checkout-step-3 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table tfoot tr:not(.order-total)>td{
+ color:var(--sf-ui-ink);font-weight:550;
+}
+body.sf-checkout-step-3 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table tr.order-total>:is(th,td){
+ border-top:1px solid var(--sf-ui-border);padding-top:16px;
+ font-size:16px;font-weight:600;color:var(--sf-ui-ink);
+}
+@media(max-width:390px){
+ body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .sf-checkout-coupon-hint{
+  font-size:10px;flex-basis:39%;
+ }
+ body.sf-checkout-step-3 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table .product-total{
+  white-space:normal;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ body.sf-checkout-step-2 .sf-checkout-page #order_review .sf-checkout-shipping-arc{transition:none}
+}
