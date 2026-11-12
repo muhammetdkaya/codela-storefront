@@ -349,7 +349,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
   const layout=await page.evaluate(()=>{
    const rect=s=>document.querySelector(s).getBoundingClientRect().toJSON();
    const body=document.querySelector('#sf-cart');
-   return {row:rect('.sf-cart-row'),summary:rect('.sf-subtotal'),cta:rect('.sf-cart-bottom .sf-ui-button'),
+   return {row:rect('.sf-cart-row'),summary:rect('.sf-cart-checkout-command'),cta:rect('.sf-cart-bottom .sf-ui-button'),
     stepper:rect('.sf-stepper'),remove:rect('.sf-remove'),detail:rect('.sf-cart-detail'),photo:rect('.sf-cart-photo'),
     buttons:[...document.querySelectorAll('.sf-stepper button,.sf-remove')].map(el=>el.getBoundingClientRect().toJSON()),
     overflow:body.scrollWidth>body.clientWidth};
