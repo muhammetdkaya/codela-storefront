@@ -96,7 +96,7 @@
             }
             const apply = coupon?.querySelector('button[name="apply_coupon"],button[type="submit"],button.button');
             if (apply) {
-                apply.textContent = read('couponApply', 'Apply');
+                apply.textContent = read('couponApply', document.documentElement.lang.toLowerCase().startsWith('tr') ? 'Uygula' : 'Apply');
                 // Keep button name, type and the original Woo AJAX handler.
             }
             // jQuery toggles the original coupon form inline, sometimes with
@@ -139,12 +139,16 @@
             const textarea = section?.querySelector('textarea[name="order_comments"]');
             const fields = section?.querySelector('.woocommerce-additional-fields__field-wrapper');
             if (!section || !textarea || !fields || section.querySelector('.sf-checkout-note-row')) return;
+            // Never collapse unrelated extension controls inserted into the additional-fields area.
+            if (Array.from(fields.querySelectorAll('input,select,textarea')).some(node =>
+                node !== textarea && node.type !== 'hidden')) return;
             const row = document.createElement('label');
             row.className = 'sf-checkout-note-row';
             row.innerHTML =
                 '<span class="sf-checkout-note-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8.5h8M8 12.5h8M8 16.5h5"/></svg></span>' +
-                '<span class="sf-checkout-note-copy"><strong>' + read('orderNote', 'Sipariş notu') + '</strong>' +
+                '<span class="sf-checkout-note-copy"><strong></strong>' +
                 '<small class="sf-checkout-note-status"></small></span>';
+            row.querySelector('.sf-checkout-note-copy strong').textContent = read('orderNote', 'Sipariş notu');
             const toggle = document.createElement('input');
             toggle.type = 'checkbox';
             toggle.className = 'sf-checkout-note-switch';

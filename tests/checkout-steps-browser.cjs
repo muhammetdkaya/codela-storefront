@@ -124,7 +124,7 @@ function html(markup){
    const couponInput=await page.locator('form.checkout_coupon input[name="coupon_code"]').boundingBox();
    const couponApply=await page.locator('form.checkout_coupon button[name="apply_coupon"]').boundingBox();
    assert(couponInput && couponApply && Math.abs(couponInput.y-couponApply.y)<2,'Coupon field and native Woo apply button stay on one row '+width);
-   assert.equal(await page.locator('form.checkout_coupon button[name="apply_coupon"]').innerText(),'Apply');
+   assert.equal(await page.locator('form.checkout_coupon button[name="apply_coupon"]').innerText(),'Uygula');
    assert.equal(await page.locator('form.checkout_coupon').evaluate(el=>getComputedStyle(el).display),'grid','Expanded coupon uses one compact grid');
    await page.locator('form.checkout_coupon').evaluate(el=>el.style.display='none');
    await page.locator('.woocommerce-form-coupon-toggle:not(.sf-checkout-coupon-open)').waitFor();
