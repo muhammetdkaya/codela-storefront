@@ -550,27 +550,8 @@
   .sf-header.is-search-expanded>.sf-brand{visibility:hidden}
 }
 
-/* Product cart is the same native dialog and cart controller, in a compact
-   header-adjacent sheet; no second cart, cloned rows or fixed bottom dock. */
-@media(max-width:900px){
-  #sf-panel.is-cart-panel.is-product-cart{
-    inset:calc(var(--sf-admin-offset,0px) + 76px) 12px auto;
-    width:calc(100% - 24px);max-width:440px;height:auto;
-    max-height:calc(100dvh - var(--sf-admin-offset,0px) - 100px - env(safe-area-inset-bottom,0px));
-    margin-left:auto;border-radius:var(--sf-ui-control-radius);
-  }
-  #sf-panel.is-product-cart::backdrop{background:rgb(0 0 0 / .16)}
-  #sf-panel.is-product-cart .sf-panel-top{min-height:56px;padding:6px 16px}
-  #sf-panel.is-product-cart .sf-panel-top h2{font-size:17px}
-  #sf-panel.is-product-cart #sf-cart{padding:12px 16px;min-height:0;overflow-y:auto}
-  #sf-panel.is-product-cart .sf-cart-row{grid-template-columns:60px minmax(0,1fr);gap:12px;padding-block:12px}
-  #sf-panel.is-product-cart .sf-cart-row>a,#sf-panel.is-product-cart .sf-cart-detail{min-height:60px}
-  #sf-panel.is-product-cart .sf-cart-row h3{font-size:14px}
-  #sf-panel.is-product-cart .sf-cart-row img{width:60px;height:60px}
-  #sf-panel.is-cart-panel.is-product-cart:has(.sf-mobile-dock) .sf-cart-bottom:not([hidden]),
-  #sf-panel.is-product-cart .sf-cart-bottom{padding:12px 16px 16px}
-  #sf-panel.is-product-cart .sf-mobile-dock{display:none!important}
-}
+/* Product pages share the standard native cart dialog at every viewport.
+   No product-specific compact sheet remains. */
 
 /* First-read placeholders reserve rows without adding entrance animation. */
 .sf-cart-skeleton-row{display:grid;grid-template-columns:80px minmax(0,1fr);gap:16px;padding-block:20px}
@@ -614,4 +595,104 @@
     background:transparent;border-bottom:0;
     padding-right:calc(var(--sf-overlay-gutter) + var(--sf-overlay-control-size) + 8px);
   }
+}
+
+
+/* Unified purchase command: shipping above one tappable subtotal/checkout
+   surface. Native Woo API values and the Codela shipping module remain the
+   only sources of totals, eligibility, remaining amount and percent. */
+#sf-panel.is-cart-panel #sf-cart-progress{
+  margin:0 auto 14px;
+  max-width:780px;
+}
+#sf-panel.is-cart-panel #sf-cart-progress[hidden]{display:none!important}
+#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb{
+  margin:0;padding:0;border:0;border-radius:0;
+  background:transparent;box-shadow:none;
+}
+#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb-text{
+  display:flex;align-items:center;gap:12px;
+  min-height:40px;font-size:13px;line-height:1.4;font-weight:500;
+  color:var(--sf-ui-ink);
+}
+#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb-text>span:last-child{
+  min-width:0;flex:1;overflow-wrap:anywhere;
+}
+#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb-track{display:none!important}
+#sf-panel.is-cart-panel .sf-cart-shipping-ring{
+  --sf-cart-shipping-color:#58a879;
+  position:relative;display:grid;place-items:center;
+  flex:0 0 40px;width:40px;height:40px;
+  color:var(--sf-ui-ink);
+}
+#sf-panel.is-cart-panel .sf-cart-shipping-ring>svg{
+  position:absolute;inset:0;width:40px;height:40px;display:block;overflow:visible;
+  fill:none;stroke-width:2.7;
+}
+#sf-panel.is-cart-panel .sf-cart-shipping-track{
+  stroke:color-mix(in srgb,var(--sf-ui-ink) 11%,transparent);
+}
+#sf-panel.is-cart-panel .sf-cart-shipping-arc{
+  stroke:var(--sf-cart-shipping-color);stroke-linecap:round;
+  stroke-dasharray:106.814;
+  stroke-dashoffset:var(--sf-cart-shipping-offset,106.814);
+  transform:rotate(-90deg);transform-origin:50% 50%;
+  transition:stroke-dashoffset 280ms ease;
+}
+#sf-panel.is-cart-panel .sf-cart-shipping-ring .cdl-fsb-ico{
+  position:relative;inset:auto;display:grid;place-items:center;
+  width:21px;height:21px;flex:none;color:inherit;
+}
+#sf-panel.is-cart-panel .sf-cart-shipping-ring .cdl-fsb-ico svg{
+  width:19px;height:19px;display:block;
+}
+#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb.is-done .sf-cart-shipping-ring{color:#34845d}
+#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb.is-warn .sf-cart-shipping-ring{
+  --sf-cart-shipping-color:#bc8053;color:#a36c44;
+}
+#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb.is-warn .cdl-fsb-text{color:#875b3c}
+#sf-panel.is-cart-panel .sf-cart-bottom{
+  padding-top:16px;border-top:1px solid color-mix(in srgb,var(--sf-ui-border) 60%,transparent);
+}
+#sf-panel.is-cart-panel .sf-cart-bottom .sf-cart-checkout-command{
+  display:flex!important;align-items:center;justify-content:space-between;
+  gap:10px;min-height:72px;height:auto;width:100%;
+  box-sizing:border-box;padding:12px 16px;
+  border-radius:24px!important;margin:0 auto;
+  background:var(--sf-ui-ink,#30312f)!important;color:#fff!important;
+  text-decoration:none!important;white-space:normal;
+  --sf-ui-button-height:auto;--sf-ui-button-font-size:14px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.17),0 5px 12px rgba(0,0,0,.09);
+}
+#sf-panel.is-cart-panel .sf-cart-checkout-command .sf-cart-checkout-total{
+  display:flex;flex-direction:column;align-items:flex-start;
+  gap:3px;min-width:0;flex:1 1 0;
+  color:#fff;text-align:start;white-space:nowrap;
+}
+#sf-panel.is-cart-panel .sf-cart-checkout-total>span{
+  font-size:11px;line-height:1.3;font-weight:400;color:rgba(255,255,255,.74);
+}
+#sf-panel.is-cart-panel .sf-cart-checkout-total>strong{
+  color:#fff;font-size:clamp(19px,5vw,24px);line-height:1.24;
+  font-weight:600;letter-spacing:-.025em;font-variant-numeric:tabular-nums;
+  max-width:100%;overflow-wrap:anywhere;white-space:normal;
+}
+#sf-panel.is-cart-panel .sf-cart-checkout-label{
+  display:inline-flex;align-items:center;justify-content:flex-end;
+  gap:8px;flex:0 1 auto;min-width:0;white-space:nowrap;
+  font-size:14px;line-height:1.3;font-weight:600;color:#fff;
+}
+#sf-panel.is-cart-panel .sf-cart-checkout-label .sf-icon{
+  width:20px;height:20px;flex:none;filter:brightness(0) invert(1);
+}
+#sf-panel.is-cart-panel .sf-cart-checkout-command:focus-visible{
+  outline:2px solid var(--sf-ui-ink);outline-offset:3px;
+}
+@media(max-width:360px){
+  #sf-panel.is-cart-panel .sf-cart-bottom .sf-cart-checkout-command{padding-inline:12px;gap:6px}
+  #sf-panel.is-cart-panel .sf-cart-checkout-label{font-size:12px;gap:5px}
+  #sf-panel.is-cart-panel .sf-cart-checkout-total>strong{font-size:19px}
+}
+@media(prefers-reduced-motion:reduce){
+  #sf-panel.is-cart-panel .sf-cart-shipping-arc{transition:none}
 }
