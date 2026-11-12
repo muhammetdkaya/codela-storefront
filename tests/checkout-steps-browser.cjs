@@ -85,12 +85,14 @@ function html(markup){
    await page.locator('.sf-checkout-note-switch').check();
    assert.equal(await page.locator('#order_comments').isEnabled(),true,'Opening note enables native Woo field');
    assert.equal(await page.locator('.shipping').isVisible(),true,'Native shipping methods in delivery');
-   assert.equal(await page.locator('form.checkout').evaluate(el=>getComputedStyle(el).borderTopStyle),'solid',
-     'Delivery uses a single unified native-form surface');
+   assert.equal(await page.locator('form.checkout').evaluate(el=>getComputedStyle(el).borderTopStyle),'none',
+     'Delivery uses independent surface cards, not one giant form card');
+   assert.equal(await page.locator('#codela-gift-wrap-wrapper').evaluate(el=>getComputedStyle(el).borderTopStyle),'solid',
+     'Gift option has its own compact card border');
    assert.equal(await page.locator('.woocommerce-additional-fields h3').isVisible(),false,
      'Step heading replaces redundant additional-info heading');
-   assert.equal(await page.locator('.codela-gift-wrap').evaluate(el=>getComputedStyle(el).borderTopWidth),'0px',
-     'Gift option no longer adds a separate card border');
+   assert.equal(await page.locator('.codela-gift-wrap').evaluate(el=>getComputedStyle(el).borderTopWidth),'1px',
+     'Gift is a separate compact card');
    assert.equal(await page.locator('.cdl-fsb-slot').isVisible(),true,'Live plugin shipping slot shown only in Delivery');
    assert.equal(await page.locator('.sf-checkout-shipping-ring').count(),1,'Single 40px shipping ring wraps original plugin icon');
    assert.equal(await page.locator('.sf-checkout-shipping-ring').evaluate(el=>getComputedStyle(el).width),'40px');
