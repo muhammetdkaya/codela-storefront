@@ -101,7 +101,7 @@ body.woocommerce-checkout .sf-checkout-page .woocommerce-additional-fields texta
    name changes, duplicate submit controls or payment method reconstruction.
    All rules are gated by JS activation to fail open for block checkout/no JS. */
 body.sf-checkout-steps-active .sf-checkout-page{
- --sf-checkout-fixed-edge:max(16px,calc((100vw - 760px)/2));
+ --sf-checkout-fixed-edge:16px;
  padding-top:12px;
  padding-bottom:calc(132px + env(safe-area-inset-bottom,0px));
 }
@@ -233,6 +233,10 @@ body.sf-checkout-steps-active.sf-checkout-editing .sf-checkout-page #place_order
 }
 /* No parallel purchase button on block checkout / unsupported templates.
    If the adapter never activates, the native single-page payment is untouched. */
+/* Cross-browser fixed container centering: no CSS division (WebKit). */
+@media(min-width:792px){
+ body.sf-checkout-steps-active .sf-checkout-page{--sf-checkout-fixed-edge:calc(50vw - 380px)}
+}
 @media(max-width:380px){
  body.sf-checkout-steps-active .sf-checkout-fixed-footer{padding-inline:12px;gap:6px}
  .sf-checkout-total-value{font-size:18px}
