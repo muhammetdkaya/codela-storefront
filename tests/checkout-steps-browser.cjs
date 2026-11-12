@@ -22,7 +22,7 @@ const native=[
 '<label><input id="ship-to-different-address-checkbox" type="checkbox">Farklı teslimat</label>',
 '<div class="shipping_address" style="display:none"><p class="form-row validate-required"><input name="shipping_first_name" required></p></div></div>',
 '<div class="codela-gift-wrap" id="codela-gift-wrap-wrapper"><label><input type="checkbox" name="codela_gift_wrap" id="codela_gift_wrap">Hediye paketi</label></div>',
-'<div class="woocommerce-additional-fields"><h3>Ek bilgi</h3><textarea name="order_comments" id="order_comments"></textarea></div></div></div>',
+'<div class="woocommerce-additional-fields"><h3>Ek bilgi</h3><div class="woocommerce-additional-fields__field-wrapper"><p class="form-row"><label for="order_comments">Sipariş notu</label><textarea name="order_comments" id="order_comments"></textarea></p></div></div></div></div>',
 '<div class="codela-external-hook"><input name="codela_extra" value="unchanged"></div>',
 '<h3 id="order_review_heading">Sipariş</h3><div id="order_review">',
 '<div class="cdl-fsb-slot"><div class="cdl-fsb cdl-fsb--checkout" role="status"><div class="cdl-fsb-text"><span class="cdl-fsb-ico"><svg viewBox="0 0 24 24"><path d="M2 4h16v15H2z"/></svg></span><span>Ücretsiz kargo için <strong>₺1.900,00</strong> daha ekleyin.</span></div><div class="cdl-fsb-track"><span class="cdl-fsb-fill" style="width:60%"></span></div></div></div>',
