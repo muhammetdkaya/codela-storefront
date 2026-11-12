@@ -65,6 +65,7 @@ jobs:
           node --check tests/passkeys-views-browser.cjs
           php tests/quick-login-markup.php
           node --check theme/codela-storefront/assets/scripts/quick-login.js
+          node --check theme/codela-storefront/assets/scripts/checkout-steps.js
           node tests/quick-login-ui.cjs
           php tests/cart-shipping.php
           node tests/cart-free-shipping.cjs
@@ -116,6 +117,8 @@ jobs:
           TEST_WEBKIT=1 node tests/navigation-feedback-bottom-browser.cjs
           node tests/navigation-browser.cjs
           node tests/checkout-browser.cjs
+          node tests/checkout-steps-browser.cjs
+          TEST_WEBKIT=1 node tests/checkout-steps-browser.cjs
           node tests/catalog-browser.cjs
           node tests/catalog-filters-browser.cjs
           node tests/product-desktop-browser.cjs
