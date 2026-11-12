@@ -62,6 +62,18 @@ function html(markup){
    assert.equal(await page.locator('.sf-checkout-privacy-brief').evaluate(el=>el.previousElementSibling.id),'customer_details','Privacy appears directly under customer address summaries');
    assert.equal(await page.locator('.sf-checkout-privacy-brief').isVisible(),true,'Privacy notice is shown in Details');
    assert.equal(await page.locator('#customer_details .col-2').isVisible(),false);
+   if (await page.locator('#order_review').isVisible()) {
+     console.log('CHECKOUT_DOM_DIAGNOSTIC', JSON.stringify(await page.locator('#order_review').evaluate(el => ({
+       body: document.body.className,
+       style: getComputedStyle(el).display,
+       parent: el.parentElement?.outerHTML.slice(0,180),
+       directParent: el.parentElement?.tagName,
+       parentClass: el.parentElement?.className,
+       insideForm: Boolean(el.closest('form.checkout')),
+       selectorMatch: el.matches('form.checkout > #order_review'),
+       inline: el.getAttribute('style')
+     }))));
+   }
    assert.equal(await page.locator('#order_review').isVisible(),false);
    assert.equal(await page.locator('.woocommerce-form-coupon-toggle').isVisible(),false);
    const footer=await page.locator('.sf-checkout-fixed-footer').boundingBox();
