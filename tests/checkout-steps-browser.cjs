@@ -80,6 +80,10 @@ function html(markup){
    assert.equal(await page.locator('#customer_details .col-1').isVisible(),false);
    assert.equal(await page.locator('#customer_details .col-2').isVisible(),true);
    assert.equal(await page.locator('#codela_gift_wrap').isVisible(),true,'Gift plugin intact');
+   assert.equal(await page.locator('.sf-checkout-note-switch').count(),1,'One optional order note switch');
+   assert.equal(await page.locator('#order_comments').isDisabled(),true,'Closed note is excluded from native form');
+   await page.locator('.sf-checkout-note-switch').check();
+   assert.equal(await page.locator('#order_comments').isEnabled(),true,'Opening note enables native Woo field');
    assert.equal(await page.locator('.shipping').isVisible(),true,'Native shipping methods in delivery');
    assert.equal(await page.locator('form.checkout').evaluate(el=>getComputedStyle(el).borderTopStyle),'solid',
      'Delivery uses a single unified native-form surface');
@@ -98,12 +102,17 @@ function html(markup){
    assert.equal(await page.locator('#payment').isVisible(),false);
    await page.locator('#codela_gift_wrap').check();
    await page.locator('#order_comments').fill('Kapıya bırakın');
+   await page.locator('.sf-checkout-note-switch').uncheck();
+   assert.equal(await page.locator('#order_comments').inputValue(),'Kapıya bırakın','Closing note preserves draft');
+   assert.equal(await page.locator('#order_comments').isDisabled(),true,'Closed note not submitted');
+   await page.locator('.sf-checkout-note-switch').check();
    await page.locator('.sf-checkout-next').click();
    assert.equal(await page.locator('body.sf-checkout-step-3').count(),1);
    assert.equal(await page.locator('#payment').isVisible(),true);
    assert.equal(await page.locator('#order_review_heading').isVisible(),false,
      'Stage title replaces redundant large order heading');
    assert.equal(await page.locator('.woocommerce-form-coupon-toggle').isVisible(),true);
+   assert.equal(await page.locator('.sf-checkout-stepper').evaluate(el=>getComputedStyle(el).position),'relative','Progress is not sticky');
    assert.equal(await page.locator('.cdl-fsb-slot').isVisible(),false,'Shipping progress does not repeat on payment');
    assert.equal(await page.locator('.showcoupon').innerText(),'Add discount code','Native coupon link has clearer copy');
    assert.equal(await page.locator('.sf-checkout-coupon-hint').count(),0,'Redundant coupon hint is removed');
@@ -116,6 +125,7 @@ function html(markup){
    const couponApply=await page.locator('form.checkout_coupon button[name="apply_coupon"]').boundingBox();
    assert(couponInput && couponApply && Math.abs(couponInput.y-couponApply.y)<2,'Coupon field and native Woo apply button stay on one row '+width);
    assert.equal(await page.locator('form.checkout_coupon button[name="apply_coupon"]').innerText(),'Apply');
+   assert.equal(await page.locator('form.checkout_coupon').evaluate(el=>getComputedStyle(el).display),'grid','Expanded coupon uses one compact grid');
    await page.locator('form.checkout_coupon').evaluate(el=>el.style.display='none');
    await page.locator('.woocommerce-form-coupon-toggle:not(.sf-checkout-coupon-open)').waitFor();
    assert.equal(await page.locator('form.checkout_coupon input[name="coupon_code"]').count(),1,'Original Woo coupon input preserved');

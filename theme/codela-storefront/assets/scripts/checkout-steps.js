@@ -131,6 +131,44 @@
             ring.append(icon);
         }
 
+        // Note switch is a disclosure for Woo's ORIGINAL optional order_comments
+        // textarea. When closed, keep the value in memory but exclude it from
+        // Woo's submitted checkout form until the customer opts in again.
+        function refineDeliveryNote() {
+            const section = delivery.querySelector('.woocommerce-additional-fields');
+            const textarea = section?.querySelector('textarea[name="order_comments"]');
+            const fields = section?.querySelector('.woocommerce-additional-fields__field-wrapper');
+            if (!section || !textarea || !fields || section.querySelector('.sf-checkout-note-row')) return;
+            const row = document.createElement('label');
+            row.className = 'sf-checkout-note-row';
+            row.innerHTML =
+                '<span class="sf-checkout-note-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8.5h8M8 12.5h8M8 16.5h5"/></svg></span>' +
+                '<span class="sf-checkout-note-copy"><strong>' + read('orderNote', 'Sipariş notu') + '</strong>' +
+                '<small class="sf-checkout-note-status"></small></span>';
+            const toggle = document.createElement('input');
+            toggle.type = 'checkbox';
+            toggle.className = 'sf-checkout-note-switch';
+            toggle.setAttribute('aria-label', read('orderNote', 'Sipariş notu'));
+            toggle.setAttribute('aria-controls', 'sf-checkout-note-fields');
+            row.append(toggle);
+            fields.id = 'sf-checkout-note-fields';
+            fields.classList.add('sf-checkout-note-fields');
+            section.prepend(row);
+            toggle.checked = Boolean(textarea.value.trim());
+            const sync = () => {
+                section.dataset.sfNoteOpen = toggle.checked ? 'true' : 'false';
+                toggle.setAttribute('aria-expanded', String(toggle.checked));
+                textarea.disabled = !toggle.checked;
+                row.querySelector('.sf-checkout-note-status').textContent =
+                    toggle.checked && textarea.value.trim()
+                        ? read('noteAdded', 'Not eklendi')
+                        : read('noteOptional', 'İsteğe bağlı');
+            };
+            toggle.addEventListener('change', sync);
+            textarea.addEventListener('input', sync);
+            sync();
+        }
+
         function syncTotal() {
             const table = form.querySelector('#order_review .woocommerce-checkout-review-order-table');
             const amount = table?.querySelector('.order-total .woocommerce-Price-amount, .order-total .amount, .order-total td:last-child');
@@ -164,9 +202,12 @@
             error.textContent = '';
             syncTotal();
             refineCoupon();
+            refineDeliveryNote();
             decorateShippingProgress();
             if (scroll) {
-                const top = stepper.getBoundingClientRect().top + window.scrollY - 76;
+                const header = document.querySelector('.sf-shell .sf-header');
+                const headerHeight = header ? header.getBoundingClientRect().height : 68;
+                const top = stepper.getBoundingClientRect().top + window.scrollY - headerHeight - 8;
                 window.scrollTo({top: Math.max(0, top), behavior: 'instant'});
             }
             // Reactivate native gateway/shipping initialization on entering
@@ -250,6 +291,7 @@
                 syncTotal();
                 decorateShippingProgress();
                 refineCoupon();
+                refineDeliveryNote();
             });
             window.jQuery(document.body).on('checkout_error.codelaSteps', function () {
                 const invalid = form.querySelector('.woocommerce-invalid');
