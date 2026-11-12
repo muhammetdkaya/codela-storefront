@@ -65,8 +65,55 @@
         const nextLabel = footer.querySelector('.sf-checkout-next-label');
         const totalLabel = footer.querySelector('.sf-checkout-total-label');
         const totalValue = footer.querySelector('.sf-checkout-total-value');
-        const shippingSection = review.querySelector('.woocommerce-checkout-review-order-table');
         let step = 1;
+
+        // Woo owns the coupon toggle and coupon form. Update only its copy;
+        // the original .showcoupon click handler and AJAX form stay intact.
+        function refineCoupon() {
+            const toggle = woo.querySelector('.woocommerce-form-coupon-toggle');
+            const link = toggle?.querySelector('.showcoupon');
+            if (!link) return;
+            const notice = link.closest('.woocommerce-info') || link.parentElement;
+            if (!notice) return;
+            if (!notice.classList.contains('sf-checkout-coupon-ready')) {
+                // Woo's existing text nodes contain the repetitive prompt.
+                // Keep links, notices, fields and coupon behavior unchanged.
+                for (const child of Array.from(notice.childNodes)) {
+                    if (child.nodeType === Node.TEXT_NODE) child.textContent = '';
+                }
+                notice.classList.add('sf-checkout-coupon-ready');
+            }
+            link.textContent = read('coupon', 'Add discount code');
+            link.setAttribute('aria-label', read('coupon', 'Add discount code'));
+            if (!notice.querySelector('.sf-checkout-coupon-hint')) {
+                const hint = document.createElement('span');
+                hint.className = 'sf-checkout-coupon-hint';
+                hint.textContent = read('couponHint', 'Have a code? Apply it here.');
+                link.after(hint);
+            }
+            const field = woo.querySelector('form.checkout_coupon input[name="coupon_code"]');
+            if (field) field.placeholder = read('couponField', 'Discount code');
+        }
+
+        // The free-shipping extension already supplies threshold, progress,
+        // completion and warning states. Never duplicate that arithmetic.
+        // Woo replaces .cdl-fsb-slot on updated_checkout, so redecorate it.
+        function decorateShippingProgress() {
+            const slot = review.querySelector('.cdl-fsb-slot');
+            const bar = slot?.querySelector('.cdl-fsb');
+            const text = bar?.querySelector('.cdl-fsb-text');
+            const icon = text?.querySelector('.cdl-fsb-ico');
+            if (!bar || !text || !icon || text.querySelector('.sf-checkout-shipping-ring')) return;
+            const pct = Number.parseFloat(bar.querySelector('.cdl-fsb-fill')?.style.width || '0');
+            const fraction = Number.isFinite(pct) ? Math.max(0, Math.min(1, pct / 100)) : 0;
+            const ring = document.createElement('span');
+            ring.className = 'sf-checkout-shipping-ring';
+            ring.setAttribute('aria-hidden', 'true');
+            ring.innerHTML = '<svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="sf-checkout-shipping-track" cx="20" cy="20" r="17"/><circle class="sf-checkout-shipping-arc" cx="20" cy="20" r="17"/></svg>';
+            ring.style.setProperty('--sf-checkout-shipping-offset', (106.814 * (1 - fraction)).toFixed(3));
+            icon.before(ring);
+            ring.append(icon);
+        }
 
         function syncTotal() {
             const table = form.querySelector('#order_review .woocommerce-checkout-review-order-table');
@@ -100,6 +147,8 @@
             error.hidden = true;
             error.textContent = '';
             syncTotal();
+            refineCoupon();
+            decorateShippingProgress();
             if (scroll) {
                 const top = stepper.getBoundingClientRect().top + window.scrollY - 76;
                 window.scrollTo({top: Math.max(0, top), behavior: 'instant'});
@@ -183,6 +232,8 @@
             window.jQuery(document.body).on('updated_checkout.codelaSteps', function () {
                 categorizeExtras();
                 syncTotal();
+                decorateShippingProgress();
+                refineCoupon();
             });
             window.jQuery(document.body).on('checkout_error.codelaSteps', function () {
                 const invalid = form.querySelector('.woocommerce-invalid');
