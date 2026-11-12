@@ -101,7 +101,10 @@
       if (!mounted || drag || settling) return;
       var footerHeight = purchase ? purchase.getBoundingClientRect().height : 0;
       sheet.style.setProperty('--sf-product-footer-height', footerHeight + 'px');
-      sheet.style.setProperty('--sf-product-closed-height', (sheet.querySelector('.sf-product-sheet-header').getBoundingClientRect().height + footerHeight + 8) + 'px');
+      // The balanced A layout reserves 14px between delivery and purchase.
+      // Keep other Woo layouts' 8px rhythm unchanged.
+      var closedGap = layoutA ? 14 : 8;
+      sheet.style.setProperty('--sf-product-closed-height', (sheet.querySelector('.sf-product-sheet-header').getBoundingClientRect().height + footerHeight + closedGap) + 'px');
       var height = sheet.querySelector('.sf-product-sheet-header').getBoundingClientRect().height + footerHeight + 16;
       // CSS owns photo framing before and after mount. Only cache the sheet
       // height for annotations; never feed measured sheet size into photos.
