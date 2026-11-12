@@ -473,7 +473,7 @@ body.single-product div.product form.cart .sf-product-purchase .quantity input.q
   }
   /* Product pages never display the navigation dock, including in dialogs.
      A pending non-product destination may still preview its own real dock. */
-  html:not([data-sf-navigation-bottom="dock"]) body.single-product .sf-shell .sf-mobile-dock{display:none!important}
+  html:not([data-sf-navigation-bottom="dock"]) body.single-product .sf-shell > .sf-mobile-dock{display:none!important}
   body.single-product:not(.sf-product-sheet-ready):has(.sf-mobile-dock){padding-bottom:0}
   /* The document's purchase stays hidden while a modal is open. */
   body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-purchase{visibility:hidden}
