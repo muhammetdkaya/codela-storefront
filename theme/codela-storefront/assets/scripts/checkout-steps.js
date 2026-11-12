@@ -59,6 +59,14 @@
         const headerTitle = stepper.querySelector('.sf-checkout-step-title');
         const index = stepper.querySelector('.sf-checkout-step-index');
         const back = stepper.querySelector('.sf-checkout-step-back');
+        const backIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        backIcon.setAttribute('viewBox', '0 0 24 24');
+        backIcon.setAttribute('aria-hidden', 'true');
+        const backPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        backPath.setAttribute('d', 'm14.5 6-6 6 6 6');
+        backIcon.append(backPath);
+        const backCopy = document.createElement('span');
+        back.append(backIcon, backCopy);
         const error = stepper.querySelector('.sf-checkout-step-error');
         const progress = Array.from(stepper.querySelectorAll('.sf-checkout-step-track > span'));
         const next = footer.querySelector('.sf-checkout-next');
@@ -120,8 +128,15 @@
             // corners: no duplicate toggle, form or custom coupon request.
             if (coupon && toggle && !coupon.dataset.sfCheckoutDisclosureObserved) {
                 coupon.dataset.sfCheckoutDisclosureObserved = '1';
-                const sync = () => toggle.classList.toggle('sf-checkout-coupon-open',
-                    getComputedStyle(coupon).display !== 'none');
+                const sync = () => {
+                    // CSS collapses the form aggressively to avoid a ghost
+                    // strip; read Woo's INLINE display state instead of the
+                    // computed style so the form can reopen on its own.
+                    const inline = coupon.style.display;
+                    const visible = inline ? inline !== 'none' : getComputedStyle(coupon).display !== 'none';
+                    toggle.classList.toggle('sf-checkout-coupon-open', visible);
+                    toggle.closest('.sf-checkout-coupon-shell')?.classList.toggle('sf-checkout-coupon-open', visible);
+                };
                 new MutationObserver(sync).observe(coupon, {attributes:true,attributeFilter:['style','class']});
                 sync();
             }
@@ -254,7 +269,9 @@
             headerTitle.textContent = stepNames[step - 1];
             index.textContent = read('step', 'Step') + ' ' + step + ' / 3';
             back.hidden = step === 1;
-            back.textContent = read('back', 'Back');
+            backCopy.textContent = read('backCompact',
+                document.documentElement.lang.toLowerCase().startsWith('tr') ? 'Önceki' : 'Previous');
+            back.setAttribute('aria-label', read('back', 'Previous step'));
             next.hidden = step === 3;
             if (step !== 3) nextLabel.textContent = nextNames[step - 1];
             totalLabel.textContent = step === 3 ? read('total', 'Total') : read('estimated', 'Estimated total');

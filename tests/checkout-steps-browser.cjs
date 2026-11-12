@@ -93,6 +93,8 @@ function html(markup){
    });
    assert(cardOrder.giftBottom<=cardOrder.noteTop,'Gift and note are ordered as independent sibling cards');
    assert.equal(await page.locator('.sf-checkout-note-switch').count(),1,'One optional order note switch');
+   assert.equal(await page.locator('.sf-checkout-step-back svg').count(),1,'Previous step uses a light arrow');
+   assert.equal(await page.locator('.sf-checkout-step-back').innerText(),'Önceki','Small previous-step copy');
    assert.equal(await page.locator('#order_comments').isDisabled(),true,'Closed note is excluded from native form');
    await page.locator('.sf-checkout-note-switch').check();
    assert.equal(await page.locator('#order_comments').isEnabled(),true,'Opening note enables native Woo field');
@@ -138,6 +140,9 @@ function html(markup){
    assert.equal(await page.locator('.sf-checkout-coupon-shell').count(),1,'Native coupon controls share a shell');
    assert.equal(await page.locator('.sf-checkout-coupon-shell > form.checkout_coupon').count(),1,'Original coupon form shares the same parent card');
    assert.equal(await page.locator('.sf-checkout-coupon-shell').evaluate(el=>getComputedStyle(el).borderTopStyle),'solid','Only shell owns the coupon border');
+   const collapsedHeight=await page.locator('.sf-checkout-coupon-shell').evaluate(el=>el.getBoundingClientRect().height);
+   assert(collapsedHeight<=68,'Collapsed coupon reserves no phantom second row: '+collapsedHeight);
+   assert.equal(await page.locator('form.checkout_coupon').isVisible(),false,'Native coupon form genuinely collapsed');
    assert.equal(await page.locator('.woocommerce-privacy-policy-text').isVisible(),false,'Payment hides redundant privacy paragraph');
    assert.equal(await page.locator('#payment .woocommerce-privacy-policy-text').count(),1,'Native Woo disclosure remains mounted');
    assert.equal(await page.locator('.sf-checkout-stepper').evaluate(el=>getComputedStyle(el).position),'relative','Progress is not sticky');
@@ -149,6 +154,7 @@ function html(markup){
    assert(collapsedCoupon && collapsedCoupon.height<=65,'Coupon summary is a compact single row');
    await page.locator('form.checkout_coupon').evaluate(el=>el.style.display='block');
    await page.locator('.woocommerce-form-coupon-toggle.sf-checkout-coupon-open').waitFor();
+   assert.equal(await page.locator('.sf-checkout-coupon-shell.sf-checkout-coupon-open').count(),1,'Shell follows native Woo disclosure state');
    const couponInput=await page.locator('form.checkout_coupon input[name="coupon_code"]').boundingBox();
    const couponApply=await page.locator('form.checkout_coupon button[name="apply_coupon"]').boundingBox();
    assert(couponInput && couponApply && Math.abs(couponInput.y-couponApply.y)<2,'Coupon field and native Woo apply button stay on one row '+width);
@@ -164,10 +170,14 @@ function html(markup){
    assert.equal(await page.locator('.sf-checkout-coupon-shell .woocommerce-info').evaluate(el=>getComputedStyle(el).borderTopStyle),'none','Coupon heading adds no second border');
    await page.locator('form.checkout_coupon').evaluate(el=>el.style.display='none');
    await page.locator('.woocommerce-form-coupon-toggle:not(.sf-checkout-coupon-open)').waitFor();
+   assert.equal(await page.locator('.sf-checkout-coupon-shell').evaluate(el=>el.getBoundingClientRect().height)<=68,true,'Coupon restores compact height after closing');
    assert.equal(await page.locator('form.checkout_coupon input[name="coupon_code"]').count(),1,'Original Woo coupon input preserved');
    assert.equal(await page.locator('.sf-checkout-shipping-ring').count(),1,'Shipping ring remains mounted for AJAX reentry');
    assert.equal(await page.locator('.woocommerce-checkout-review-order-table thead').isVisible(),false,'Compact summary hides redundant table headings');
    assert.equal(await page.locator('.cart_item').isVisible(),true,'Native products remain visible');
+   assert.equal(await page.locator('#order_review').evaluate(el=>getComputedStyle(el).borderTopStyle),'none','Review outer shell has no card border');
+   assert.equal(await page.locator('.woocommerce-checkout-review-order-table').evaluate(el=>getComputedStyle(el).borderTopStyle),'solid','Order summary has its own card');
+   assert.equal(await page.locator('#payment').evaluate(el=>getComputedStyle(el).backgroundColor),'rgba(0, 0, 0, 0)','Native payment area is visually separate from the summary');
    assert.equal(await page.locator('.order-total').isVisible(),false,'Native total row stays mounted but the persistent footer is its only visible total');
    assert.equal(await page.locator('.order-total').count(),1,'Native total row still feeds the fixed footer');
    assert.equal(await page.locator('.cart_item').isVisible(),true);
