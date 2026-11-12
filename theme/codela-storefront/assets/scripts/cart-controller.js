@@ -101,6 +101,26 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
         }
         host.innerHTML = markup;
         host.hidden = false;
+        // Use ONLY the original Codela module's percentage and merchant copy:
+        // the theme draws a compact 40px circular progress indicator around the
+        // plugin's existing truck / check / warning icon. No threshold math.
+        const bar = host.querySelector?.('.cdl-fsb');
+        const text = bar?.querySelector('.cdl-fsb-text');
+        const icon = text?.querySelector('.cdl-fsb-ico');
+        const fill = bar?.querySelector('.cdl-fsb-fill');
+        if (bar && text && icon) {
+            const rawPercent = Number.parseFloat(fill?.style.width || '');
+            const percent = Number.isFinite(rawPercent) ? Math.max(0, Math.min(100, rawPercent)) : 0;
+            const ring = document.createElement('span');
+            ring.className = 'sf-cart-shipping-ring';
+            ring.setAttribute('aria-hidden', 'true');
+            ring.innerHTML = '<svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><circle class="sf-cart-shipping-track" cx="20" cy="20" r="17"/><circle class="sf-cart-shipping-arc" cx="20" cy="20" r="17"/></svg>';
+            icon.before(ring);
+            ring.append(icon);
+            ring.style.setProperty('--sf-cart-shipping-offset', (106.814 * (1 - percent / 100)).toFixed(3));
+            // The module already marks a completed goal or selected paid rate.
+            bar.classList.toggle('sf-cart-shipping-complete',bar.classList.contains('is-done'));
+        }
     }
     function renderCart(data) {
         // Keep the live badge immediate; closed-cart photos/rows do no work.
