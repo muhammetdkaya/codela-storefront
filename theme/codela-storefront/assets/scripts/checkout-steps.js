@@ -74,15 +74,14 @@
             if (amount) totalValue.textContent = (amount.textContent || '').replace(/\s+/g, ' ').trim() || '—';
         }
 
-        // Woo/payment extensions may inject their own form-level controls.
-        // Give only non-notice, non-hidden direct siblings a presentation phase.
+        // Only classify recognized Woo/Codela content hooks. Unknown checkout
+        // extension nodes MUST remain visible and mounted in every phase:
+        // payment SDKs and anti-fraud integrations sometimes add direct siblings.
         function categorizeExtras() {
-            let phase = 1;
             for (const node of form.children) {
-                if (node.id === 'customer_details') { phase = 2; continue; }
-                if (node.id === 'order_review_heading' || node.id === 'order_review') { phase = 3; continue; }
-                if (node.matches('input[type="hidden"],.woocommerce-NoticeGroup,.woocommerce-error,.woocommerce-message,.woocommerce-info,script,style')) continue;
-                node.dataset.sfCheckoutExtraStep = String(phase);
+                if (node.matches('.woocommerce-billing-fields')) node.dataset.sfCheckoutExtraStep = '1';
+                else if (node.matches('.woocommerce-shipping-fields,.woocommerce-additional-fields,.codela-gift-wrap,#codela-gift-wrap-wrapper'))
+                    node.dataset.sfCheckoutExtraStep = '2';
             }
         }
 
