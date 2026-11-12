@@ -89,6 +89,16 @@
             // two-line card before the customer had even opened the coupon.
             notice.querySelector('.sf-checkout-coupon-hint')?.remove();
             const coupon = woo.querySelector('form.checkout_coupon');
+            // Group Woo's original toggle and ORIGINAL coupon form so theme
+            // or Gutenberg block spacing cannot split them into two cards.
+            // The form, input names and Woo AJAX handlers are not recreated.
+            if (coupon && toggle && coupon.parentElement === toggle.parentElement &&
+                !toggle.closest('.sf-checkout-coupon-shell')) {
+                const shell = document.createElement('div');
+                shell.className = 'sf-checkout-coupon-shell';
+                toggle.parentNode.insertBefore(shell, toggle);
+                shell.append(toggle, coupon);
+            }
             const field = coupon?.querySelector('input[name="coupon_code"]');
             if (field) {
                 field.placeholder = read('couponField', 'Discount code');
@@ -173,6 +183,44 @@
             sync();
         }
 
+        // Woo's existing privacy-policy URL is the authoritative destination.
+        // Present one short link during Details, BEFORE personal data is entered;
+        // keep the native text mounted as a no-link/JS fallback in Payment.
+        function refinePrivacyNotice() {
+            const original = review.querySelector('.woocommerce-privacy-policy-text');
+            const link = original?.querySelector('a[href]');
+            const billingFields = billing.querySelector('.woocommerce-billing-fields__field-wrapper');
+            if (!original || !link || !billingFields || !link.getAttribute('href')) return;
+            const href = link.getAttribute('href');
+            let brief = billing.querySelector('.sf-checkout-privacy-brief');
+            if (!brief) {
+                brief = document.createElement('p');
+                brief.className = 'sf-checkout-privacy-brief';
+                const lead = document.createElement('span');
+                lead.textContent = document.documentElement.lang.toLowerCase().startsWith('tr')
+                    ? 'Kişisel verilerinizin işlenmesi hakkında bilgi için '
+                    : 'For information about processing your personal data, see our ';
+                const anchor = document.createElement('a');
+                anchor.textContent = document.documentElement.lang.toLowerCase().startsWith('tr')
+                    ? 'Gizlilik Politikası'
+                    : 'Privacy Policy';
+                const ending = document.createElement('span');
+                ending.textContent = document.documentElement.lang.toLowerCase().startsWith('tr')
+                    ? ' sayfasını inceleyin.'
+                    : '.';
+                brief.append(lead, anchor, ending);
+                billingFields.after(brief);
+            }
+            const anchor = brief.querySelector('a');
+            anchor.setAttribute('href', href);
+            // Never assign untrusted markup or clone the original legal controls.
+            if (link.hasAttribute('target')) anchor.setAttribute('target', link.getAttribute('target'));
+            else anchor.removeAttribute('target');
+            if (link.hasAttribute('rel')) anchor.setAttribute('rel', link.getAttribute('rel'));
+            else anchor.removeAttribute('rel');
+            original.dataset.sfCheckoutPrivacyMoved = '1';
+        }
+
         function syncTotal() {
             const table = form.querySelector('#order_review .woocommerce-checkout-review-order-table');
             const amount = table?.querySelector('.order-total .woocommerce-Price-amount, .order-total .amount, .order-total td:last-child');
@@ -207,6 +255,7 @@
             syncTotal();
             refineCoupon();
             refineDeliveryNote();
+            refinePrivacyNotice();
             decorateShippingProgress();
             if (scroll) {
                 const header = document.querySelector('.sf-shell .sf-header');
@@ -296,6 +345,7 @@
                 decorateShippingProgress();
                 refineCoupon();
                 refineDeliveryNote();
+                refinePrivacyNotice();
             });
             window.jQuery(document.body).on('checkout_error.codelaSteps', function () {
                 const invalid = form.querySelector('.woocommerce-invalid');

@@ -21,8 +21,8 @@ const native=[
 '<div class="col-2"><div class="woocommerce-shipping-fields"><h3>Teslimat adresi</h3>',
 '<label><input id="ship-to-different-address-checkbox" type="checkbox">Farklı teslimat</label>',
 '<div class="shipping_address" style="display:none"><p class="form-row validate-required"><input name="shipping_first_name" required></p></div></div>',
-'<div class="codela-gift-wrap" id="codela-gift-wrap-wrapper"><label><input type="checkbox" name="codela_gift_wrap" id="codela_gift_wrap">Hediye paketi</label></div>',
-'<div class="woocommerce-additional-fields"><h3>Ek bilgi</h3><div class="woocommerce-additional-fields__field-wrapper"><p class="form-row"><label for="order_comments">Sipariş notu</label><textarea name="order_comments" id="order_comments"></textarea></p></div></div></div></div>',
+'<div class="woocommerce-additional-fields"><h3>Ek bilgi</h3><div class="woocommerce-additional-fields__field-wrapper"><p class="form-row"><label for="order_comments">Sipariş notu</label><textarea name="order_comments" id="order_comments"></textarea></p></div>',
+'<div class="codela-gift-wrap" id="codela-gift-wrap-wrapper"><label><input type="checkbox" name="codela_gift_wrap" id="codela_gift_wrap">Hediye paketi</label></div></div></div></div>',
 '<div class="codela-external-hook"><input name="codela_extra" value="unchanged"></div>',
 '<h3 id="order_review_heading">Sipariş</h3><div id="order_review">',
 '<div class="cdl-fsb-slot"><div class="cdl-fsb cdl-fsb--checkout" role="status"><div class="cdl-fsb-text"><span class="cdl-fsb-ico"><svg viewBox="0 0 24 24"><path d="M2 4h16v15H2z"/></svg></span><span>Ücretsiz kargo için <strong>₺1.900,00</strong> daha ekleyin.</span></div><div class="cdl-fsb-track"><span class="cdl-fsb-fill" style="width:60%"></span></div></div></div>',
@@ -31,7 +31,7 @@ const native=[
 '<tr class="shipping"><th>Gönderim</th><td><label><input type="radio" name="shipping_method[0]" checked value="flat_rate:1">₺100,00</label></td></tr>',
 '<tr class="order-total"><th>Toplam</th><td><strong><span class="woocommerce-Price-amount amount">₺900,00</span></strong></td></tr>',
 '</tfoot></table><div id="payment"><ul class="payment_methods"><li>Ödeme yöntemi bulunamadı</li></ul>',
-'<div class="form-row place-order"><label><input type="checkbox" name="terms" id="terms">Mesafeli satış</label>',
+'<div class="form-row place-order"><div class="woocommerce-privacy-policy-text"><p>Kişisel verileriniz <a href="/gizlilik-politikasi/" class="woocommerce-privacy-policy-link">gizlilik ilkesi</a> sayfamızda açıklanan amaçlar için kullanılacaktır.</p></div><label><input type="checkbox" name="terms" id="terms">Mesafeli satış</label>',
 '<label><input type="checkbox" name="pre_info" id="pre_info">Ön bilgilendirme</label>',
 '<input type="hidden" name="woocommerce-process-checkout-nonce" value="original-nonce">',
 '<button id="place_order" name="woocommerce_checkout_place_order" type="submit">Siparişi onayla</button>',
@@ -57,6 +57,8 @@ function html(markup){
    assert.equal(await page.locator('#place_order').count(),1,'One order submit');
    assert.equal(await page.locator('#place_order').evaluate(el=>el.parentElement.classList.contains('place-order')),true,'Native gateway button stays in place');
    assert.equal(await page.locator('#customer_details .col-1').isVisible(),true);
+   assert.equal(await page.locator('.sf-checkout-privacy-brief a').getAttribute('href'),'/gizlilik-politikasi/','The actual Woo privacy URL appears at first data collection');
+   assert.equal(await page.locator('.sf-checkout-privacy-brief').isVisible(),true,'Privacy notice is shown in Details');
    assert.equal(await page.locator('#customer_details .col-2').isVisible(),false);
    assert.equal(await page.locator('#order_review').isVisible(),false);
    assert.equal(await page.locator('.woocommerce-form-coupon-toggle').isVisible(),false);
@@ -80,6 +82,14 @@ function html(markup){
    assert.equal(await page.locator('#customer_details .col-1').isVisible(),false);
    assert.equal(await page.locator('#customer_details .col-2').isVisible(),true);
    assert.equal(await page.locator('#codela_gift_wrap').isVisible(),true,'Gift plugin intact');
+   assert.equal(await page.locator('.woocommerce-additional-fields').evaluate(el=>getComputedStyle(el).borderTopStyle),'none','The note parent must not surround the gift');
+   assert.equal(await page.locator('.sf-checkout-note-row').evaluate(el=>getComputedStyle(el).borderTopStyle),'solid','The note is its own compact card');
+   const cardOrder=await page.evaluate(()=>{
+      const gift=document.querySelector('#codela-gift-wrap-wrapper').getBoundingClientRect();
+      const note=document.querySelector('.sf-checkout-note-row').getBoundingClientRect();
+      return {giftBottom:gift.bottom,noteTop:note.top};
+   });
+   assert(cardOrder.giftBottom<=cardOrder.noteTop,'Gift and note are ordered as independent sibling cards');
    assert.equal(await page.locator('.sf-checkout-note-switch').count(),1,'One optional order note switch');
    assert.equal(await page.locator('#order_comments').isDisabled(),true,'Closed note is excluded from native form');
    await page.locator('.sf-checkout-note-switch').check();
@@ -114,6 +124,9 @@ function html(markup){
    assert.equal(await page.locator('#order_review_heading').isVisible(),false,
      'Stage title replaces redundant large order heading');
    assert.equal(await page.locator('.woocommerce-form-coupon-toggle').isVisible(),true);
+   assert.equal(await page.locator('.sf-checkout-coupon-shell').count(),1,'Native coupon controls share a shell');
+   assert.equal(await page.locator('.woocommerce-privacy-policy-text').isVisible(),false,'Payment hides redundant privacy paragraph');
+   assert.equal(await page.locator('#payment .woocommerce-privacy-policy-text').count(),1,'Native Woo disclosure remains mounted');
    assert.equal(await page.locator('.sf-checkout-stepper').evaluate(el=>getComputedStyle(el).position),'relative','Progress is not sticky');
    assert.equal(await page.locator('.cdl-fsb-slot').isVisible(),false,'Shipping progress does not repeat on payment');
    assert.equal(await page.locator('.showcoupon').innerText(),'Add discount code','Native coupon link has clearer copy');
@@ -128,13 +141,20 @@ function html(markup){
    assert(couponInput && couponApply && Math.abs(couponInput.y-couponApply.y)<2,'Coupon field and native Woo apply button stay on one row '+width);
    assert.equal(await page.locator('form.checkout_coupon button[name="apply_coupon"]').innerText(),'Uygula');
    assert.equal(await page.locator('form.checkout_coupon').evaluate(el=>getComputedStyle(el).display),'grid','Expanded coupon uses one compact grid');
+   const couponGap=await page.evaluate(()=>{
+      const header=document.querySelector('.woocommerce-form-coupon-toggle').getBoundingClientRect();
+      const form=document.querySelector('form.checkout_coupon').getBoundingClientRect();
+      return form.top-header.bottom;
+   });
+   assert(Math.abs(couponGap)<2,'Coupon entry directly joins its header with no empty gap: '+couponGap);
    await page.locator('form.checkout_coupon').evaluate(el=>el.style.display='none');
    await page.locator('.woocommerce-form-coupon-toggle:not(.sf-checkout-coupon-open)').waitFor();
    assert.equal(await page.locator('form.checkout_coupon input[name="coupon_code"]').count(),1,'Original Woo coupon input preserved');
    assert.equal(await page.locator('.sf-checkout-shipping-ring').count(),1,'Shipping ring remains mounted for AJAX reentry');
    assert.equal(await page.locator('.woocommerce-checkout-review-order-table thead').isVisible(),false,'Compact summary hides redundant table headings');
    assert.equal(await page.locator('.cart_item').isVisible(),true,'Native products remain visible');
-   assert.equal(await page.locator('.order-total').isVisible(),true,'Native summary total remains visible');
+   assert.equal(await page.locator('.order-total').isVisible(),false,'Native total row stays mounted but the persistent footer is its only visible total');
+   assert.equal(await page.locator('.order-total').count(),1,'Native total row still feeds the fixed footer');
    assert.equal(await page.locator('.cart_item').isVisible(),true);
    assert.equal(await page.locator('#place_order').isVisible(),true);
    assert.equal(await page.locator('#place_order').getAttribute('type'),'submit');

@@ -443,12 +443,28 @@ body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #customer_det
 body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page :is(.woocommerce-shipping-fields,.woocommerce-additional-fields){
  margin:0!important;
 }
-body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #codela-gift-wrap-wrapper.codela-gift-wrap,
-body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page .woocommerce-additional-fields:has(.sf-checkout-note-row){
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #codela-gift-wrap-wrapper.codela-gift-wrap{
  margin:0 0 10px!important;padding:0!important;
  border:1px solid var(--sf-ui-border)!important;
  border-radius:17px!important;background:var(--sf-ui-surface)!important;
  box-shadow:0 3px 12px rgba(0,0,0,.018)!important;overflow:hidden;
+}
+/* Woo adds Codela's gift module AFTER the notes, INSIDE additional-fields.
+   Never put a card around that parent; it nests the gift card inside the note. */
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page .woocommerce-additional-fields:has(>.sf-checkout-note-row){
+ display:flex!important;flex-direction:column!important;align-items:stretch!important;
+ gap:0!important;margin:0!important;padding:0!important;border:0!important;
+ border-radius:0!important;background:transparent!important;box-shadow:none!important;
+ overflow:visible!important;
+}
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page .woocommerce-additional-fields>#codela-gift-wrap-wrapper{
+ order:-2;
+}
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page .woocommerce-additional-fields>.sf-checkout-note-row{
+ order:-1;
+}
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page .woocommerce-additional-fields>.sf-checkout-note-fields{
+ order:0;
 }
 body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #codela-gift-wrap-wrapper .codela-gift-wrap__row{
  display:grid!important;grid-template-columns:24px minmax(0,1fr) 42px!important;
@@ -504,7 +520,12 @@ body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #codela-gift-
 }
 body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page .sf-checkout-note-row{
  display:grid;grid-template-columns:24px minmax(0,1fr) 42px;gap:12px;
- align-items:center;min-height:62px;padding:11px 15px;margin:0;cursor:pointer;
+ align-items:center;min-height:62px;padding:11px 15px;margin:0 0 10px!important;
+ border:1px solid var(--sf-ui-border);border-radius:17px;
+ background:var(--sf-ui-surface);box-shadow:0 3px 12px rgba(0,0,0,.018);cursor:pointer;
+}
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page .woocommerce-additional-fields[data-sf-note-open="true"]>.sf-checkout-note-row{
+ margin-bottom:0!important;border-radius:17px 17px 0 0;border-bottom-color:transparent;
 }
 body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page .sf-checkout-note-icon{
  display:grid;place-items:center;width:24px;height:26px;color:var(--sf-ui-ink);
@@ -523,13 +544,16 @@ body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page .sf-checkout-
  font-size:12px;color:var(--sf-muted);line-height:1.35;
 }
 body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page .woocommerce-additional-fields__field-wrapper.sf-checkout-note-fields{
- padding:0 15px 0!important;margin:0!important;box-sizing:border-box;
+ padding:0 15px!important;margin:0!important;box-sizing:border-box;
  display:grid;grid-template-rows:0fr;opacity:0;visibility:hidden;
+ border:0!important;border-radius:0;
  transition:grid-template-rows .25s ease,opacity .2s ease,visibility .25s ease;
 }
 body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page .woocommerce-additional-fields[data-sf-note-open="true"] .sf-checkout-note-fields{
  grid-template-rows:1fr;opacity:1;visibility:visible;
- padding-bottom:14px!important;
+ padding-bottom:14px!important;margin-bottom:10px!important;
+ border:1px solid var(--sf-ui-border)!important;border-top:0!important;
+ border-radius:0 0 17px 17px;background:var(--sf-ui-surface);
 }
 body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page .sf-checkout-note-fields>.form-row{
  min-height:0!important;overflow:hidden;margin:0!important;padding:0!important;
@@ -561,6 +585,14 @@ body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #order_review
 
 /* Coupon: a single compact disclosure surface. Woo still toggles the
    ORIGINAL form's inline display and handles its own AJAX submission. */
+body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .sf-checkout-coupon-shell{
+ display:flex!important;flex-direction:column!important;gap:0!important;
+ align-items:stretch!important;width:100%!important;max-width:100%;
+ margin:0 0 12px!important;padding:0!important;
+}
+body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .sf-checkout-coupon-shell>.woocommerce-form-coupon-toggle{
+ margin:0!important;flex:none!important;
+}
 body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .woocommerce-form-coupon-toggle{
  margin:0 0 12px!important;
 }
@@ -595,6 +627,9 @@ body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page form.checkout
  border:1px solid var(--sf-ui-border)!important;border-top:0!important;
  border-radius:0 0 17px 17px!important;background:var(--sf-ui-surface)!important;
  box-shadow:none!important;min-height:0!important;
+}
+body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .sf-checkout-coupon-shell>form.checkout_coupon{
+ margin:0!important;max-width:none!important;align-self:stretch!important;
 }
 /* Keep inline Woo display:none authoritative: never turn the hidden form on. */
 body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .woocommerce-form-coupon-toggle.sf-checkout-coupon-open + form.checkout_coupon:not([style*="display:none"]):not([style*="display: none"]){
@@ -715,4 +750,22 @@ body.sf-checkout-steps-active .sf-checkout-page :is(.woocommerce-notices-wrapper
 body.sf-checkout-steps-active .sf-checkout-page .sf-checkout-stepper{
  position:relative!important;top:auto!important;margin-top:0!important;
  margin-bottom:14px!important;
+}
+
+/* 0.1.296: private-data transparency in Details, with the original Woo
+   paragraph retained only as fallback when no privacy link is available. */
+body.sf-checkout-steps-active.sf-checkout-step-1 .sf-checkout-page .sf-checkout-privacy-brief{
+ margin:14px 0 4px;padding:0;color:var(--sf-muted);
+ font-size:12px;line-height:1.6;
+}
+body.sf-checkout-steps-active .sf-checkout-page .sf-checkout-privacy-brief a{
+ color:var(--sf-ui-ink);text-decoration:underline;text-underline-offset:3px;
+}
+body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page #payment .woocommerce-privacy-policy-text[data-sf-checkout-privacy-moved="1"]{
+ display:none!important;
+}
+/* The persistent order action already repeats the real, AJAX-updated total.
+   Keep the native table row in the DOM for calculations, not as a duplicate. */
+body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table tr.order-total{
+ display:none!important;
 }
