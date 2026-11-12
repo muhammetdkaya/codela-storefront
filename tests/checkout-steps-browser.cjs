@@ -22,7 +22,7 @@ const native=[
 '<label><input id="ship-to-different-address-checkbox" type="checkbox">Farklı teslimat</label>',
 '<div class="shipping_address" style="display:none"><p class="form-row validate-required"><input name="shipping_first_name" required></p></div></div>',
 '<div class="woocommerce-additional-fields"><h3>Ek bilgi</h3><div class="woocommerce-additional-fields__field-wrapper"><p class="form-row"><label for="order_comments">Sipariş notu</label><textarea name="order_comments" id="order_comments"></textarea></p></div>',
-'<div class="codela-gift-wrap" id="codela-gift-wrap-wrapper"><label><input type="checkbox" name="codela_gift_wrap" id="codela_gift_wrap">Hediye paketi</label><div class="codela-gift-wrap__note" style="display:none"><label for="codela_gift_note">Hediye Notu</label><textarea id="codela_gift_note" name="codela_gift_note" rows="2"></textarea></div></div></div></div>',
+'<div class="codela-gift-wrap" id="codela-gift-wrap-wrapper"><label><input type="checkbox" name="codela_gift_wrap" id="codela_gift_wrap">Hediye paketi</label><div class="codela-gift-wrap__note" style="display:none"><label for="codela_gift_note">Hediye Notu</label><textarea id="codela_gift_note" name="codela_gift_note" rows="2"></textarea></div></div></div></div></div>',
 '<div class="codela-external-hook"><input name="codela_extra" value="unchanged"></div>',
 '<h3 id="order_review_heading">Sipariş</h3><div id="order_review">',
 '<div class="cdl-fsb-slot"><div class="cdl-fsb cdl-fsb--checkout" role="status"><div class="cdl-fsb-text"><span class="cdl-fsb-ico"><svg viewBox="0 0 24 24"><path d="M2 4h16v15H2z"/></svg></span><span>Ücretsiz kargo için <strong>₺1.900,00</strong> daha ekleyin.</span></div><div class="cdl-fsb-track"><span class="cdl-fsb-fill" style="width:60%"></span></div></div></div>',
@@ -62,18 +62,6 @@ function html(markup){
    assert.equal(await page.locator('.sf-checkout-privacy-brief').evaluate(el=>el.previousElementSibling.id),'customer_details','Privacy appears directly under customer address summaries');
    assert.equal(await page.locator('.sf-checkout-privacy-brief').isVisible(),true,'Privacy notice is shown in Details');
    assert.equal(await page.locator('#customer_details .col-2').isVisible(),false);
-   if (await page.locator('#order_review').isVisible()) {
-     console.log('CHECKOUT_DOM_DIAGNOSTIC', JSON.stringify(await page.locator('#order_review').evaluate(el => ({
-       body: document.body.className,
-       style: getComputedStyle(el).display,
-       parent: el.parentElement?.outerHTML.slice(0,180),
-       directParent: el.parentElement?.tagName,
-       parentClass: el.parentElement?.className,
-       insideForm: Boolean(el.closest('form.checkout')),
-       selectorMatch: el.matches('form.checkout > #order_review'),
-       inline: el.getAttribute('style')
-     }))));
-   }
    assert.equal(await page.locator('#order_review').isVisible(),false);
    assert.equal(await page.locator('.woocommerce-form-coupon-toggle').isVisible(),false);
    const footer=await page.locator('.sf-checkout-fixed-footer').boundingBox();
