@@ -11,6 +11,11 @@
     const intro = query(root,'.sf-account-intro');
     const loginForm = query(root,'form.woocommerce-form-login');
     if (!intro?.dataset.authLookupUrl || !loginForm || root.classList.contains('sf-smart-auth-active')) return;
+    // WooCommerce can nest .woocommerce wrappers (especially page/overlay shells).
+    // Only the wrapper that OWNS both the intro and the native form may create
+    // the progressive field. Otherwise the outer wrapper creates a duplicate.
+    if (intro.closest('.woocommerce') !== root || loginForm.closest('.woocommerce') !== root) return;
+    if (query(root,':scope > .sf-smart-auth')) return;
     const container = query(root,'#customer_login');
     const registerForm = query(root,'form.woocommerce-form-register');
     const loginUser = query(loginForm,'input[name="username"],input#username');
