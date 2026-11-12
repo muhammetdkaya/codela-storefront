@@ -10,7 +10,7 @@ const source=fs.readFileSync(root+'scripts/checkout-steps.js','utf8');
 const native=[
 '<div class="woocommerce">',
 '<div class="woocommerce-form-coupon-toggle"><div class="woocommerce-info">Kuponunuz var mı? <a href="#" class="showcoupon">Kupon kodu</a></div></div>',
-'<form class="checkout_coupon" style="display:none"><input name="coupon_code"></form>',
+'<form class="checkout_coupon" style="display:none"><p class="form-row form-row-first"><input name="coupon_code" aria-label="Coupon"></p><p class="form-row form-row-last"><button type="submit" name="apply_coupon">Kupon kullan</button></p></form>',
 '<form class="checkout woocommerce-checkout" action="/pay" method="post">',
 '<div id="customer_details" class="col2-set">',
 '<div class="col-1"><div class="woocommerce-billing-fields"><h3>Fatura</h3><div class="woocommerce-billing-fields__field-wrapper">',
@@ -22,7 +22,7 @@ const native=[
 '<label><input id="ship-to-different-address-checkbox" type="checkbox">Farklı teslimat</label>',
 '<div class="shipping_address" style="display:none"><p class="form-row validate-required"><input name="shipping_first_name" required></p></div></div>',
 '<div class="codela-gift-wrap" id="codela-gift-wrap-wrapper"><label><input type="checkbox" name="codela_gift_wrap" id="codela_gift_wrap">Hediye paketi</label></div>',
-'<div class="woocommerce-additional-fields"><textarea name="order_comments" id="order_comments"></textarea></div></div></div>',
+'<div class="woocommerce-additional-fields"><h3>Ek bilgi</h3><textarea name="order_comments" id="order_comments"></textarea></div></div></div>',
 '<div class="codela-external-hook"><input name="codela_extra" value="unchanged"></div>',
 '<h3 id="order_review_heading">Sipariş</h3><div id="order_review">',
 '<div class="cdl-fsb-slot"><div class="cdl-fsb cdl-fsb--checkout" role="status"><div class="cdl-fsb-text"><span class="cdl-fsb-ico"><svg viewBox="0 0 24 24"><path d="M2 4h16v15H2z"/></svg></span><span>Ücretsiz kargo için <strong>₺1.900,00</strong> daha ekleyin.</span></div><div class="cdl-fsb-track"><span class="cdl-fsb-fill" style="width:60%"></span></div></div></div>',
@@ -81,6 +81,12 @@ function html(markup){
    assert.equal(await page.locator('#customer_details .col-2').isVisible(),true);
    assert.equal(await page.locator('#codela_gift_wrap').isVisible(),true,'Gift plugin intact');
    assert.equal(await page.locator('.shipping').isVisible(),true,'Native shipping methods in delivery');
+   assert.equal(await page.locator('form.checkout').evaluate(el=>getComputedStyle(el).borderTopStyle),'solid',
+     'Delivery uses a single unified native-form surface');
+   assert.equal(await page.locator('.woocommerce-additional-fields h3').isVisible(),false,
+     'Step heading replaces redundant additional-info heading');
+   assert.equal(await page.locator('.codela-gift-wrap').evaluate(el=>getComputedStyle(el).borderTopWidth),'0px',
+     'Gift option no longer adds a separate card border');
    assert.equal(await page.locator('.cdl-fsb-slot').isVisible(),true,'Live plugin shipping slot shown only in Delivery');
    assert.equal(await page.locator('.sf-checkout-shipping-ring').count(),1,'Single 40px shipping ring wraps original plugin icon');
    assert.equal(await page.locator('.sf-checkout-shipping-ring').evaluate(el=>getComputedStyle(el).width),'40px');
@@ -95,10 +101,23 @@ function html(markup){
    await page.locator('.sf-checkout-next').click();
    assert.equal(await page.locator('body.sf-checkout-step-3').count(),1);
    assert.equal(await page.locator('#payment').isVisible(),true);
+   assert.equal(await page.locator('#order_review_heading').isVisible(),false,
+     'Stage title replaces redundant large order heading');
    assert.equal(await page.locator('.woocommerce-form-coupon-toggle').isVisible(),true);
    assert.equal(await page.locator('.cdl-fsb-slot').isVisible(),false,'Shipping progress does not repeat on payment');
    assert.equal(await page.locator('.showcoupon').innerText(),'Add discount code','Native coupon link has clearer copy');
-   assert.equal(await page.locator('.sf-checkout-coupon-hint').isVisible(),true,'Short discount hint is visible');
+   assert.equal(await page.locator('.sf-checkout-coupon-hint').count(),0,'Redundant coupon hint is removed');
+   assert.equal(await page.locator('.showcoupon').isVisible(),true,'One line coupon toggle is visible');
+   const collapsedCoupon=await page.locator('.woocommerce-form-coupon-toggle .woocommerce-info').boundingBox();
+   assert(collapsedCoupon && collapsedCoupon.height<=65,'Coupon summary is a compact single row');
+   await page.locator('form.checkout_coupon').evaluate(el=>el.style.display='block');
+   await page.locator('.woocommerce-form-coupon-toggle.sf-checkout-coupon-open').waitFor();
+   const couponInput=await page.locator('form.checkout_coupon input[name="coupon_code"]').boundingBox();
+   const couponApply=await page.locator('form.checkout_coupon button[name="apply_coupon"]').boundingBox();
+   assert(couponInput && couponApply && Math.abs(couponInput.y-couponApply.y)<2,'Coupon field and native Woo apply button stay on one row '+width);
+   assert.equal(await page.locator('form.checkout_coupon button[name="apply_coupon"]').innerText(),'Apply');
+   await page.locator('form.checkout_coupon').evaluate(el=>el.style.display='none');
+   await page.locator('.woocommerce-form-coupon-toggle:not(.sf-checkout-coupon-open)').waitFor();
    assert.equal(await page.locator('form.checkout_coupon input[name="coupon_code"]').count(),1,'Original Woo coupon input preserved');
    assert.equal(await page.locator('.sf-checkout-shipping-ring').count(),1,'Shipping ring remains mounted for AJAX reentry');
    assert.equal(await page.locator('.woocommerce-checkout-review-order-table thead').isVisible(),false,'Compact summary hides redundant table headings');
