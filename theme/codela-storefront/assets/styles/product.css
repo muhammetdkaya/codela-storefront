@@ -498,7 +498,7 @@ body.single-product .sf-product-plugin-footer .cdl-wa-float{
 body.single-product:has(#sf-panel[open],.pswp--open) .sf-product-plugin-footer{visibility:hidden}
 
 /* Progressive mobile composition. Without JS the native document stays usable. */
-.sf-product-sheet-header{position:relative;flex:none;min-height:64px;padding:48px 16px 8px}
+.sf-product-sheet-header{position:relative;flex:none;min-height:64px;padding:44px 16px 12px}
 /* A single genuine SVG path morphs via JS rAF; never two rounded halves. */
 .sf-product-sheet-handle{
   position:absolute;top:10px;left:50%;width:38px;height:18px;
@@ -707,7 +707,7 @@ body.single-product .stock.in-stock{display:none}
        a test product with extra price/urgency lines. */
     grid-template-rows:minmax(var(--sf-ui-product-heading-height),max-content);grid-auto-rows:max-content;align-content:start;align-items:center;
     column-gap:10px;row-gap:0;overflow:hidden;box-sizing:border-box;
-    padding:48px 16px 0;margin:0 auto!important;width:calc(100% - var(--sf-ui-bottom-bar-inset) - var(--sf-ui-bottom-bar-inset))!important;max-width:var(--sf-ui-bottom-bar-max-width);
+    padding:44px 16px 4px;margin:0 auto!important;width:calc(100% - var(--sf-ui-bottom-bar-inset) - var(--sf-ui-bottom-bar-inset))!important;max-width:var(--sf-ui-bottom-bar-max-width);
     height:max-content;
     transition:none;
   }
@@ -980,7 +980,7 @@ html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:
   body.sf-product-sheet-ready .sf-product-gallery-rail:not([hidden]){display:flex}
   body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-rail-arrow{display:grid}
   body.sf-product-sheet-ready .sf-product-gallery-expand{display:grid}
-  /* Header top padding remains 28px through open/drag/close. An 8px change
+  /* Header top padding remains 44px through open/drag/close. An 8px change
      mid-gesture used to resize the title and disturb the purchase baseline. */
   body.sf-product-sheet-ready .sf-product-sheet.is-expanded .sf-product-sheet-body > .sf-product-information{margin-top:12px}
   body.sf-product-sheet-open :is(.sf-product-gallery-rail,.sf-product-gallery-expand),
