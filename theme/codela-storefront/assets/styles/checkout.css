@@ -210,7 +210,7 @@ body.sf-checkout-step-3 .sf-checkout-page #place_order{
  bottom:calc(24px + env(safe-area-inset-bottom,0px))!important;
  left:auto!important;top:auto!important;float:none!important;
  width:auto!important;max-width:calc(53vw - 27px);height:52px!important;min-height:52px!important;
- display:flex!important;align-items:center;justify-content:flex-end;
+ display:inline-flex;align-items:center;justify-content:flex-end;
  gap:6px;padding:0 3px!important;margin:0!important;
  background:transparent!important;border:0!important;border-radius:12px!important;
  color:#fff!important;box-shadow:none!important;
