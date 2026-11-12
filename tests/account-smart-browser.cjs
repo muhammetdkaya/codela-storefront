@@ -66,6 +66,13 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or register
      res.writeHead(status,{'Content-Type':type,'Cache-Control':'no-store'});res.end(body);
    };
    if(req.url==='/'&&req.method==='GET')return send(200,html,'text/html; charset=utf-8');
+   if(req.url==='/nested'&&req.method==='GET'){
+     // A surrounding Woo shortcode wrapper must NOT create a second email pill.
+     const nestedHtml=html
+       .replace('<div class="woocommerce sf-overlay-auth"', '<div class="woocommerce" data-fixture-outer="1"><div class="woocommerce sf-overlay-auth"')
+       .replace('</div><div class="sf-mobile-dock">Dock', '</div></div><div class="sf-mobile-dock">Dock');
+     return send(200,nestedHtml,'text/html; charset=utf-8');
+   }
    if(req.url==='/auth.js')return send(200,auth,'text/javascript');
    if(req.url==='/auth-smart.js')return send(200,smart,'text/javascript');
    if(req.url==='/state'&&req.method==='POST')
@@ -91,6 +98,17 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or register
  try{
    const page=await browser.newPage({viewport:{width:390,height:844}});
    await page.goto(url);
+   const nestedPage=await browser.newPage({viewport:{width:390,height:844}});
+   await nestedPage.goto(url+'nested');
+   assert.equal(await nestedPage.locator('.sf-smart-identity').count(),1,
+     'Nested WooCommerce wrappers must create exactly one smart email field');
+   assert.equal(await nestedPage.locator('.woocommerce.sf-smart-auth-active').count(),1,
+     'Only the form-owning WooCommerce wrapper initializes smart auth');
+   assert.equal(await nestedPage.locator('.sf-smart-mail-icon').count(),1,
+     'Nested wrappers must not duplicate the envelope icon');
+   assert.equal(await nestedPage.locator('.sf-smart-identity').isVisible(),true,
+     'The one smart identity remains visible in nested WooCommerce markup');
+   await nestedPage.close();
    const uid=page.locator('.sf-smart-identity');
    assert(await uid.isVisible(),'Initial page exposes one shared identity input');
    assert.equal(await page.locator('.u-column1').isVisible(),false,'Native login stays folded');
