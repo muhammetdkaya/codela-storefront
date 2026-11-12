@@ -234,7 +234,7 @@ class Tests(unittest.TestCase):
         self.assertIn('if (dock.parentElement === getDialog()) dockHome.after(dock);',js)
         self.assertIn('mountDock();',(build.ROOT/'assets/scripts/overlay-controller.js').read_text())
         self.assertIn('restoreDock();',(build.ROOT/'assets/scripts/overlay-controller.js').read_text())
-        self.assertIn("dock.hidden = name === 'menu' || (name === 'cart' && document.body.classList.contains('single-product'));",(build.ROOT/'assets/scripts/overlay-controller.js').read_text())
+        self.assertIn("dock.hidden = name === 'menu';",(build.ROOT/'assets/scripts/overlay-controller.js').read_text())
         self.assertIn('markDockActive(name);',(build.ROOT/'assets/scripts/overlay-controller.js').read_text())
         self.assertIn('installDockGestures(mobileDock());',js)
         self.assertIn('function dockCandidate(',js)
