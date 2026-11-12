@@ -22,7 +22,8 @@ assert.equal((output.match(/sf-ui-icon-button--soft/g)||[]).length,3,'Menu and b
 assert.equal((output.match(/sf-ui-icon-button--clear/g)||[]).length,1,'Search clear uses common control');
 assert.match(output,/<a[^>]*data-panel="cart"[^>]*>[\s\S]*?sf-badge/,'Cart badge preserved');
 assert.match(output,/sf-ui-nav-tab/,'Mobile tabs use named UI component');
-assert.match(output,/class="sf-primary sf-ui-button sf-ui-button--primary"/,'Checkout CTA uses same primary button');
+assert.match(output,/class="sf-cart-checkout-command sf-ui-button sf-ui-button--primary/,'The unified checkout command retains the shared primary Button');
+assert.match(output,/class="sf-cart-checkout-total"/,'Native subtotal stays inside the checkout action');
 const cssBase=fs.readFileSync('theme/codela-storefront/assets/storefront.css','utf8');
 const cssUI=fs.readFileSync('theme/codela-storefront/assets/styles/components.css','utf8');
 const tokens=fs.readFileSync('theme/codela-storefront/assets/styles/tokens.css','utf8');
