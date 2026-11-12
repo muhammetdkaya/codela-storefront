@@ -232,6 +232,7 @@ add_action( 'wp_enqueue_scripts', function() {
             'coupon' => __( 'Add discount code', 'codela-storefront' ),
             'couponHint' => __( 'Have a code? Apply it here.', 'codela-storefront' ),
             'couponField' => __( 'Discount code', 'codela-storefront' ),
+            'privacyUrl' => function_exists( 'get_privacy_policy_url' ) ? esc_url_raw( (string) get_privacy_policy_url() ) : '',
         ] ) . ';', 'before' );
     }
     if ( function_exists( 'is_account_page' ) && is_account_page() ) {

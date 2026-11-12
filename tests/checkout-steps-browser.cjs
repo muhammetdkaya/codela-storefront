@@ -58,6 +58,8 @@ function html(markup){
    assert.equal(await page.locator('#place_order').evaluate(el=>el.parentElement.classList.contains('place-order')),true,'Native gateway button stays in place');
    assert.equal(await page.locator('#customer_details .col-1').isVisible(),true);
    assert.equal(await page.locator('.sf-checkout-privacy-brief a').getAttribute('href'),'/gizlilik-politikasi/','The actual Woo privacy URL appears at first data collection');
+   assert.equal(await page.locator('.sf-checkout-privacy-brief').evaluate(el=>el.parentElement.id),'','Privacy notice is not nested inside a hidden billing form');
+   assert.equal(await page.locator('.sf-checkout-privacy-brief').evaluate(el=>el.previousElementSibling.id),'customer_details','Privacy appears directly under customer address summaries');
    assert.equal(await page.locator('.sf-checkout-privacy-brief').isVisible(),true,'Privacy notice is shown in Details');
    assert.equal(await page.locator('#customer_details .col-2').isVisible(),false);
    assert.equal(await page.locator('#order_review').isVisible(),false);
@@ -125,6 +127,8 @@ function html(markup){
      'Stage title replaces redundant large order heading');
    assert.equal(await page.locator('.woocommerce-form-coupon-toggle').isVisible(),true);
    assert.equal(await page.locator('.sf-checkout-coupon-shell').count(),1,'Native coupon controls share a shell');
+   assert.equal(await page.locator('.sf-checkout-coupon-shell > form.checkout_coupon').count(),1,'Original coupon form shares the same parent card');
+   assert.equal(await page.locator('.sf-checkout-coupon-shell').evaluate(el=>getComputedStyle(el).borderTopStyle),'solid','Only shell owns the coupon border');
    assert.equal(await page.locator('.woocommerce-privacy-policy-text').isVisible(),false,'Payment hides redundant privacy paragraph');
    assert.equal(await page.locator('#payment .woocommerce-privacy-policy-text').count(),1,'Native Woo disclosure remains mounted');
    assert.equal(await page.locator('.sf-checkout-stepper').evaluate(el=>getComputedStyle(el).position),'relative','Progress is not sticky');
@@ -147,6 +151,8 @@ function html(markup){
       return form.top-header.bottom;
    });
    assert(Math.abs(couponGap)<2,'Coupon entry directly joins its header with no empty gap: '+couponGap);
+   assert.equal(await page.locator('.sf-checkout-coupon-shell > form.checkout_coupon').evaluate(el=>getComputedStyle(el).borderTopStyle),'solid','Expanded coupon separator is inside the outer card');
+   assert.equal(await page.locator('.sf-checkout-coupon-shell .woocommerce-info').evaluate(el=>getComputedStyle(el).borderTopStyle),'none','Coupon heading adds no second border');
    await page.locator('form.checkout_coupon').evaluate(el=>el.style.display='none');
    await page.locator('.woocommerce-form-coupon-toggle:not(.sf-checkout-coupon-open)').waitFor();
    assert.equal(await page.locator('form.checkout_coupon input[name="coupon_code"]').count(),1,'Original Woo coupon input preserved');

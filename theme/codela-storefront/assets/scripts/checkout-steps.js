@@ -92,12 +92,18 @@
             // Group Woo's original toggle and ORIGINAL coupon form so theme
             // or Gutenberg block spacing cannot split them into two cards.
             // The form, input names and Woo AJAX handlers are not recreated.
-            if (coupon && toggle && coupon.parentElement === toggle.parentElement &&
-                !toggle.closest('.sf-checkout-coupon-shell')) {
-                const shell = document.createElement('div');
-                shell.className = 'sf-checkout-coupon-shell';
-                toggle.parentNode.insertBefore(shell, toggle);
-                shell.append(toggle, coupon);
+            if (coupon && toggle && !form.contains(coupon) && !form.contains(toggle)) {
+                let shell = toggle.closest('.sf-checkout-coupon-shell');
+                if (!shell) {
+                    shell = document.createElement('div');
+                    shell.className = 'sf-checkout-coupon-shell';
+                    toggle.parentNode.insertBefore(shell, toggle);
+                    shell.append(toggle);
+                }
+                // Some Woo templates add notice wrappers between these nodes.
+                // Re-parent the ORIGINAL coupon form; Woo's own AJAX and native
+                // .showcoupon handler continue to target the same form element.
+                if (coupon.parentElement !== shell) shell.append(coupon);
             }
             const field = coupon?.querySelector('input[name="coupon_code"]');
             if (field) {
@@ -183,42 +189,45 @@
             sync();
         }
 
-        // Woo's existing privacy-policy URL is the authoritative destination.
-        // Present one short link during Details, BEFORE personal data is entered;
-        // keep the native text mounted as a no-link/JS fallback in Payment.
+        // Customer details can render address summaries while the edit forms stay
+        // hidden. Render the short notice AFTER #customer_details (not inside
+        // the hidden billing fields), using the store's configured policy URL.
+        // Keep Woo's own source text mounted for a no-JS/unsupported fallback.
         function refinePrivacyNotice() {
             const original = review.querySelector('.woocommerce-privacy-policy-text');
-            const link = original?.querySelector('a[href]');
-            const billingFields = billing.querySelector('.woocommerce-billing-fields__field-wrapper');
-            if (!original || !link || !billingFields || !link.getAttribute('href')) return;
-            const href = link.getAttribute('href');
-            let brief = billing.querySelector('.sf-checkout-privacy-brief');
+            const nativeLink = original?.querySelector('a[href]');
+            const policyUrl = read('privacyUrl', '') || nativeLink?.getAttribute('href') || '';
+            let brief = form.querySelector('.sf-checkout-privacy-brief');
             if (!brief) {
                 brief = document.createElement('p');
                 brief.className = 'sf-checkout-privacy-brief';
-                const lead = document.createElement('span');
-                lead.textContent = document.documentElement.lang.toLowerCase().startsWith('tr')
-                    ? 'Kişisel verilerinizin işlenmesi hakkında bilgi için '
-                    : 'For information about processing your personal data, see our ';
-                const anchor = document.createElement('a');
-                anchor.textContent = document.documentElement.lang.toLowerCase().startsWith('tr')
-                    ? 'Gizlilik Politikası'
-                    : 'Privacy Policy';
-                const ending = document.createElement('span');
-                ending.textContent = document.documentElement.lang.toLowerCase().startsWith('tr')
-                    ? ' sayfasını inceleyin.'
-                    : '.';
-                brief.append(lead, anchor, ending);
-                billingFields.after(brief);
+                brief.setAttribute('role', 'note');
+                customer.insertAdjacentElement('afterend', brief);
             }
-            const anchor = brief.querySelector('a');
-            anchor.setAttribute('href', href);
-            // Never assign untrusted markup or clone the original legal controls.
-            if (link.hasAttribute('target')) anchor.setAttribute('target', link.getAttribute('target'));
-            else anchor.removeAttribute('target');
-            if (link.hasAttribute('rel')) anchor.setAttribute('rel', link.getAttribute('rel'));
-            else anchor.removeAttribute('rel');
-            original.dataset.sfCheckoutPrivacyMoved = '1';
+            brief.replaceChildren();
+            const isTR = document.documentElement.lang.toLowerCase().startsWith('tr');
+            const lead = document.createElement('span');
+            lead.textContent = isTR
+                ? 'Kişisel verilerinizin işlenmesi hakkında bilgi için '
+                : 'For information about how we process your personal data, see ';
+            brief.append(lead);
+            if (policyUrl) {
+                const anchor = document.createElement('a');
+                anchor.href = policyUrl;
+                anchor.textContent = isTR ? 'Gizlilik Politikası' : 'Privacy Policy';
+                if (nativeLink?.hasAttribute('target')) anchor.setAttribute('target', nativeLink.getAttribute('target'));
+                if (nativeLink?.hasAttribute('rel')) anchor.setAttribute('rel', nativeLink.getAttribute('rel'));
+                brief.append(anchor);
+            } else {
+                // Do not invent a destination when WordPress has no privacy
+                // page configured. The native payment explanation remains.
+                const fallback = document.createElement('span');
+                fallback.textContent = isTR
+                    ? 'gizlilik bilgilendirmesini inceleyin.'
+                    : 'the privacy information.';
+                brief.append(fallback);
+            }
+            if (original) original.dataset.sfCheckoutPrivacyMoved = policyUrl ? '1' : '0';
         }
 
         function syncTotal() {

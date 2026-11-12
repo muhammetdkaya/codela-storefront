@@ -769,3 +769,103 @@ body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page #payment .woo
 body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table tr.order-total{
  display:none!important;
 }
+
+
+/* v0.1.297 — Coupon is ONE card in both states. Give only the outer shell
+   a border; the original Woo disclosure and original form have none. */
+body.woocommerce-checkout.sf-checkout-steps-active:not(.sf-checkout-step-3) .sf-checkout-page .sf-checkout-coupon-shell{
+ display:none!important;
+}
+body.woocommerce-checkout.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .woocommerce .sf-checkout-coupon-shell{
+ display:flex!important;flex-direction:column!important;align-items:stretch!important;
+ width:100%!important;max-width:100%!important;gap:0!important;
+ margin:0 0 14px!important;padding:0!important;box-sizing:border-box!important;
+ border:1px solid var(--sf-ui-border)!important;border-radius:17px!important;
+ background:var(--sf-ui-surface)!important;box-shadow:none!important;overflow:hidden!important;
+}
+body.woocommerce-checkout.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .sf-checkout-coupon-shell>.woocommerce-form-coupon-toggle{
+ display:block!important;margin:0!important;padding:0!important;min-height:0!important;
+ border:0!important;border-radius:0!important;box-shadow:none!important;
+ background:transparent!important;flex:none!important;
+}
+body.woocommerce-checkout.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .sf-checkout-coupon-shell>.woocommerce-form-coupon-toggle .woocommerce-info.sf-checkout-coupon-ready,
+body.woocommerce-checkout.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .sf-checkout-coupon-shell>.woocommerce-form-coupon-toggle.sf-checkout-coupon-open .woocommerce-info.sf-checkout-coupon-ready{
+ display:flex!important;align-items:center!important;min-height:58px!important;
+ margin:0!important;padding:7px 16px!important;
+ border:0!important;border-radius:0!important;background:transparent!important;
+ box-shadow:none!important;font-size:0!important;
+}
+body.woocommerce-checkout.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .sf-checkout-coupon-shell>.woocommerce-form-coupon-toggle .showcoupon{
+ display:flex!important;min-height:42px!important;align-items:center!important;
+ padding:0!important;margin:0!important;width:100%!important;font-size:14px!important;
+}
+body.woocommerce-checkout.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .sf-checkout-coupon-shell>form.checkout_coupon{
+ box-sizing:border-box!important;align-self:stretch!important;flex:none!important;
+ width:100%!important;max-width:none!important;min-width:0!important;
+ margin:0!important;padding:0 15px!important;border:0!important;
+ border-radius:0!important;background:transparent!important;box-shadow:none!important;
+ overflow:hidden!important;
+}
+body.woocommerce-checkout.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .sf-checkout-coupon-shell>.woocommerce-form-coupon-toggle.sf-checkout-coupon-open+form.checkout_coupon:not([style*="display:none"]):not([style*="display: none"]){
+ display:grid!important;grid-template-columns:minmax(0,1fr) 96px!important;
+ gap:8px!important;align-items:center!important;padding:12px 15px 15px!important;
+ border-top:1px solid var(--sf-ui-border)!important;
+}
+body.woocommerce-checkout.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .sf-checkout-coupon-shell>form.checkout_coupon .form-row{
+ min-height:0!important;float:none!important;width:auto!important;
+ margin:0!important;padding:0!important;clear:none!important;
+}
+body.woocommerce-checkout.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .sf-checkout-coupon-shell>form.checkout_coupon .form-row-first{grid-column:1}
+body.woocommerce-checkout.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .sf-checkout-coupon-shell>form.checkout_coupon .form-row-last{grid-column:2}
+body.woocommerce-checkout.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .sf-checkout-coupon-shell>form.checkout_coupon :is(input[name="coupon_code"],button[name="apply_coupon"]){
+ box-sizing:border-box!important;width:100%!important;max-width:none!important;
+ height:44px!important;min-height:44px!important;margin:0!important;
+ font-size:13px!important;border-radius:12px!important;
+}
+@media(max-width:360px){
+ body.woocommerce-checkout.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .sf-checkout-coupon-shell>.woocommerce-form-coupon-toggle.sf-checkout-coupon-open+form.checkout_coupon:not([style*="display:none"]):not([style*="display: none"]){
+  grid-template-columns:minmax(0,1fr) 84px!important;
+ }
+}
+/* Identical note surfaces: gift-message label is redundant with the header;
+   keep it in the accessibility tree, but hide the repeated visual heading.
+   Codela's gift price, state and gift-note persistence remain plugin-owned. */
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #codela-gift-wrap-wrapper .codela-gift-wrap__note{
+ box-sizing:border-box!important;margin:0!important;
+ padding:14px 15px 15px!important;
+ border-top:1px solid var(--sf-ui-border)!important;
+}
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #codela-gift-wrap-wrapper .codela-gift-wrap__note>label{
+ position:absolute!important;width:1px!important;height:1px!important;
+ margin:0!important;padding:0!important;border:0!important;
+ overflow:hidden!important;white-space:nowrap!important;clip-path:inset(50%)!important;
+}
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #codela-gift-wrap-wrapper .codela-gift-wrap__note textarea,
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page .sf-checkout-note-fields textarea{
+ box-sizing:border-box!important;display:block!important;
+ width:100%!important;min-width:0!important;
+ height:96px!important;min-height:96px!important;max-height:160px!important;
+ margin:0!important;padding:12px 13px!important;
+ border:1px solid var(--sf-ui-border)!important;border-radius:12px!important;
+ background:var(--sf-ui-page)!important;box-shadow:none!important;
+ color:var(--sf-ui-ink)!important;font-size:13px!important;line-height:1.5!important;
+ resize:vertical!important;
+}
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page :is(.codela-gift-wrap__note textarea,.sf-checkout-note-fields textarea):focus-visible{
+ border-color:var(--sf-ui-ink)!important;
+ outline:2px solid color-mix(in srgb,var(--sf-ui-ink) 12%,transparent);
+ outline-offset:1px;
+}
+/* The privacy text sits immediately AFTER the customer address summaries.
+   It must never inherit visibility/display rules from collapsed billing forms. */
+body.sf-checkout-steps-active.sf-checkout-step-1 .sf-checkout-page form.checkout>.sf-checkout-privacy-brief{
+ display:block!important;width:100%!important;box-sizing:border-box!important;
+ margin:0 0 18px!important;padding:5px 3px!important;
+ color:var(--sf-muted)!important;font-size:12px!important;line-height:1.6!important;
+}
+body.sf-checkout-steps-active:not(.sf-checkout-step-1) .sf-checkout-page form.checkout>.sf-checkout-privacy-brief{
+ display:none!important;
+}
+body.sf-checkout-steps-active.sf-checkout-step-1 .sf-checkout-page .sf-checkout-privacy-brief a{
+ color:var(--sf-ui-ink)!important;text-decoration:underline!important;text-underline-offset:3px!important;
+}
