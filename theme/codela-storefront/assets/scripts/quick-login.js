@@ -493,7 +493,10 @@
     input.addEventListener('compositionend', handleDigits);
     input.addEventListener('keydown', event => {
       if (event.key === 'Enter' && input.value.length === 6) {
-        event.preventDefault();handleDigits();
+        // Do not treat IME candidate confirmation as a PIN submit (including WebKit).
+        if (event.isComposing || event.keyCode === 229) return;
+        event.preventDefault();
+        handleDigits();
       }
     });
     section.addEventListener('keydown', event => {

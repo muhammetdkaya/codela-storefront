@@ -114,4 +114,37 @@ assert(js.includes("document.documentElement.classList.remove('sf-quick-checking
  'Verification atomically reveals the native or recognized screen');
 assert(js.includes("uri.searchParams.delete('sf_quick_auth')"),
  'One-time account cache-bypass parameter is removed from the address');
+// Regression: IME candidate confirmation must not submit/blow away the native
+// email input or six-digit PIN (Safari may emit keyCode 229 after compositionend).
+const vm=require('node:vm');
+const smart=fs.readFileSync('theme/codela-storefront/assets/scripts/auth-smart.js','utf8');
+function assertImeSafeEnter(source,kind) {
+  const match=source.match(/input\.addEventListener\('keydown',\s*event\s*=>\s*\{([\s\S]*?)\n\s*\}\);/);
+  assert(match,kind+' has a native input Enter handler');
+  const run=(key,isComposing,keyCode,length=6)=>{
+    const calls=[];
+    const context={
+      event:{key,isComposing,keyCode,preventDefault:()=>calls.push('preventDefault')},
+      input:{value:'123456'.slice(0,length),blur:()=>calls.push('blur')},
+      stage:'existing',
+      loginPassword:{value:'secret'},
+      loginForm:{requestSubmit:()=>calls.push('login')},
+      registerForm:null,
+      root:{classList:{contains:()=>false}},
+      handleDigits:()=>calls.push('pin')
+    };
+    // Execute the extracted listener as a function so its early return is legal.
+    vm.runInNewContext('(function(){'+match[1]+'})()',context,{timeout:1000});
+    return calls;
+  };
+  const success=kind==='email'?['preventDefault','login']:['preventDefault','pin'];
+  assert.deepEqual(run('Enter',false,13),success,kind+' ordinary Enter still works');
+  assert.deepEqual(run('Enter',true,13),[],kind+' does not consume active composition');
+  assert.deepEqual(run('Enter',false,229),[],kind+' ignores Safari IME confirmation');
+  assert.deepEqual(run('x',false,88),[],kind+' ignores ordinary typing');
+  if(kind==='pin')assert.deepEqual(run('Enter',false,13,5),[],'Incomplete PIN never submits');
+}
+assertImeSafeEnter(smart,'email');
+assertImeSafeEnter(js,'pin');
+
 console.log('Quick login browser contracts passed');
