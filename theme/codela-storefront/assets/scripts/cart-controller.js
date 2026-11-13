@@ -41,9 +41,11 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
              document.querySelector('.wp-block-woocommerce-cart') ||
              document.querySelector('.woocommerce-cart-form')?.closest('.woocommerce'));
         if (!native) { unmountPage(); return; }
-        const main = native.closest('main') || document.querySelector('.sf-cart-page') || native.parentElement;
-        if (!main) return;
-        if (pageHost?.isConnected && pageNative === native && pageHost.parentElement === main) return;
+        // The Site Editor may nest post-content inside multiple Group blocks;
+        // insert beside the actual native container, never a distant <main>.
+        const parent = native.parentElement;
+        if (!parent) return;
+        if (pageHost?.isConnected && pageNative === native && pageHost.parentElement === parent) return;
         unmountPage();
         const dialog = getDialog();
         const items = dialog?.querySelector('#sf-cart');
@@ -58,7 +60,7 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
         pageHost.className = 'sf-cart-page-panel';
         pageHost.setAttribute('role', 'region');
         pageHost.setAttribute('aria-label', t('Your cart'));
-        main.insertBefore(pageHost, native);
+        parent.insertBefore(pageHost, native);
         for (const {node} of originalCartHomes) pageHost.append(node);
         items.hidden = false;
         // Never discard the native Woo cart until the shared Store API view
