@@ -227,7 +227,30 @@ html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-choice-alternatives{vis
   border-color:#343437;background:#fff;
   box-shadow:0 0 0 1px rgba(52,52,58,.07);
 }
-.sf-quick-pin-track.is-checking .sf-quick-slot{border-color:#c7c8cc}
+/* Six-code verification: motion starts immediately on digit six, while
+   challenge/signature/server verification runs. The slot remains stationary;
+   only a subtle 2px accent traces its existing rounded perimeter. */
+@property --sf-quick-orbit {
+  syntax:"<angle>";
+  inherits:false;
+  initial-value:0deg;
+}
+.sf-quick-pin-track.is-checking .sf-quick-slot{
+  border-color:#c7c8cc;
+}
+.sf-quick-pin-track.is-checking .sf-quick-slot::after{
+  content:"";position:absolute;inset:-2.5px;z-index:2;
+  padding:2px;border-radius:10px;pointer-events:none;
+  background:conic-gradient(from var(--sf-quick-orbit),
+    transparent 0deg, transparent 230deg,#7e8997 275deg,#26282d 315deg,transparent 359deg);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+  mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  mask-composite:exclude;
+  animation:sf-quick-verifying-orbit 1.15s linear infinite;
+}
+@keyframes sf-quick-verifying-orbit{to{--sf-quick-orbit:360deg}}
+
 .sf-quick-pin-track.is-merging .sf-quick-slot,
 .sf-quick-pin-track.is-verified .sf-quick-slot{
   transform:translateX(var(--sf-quick-shift,0px)) scale(.80);
@@ -295,7 +318,8 @@ html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-choice-alternatives{vis
   .sf-quick-account,.sf-quick-account-frame,.sf-quick-slot,.sf-quick-slot i,.sf-quick-result,
   .sf-quick-check,.sf-quick-chevron svg,.sf-quick-inline-pin{transition:none!important}
   .sf-quick-pin-track.is-error .sf-quick-slot,
-  .sf-quick-pin-track.is-verified .sf-quick-check{animation-duration:.01ms!important}
+  .sf-quick-pin-track.is-verified .sf-quick-check,
+  .sf-quick-pin-track.is-checking .sf-quick-slot::after{animation-duration:.01ms!important}
 }
 
 .sf-quick-onboarding{margin:20px 0;padding:20px;border:1px solid var(--sf-ui-border,#e7e7ea);border-radius:18px;background:var(--sf-ui-surface,#fbfbfc)}

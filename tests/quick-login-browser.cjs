@@ -154,6 +154,12 @@ function release(ok) {
       assert.equal(await page.locator('#customer_login').isVisible(),false,'Native Woo login hidden until selected');
       await page.locator('.sf-quick-native-pin').fill('381905');
       await page.locator('.sf-quick-pin-track.is-checking').waitFor({state:'attached'});
+      const verifying=await page.locator('.sf-quick-slot').first().evaluate(el=>{
+        const style=getComputedStyle(el,'::after');
+        return {content:style.content,animationName:style.animationName,duration:style.animationDuration};
+      });
+      assert.equal(verifying.content,'""','Every PIN square has a visible rotating border while verifying');
+      assert(verifying.animationName.includes('sf-quick-verifying-orbit'),'Six-box border animation starts before server reply');
       await awaitRequest(page);
       assert.equal(await page.locator('.sf-quick-pin-track.is-verified').count(),0,
         'No approved check appears before server response');

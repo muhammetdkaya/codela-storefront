@@ -154,7 +154,13 @@
             const bar = slot?.querySelector('.cdl-fsb');
             const text = bar?.querySelector('.cdl-fsb-text');
             const icon = text?.querySelector('.cdl-fsb-ico');
-            if (!bar || !text || !icon || text.querySelector('.sf-checkout-shipping-ring')) return;
+            if (!bar || !text || !icon) return;
+            if (bar.classList.contains('is-done') && !bar.classList.contains('is-warn')) {
+                const message = text.querySelector(':scope > span:last-child');
+                if (message) message.textContent =
+                    document.documentElement.lang.toLowerCase().startsWith('tr') ? 'Ücretsiz kargo' : 'Free shipping';
+            }
+            if (text.querySelector('.sf-checkout-shipping-ring')) return;
             const pct = Number.parseFloat(bar.querySelector('.cdl-fsb-fill')?.style.width || '0');
             const fraction = Number.isFinite(pct) ? Math.max(0, Math.min(1, pct / 100)) : 0;
             const ring = document.createElement('span');

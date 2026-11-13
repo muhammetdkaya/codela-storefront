@@ -109,11 +109,28 @@ function html(markup){
      'Gift is a separate compact card');
    assert.equal(await page.locator('.cdl-fsb-slot').isVisible(),true,'Live plugin shipping slot shown only in Delivery');
    assert.equal(await page.locator('.sf-checkout-shipping-ring').count(),1,'Single 40px shipping ring wraps original plugin icon');
-   assert.equal(await page.locator('.sf-checkout-shipping-ring').evaluate(el=>getComputedStyle(el).width),'40px');
+   assert.equal(await page.locator('.sf-checkout-shipping-ring').evaluate(el=>getComputedStyle(el).width),'36px');
    const ringOffset=await page.locator('.sf-checkout-shipping-ring').evaluate(el=>parseFloat(el.style.getPropertyValue('--sf-checkout-shipping-offset')));
    assert(Math.abs(ringOffset-42.726)<0.1,'Ring uses native plugin percent: '+ringOffset);
    assert.equal(await page.locator('.cdl-fsb-track').isVisible(),false,'Original linear progress is visually replaced');
    assert.equal(await page.locator('.sf-checkout-shipping-ring .cdl-fsb-ico').count(),1,'One original icon preserved');
+   await page.evaluate(() => {
+      const bar=document.querySelector('#order_review .cdl-fsb');
+      bar.classList.add('is-done');
+      bar.querySelector('.cdl-fsb-text > span:last-child').textContent='Kargonuz ücretsiz.';
+      // Exercise the native stepper's shipping decorator, without
+      // introducing a fake jQuery runtime into this browser fixture.
+      document.querySelector('.sf-checkout-step-back').click();
+      document.querySelector('.sf-checkout-next').click();
+   });
+   assert.equal(await page.locator('.cdl-fsb.is-done .cdl-fsb-text > span:last-child').innerText(),'Ücretsiz kargo',
+     'Only success wording changes; payment method labels and shipping logic remain Woo/plugin owned');
+   const completed=await page.locator('#order_review .cdl-fsb.is-done').evaluate(el=>({
+      border:getComputedStyle(el).borderTopWidth,
+      background:getComputedStyle(el).backgroundColor
+   }));
+   assert.equal(completed.border,'0px','Success message is not a second bordered card');
+   assert.equal(completed.background,'rgba(0, 0, 0, 0)','Success is not a full green banner');
    assert.equal(await page.locator('.codela-external-hook').isVisible(),true,'Checkout hook retains delivery placement');
    assert.equal(await page.locator('#payment').isVisible(),false);
    await page.locator('#codela_gift_wrap').check();

@@ -330,6 +330,38 @@ add_action( 'wp_enqueue_scripts', function() {
             'excluded' => [ wc_get_cart_url(), wc_get_checkout_url(), wc_get_account_endpoint_url( 'customer-logout' ) ],
         ] ) . ';', 'before' );
     }
+    // Cart and Checkout must preserve native Woo navigation and forms, but
+    // loading feedback must begin at the TAP, not in the destination document.
+    // Their lightweight click bridge shares the existing feedback renderer;
+    // it never initializes Core Router or intercepts a payment POST.
+    if ( ( function_exists( 'is_cart' ) && is_cart() || codela_sf_checkout_skeleton_allowed() )
+        && ! codela_sf_document_continuity_allowed() ) {
+        wp_enqueue_style( 'codela-storefront-commerce-navigation-feedback',
+            $root_uri . 'styles/navigation-feedback.css', [ 'codela-storefront-components' ], $style_version );
+        wp_enqueue_script( 'codela-storefront-commerce-navigation-feedback',
+            $root_uri . 'scripts/navigation-feedback.js', [], codela_sf_script_module_version( 'scripts/navigation-feedback.js' ), false );
+        wp_add_inline_script( 'codela-storefront-commerce-navigation-feedback', 'window.codelaSFDocument=' . wp_json_encode( [
+            'home' => home_url( '/' ),
+            'account' => wc_get_page_permalink( 'myaccount' ),
+            'cart' => wc_get_cart_url(),
+            'checkout' => wc_get_checkout_url(),
+            'commerceSkeletons' => [
+                'cart' => codela_sf_commerce_skeleton_markup( 'cart' ),
+                'checkout' => codela_sf_commerce_skeleton_markup( 'checkout' ),
+            ],
+            'cartLabel' => __( 'Cart', 'codela-storefront' ),
+            'checkoutLabel' => __( 'Checkout', 'woocommerce' ),
+            'loading' => __( 'Loading…', 'codela-storefront' ),
+            'backIcon' => codela_sf_transition_icon( 'chevron-left' ),
+            'menuIcon' => codela_sf_transition_icon( 'menu' ),
+            'homeIcon' => codela_sf_transition_icon( 'house' ),
+            'cartIcon' => codela_sf_transition_icon( 'shopping-bag' ),
+            'accountIcon' => codela_sf_transition_icon( 'user-round' ),
+            'brandMarkup' => has_custom_logo() ? get_custom_logo() : '<span>' . esc_html( get_bloginfo( 'name' ) ) . '</span>',
+        ] ) . ';', 'before' );
+        wp_enqueue_script( 'codela-storefront-commerce-links', $root_uri . 'scripts/commerce-links.js',
+            [ 'codela-storefront-commerce-navigation-feedback' ], codela_sf_script_module_version( 'scripts/commerce-links.js' ), false );
+    }
     if ( function_exists( 'is_product' ) && is_product() ) {
         wp_enqueue_style( 'codela-storefront-gallery' );
         // Product-only layout; WooCommerce gallery, variations and cart stay native.
