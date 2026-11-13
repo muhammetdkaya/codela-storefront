@@ -60,7 +60,7 @@ const html='<html><head><meta name="viewport" content="width=device-width,initia
  +'<section class="sf-panel-body" id="sf-cart" hidden><p class="sf-cart-count" id="sf-cart-count" hidden></p><div id="sf-cart-items"></div></section>'
  +footer+'<p id="sf-status" class="sf-status" role="status"></p></dialog></div>'
  +'<main id="sf-content" class="sf-content sf-cart-page"><div class="wp-block-post-content">'
- +'<div class="wc-block-cart"><h2>WooCommerce native fallback</h2><a class="wc-block-cart__submit-button" href="/odeme/">Native checkout</a></div>'
+ +'<div class="wc-block-cart"><h2>WooCommerce native fallback</h2><form class="woocommerce-cart-form"><input name="cart[stale][qty]" value="99"></form><a class="wc-block-cart__submit-button" href="/odeme/">Native checkout</a></div>'
  +'</div></main></body></html>';
 (async()=>{
 const browser=await(process.env.TEST_WEBKIT?webkit:chromium).launch({headless:true});
@@ -107,10 +107,32 @@ for(const width of [390,1120]){
  await plus.click();
  await page.waitForFunction(()=>document.querySelector('#sf-cart-count')?.textContent?.includes('4 ürün'));
  assert.equal(await page.locator('#sf-subtotal').innerText(),'₺3.050,00','One Store API mutation updates shared subtotal');
- await page.locator('.sf-cart-row[data-cart-key="b"] [data-remove="b"]').click();
+ // The hidden legacy Woo form must NEVER submit its stale quantity fields
+ // after the Store API confirms removal. Simulate its update listener.
+ await page.evaluate(()=>{
+   window.__legacyCartWrites=0;
+   window.jQuery=()=>({trigger:name=>{if(name==='wc_update_cart')window.__legacyCartWrites++}});
+ });
+ await page.locator('.sf-cart-row[data-cart-key="b"] .sf-remove-icon').click();
  await page.waitForFunction(()=>document.querySelectorAll('.sf-cart-row').length===1);
  assert.equal(await page.locator('.sf-cart-checkout-command').count(),1,'Remove keeps sole CTA');
  assert.equal(await page.locator('.sf-cart-page-panel .sf-cart-bottom').count(),1,'No duplicate purchase bar after mutation');
+ assert.equal(await page.evaluate(()=>window.__legacyCartWrites),0,'Removing by icon never triggers hidden Woo form with stale quantities');
+ assert.equal(await page.evaluate(()=>window.__apiCalls.filter(x=>x.url.endsWith('/remove-item')&&x.method==='POST').length),1,'Removal is one authoritative Store API write');
+ await page.evaluate(()=>{
+    window.__cartData.extensions['codela-storefront-shipping'].html=
+      '<div class="cdl-fsb is-done"><div class="cdl-fsb-text"><span class="cdl-fsb-ico"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span><span>Kargonuz ücretsiz.</span></div><div class="cdl-fsb-track"><span class="cdl-fsb-fill" style="width:100%"></span></div></div>';
+    void window.controller.refresh();
+ });
+ await page.waitForFunction(()=>document.querySelector('#sf-cart-progress .cdl-fsb.is-done')?.textContent?.includes('Kargonuz'));
+ const ship=await page.locator('#sf-cart-progress .cdl-fsb.is-done').evaluate(el=>({
+   bg:getComputedStyle(el).backgroundColor,
+   border:getComputedStyle(el).borderTopWidth,
+   ring:el.querySelector('.sf-cart-shipping-ring')?.getBoundingClientRect().width
+ }));
+ assert.equal(ship.bg,'rgba(0, 0, 0, 0)','Free shipping success is a quiet inline status, never a green banner');
+ assert.equal(ship.border,'0px','Free shipping is not wrapped in another card');
+ assert(ship.ring===36,'Compact success ring matches 36px geometry');
  await page.evaluate(()=>{document.dispatchEvent(new Event('codela:before-route'));window.currentPanel='cart';});
  assert.equal(await page.locator('.sf-cart-page-panel').count(),0,'Unmount cleans up page host');
  assert.equal(await page.locator('#sf-panel #sf-cart').count(),1,'Same cart is restored to dialog');

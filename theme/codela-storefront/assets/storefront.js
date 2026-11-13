@@ -109,8 +109,17 @@ function init() {
     document.addEventListener('click', event => {
         const b = event.target.closest('#sf-cart button');
         if (!b) return;
-        if (b.matches('[data-qty],[data-remove]')) cartFeature.change(b);
-        if (b.matches('.sf-retry-cart')) cartFeature.refresh();
+        // The shared quantity/delete controls are native buttons, never Woo
+        // form submissions or links. Do not let any ancestor click handler
+        // initiate a second cart mutation during the Store API request.
+        if (b.matches('[data-qty],[data-remove]')) {
+            event.preventDefault();
+            cartFeature.change(b);
+        }
+        if (b.matches('.sf-retry-cart')) {
+            event.preventDefault();
+            cartFeature.refresh();
+        }
     });
     dialog.closest('.sf-shell').addEventListener('click', event => {
         const b = event.target.closest('button'); if (!b) return;

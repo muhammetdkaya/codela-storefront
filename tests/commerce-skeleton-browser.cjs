@@ -12,7 +12,7 @@ const checkout = fs.readFileSync(base+'assets/scripts/checkout-steps.js','utf8')
 const styles = ['styles/tokens.css','storefront.css','styles/components.css','styles/navigation.css','styles/navigation-feedback.css','styles/commerce-skeleton.css','styles/cart-page.css','styles/checkout.css']
   .map(p=>fs.readFileSync(base+'assets/'+p,'utf8')).join('\n');
 function markup(type) {
-  const expression = "define('ABSPATH', '/'); require 'theme/codela-storefront/inc/document-continuity.php'; echo codela_sf_commerce_skeleton_markup('"+type+"');";
+  const expression = "define('ABSPATH', '/'); function esc_html__($message,$domain=''){return htmlspecialchars($message,ENT_QUOTES,'UTF-8');} require 'theme/codela-storefront/inc/document-continuity.php'; echo codela_sf_commerce_skeleton_markup('"+type+"');";
   return execFileSync(process.env.PHP_BIN||'php',['-r',expression],{encoding:'utf8'});
 }
 const cart = markup('cart');
@@ -20,6 +20,11 @@ const payment = markup('checkout');
 assert.equal((cart.match(/class="sf-commerce-cart-row"/g)||[]).length,2,'Cart uses two true product row placeholders');
 assert.equal((payment.match(/class="sf-commerce-checkout-field"/g)||[]).length,4,'Checkout uses four true input placeholders');
 assert(!/<form\b|<input\b|<button\b|<a\b/i.test(cart+payment),'Loading fragments contain no interactive fake elements');
+assert(cart.includes('<small>Subtotal</small>') && cart.includes('>Checkout<span'),'Known cart subtotal and checkout labels must be visible');
+assert(payment.includes('<small>Estimated total</small>') && payment.includes('>Continue<span'),'Known checkout labels must be visible');
+assert.equal((cart.match(/sf-commerce-action-price/g)||[]).length,1,'Cart only shimmers unknown money amount');
+assert.equal((payment.match(/sf-commerce-action-price/g)||[]).length,1,'Checkout only shimmers unknown money amount');
+assert(!cart.includes('sf-commerce-action-summary sf-skeleton-shape'),'Fixed subtotal caption is never a gray placeholder');
 assert(checkout.includes('window.codelaSFCheckoutBoot?.ready()'),'Real Woo stepper releases checkout skeleton after activation');
 assert(checkout.includes('window.codelaSFCheckoutBoot?.fallback()'),'Unsupported checkout fails open');
 const guard = type => {
