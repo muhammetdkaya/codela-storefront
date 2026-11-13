@@ -64,7 +64,10 @@ function codela_sf_commerce_skeleton_markup( string $kind ): string {
             . '</div>'
             . '<div class="sf-commerce-cart-footer">'
             . '<div class="sf-commerce-shipping">' . $shape( 'shipping-ring' ) . $shape( 'shipping-copy' ) . '</div>'
-            . '<div class="sf-commerce-dark-action">' . $shape( 'action-summary' ) . $shape( 'action-label' ) . '</div>'
+            . '<div class="sf-commerce-dark-action">'
+            . '<span class="sf-commerce-action-summary"><small>' . esc_html__( 'Subtotal', 'codela-storefront' ) . '</small>' . $shape( 'action-price' ) . '</span>'
+            . '<span class="sf-commerce-action-label">' . esc_html__( 'Checkout', 'codela-storefront' ) . '<span aria-hidden="true">→</span></span>'
+            . '</div>'
             . '</div></div>';
     }
     $fields = '';
@@ -80,6 +83,7 @@ function codela_sf_commerce_skeleton_markup( string $kind ): string {
         . '</div><div class="sf-commerce-checkout-fields">' . $fields . '</div>'
         . '</div>'
         . '<div class="sf-commerce-checkout-footer sf-commerce-dark-action">'
-        . $shape( 'action-summary' ) . $shape( 'action-label' )
+        . '<span class="sf-commerce-action-summary"><small>' . esc_html__( 'Estimated total', 'codela-storefront' ) . '</small>' . $shape( 'action-price' ) . '</span>'
+        . '<span class="sf-commerce-action-label">' . esc_html__( 'Continue', 'codela-storefront' ) . '<span aria-hidden="true">→</span></span>'
         . '</div></div>';
 }
