@@ -1130,8 +1130,8 @@ body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .sf-checkout-
  animation:sf-checkout-coupon-open .16s ease-out both;
 }
 @keyframes sf-checkout-coupon-open{
- from{opacity:.65;transform:translateY(-3px)}
- to{opacity:1;transform:translateY(0)}
+ from{opacity:.6}
+ to{opacity:1}
 }
 @media(prefers-reduced-motion:reduce){
  body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page .sf-checkout-coupon-shell>form.checkout_coupon{animation:none}
