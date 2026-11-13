@@ -10,7 +10,7 @@
     if(!value)return false;
     const base=new URL(value,location.href);
     return target.origin===base.origin &&
-      target.pathname.replace(/\\/+$/,'')===base.pathname.replace(/\\/+$/,'') &&
+      target.pathname.replace(/\/+$/,'')===base.pathname.replace(/\/+$/,'') &&
       [...base.searchParams].every(([key,v])=>target.searchParams.get(key)===v);
   };
   document.addEventListener('click',event=>{
@@ -23,7 +23,7 @@
     if(url.origin!==location.origin || !['http:','https:'].includes(url.protocol) ||
       url.hash || url.href===location.href ||
       ['add-to-cart','remove_item','_wpnonce','wc-ajax','order-pay','key'].some(k=>url.searchParams.has(k)) ||
-      /\\/(order-pay|order-received|customer-logout|lost-password|wp-admin|wp-json)(\\/|$)/.test(url.pathname))return;
+      /\/(order-pay|order-received|customer-logout|lost-password|wp-admin|wp-json)(\/|$)/.test(url.pathname))return;
     if(!matches(url,config.cart)&&!matches(url,config.checkout))return;
     // Native navigation continues. There is no custom fetch or preventDefault.
     // Capture starts before Woo's click handlers and before the document unloads.
