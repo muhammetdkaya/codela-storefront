@@ -26,7 +26,7 @@ const block=()=>'<div class="sf-cart-page"><h1 class="wp-block-post-title">Sepet
  +'<div class="wc-block-cart__submit-container"><a href="/odeme/" class="wc-block-cart__submit-button">Ödemeye geç</a></div>'
  +'</div></div></div></div>';
 const classic=()=>'<div class="sf-cart-page"><h1 class="wp-block-post-title">Sepetim</h1>'
- +'<div class="wp-block-post-content"><div class="woocommerce">'
+ +'<div class="wp-block-post-content"><div class="wp-block-shortcode"><div class="woocommerce">'
  +'<form class="woocommerce-cart-form"><table class="shop_table"><thead><tr><th>Ürün</th></tr></thead><tbody>'
  +'<tr class="cart_item"><td class="product-remove"><a class="remove" href="#remove">×</a></td>'
  +'<td class="product-thumbnail"><img src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\'/%3E" alt=""></td>'
@@ -39,7 +39,7 @@ const classic=()=>'<div class="sf-cart-page"><h1 class="wp-block-post-title">Sep
  +'<div class="cart-collaterals"><div class="cart_totals"><h2>Sipariş özeti</h2>'
  +'<table class="shop_table"><tbody><tr><th>Toplam</th><td>₺1.200</td></tr></tbody></table>'
  +'<div class="wc-proceed-to-checkout"><a class="checkout-button" href="/odeme/">Ödemeye geç</a></div>'
- +'</div></div></div></div></div>';
+ +'</div></div></div></div></div></div>';
 (async()=>{
   const browser=await (process.env.TEST_WEBKIT?webkit:chromium).launch({headless:true});
   try{
