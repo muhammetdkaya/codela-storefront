@@ -6,10 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Ürün değerlendirme accordion'unda tekrar eden WooCommerce başlıkları ve boş yorum metinleri kaldırıldı.",
-    "Gerçek WooCommerce ortalama puanı, yalnız değerlendirme varsa accordion başlığında yıldız ve puan olarak gösteriliyor.",
-    "Mevcut yorumlarda WooCommerce yıldızları, yazar, tarih ve metin daha kompakt Codela stilinde görüntüleniyor.",
-    "Yorum formunda önce WooCommerce yıldız seçimi gösteriliyor; puan seçildikten sonra yorum ve zorunlu iletişim alanları açılıyor.",
-    "Yorumların kaydedilmesi, yıldız doğrulaması, oturum ve WooCommerce izin kuralları değiştirilmedi."
+    "Sepet sayfası Codela sepet popup tasarımına uyumlu ürün satırları, görseller, miktar kontrolleri ve sipariş özetiyle yenilendi.",
+    "Mobil sepet tek sütunlu, masaüstü sepet ürünler ve sipariş özeti yan yana olacak şekilde düzenlendi.",
+    "Ödeme butonu, kupon alanı ve kargo sunumu tema tasarım sistemiyle uyumlu hale getirildi; WooCommerce hesaplama ve işlem altyapısı korundu.",
+    "WooCommerce Cart Block ve klasik sepet kısa kodu için ayrı düzenler ve Chromium/WebKit görünüm testleri eklendi.",
+    "E-posta ve 6 haneli PIN girişinde Safari dahil karakter oluşturma (IME) sırasında Enter ile yanlış gönderim engellendi."
   ]
 }
