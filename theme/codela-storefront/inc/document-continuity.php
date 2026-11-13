@@ -37,3 +37,49 @@ function codela_sf_navigation_purchase_preview(): string {
         . codela_sf_ui_button( __( 'Add to cart', 'woocommerce' ), [ 'disabled' => true, 'class' => 'sf-navigation-buy-button' ] )
         . '</div></section>';
 }
+
+
+/**
+ * Exact inert commerce skeleton used by BOTH navigation feedback and first
+ * document paint. These placeholders have no form, price, coupon, customer
+ * data, request or WooCommerce state. One markup source prevents drift.
+ */
+function codela_sf_commerce_skeleton_markup( string $kind ): string {
+    if ( ! in_array( $kind, [ 'cart', 'checkout' ], true ) ) { return ''; }
+    $shape = static function( string $name ): string {
+        return '<i class="sf-skeleton-shape sf-commerce-shape sf-commerce-' . $name . '"></i>';
+    };
+    if ( 'cart' === $kind ) {
+        $rows = '';
+        for ( $i = 0; $i < 2; $i++ ) {
+            $rows .= '<div class="sf-commerce-cart-row">'
+                . $shape( 'cart-photo' )
+                . '<div class="sf-commerce-cart-detail">'
+                . $shape( 'cart-title' ) . $shape( 'cart-price' ) . $shape( 'cart-quantity' )
+                . '</div>' . $shape( 'cart-remove' ) . '</div>';
+        }
+        return '<div class="sf-commerce-skeleton sf-commerce-skeleton--cart">'
+            . '<div class="sf-commerce-cart-main">'
+            . $shape( 'cart-count' ) . '<div class="sf-commerce-cart-rows">' . $rows . '</div>'
+            . '</div>'
+            . '<div class="sf-commerce-cart-footer">'
+            . '<div class="sf-commerce-shipping">' . $shape( 'shipping-ring' ) . $shape( 'shipping-copy' ) . '</div>'
+            . '<div class="sf-commerce-dark-action">' . $shape( 'action-summary' ) . $shape( 'action-label' ) . '</div>'
+            . '</div></div>';
+    }
+    $fields = '';
+    for ( $i = 0; $i < 4; $i++ ) {
+        $fields .= '<div class="sf-commerce-checkout-field">'
+            . $shape( 'field-label' ) . $shape( 'field-input' ) . '</div>';
+    }
+    return '<div class="sf-commerce-skeleton sf-commerce-skeleton--checkout">'
+        . '<div class="sf-commerce-checkout-main">'
+        . '<div class="sf-commerce-checkout-stepper">'
+        . $shape( 'step-index' ) . $shape( 'step-title' )
+        . '<div class="sf-commerce-step-track">' . $shape( 'step-segment' ) . $shape( 'step-segment' ) . $shape( 'step-segment' ) . '</div>'
+        . '</div><div class="sf-commerce-checkout-fields">' . $fields . '</div>'
+        . '</div>'
+        . '<div class="sf-commerce-checkout-footer sf-commerce-dark-action">'
+        . $shape( 'action-summary' ) . $shape( 'action-label' )
+        . '</div></div>';
+}
