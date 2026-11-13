@@ -167,6 +167,12 @@ function html(markup){
    assert.equal(await page.locator('.sf-checkout-selected-shipping').isVisible(),true,'Selected shipping displayed as read-only payment summary');
    assert.equal(await page.locator('.shipping input[name="shipping_method[0]"]').isVisible(),false,'No repeated shipping selection on payment');
    assert.equal(await page.locator('.shipping input[name="shipping_method[0]"]').isChecked(),true,'Original selected Woo radio kept in form');
+   // Revisit payment after a native rate's label changes to free shipping.
+   await page.evaluate(()=>{document.querySelector('.shipping td label').lastChild.textContent='Ücretsiz gönderim'});
+   await page.locator('.sf-checkout-step-back').click();
+   await page.locator('.sf-checkout-next').click();
+   assert.equal(await page.locator('.sf-checkout-selected-shipping').innerText(),'Ücretsiz','Do not repeat Gönderim in the value');
+   assert.equal(await page.locator('.sf-checkout-selected-shipping').evaluate(el=>getComputedStyle(el).whiteSpace),'nowrap','One-line shipping receipt');
    assert.equal(await page.locator('.sf-checkout-product-image').isVisible(),true,'Checkout review thumbnails have reserved space');
    const productRow=await page.evaluate(()=>{
      const name=document.querySelector('.sf-checkout-product-label').getBoundingClientRect();
@@ -174,15 +180,22 @@ function html(markup){
      return {nameY:name.y+name.height/2,qtyY:qty.y+qty.height/2};
    });
    assert(Math.abs(productRow.nameY-productRow.qtyY)<10,'Quantity remains beside the name: '+JSON.stringify(productRow));
-   assert.equal(await page.locator('.showcoupon').innerText(),'Add discount code','Native coupon link has clearer copy');
+   assert.equal(await page.locator('.cart_item td.product-total').evaluate(el=>getComputedStyle(el).verticalAlign),'middle',
+     'Line-item price is vertically centered next to the product');
+   assert.equal(await page.locator('.sf-checkout-coupon-trigger').innerText(),'Add discount code','Native coupon button has concise copy');
+   assert.equal(await page.locator('.sf-checkout-coupon-trigger').evaluate(el=>el.tagName),'BUTTON','Coupon is a button, not an href link');
+   assert.equal(await page.locator('.sf-checkout-coupon-trigger').getAttribute('type'),'button','Coupon cannot submit a checkout form');
+   assert.equal(await page.locator('a.showcoupon').count(),0,'No hash link remains to jump to the top');
    assert.equal(await page.locator('.sf-checkout-coupon-hint').count(),0,'Redundant coupon hint is removed');
-   assert.equal(await page.locator('.showcoupon').isVisible(),true,'One line coupon toggle is visible');
+   assert.equal(await page.locator('.sf-checkout-coupon-trigger').isVisible(),true,'One line coupon toggle is visible');
    const collapsedCoupon=await page.locator('.woocommerce-form-coupon-toggle .woocommerce-info').boundingBox();
    assert(collapsedCoupon && collapsedCoupon.height<=65,'Coupon summary is a compact single row');
    const couponUrl=page.url();
-   await page.locator('.showcoupon').click();
+   await page.evaluate(()=>{window.__sfCouponDocumentMark='same-document'});
+   await page.locator('.sf-checkout-coupon-trigger').click();
    assert.equal(page.url(),couponUrl,'Opening coupon never navigates/reloads');
-   assert.equal(await page.locator('.showcoupon').getAttribute('aria-expanded'),'true');
+   assert.equal(await page.evaluate(()=>window.__sfCouponDocumentMark),'same-document','Opening cannot silently reload the same URL');
+   assert.equal(await page.locator('.sf-checkout-coupon-trigger').getAttribute('aria-expanded'),'true');
    assert.equal(await page.locator('form.checkout_coupon').isVisible(),true,'Coupon opens on first click');
    await page.locator('.woocommerce-form-coupon-toggle.sf-checkout-coupon-open').waitFor();
    assert.equal(await page.locator('.sf-checkout-coupon-shell.sf-checkout-coupon-open').count(),1,'Shell follows native Woo disclosure state');
@@ -200,8 +213,9 @@ function html(markup){
    assert.equal(await page.locator('.sf-checkout-coupon-shell > form.checkout_coupon').evaluate(el=>getComputedStyle(el).borderTopStyle),'solid','Expanded coupon separator is inside the outer card');
    assert.equal(await page.locator('.sf-checkout-coupon-shell .woocommerce-info').evaluate(el=>getComputedStyle(el).borderTopStyle),'none','Coupon heading adds no second border');
    assert.equal(await page.locator('.sf-checkout-coupon-shell .woocommerce-info').evaluate(el=>getComputedStyle(el,'::before').content),'none','No default WooCommerce coupon stripe');
-   await page.locator('.showcoupon').click();
+   await page.locator('.sf-checkout-coupon-trigger').click();
    assert.equal(page.url(),couponUrl,'Closing coupon never navigates/reloads');
+   assert.equal(await page.evaluate(()=>window.__sfCouponDocumentMark),'same-document','Closing cannot silently reload the same URL');
    await page.locator('.woocommerce-form-coupon-toggle:not(.sf-checkout-coupon-open)').waitFor();
    assert.equal(await page.locator('.sf-checkout-coupon-shell').evaluate(el=>el.getBoundingClientRect().height)<=68,true,'Coupon restores compact height after closing');
    assert.equal(await page.locator('form.checkout_coupon input[name="coupon_code"]').count(),1,'Original Woo coupon input preserved');

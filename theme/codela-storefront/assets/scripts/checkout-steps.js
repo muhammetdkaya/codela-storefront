@@ -83,10 +83,23 @@
         // disclosure click so an unhandled href="#" never jumps/reloads the page.
         function refineCoupon() {
             const toggle = woo.querySelector('.woocommerce-form-coupon-toggle');
-            const link = toggle?.querySelector('.showcoupon');
+            let link = toggle?.querySelector('.sf-checkout-coupon-trigger, a.showcoupon');
             if (!link) return;
             const notice = link.closest('.woocommerce-info') || link.parentElement;
             if (!notice) return;
+            // A native disclosure button cannot follow href="#" or submit a form.
+            // Keep Woo's original coupon form and its AJAX submission untouched.
+            if (link.matches('a.showcoupon')) {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'sf-checkout-coupon-trigger';
+                button.innerHTML = '<span class="sf-checkout-coupon-icon" aria-hidden="true">' +
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' +
+                    '<path d="M4 10V5a1 1 0 0 1 1-1h6l9 9-7 7-9-9a2 2 0 0 1 0-1Z"/><circle cx="8" cy="8" r="1"/></svg></span>' +
+                    '<span class="sf-checkout-coupon-label"></span><span class="sf-checkout-coupon-chevron" aria-hidden="true"></span>';
+                link.replaceWith(button);
+                link = button;
+            }
             if (!notice.classList.contains('sf-checkout-coupon-ready')) {
                 // Woo's existing text nodes contain the repetitive prompt.
                 // Keep links, notices, fields and coupon behavior unchanged.
@@ -95,8 +108,11 @@
                 }
                 notice.classList.add('sf-checkout-coupon-ready');
             }
-            link.textContent = read('coupon', 'Add discount code');
-            link.setAttribute('aria-label', read('coupon', 'Add discount code'));
+            const label = read('coupon', 'Add discount code');
+            const labelNode = link.querySelector('.sf-checkout-coupon-label');
+            if (labelNode) labelNode.textContent = label;
+            else link.textContent = label;
+            link.setAttribute('aria-label', label);
             // A single, legible disclosure row is enough: the hint made a
             // two-line card before the customer had even opened the coupon.
             notice.querySelector('.sf-checkout-coupon-hint')?.remove();
@@ -143,23 +159,16 @@
                 };
                 if (!coupon.id) coupon.id = 'sf-checkout-coupon-form';
                 link.setAttribute('aria-controls', coupon.id);
-                // Handle the click before Woo's delegated anchor listener to
-                // prevent double toggles and the default "#" page jump.
+                // This type=button has no href and does not match Woo's
+                // .showcoupon selector. Do not autofocus: opening the mobile
+                // keyboard can shift Safari's viewport unexpectedly.
                 link.addEventListener('click', event => {
                     event.preventDefault();
-                    event.stopImmediatePropagation();
                     const wasOpen = coupon.style.display
                         ? coupon.style.display !== 'none'
                         : getComputedStyle(coupon).display !== 'none';
                     coupon.style.display = wasOpen ? 'none' : 'block';
                     sync();
-                    if (!wasOpen) field?.focus({preventScroll:true});
-                }, true);
-                link.addEventListener('keydown', event => {
-                    if (event.key === ' ') {
-                        event.preventDefault();
-                        link.click();
-                    }
                 });
                 new MutationObserver(sync).observe(coupon, {attributes:true,attributeFilter:['style','class']});
                 sync();
@@ -286,7 +295,10 @@
                 const selected = rates?.querySelector('input[type="radio"]:checked, option:checked, input[type="hidden"]');
                 const label = selected?.id ? rates?.querySelector('label[for="' + CSS.escape(selected.id) + '"]') : null;
                 const fallback = selected?.closest('label') || selected?.closest('li')?.querySelector('label') || rates?.querySelector('li:has(input:checked) label, li:has(input[type="hidden"]) label');
-                const text = (label?.textContent || fallback?.textContent || (selected?.tagName === 'OPTION' ? selected.textContent : '') || '').replace(/\s+/g, ' ').trim();
+                const methodText = (label?.textContent || fallback?.textContent || (selected?.tagName === 'OPTION' ? selected.textContent : '') || '').replace(/\s+/g, ' ').trim();
+                // Gönderim is already the row heading. Avoid repeating it.
+                const isFree = /^(?:ücretsiz(?:\s+(?:gönderim|kargo))?|free shipping)(?:\s*[:\-–]\s*(?:₺\s*)?0(?:[,.]0{1,2})?)?$/i.test(methodText);
+                const text = isFree ? (document.documentElement.lang.toLowerCase().startsWith('tr') ? 'Ücretsiz' : 'Free') : methodText;
                 let summary = cell?.querySelector('.sf-checkout-selected-shipping');
                 if (!selected || !text) {
                     summary?.remove();
@@ -300,6 +312,7 @@
                     cell.append(summary);
                 }
                 summary.textContent = text;
+                summary.title = methodText;
                 row.classList.add('sf-checkout-shipping-summary-ready');
             });
         }
