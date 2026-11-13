@@ -1192,7 +1192,7 @@ body.woocommerce-checkout.sf-checkout-steps-active.sf-checkout-step-3 .sf-checko
  white-space:nowrap!important;
 }
 body.woocommerce-checkout.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page #order_review table.woocommerce-checkout-review-order-table tfoot tr.sf-checkout-shipping-summary-ready>td{
- white-space:nowrap!important;max-width:1px;
+ white-space:nowrap!important;
 }
 body.woocommerce-checkout.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page #order_review .sf-checkout-selected-shipping{
  display:block!important;width:100%;max-width:100%;white-space:nowrap!important;
