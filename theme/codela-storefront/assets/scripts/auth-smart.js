@@ -256,6 +256,8 @@
     });
     input.addEventListener('keydown',event=>{
       if(event.key==='Enter'){
+        // Let IME candidate confirmation pass through; Safari may report keyCode 229.
+        if(event.isComposing || event.keyCode===229)return;
         event.preventDefault();
         if(stage==='existing' && loginPassword.value)loginForm.requestSubmit();
         else if(stage==='new' && registerForm && root.classList.contains('sf-smart-register-ready'))registerForm.requestSubmit();
