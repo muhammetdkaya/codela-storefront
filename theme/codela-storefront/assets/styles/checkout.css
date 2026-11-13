@@ -998,3 +998,59 @@ body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #order_review
 body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #order_review :is(#shipping_method,.woocommerce-shipping-methods) li:has(input:checked) label{
   font-weight:650;color:var(--sf-ui-ink);
 }
+
+
+/* 0.1.306 — Native Woo shipping methods remain real radio choices.
+   Different rates (e.g. free vs flat) are individually tap-sized, with the
+   selected row visually distinct, in the existing Delivery step only. */
+body.sf-checkout-steps-active.sf-checkout-step-2
+ .sf-checkout-page #order_review .woocommerce-checkout-review-order-table
+ :is(#shipping_method,.woocommerce-shipping-methods){
+  display:grid;gap:8px;width:100%;text-align:start;
+}
+body.sf-checkout-steps-active.sf-checkout-step-2
+ .sf-checkout-page #order_review .woocommerce-checkout-review-order-table
+ :is(#shipping_method,.woocommerce-shipping-methods)>li:has(input[type="radio"]){
+  box-sizing:border-box;display:flex!important;
+  align-items:center;justify-content:flex-start!important;
+  gap:11px;width:100%;min-width:0;min-height:56px;
+  margin:0!important;padding:12px 14px!important;
+  border:1px solid var(--sf-ui-border);
+  border-radius:var(--sf-ui-control-radius);
+  background:var(--sf-ui-surface);
+  color:var(--sf-ui-control-ink);
+  transition:border-color .16s ease,background-color .16s ease;
+}
+body.sf-checkout-steps-active.sf-checkout-step-2
+ .sf-checkout-page #order_review .woocommerce-checkout-review-order-table
+ :is(#shipping_method,.woocommerce-shipping-methods)>li:has(input[type="radio"]:checked){
+  border-color:var(--sf-ui-ink);background:var(--sf-ui-surface-muted);
+}
+body.sf-checkout-steps-active.sf-checkout-step-2
+ .sf-checkout-page #order_review .woocommerce-checkout-review-order-table
+ :is(#shipping_method,.woocommerce-shipping-methods)>li:focus-within{
+  outline:2px solid var(--sf-ui-ink);outline-offset:2px;
+}
+body.sf-checkout-steps-active.sf-checkout-step-2
+ .sf-checkout-page #order_review .woocommerce-checkout-review-order-table
+ :is(#shipping_method,.woocommerce-shipping-methods)>li:has(input[type="radio"])>label{
+  display:flex;align-items:center;justify-content:space-between;flex:1;
+  flex-wrap:wrap;gap:4px 10px;min-width:0;margin:0;cursor:pointer;
+  color:inherit;font-size:14px;line-height:1.5;font-weight:500;
+}
+body.sf-checkout-steps-active.sf-checkout-step-2
+ .sf-checkout-page #order_review .woocommerce-checkout-review-order-table
+ :is(#shipping_method,.woocommerce-shipping-methods)>li:has(input[type="radio"]) :is(.woocommerce-Price-amount,.amount){
+  margin-inline-start:auto;white-space:nowrap;font-weight:600;
+}
+body.sf-checkout-steps-active.sf-checkout-step-2
+ .sf-checkout-page #order_review .woocommerce-checkout-review-order-table
+ :is(#shipping_method,.woocommerce-shipping-methods)>li:has(input[type="radio"])>input[type="radio"]{
+  flex:none;min-width:19px;min-height:19px;width:19px;height:19px;
+  margin:0;accent-color:var(--sf-ui-ink);
+}
+@media(prefers-reduced-motion:reduce){
+ body.sf-checkout-steps-active.sf-checkout-step-2
+  .sf-checkout-page #order_review .woocommerce-checkout-review-order-table
+  :is(#shipping_method,.woocommerce-shipping-methods)>li:has(input[type="radio"]){transition:none}
+}

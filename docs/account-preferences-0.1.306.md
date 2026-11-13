@@ -1,0 +1,6 @@
+# 0.1.306 — Woo native Account and shipping presentation
+
+- Codela Consent Center already owns the `communication-preferences` rewrite route, endpoint callback, persistence and consent form. Register its endpoint in Woo's `woocommerce_get_query_vars` list only when that renderer is installed; this repairs `WC()->query->get_current_endpoint()`, `is_wc_endpoint_url()`, mobile dashboard detection and the independent account header/back state. No consent processing or saved preferences changed.
+- Native `woocommerce-EditAccountForm` is restyled using existing Storefront tokens; fields, password change, Woo nonce, save action, and third-party hooks remain native. Two-column first/last name on desktop, single column mobile; compact surfaces and full-width mobile save.
+- Delivery-only native Woo shipping radios use clearly selectable 56px minimum touch cards; no scripted selection, fake costs, hiding native fields, or changes to gateway/order totals. Free and flat rates are styled uniformly.
+- Static contracts added to release checks. Real WordPress/Woo live endpoint, customer save, shipping fragment AJAX and physical Safari tests still need staging or production acceptance. This is a GitHub-only release; host deployment not asserted.
