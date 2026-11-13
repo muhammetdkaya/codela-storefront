@@ -118,7 +118,10 @@ function html(markup){
       const bar=document.querySelector('#order_review .cdl-fsb');
       bar.classList.add('is-done');
       bar.querySelector('.cdl-fsb-text > span:last-child').textContent='Kargonuz ücretsiz.';
-      window.jQuery(document.body).trigger('updated_checkout');
+      // Exercise the native stepper's shipping decorator, without
+      // introducing a fake jQuery runtime into this browser fixture.
+      document.querySelector('.sf-checkout-step-back').click();
+      document.querySelector('.sf-checkout-next').click();
    });
    assert.equal(await page.locator('.cdl-fsb.is-done .cdl-fsb-text > span:last-child').innerText(),'Ücretsiz kargo',
      'Only success wording changes; payment method labels and shipping logic remain Woo/plugin owned');
