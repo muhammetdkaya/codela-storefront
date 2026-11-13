@@ -15,7 +15,11 @@
         const review = form?.querySelector('#order_review');
         const nativeSubmit = review?.querySelector('#place_order');
         if (!scope || !form || !billing || !delivery || !review || !nativeSubmit ||
-            scope.querySelector('.sf-checkout-stepper')) return;
+            scope.querySelector('.sf-checkout-stepper')) {
+            // Block checkout / unsupported fields keep Woo's native fallback.
+            window.codelaSFCheckoutBoot?.fallback();
+            return;
+        }
 
         const labels = window.codelaSFCheckoutSteps || {};
         const read = (key, fallback) => typeof labels[key] === 'string' && labels[key] ? labels[key] : fallback;
@@ -400,6 +404,9 @@
         // The fields' own change handlers continue to drive Woo checkout AJAX.
         categorizeExtras();
         showStep(1, false);
+        // Release the shared skeleton only AFTER native Woo fields and the
+        // stepper/fixed footer are in their final live positions.
+        window.codelaSFCheckoutBoot?.ready();
     }
 
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true});
