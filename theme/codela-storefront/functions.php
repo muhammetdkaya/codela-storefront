@@ -126,6 +126,33 @@ add_action( 'init', function() {
     register_block_type( 'codela/storefront-footer', [ 'api_version' => 3, 'render_callback' => 'codela_sf_footer', 'supports' => [ 'html' => false, 'inserter' => false ] ] );
 } );
 /**
+ * Checkout payment/thank-you endpoints must remain completely untouched.
+ * Only the native checkout form document receives an inert loading preview.
+ */
+function codela_sf_checkout_skeleton_allowed(): bool {
+    return function_exists( 'is_checkout' ) && is_checkout()
+        && ! ( function_exists( 'is_wc_endpoint_url' )
+            && ( is_wc_endpoint_url( 'order-pay' ) || is_wc_endpoint_url( 'order-received' ) ) );
+}
+
+/**
+ * This is the SAME HTML fragment used by navigation-feedback.js. A skeleton
+ * is server-rendered before the shell, without introducing a second Woo form.
+ * With JS disabled no awaiting class is set and the native Woo page is shown.
+ */
+add_action( 'wp_body_open', static function() {
+    if ( ! codela_sf_ready() ) { return; }
+    $kind = function_exists( 'is_cart' ) && is_cart() ? 'cart'
+        : ( codela_sf_checkout_skeleton_allowed() ? 'checkout' : '' );
+    if ( ! $kind ) { return; }
+    echo '<section class="sf-commerce-entry sf-commerce-entry--' . esc_attr( $kind ) . ' sf-skeleton" role="status" aria-live="polite">'
+        . '<span class="sf-skeleton-status">' . esc_html__( 'Loading…', 'codela-storefront' ) . '</span>'
+        . '<div class="sf-skeleton-layout" aria-hidden="true">'
+        . codela_sf_commerce_skeleton_markup( $kind )
+        . '</div></section>';
+}, 1 );
+
+/**
  * Critical cart first paint: avoid rendering the old Woo cart for a frame
  * before the shared Store API view has mounted. The marker is created only by
  * JavaScript, so with JS disabled native WooCommerce remains visible. A short
@@ -143,6 +170,11 @@ add_action( 'wp_head', static function() {
     html.sf-cart-awaiting body.woocommerce-cart .wp-block-post-content:has(.woocommerce-cart-form),
     html.sf-cart-awaiting body.woocommerce-cart main > .woocommerce:has(.woocommerce-cart-form) {
         visibility:hidden!important;pointer-events:none!important;
+    }
+    /* Legacy pseudo silhouette only when a custom cart template omits
+       wp_body_open; the real first paint uses the shared HTML fragment. */
+    html.sf-cart-awaiting body.woocommerce-cart:has(.sf-commerce-entry) .sf-cart-page::before {
+        display:none!important;
     }
     html.sf-cart-awaiting body.woocommerce-cart .sf-cart-page::before {
         content:"";display:block;max-width:780px;width:100%;
@@ -180,6 +212,32 @@ add_action( 'wp_head', static function() {
                 clearTimeout(timer);
                 revealNative();
             }
+        };
+    }());
+    </script>
+    <?php
+}, 0 );
+
+/* Checkout uses the exact same early first-paint handshake as Cart. No legacy
+ * form or gateway surface is hidden on order-pay/order-received endpoints. */
+add_action( 'wp_head', static function() {
+    if ( ! codela_sf_ready() || ! codela_sf_checkout_skeleton_allowed() ) { return; }
+    ?>
+    <style id="codela-checkout-first-paint">
+    html.sf-checkout-awaiting body.woocommerce-checkout .sf-checkout-page .wp-block-post-content,
+    html.sf-checkout-awaiting body.woocommerce-checkout .sf-checkout-page > .woocommerce {
+        visibility:hidden!important;pointer-events:none!important;
+    }
+    </style>
+    <script id="codela-checkout-first-paint-script">
+    (function () {
+        var root = document.documentElement;
+        root.classList.add('sf-checkout-awaiting');
+        function clear() { root.classList.remove('sf-checkout-awaiting'); }
+        var timer = setTimeout(clear, 8000);
+        window.codelaSFCheckoutBoot = {
+            ready: function () { clearTimeout(timer); clear(); },
+            fallback: function () { clearTimeout(timer); clear(); }
         };
     }());
     </script>
@@ -241,6 +299,14 @@ add_action( 'wp_enqueue_scripts', function() {
             'productBase' => home_url( '/' . trim( explode( '%', wc_get_permalink_structure()['product_rewrite_slug'] )[0], '/' ) . '/' ),
             'catalogBases' => [ home_url( '/' . wc_get_permalink_structure()['category_rewrite_slug'] . '/' ), home_url( '/' . wc_get_permalink_structure()['tag_rewrite_slug'] . '/' ) ],
             'account' => wc_get_page_permalink( 'myaccount' ),
+            'cart' => wc_get_cart_url(),
+            'checkout' => wc_get_checkout_url(),
+            'commerceSkeletons' => [
+                'cart' => codela_sf_commerce_skeleton_markup( 'cart' ),
+                'checkout' => codela_sf_commerce_skeleton_markup( 'checkout' ),
+            ],
+            'cartLabel' => __( 'Cart', 'codela-storefront' ),
+            'checkoutLabel' => __( 'Checkout', 'woocommerce' ),
             'loading' => __( 'Loading…', 'codela-storefront' ),
             // Static target layout only: no price, product ID, form or cart action.
             'purchasePreview' => codela_sf_navigation_purchase_preview(),
@@ -272,6 +338,11 @@ add_action( 'wp_enqueue_scripts', function() {
         // The adapter removes the prepaint state after mounting; the head bootstrap owns failure fallback.
         // Reuse Woo's PhotoSwipe; preserve native responsive photo loading.
         wp_enqueue_script( 'codela-storefront-gallery-defer', $root_uri . 'scripts/gallery-defer.js', [ 'wc-single-product', 'photoswipe-ui-default' ], $style_version, true );
+    }
+    if ( function_exists( 'is_cart' ) && is_cart() || codela_sf_checkout_skeleton_allowed() ) {
+        // Source pages bundle the same CSS with navigation feedback; commerce
+        // documents load only this tiny shape stylesheet, not router scripts.
+        wp_enqueue_style( 'codela-storefront-commerce-skeleton', $root_uri . 'styles/commerce-skeleton.css', [ 'codela-storefront-components' ], $style_version );
     }
     if ( function_exists( 'is_cart' ) && is_cart() ) {
         // Native Woo Cart Block or classic shortcode remains fully authoritative.
