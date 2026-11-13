@@ -1,0 +1,38 @@
+name: Native cart page design check (no deployment)
+
+on:
+  pull_request:
+    paths:
+      - 'theme/codela-storefront/templates/page-cart.html'
+      - 'theme/codela-storefront/assets/styles/cart-page.css'
+      - 'theme/codela-storefront/functions.php'
+      - 'tests/cart-page-browser.cjs'
+      - 'tests/cart-design.cjs'
+      - '.github/workflows/cart-page.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cart-page:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install locked browser test dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Install Chromium and WebKit browser runtimes
+        run: npx playwright install --with-deps chromium webkit
+      - name: Verify cart source and native behavior contracts
+        run: |
+          node --check tests/cart-page-browser.cjs
+          node tests/cart-design.cjs
+      - name: Check mobile and desktop layout in Chromium
+        run: node tests/cart-page-browser.cjs
+      - name: Check mobile and desktop layout in WebKit
+        run: TEST_WEBKIT=1 node tests/cart-page-browser.cjs

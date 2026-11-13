@@ -44,4 +44,22 @@ assert(css.includes('.sf-cart-shipping-ring') && js.includes('rawPercent'),'Orig
 assert(css.includes('.sf-cart-checkout-command'),'Integrated subtotal and CTA share one surface');
 assert(html.includes('aria-labelledby="sf-panel-title"'),'Accessible native dialog');
 assert(!js.includes("t('Continue shopping')"),'No empty-state CTA');
+// Dedicated Cart page inherits the popup materials but not its independent Store API
+// rendering. The real Woo Cart Block/classic shortcode remains in post-content.
+const cartPage=fs.readFileSync(dir+'assets/styles/cart-page.css','utf8');
+const cartTemplate=fs.readFileSync(dir+'templates/page-cart.html','utf8');
+const functions=fs.readFileSync(dir+'functions.php','utf8');
+assert(cartTemplate.includes('woocommerce/page-content-wrapper {"page":"cart"}'),'Woo recognizes cart template');
+assert(cartTemplate.includes('wp:post-content {"align":"wide"}'),'Assigned native Woo cart content is rendered');
+assert(cartTemplate.includes('sf-content sf-cart-page'),'Only real cart page gets its own shell');
+assert(!cartTemplate.includes('wp:woocommerce/cart '),'Cart Block is not duplicated outside page content');
+assert(functions.includes("if ( function_exists( 'is_cart' ) && is_cart() )"),'Dedicated stylesheet loads only on Woo Cart');
+assert(functions.includes("'styles/cart-page.css', [ 'codela-storefront-components' ]"),'Cart style follows shared component tokens');
+assert(cartPage.includes('.wc-block-cart__main') && cartPage.includes('.wc-block-cart__sidebar'),'Block cart and summary keep native source');
+assert(cartPage.includes('.woocommerce-cart-form') && cartPage.includes('.cart-collaterals'),'Classic cart remains supported');
+assert(cartPage.includes('.wp-block-shortcode > .woocommerce'),'Classic shortcode wrapper gets matching layout');
+assert(cartPage.includes('wc-block-components-totals-coupon__form') && cartPage.includes('#coupon_code'),'Native coupon interactions remain available');
+assert(cartPage.includes('wc-block-components-quantity-selector') && cartPage.includes('input.qty'),'Both quantity mechanisms remain native');
+assert(cartPage.includes('wc-block-cart__submit-button') && cartPage.includes('wc-proceed-to-checkout'),'Native checkout links remain primary');
+assert(!cartPage.includes('display:none!important}.wc-block-components-totals-coupon'),'Coupon content is not disabled');
 console.log('Mobile cart layout contract: passed');

@@ -212,6 +212,11 @@ add_action( 'wp_enqueue_scripts', function() {
         // Reuse Woo's PhotoSwipe; preserve native responsive photo loading.
         wp_enqueue_script( 'codela-storefront-gallery-defer', $root_uri . 'scripts/gallery-defer.js', [ 'wc-single-product', 'photoswipe-ui-default' ], $style_version, true );
     }
+    if ( function_exists( 'is_cart' ) && is_cart() ) {
+        // Native Woo Cart Block or classic shortcode remains fully authoritative.
+        // Only the assigned Cart page receives popup-matched presentation.
+        wp_enqueue_style( 'codela-storefront-cart-page', $root_uri . 'styles/cart-page.css', [ 'codela-storefront-components' ], $style_version );
+    }
     if ( function_exists( 'is_checkout' ) && is_checkout() ) {
         // Native Woo keeps the only checkout form, AJAX, coupon and gateway.
         wp_enqueue_style( 'codela-storefront-checkout', $root_uri . 'styles/checkout.css', [ 'codela-storefront-components' ], $style_version );
