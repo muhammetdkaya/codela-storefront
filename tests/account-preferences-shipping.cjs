@@ -11,6 +11,7 @@ assert(account.includes("$vars['communication-preferences'] = 'communication-pre
 assert(account.includes("has_action( 'woocommerce_account_communication-preferences_endpoint'"),'Only active consent renderer registered');
 assert(account.includes("codela_consent_center_render_preferences_endpoint"),'No theme-built second preferences engine');
 assert(account.includes("WC()->query->get_current_endpoint()"),'Header and endpoint content use Woo query');
+assert(account.includes("'communication-preferences' === $endpoint"),'Plugin preferences owns only one title');
 assert(account.includes("! is_wc_endpoint_url()"),'Dashboard body state relies on WC query registry');
 assert(css.includes('form.woocommerce-EditAccountForm'),'Profile Woo form scoped');
 assert(css.includes('button[name="save_account_details"]'),'Native Woo save button retained');

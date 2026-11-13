@@ -8,7 +8,7 @@ const icon=fs.readFileSync(dir+'assets/icons/trash-2.svg','utf8');
 assert(js.includes("t('Items in cart: %d')"),'Localized item count');
 assert(js.includes('sf-stepper sf-ui-surface'),'Native glass quantity');
 assert(js.includes('sf-remove sf-ui-icon-button sf-ui-icon-button--clear'),'Removal retains existing UI Kit icon button');
-assert(js.includes('sf-remove-icon" aria-hidden="true"'),'Decorative removal icon');
+assert(js.includes('svg class="sf-remove-icon"') && js.includes('viewBox="0 0 24 24"'),'Square stroked removal SVG');
 assert(js.includes("escape(t('Remove'))"),'Accessible label');
 assert(js.includes("'/remove-item'")&&js.includes("'/update-item'"),'Woo API mutations');
 assert(css.includes('#sf-panel.is-cart-panel:not(.is-product-cart) #sf-panel-title'),'Heading hidden visually');
@@ -28,7 +28,7 @@ assert(css.includes('--sf-state-heading-size:19px') && css.includes('--sf-state-
 assert(css.includes('min-width:44px;min-height:44px'),'Remove retains minimum touch target');
 assert(css.includes('width:32px;height:32px'),'Glass removal visual is smaller than its touch target');
 assert(css.includes('rgba(255,255,255,.55)'),'Quantity glass material is less dominant');
-assert(css.includes("mask:url('../icons/trash-2.svg')"),'Shared licensed icon');
+assert(css.includes('svg.sf-remove-icon') && css.includes('stroke:currentColor'),'Remove icon does not use compressed CSS mask');
 assert(icon.includes('xmlns="http://www.w3.org/2000/svg"'),'Icon is SVG');
 assert(icon.includes('width="56" height="56" viewBox="0 0 56 56"'),'Filled deletion glyph matches existing icon geometry');
 assert(html.includes('id="sf-cart-count" hidden'),'Cart count has an independent header slot');

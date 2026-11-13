@@ -494,3 +494,21 @@ add_filter( 'codela_store_appearance_surface_mode', static function( $mode, $sur
     return 'account' === $surface ? 'theme' : $mode;
 }, 10, 2 );
 
+
+/**
+ * Thumbnail alongside each product in Woo's classic order-review template.
+ * The hook runs during AJAX fragment updates too; the Cart and Blocks paths
+ * keep their own rendering, validation and item meta.
+ */
+add_filter( 'woocommerce_cart_item_name', static function ( $name, $item ) {
+    if ( ! did_action( 'woocommerce_review_order_before_cart_contents' ) ) { return $name; }
+    $product = $item['data'] ?? null;
+    if ( ! $product instanceof WC_Product ) { return $name; }
+    $thumbnail = $product->get_image( 'woocommerce_thumbnail', [
+        'class' => 'sf-checkout-product-image',
+        'loading' => 'lazy',
+        'decoding' => 'async',
+    ] );
+    return '<span class="sf-checkout-product-main">' . $thumbnail
+        . '<span class="sf-checkout-product-label">' . $name . '</span></span>';
+}, 30, 2 );

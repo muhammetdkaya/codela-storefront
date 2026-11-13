@@ -6,11 +6,11 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Sepet popup'ı ve normal sepet sayfasında ürün silme, artık doğrudan tek kalıcı sepet kontrolünden yönetiliyor; başka tıklama işleyicileri silme işlemini bozamıyor.",
-    "Sepet ve ödeme bağlantılarına dokunulduğu anda, yeni sayfanın açılması beklenmeden mevcut ortak skeleton gösteriliyor; doğal WooCommerce yönlendirmeleri korunuyor.",
-    "Ücretsiz kargo başarı metni 'Ücretsiz kargo' olarak kısaltıldı; teslimat adımındaki kargo göstergesi, seçili gönderim yöntemleri ve kart görselliği temayla uyumlu hale getirildi.",
-    "Hesabım menüsünün sipariş, adres, güvenlik, tercihler, hesap ve çıkış ikonları tutarlı çizgi kalınlığı ve biçimiyle yenilendi.",
-    "6 haneli hızlı girişte son rakam girildikten sonra doğrulama sürerken altı kutunun çerçevesi dönüyor; yeşil başarı durumu yalnızca sunucu doğrulamasından sonra gösteriliyor.",
-    "Chromium ve WebKit odak testleri sepet silme, tıklama anında skeleton, doğal geçişler, teslimat seçenekleri ve PIN doğrulama animasyonunu kapsıyor."
+    "Tercihlerim uç noktasında eklenti başlığı tek başına gösterilir; yinelenen tema başlığı kaldırıldı.",
+    "İndirim kodu başlığı artık sayfayı başa döndürmeden açılıp kapanıyor; WooCommerce'in gerçek AJAX kupon formu korunuyor.",
+    "İndirim kodu kartı tek dış çerçeveye ve ortalanmış başlığa sahip; içteki çift bordürler kaldırıldı.",
+    "Ödeme adımında seçili kargo yöntemi yalnızca salt-okunur özet olarak görünüyor; ücret tercihi Teslimat'ta yapılmaya devam ediyor.",
+    "Sipariş özetinde gerçek WooCommerce ürün görselleri, ad ve tek satırda adet gösterimi eklendi; blok ödeme yapısı değiştirilmedi.",
+    "Sepet ürün silme kontrolü daha dengeli çizgisel 24px SVG ikon kullanıyor; tek Woo Store API silme işleyicisi korunuyor."
   ]
 }

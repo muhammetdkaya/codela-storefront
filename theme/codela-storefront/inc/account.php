@@ -390,7 +390,7 @@ function codela_sf_account_icon( string $endpoint ): string {
 add_action( 'woocommerce_account_content', function (): void {
     if ( ! is_user_logged_in() || ! function_exists( 'WC' ) || ! WC()->query ) { return; }
     $endpoint = WC()->query->get_current_endpoint();
-    if ( ! $endpoint ) { return; }
+    if ( ! $endpoint || 'communication-preferences' === $endpoint ) { return; } // The consent plugin renders its own title.
     $items = wc_get_account_menu_items();
     $title = $items[ $endpoint ] ?? WC()->query->get_endpoint_title( $endpoint );
     if ( $title ) { echo '<h1 class="sf-account-endpoint-title">' . esc_html( $title ) . '</h1>'; }
