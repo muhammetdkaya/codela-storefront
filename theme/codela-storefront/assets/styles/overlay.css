@@ -294,18 +294,18 @@
 #sf-panel .sf-close.sf-initial-focus:focus-visible{outline:none!important}
 
 /* Full-screen mobile cart reuses the native Woo Store API and existing UI Kit. */
-#sf-panel.is-cart-panel .sf-cart-count{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-count{
   max-width:780px;margin:0 auto 8px;color:var(--sf-muted,#77776d);
   font-size:12px;line-height:1.5;font-weight:400;
 }
 #sf-panel.is-product-cart .sf-cart-count{display:none}
 /* Optional module-owned shipping progress. Theme owns presentation, never calculations. */
-#sf-panel.is-cart-panel #sf-cart-progress{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress{
   max-width:780px;
   margin:0 auto 16px;
 }
-#sf-panel.is-cart-panel #sf-cart-progress[hidden]{display:none!important}
-#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress[hidden]{display:none!important}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb{
   margin:0;
   padding:13px 15px;
   border:1px solid var(--sf-ui-border);
@@ -313,24 +313,24 @@
   background:var(--sf-ui-surface);
   box-shadow:var(--sf-ui-glass-control-shadow);
 }
-#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb-text{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb-text{
   display:flex;
   align-items:center;
   gap:10px;
   font-size:13px;
   line-height:1.45;
 }
-#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb-text strong{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb-text strong{
   font-weight:600;
   font-variant-numeric:tabular-nums;
 }
-#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb-ico{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb-ico{
   display:inline-flex;
   flex:none;
   color:#1f7a35;
 }
-#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb-ico svg{width:18px;height:18px}
-#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb-track{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb-ico svg{width:18px;height:18px}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb-track{
   position:relative;
   height:5px;
   margin-top:9px;
@@ -338,45 +338,45 @@
   background:color-mix(in srgb,currentColor 10%,transparent);
   overflow:hidden;
 }
-#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb-fill{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb-fill{
   position:absolute;
   inset:0 auto 0 0;
   border-radius:inherit;
   background:#34c759;
   transition:width .4s ease;
 }
-#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb.is-done{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb.is-done{
   border-color:rgba(31,122,53,.35);
   background:rgba(52,199,89,.07);
 }
-#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb.is-done .cdl-fsb-text{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb.is-done .cdl-fsb-text{
   color:#1f7a35;
   font-weight:600;
 }
-#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb.is-warn{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb.is-warn{
   border-color:rgba(182,68,0,.4);
   background:rgba(182,68,0,.07);
 }
-#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb.is-warn .cdl-fsb-text,
-#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb.is-warn .cdl-fsb-ico{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb.is-warn .cdl-fsb-text,
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb.is-warn .cdl-fsb-ico{
   color:#b64400;
 }
-#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb.is-warn .cdl-fsb-fill{background:#b64400}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb.is-warn .cdl-fsb-fill{background:#b64400}
 @media(prefers-reduced-motion:reduce){
-  #sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb-fill{transition:none}
+  :is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb-fill{transition:none}
 }
-#sf-panel.is-cart-panel .sf-stepper.sf-ui-surface{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-stepper.sf-ui-surface{
   border-color:transparent;border-radius:var(--sf-ui-pill);
   --sf-ui-surface-shadow:var(--sf-ui-glass-thumb-shadow);
 }
 /* A 32px subtle glass disc within the accessible 44px remove target.
    The shared clear IconButton still owns native focus and pressed feedback. */
-#sf-panel.is-cart-panel .sf-remove.sf-ui-icon-button{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-remove.sf-ui-icon-button{
   position:relative;flex:none;width:44px;height:44px;min-width:44px;min-height:44px;
   display:grid;place-items:center;text-decoration:none!important;
   background:transparent!important;box-shadow:none!important;color:var(--sf-ui-glass-ink);
 }
-#sf-panel.is-cart-panel .sf-remove.sf-ui-icon-button::before{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-remove.sf-ui-icon-button::before{
   content:'';position:absolute;top:50%;left:50%;width:32px;height:32px;
   transform:translate(-50%,-50%);border-radius:var(--sf-ui-pill);
   border:1px solid var(--sf-ui-glass-border);
@@ -384,7 +384,7 @@
   box-shadow:var(--sf-ui-glass-thumb-shadow);
   pointer-events:none;
 }
-#sf-panel.is-cart-panel .sf-remove-icon{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-remove-icon{
   display:block;position:relative;z-index:1;width:17px;height:17px;
   background:currentColor;opacity:.87;
   -webkit-mask:url('../icons/trash-2.svg') center/contain no-repeat;
@@ -399,91 +399,91 @@
     position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
     clip-path:inset(50%);white-space:nowrap;border:0;
   }
-  #sf-panel.is-cart-panel:not(.is-product-cart) #sf-cart{padding:4px var(--sf-overlay-gutter) 24px}
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-row{
+  :is(#sf-panel.is-cart-panel:not(.is-product-cart),.sf-cart-page-panel) #sf-cart{padding:4px var(--sf-overlay-gutter) 24px}
+  :is(#sf-panel.is-cart-panel:not(.is-product-cart),.sf-cart-page-panel) .sf-cart-row{
     grid-template-columns:86px minmax(0,1fr);gap:12px;align-items:start;padding:12px 0;
   }
-  #sf-panel.is-cart-panel:not(.is-product-cart) #sf-cart-items>.sf-cart-row:first-child{padding-top:0}
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-row>a{
+  :is(#sf-panel.is-cart-panel:not(.is-product-cart),.sf-cart-page-panel) #sf-cart-items>.sf-cart-row:first-child{padding-top:0}
+  :is(#sf-panel.is-cart-panel:not(.is-product-cart),.sf-cart-page-panel) .sf-cart-row>a{
     align-self:start;min-height:0;width:100%;height:auto;aspect-ratio:1;
   }
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-photo{
+  :is(#sf-panel.is-cart-panel:not(.is-product-cart),.sf-cart-page-panel) .sf-cart-photo{
     width:100%;height:100%;object-fit:cover;
   }
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-detail{min-height:0}
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-row h3{
+  :is(#sf-panel.is-cart-panel:not(.is-product-cart),.sf-cart-page-panel) .sf-cart-detail{min-height:0}
+  :is(#sf-panel.is-cart-panel:not(.is-product-cart),.sf-cart-page-panel) .sf-cart-row h3{
     display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
     overflow:hidden;min-width:0;margin:0 0 5px;
     font-size:14px;line-height:1.4;font-weight:500;letter-spacing:-.01em;
   }
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-price{
+  :is(#sf-panel.is-cart-panel:not(.is-product-cart),.sf-cart-page-panel) .sf-cart-price{
     font-size:15px;line-height:1.4;font-weight:500;
   }
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-quantity{
+  :is(#sf-panel.is-cart-panel:not(.is-product-cart),.sf-cart-page-panel) .sf-quantity{
     margin-top:0;padding-top:4px;gap:4px 8px;flex-wrap:nowrap;
   }
   /* Separate the 30px glass capsule from the 44px native touch targets.
      Previously min-height:44px (and overflow:hidden in storefront.css) kept
      the visible capsule too tall even when its width had been reduced. */
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-stepper{
+  :is(#sf-panel.is-cart-panel:not(.is-product-cart),.sf-cart-page-panel) .sf-stepper{
     display:inline-flex;align-items:center;
     height:30px;min-height:30px;overflow:visible;
     border-radius:var(--sf-ui-pill);
     --sf-ui-glass-surface:rgba(255,255,255,.55);
     --sf-ui-surface-shadow:var(--sf-ui-glass-thumb-shadow);
   }
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-stepper button{
+  :is(#sf-panel.is-cart-panel:not(.is-product-cart),.sf-cart-page-panel) .sf-stepper button{
     flex:0 0 44px;width:44px;height:44px;min-height:44px;
     font-size:16px;font-weight:400;padding:0;line-height:1;
     /* Buttons extend 7px above/below the capsule and remain fully clickable. */
   }
   /* Target only the quantity text. Targeting every span stretches the nested
      shared 16px spinner into an ellipse and causes malformed loading arcs. */
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-stepper .sf-cart-quantity-current{
+  :is(#sf-panel.is-cart-panel:not(.is-product-cart),.sf-cart-page-panel) .sf-stepper .sf-cart-quantity-current{
     flex:0 0 auto;min-width:14px;padding:0;font-size:13px;line-height:1;
   }
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-busy>.sf-ui-spinner{
+  :is(#sf-panel.is-cart-panel:not(.is-product-cart),.sf-cart-page-panel) .sf-cart-busy>.sf-ui-spinner{
     display:block;flex:none;width:16px;height:16px;min-width:0;min-height:0;
     padding:0;aspect-ratio:1;border-radius:50%;
   }
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-bottom{
+  :is(#sf-panel.is-cart-panel:not(.is-product-cart),.sf-cart-page-panel) .sf-cart-bottom{
     padding-top:14px;border-top-color:color-mix(in srgb,var(--sf-ui-border) 60%,transparent);
   }
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-subtotal{font-size:14px}
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-subtotal strong{font-size:18px;font-weight:600}
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-bottom p{margin:7px auto 13px}
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-empty{
+  :is(#sf-panel.is-cart-panel:not(.is-product-cart),.sf-cart-page-panel) .sf-subtotal{font-size:14px}
+  :is(#sf-panel.is-cart-panel:not(.is-product-cart),.sf-cart-page-panel) .sf-subtotal strong{font-size:18px;font-weight:600}
+  :is(#sf-panel.is-cart-panel:not(.is-product-cart),.sf-cart-page-panel) .sf-cart-bottom p{margin:7px auto 13px}
+  :is(#sf-panel.is-cart-panel:not(.is-product-cart),.sf-cart-page-panel) .sf-cart-empty{
     min-height:min(39dvh,275px);padding:16px 12px;transform:translateY(-19px);
   }
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-empty-mark{
+  :is(#sf-panel.is-cart-panel:not(.is-product-cart),.sf-cart-page-panel) .sf-cart-empty-mark{
     width:var(--sf-state-mark-size);height:var(--sf-state-mark-size);margin-bottom:var(--sf-state-mark-gap);background-size:var(--sf-state-glyph-size) var(--sf-state-glyph-size);
   }
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-empty h3{
+  :is(#sf-panel.is-cart-panel:not(.is-product-cart),.sf-cart-page-panel) .sf-cart-empty h3{
     font-size:var(--sf-state-heading-size);font-weight:var(--sf-state-heading-weight);letter-spacing:var(--sf-state-heading-tracking);line-height:var(--sf-state-heading-leading);
   }
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-empty p{
+  :is(#sf-panel.is-cart-panel:not(.is-product-cart),.sf-cart-page-panel) .sf-cart-empty p{
     max-width:min(330px,100%);margin-top:var(--sf-state-copy-gap);font-size:var(--sf-state-copy-size);line-height:var(--sf-state-copy-leading);
   }
 }
 @media(max-width:360px){
-  #sf-panel.is-cart-panel:not(.is-product-cart) .sf-cart-row{
+  :is(#sf-panel.is-cart-panel:not(.is-product-cart),.sf-cart-page-panel) .sf-cart-row{
     grid-template-columns:72px minmax(0,1fr);gap:12px;
   }
 }
 
 /* Cart uses the toolbar gutter for its list, feedback and summary.
    Keep the scrollable list independent of the checkout/dock area. */
-#sf-panel.is-cart-panel #sf-cart{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart{
   padding:24px var(--sf-overlay-gutter) 28px;
   scrollbar-width:thin;
 }
-#sf-panel.is-cart-panel .sf-cart-bottom{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-bottom{
   padding-inline:var(--sf-overlay-gutter);
   padding-top:20px;
 }
-#sf-panel.is-cart-panel .sf-cart-bottom .sf-ui-button{display:flex}
-#sf-panel.is-cart-panel .sf-status{padding-inline:var(--sf-overlay-gutter)}
-#sf-panel.is-cart-panel #sf-cart-items{max-width:780px;margin-inline:auto}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-bottom .sf-ui-button{display:flex}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-status{padding-inline:var(--sf-overlay-gutter)}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-items{max-width:780px;margin-inline:auto}
 /* Shared empty-state design measurements for Cart and guest Account:
    one token set prevents divergent icon, heading and supporting-copy sizes. */
 #sf-panel{
@@ -499,16 +499,16 @@
   --sf-state-copy-gap:7px;
 }
 /* Empty cart is a composed state, not a second cart or button component. */
-#sf-panel.is-cart-panel .sf-cart-empty{min-height:min(50vh,360px);display:flex;flex-direction:column;align-items:center;justify-content:center;box-sizing:border-box;padding:32px 20px;text-align:center}
-#sf-panel.is-cart-panel .sf-cart-empty-mark{display:block;width:64px;height:64px;flex:none;margin-bottom:20px;border-radius:var(--sf-ui-pill);background:var(--sf-ui-surface-muted) url('../icons/shopping-bag.svg') center/27px 27px no-repeat}
-#sf-panel.is-cart-panel .sf-cart-empty h3{margin:0;color:var(--sf-ui-ink);font:inherit;font-size:clamp(19px,3vw,23px);font-weight:600;letter-spacing:-.025em;line-height:1.25}
-#sf-panel.is-cart-panel .sf-cart-empty p{max-width:320px;margin:10px 0 0;color:var(--sf-muted,#73746d);font-size:13px;line-height:1.6}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-empty{min-height:min(50vh,360px);display:flex;flex-direction:column;align-items:center;justify-content:center;box-sizing:border-box;padding:32px 20px;text-align:center}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-empty-mark{display:block;width:64px;height:64px;flex:none;margin-bottom:20px;border-radius:var(--sf-ui-pill);background:var(--sf-ui-surface-muted) url('../icons/shopping-bag.svg') center/27px 27px no-repeat}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-empty h3{margin:0;color:var(--sf-ui-ink);font:inherit;font-size:clamp(19px,3vw,23px);font-weight:600;letter-spacing:-.025em;line-height:1.25}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-empty p{max-width:320px;margin:10px 0 0;color:var(--sf-muted,#73746d);font-size:13px;line-height:1.6}
 @media(max-width:360px){
-  #sf-panel.is-cart-panel .sf-cart-row{grid-template-columns:64px minmax(0,1fr);gap:12px}
+  :is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-row{grid-template-columns:64px minmax(0,1fr);gap:12px}
 }
 
-#sf-panel.is-cart-panel .sf-cart-row:not(:has(.sf-cart-photo)){grid-template-columns:minmax(0,1fr)}
-#sf-panel.is-cart-panel .sf-cart-row>a:empty{display:none}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-row:not(:has(.sf-cart-photo)){grid-template-columns:minmax(0,1fr)}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-row>a:empty{display:none}
 
 /* Desktop search occupies the existing header menu slot; results stay anchored
    to that form and never lock the document. Mobile uses the same section. */
@@ -536,7 +536,7 @@
   #sf-panel.is-cart-panel{left:auto;right:0;width:min(460px,100%);box-shadow:-12px 0 48px rgb(0 0 0 / .12)}
   #sf-panel.is-cart-panel::backdrop{background:rgb(0 0 0 / .22);animation:sf-cart-backdrop-in var(--sf-ui-motion-panel-enter) var(--sf-ui-ease-press) both}
   #sf-panel.is-cart-panel.is-closing::backdrop{animation:sf-cart-backdrop-out var(--sf-ui-motion-panel-exit) var(--sf-ui-ease-press) both}
-  #sf-panel.is-cart-panel .sf-cart-row{grid-template-columns:80px minmax(0,1fr);gap:16px}
+  :is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-row{grid-template-columns:80px minmax(0,1fr);gap:16px}
 }
 @keyframes sf-cart-backdrop-in{from{opacity:0}to{opacity:1}}
 @keyframes sf-cart-backdrop-out{from{opacity:1}to{opacity:0}}
@@ -601,60 +601,60 @@
 /* Unified purchase command: shipping above one tappable subtotal/checkout
    surface. Native Woo API values and the Codela shipping module remain the
    only sources of totals, eligibility, remaining amount and percent. */
-#sf-panel.is-cart-panel #sf-cart-progress{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress{
   margin:0 auto 14px;
   max-width:780px;
 }
-#sf-panel.is-cart-panel #sf-cart-progress[hidden]{display:none!important}
-#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress[hidden]{display:none!important}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb{
   margin:0;padding:0;border:0;border-radius:0;
   background:transparent;box-shadow:none;
 }
-#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb-text{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb-text{
   display:flex;align-items:center;gap:12px;
   min-height:40px;font-size:13px;line-height:1.4;font-weight:500;
   color:var(--sf-ui-ink);
 }
-#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb-text>span:last-child{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb-text>span:last-child{
   min-width:0;flex:1;overflow-wrap:anywhere;
 }
-#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb-track{display:none!important}
-#sf-panel.is-cart-panel .sf-cart-shipping-ring{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb-track{display:none!important}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-shipping-ring{
   --sf-cart-shipping-color:#58a879;
   position:relative;display:grid;place-items:center;
   flex:0 0 40px;width:40px;height:40px;
   color:var(--sf-ui-ink);
 }
-#sf-panel.is-cart-panel .sf-cart-shipping-ring>svg{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-shipping-ring>svg{
   position:absolute;inset:0;width:40px;height:40px;display:block;overflow:visible;
   fill:none;stroke-width:2.7;
 }
-#sf-panel.is-cart-panel .sf-cart-shipping-track{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-shipping-track{
   stroke:color-mix(in srgb,var(--sf-ui-ink) 11%,transparent);
 }
-#sf-panel.is-cart-panel .sf-cart-shipping-arc{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-shipping-arc{
   stroke:var(--sf-cart-shipping-color);stroke-linecap:round;
   stroke-dasharray:106.814;
   stroke-dashoffset:var(--sf-cart-shipping-offset,106.814);
   transform:rotate(-90deg);transform-origin:50% 50%;
   transition:stroke-dashoffset 280ms ease;
 }
-#sf-panel.is-cart-panel .sf-cart-shipping-ring .cdl-fsb-ico{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-shipping-ring .cdl-fsb-ico{
   position:relative;inset:auto;display:grid;place-items:center;
   width:21px;height:21px;flex:none;color:inherit;
 }
-#sf-panel.is-cart-panel .sf-cart-shipping-ring .cdl-fsb-ico svg{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-shipping-ring .cdl-fsb-ico svg{
   width:19px;height:19px;display:block;
 }
-#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb.is-done .sf-cart-shipping-ring{color:#34845d}
-#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb.is-warn .sf-cart-shipping-ring{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb.is-done .sf-cart-shipping-ring{color:#34845d}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb.is-warn .sf-cart-shipping-ring{
   --sf-cart-shipping-color:#bc8053;color:#a36c44;
 }
-#sf-panel.is-cart-panel #sf-cart-progress .cdl-fsb.is-warn .cdl-fsb-text{color:#875b3c}
-#sf-panel.is-cart-panel .sf-cart-bottom{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb.is-warn .cdl-fsb-text{color:#875b3c}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-bottom{
   padding-top:16px;border-top:1px solid color-mix(in srgb,var(--sf-ui-border) 60%,transparent);
 }
-#sf-panel.is-cart-panel .sf-cart-bottom .sf-cart-checkout-command{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-bottom .sf-cart-checkout-command{
   display:flex!important;align-items:center;justify-content:space-between;
   gap:10px;min-height:72px;height:auto;width:100%;
   box-sizing:border-box;padding:12px 16px;
@@ -664,35 +664,35 @@
   --sf-ui-button-height:auto;--sf-ui-button-font-size:14px;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.17),0 5px 12px rgba(0,0,0,.09);
 }
-#sf-panel.is-cart-panel .sf-cart-checkout-command .sf-cart-checkout-total{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-checkout-command .sf-cart-checkout-total{
   display:flex;flex-direction:column;align-items:flex-start;
   gap:3px;min-width:0;flex:1 1 0;
   color:#fff;text-align:start;white-space:nowrap;
 }
-#sf-panel.is-cart-panel .sf-cart-checkout-total>span{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-checkout-total>span{
   font-size:11px;line-height:1.3;font-weight:400;color:rgba(255,255,255,.74);
 }
-#sf-panel.is-cart-panel .sf-cart-checkout-total>strong{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-checkout-total>strong{
   color:#fff;font-size:clamp(19px,5vw,24px);line-height:1.24;
   font-weight:600;letter-spacing:-.025em;font-variant-numeric:tabular-nums;
   max-width:100%;overflow-wrap:anywhere;white-space:normal;
 }
-#sf-panel.is-cart-panel .sf-cart-checkout-label{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-checkout-label{
   display:inline-flex;align-items:center;justify-content:flex-end;
   gap:8px;flex:0 1 auto;min-width:0;white-space:nowrap;
   font-size:14px;line-height:1.3;font-weight:600;color:#fff;
 }
-#sf-panel.is-cart-panel .sf-cart-checkout-label .sf-icon{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-checkout-label .sf-icon{
   width:20px;height:20px;flex:none;filter:brightness(0) invert(1);
 }
-#sf-panel.is-cart-panel .sf-cart-checkout-command:focus-visible{
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-checkout-command:focus-visible{
   outline:2px solid var(--sf-ui-ink);outline-offset:3px;
 }
 @media(max-width:360px){
-  #sf-panel.is-cart-panel .sf-cart-bottom .sf-cart-checkout-command{padding-inline:12px;gap:6px}
-  #sf-panel.is-cart-panel .sf-cart-checkout-label{font-size:12px;gap:5px}
-  #sf-panel.is-cart-panel .sf-cart-checkout-total>strong{font-size:19px}
+  :is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-bottom .sf-cart-checkout-command{padding-inline:12px;gap:6px}
+  :is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-checkout-label{font-size:12px;gap:5px}
+  :is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-checkout-total>strong{font-size:19px}
 }
 @media(prefers-reduced-motion:reduce){
-  #sf-panel.is-cart-panel .sf-cart-shipping-arc{transition:none}
+  :is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-shipping-arc{transition:none}
 }
