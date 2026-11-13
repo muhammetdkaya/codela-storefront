@@ -282,13 +282,13 @@
             const rows = review.querySelectorAll('.woocommerce-checkout-review-order-table tfoot tr.shipping, .woocommerce-checkout-review-order-table tfoot tr.woocommerce-shipping-totals');
             rows.forEach(row => {
                 const cell = row.querySelector('td');
-                const rates = cell?.querySelector('#shipping_method, .woocommerce-shipping-methods');
+                const rates = cell?.querySelector('#shipping_method, .woocommerce-shipping-methods') || cell;
                 const selected = rates?.querySelector('input[type="radio"]:checked, option:checked, input[type="hidden"]');
                 const label = selected?.id ? rates?.querySelector('label[for="' + CSS.escape(selected.id) + '"]') : null;
-                const fallback = selected?.closest('li')?.querySelector('label') || rates?.querySelector('li:has(input:checked) label, li:has(input[type="hidden"]) label');
+                const fallback = selected?.closest('label') || selected?.closest('li')?.querySelector('label') || rates?.querySelector('li:has(input:checked) label, li:has(input[type="hidden"]) label');
                 const text = (label?.textContent || fallback?.textContent || (selected?.tagName === 'OPTION' ? selected.textContent : '') || '').replace(/\s+/g, ' ').trim();
                 let summary = cell?.querySelector('.sf-checkout-selected-shipping');
-                if (!rates || !text) {
+                if (!selected || !text) {
                     summary?.remove();
                     row.classList.remove('sf-checkout-shipping-summary-ready');
                     return;
