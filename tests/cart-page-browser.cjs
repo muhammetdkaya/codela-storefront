@@ -53,7 +53,7 @@ const footer='<div class="sf-cart-bottom" hidden><div id="sf-cart-progress" clas
  +'<a class="sf-cart-checkout-command sf-ui-button sf-ui-button--primary sf-primary sf-ui-pressable" href="/odeme/">'
  +'<span class="sf-cart-checkout-total"><span>Ara toplam</span><strong id="sf-subtotal"></strong></span>'
  +'<span class="sf-cart-checkout-label">Ödemeye geç <span class="sf-icon">→</span></span></a></div>';
-const html='<html><head><meta name="viewport" content="width=device-width,initial-scale=1">'
+const html='<html lang="tr"><head><meta name="viewport" content="width=device-width,initial-scale=1">'
  +firstPaintStyle+firstPaintScript
  +'<style>body{margin:0;font-family:system-ui}button{font:inherit}[hidden]{display:none!important}</style><style>'+css+'</style></head>'
  +'<body class="woocommerce-cart"><div class="sf-shell"><nav class="sf-mobile-dock"><div class="sf-dock-surface"></div></nav><dialog id="sf-panel" class="sf-panel is-cart-panel">'
@@ -124,7 +124,7 @@ for(const width of [390,1120]){
       '<div class="cdl-fsb is-done"><div class="cdl-fsb-text"><span class="cdl-fsb-ico"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span><span>Kargonuz ücretsiz.</span></div><div class="cdl-fsb-track"><span class="cdl-fsb-fill" style="width:100%"></span></div></div>';
     void window.controller.refresh();
  });
- await page.waitForFunction(()=>document.querySelector('#sf-cart-progress .cdl-fsb.is-done')?.textContent?.includes('Kargonuz'));
+ await page.waitForFunction(()=>document.querySelector('#sf-cart-progress .cdl-fsb.is-done')?.textContent?.includes('Ücretsiz kargo'));
  const ship=await page.locator('#sf-cart-progress .cdl-fsb.is-done').evaluate(el=>({
    bg:getComputedStyle(el).backgroundColor,
    border:getComputedStyle(el).borderTopWidth,
