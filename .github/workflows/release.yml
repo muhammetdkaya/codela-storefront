@@ -70,6 +70,7 @@ jobs:
           node --check theme/codela-storefront/assets/scripts/quick-login.js
           node --check theme/codela-storefront/assets/scripts/passkeys.js
           node tests/quick-login-ui.cjs
+          node tests/auth-lazy.cjs
           php tests/cart-shipping.php
           node tests/cart-free-shipping.cjs
           # Full browser navigation regressions passed earlier in CI run

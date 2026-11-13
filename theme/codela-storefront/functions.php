@@ -3,6 +3,10 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 function codela_sf_ready(): bool {
     return defined( 'CODELA_VERSION' ) && version_compare( CODELA_VERSION, '1.2.0', '>=' ) && defined( 'CODELA_THEME_API_VERSION' ) && version_compare( CODELA_THEME_API_VERSION, '1.0.0', '>=' ) && defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '9.0', '>=' ) && function_exists( 'wp_interactivity_state' );
 }
+/** Guest storefront panels load account enhancements only when requested. */
+function codela_sf_guest_auth_lazy_allowed(): bool {
+    return ! is_user_logged_in() && ( ! function_exists( 'is_account_page' ) || ! is_account_page() );
+}
 add_action( 'after_setup_theme', function() {
     load_theme_textdomain( 'codela-storefront', get_template_directory() . '/languages' );
     add_theme_support( 'woocommerce' );
@@ -411,17 +415,42 @@ add_action( 'wp_enqueue_scripts', function() {
         }
     }
     if ( ! is_user_logged_in() ) {
-        // Guest account opens inside the existing panel on store pages. Reuse the
-        // same tiny tab script and Woo native forms as the fallback Account page.
-        if ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) {
-            wp_enqueue_style( 'codela-storefront-account-overlay', $root_uri . 'styles/account-overlay.css', [ 'codela-storefront-components' ], $style_version );
+        if ( codela_sf_guest_auth_lazy_allowed() ) {
+            // The Woo login form is present in the inert, hidden panel, but its
+            // 3 feature styles and 4 scripts need not delay a guest's first paint.
+            // The tiny bridge loads them in their original dependency order on
+            // account intent; /my-account/ retains the eager, native fallback.
+            $asset = static function( string $path, string $version ) use ( $root_uri ): string {
+                return add_query_arg( 'ver', $version, $root_uri . $path );
+            };
+            wp_enqueue_script( 'codela-storefront-auth-loader',
+                $root_uri . 'scripts/auth-loader.js', [], codela_sf_script_module_version( 'scripts/auth-loader.js' ), true );
+            wp_localize_script( 'codela-storefront-auth-loader', 'CodelaSFAuthLoader', [
+                'styles' => [
+                    $asset( 'styles/account-overlay.css', $style_version ),
+                    $asset( 'styles/auth-smart.css', codela_sf_script_module_version( 'styles/auth-smart.css' ) ),
+                    $asset( 'styles/quick-login.css', $style_version ),
+                ],
+                'scripts' => [
+                    $asset( 'scripts/auth.js', $style_version ),
+                    $asset( 'scripts/auth-smart.js', codela_sf_script_module_version( 'scripts/auth-smart.js' ) ),
+                    $asset( 'scripts/quick-login.js', codela_sf_script_module_version( 'scripts/quick-login.js' ) ),
+                    $asset( 'scripts/passkeys.js', codela_sf_script_module_version( 'scripts/passkeys.js' ) ),
+                ],
+                'account' => wc_get_page_permalink( 'myaccount' ),
+                'loading' => __( 'Loading…', 'codela-storefront' ),
+                'fallback' => __( 'Open my account', 'codela-storefront' ),
+            ] );
+        } else {
+            // Direct Account loads must preserve the old ready-before-first-paint
+            // behavior, native Woo registration and all remembered PIN/passkeys.
+            wp_enqueue_script( 'codela-storefront-auth', $root_uri . 'scripts/auth.js', [], $style_version, true );
+            wp_enqueue_style( 'codela-storefront-auth-smart', $root_uri . 'styles/auth-smart.css',
+                [ 'codela-storefront-account' ],
+                codela_sf_script_module_version( 'styles/auth-smart.css' ) );
+            wp_enqueue_script( 'codela-storefront-auth-smart', $root_uri . 'scripts/auth-smart.js',
+                [ 'codela-storefront-auth' ], codela_sf_script_module_version( 'scripts/auth-smart.js' ), true );
         }
-        wp_enqueue_script( 'codela-storefront-auth', $root_uri . 'scripts/auth.js', [], $style_version, true );
-        wp_enqueue_style( 'codela-storefront-auth-smart', $root_uri . 'styles/auth-smart.css',
-            [ function_exists( 'is_account_page' ) && is_account_page() ? 'codela-storefront-account' : 'codela-storefront-account-overlay' ],
-            codela_sf_script_module_version( 'styles/auth-smart.css' ) );
-        wp_enqueue_script( 'codela-storefront-auth-smart', $root_uri . 'scripts/auth-smart.js',
-            [ 'codela-storefront-auth' ], codela_sf_script_module_version( 'scripts/auth-smart.js' ), true );
     }
     // Every Account document, including after ?loggedout=true, uses the same
     // four-tab store shell and working menu/cart/search module as the shop.
