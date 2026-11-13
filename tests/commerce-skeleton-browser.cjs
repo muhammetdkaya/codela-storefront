@@ -17,8 +17,8 @@ function markup(type) {
 }
 const cart = markup('cart');
 const payment = markup('checkout');
-assert.equal((cart.match(/sf-commerce-cart-row/g)||[]).length,2,'Cart uses two true product row placeholders');
-assert.equal((payment.match(/sf-commerce-checkout-field/g)||[]).length,4,'Checkout uses four true input placeholders');
+assert.equal((cart.match(/class="sf-commerce-cart-row"/g)||[]).length,2,'Cart uses two true product row placeholders');
+assert.equal((payment.match(/class="sf-commerce-checkout-field"/g)||[]).length,4,'Checkout uses four true input placeholders');
 assert(!/<form\b|<input\b|<button\b|<a\b/i.test(cart+payment),'Loading fragments contain no interactive fake elements');
 assert(checkout.includes('window.codelaSFCheckoutBoot?.ready()'),'Real Woo stepper releases checkout skeleton after activation');
 assert(checkout.includes('window.codelaSFCheckoutBoot?.fallback()'),'Unsupported checkout fails open');
