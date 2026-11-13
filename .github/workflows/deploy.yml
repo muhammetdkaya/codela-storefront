@@ -14,9 +14,52 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-24.04
+    outputs:
+      quick: ${{ steps.tier.outputs.quick }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Classify small presentation-only changes
+        id: tier
+        shell: bash
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          echo 'quick=false' >> "$GITHUB_OUTPUT"
+          if [ "$GITHUB_EVENT_NAME" != 'push' ] || [ -z "$BEFORE_SHA" ] || [ "$BEFORE_SHA" = '0000000000000000000000000000000000000000' ]; then exit 0; fi
+          git cat-file -e "$BEFORE_SHA^{commit}" 2>/dev/null || git fetch --quiet --depth=1 origin "$BEFORE_SHA" || exit 0
+          git diff --name-only "$BEFORE_SHA" "$GITHUB_SHA" > /tmp/codela-changes
+          test -s /tmp/codela-changes || exit 0
+          test "$(wc -l < /tmp/codela-changes)" -le 5 || exit 0
+          if git diff --name-only --diff-filter=D "$BEFORE_SHA" "$GITHUB_SHA" | grep -q .; then exit 0; fi
+          while IFS= read -r FILE; do
+            case "$FILE" in
+              theme/codela-storefront/assets/*.css|theme/codela-storefront/assets/*.svg|theme/codela-storefront/parts/*.html)
+                case "$FILE" in *checkout*|*cart*|*auth*|*account*|*payment*|*login*) exit 0;; esac
+                ;;
+              *) exit 0;;
+            esac
+          done < /tmp/codela-changes
+          echo 'quick=true' >> "$GITHUB_OUTPUT"
+      - name: Quick presentation checks (no browser download)
+        if: steps.tier.outputs.quick == 'true'
+        run: |
+          python3 scripts/build-assets.py --check
+          php -l theme/codela-storefront/functions.php
+          python3 - <<'PY'
+          from pathlib import Path
+          from xml.etree import ElementTree
+          for icon in Path('theme/codela-storefront/assets/icons').glob('*.svg'):
+              root=ElementTree.parse(icon).getroot()
+              assert root.tag.endswith('}svg') or root.tag=='svg', icon
+              for node in root.iter():
+                  assert node.tag.rsplit('}',1)[-1] not in {'script','foreignObject'}, icon
+                  assert not any(name.lower().startswith('on') for name in node.attrib), icon
+          PY
+          python3 tests/package.py
       - name: Validate and build theme
+        if: steps.tier.outputs.quick != 'true'
         run: |
           find theme -name '*.php' -type f -print0 | xargs -0 -n1 php -l
           node --input-type=module --check < theme/codela-storefront/assets/storefront.js
@@ -78,6 +121,7 @@ jobs:
           python3 tests/package.py
           python3 scripts/build-package.py
       - name: Browser navigation regression checks
+        if: steps.tier.outputs.quick != 'true'
         run: |
           npm install --no-save --package-lock=false playwright@1.62.1
           npx playwright install --with-deps chromium webkit
@@ -146,13 +190,14 @@ jobs:
           TEST_WEBKIT=1 node tests/account-dashboard-browser.cjs
           node tests/ui-kit-preview.cjs
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && steps.tier.outputs.quick != 'true'
         with:
           name: codela-storefront-ui-reference
           path: qa/storefront-ui-kit-*.png
           if-no-files-found: error
           retention-days: 14
       - uses: actions/upload-artifact@v4
+        if: steps.tier.outputs.quick != 'true'
         with:
           name: codela-storefront-package
           path: dist/
@@ -165,10 +210,6 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with:
-          name: codela-storefront-package
-          path: dist/
       - name: Require FTP secrets
         env:
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}

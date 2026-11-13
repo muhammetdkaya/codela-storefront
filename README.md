@@ -33,3 +33,7 @@ Deployment validates the theme destination, stages/uploads only the intended the
 
 `python3 tests/package.py` covers deterministic ZIP, identity, missing-secret no-connect, safe deployment, wrong mapping, and health failure rollback.
 CI also lints PHP and checks JavaScript syntax. Real device visuals and production payment tests remain separate.
+
+### Fast codela.dev iteration (November 2026)
+
+Main-branch pushes changing at most five presentation-only CSS/SVG or noncritical theme-part HTML files use quick asset, PHP syntax, SVG, and deterministic package checks; changes to theme logic, checkout, account/auth, tests or deployment workflows retain full browser validation. Manual dispatch always requests the full suite. The FTPS deployment now writes a scoped, checksum-verified theme manifest after a successful health check and transfers only changed/new files on later deployments; previously listed removed files are retired with rollback copies. An absent manifest causes one initial full synchronization. The marker also changes the theme's CSS cache key *on codela.dev* without advancing the WordPress update feed; other sites still receive changes only via the separate versioned release process. Heavy live audits are manually dispatchable or run when their own test scripts change, rather than starting automatically after every deploy.

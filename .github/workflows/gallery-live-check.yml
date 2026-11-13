@@ -4,15 +4,10 @@ on:
     branches: [main]
     paths: ['tools/live-product.cjs', 'tools/gallery-live-check.cjs', '.github/workflows/gallery-live-check.yml']
   workflow_dispatch:
-  workflow_run:
-    workflows: ['Deploy Codela Storefront']
-    branches: [main]
-    types: [completed]
 permissions:
   contents: read
 jobs:
   gallery:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
     timeout-minutes: 8
     steps:

@@ -496,6 +496,23 @@ class DeploymentTests(unittest.TestCase):
     def test_failed_health_restores_old_theme(self):
         result,files,old,new=self.run_deploy("health");self.assertEqual(result,1);self.assertEqual(files,old)
 
+class DeploymentDeltaTests(unittest.TestCase):
+    def test_second_deploy_sends_only_modified_assets(self):
+        files={"style.css":b"theme","assets/icons/bag.svg":b"v1","assets/styles/main.css":b"same"}
+        before=deploy.checked_manifest(deploy.build_manifest(files))
+        updated=dict(files);updated["assets/icons/bag.svg"]=b"v2"
+        changed,retired=deploy.delta_plan(updated,before)
+        self.assertEqual(changed,{"assets/icons/bag.svg":b"v2"})
+        self.assertEqual(retired,[])
+    def test_retired_paths_are_scoped_to_previous_manifest(self):
+        before=deploy.checked_manifest(deploy.build_manifest({"style.css":b"theme","old.css":b"x"}))
+        changed,retired=deploy.delta_plan({"style.css":b"theme"},before)
+        self.assertEqual(changed,{})
+        self.assertEqual(retired,["old.css"])
+    def test_invalid_deployment_manifest_rejected(self):
+        bad=deploy.build_manifest({"style.css":b"theme"}).replace(b'"style.css"',b'"../outside.css"')
+        with self.assertRaises(RuntimeError):
+            deploy.checked_manifest(bad)
 if __name__=="__main__":unittest.main()
 
 

@@ -49,6 +49,15 @@ function codela_sf_style_version(): string {
     static $version = null;
     if ( null === $version ) {
         $version = (string) wp_get_theme()->get( 'Version' );
+        // codela.dev hotfixes must invalidate stylesheet URLs without publishing
+        // a WordPress update to every Storefront installation.
+        $deployment_marker = get_template_directory() . '/.codela-deploy-manifest.json';
+        if ( is_file( $deployment_marker ) ) {
+            $marker_hash = hash_file( 'sha256', $deployment_marker );
+            if ( false !== $marker_hash ) {
+                $version .= '-' . substr( $marker_hash, 0, 12 );
+            }
+        }
     }
     return $version;
 }

@@ -3,6 +3,32 @@ import ftplib,hashlib,io,json,os,re,ssl,urllib.parse,urllib.request,uuid
 from pathlib import Path
 TARGET="codela-storefront"
 PUBLIC="https://codela.dev/wp-content/themes/codela-storefront/"
+MANIFEST=".codela-deploy-manifest.json"
+
+def build_manifest(files):
+    return json.dumps({
+        "format":1,"theme":TARGET,"site":"https://codela.dev",
+        "files":{path:hashlib.sha256(data).hexdigest() for path,data in sorted(files.items())}
+    },sort_keys=True,separators=(",",":")).encode()
+
+def checked_manifest(raw):
+    record=json.loads(raw)
+    if not isinstance(record,dict) or record.get("format")!=1 or record.get("theme")!=TARGET or record.get("site")!="https://codela.dev":
+        raise RuntimeError("Invalid existing deployment manifest")
+    entries=record.get("files")
+    if not isinstance(entries,dict) or not entries or "style.css" not in entries:
+        raise RuntimeError("Incomplete existing deployment manifest")
+    for path,digest in entries.items():
+        if not isinstance(path,str) or not re.fullmatch(r"[A-Za-z0-9_.@+ -]+(?:/[A-Za-z0-9_.@+ -]+)*",path) or any(part in (".","..") for part in path.split("/")) or path==MANIFEST or not isinstance(digest,str) or not re.fullmatch(r"[a-f0-9]{64}",digest):
+            raise RuntimeError("Unsafe existing deployment manifest")
+    return record
+
+def delta_plan(files,previous):
+    hashes=json.loads(build_manifest(files))["files"]
+    old=previous["files"] if previous is not None else {}
+    changed={path:data for path,data in files.items() if old.get(path)!=hashes[path]}
+    retired=sorted(set(old)-set(files))
+    return changed,retired
 def read_url(url):
     request=urllib.request.Request(url,headers={"Cache-Control":"no-cache"})
     with urllib.request.urlopen(request,timeout=30) as response:
@@ -19,7 +45,7 @@ def package_files():
             relative=file.relative_to(root).as_posix()
             if ".." in relative.split("/") or "\n" in relative or "\r" in relative:raise RuntimeError("Invalid path")
             files[relative]=file.read_bytes()
-    if not valid_theme(files.get("style.css",b"")) or "templates/index.html" not in files:raise RuntimeError("Invalid theme")
+    if MANIFEST in files or not valid_theme(files.get("style.css",b"")) or "templates/index.html" not in files:raise RuntimeError("Invalid theme")
     return files
 def main():
     password=os.environ.get("FTP_PASSWORD","")
@@ -29,7 +55,7 @@ def main():
         print("Missing FTP_PASSWORD, FTP_SERVER or FTP_USERNAME; no connection attempted.");return 1
     files=package_files()
     ftp=ftplib.FTP_TLS(context=ssl.create_default_context(),timeout=30)
-    stage="connect";originals={};changed=[];temporary=[]
+    stage="connect";originals={};changed=[];temporary=[];marker_temp=None;marker_switched=False;marker_before=None
     backup=Path(os.environ["RUNNER_TEMP"])/"storefront-rollback";backup.mkdir(exist_ok=True)
     try:
         for attempt in range(3):
@@ -83,8 +109,16 @@ def main():
             elif root_files-{".ftpquota",".htaccess","index.php","index.html"}:raise RuntimeError("Unexpected account root")
             print("Retry public mapping at restricted account root.")
             probe_mapping()
+        stage="compare verified deployment manifest"
+        root_files=names()
+        if MANIFEST in root_files:
+            marker_before=get(MANIFEST)
+        previous=checked_manifest(marker_before) if marker_before is not None else None
+        changed_files,retired=delta_plan(files,previous)
+        print("Theme delta: %d changed/new, %d unchanged, %d retired (of %d files)." % (
+            len(changed_files),len(files)-len(changed_files),len(retired),len(files)),flush=True)
         stage="stage theme files";directories={"."}
-        for path,data in files.items():
+        for path,data in changed_files.items():
             parts=path.split("/")[:-1]
             for index in range(1,len(parts)+1):
                 directory="/".join(parts[:index])
@@ -101,12 +135,33 @@ def main():
         stage="switch staged files"
         temporary.sort(key=lambda item:item[1]=="style.css")
         for temp,path in temporary:ftp.rename(temp,path);changed.append(path)
+        stage="remove retired theme files"
+        for path in retired:
+            try:old=get(path)
+            except ftplib.error_perm:continue
+            originals[path]=old
+            target=backup/path;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(old)
+            ftp.delete(path);changed.append(path)
         stage="verify public source and store"
         for path in ("style.css","assets/storefront.js","assets/storefront.css"):
             if read_url(PUBLIC+path+"?nocache="+uuid.uuid4().hex)!=files[path]:raise RuntimeError("Public mismatch")
         read_url("https://codela.dev/?storefront_check="+uuid.uuid4().hex);read_url("https://codela.dev/wp-json/")
-        print("Storefront deployed; checks passed.");return 0
+        stage="record verified release"
+        marker_temp=MANIFEST+".stage-"+uuid.uuid4().hex
+        put(marker_temp,build_manifest(files))
+        ftp.rename(marker_temp,MANIFEST)
+        marker_temp=None;marker_switched=True
+        if get(MANIFEST)!=build_manifest(files):raise RuntimeError("Manifest readback mismatch")
+        print("Storefront deployed; %d theme files uploaded, %d retired; health and checksums passed." % (len(changed_files),len(retired)),flush=True)
+        return 0
     except Exception as error:
+        if marker_switched:
+            try:
+                if marker_before is None:ftp.delete(MANIFEST)
+                else:
+                    previous_temp=MANIFEST+".rollback-"+uuid.uuid4().hex
+                    put(previous_temp,marker_before);ftp.rename(previous_temp,MANIFEST)
+            except Exception:print("WARNING: Manifest rollback incomplete; inspect remote marker.")
         if isinstance(error,urllib.error.HTTPError):print("Public mapping/health HTTP status: "+str(error.code))
         restored=True
         for path in reversed(changed):
@@ -118,6 +173,9 @@ def main():
         if changed:print("Rollback restored." if restored else "Rollback incomplete; use private artifact.")
         return 1
     finally:
+        if marker_temp is not None:
+            try:ftp.delete(marker_temp)
+            except Exception:pass
         for temp,path in temporary:
             if path not in changed:
                 try:ftp.delete(temp)

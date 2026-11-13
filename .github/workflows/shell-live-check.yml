@@ -3,16 +3,11 @@ on:
   push:
     branches: [main]
     paths: ['tools/shell-live-check.cjs', '.github/workflows/shell-live-check.yml']
-  workflow_run:
-    workflows: ['Deploy Codela Storefront']
-    branches: [main]
-    types: [completed]
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
   shell:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:

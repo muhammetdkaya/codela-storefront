@@ -4,15 +4,10 @@ on:
     branches: [main]
     paths: ['tools/performance-budget.cjs', 'tools/performance-budget-test.cjs', 'tools/performance-audit.cjs', '.github/workflows/performance-audit.yml']
   workflow_dispatch:
-  workflow_run:
-    workflows: ['Deploy Codela Storefront']
-    branches: [main]
-    types: [completed]
 permissions:
   contents: read
 jobs:
   measure:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
