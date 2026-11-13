@@ -203,6 +203,13 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
         const icon = text?.querySelector('.cdl-fsb-ico');
         const fill = bar?.querySelector('.cdl-fsb-fill');
         if (bar && text && icon) {
+            // Only the success COPY changes. Eligibility, percent, paid-rate
+            // warnings and icon remain supplied by Codela's shipping module.
+            if (bar.classList.contains('is-done') && !bar.classList.contains('is-warn')) {
+                const message = text.querySelector(':scope > span:last-child');
+                if (message) message.textContent =
+                    document.documentElement.lang.toLowerCase().startsWith('tr') ? 'Ücretsiz kargo' : 'Free shipping';
+            }
             const rawPercent = Number.parseFloat(fill?.style.width || '');
             const percent = Number.isFinite(rawPercent) ? Math.max(0, Math.min(100, rawPercent)) : 0;
             const ring = document.createElement('span');
