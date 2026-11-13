@@ -28,27 +28,28 @@ function fixture(from,to){
   try{
     for(const [from,to] of [['cart','checkout'],['checkout','cart']]){
       const page=await browser.newPage({viewport:{width:390,height:844}});
-      let requestResolve,release;
-      const requested=new Promise(resolve=>requestResolve=resolve);
-      await page.route('https://store.test/'+(to==='cart'?'sepet':'odeme')+'/',async route=>{
-        requestResolve();
-        await new Promise(resolve=>release=resolve);
-        await route.fulfill({status:200,contentType:'text/html',body:'<!doctype html><html><body><h1>Woo destination</h1></body></html>'});
-      });
+      await page.route('https://store.test/'+(to==='cart'?'sepet':'odeme')+'/',route=>
+        route.fulfill({status:200,contentType:'text/html',body:'<!doctype html><html><body><h1>Woo destination</h1></body></html>'}));
       await page.route('https://store.test/'+(from==='cart'?'sepet':'odeme')+'/',route=>
         route.fulfill({status:200,contentType:'text/html',body:fixture(from,to)}));
       await page.goto('https://store.test/'+(from==='cart'?'sepet':'odeme')+'/',{waitUntil:'load'});
-      await page.locator('#go').click({noWaitAfter:true});
-      await page.locator('.sf-skeleton').waitFor({state:'visible',timeout:4000});
-      assert.equal(await page.locator('.sf-skeleton-layout .sf-commerce-'+to+'-row').count(),to==='cart'?2:0,'Row count belongs to destination');
-      const hasPreview=await page.evaluate(type=>{
-        const root=document.querySelector('.sf-skeleton');
-        return !!root && !!root.querySelector('.sf-commerce-skeleton--'+type);
+      // Cancel just this synthetic click's default action so we can inspect
+      // the SAME source document synchronously at the instant of activation.
+      const instant=await page.evaluate(type=>{
+        const link=document.querySelector('#go');
+        link.addEventListener('click',e=>e.preventDefault(),{once:true});
+        link.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true,button:0}));
+        const skeleton=document.querySelector('.sf-skeleton');
+        return {visible:!!skeleton && getComputedStyle(skeleton).display!=='none',
+          correct:!!skeleton?.querySelector('.sf-commerce-skeleton--'+type),
+          rows:skeleton?.querySelectorAll('.sf-commerce-cart-row').length||0};
       },to);
-      assert(hasPreview,'The matching commerce skeleton starts on the source document immediately');
-      const didRequest=await Promise.race([requested.then(()=>true),new Promise(resolve=>setTimeout(()=>resolve(false),4500))]);
-      assert(didRequest,'Skeleton must not cancel native navigation '+from+' → '+to);
-      release();
+      assert(instant.visible && instant.correct,'Identical skeleton paints at click time before navigation '+from+' → '+to);
+      assert.equal(instant.rows,to==='cart'?2:0,'The destination placeholder has the correct rows');
+      await page.evaluate(()=>window.codelaSFFeedback.end());
+      // A subsequent real link activation still uses the normal browser
+      // navigation, never a duplicated commerce fetch or Woo form override.
+      await page.locator('#go').click({noWaitAfter:true});
       await page.waitForURL('https://store.test/'+(to==='cart'?'sepet':'odeme')+'/',{timeout:8000});
       assert.equal(await page.locator('h1').innerText(),'Woo destination','Real native browser navigation completes');
       await page.close();
