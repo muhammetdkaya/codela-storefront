@@ -46,6 +46,15 @@ assert(php.includes('aria-expanded="false"') && php.includes('sf-quick-method--p
 assert(php.includes('sf-quick-choice-alternatives') && php.includes('sf-quick-email-login'),'Reference actions belong below the account card');
 assert(php.includes('sf-quick-google') && php.includes('disabled aria-label='),'Google button stays visible but safely disabled without configured OAuth');
 assert(css.includes('.sf-quick-or') && css.includes('.sf-quick-google'),'Divider and Google CTA have dedicated styles');
+const accountIcons=fs.readFileSync('theme/codela-storefront/inc/account.php','utf8');
+const iconRenderer=fs.readFileSync('theme/codela-storefront/inc/render.php','utf8');
+for(const iconName of ['account-orders','account-address','account-security','account-preferences','account-profile','account-sign-out']){
+  const file='theme/codela-storefront/assets/icons/'+iconName+'.svg';
+  const svg=fs.readFileSync(file,'utf8');
+  assert(svg.includes('stroke-width="1.9"') && svg.includes('fill="none"'),'Consistent outline icon '+iconName);
+  assert(accountIcons.includes("'"+iconName+"'")&&iconRenderer.includes("'"+iconName+"'"),'Account menu icon is registered '+iconName);
+}
+assert(!accountIcons.includes("'edit-address' => 'map-pin'"),'Asymmetric legacy map-pin is removed from account navigation');
 assert(css.includes('background:#252628!important;background-image:none!important'), 'Remembered Google button uses the same dark Codela surface without a secondary tint');
 assert(!js.includes("data-quick-digit"),'No custom number keypad should be used');
 
