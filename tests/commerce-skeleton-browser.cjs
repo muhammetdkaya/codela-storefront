@@ -47,11 +47,11 @@ const snapshot=(type,js=true)=>'<!doctype html><html lang="tr"><head><meta name=
       const native=page.locator(type==='cart'?'.wc-block-cart':'form.checkout');
       assert(await entry.isVisible(),type+'/'+width+' shared entry fragment visible on first paint');
       assert(!await native.isVisible(),type+'/'+width+' no legacy Woo flash');
-      const before=await entry.evaluate(el=>({
+      const before=await entry.evaluate((el,kind)=>({
         z:getComputedStyle(el).zIndex,
-        rows:el.querySelectorAll(type==='cart'?'.sf-commerce-cart-row':'.sf-commerce-checkout-field').length,
+        rows:el.querySelectorAll(kind==='cart'?'.sf-commerce-cart-row':'.sf-commerce-checkout-field').length,
         button:el.querySelector('.sf-commerce-dark-action')?.getBoundingClientRect().toJSON(),
-      }));
+      }),type);
       assert.equal(before.rows,type==='cart'?2:4,'Accurate commerce placeholder count');
       assert(before.button?.height===76,'Checkout control height matches native');
       if(width===390) {
