@@ -1,0 +1,81 @@
+name: Modern Web Guidance — Audit
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/modern-web-guidance.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    name: Read-only legacy pattern scan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Scan canonical source (no code changes)
+        shell: bash
+        env:
+          DISABLE_TELEMETRY: '1'
+        run: |
+          set +e
+          npx --yes modern-web-guidance@1.0.0 legacy-scan theme/codela-storefront --json > modern-web-guidance-report.json 2> modern-web-guidance-stderr.txt
+          result=$?
+          printf '%s\n' "$result" > modern-web-guidance-status.txt
+          if [ "$result" -ne 0 ]; then
+            echo "::warning::Scanner exit code $result. Check stderr and the full artifact; this is a non-blocking audit."
+          fi
+          exit 0
+
+      - name: Report outcome
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '## Modern Web Guidance — read-only audit'
+            echo ''
+            echo 'Scope: `theme/codela-storefront`'
+            echo ''
+            if [ -f modern-web-guidance-status.txt ]; then
+              printf 'Scanner exit code: **%s**\n\n' "$(cat modern-web-guidance-status.txt)"
+            else
+              echo 'Scanner was not started or did not finish.'
+            fi
+            echo 'The report is advisory, not an automatic code fix. Download the full artifact for review.'
+            echo ''
+            if [ -s modern-web-guidance-report.json ]; then
+              echo '### Report excerpt (first 80 lines)'
+              echo '```json'
+              sed -n '1,80p' modern-web-guidance-report.json
+              echo '```'
+            fi
+            if [ -s modern-web-guidance-stderr.txt ]; then
+              echo '### Scanner stderr (first 40 lines)'
+              echo '```text'
+              sed -n '1,40p' modern-web-guidance-stderr.txt
+              echo '```'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Attach full report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: modern-web-guidance-report
+          path: |
+            modern-web-guidance-report.json
+            modern-web-guidance-stderr.txt
+            modern-web-guidance-status.txt
+          if-no-files-found: warn
+          retention-days: 14
