@@ -158,7 +158,24 @@ function html(markup){
    assert.equal(await page.locator('.sf-checkout-coupon-shell > form.checkout_coupon').count(),1,'Original coupon form shares the same parent card');
    assert.equal(await page.locator('.sf-checkout-coupon-shell').evaluate(el=>getComputedStyle(el).borderTopStyle),'solid','Only shell owns the coupon border');
    const collapsedHeight=await page.locator('.sf-checkout-coupon-shell').evaluate(el=>el.getBoundingClientRect().height);
-   assert(collapsedHeight<=68,'Collapsed coupon reserves no phantom second row: '+collapsedHeight);
+   assert(collapsedHeight>=54 && collapsedHeight<=58,'Collapsed coupon is one 54px heading, not a clipped oversized notice: '+collapsedHeight);
+   const closedCouponGeometry=await page.evaluate(()=>{
+      const box=el=>el.getBoundingClientRect();
+      const shell=box(document.querySelector('.sf-checkout-coupon-shell'));
+      const wrap=box(document.querySelector('.sf-checkout-coupon-shell>.woocommerce-form-coupon-toggle'));
+      const notice=box(document.querySelector('.sf-checkout-coupon-shell .woocommerce-info'));
+      const button=box(document.querySelector('.sf-checkout-coupon-trigger'));
+      const icon=box(document.querySelector('.sf-checkout-coupon-icon'));
+      return {shellCenter:(shell.top+shell.bottom)/2,wrapTop:wrap.top,wrapHeight:wrap.height,
+        noticeHeight:notice.height,buttonTop:button.top,buttonHeight:button.height,
+        iconCenter:(icon.top+icon.bottom)/2};
+   });
+   assert(Math.abs(closedCouponGeometry.iconCenter-closedCouponGeometry.shellCenter)<2,
+      'Coupon icon is centered when closed, never clipped at the bottom: '+JSON.stringify(closedCouponGeometry));
+   assert(Math.abs(closedCouponGeometry.wrapHeight-54)<1 && Math.abs(closedCouponGeometry.noticeHeight-54)<1,
+      'Coupon wrappers must not reserve additional height: '+JSON.stringify(closedCouponGeometry));
+   assert(Math.abs(closedCouponGeometry.buttonTop-closedCouponGeometry.wrapTop)<1,
+      'Coupon button starts at the top of its wrapper: '+JSON.stringify(closedCouponGeometry));
    assert.equal(await page.locator('form.checkout_coupon').isVisible(),false,'Native coupon form genuinely collapsed');
    assert.equal(await page.locator('.woocommerce-privacy-policy-text').isVisible(),false,'Payment hides redundant privacy paragraph');
    assert.equal(await page.locator('#payment .woocommerce-privacy-policy-text').count(),1,'Native Woo disclosure remains mounted');
@@ -210,6 +227,18 @@ function html(markup){
       return form.top-header.bottom;
    });
    assert(Math.abs(couponGap)<2,'Coupon entry directly joins its header with no empty gap: '+couponGap);
+   const openCouponGeometry=await page.evaluate(()=>{
+      const shell=document.querySelector('.sf-checkout-coupon-shell').getBoundingClientRect();
+      const toggle=document.querySelector('.woocommerce-form-coupon-toggle').getBoundingClientRect();
+      const notice=document.querySelector('.sf-checkout-coupon-shell .woocommerce-info').getBoundingClientRect();
+      const icon=document.querySelector('.sf-checkout-coupon-icon').getBoundingClientRect();
+      return {shellHeight:shell.height,toggleHeight:toggle.height,noticeHeight:notice.height,
+        iconOffset:(icon.top+icon.bottom)/2-toggle.top};
+   });
+   assert(Math.abs(openCouponGeometry.iconOffset-27)<2,
+      'Icon stays centered in 54px heading when coupon opens: '+JSON.stringify(openCouponGeometry));
+   assert(openCouponGeometry.shellHeight>=105 && openCouponGeometry.shellHeight<=145,
+      'Open coupon is one compact card, without ghost space: '+JSON.stringify(openCouponGeometry));
    assert.equal(await page.locator('.sf-checkout-coupon-shell > form.checkout_coupon').evaluate(el=>getComputedStyle(el).borderTopStyle),'solid','Expanded coupon separator is inside the outer card');
    assert.equal(await page.locator('.sf-checkout-coupon-shell .woocommerce-info').evaluate(el=>getComputedStyle(el).borderTopStyle),'none','Coupon heading adds no second border');
    assert.equal(await page.locator('.sf-checkout-coupon-shell .woocommerce-info').evaluate(el=>getComputedStyle(el,'::before').content),'none','No default WooCommerce coupon stripe');
