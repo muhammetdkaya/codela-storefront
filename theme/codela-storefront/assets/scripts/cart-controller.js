@@ -525,7 +525,8 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
         // Handle controls on that persistent element in the capture phase:
         // external Woo handlers and delegated document listeners can no longer
         // swallow clicks on the nested trash glyph or trigger duplicate writes.
-        $('#sf-cart')?.addEventListener('click', event => {
+        const cartRoot = $('#sf-cart');
+        if (typeof cartRoot?.addEventListener === 'function') cartRoot.addEventListener('click', event => {
             const button = event.target.closest?.('button[data-remove],button[data-qty],button.sf-retry-cart');
             if (!button || !event.currentTarget.contains(button)) return;
             event.preventDefault();
