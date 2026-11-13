@@ -104,23 +104,8 @@ function init() {
         sub.before(button);
     });
     $('#sf-menu .sf-back').addEventListener('click', () => {const item = menuPath.pop();paintMenu();overlay.animateContent($('#sf-menu'),-1);item?.querySelector('.sf-submenu-toggle')?.focus({preventScroll:true});});
-    // The same cart nodes can live in the modal or in the native Cart page.
-    // Delegate at the document root so moving nodes never loses their controls.
-    document.addEventListener('click', event => {
-        const b = event.target.closest('#sf-cart button');
-        if (!b) return;
-        // The shared quantity/delete controls are native buttons, never Woo
-        // form submissions or links. Do not let any ancestor click handler
-        // initiate a second cart mutation during the Store API request.
-        if (b.matches('[data-qty],[data-remove]')) {
-            event.preventDefault();
-            cartFeature.change(b);
-        }
-        if (b.matches('.sf-retry-cart')) {
-            event.preventDefault();
-            cartFeature.refresh();
-        }
-    });
+    // Cart controls are delegated by their owning controller on the single
+    // persistent #sf-cart node; do not attach a second document listener.
     dialog.closest('.sf-shell').addEventListener('click', event => {
         const b = event.target.closest('button'); if (!b) return;
         if (b.matches('.sf-retry-search')) searchFeature.retry();
