@@ -696,3 +696,43 @@
 @media(prefers-reduced-motion:reduce){
   :is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-shipping-arc{transition:none}
 }
+
+/* Shipping states must not re-introduce the old full-width green plugin
+   banner. The Codela module retains ALL thresholds and translated copy; the
+   existing cart ring is the sole visual progress indicator. This applies to
+   the identical cart DOM in both page and popup. */
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb,
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb.is-done,
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb.is-warn {
+  display:block;box-sizing:border-box;
+  background:transparent!important;
+  border:0!important;box-shadow:none!important;
+  border-radius:0!important;margin:0!important;padding:0!important;
+}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb-text{
+  display:flex;align-items:center;min-height:36px;
+  gap:11px;font-size:13px;line-height:1.38;
+  font-weight:500;letter-spacing:-.01em;
+  color:var(--sf-ui-ink)!important;
+}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-shipping-ring{
+  flex:0 0 36px;width:36px;height:36px;
+}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-shipping-ring>svg{
+  width:36px;height:36px;
+}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-shipping-ring .cdl-fsb-ico{
+  width:18px;height:18px;
+}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) .sf-cart-shipping-ring .cdl-fsb-ico svg{
+  width:18px;height:18px;
+}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb.is-done .cdl-fsb-text{
+  color:var(--sf-ui-ink)!important;font-weight:500!important;
+}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb.is-done .cdl-fsb-text>span:last-child{
+  color:#327b54;font-weight:600;
+}
+:is(#sf-panel.is-cart-panel,.sf-cart-page-panel) #sf-cart-progress .cdl-fsb.is-warn .cdl-fsb-text{
+  color:#8d603f!important;
+}
