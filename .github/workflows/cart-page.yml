@@ -14,6 +14,19 @@ on:
       - 'theme/codela-storefront/assets/scripts/navigation-feedback.js'
       - 'theme/codela-storefront/assets/scripts/document-continuity.js'
       - 'theme/codela-storefront/assets/styles/commerce-skeleton.css'
+      - 'theme/codela-storefront/assets/scripts/cart-controller.js'
+      - 'theme/codela-storefront/assets/storefront.js'
+      - 'theme/codela-storefront/assets/scripts/commerce-links.js'
+      - 'theme/codela-storefront/assets/scripts/quick-login.js'
+      - 'theme/codela-storefront/assets/styles/quick-login.css'
+      - 'theme/codela-storefront/inc/account.php'
+      - 'theme/codela-storefront/inc/render.php'
+      - 'theme/codela-storefront/assets/icons/account-*.svg'
+      - 'theme/codela-storefront/assets/styles/checkout.css'
+      - 'tests/quick-login-browser.cjs'
+      - 'tests/quick-login-ui.cjs'
+      - 'tests/checkout-steps-browser.cjs'
+      - 'tests/commerce-link-click-browser.cjs'
       - 'scripts/build-assets.py'
       - '.github/workflows/cart-page.yml'
   workflow_dispatch:
@@ -47,3 +60,17 @@ jobs:
         run: node tests/commerce-skeleton-browser.cjs
       - name: Shared Cart/Checkout skeleton in WebKit
         run: TEST_WEBKIT=1 node tests/commerce-skeleton-browser.cjs
+      - name: Commerce link click starts skeleton in Chromium
+        run: node tests/commerce-link-click-browser.cjs
+      - name: Commerce link click starts skeleton in WebKit
+        run: TEST_WEBKIT=1 node tests/commerce-link-click-browser.cjs
+      - name: Checkout delivery and free shipping in Chromium
+        run: node tests/checkout-steps-browser.cjs
+      - name: Checkout delivery and free shipping in WebKit
+        run: TEST_WEBKIT=1 node tests/checkout-steps-browser.cjs
+      - name: Account/PIN UI contracts
+        run: node tests/quick-login-ui.cjs
+      - name: PIN verification progress in Chromium
+        run: node tests/quick-login-browser.cjs
+      - name: PIN verification progress in WebKit
+        run: TEST_WEBKIT=1 node tests/quick-login-browser.cjs
