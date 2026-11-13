@@ -6,10 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Sepet sayfası Codela sepet popup tasarımına uyumlu ürün satırları, görseller, miktar kontrolleri ve sipariş özetiyle yenilendi.",
-    "Mobil sepet tek sütunlu, masaüstü sepet ürünler ve sipariş özeti yan yana olacak şekilde düzenlendi.",
-    "Ödeme butonu, kupon alanı ve kargo sunumu tema tasarım sistemiyle uyumlu hale getirildi; WooCommerce hesaplama ve işlem altyapısı korundu.",
-    "WooCommerce Cart Block ve klasik sepet kısa kodu için ayrı düzenler ve Chromium/WebKit görünüm testleri eklendi.",
-    "E-posta ve 6 haneli PIN girişinde Safari dahil karakter oluşturma (IME) sırasında Enter ile yanlış gönderim engellendi."
+    "Normal sepet sayfası ve sepet popup'ı artık aynı gerçek sepet bileşenini, aynı ürün satırlarını ve WooCommerce Store API denetleyicisini kullanıyor.",
+    "Ürün miktarı, silme, ara toplam, kargo halkası ve ödeme butonu iki görünüm arasında tek kod ve tek DOM ile paylaşılıyor.",
+    "Ayrı sepet sayfası görünümü ve yinelenen başlık/ödeme arayüzü kaldırıldı; popup tasarımı aynen kullanılıyor.",
+    "WordPress sepet içeriği, JavaScript veya Store API arızasında kullanılabilir yedek olarak korunuyor.",
+    "Mobil/masaüstü Chromium ve WebKit testlerinde canlı sepet bileşeni, miktar değiştirme, silme ve sayfa geçişi doğrulandı."
   ]
 }
