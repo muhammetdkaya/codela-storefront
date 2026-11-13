@@ -35,7 +35,7 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
     function syncPage() {
         // A Site Editor template can replace page-cart.html, so also recognize
         // the assigned native Woo post-content on the real Cart document.
-        const native = document.body.classList.contains('woocommerce-cart') &&
+        const native = document.body.classList?.contains('woocommerce-cart') &&
             (document.querySelector('.sf-cart-page .wp-block-post-content') ||
              document.querySelector('main .wp-block-post-content') ||
              document.querySelector('.wp-block-woocommerce-cart') ||
