@@ -68,7 +68,7 @@ try{
 for(const width of [390,1120]){
  const page=await browser.newPage({viewport:{width,height:844}});
  await page.setContent(html);
- await page.addScriptTag({content:harness+source+'\nwindow.controller=createCartController({$:s=>document.querySelector(s),config:()=>({api:"/wc/store/v1/",cart:"/sepet/",taxInclusive:false}),t:k=>({"Your cart":"Sepet","Items in cart: %d":"Sepetinizde %d ürün"}[k]||k),getCurrent:()=>window.currentPanel,getDialog:()=>document.getElementById("sf-panel")});window.originalCart=document.getElementById("sf-cart");window.controller.bind();document.addEventListener("click",e=>{let b=e.target.closest("#sf-cart button");if(!b)return;if(b.matches("[data-qty],[data-remove]"))window.controller.change(b);});'});
+ await page.addScriptTag({content:harness+source+'\nwindow.controller=createCartController({$:s=>document.querySelector(s),config:()=>({api:"/wc/store/v1/",cart:"/sepet/",taxInclusive:false}),t:k=>({"Your cart":"Sepet","Items in cart: %d":"Sepetinizde %d ürün"}[k]||k),getCurrent:()=>window.currentPanel,getDialog:()=>document.getElementById("sf-panel")});window.originalCart=document.getElementById("sf-cart");window.controller.bind();'});
  await page.waitForFunction(()=>typeof window.__resolveCart==='function');
  assert.equal(await page.locator('.wc-block-cart').isVisible(),false,'Old native cart is hidden from first paint');
  assert(await page.locator('html').evaluate(e=>e.classList.contains('sf-cart-awaiting')),'Inline head boot runs before first paint');
