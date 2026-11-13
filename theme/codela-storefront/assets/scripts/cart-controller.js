@@ -10,6 +10,68 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
     let wooStore = null, wooSnapshot = '', wooRefresh = null, wooRefreshDirty = false;
     let renderedCart = '', mutationKey = '';
     const disabledBeforeMutation = new Map();
+    // The popup and /cart/ use the SAME DOM nodes and the SAME Store API
+    // controller. Reparent the one rendered cart instead of cloning it.
+    let pageHost = null, pageNative = null, originalCartHomes = null;
+    const pageActive = () => !!pageHost?.isConnected && pageHost.contains($('#sf-cart'));
+    const cartVisible = () => getCurrent() === 'cart' || pageActive();
+
+    function unmountPage() {
+        if (!pageHost) return;
+        // Reverse order restores the original nextSibling anchors in the dialog.
+        for (const {node,parent,next} of [...(originalCartHomes || [])].reverse()) {
+            if (parent?.isConnected) parent.insertBefore(node, next?.parentNode === parent ? next : null);
+        }
+        if (pageNative?.isConnected) {
+            pageNative.hidden = false;
+            pageNative.removeAttribute('aria-hidden');
+            pageNative.classList.remove('sf-cart-page-native');
+        }
+        document.body.classList.remove('sf-cart-page-enhanced');
+        pageHost.remove();
+        pageHost = null; pageNative = null; originalCartHomes = null;
+    }
+
+    function syncPage() {
+        // A Site Editor template can replace page-cart.html, so also recognize
+        // the assigned native Woo post-content on the real Cart document.
+        const native = document.body.classList.contains('woocommerce-cart') &&
+            (document.querySelector('.sf-cart-page .wp-block-post-content') ||
+             document.querySelector('main .wp-block-post-content') ||
+             document.querySelector('.wp-block-woocommerce-cart') ||
+             document.querySelector('.woocommerce-cart-form')?.closest('.woocommerce'));
+        if (!native) { unmountPage(); return; }
+        const main = native.closest('main') || document.querySelector('.sf-cart-page') || native.parentElement;
+        if (!main) return;
+        if (pageHost?.isConnected && pageNative === native && pageHost.parentElement === main) return;
+        unmountPage();
+        const dialog = getDialog();
+        const items = dialog?.querySelector('#sf-cart');
+        const footer = dialog?.querySelector('.sf-cart-bottom');
+        const status = dialog?.querySelector('#sf-status');
+        if (!items || !footer || !status) return;
+        pageNative = native;
+        originalCartHomes = [items, footer, status].map(node => ({
+            node, parent:node.parentNode, next:node.nextSibling
+        }));
+        pageHost = document.createElement('section');
+        pageHost.className = 'sf-cart-page-panel';
+        pageHost.setAttribute('role', 'region');
+        pageHost.setAttribute('aria-label', t('Your cart'));
+        main.insertBefore(pageHost, native);
+        for (const {node} of originalCartHomes) pageHost.append(node);
+        items.hidden = false;
+        // Never discard the native Woo cart until the shared Store API view
+        // has successfully painted. It stays usable if JS/REST fails.
+        if (cartData) renderCart(cartData);
+        if (bound) void refreshCart();
+    }
+
+    function focusPage() {
+        if (!pageActive()) return false;
+        pageHost.scrollIntoView({block:'start',behavior:'auto'});
+        return true;
+    }
 
     // Observe only cart contents, not unrelated wp.data updates or customer fields.
     function cartSignature(data) {
@@ -86,6 +148,14 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
             link.setAttribute('aria-label', `${t('Your cart')} (${data.items_count || 0})`);
         });
         renderCart(data);
+        if (pageActive()) {
+            pageHost.classList.add('is-ready');
+            pageHost.setAttribute('aria-busy', 'false');
+            pageNative.hidden = true;
+            pageNative.setAttribute('aria-hidden', 'true');
+            pageNative.classList.add('sf-cart-page-native');
+            document.body.classList.add('sf-cart-page-enhanced');
+        }
     }
     function renderCartProgress(data) {
         const host = $('#sf-cart-progress');
@@ -124,7 +194,7 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
     }
     function renderCart(data) {
         // Keep the live badge immediate; closed-cart photos/rows do no work.
-        if (getCurrent() !== 'cart') return;
+        if (!cartVisible()) return;
         const root = $('#sf-cart-items');
         const signature = cartSignature(data);
         const count = Number(data.items_count) || data.items.reduce((n, item) => n + (Number(item.quantity) || 0), 0);
@@ -144,10 +214,10 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
         }).join('') : `<div class="sf-empty sf-cart-empty"><span class="sf-cart-empty-mark" aria-hidden="true"></span><h3>${escape(t('Your cart is empty.'))}</h3><p>${escape(t('Discover products and add your favorites here.'))}</p></div>`;
         renderedCart = signature;
         updateCartBusy();
-        $('.sf-cart-bottom').hidden = getCurrent() !== 'cart' || !data.items.length;
+        $('.sf-cart-bottom').hidden = !cartVisible() || !data.items.length;
         const subtotal = Number(data.totals.total_items) + (config().taxInclusive ? Number(data.totals.total_items_tax) : 0);
         $('#sf-subtotal').textContent = money(subtotal,data.totals);
-        if (getCurrent() === 'cart') $('#sf-status').textContent = (data.errors || []).map(e => decode(e.message)).join(' ');
+        if (cartVisible()) $('#sf-status').textContent = (data.errors || []).map(e => decode(e.message)).join(' ');
     }
     function updateCartBusy() {
         const root = $('#sf-cart');
@@ -167,7 +237,9 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
         $('.sf-cart-bottom').inert = mutating;
     }
     function showCartLoading() {
-        if (cartData || getCurrent() !== 'cart') return;
+        // While the API is loading the assigned native Woo cart remains the
+        // visible, accessible fallback rather than flashing duplicate rows.
+        if (cartData || !cartVisible() || pageActive() && !pageHost.classList.contains('is-ready')) return;
         const row = '<div class="sf-cart-skeleton-row"><i></i><span><b></b><b></b><b></b></span></div>';
         $('#sf-cart-items').innerHTML = '<div class="sf-cart-skeleton" aria-hidden="true">' + row.repeat(2) + '</div>' +
             '<p class="screen-reader-text">' + escape(t('Loading…')) + '</p>';
@@ -207,10 +279,10 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
                     if (!mutating) dirty = true;
                     return;
                 }
-                if (!cartData) {
+                if (!cartData && !pageActive()) {
                     $('#sf-cart-items').innerHTML = `<p>${escape(t('Something went wrong. Please try again.'))}</p><button class="sf-retry-cart sf-ui-pressable">${escape(t('Retry'))}</button><p><a href="${safeURL(config().cart)}">${escape(t('Your cart'))}</a></p>`;
                     $('.sf-cart-bottom').hidden = true;
-                } else if (getCurrent() === 'cart') {
+                } else if (cartVisible() && !pageActive()) {
                     $('#sf-status').textContent = t('Something went wrong. Please try again.');
                 }
             } finally {
@@ -244,16 +316,16 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
                 if (!['woocommerce_rest_invalid_nonce','woocommerce_rest_missing_nonce'].includes(error.code)) throw error;
                 await requestCart('', null, {acceptNonce:() => mutating}); data = await requestCart(isRemove ? '/remove-item' : '/update-item',payload);
             }
-            paintCart(data); if (getCurrent() === 'cart') $('#sf-status').textContent = t('Cart updated.');
+            paintCart(data); if (cartVisible()) $('#sf-status').textContent = t('Cart updated.');
             notifyWooConsumers();
         } catch(error) {
             if (error.cart) paintCart(error.cart);
             else { try { paintCart(await requestCart('', null, {acceptNonce:() => mutating})); } catch { if (cartData) paintCart(cartData); } }
-            if (getCurrent() === 'cart') $('#sf-status').textContent = error.message;
+            if (cartVisible()) $('#sf-status').textContent = error.message;
         } finally {
             mutating = false; mutationKey = ''; updateCartBusy();
             if (externalRevision !== externalAtStart || dirty) { dirty = true; scheduleRefresh(); }
-            if (getCurrent() === 'cart' && getDialog()?.open) {
+            if (cartVisible() && (getDialog()?.open || pageActive())) {
                 const candidate = [...$('#sf-cart').querySelectorAll('[data-key]')].find(b => b.dataset.key === key && b.dataset.qty === focusQuantity && !b.disabled) || $('#sf-cart button:not(:disabled)') || $('.sf-close');
                 candidate.focus({preventScroll:true});
             }
@@ -426,6 +498,9 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
             );
         }
         bindWooStore();
+        syncPage();
+        document.addEventListener('codela:before-route', unmountPage);
+        window.addEventListener('codela:route-committed', syncPage);
         // Classic footer scripts normally precede module init. One load retry
         // supports deferred Woo registration without polling or loading Blocks on Home.
         window.addEventListener('load', bindWooStore, {once:true});
@@ -442,6 +517,10 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
         refresh: refreshCart,
         change: changeCart,
         invalidate,
+        syncPage,
+        unmountPage,
+        isPageActive: pageActive,
+        focusPage,
     };
 }
 
