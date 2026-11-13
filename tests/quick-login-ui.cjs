@@ -133,7 +133,8 @@ function assertImeSafeEnter(source,kind) {
       root:{classList:{contains:()=>false}},
       handleDigits:()=>calls.push('pin')
     };
-    vm.runInNewContext(match[1],context,{timeout:1000});
+    // Execute the extracted listener as a function so its early return is legal.
+    vm.runInNewContext('(function(){'+match[1]+'})()',context,{timeout:1000});
     return calls;
   };
   const success=kind==='email'?['preventDefault','login']:['preventDefault','pin'];
