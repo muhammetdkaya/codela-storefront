@@ -20,6 +20,8 @@ assert(css.includes('.sf-quick-login.is-inline-open .sf-quick-inline-inner{visib
 assert(css.includes('.sf-quick-account-frame::before') && !css.includes('.sf-quick-account::before'),'Skeleton uses the single actual outer card frame');
 assert(css.includes('.sf-quick-google:disabled{opacity:1!important'),'Disabled Google CTA preserves full dark background and logo colors');
 assert(js.includes('mergeSlots()') && js.includes("track.classList.add('is-merging')"),'The six square boxes converge to a single result');
+assert(css.includes('.sf-quick-pin-track.is-checking .sf-quick-slot::after') &&
+  css.includes('sf-quick-verifying-orbit'),'Pending six-digit verification has a clear running border animation');
 assert(js.includes("if (!result.ok || typeof result.account_url !== 'string')"),'Server authentication response is validated before success');
 assert(js.indexOf('mergeSlots();') > js.indexOf("const result = await request('verify'") && js.indexOf("track.classList.add('is-verified')") > js.indexOf('mergeSlots();'),'Both merge and check are gated on the successful server response');
 assert(js.includes("accountStore.storePin({...remembered,") &&
