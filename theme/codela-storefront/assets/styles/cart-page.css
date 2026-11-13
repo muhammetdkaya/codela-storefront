@@ -47,8 +47,7 @@ body.woocommerce-cart .sf-cart-page-panel .sf-cart-count {
 }
 body.woocommerce-cart .sf-cart-page-panel .sf-cart-bottom {
   box-sizing:border-box;
-  position:sticky;bottom:calc(90px + env(safe-area-inset-bottom,0px));
-  z-index:10;width:100%;margin-top:auto;
+  position:static;z-index:10;width:100%;margin-top:auto;
   background:var(--sf-ui-page);
   padding:18px 0 12px!important;
   border-top:1px solid color-mix(in srgb,var(--sf-ui-border) 55%,transparent);
@@ -64,14 +63,45 @@ body.woocommerce-cart .sf-cart-page-panel .sf-status {padding:4px 0;margin:0;min
 body.woocommerce-cart .sf-cart-page-panel .sf-status:empty {display:none}
 body.woocommerce-cart .sf-cart-page-panel .sf-cart-empty {min-height:35vh}
 body.woocommerce-cart .sf-cart-page-panel .sf-cart-row {box-sizing:border-box}
+/* The page and popup already use the same quantity markup. Prevent generic
+ * native Woo button styles from making the page's capsule look like 3 squares.
+ * These are surface fixes only; quantity logic remains the shared controller. */
+body.woocommerce-cart .sf-cart-page-panel .sf-stepper.sf-ui-surface {
+  border-radius:var(--sf-ui-pill)!important;
+  background:var(--sf-ui-glass-surface)!important;
+  box-shadow:var(--sf-ui-glass-thumb-shadow)!important;
+  overflow:visible!important;
+}
+body.woocommerce-cart .sf-cart-page-panel .sf-stepper.sf-ui-surface > button {
+  background:transparent!important;
+  border:0!important;box-shadow:none!important;
+  border-radius:var(--sf-ui-pill)!important;
+}
+@media (max-width:900px){
+  /* Sticky only sticks once its block reaches the viewport edge and thus
+   * parked our CTA midway down short carts. This bar is viewport-fixed. */
+  body.woocommerce-cart .sf-cart-page-panel .sf-cart-bottom {
+    position:fixed;
+    left:0;right:0;width:100%;max-width:none;
+    bottom:calc(12px + env(safe-area-inset-bottom,0px));
+    margin:0;
+    padding:12px 20px 10px!important;
+    z-index:990;
+    background:var(--sf-ui-page);
+  }
+  body.woocommerce-cart:has(.sf-mobile-dock:not([hidden])) .sf-cart-page-panel .sf-cart-bottom {
+    bottom:calc(var(--sf-ui-bottom-bar-height,58px) + var(--sf-ui-bottom-bar-gap,4px) + 8px + env(safe-area-inset-bottom,0px));
+  }
+  /* Keep the last product fully scrollable above the fixed purchase surface. */
+  body.woocommerce-cart .sf-cart-page-panel #sf-cart {
+    padding-bottom:230px;
+  }
+}
 @media (max-width:700px){
   body.woocommerce-cart .sf-cart-page {
     padding:10px 20px calc(105px + env(safe-area-inset-bottom,0px));
   }
   body.woocommerce-cart .sf-cart-page-panel {min-height:calc(100svh - 220px)}
-  body.woocommerce-cart .sf-cart-page-panel .sf-cart-bottom {
-    bottom:calc(84px + env(safe-area-inset-bottom,0px));
-  }
   body.woocommerce-cart .sf-cart-page-panel .sf-cart-count {margin-bottom:8px}
 }
 @media (min-width:901px){
