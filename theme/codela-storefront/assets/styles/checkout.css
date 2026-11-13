@@ -1098,6 +1098,7 @@ body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page tr.woocommerc
  justify-content:flex-end;font-size:13px;font-weight:550;line-height:1.5;
  color:var(--sf-ui-ink);overflow-wrap:anywhere;
 }
+body.sf-checkout-steps-active.sf-checkout-step-3 .sf-checkout-page tr.sf-checkout-shipping-summary-ready>td>label:has(input[name^="shipping_method"]){display:none!important}
 body.sf-checkout-steps-active:not(.sf-checkout-step-3) .sf-checkout-selected-shipping{display:none!important}
 /* Coupon disclosure is ONE bordered surface: Woo's notification stripes and
    nested card borders never reappear. The native coupon form/submit stay real. */
