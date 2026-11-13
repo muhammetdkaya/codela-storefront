@@ -955,3 +955,46 @@ body.woocommerce-checkout.sf-checkout-steps-active.sf-checkout-step-3 .sf-checko
  border:1px solid var(--sf-ui-border)!important;border-radius:17px!important;
  background:var(--sf-ui-surface)!important;
 }
+
+/* Delivery / free shipping shares the cart's understated status treatment.
+ * Woo's rate inputs, prices and merchant plugin calculations remain native.
+ * The generic Codela "done" state must not paint a second green card. */
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #order_review .cdl-fsb,
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #order_review .cdl-fsb.is-done,
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #order_review .cdl-fsb.is-warn{
+  margin:0!important;padding:0 0 14px!important;
+  border:0!important;background:transparent!important;
+  box-shadow:none!important;border-radius:0!important;
+}
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #order_review .cdl-fsb-text{
+  gap:11px!important;min-height:36px!important;
+  color:var(--sf-ui-ink)!important;
+  font-size:14px!important;line-height:1.4!important;font-weight:500!important;
+}
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #order_review .cdl-fsb.is-done .cdl-fsb-text>span:last-child{
+  color:#327b54!important;font-weight:600!important;
+}
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #order_review .sf-checkout-shipping-ring{
+  flex:0 0 36px!important;width:36px!important;height:36px!important;
+}
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #order_review .sf-checkout-shipping-ring>svg{
+  width:36px!important;height:36px!important;
+}
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #order_review .sf-checkout-shipping-ring .cdl-fsb-ico{
+  width:18px;height:18px;
+}
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table #shipping_method li,
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table .woocommerce-shipping-methods li{
+  display:flex;align-items:center;justify-content:flex-end;gap:7px;
+  min-height:30px;padding:3px 0;box-sizing:border-box;
+}
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #order_review .woocommerce-checkout-review-order-table input[type="radio"]{
+  width:18px;height:18px;min-width:18px;min-height:18px;margin:0;
+  accent-color:var(--sf-ui-ink);
+}
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #order_review :is(#shipping_method,.woocommerce-shipping-methods) li label{
+  font-size:13px;line-height:1.45;font-weight:500;
+}
+body.sf-checkout-steps-active.sf-checkout-step-2 .sf-checkout-page #order_review :is(#shipping_method,.woocommerce-shipping-methods) li:has(input:checked) label{
+  font-weight:650;color:var(--sf-ui-ink);
+}
