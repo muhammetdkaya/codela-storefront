@@ -8,6 +8,13 @@ on:
       - 'theme/codela-storefront/functions.php'
       - 'tests/cart-page-browser.cjs'
       - 'tests/cart-design.cjs'
+      - 'tests/commerce-skeleton-browser.cjs'
+      - 'theme/codela-storefront/inc/document-continuity.php'
+      - 'theme/codela-storefront/assets/scripts/checkout-steps.js'
+      - 'theme/codela-storefront/assets/scripts/navigation-feedback.js'
+      - 'theme/codela-storefront/assets/scripts/document-continuity.js'
+      - 'theme/codela-storefront/assets/styles/commerce-skeleton.css'
+      - 'scripts/build-assets.py'
       - '.github/workflows/cart-page.yml'
   workflow_dispatch:
 
@@ -36,3 +43,7 @@ jobs:
         run: node tests/cart-page-browser.cjs
       - name: Check mobile and desktop layout in WebKit
         run: TEST_WEBKIT=1 node tests/cart-page-browser.cjs
+      - name: Shared Cart/Checkout skeleton in Chromium
+        run: node tests/commerce-skeleton-browser.cjs
+      - name: Shared Cart/Checkout skeleton in WebKit
+        run: TEST_WEBKIT=1 node tests/commerce-skeleton-browser.cjs

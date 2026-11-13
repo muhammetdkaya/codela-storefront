@@ -87,14 +87,25 @@
             /\/(wp-admin|wp-login\.php|wp-json|customer-logout|lost-password)(\/|$)/.test(url.pathname) ||
             /\.[a-z0-9]{2,5}$/i.test(url.pathname) && !/\.(html?|php)$/i.test(url.pathname) ||
             link.matches('[data-panel],.ajax_add_to_cart') ||
-            link.hasAttribute('data-sf-route') && document.querySelector('#sf-content[data-wp-router-region]') ||
-            (config.excluded || []).some(value => {
+            link.hasAttribute('data-sf-route') && document.querySelector('#sf-content[data-wp-router-region]')) return;
+        const excluded = (config.excluded || []).some(value => {
                 const excluded = new URL(value, location.href);
                 const path = excluded.pathname.replace(/\/$/, '');
                 return excluded.search ? url.pathname === excluded.pathname &&
                     [...excluded.searchParams].every(([key, value]) => url.searchParams.get(key) === value) :
                     url.pathname === path || url.pathname.startsWith(path + '/');
-            })) return;
+            });
+        // Commerce destinations still use NATIVE document navigation. Only
+        // the same inert feedback preview is permitted before the handoff;
+        // never intercept checkout forms, order-payment endpoints or POSTs.
+        const commerce = [config.cart, config.checkout].some(value => {
+            if (!value) return false;
+            const target = new URL(value, location.href);
+            return target.origin === url.origin &&
+                target.pathname.replace(/\/+$/, '') === url.pathname.replace(/\/+$/, '') &&
+                [...target.searchParams].every(([key, entry]) => url.searchParams.get(key) === entry);
+        });
+        if (excluded && !commerce) return;
         const main = document.querySelector('#sf-content');
         if (!main) return;
         window.codelaSFFeedback?.begin({ url: url.href, link });

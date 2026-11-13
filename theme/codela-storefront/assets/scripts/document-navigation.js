@@ -20,6 +20,10 @@
                 [...base.searchParams].every(([key, value]) => url.searchParams.get(key) === value);
         };
         if (accountDepth(url.href) >= 0) return 'account';
+        // Commerce URLs are matched against Woo's configured permalinks, not
+        // hard-coded /sepet/ or /checkout/ slugs.
+        if (matches(config.cart)) return 'cart';
+        if (matches(config.checkout)) return 'checkout';
         if (url.searchParams.get('post_type') === 'product' && (url.searchParams.has('p') || url.searchParams.has('product'))) return 'product';
         if (url.searchParams.has('product')) return 'product';
         if (url.searchParams.has('product_cat') || url.searchParams.has('product_tag') ||
@@ -27,7 +31,7 @@
         const shopPagination = config.shop && /\/page\/\d+\/?$/.test(url.pathname) &&
             url.pathname.replace(/page\/\d+\/?$/, '').replace(/\/$/, '') === new URL(config.shop, location.href).pathname.replace(/\/$/, '');
         if (matches(config.shop) || shopPagination || (config.catalogBases || []).some(base => matches(base, true))) return 'catalog';
-        if (['home','catalog','product','account','page'].includes(link?.dataset.sfSkeleton)) return link.dataset.sfSkeleton;
+        if (['home','catalog','product','account','cart','checkout','page'].includes(link?.dataset.sfSkeleton)) return link.dataset.sfSkeleton;
         if (link?.matches('.woocommerce-loop-product__link,.woocommerce-LoopProduct-link,.wc-block-components-product-name,.wc-block-components-product-image a,.sf-result') ||
             matches(config.productBase, true) && new URL(config.productBase, location.href).pathname !== '/') return 'product';
         if (matches(config.home) && !['page_id','p','s'].some(key => url.searchParams.has(key)) || link?.dataset.sfRoute === 'home') return 'home';
@@ -36,6 +40,11 @@
     function layout(type, url) {
         const shape = name => '<div class="sf-skeleton-shape sf-skeleton-' + name + '"></div>';
         const lines = '<div class="sf-skeleton-lines"><i></i><i></i></div>';
+        if (type === 'cart' || type === 'checkout') {
+            // Render the same inert PHP fragment used on the destination's
+            // first paint. No commerce state, prices or fake form controls.
+            return config.commerceSkeletons?.[type] || shape('heading') + lines;
+        }
         if (type === 'account') {
             const menu = '<div class="sf-skeleton-account-menu">' + ('<div class="sf-skeleton-account-link">' + shape('account-icon') + shape('account-label') + '</div>').repeat(6) + '</div>';
             const heading = shape('heading');
@@ -118,7 +127,9 @@
             link?.dataset?.sfPageTitle || link?.textContent || '').trim().slice(0, 64);
         const fallbackLogo = config.brandMarkup || '';
         const fallbackTitle = type === 'catalog' ? (config.shopLabel || 'Shop') :
-            type === 'account' ? (config.accountLabel || 'Account') : linkTitle;
+            type === 'account' ? (config.accountLabel || 'Account') :
+            type === 'cart' ? (config.cartLabel || 'Cart') :
+            type === 'checkout' ? (config.checkoutLabel || 'Checkout') : linkTitle;
 
         if (type === 'home') {
             capsule(left, 'logo', fallbackLogo, config.brandName || '');
@@ -283,23 +294,26 @@
         const dock = document.querySelector('.sf-shell > .sf-mobile-dock');
         if (dock) {
             save(dock, ['hidden', 'inert', 'aria-busy', 'class', 'style']);
-            const selected = type === 'home' || type === 'account';
+            const selected = type === 'home' || type === 'account' || type === 'cart';
             dock.classList.toggle('has-selection', selected);
-            dock.style.setProperty('--sf-dock-index', type === 'account' ? '3' : '0');
+            dock.style.setProperty('--sf-dock-index', type === 'account' ? '3' : type === 'cart' ? '2' : '0');
             dock.style.removeProperty('--sf-dock-position');
             dock.querySelectorAll('[data-dock-view]').forEach(node => {
                 save(node, ['class', 'aria-current']);
                 node.classList.toggle('is-active', selected && node.dataset.dockView === type);
                 node.removeAttribute('aria-current');
             });
-            dock.hidden = type === 'product';
+            // Checkout is a native no-dock document; do not preview a dock
+            // beneath its fixed payment footer.
+            dock.hidden = type === 'product' || type === 'checkout';
             dock.inert = true;
             dock.setAttribute('aria-busy', 'true');
             dock.classList.remove('is-collapsed');
         }
         document.documentElement.dataset.sfNavigationPending = owner;
         document.documentElement.dataset.sfNavigationTarget = type;
-        document.documentElement.dataset.sfNavigationBottom = type === 'product' ? 'product' : dock ? 'dock' : 'none';
+        document.documentElement.dataset.sfNavigationBottom = type === 'product' ? 'product' :
+            type === 'checkout' ? 'none' : dock ? 'dock' : 'none';
         // Outside transformed/contained outgoing main, including router regions.
         document.body.append(surface);
         if (state.preview) document.body.append(state.preview);
@@ -433,14 +447,25 @@
             /\/(wp-admin|wp-login\.php|wp-json|customer-logout|lost-password)(\/|$)/.test(url.pathname) ||
             /\.[a-z0-9]{2,5}$/i.test(url.pathname) && !/\.(html?|php)$/i.test(url.pathname) ||
             link.matches('[data-panel],.ajax_add_to_cart') ||
-            link.hasAttribute('data-sf-route') && document.querySelector('#sf-content[data-wp-router-region]') ||
-            (config.excluded || []).some(value => {
+            link.hasAttribute('data-sf-route') && document.querySelector('#sf-content[data-wp-router-region]')) return;
+        const excluded = (config.excluded || []).some(value => {
                 const excluded = new URL(value, location.href);
                 const path = excluded.pathname.replace(/\/$/, '');
                 return excluded.search ? url.pathname === excluded.pathname &&
                     [...excluded.searchParams].every(([key, value]) => url.searchParams.get(key) === value) :
                     url.pathname === path || url.pathname.startsWith(path + '/');
-            })) return;
+            });
+        // Commerce destinations still use NATIVE document navigation. Only
+        // the same inert feedback preview is permitted before the handoff;
+        // never intercept checkout forms, order-payment endpoints or POSTs.
+        const commerce = [config.cart, config.checkout].some(value => {
+            if (!value) return false;
+            const target = new URL(value, location.href);
+            return target.origin === url.origin &&
+                target.pathname.replace(/\/+$/, '') === url.pathname.replace(/\/+$/, '') &&
+                [...target.searchParams].every(([key, entry]) => url.searchParams.get(key) === entry);
+        });
+        if (excluded && !commerce) return;
         const main = document.querySelector('#sf-content');
         if (!main) return;
         window.codelaSFFeedback?.begin({ url: url.href, link });
