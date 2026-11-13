@@ -514,6 +514,19 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
     function bind() {
         if (bound) return;
         bound = true;
+        // The ONE cart element is reparented between popup and /sepet/.
+        // Handle controls on that persistent element in the capture phase:
+        // external Woo handlers and delegated document listeners can no longer
+        // swallow clicks on the nested trash glyph or trigger duplicate writes.
+        $('#sf-cart')?.addEventListener('click', event => {
+            const button = event.target.closest?.('button[data-remove],button[data-qty],button.sf-retry-cart');
+            if (!button || !event.currentTarget.contains(button)) return;
+            event.preventDefault();
+            event.stopPropagation();
+            if (button.disabled || button.closest('[inert]')) return;
+            if (button.matches('.sf-retry-cart')) void refreshCart();
+            else void changeCart(button);
+        }, true);
         bindPurchaseFeedback();
         document.body.addEventListener('wc-blocks_added_to_cart', invalidate);
         document.body.addEventListener('wc-blocks_removed_from_cart', invalidate);
