@@ -506,12 +506,17 @@ add_action( 'wp_head', static function(): void {
 add_action( 'wp_enqueue_scripts', static function(): void {
     // The login overlay can be opened on any storefront page by a guest.
     if ( is_user_logged_in() && ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) ) { return; }
-    $uri = get_template_directory_uri() . '/assets/';
-    wp_enqueue_style( 'codela-storefront-quick-login', $uri . 'styles/quick-login.css',
-        [], codela_sf_style_version() );
-    wp_enqueue_script( 'codela-storefront-quick-login', $uri . 'scripts/quick-login.js',
-        [], codela_sf_script_module_version( 'scripts/quick-login.js' ), true );
-    wp_localize_script( 'codela-storefront-quick-login', 'CodelaQuickLogin', [
+    $lazy = codela_sf_guest_auth_lazy_allowed();
+    if ( ! $lazy ) {
+        $uri = get_template_directory_uri() . '/assets/';
+        wp_enqueue_style( 'codela-storefront-quick-login', $uri . 'styles/quick-login.css',
+            [], codela_sf_style_version() );
+        wp_enqueue_script( 'codela-storefront-quick-login', $uri . 'scripts/quick-login.js',
+            [], codela_sf_script_module_version( 'scripts/quick-login.js' ), true );
+    }
+    // The loader must receive the exact same trusted configuration before it
+    // evaluates quick-login.js; no user identity or key is serialized afresh.
+    wp_localize_script( $lazy ? 'codela-storefront-auth-loader' : 'codela-storefront-quick-login', 'CodelaQuickLogin', [
         'rest' => esc_url_raw( rest_url( 'codela-storefront/v1/quick-login/' ) ),
         'nonce' => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
         'account' => wc_get_page_permalink( 'myaccount' ),
@@ -540,5 +545,5 @@ add_action( 'wp_enqueue_scripts', static function(): void {
             'revokeFailed' => __( 'Could not remove browser.', 'codela-storefront' ),
         ],
     ] );
-    wp_script_add_data( 'codela-storefront-quick-login', 'strategy', 'defer' );
+    if ( ! $lazy ) { wp_script_add_data( 'codela-storefront-quick-login', 'strategy', 'defer' ); }
 }, 25 );

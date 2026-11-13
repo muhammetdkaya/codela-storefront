@@ -346,9 +346,12 @@ add_action( 'woocommerce_before_customer_login_form', 'codela_sf_pk_guest_markup
 
 add_action( 'wp_enqueue_scripts', static function(): void {
     if ( is_user_logged_in() && ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) ) { return; }
-    $url = get_template_directory_uri() . '/assets/';
-    wp_enqueue_script( 'codela-storefront-passkeys', $url . 'scripts/passkeys.js', [ 'codela-storefront-quick-login' ], codela_sf_script_module_version( 'scripts/passkeys.js' ), true );
-    wp_localize_script( 'codela-storefront-passkeys', 'CodelaSFPasskey', [
+    $lazy = codela_sf_guest_auth_lazy_allowed();
+    if ( ! $lazy ) {
+        $url = get_template_directory_uri() . '/assets/';
+        wp_enqueue_script( 'codela-storefront-passkeys', $url . 'scripts/passkeys.js', [ 'codela-storefront-quick-login' ], codela_sf_script_module_version( 'scripts/passkeys.js' ), true );
+    }
+    wp_localize_script( $lazy ? 'codela-storefront-auth-loader' : 'codela-storefront-passkeys', 'CodelaSFPasskey', [
         'rest' => esc_url_raw( rest_url( 'codela-storefront/v1/passkey' ) ),
         'nonce' => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
         'account' => wc_get_page_permalink( 'myaccount' ),
