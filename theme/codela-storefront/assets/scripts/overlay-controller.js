@@ -176,6 +176,14 @@ export function createOverlayController({
     }
     function open(name, event) {
         if (event && (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) return;
+        // The native Cart page already displays the *actual* cart dialog
+        // nodes. Do not open a second/empty cart dialog on that destination.
+        if (name === 'cart' && cartFeature.isPageActive()) {
+            event?.preventDefault();
+            if (dialog?.open) close();
+            cartFeature.focusPage();
+            return;
+        }
         event?.preventDefault();
         dialog ||= $('#sf-panel');
         if (!dialog || typeof dialog.showModal !== 'function') { if (name !== 'menu') location.href = config()[name] || config().shop; return; }
