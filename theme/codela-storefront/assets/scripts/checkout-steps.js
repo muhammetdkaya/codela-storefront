@@ -83,10 +83,13 @@
         // disclosure click so an unhandled href="#" never jumps/reloads the page.
         function refineCoupon() {
             const toggle = woo.querySelector('.woocommerce-form-coupon-toggle');
-            let link = toggle?.querySelector('.sf-checkout-coupon-trigger, a.showcoupon');
-            if (!link) return;
-            const notice = link.closest('.woocommerce-info') || link.parentElement;
-            if (!notice) return;
+            let shell = woo.querySelector('.sf-checkout-coupon-shell');
+            // Once prepared, the theme-owned button sits directly in its card.
+            // The original Woo notice stays mounted but no longer paints UI.
+            let link = shell?.querySelector(':scope > .sf-checkout-coupon-trigger') ||
+                toggle?.querySelector('.sf-checkout-coupon-trigger, a.showcoupon');
+            const notice = toggle?.querySelector('.woocommerce-info') || link?.closest('.woocommerce-info');
+            if (!toggle || !link || !notice) return;
             // A native disclosure button cannot follow href="#" or submit a form.
             // Keep Woo's original coupon form and its AJAX submission untouched.
             if (link.matches('a.showcoupon')) {
@@ -121,16 +124,20 @@
             // or Gutenberg block spacing cannot split them into two cards.
             // The form, input names and Woo AJAX handlers are not recreated.
             if (coupon && toggle && !form.contains(coupon) && !form.contains(toggle)) {
-                let shell = toggle.closest('.sf-checkout-coupon-shell');
+                shell = toggle.closest('.sf-checkout-coupon-shell');
                 if (!shell) {
                     shell = document.createElement('div');
                     shell.className = 'sf-checkout-coupon-shell';
                     toggle.parentNode.insertBefore(shell, toggle);
                     shell.append(toggle);
                 }
-                // Some Woo templates add notice wrappers between these nodes.
-                // Re-parent the ORIGINAL coupon form; Woo's own AJAX and native
-                // .showcoupon handler continue to target the same form element.
+                // Design A: the visible trigger is a direct child of the card,
+                // not nested in Woo's .woocommerce-info notice. Otherwise the
+                // shared notice border/padding can clip it on Safari.
+                if (link.parentElement !== shell) shell.insertBefore(link, toggle);
+                // Keep the original Woo notice for compatibility; its
+                // presentation is hidden only after successful JS activation.
+                // The ORIGINAL coupon form stays mounted for Woo's AJAX.
                 if (coupon.parentElement !== shell) shell.append(coupon);
             }
             const field = coupon?.querySelector('input[name="coupon_code"]');
@@ -154,7 +161,7 @@
                     const inline = coupon.style.display;
                     const visible = inline ? inline !== 'none' : getComputedStyle(coupon).display !== 'none';
                     toggle.classList.toggle('sf-checkout-coupon-open', visible);
-                    toggle.closest('.sf-checkout-coupon-shell')?.classList.toggle('sf-checkout-coupon-open', visible);
+                    link.closest('.sf-checkout-coupon-shell')?.classList.toggle('sf-checkout-coupon-open', visible);
                     link.setAttribute('aria-expanded', String(visible));
                 };
                 if (!coupon.id) coupon.id = 'sf-checkout-coupon-form';
