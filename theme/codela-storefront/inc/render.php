@@ -79,7 +79,7 @@ function codela_sf_header_context(): array {
         return [ 'title' => __( 'Checkout', 'woocommerce' ), 'back' => wc_get_cart_url(), 'history' => false ];
     }
     if ( function_exists( 'is_cart' ) && is_cart() ) {
-        return [ 'title' => __( 'Your cart', 'codela-storefront' ), 'back' => '', 'history' => false ];
+        return [ 'title' => __( 'Cart', 'codela-storefront' ), 'back' => '', 'history' => false, 'cart' => true ];
     }
     return [];
 }
@@ -129,7 +129,7 @@ function codela_sf_header(): string {
                     <a class="sf-ui-pressable" data-sf-context-back <?php echo ! empty( $context['root'] ) ? 'data-sf-context-root' : ''; ?> <?php echo ! empty( $context['parent'] ) ? 'data-sf-hierarchy-parent="' . esc_url( $context['parent'] ) . '"' : ''; ?> data-sf-page-title="<?php echo esc_attr( get_the_title( get_queried_object_id() ) ); ?>" href="<?php echo esc_url( $context['back'] ?: home_url( '/' ) ); ?>" aria-label="<?php esc_attr_e( 'Back', 'codela-storefront' ); ?>" <?php echo ! empty( $context['root'] ) ? 'hidden' : ''; ?>><?php echo codela_sf_icon( 'chevron-left' ); ?></a>
                     <span class="sf-context-label" <?php echo empty( $context['root'] ) || $product_page ? 'hidden' : ''; ?>><?php echo esc_html( $context['title'] ); ?></span>
                     <?php elseif ( $context['back'] ) : ?><a class="sf-ui-pressable" data-sf-page-title="<?php echo esc_attr( get_the_title( get_queried_object_id() ) ); ?>" href="<?php echo esc_url( $context['back'] ); ?>" data-sf-account-back aria-label="<?php echo esc_attr( __( 'Back', 'codela-storefront' ) . ': ' . ( $checkout_page ? __( 'Your cart', 'codela-storefront' ) : $context['title'] ) ); ?>"><?php echo codela_sf_icon( 'chevron-left' ); ?></a>
-                    <?php elseif ( ! empty( $context['account'] ) ) : ?><span class="sf-account-context-heading"><?php echo codela_sf_icon( 'user-round' ); ?><span class="sf-context-label"><?php echo esc_html( $context['title'] ); ?></span></span>
+                    <?php elseif ( ! empty( $context['account'] ) || ! empty( $context['cart'] ) ) : ?><span class="sf-account-context-heading"><?php echo codela_sf_icon( ! empty( $context['cart'] ) ? 'shopping-bag' : 'user-round' ); ?><span class="sf-context-label"><?php echo esc_html( $context['title'] ); ?></span></span>
                     <?php else : ?><span class="sf-context-label"><?php echo esc_html( $context['title'] ); ?></span><?php endif; ?>
 
                 <?php elseif ( has_custom_logo() ) : the_custom_logo(); else : ?><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></a><?php endif; ?>
