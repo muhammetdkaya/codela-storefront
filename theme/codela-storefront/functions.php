@@ -161,10 +161,16 @@ add_action( 'wp_head', static function() {
     (function () {
         var root = document.documentElement;
         root.classList.add('sf-cart-awaiting');
-        var timer = setTimeout(function () {
+        function revealNative() {
             root.classList.remove('sf-cart-awaiting');
             root.classList.add('sf-cart-fallback');
-        }, 8000);
+            var pending = document.querySelector('.sf-cart-page-panel:not(.is-ready)');
+            if (pending) {
+                pending.hidden = true;
+                pending.setAttribute('aria-hidden', 'true');
+            }
+        }
+        var timer = setTimeout(revealNative, 8000);
         window.codelaSFCartBoot = {
             ready: function () {
                 clearTimeout(timer);
@@ -172,8 +178,7 @@ add_action( 'wp_head', static function() {
             },
             fallback: function () {
                 clearTimeout(timer);
-                root.classList.remove('sf-cart-awaiting');
-                root.classList.add('sf-cart-fallback');
+                revealNative();
             }
         };
     }());
