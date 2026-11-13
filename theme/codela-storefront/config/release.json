@@ -6,10 +6,11 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Sepet sayfasında ürün silme sonrası gizli WooCommerce formunun eski miktarları yeniden göndermesi engellendi; tek yetkili Store API işlemi korunuyor.",
-    "Sepet popup'ı ve normal sepet sayfasının ücretsiz kargo durumu sadeleştirildi: büyük yeşil bant yerine 36 piksel ilerleme halkası ve net tek satır mesaj kullanılıyor.",
-    "Sepet ve ödeme skeleton'larının alt butonlarında sabit metinler hemen görünüyor; yalnızca yüklenmemiş fiyat alanı animasyonlu yer tutucu kullanıyor.",
-    "Sepet miktar düğmeleri form göndermiyor; WooCommerce kargo eşikleri, oturum tutarları ve ödeme formları değiştirilmedi.",
-    "Chromium ve WebKit testlerinde silme ikonuna dokunma, Store API üzerinden tek silme isteği, ücretsiz kargo görünümü ve skeleton etiketleri doğrulandı."
+    "Sepet popup'ı ve normal sepet sayfasında ürün silme, artık doğrudan tek kalıcı sepet kontrolünden yönetiliyor; başka tıklama işleyicileri silme işlemini bozamıyor.",
+    "Sepet ve ödeme bağlantılarına dokunulduğu anda, yeni sayfanın açılması beklenmeden mevcut ortak skeleton gösteriliyor; doğal WooCommerce yönlendirmeleri korunuyor.",
+    "Ücretsiz kargo başarı metni 'Ücretsiz kargo' olarak kısaltıldı; teslimat adımındaki kargo göstergesi, seçili gönderim yöntemleri ve kart görselliği temayla uyumlu hale getirildi.",
+    "Hesabım menüsünün sipariş, adres, güvenlik, tercihler, hesap ve çıkış ikonları tutarlı çizgi kalınlığı ve biçimiyle yenilendi.",
+    "6 haneli hızlı girişte son rakam girildikten sonra doğrulama sürerken altı kutunun çerçevesi dönüyor; yeşil başarı durumu yalnızca sunucu doğrulamasından sonra gösteriliyor.",
+    "Chromium ve WebKit odak testleri sepet silme, tıklama anında skeleton, doğal geçişler, teslimat seçenekleri ve PIN doğrulama animasyonunu kapsıyor."
   ]
 }
