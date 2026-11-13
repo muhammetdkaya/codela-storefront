@@ -85,6 +85,8 @@ jobs:
           # independently flaky product/gallery acceptance suites.
           node tests/checkout-steps-browser.cjs
           TEST_WEBKIT=1 node tests/checkout-steps-browser.cjs
+          node tests/cart-page-browser.cjs
+          TEST_WEBKIT=1 node tests/cart-page-browser.cjs
           node tests/desktop-header-browser.cjs
           TEST_WEBKIT=1 node tests/desktop-header-browser.cjs
           responsive_failed=0
