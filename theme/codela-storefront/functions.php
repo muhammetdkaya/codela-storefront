@@ -125,6 +125,67 @@ add_action( 'init', function() {
     register_block_type( 'codela/storefront-search', [ 'api_version' => 3, 'render_callback' => 'codela_sf_search_results', 'supports' => [ 'html' => false, 'inserter' => false ] ] );
     register_block_type( 'codela/storefront-footer', [ 'api_version' => 3, 'render_callback' => 'codela_sf_footer', 'supports' => [ 'html' => false, 'inserter' => false ] ] );
 } );
+/**
+ * Critical cart first paint: avoid rendering the old Woo cart for a frame
+ * before the shared Store API view has mounted. The marker is created only by
+ * JavaScript, so with JS disabled native WooCommerce remains visible. A short
+ * watchdog reveals native Woo if the script or API never finishes.
+ *
+ * wp_head priority 0 is intentionally earlier than the blocking theme CSS:
+ * the initial frame has a stable loading silhouette, never a legacy CTA.
+ */
+add_action( 'wp_head', static function() {
+    if ( ! codela_sf_ready() || ! function_exists( 'is_cart' ) || ! is_cart() ) { return; }
+    ?>
+    <style id="codela-cart-first-paint">
+    html.sf-cart-awaiting body.woocommerce-cart .sf-cart-page .wp-block-post-content,
+    html.sf-cart-awaiting body.woocommerce-cart .wp-block-post-content:has(.wc-block-cart),
+    html.sf-cart-awaiting body.woocommerce-cart .wp-block-post-content:has(.woocommerce-cart-form),
+    html.sf-cart-awaiting body.woocommerce-cart main > .woocommerce:has(.woocommerce-cart-form) {
+        visibility:hidden!important;pointer-events:none!important;
+    }
+    html.sf-cart-awaiting body.woocommerce-cart .sf-cart-page::before {
+        content:"";display:block;max-width:780px;width:100%;
+        height:238px;margin:2px auto 0;pointer-events:none;
+        background:
+            linear-gradient(#e7e7e4,#e7e7e4) left 0 top 12px/82px 82px no-repeat,
+            linear-gradient(#e7e7e4,#e7e7e4) left 100px top 20px/59% 17px no-repeat,
+            linear-gradient(#ebebe8,#ebebe8) left 100px top 51px/38% 16px no-repeat,
+            linear-gradient(#e7e7e4,#e7e7e4) left 0 top 130px/82px 82px no-repeat,
+            linear-gradient(#e7e7e4,#e7e7e4) left 100px top 138px/55% 17px no-repeat,
+            linear-gradient(#ebebe8,#ebebe8) left 100px top 169px/35% 16px no-repeat;
+        border-radius:14px;opacity:.82;
+    }
+    </style>
+    <script id="codela-cart-first-paint-script">
+    (function () {
+        var root = document.documentElement;
+        root.classList.add('sf-cart-awaiting');
+        function revealNative() {
+            root.classList.remove('sf-cart-awaiting');
+            root.classList.add('sf-cart-fallback');
+            var pending = document.querySelector('.sf-cart-page-panel:not(.is-ready)');
+            if (pending) {
+                pending.hidden = true;
+                pending.setAttribute('aria-hidden', 'true');
+            }
+        }
+        var timer = setTimeout(revealNative, 8000);
+        window.codelaSFCartBoot = {
+            ready: function () {
+                clearTimeout(timer);
+                root.classList.remove('sf-cart-awaiting', 'sf-cart-fallback');
+            },
+            fallback: function () {
+                clearTimeout(timer);
+                revealNative();
+            }
+        };
+    }());
+    </script>
+    <?php
+}, 0 );
+
 add_action( 'wp_enqueue_scripts', function() {
     if ( ! codela_sf_ready() ) { return; }
     $root_uri = get_template_directory_uri() . '/assets/';

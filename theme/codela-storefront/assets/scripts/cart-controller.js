@@ -28,6 +28,7 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
             pageNative.classList.remove('sf-cart-page-native');
         }
         document.body.classList.remove('sf-cart-page-enhanced');
+        document.documentElement.classList.remove('sf-cart-awaiting', 'sf-cart-fallback');
         pageHost.remove();
         pageHost = null; pageNative = null; originalCartHomes = null;
     }
@@ -65,7 +66,7 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
         items.hidden = false;
         // Never discard the native Woo cart until the shared Store API view
         // has successfully painted. It stays usable if JS/REST fails.
-        if (cartData) renderCart(cartData);
+        if (cartData) paintCart(cartData);
         if (bound) void refreshCart();
     }
 
@@ -151,13 +152,29 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
         });
         renderCart(data);
         if (pageActive()) {
+            pageHost.hidden = false;
+            pageHost.removeAttribute('aria-hidden');
             pageHost.classList.add('is-ready');
             pageHost.setAttribute('aria-busy', 'false');
             pageNative.hidden = true;
             pageNative.setAttribute('aria-hidden', 'true');
             pageNative.classList.add('sf-cart-page-native');
             document.body.classList.add('sf-cart-page-enhanced');
+            document.body.classList.remove('sf-cart-page-fallback');
+            window.codelaSFCartBoot?.ready();
+            document.documentElement.classList.remove('sf-cart-awaiting', 'sf-cart-fallback');
         }
+    }
+    function showPageFallback() {
+        if (!pageActive() || pageHost.classList.contains('is-ready')) return;
+        // The native Woo view is only a recovery surface, not a first paint.
+        pageHost.hidden = true;
+        pageHost.setAttribute('aria-hidden', 'true');
+        pageNative.hidden = false;
+        pageNative.removeAttribute('aria-hidden');
+        document.body.classList.add('sf-cart-page-fallback');
+        window.codelaSFCartBoot?.fallback();
+        document.documentElement.classList.remove('sf-cart-awaiting');
     }
     function renderCartProgress(data) {
         const host = $('#sf-cart-progress');
@@ -281,6 +298,7 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
                     if (!mutating) dirty = true;
                     return;
                 }
+                if (!cartData && pageActive()) showPageFallback();
                 if (!cartData && !pageActive()) {
                     $('#sf-cart-items').innerHTML = `<p>${escape(t('Something went wrong. Please try again.'))}</p><button class="sf-retry-cart sf-ui-pressable">${escape(t('Retry'))}</button><p><a href="${safeURL(config().cart)}">${escape(t('Your cart'))}</a></p>`;
                     $('.sf-cart-bottom').hidden = true;
