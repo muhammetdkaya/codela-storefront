@@ -246,6 +246,21 @@ add_filter( 'login_redirect', static function( $redirect, $requested, $user ) {
     return codela_sf_signed_in_account_url( $redirect );
 }, 25, 3 );
 
+// Codela Consent Center registers its WordPress rewrite endpoint and its own
+// Woo account callback, but does not add it to WC_Query's endpoint registry.
+// Without this bridge, get_current_endpoint() and is_wc_endpoint_url() treat
+// /my-account/communication-preferences/ as the dashboard. On mobile that
+// leaves the dashboard menu visible instead of the requested separate screen.
+// Register only when the plugin's real renderer is active: no phantom page.
+add_filter( 'woocommerce_get_query_vars', static function( array $vars ): array {
+    if ( function_exists( 'codela_consent_center_render_preferences_endpoint' )
+        && has_action( 'woocommerce_account_communication-preferences_endpoint',
+            'codela_consent_center_render_preferences_endpoint' ) ) {
+        $vars['communication-preferences'] = 'communication-preferences';
+    }
+    return $vars;
+}, 11 );
+
 // Keep WooCommerce endpoint navigation and all registered plugin destinations.
 
 /**

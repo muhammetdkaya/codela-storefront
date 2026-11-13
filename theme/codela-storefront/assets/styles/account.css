@@ -579,3 +579,125 @@ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout):has(.woo
  body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
   .sf-shell > :is(.sf-header,.sf-mobile-dock){transition:none}
 }
+
+
+/* 0.1.306 — Signed-in native account profile: theme surfaces, never a
+   duplicate account editor. Woo owns names, email, password, nonce and save. */
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
+ .woocommerce-MyAccount-content form.woocommerce-EditAccountForm{
+  box-sizing:border-box;
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:0 18px;
+  width:100%;max-width:860px;
+  margin:0;padding:clamp(18px,3vw,30px)!important;
+  border:1px solid var(--sf-ui-border)!important;
+  border-radius:20px;
+  background:var(--sf-ui-surface);
+  box-shadow:0 8px 32px rgba(20,22,24,.035);
+}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
+ .woocommerce-MyAccount-content form.woocommerce-EditAccountForm>.form-row{
+  box-sizing:border-box;grid-column:1/-1;
+  float:none!important;width:100%!important;min-width:0;
+  padding:0!important;margin:0 0 19px!important;
+}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
+ .woocommerce-MyAccount-content form.woocommerce-EditAccountForm>.form-row:is(.form-row-first,.form-row-last){
+  grid-column:span 1;
+}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
+ .woocommerce-MyAccount-content form.woocommerce-EditAccountForm>.clear{display:none}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
+ .woocommerce-MyAccount-content .woocommerce-EditAccountForm label{
+  margin:0 0 8px!important;
+  font-size:13px;font-weight:500;line-height:1.5;color:var(--sf-ui-control-ink);
+}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
+ .woocommerce-MyAccount-content .woocommerce-EditAccountForm :is(input.woocommerce-Input,input.input-text,select){
+  box-sizing:border-box;display:block;width:100%;min-width:0;
+  min-height:var(--sf-ui-action-height);
+  padding:12px 16px;
+  font:inherit;font-size:16px;line-height:1.4;
+  border:1px solid var(--sf-ui-border);
+  border-radius:var(--sf-ui-control-radius);
+  background:var(--sf-ui-surface);
+  color:var(--sf-ui-control-ink);
+  box-shadow:none;
+  transition:border-color .18s ease,box-shadow .18s ease;
+}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
+ .woocommerce-MyAccount-content .woocommerce-EditAccountForm :is(input.woocommerce-Input,input.input-text,select):focus-visible{
+  outline:2px solid var(--sf-ui-ink);outline-offset:2px;
+}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
+ .woocommerce-MyAccount-content .woocommerce-EditAccountForm .password-input{
+  display:block;position:relative;width:100%;min-width:0;
+}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
+ .woocommerce-MyAccount-content .woocommerce-EditAccountForm .show-password-input{
+  display:grid;place-items:center;
+  min-width:44px;min-height:44px;
+}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
+ .woocommerce-MyAccount-content .woocommerce-EditAccountForm em{
+  display:block;margin-top:7px;color:var(--sf-muted);
+  font-size:12px;font-style:normal;line-height:1.5;
+}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
+ .woocommerce-MyAccount-content form.woocommerce-EditAccountForm>fieldset{
+  box-sizing:border-box;grid-column:1/-1;
+  min-width:0;margin:12px 0 18px!important;
+  padding:20px clamp(14px,3vw,24px)!important;
+  border:1px solid var(--sf-ui-border)!important;
+  border-radius:var(--sf-ui-control-radius)!important;
+  background:var(--sf-ui-surface-muted)!important;
+}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
+ .woocommerce-MyAccount-content form.woocommerce-EditAccountForm>fieldset legend{
+  margin:0;padding:0 8px;
+  color:var(--sf-ui-ink);font-size:14px;font-weight:600;letter-spacing:-.015em;
+}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
+ .woocommerce-MyAccount-content form.woocommerce-EditAccountForm>fieldset>.form-row{
+  float:none;width:100%;min-width:0;margin:0 0 14px;padding:0;
+}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
+ .woocommerce-MyAccount-content form.woocommerce-EditAccountForm>fieldset>.form-row:last-child{margin-bottom:0}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
+ .woocommerce-MyAccount-content form.woocommerce-EditAccountForm>p:has(button[name="save_account_details"]){
+  display:flex;align-items:center;justify-content:flex-end;
+  grid-column:1/-1;min-width:0;margin:4px 0 0!important;
+  padding:20px 0 0!important;border-top:1px solid var(--sf-ui-border);
+}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
+ .woocommerce-MyAccount-content form.woocommerce-EditAccountForm button[name="save_account_details"]{
+  box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;
+  min-width:175px;min-height:var(--sf-ui-action-height);
+  margin:0!important;padding:12px 24px!important;
+  border:1px solid var(--sf-ui-ink)!important;
+  border-radius:var(--sf-ui-button-radius)!important;
+  background:var(--sf-ui-ink)!important;color:#fff!important;
+  font:inherit;font-size:14px;font-weight:600;line-height:1.35;
+  box-shadow:var(--sf-ui-action-shadow);cursor:pointer;
+}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
+ .woocommerce-MyAccount-content form.woocommerce-EditAccountForm button[name="save_account_details"]:focus-visible{
+  outline:2px solid var(--sf-ui-ink);outline-offset:3px;
+}
+@media(max-width:650px){
+ body.woocommerce-account.logged-in:not(.codela-my-account-layout)
+  .woocommerce-MyAccount-content form.woocommerce-EditAccountForm{
+   grid-template-columns:minmax(0,1fr);gap:0;padding:18px!important;
+   border-radius:18px;
+  }
+ body.woocommerce-account.logged-in:not(.codela-my-account-layout)
+  .woocommerce-MyAccount-content form.woocommerce-EditAccountForm>.form-row:is(.form-row-first,.form-row-last){grid-column:1/-1}
+ body.woocommerce-account.logged-in:not(.codela-my-account-layout)
+  .woocommerce-MyAccount-content form.woocommerce-EditAccountForm>p:has(button[name="save_account_details"]){justify-content:stretch}
+ body.woocommerce-account.logged-in:not(.codela-my-account-layout)
+  .woocommerce-MyAccount-content form.woocommerce-EditAccountForm button[name="save_account_details"]{width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+ body.woocommerce-account.logged-in:not(.codela-my-account-layout)
+  .woocommerce-MyAccount-content .woocommerce-EditAccountForm :is(input.woocommerce-Input,input.input-text,select){transition:none}
+}
