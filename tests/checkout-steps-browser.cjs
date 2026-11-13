@@ -27,7 +27,7 @@ const native=[
 '<h3 id="order_review_heading">Sipariş</h3><div id="order_review">',
 '<div class="cdl-fsb-slot"><div class="cdl-fsb cdl-fsb--checkout" role="status"><div class="cdl-fsb-text"><span class="cdl-fsb-ico"><svg viewBox="0 0 24 24"><path d="M2 4h16v15H2z"/></svg></span><span>Ücretsiz kargo için <strong>₺1.900,00</strong> daha ekleyin.</span></div><div class="cdl-fsb-track"><span class="cdl-fsb-fill" style="width:60%"></span></div></div></div>',
 '<table class="woocommerce-checkout-review-order-table"><thead><tr><th>Ürün</th><th>Tutar</th></tr></thead>',
-'<tbody><tr class="cart_item"><td>Vazo</td><td>₺800,00</td></tr></tbody><tfoot>',
+'<tbody><tr class="cart_item"><td class="product-name"><span class="sf-checkout-product-main"><img class="sf-checkout-product-image" alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="><span class="sf-checkout-product-label">Vazo</span></span> <strong class="product-quantity">&times;&nbsp;5</strong></td><td class="product-total">₺800,00</td></tr></tbody><tfoot>',
 '<tr class="shipping"><th>Gönderim</th><td><label><input type="radio" name="shipping_method[0]" checked value="flat_rate:1">₺100,00</label></td></tr>',
 '<tr class="order-total"><th>Toplam</th><td><strong><span class="woocommerce-Price-amount amount">₺900,00</span></strong></td></tr>',
 '</tfoot></table><div id="payment"><ul class="payment_methods"><li>Ödeme yöntemi bulunamadı</li></ul>',
@@ -164,12 +164,26 @@ function html(markup){
    assert.equal(await page.locator('#payment .woocommerce-privacy-policy-text').count(),1,'Native Woo disclosure remains mounted');
    assert.equal(await page.locator('.sf-checkout-stepper').evaluate(el=>getComputedStyle(el).position),'relative','Progress is not sticky');
    assert.equal(await page.locator('.cdl-fsb-slot').isVisible(),false,'Shipping progress does not repeat on payment');
+   assert.equal(await page.locator('.sf-checkout-selected-shipping').isVisible(),true,'Selected shipping displayed as read-only payment summary');
+   assert.equal(await page.locator('.shipping input[name="shipping_method[0]"]').isVisible(),false,'No repeated shipping selection on payment');
+   assert.equal(await page.locator('.shipping input[name="shipping_method[0]"]').isChecked(),true,'Original selected Woo radio kept in form');
+   assert.equal(await page.locator('.sf-checkout-product-image').isVisible(),true,'Checkout review thumbnails have reserved space');
+   const productRow=await page.evaluate(()=>{
+     const name=document.querySelector('.sf-checkout-product-label').getBoundingClientRect();
+     const qty=document.querySelector('.cart_item .product-quantity').getBoundingClientRect();
+     return {nameY:name.y+name.height/2,qtyY:qty.y+qty.height/2};
+   });
+   assert(Math.abs(productRow.nameY-productRow.qtyY)<10,'Quantity remains beside the name: '+JSON.stringify(productRow));
    assert.equal(await page.locator('.showcoupon').innerText(),'Add discount code','Native coupon link has clearer copy');
    assert.equal(await page.locator('.sf-checkout-coupon-hint').count(),0,'Redundant coupon hint is removed');
    assert.equal(await page.locator('.showcoupon').isVisible(),true,'One line coupon toggle is visible');
    const collapsedCoupon=await page.locator('.woocommerce-form-coupon-toggle .woocommerce-info').boundingBox();
    assert(collapsedCoupon && collapsedCoupon.height<=65,'Coupon summary is a compact single row');
-   await page.locator('form.checkout_coupon').evaluate(el=>el.style.display='block');
+   const couponUrl=page.url();
+   await page.locator('.showcoupon').click();
+   assert.equal(page.url(),couponUrl,'Opening coupon never navigates/reloads');
+   assert.equal(await page.locator('.showcoupon').getAttribute('aria-expanded'),'true');
+   assert.equal(await page.locator('form.checkout_coupon').isVisible(),true,'Coupon opens on first click');
    await page.locator('.woocommerce-form-coupon-toggle.sf-checkout-coupon-open').waitFor();
    assert.equal(await page.locator('.sf-checkout-coupon-shell.sf-checkout-coupon-open').count(),1,'Shell follows native Woo disclosure state');
    const couponInput=await page.locator('form.checkout_coupon input[name="coupon_code"]').boundingBox();
@@ -185,7 +199,9 @@ function html(markup){
    assert(Math.abs(couponGap)<2,'Coupon entry directly joins its header with no empty gap: '+couponGap);
    assert.equal(await page.locator('.sf-checkout-coupon-shell > form.checkout_coupon').evaluate(el=>getComputedStyle(el).borderTopStyle),'solid','Expanded coupon separator is inside the outer card');
    assert.equal(await page.locator('.sf-checkout-coupon-shell .woocommerce-info').evaluate(el=>getComputedStyle(el).borderTopStyle),'none','Coupon heading adds no second border');
-   await page.locator('form.checkout_coupon').evaluate(el=>el.style.display='none');
+   assert.equal(await page.locator('.sf-checkout-coupon-shell .woocommerce-info').evaluate(el=>getComputedStyle(el,'::before').content),'none','No default WooCommerce coupon stripe');
+   await page.locator('.showcoupon').click();
+   assert.equal(page.url(),couponUrl,'Closing coupon never navigates/reloads');
    await page.locator('.woocommerce-form-coupon-toggle:not(.sf-checkout-coupon-open)').waitFor();
    assert.equal(await page.locator('.sf-checkout-coupon-shell').evaluate(el=>el.getBoundingClientRect().height)<=68,true,'Coupon restores compact height after closing');
    assert.equal(await page.locator('form.checkout_coupon input[name="coupon_code"]').count(),1,'Original Woo coupon input preserved');

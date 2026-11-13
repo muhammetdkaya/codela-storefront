@@ -79,8 +79,8 @@
         const totalValue = footer.querySelector('.sf-checkout-total-value');
         let step = 1;
 
-        // Woo owns the coupon toggle and coupon form. Update only its copy;
-        // the original .showcoupon click handler and AJAX form stay intact.
+        // Keep Woo's ORIGINAL coupon form and AJAX application, but own the
+        // disclosure click so an unhandled href="#" never jumps/reloads the page.
         function refineCoupon() {
             const toggle = woo.querySelector('.woocommerce-form-coupon-toggle');
             const link = toggle?.querySelector('.showcoupon');
@@ -127,9 +127,8 @@
                 apply.textContent = read('couponApply', document.documentElement.lang.toLowerCase().startsWith('tr') ? 'Uygula' : 'Apply');
                 // Keep button name, type and the original Woo AJAX handler.
             }
-            // jQuery toggles the original coupon form inline, sometimes with
-            // animation frames. Observe only the display state for connected
-            // corners: no duplicate toggle, form or custom coupon request.
+            // Observe the original form display; the disclosure itself is
+            // handled locally without submitting any form or navigating.
             if (coupon && toggle && !coupon.dataset.sfCheckoutDisclosureObserved) {
                 coupon.dataset.sfCheckoutDisclosureObserved = '1';
                 const sync = () => {
@@ -140,7 +139,28 @@
                     const visible = inline ? inline !== 'none' : getComputedStyle(coupon).display !== 'none';
                     toggle.classList.toggle('sf-checkout-coupon-open', visible);
                     toggle.closest('.sf-checkout-coupon-shell')?.classList.toggle('sf-checkout-coupon-open', visible);
+                    link.setAttribute('aria-expanded', String(visible));
                 };
+                if (!coupon.id) coupon.id = 'sf-checkout-coupon-form';
+                link.setAttribute('aria-controls', coupon.id);
+                // Handle the click before Woo's delegated anchor listener to
+                // prevent double toggles and the default "#" page jump.
+                link.addEventListener('click', event => {
+                    event.preventDefault();
+                    event.stopImmediatePropagation();
+                    const wasOpen = coupon.style.display
+                        ? coupon.style.display !== 'none'
+                        : getComputedStyle(coupon).display !== 'none';
+                    coupon.style.display = wasOpen ? 'none' : 'block';
+                    sync();
+                    if (!wasOpen) field?.focus({preventScroll:true});
+                }, true);
+                link.addEventListener('keydown', event => {
+                    if (event.key === ' ') {
+                        event.preventDefault();
+                        link.click();
+                    }
+                });
                 new MutationObserver(sync).observe(coupon, {attributes:true,attributeFilter:['style','class']});
                 sync();
             }
@@ -255,6 +275,35 @@
             if (original) original.dataset.sfCheckoutPrivacyMoved = policyUrl ? '1' : '0';
         }
 
+        // The selected rate is editable only in Delivery. Keep its original
+        // Woo fields mounted and enabled so checkout totals and submission
+        // remain Woo-owned, while Payment shows a compact read-only receipt.
+        function syncPaymentShipping() {
+            const rows = review.querySelectorAll('.woocommerce-checkout-review-order-table tfoot tr.shipping, .woocommerce-checkout-review-order-table tfoot tr.woocommerce-shipping-totals');
+            rows.forEach(row => {
+                const cell = row.querySelector('td');
+                const rates = cell?.querySelector('#shipping_method, .woocommerce-shipping-methods') || cell;
+                const selected = rates?.querySelector('input[type="radio"]:checked, option:checked, input[type="hidden"]');
+                const label = selected?.id ? rates?.querySelector('label[for="' + CSS.escape(selected.id) + '"]') : null;
+                const fallback = selected?.closest('label') || selected?.closest('li')?.querySelector('label') || rates?.querySelector('li:has(input:checked) label, li:has(input[type="hidden"]) label');
+                const text = (label?.textContent || fallback?.textContent || (selected?.tagName === 'OPTION' ? selected.textContent : '') || '').replace(/\s+/g, ' ').trim();
+                let summary = cell?.querySelector('.sf-checkout-selected-shipping');
+                if (!selected || !text) {
+                    summary?.remove();
+                    row.classList.remove('sf-checkout-shipping-summary-ready');
+                    return;
+                }
+                if (!summary) {
+                    summary = document.createElement('span');
+                    summary.className = 'sf-checkout-selected-shipping';
+                    summary.setAttribute('aria-label', read('shippingSelected', document.documentElement.lang.toLowerCase().startsWith('tr') ? 'Seçilen kargo' : 'Selected shipping'));
+                    cell.append(summary);
+                }
+                summary.textContent = text;
+                row.classList.add('sf-checkout-shipping-summary-ready');
+            });
+        }
+
         function syncTotal() {
             const table = form.querySelector('#order_review .woocommerce-checkout-review-order-table');
             const amount = table?.querySelector('.order-total .woocommerce-Price-amount, .order-total .amount, .order-total td:last-child');
@@ -293,6 +342,7 @@
             refineDeliveryNote();
             refinePrivacyNotice();
             decorateShippingProgress();
+            syncPaymentShipping();
             if (scroll) {
                 const header = document.querySelector('.sf-shell .sf-header');
                 const headerHeight = header ? header.getBoundingClientRect().height : 68;
@@ -379,6 +429,7 @@
                 categorizeExtras();
                 syncTotal();
                 decorateShippingProgress();
+                syncPaymentShipping();
                 refineCoupon();
                 refineDeliveryNote();
                 refinePrivacyNotice();
