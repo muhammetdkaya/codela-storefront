@@ -60,7 +60,7 @@ assert(js.includes('originalCartHomes') && js.includes('pageHost.append(node)'),
 assert(js.includes("pageNative.hidden = true"),'Native Woo fallback hidden only after session success');
 assert(js.includes("document.body.classList.add('sf-cart-page-enhanced')"),'Page is enhanced only after live data is painted');
 assert(js.includes("data.extensions?.['codela-storefront-shipping']?.html"),'Both surfaces use native plugin shipping');
-assert(js.includes("$('#sf-cart')?.addEventListener('click', event => {") && js.includes('}, true);'),'The one real cart node owns capture-phase quantity/remove handlers');
+assert(js.includes("cartRoot.addEventListener('click', event => {") && js.includes('}, true);'),'The one real cart node owns capture-phase quantity/remove handlers');
 assert(!storefront.includes("event.target.closest('#sf-cart button')"),'No competing document-level cart mutation handler');
 assert(overlay.includes('cartFeature.isPageActive()'),'Active Cart page never opens an empty cloned popup');
 assert(css.includes(':is(#sf-panel.is-cart-panel,.sf-cart-page-panel)'),'Cart popup styling is shared by both mounts');
