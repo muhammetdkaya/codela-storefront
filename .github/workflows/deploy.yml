@@ -33,6 +33,464 @@ jobs:
           test -s /tmp/codela-changes || exit 0
           test "$(wc -l < /tmp/codela-changes)" -le 5 || exit 0
           if git diff --name-only --diff-filter=D "$BEFORE_SHA" "$GITHUB_SHA" | grep -q .; then exit 0; fi
+          # Version-only commits may use the fast path, but only if the theme
+          # header is the sole changed line and the version advances once.
+          if [ "$(cat /tmp/codela-changes)" = "theme/codela-storefront/style.css" ]; then
+            python3 - "$BEFORE_SHA" <<'PY'
+          import re,subprocess,sys
+          from pathlib import Path
+          before=subprocess.check_output(['git','show',sys.argv[1]+':theme/codela-storefront/style.css']).decode()
+          after=Path('theme/codela-storefront/style.css').read_text()
+          old=re.search(r'(?m)^Version: (\\d+)\\.(\\d+)\\.(\\d+)
+            case "$FILE" in
+              theme/codela-storefront/assets/*.css|theme/codela-storefront/assets/*.svg|theme/codela-storefront/parts/*.html)
+                case "$FILE" in *checkout*|*cart*|*auth*|*account*|*payment*|*login*) exit 0;; esac
+                ;;
+              *) exit 0;;
+            esac
+          done < /tmp/codela-changes
+          echo 'quick=true' >> "$GITHUB_OUTPUT"
+      - name: Quick presentation checks (no browser download)
+        if: steps.tier.outputs.quick == 'true'
+        run: |
+          python3 scripts/build-assets.py --check
+          php -l theme/codela-storefront/functions.php
+          python3 - <<'PY'
+          from pathlib import Path
+          from xml.etree import ElementTree
+          for icon in Path('theme/codela-storefront/assets/icons').glob('*.svg'):
+              root=ElementTree.parse(icon).getroot()
+              assert root.tag.endswith('}svg') or root.tag=='svg', icon
+              for node in root.iter():
+                  assert node.tag.rsplit('}',1)[-1] not in {'script','foreignObject'}, icon
+                  assert not any(name.lower().startswith('on') for name in node.attrib), icon
+          PY
+          python3 tests/package.py
+      - name: Validate and build theme
+        if: steps.tier.outputs.quick != 'true'
+        run: |
+          find theme -name '*.php' -type f -print0 | xargs -0 -n1 php -l
+          node --input-type=module --check < theme/codela-storefront/assets/storefront.js
+          node --input-type=module --check < theme/codela-storefront/assets/scripts/format.js
+          node --input-type=module --check < theme/codela-storefront/assets/scripts/search-controller.js
+          node --input-type=module --check < theme/codela-storefront/assets/scripts/cart-controller.js
+          node --input-type=module --check < theme/codela-storefront/assets/scripts/overlay-controller.js
+          node --input-type=module --check < theme/codela-storefront/assets/scripts/dock-controller.js
+          php tests/catalog.php
+          php tests/product-composition.php
+          node --check theme/codela-storefront/assets/scripts/product-information.js
+          node --check theme/codela-storefront/assets/scripts/gallery-horizontal.js
+          php tests/homepage.php
+          python3 tests/build-assets.py
+          node --check theme/codela-storefront/assets/scripts/document-navigation.js
+          php tests/front-page-source.php
+          php tests/sections-preview.php
+          node --check theme/codela-storefront/assets/scripts/media-loading.js
+          php tests/media.php
+          php tests/product-mobile-media.php
+          php tests/media-optimization.php
+          php tests/navigation.php
+          php tests/account-contact-ux.php
+          php tests/account-registration-discovery.php
+          php tests/account-nonces.php
+          php tests/account-smart.php
+          node --check theme/codela-storefront/assets/scripts/auth-smart.js
+          node --check theme/codela-storefront/assets/scripts/navigation-feedback.js
+          node --check theme/codela-storefront/assets/scripts/document-continuity.js
+          php tests/document-continuity.php
+          node --check tests/wordpress-commerce.cjs
+          node --check tests/document-continuity-browser.cjs
+          node --input-type=module --check < theme/codela-storefront/assets/scripts/navigation-controller.js
+          node --check tests/shell-navigation-browser.cjs
+          node --check tools/floating-surfaces-live.cjs
+          node --check theme/codela-storefront/assets/scripts/gallery-defer.js
+          node --check theme/codela-storefront/assets/scripts/media-admin.js
+          node --check theme/codela-storefront/assets/scripts/product-mobile-media-admin.js
+          node tests/cart-race.cjs
+          node tests/cart-sync.cjs
+          node tests/cart-design.cjs
+          php tests/quick-login.php
+          php tests/passkeys.php
+          node --check theme/codela-storefront/assets/scripts/passkeys.js
+          node tests/passkeys-ui.cjs
+          node --check tests/passkeys-views-browser.cjs
+          php tests/quick-login-markup.php
+          node --check theme/codela-storefront/assets/scripts/quick-login.js
+          node --check theme/codela-storefront/assets/scripts/checkout-steps.js
+          node tests/quick-login-ui.cjs
+          php tests/cart-shipping.php
+          node tests/cart-free-shipping.cjs
+          node tests/search-panel.cjs
+          node tests/format.cjs
+          node tests/ui-kit.cjs
+          node tests/google-auth.cjs
+          node tests/footer.cjs
+          node tests/dock-gesture.cjs
+          python3 tests/package.py
+          python3 scripts/build-package.py
+      - name: Browser navigation regression checks
+        if: steps.tier.outputs.quick != 'true'
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium webkit
+          # Exercise the native checkout/gateway presentation before broader,
+          # independently flaky product/gallery acceptance suites.
+          node tests/checkout-steps-browser.cjs
+          TEST_WEBKIT=1 node tests/checkout-steps-browser.cjs
+          node tests/commerce-skeleton-browser.cjs
+          TEST_WEBKIT=1 node tests/commerce-skeleton-browser.cjs
+          node tests/cart-page-browser.cjs
+          TEST_WEBKIT=1 node tests/cart-page-browser.cjs
+          node tests/desktop-header-browser.cjs
+          TEST_WEBKIT=1 node tests/desktop-header-browser.cjs
+          responsive_failed=0
+          node tests/desktop-tools-browser.cjs || responsive_failed=1
+          TEST_WEBKIT=1 node tests/desktop-tools-browser.cjs || responsive_failed=1
+          node tests/journal-browser.cjs || responsive_failed=1
+          TEST_WEBKIT=1 node tests/journal-browser.cjs || responsive_failed=1
+          node tests/homepage-browser.cjs || responsive_failed=1
+          test "$responsive_failed" -eq 0
+
+          node tests/media-loading-browser.cjs
+          TEST_WEBKIT=1 node tests/media-loading-browser.cjs
+          node tests/homepage-browser.cjs
+          node tests/product-menu-scroll-browser.cjs
+          TEST_WEBKIT=1 node tests/product-menu-scroll-browser.cjs
+          node tests/product-skeleton-geometry-browser.cjs
+          TEST_WEBKIT=1 node tests/product-skeleton-geometry-browser.cjs
+          node tests/product-sheet-browser.cjs
+          node tests/product-layout-a-browser.cjs
+          node tests/product-sheet-handoff-browser.cjs
+          # Verify shared logged-out Account chrome and instantaneous real
+          # header SVGs before the unrelated broad search navigation suite.
+          node tests/passkeys-views-browser.cjs
+          TEST_WEBKIT=1 node tests/passkeys-views-browser.cjs
+          node tests/quick-login-browser.cjs
+          TEST_WEBKIT=1 node tests/quick-login-browser.cjs
+          node tests/account-keyboard-style-browser.cjs
+          TEST_WEBKIT=1 node tests/account-keyboard-style-browser.cjs
+          node tests/account-smart-browser.cjs
+          TEST_WEBKIT=1 node tests/account-smart-browser.cjs
+          node tests/account-instant-browser.cjs
+          TEST_WEBKIT=1 node tests/account-instant-browser.cjs
+          node tests/account-browser.cjs
+          TEST_WEBKIT=1 node tests/navigation-feedback-bottom-browser.cjs
+          node tests/navigation-browser.cjs
+          node tests/checkout-browser.cjs
+          node tests/catalog-browser.cjs
+          node tests/catalog-filters-browser.cjs
+          node tests/product-desktop-browser.cjs
+          TEST_WEBKIT=1 node tests/product-desktop-browser.cjs
+          node tests/product-browser.cjs
+          node tests/product-modules-browser.cjs
+          node tests/shell-navigation-browser.cjs
+          node tests/navigation-viewport-browser.cjs
+          node tests/document-continuity-browser.cjs
+          node tests/gallery-defer-browser.cjs
+          node tests/product-mobile-media-admin-browser.cjs
+          node tests/product-mobile-media-browser.cjs
+          TEST_WEBKIT=1 node tests/product-mobile-media-browser.cjs
+          node tests/ui-kit-browser.cjs
+          node tests/native-woo-buttons.cjs
+          node tests/context-header-browser.cjs
+          TEST_WEBKIT=1 node tests/context-header-browser.cjs
+          node tests/account-dashboard-browser.cjs
+          TEST_WEBKIT=1 node tests/account-dashboard-browser.cjs
+          node tests/ui-kit-preview.cjs
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.tier.outputs.quick != 'true'
+        with:
+          name: codela-storefront-ui-reference
+          path: qa/storefront-ui-kit-*.png
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: steps.tier.outputs.quick != 'true'
+        with:
+          name: codela-storefront-package
+          path: dist/
+          retention-days: 14
+  deploy:
+    # [github-only] release merge must never deploy FTP; other pushes and manual deploys stay unchanged.
+    if: github.event_name != 'pull_request' && !contains(github.event.head_commit.message, '[github-only]')
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require FTP secrets
+        env:
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_SERVER: server38.shared.spaceship.host
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+        run: |
+          for KEY in FTP_PASSWORD FTP_SERVER FTP_USERNAME; do
+            test -n "${!KEY}" || { echo "::error::Missing $KEY repository secret."; exit 1; }
+          done
+      - name: Skip superseded revision
+        id: head
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          LATEST=$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)
+          # Release requests and documentation must not cancel the validated deployment.
+          # Refuse deployment only if a newer commit changed its code or validation.
+          git fetch origin "$LATEST" --depth=1
+          if git diff --quiet "$GITHUB_SHA" "$LATEST" -- theme scripts tests .github/workflows/deploy.yml; then
+            echo 'current=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'current=false' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Deploy Storefront only
+        if: steps.head.outputs.current == 'true'
+        env:
+          FTP_SERVER: server38.shared.spaceship.host
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: python3 scripts/deploy.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: codela-storefront-rollback-${{ github.sha }}
+          path: ${{ runner.temp }}/storefront-rollback/
+          if-no-files-found: ignore
+          retention-days: 14
+
+
+
+
+
+,before)
+          new=re.search(r'(?m)^Version: (\\d+)\\.(\\d+)\\.(\\d+)
+            case "$FILE" in
+              theme/codela-storefront/assets/*.css|theme/codela-storefront/assets/*.svg|theme/codela-storefront/parts/*.html)
+                case "$FILE" in *checkout*|*cart*|*auth*|*account*|*payment*|*login*) exit 0;; esac
+                ;;
+              *) exit 0;;
+            esac
+          done < /tmp/codela-changes
+          echo 'quick=true' >> "$GITHUB_OUTPUT"
+      - name: Quick presentation checks (no browser download)
+        if: steps.tier.outputs.quick == 'true'
+        run: |
+          python3 scripts/build-assets.py --check
+          php -l theme/codela-storefront/functions.php
+          python3 - <<'PY'
+          from pathlib import Path
+          from xml.etree import ElementTree
+          for icon in Path('theme/codela-storefront/assets/icons').glob('*.svg'):
+              root=ElementTree.parse(icon).getroot()
+              assert root.tag.endswith('}svg') or root.tag=='svg', icon
+              for node in root.iter():
+                  assert node.tag.rsplit('}',1)[-1] not in {'script','foreignObject'}, icon
+                  assert not any(name.lower().startswith('on') for name in node.attrib), icon
+          PY
+          python3 tests/package.py
+      - name: Validate and build theme
+        if: steps.tier.outputs.quick != 'true'
+        run: |
+          find theme -name '*.php' -type f -print0 | xargs -0 -n1 php -l
+          node --input-type=module --check < theme/codela-storefront/assets/storefront.js
+          node --input-type=module --check < theme/codela-storefront/assets/scripts/format.js
+          node --input-type=module --check < theme/codela-storefront/assets/scripts/search-controller.js
+          node --input-type=module --check < theme/codela-storefront/assets/scripts/cart-controller.js
+          node --input-type=module --check < theme/codela-storefront/assets/scripts/overlay-controller.js
+          node --input-type=module --check < theme/codela-storefront/assets/scripts/dock-controller.js
+          php tests/catalog.php
+          php tests/product-composition.php
+          node --check theme/codela-storefront/assets/scripts/product-information.js
+          node --check theme/codela-storefront/assets/scripts/gallery-horizontal.js
+          php tests/homepage.php
+          python3 tests/build-assets.py
+          node --check theme/codela-storefront/assets/scripts/document-navigation.js
+          php tests/front-page-source.php
+          php tests/sections-preview.php
+          node --check theme/codela-storefront/assets/scripts/media-loading.js
+          php tests/media.php
+          php tests/product-mobile-media.php
+          php tests/media-optimization.php
+          php tests/navigation.php
+          php tests/account-contact-ux.php
+          php tests/account-registration-discovery.php
+          php tests/account-nonces.php
+          php tests/account-smart.php
+          node --check theme/codela-storefront/assets/scripts/auth-smart.js
+          node --check theme/codela-storefront/assets/scripts/navigation-feedback.js
+          node --check theme/codela-storefront/assets/scripts/document-continuity.js
+          php tests/document-continuity.php
+          node --check tests/wordpress-commerce.cjs
+          node --check tests/document-continuity-browser.cjs
+          node --input-type=module --check < theme/codela-storefront/assets/scripts/navigation-controller.js
+          node --check tests/shell-navigation-browser.cjs
+          node --check tools/floating-surfaces-live.cjs
+          node --check theme/codela-storefront/assets/scripts/gallery-defer.js
+          node --check theme/codela-storefront/assets/scripts/media-admin.js
+          node --check theme/codela-storefront/assets/scripts/product-mobile-media-admin.js
+          node tests/cart-race.cjs
+          node tests/cart-sync.cjs
+          node tests/cart-design.cjs
+          php tests/quick-login.php
+          php tests/passkeys.php
+          node --check theme/codela-storefront/assets/scripts/passkeys.js
+          node tests/passkeys-ui.cjs
+          node --check tests/passkeys-views-browser.cjs
+          php tests/quick-login-markup.php
+          node --check theme/codela-storefront/assets/scripts/quick-login.js
+          node --check theme/codela-storefront/assets/scripts/checkout-steps.js
+          node tests/quick-login-ui.cjs
+          php tests/cart-shipping.php
+          node tests/cart-free-shipping.cjs
+          node tests/search-panel.cjs
+          node tests/format.cjs
+          node tests/ui-kit.cjs
+          node tests/google-auth.cjs
+          node tests/footer.cjs
+          node tests/dock-gesture.cjs
+          python3 tests/package.py
+          python3 scripts/build-package.py
+      - name: Browser navigation regression checks
+        if: steps.tier.outputs.quick != 'true'
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps chromium webkit
+          # Exercise the native checkout/gateway presentation before broader,
+          # independently flaky product/gallery acceptance suites.
+          node tests/checkout-steps-browser.cjs
+          TEST_WEBKIT=1 node tests/checkout-steps-browser.cjs
+          node tests/commerce-skeleton-browser.cjs
+          TEST_WEBKIT=1 node tests/commerce-skeleton-browser.cjs
+          node tests/cart-page-browser.cjs
+          TEST_WEBKIT=1 node tests/cart-page-browser.cjs
+          node tests/desktop-header-browser.cjs
+          TEST_WEBKIT=1 node tests/desktop-header-browser.cjs
+          responsive_failed=0
+          node tests/desktop-tools-browser.cjs || responsive_failed=1
+          TEST_WEBKIT=1 node tests/desktop-tools-browser.cjs || responsive_failed=1
+          node tests/journal-browser.cjs || responsive_failed=1
+          TEST_WEBKIT=1 node tests/journal-browser.cjs || responsive_failed=1
+          node tests/homepage-browser.cjs || responsive_failed=1
+          test "$responsive_failed" -eq 0
+
+          node tests/media-loading-browser.cjs
+          TEST_WEBKIT=1 node tests/media-loading-browser.cjs
+          node tests/homepage-browser.cjs
+          node tests/product-menu-scroll-browser.cjs
+          TEST_WEBKIT=1 node tests/product-menu-scroll-browser.cjs
+          node tests/product-skeleton-geometry-browser.cjs
+          TEST_WEBKIT=1 node tests/product-skeleton-geometry-browser.cjs
+          node tests/product-sheet-browser.cjs
+          node tests/product-layout-a-browser.cjs
+          node tests/product-sheet-handoff-browser.cjs
+          # Verify shared logged-out Account chrome and instantaneous real
+          # header SVGs before the unrelated broad search navigation suite.
+          node tests/passkeys-views-browser.cjs
+          TEST_WEBKIT=1 node tests/passkeys-views-browser.cjs
+          node tests/quick-login-browser.cjs
+          TEST_WEBKIT=1 node tests/quick-login-browser.cjs
+          node tests/account-keyboard-style-browser.cjs
+          TEST_WEBKIT=1 node tests/account-keyboard-style-browser.cjs
+          node tests/account-smart-browser.cjs
+          TEST_WEBKIT=1 node tests/account-smart-browser.cjs
+          node tests/account-instant-browser.cjs
+          TEST_WEBKIT=1 node tests/account-instant-browser.cjs
+          node tests/account-browser.cjs
+          TEST_WEBKIT=1 node tests/navigation-feedback-bottom-browser.cjs
+          node tests/navigation-browser.cjs
+          node tests/checkout-browser.cjs
+          node tests/catalog-browser.cjs
+          node tests/catalog-filters-browser.cjs
+          node tests/product-desktop-browser.cjs
+          TEST_WEBKIT=1 node tests/product-desktop-browser.cjs
+          node tests/product-browser.cjs
+          node tests/product-modules-browser.cjs
+          node tests/shell-navigation-browser.cjs
+          node tests/navigation-viewport-browser.cjs
+          node tests/document-continuity-browser.cjs
+          node tests/gallery-defer-browser.cjs
+          node tests/product-mobile-media-admin-browser.cjs
+          node tests/product-mobile-media-browser.cjs
+          TEST_WEBKIT=1 node tests/product-mobile-media-browser.cjs
+          node tests/ui-kit-browser.cjs
+          node tests/native-woo-buttons.cjs
+          node tests/context-header-browser.cjs
+          TEST_WEBKIT=1 node tests/context-header-browser.cjs
+          node tests/account-dashboard-browser.cjs
+          TEST_WEBKIT=1 node tests/account-dashboard-browser.cjs
+          node tests/ui-kit-preview.cjs
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.tier.outputs.quick != 'true'
+        with:
+          name: codela-storefront-ui-reference
+          path: qa/storefront-ui-kit-*.png
+          if-no-files-found: error
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: steps.tier.outputs.quick != 'true'
+        with:
+          name: codela-storefront-package
+          path: dist/
+          retention-days: 14
+  deploy:
+    # [github-only] release merge must never deploy FTP; other pushes and manual deploys stay unchanged.
+    if: github.event_name != 'pull_request' && !contains(github.event.head_commit.message, '[github-only]')
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require FTP secrets
+        env:
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_SERVER: server38.shared.spaceship.host
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+        run: |
+          for KEY in FTP_PASSWORD FTP_SERVER FTP_USERNAME; do
+            test -n "${!KEY}" || { echo "::error::Missing $KEY repository secret."; exit 1; }
+          done
+      - name: Skip superseded revision
+        id: head
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          LATEST=$(gh api "repos/$GITHUB_REPOSITORY/commits/main" --jq .sha)
+          # Release requests and documentation must not cancel the validated deployment.
+          # Refuse deployment only if a newer commit changed its code or validation.
+          git fetch origin "$LATEST" --depth=1
+          if git diff --quiet "$GITHUB_SHA" "$LATEST" -- theme scripts tests .github/workflows/deploy.yml; then
+            echo 'current=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'current=false' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Deploy Storefront only
+        if: steps.head.outputs.current == 'true'
+        env:
+          FTP_SERVER: server38.shared.spaceship.host
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: python3 scripts/deploy.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: codela-storefront-rollback-${{ github.sha }}
+          path: ${{ runner.temp }}/storefront-rollback/
+          if-no-files-found: ignore
+          retention-days: 14
+
+
+
+
+
+,after)
+          if not (old and new and before.replace(old.group(0),new.group(0),1)==after):
+              sys.exit(1)
+          a,b=tuple(map(int,old.groups())),tuple(map(int,new.groups()))
+          sys.exit(0 if b[:2]==a[:2] and b[2]==a[2]+1 else 1)
+          PY
+            if [ "$?" -eq 0 ]; then
+              echo 'quick=true' >> "$GITHUB_OUTPUT"
+            fi
+            exit 0
+          fi
           while IFS= read -r FILE; do
             case "$FILE" in
               theme/codela-storefront/assets/*.css|theme/codela-storefront/assets/*.svg|theme/codela-storefront/parts/*.html)
