@@ -79,107 +79,128 @@
         const totalValue = footer.querySelector('.sf-checkout-total-value');
         let step = 1;
 
-        // Keep Woo's ORIGINAL coupon form and AJAX application, but own the
-        // disclosure click so an unhandled href="#" never jumps/reloads the page.
+        // Payment summary coupon — the ONLY visible entry lives in the order
+        // review, immediately after the native subtotal. The real Woo coupon
+        // FORM MUST stay outside form.checkout (nested HTML forms are invalid).
+        // The small in-summary input is nameless, so it is never included in
+        // checkout payment POST. Its Apply button forwards to Woo's EXISTING
+        // coupon form + registered AJAX submit handler. No duplicate checkout
+        // form, coupon endpoint, or page navigation is introduced.
+        let couponOpen = false;
+        let couponDraft = '';
         function refineCoupon() {
-            const toggle = woo.querySelector('.woocommerce-form-coupon-toggle');
-            let shell = woo.querySelector('.sf-checkout-coupon-shell');
-            // Once prepared, the theme-owned button sits directly in its card.
-            // The original Woo notice stays mounted but no longer paints UI.
-            let link = shell?.querySelector(':scope > .sf-checkout-coupon-trigger') ||
-                toggle?.querySelector('.sf-checkout-coupon-trigger, a.showcoupon');
-            const notice = toggle?.querySelector('.woocommerce-info') || link?.closest('.woocommerce-info');
-            if (!toggle || !link || !notice) return;
-            // A native disclosure button cannot follow href="#" or submit a form.
-            // Keep Woo's original coupon form and its AJAX submission untouched.
-            if (link.matches('a.showcoupon')) {
-                const button = document.createElement('button');
-                button.type = 'button';
-                button.className = 'sf-checkout-coupon-trigger';
-                button.innerHTML = '<span class="sf-checkout-coupon-icon" aria-hidden="true">' +
-                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' +
-                    '<path d="M4 10V5a1 1 0 0 1 1-1h6l9 9-7 7-9-9a2 2 0 0 1 0-1Z"/><circle cx="8" cy="8" r="1"/></svg></span>' +
-                    '<span class="sf-checkout-coupon-label"></span><span class="sf-checkout-coupon-chevron" aria-hidden="true"></span>';
-                link.replaceWith(button);
-                link = button;
-            }
-            if (!notice.classList.contains('sf-checkout-coupon-ready')) {
-                // Woo's existing text nodes contain the repetitive prompt.
-                // Keep links, notices, fields and coupon behavior unchanged.
-                for (const child of Array.from(notice.childNodes)) {
-                    if (child.nodeType === Node.TEXT_NODE) child.textContent = '';
-                }
-                notice.classList.add('sf-checkout-coupon-ready');
-            }
-            const label = read('coupon', 'Add discount code');
-            const labelNode = link.querySelector('.sf-checkout-coupon-label');
-            if (labelNode) labelNode.textContent = label;
-            else link.textContent = label;
-            link.setAttribute('aria-label', label);
-            // A single, legible disclosure row is enough: the hint made a
-            // two-line card before the customer had even opened the coupon.
-            notice.querySelector('.sf-checkout-coupon-hint')?.remove();
-            const coupon = woo.querySelector('form.checkout_coupon');
-            // Group Woo's original toggle and ORIGINAL coupon form so theme
-            // or Gutenberg block spacing cannot split them into two cards.
-            // The form, input names and Woo AJAX handlers are not recreated.
-            if (coupon && toggle && !form.contains(coupon) && !form.contains(toggle)) {
-                shell = toggle.closest('.sf-checkout-coupon-shell');
-                if (!shell) {
-                    shell = document.createElement('div');
-                    shell.className = 'sf-checkout-coupon-shell';
-                    toggle.parentNode.insertBefore(shell, toggle);
-                    shell.append(toggle);
-                }
-                // Design A: the visible trigger is a direct child of the card,
-                // not nested in Woo's .woocommerce-info notice. Otherwise the
-                // shared notice border/padding can clip it on Safari.
-                if (link.parentElement !== shell) shell.insertBefore(link, toggle);
-                // Keep the original Woo notice for compatibility; its
-                // presentation is hidden only after successful JS activation.
-                // The ORIGINAL coupon form stays mounted for Woo's AJAX.
-                if (coupon.parentElement !== shell) shell.append(coupon);
-            }
-            const field = coupon?.querySelector('input[name="coupon_code"]');
-            if (field) {
-                field.placeholder = read('couponField', 'Discount code');
-                field.setAttribute('aria-label', read('couponField', 'Discount code'));
-            }
-            const apply = coupon?.querySelector('button[name="apply_coupon"],button[type="submit"],button.button');
-            if (apply) {
-                apply.textContent = read('couponApply', document.documentElement.lang.toLowerCase().startsWith('tr') ? 'Uygula' : 'Apply');
-                // Keep button name, type and the original Woo AJAX handler.
-            }
-            // Observe the original form display; the disclosure itself is
-            // handled locally without submitting any form or navigating.
-            if (coupon && toggle && !coupon.dataset.sfCheckoutDisclosureObserved) {
-                coupon.dataset.sfCheckoutDisclosureObserved = '1';
-                const sync = () => {
-                    // CSS collapses the form aggressively to avoid a ghost
-                    // strip; read Woo's INLINE display state instead of the
-                    // computed style so the form can reopen on its own.
-                    const inline = coupon.style.display;
-                    const visible = inline ? inline !== 'none' : getComputedStyle(coupon).display !== 'none';
-                    toggle.classList.toggle('sf-checkout-coupon-open', visible);
-                    link.closest('.sf-checkout-coupon-shell')?.classList.toggle('sf-checkout-coupon-open', visible);
-                    link.setAttribute('aria-expanded', String(visible));
-                };
-                if (!coupon.id) coupon.id = 'sf-checkout-coupon-form';
-                link.setAttribute('aria-controls', coupon.id);
-                // This type=button has no href and does not match Woo's
-                // .showcoupon selector. Do not autofocus: opening the mobile
-                // keyboard can shift Safari's viewport unexpectedly.
-                link.addEventListener('click', event => {
-                    event.preventDefault();
-                    const wasOpen = coupon.style.display
-                        ? coupon.style.display !== 'none'
-                        : getComputedStyle(coupon).display !== 'none';
-                    coupon.style.display = wasOpen ? 'none' : 'block';
-                    sync();
+            const originalToggle = woo.querySelector('.woocommerce-form-coupon-toggle');
+            const nativeCoupon = woo.querySelector('form.checkout_coupon');
+            const nativeInput = nativeCoupon?.querySelector('input[name="coupon_code"]');
+            const subtotal = review.querySelector('.woocommerce-checkout-review-order-table tfoot tr.cart-subtotal');
+            if (!originalToggle || !nativeCoupon || !nativeInput || !subtotal) return;
+
+            const isTR = document.documentElement.lang.toLowerCase().startsWith('tr');
+            let row = review.querySelector('.sf-checkout-discount-row');
+            let entry = review.querySelector('.sf-checkout-discount-entry-row');
+            if (!row || !entry) {
+                row?.remove();
+                entry?.remove();
+                row = document.createElement('tr');
+                row.className = 'sf-checkout-discount-row';
+                const title = document.createElement('th');
+                title.scope = 'row';
+                title.textContent = read('couponSummary', isTR ? 'İndirim' : 'Discount');
+                const value = document.createElement('td');
+                const trigger = document.createElement('button');
+                trigger.type = 'button';
+                trigger.className = 'sf-checkout-discount-trigger';
+                const triggerText = document.createElement('span');
+                triggerText.textContent = read('couponAdd', isTR ? 'Kodu ekle' : 'Add code');
+                const arrow = document.createElement('span');
+                arrow.className = 'sf-checkout-discount-arrow';
+                arrow.setAttribute('aria-hidden', 'true');
+                trigger.append(triggerText, arrow);
+                value.append(trigger);
+                row.append(title, value);
+
+                entry = document.createElement('tr');
+                entry.className = 'sf-checkout-discount-entry-row';
+                const cell = document.createElement('td');
+                cell.colSpan = 2;
+                const content = document.createElement('div');
+                content.className = 'sf-checkout-discount-entry';
+                const input = document.createElement('input');
+                input.className = 'sf-checkout-discount-input';
+                input.type = 'text';
+                input.placeholder = read('couponField', isTR ? 'İndirim kodu' : 'Discount code');
+                input.setAttribute('aria-label', input.placeholder);
+                // No name: the outer Woo checkout must never submit a proxy
+                // coupon field as part of billing/payment information.
+                const apply = document.createElement('button');
+                apply.type = 'button';
+                apply.className = 'sf-checkout-discount-apply';
+                apply.textContent = read('couponApply', isTR ? 'Uygula' : 'Apply');
+                const feedback = document.createElement('p');
+                feedback.className = 'sf-checkout-discount-feedback';
+                feedback.setAttribute('role', 'status');
+                feedback.hidden = true;
+                content.append(input, apply, feedback);
+                cell.append(content);
+                entry.append(cell);
+                entry.id = 'sf-checkout-discount-entry';
+                trigger.setAttribute('aria-controls', entry.id);
+
+                trigger.addEventListener('click', () => {
+                    couponOpen = !couponOpen;
+                    syncCouponRow();
                 });
-                new MutationObserver(sync).observe(coupon, {attributes:true,attributeFilter:['style','class']});
-                sync();
+                input.addEventListener('input', () => {
+                    couponDraft = input.value;
+                    feedback.hidden = true;
+                });
+                input.addEventListener('keydown', event => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        apply.click();
+                    }
+                });
+                apply.addEventListener('click', () => {
+                    const code = input.value.trim();
+                    couponDraft = code;
+                    if (!code) {
+                        feedback.textContent = read('couponField', isTR ? 'İndirim kodu girin' : 'Enter a discount code');
+                        feedback.hidden = false;
+                        input.focus({preventScroll:true});
+                        return;
+                    }
+                    // WooCommerce binds its AJAX handler to submit on the
+                    // original form. triggerHandler invokes it without the
+                    // browser's submit default, preventing full-page reload.
+                    if (!window.jQuery || typeof window.jQuery(nativeCoupon).triggerHandler !== 'function') {
+                        feedback.textContent = isTR ? 'Kupon işlemi şu anda kullanılamıyor.' : 'Coupon service is unavailable.';
+                        feedback.hidden = false;
+                        return;
+                    }
+                    nativeInput.value = code;
+                    window.jQuery(nativeCoupon).triggerHandler('submit');
+                    // Woo owns validation, notices, discount totals, and
+                    // checkout fragment refresh; never claim success here.
+                });
             }
+            if (row.previousElementSibling !== subtotal) subtotal.after(row);
+            if (row.nextElementSibling !== entry) row.after(entry);
+
+            function syncCouponRow() {
+                const trigger = row.querySelector('.sf-checkout-discount-trigger');
+                const field = entry.querySelector('.sf-checkout-discount-input');
+                const feedback = entry.querySelector('.sf-checkout-discount-feedback');
+                trigger.setAttribute('aria-expanded', String(couponOpen));
+                row.classList.toggle('sf-checkout-discount-open', couponOpen);
+                entry.hidden = !couponOpen;
+                field.value = couponDraft;
+                if (!couponOpen) feedback.hidden = true;
+            }
+            syncCouponRow();
+            // Hide the old Woo disclosure only once the inline replacement is
+            // actually present. If Woo disables coupons / HTML differs, its
+            // original UI remains available as a non-JS fallback.
+            document.body.classList.add('sf-checkout-discount-inline-ready');
         }
 
         // The free-shipping extension already supplies threshold, progress,
