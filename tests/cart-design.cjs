@@ -57,6 +57,7 @@ assert(functions.includes("if ( function_exists( 'is_cart' ) && is_cart() )"),'D
 assert(functions.includes("'styles/cart-page.css', [ 'codela-storefront-components' ]"),'Cart style follows shared component tokens');
 assert(cartPage.includes('.wc-block-cart__main') && cartPage.includes('.wc-block-cart__sidebar'),'Block cart and summary keep native source');
 assert(cartPage.includes('.woocommerce-cart-form') && cartPage.includes('.cart-collaterals'),'Classic cart remains supported');
+assert(cartPage.includes('.wp-block-shortcode > .woocommerce'),'Classic shortcode wrapper gets matching layout');
 assert(cartPage.includes('wc-block-components-totals-coupon__form') && cartPage.includes('#coupon_code'),'Native coupon interactions remain available');
 assert(cartPage.includes('wc-block-components-quantity-selector') && cartPage.includes('input.qty'),'Both quantity mechanisms remain native');
 assert(cartPage.includes('wc-block-cart__submit-button') && cartPage.includes('wc-proceed-to-checkout'),'Native checkout links remain primary');
