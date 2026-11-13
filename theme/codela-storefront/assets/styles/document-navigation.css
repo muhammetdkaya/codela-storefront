@@ -323,6 +323,13 @@ html:is(.sf-cart-awaiting,.sf-checkout-awaiting) .sf-commerce-entry{
   background:var(--sf-ui-page,#f8f7f4);
   overflow:hidden;pointer-events:none;
 }
+/* First-paint commerce documents do not need the full navigation-feedback
+   stylesheet; keep its status accessibility and shimmer behavior here too. */
+.sf-commerce-entry .sf-skeleton-status{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip-path:inset(50%);white-space:nowrap;border:0;
+}
+.sf-commerce-entry .sf-skeleton-layout{max-width:1440px;margin-inline:auto}
 .sf-commerce-skeleton{box-sizing:border-box;width:100%;max-width:780px;margin:0 auto;min-width:0}
 .sf-commerce-skeleton .sf-commerce-shape{display:block;box-sizing:border-box;flex:none;background:var(--sf-ui-skeleton,#dfe1e5)}
 .sf-commerce-cart-main{display:grid;gap:14px;max-width:780px;margin:0 auto}
@@ -409,6 +416,9 @@ html:is(.sf-cart-awaiting,.sf-checkout-awaiting) .sf-commerce-entry{
   .sf-commerce-cart-quantity{width:94px}
   .sf-commerce-action-label{width:105px}
 }
+/* Identical timing as the shared navigation shimmer; checkout documents
+   deliberately do not download the full navigation feedback stylesheet. */
+@keyframes sf-skeleton-pulse{0%,100%{opacity:1}50%{opacity:.55}}
 @media(prefers-reduced-motion:no-preference){
   :is(.sf-skeleton,.sf-commerce-entry) .sf-commerce-shape{
     animation:sf-skeleton-pulse var(--sf-ui-skeleton-duration,1.4s) ease-in-out infinite;
