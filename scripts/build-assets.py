@@ -16,6 +16,7 @@ BUNDLES = {
     ),
     "styles/document-navigation.css": (
         "styles/document-continuity.css", "styles/navigation-feedback.css",
+        "styles/commerce-skeleton.css",
     ),
     "scripts/document-navigation.js": (
         "scripts/navigation-feedback.js", "scripts/document-continuity.js",
