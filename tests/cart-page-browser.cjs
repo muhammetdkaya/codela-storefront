@@ -7,6 +7,10 @@ const {chromium,webkit}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const base='theme/codela-storefront/assets/';
 const css=['styles/tokens.css','storefront.css','styles/overlay.css','styles/navigation.css','styles/components.css','styles/cart-page.css'].map(f=>fs.readFileSync(base+f,'utf8')).join('\n');
 const source=fs.readFileSync(base+'scripts/cart-controller.js','utf8').replace(/^import .*;$/gm,'').replace(/^export /gm,'');
+const php=fs.readFileSync('theme/codela-storefront/functions.php','utf8');
+const firstPaintStyle=php.match(/<style id="codela-cart-first-paint">[\s\S]*?<\/style>/)?.[0];
+const firstPaintScript=php.match(/<script id="codela-cart-first-paint-script">[\s\S]*?<\/script>/)?.[0];
+assert(firstPaintStyle && firstPaintScript,'First-paint guard is included in PHP head');
 const harness=String.raw`
 const escape = v => String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 const decode = v => String(v??'');
@@ -50,8 +54,9 @@ const footer='<div class="sf-cart-bottom" hidden><div id="sf-cart-progress" clas
  +'<span class="sf-cart-checkout-total"><span>Ara toplam</span><strong id="sf-subtotal"></strong></span>'
  +'<span class="sf-cart-checkout-label">Ödemeye geç <span class="sf-icon">→</span></span></a></div>';
 const html='<html><head><meta name="viewport" content="width=device-width,initial-scale=1">'
+ +firstPaintStyle+firstPaintScript
  +'<style>body{margin:0;font-family:system-ui}button{font:inherit}[hidden]{display:none!important}</style><style>'+css+'</style></head>'
- +'<body class="woocommerce-cart"><div class="sf-shell"><dialog id="sf-panel" class="sf-panel is-cart-panel">'
+ +'<body class="woocommerce-cart"><div class="sf-shell"><nav class="sf-mobile-dock"><div class="sf-dock-surface"></div></nav><dialog id="sf-panel" class="sf-panel is-cart-panel">'
  +'<section class="sf-panel-body" id="sf-cart" hidden><p class="sf-cart-count" id="sf-cart-count" hidden></p><div id="sf-cart-items"></div></section>'
  +footer+'<p id="sf-status" class="sf-status" role="status"></p></dialog></div>'
  +'<main id="sf-content" class="sf-content sf-cart-page"><div class="wp-block-post-content">'
@@ -65,7 +70,9 @@ for(const width of [390,1120]){
  await page.setContent(html);
  await page.addScriptTag({content:harness+source+'\nwindow.controller=createCartController({$:s=>document.querySelector(s),config:()=>({api:"/wc/store/v1/",cart:"/sepet/",taxInclusive:false}),t:k=>({"Your cart":"Sepet","Items in cart: %d":"Sepetinizde %d ürün"}[k]||k),getCurrent:()=>window.currentPanel,getDialog:()=>document.getElementById("sf-panel")});window.originalCart=document.getElementById("sf-cart");window.controller.bind();document.addEventListener("click",e=>{let b=e.target.closest("#sf-cart button");if(!b)return;if(b.matches("[data-qty],[data-remove]"))window.controller.change(b);});'});
  await page.waitForFunction(()=>typeof window.__resolveCart==='function');
- assert(await page.locator('.wc-block-cart').isVisible(),'Native fallback remains before Store API resolves');
+ assert.equal(await page.locator('.wc-block-cart').isVisible(),false,'Old native cart is hidden from first paint');
+ assert(await page.locator('html').evaluate(e=>e.classList.contains('sf-cart-awaiting')),'Inline head boot runs before first paint');
+ assert.equal(await page.locator('.sf-cart-page').evaluate(el=>getComputedStyle(el,'::before').content),'\"\"','Loading silhouette replaces old cart');
  assert.equal(await page.locator('#sf-cart').count(),1,'One DOM cart before enhancement');
  await page.evaluate(()=>window.__resolveCart());
  await page.waitForFunction(()=>document.body.classList.contains('sf-cart-page-enhanced'));
@@ -75,12 +82,25 @@ for(const width of [390,1120]){
  assert.equal(await page.locator('.sf-cart-checkout-command').count(),1,'Exactly one checkout CTA');
  assert.equal(await page.locator('.sf-cart-shipping-ring').count(),1,'Exactly one plugin-derived progress ring');
  assert.equal(await page.locator('.wc-block-cart').isVisible(),false,'Native fallback hidden after live session success');
+ assert.equal(await page.locator('html').evaluate(e=>e.classList.contains('sf-cart-awaiting')),false,'Hydration removes head loading guard');
  assert.equal(await page.locator('#sf-cart-count').innerText(),'Sepetinizde 3 ürün');
  assert.equal(await page.locator('#sf-subtotal').innerText(),'₺2.300,00');
  const computed=await page.locator('.sf-cart-checkout-command').evaluate(el=>({bg:getComputedStyle(el).backgroundColor,r:getComputedStyle(el).borderTopLeftRadius,h:el.getBoundingClientRect().height}));
  assert(computed.bg==='rgb(34, 35, 31)'||computed.bg==='rgb(48, 49, 47)','Same dark popup checkout material '+JSON.stringify(computed));
  assert.equal(computed.r,'24px','Popup CTA 24px corner reused on page');
  assert(computed.h>=72,'Popup checkout button geometry used');
+ if(width===390){
+   const fixed=await page.locator('.sf-cart-page-panel .sf-cart-bottom').evaluate(el=>({
+     position:getComputedStyle(el).position,rect:el.getBoundingClientRect().toJSON()
+   }));
+   const dock=await page.locator('.sf-mobile-dock').boundingBox();
+   assert.equal(fixed.position,'fixed','Purchase surface is viewport-fixed, not sticky');
+   assert(dock && fixed.rect.bottom <= dock.y+2,'Checkout and shipping sit immediately above mobile dock');
+   const before=fixed.rect.top;
+   await page.evaluate(()=>{document.body.style.minHeight='1800px';window.scrollTo(0,250)});
+   const after=(await page.locator('.sf-cart-page-panel .sf-cart-bottom').boundingBox()).y;
+   assert(Math.abs(after-before)<2,'Checkout remains pinned while native page scrolls');
+ }
  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
  assert(overflow<=2,'No horizontal overflow at '+width+'px');
  const plus=page.locator('.sf-cart-row[data-cart-key="a"] [data-qty="3"]');
@@ -98,6 +118,25 @@ for(const width of [390,1120]){
  assert(await page.evaluate(()=>document.getElementById('sf-cart')===window.originalCart),'Original popup node identity survives route');
  await page.close();
 }
-console.log('Shared popup/cart page DOM, Store API, controls, fallback and responsive visuals passed.');
+// When JavaScript is disabled the early CSS must never hide native Woo.
+{
+ const noJS=await browser.newPage({viewport:{width:390,height:844},javaScriptEnabled:false});
+ await noJS.setContent(html);
+ assert(await noJS.locator('.wc-block-cart').isVisible(),'No-JS users retain native cart');
+ await noJS.close();
+}
+// A rejected Store API request immediately restores native Woo; there is no
+// persistent blank screen and no duplicate checkout.
+{
+ const offline=await browser.newPage({viewport:{width:390,height:844}});
+ await offline.setContent(html);
+ await offline.addScriptTag({content:harness+'\nwindow.fetch=async()=>{throw Error("offline")};\n'+source+
+ '\nwindow.controller=createCartController({$:s=>document.querySelector(s),config:()=>({api:"/wc/store/v1/",cart:"/sepet/",taxInclusive:false}),t:k=>k,getCurrent:()=>null,getDialog:()=>document.getElementById("sf-panel")});window.controller.bind();'});
+ await offline.waitForFunction(()=>document.documentElement.classList.contains('sf-cart-fallback'));
+ assert(await offline.locator('.wc-block-cart').isVisible(),'Offline native Woo cart recovers');
+ assert.equal(await offline.locator('.sf-cart-page-panel').isVisible(),false,'Failed shared view never remains as a blank panel');
+ await offline.close();
+}
+console.log('Shared cart first paint, fixed mobile checkout, native fallback and Store API contracts passed.');
 }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exit(1)});
