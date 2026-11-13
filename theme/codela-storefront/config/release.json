@@ -6,10 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Sepet sayfasında ilk yüklemede kısa süre görünen eski WooCommerce sepeti kaldırıldı; ortak sepet yüklenirken hafif skeleton gösteriliyor.",
-    "Mobilde ücretsiz kargo göstergesi ve Ödemeye geç butonu alt gezinme menüsünün hemen üzerinde sabitleniyor; kaydırmada yer değiştirmiyor.",
-    "Sepet sayfası ve popup aynı ürün listesi, ara toplam, miktar, silme ve ödeme bileşenlerini paylaşmaya devam ediyor.",
-    "Store API hatasında veya yükleme zaman aşımında standart WooCommerce sepeti güvenli yedek olarak açılıyor; JavaScript kapalıysa da çalışıyor.",
-    "Chromium ve WebKit testlerinde ilk görünüm, sabit ödeme alanı, sepet işlemleri ve hata senaryoları doğrulandı."
+    "Sepet ve ödeme sayfaları diğer sayfalarla aynı ortak skeleton yükleme sistemine geçirildi; tek pasif şablon hem sayfa geçişinde hem ilk açılışta kullanılıyor.",
+    "Sepet skeleton'ı kompakt ürün satırları, miktar düğmeleri, kargo göstergesi ve altta sabit ödeme alanıyla gerçek sepet yerleşimini takip ediyor.",
+    "Ödeme skeleton'ı üç aşamalı başlık, müşteri form alanları ve sabit devam butonunu gerçek ekran ölçülerine yakın gösteriyor.",
+    "İlk yükleme tamamlandığında skeleton otomatik kaldırılıyor; desteklenmeyen ödeme biçiminde, hata halinde veya JavaScript kapalıyken WooCommerce içerikleri korunuyor.",
+    "Mobil/masaüstü Chromium ve WebKit testleri; ilk görünüm, navigasyon, hata geri dönüşü ve JavaScript kapalı durumu doğruluyor."
   ]
 }
