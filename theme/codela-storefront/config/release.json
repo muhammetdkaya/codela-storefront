@@ -6,10 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Sepet ve ödeme sayfaları diğer sayfalarla aynı ortak skeleton yükleme sistemine geçirildi; tek pasif şablon hem sayfa geçişinde hem ilk açılışta kullanılıyor.",
-    "Sepet skeleton'ı kompakt ürün satırları, miktar düğmeleri, kargo göstergesi ve altta sabit ödeme alanıyla gerçek sepet yerleşimini takip ediyor.",
-    "Ödeme skeleton'ı üç aşamalı başlık, müşteri form alanları ve sabit devam butonunu gerçek ekran ölçülerine yakın gösteriyor.",
-    "İlk yükleme tamamlandığında skeleton otomatik kaldırılıyor; desteklenmeyen ödeme biçiminde, hata halinde veya JavaScript kapalıyken WooCommerce içerikleri korunuyor.",
-    "Mobil/masaüstü Chromium ve WebKit testleri; ilk görünüm, navigasyon, hata geri dönüşü ve JavaScript kapalı durumu doğruluyor."
+    "Sepet sayfasında ürün silme sonrası gizli WooCommerce formunun eski miktarları yeniden göndermesi engellendi; tek yetkili Store API işlemi korunuyor.",
+    "Sepet popup'ı ve normal sepet sayfasının ücretsiz kargo durumu sadeleştirildi: büyük yeşil bant yerine 36 piksel ilerleme halkası ve net tek satır mesaj kullanılıyor.",
+    "Sepet ve ödeme skeleton'larının alt butonlarında sabit metinler hemen görünüyor; yalnızca yüklenmemiş fiyat alanı animasyonlu yer tutucu kullanıyor.",
+    "Sepet miktar düğmeleri form göndermiyor; WooCommerce kargo eşikleri, oturum tutarları ve ödeme formları değiştirilmedi.",
+    "Chromium ve WebKit testlerinde silme ikonuna dokunma, Store API üzerinden tek silme isteği, ücretsiz kargo görünümü ve skeleton etiketleri doğrulandı."
   ]
 }
