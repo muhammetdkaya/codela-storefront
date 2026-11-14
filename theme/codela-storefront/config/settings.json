@@ -7,6 +7,17 @@
       "description": "Site-wide font for the storefront, product panels, cart and guest account.",
       "fields": [
         {
+          "id": "site_mode",
+          "type": "select",
+          "default": "commerce",
+          "label": "Site type",
+          "description": "Choose E-commerce or Agency. This saves the site type; existing page content stays unchanged.",
+          "options": {
+            "commerce": "E-commerce",
+            "agency": "Agency"
+          }
+        },
+        {
           "id": "site_font",
           "type": "select",
           "default": "system",

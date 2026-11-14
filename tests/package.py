@@ -20,6 +20,10 @@ class Tests(unittest.TestCase):
         self.assertEqual(site_font["type"],"select")
         self.assertEqual(site_font["default"],"system")
         self.assertEqual(set(site_font["options"]),{"system","arial"})
+        site_mode=next(field for field in sections["appearance"]["fields"] if field["id"]=="site_mode")
+        self.assertEqual(site_mode["type"],"select")
+        self.assertEqual(site_mode["default"],"commerce")
+        self.assertEqual(set(site_mode["options"]),{"commerce","agency"})
         fields=[field["id"] for section in schema["sections"] for field in section["fields"]]
         self.assertEqual(len(fields),len(set(fields)))
         self.assertTrue({"accent_color","corner_style"}.isdisjoint(fields),"Shared appearance has a single plugin owner")

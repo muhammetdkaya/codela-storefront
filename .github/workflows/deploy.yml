@@ -82,6 +82,8 @@ jobs:
           node --input-type=module --check < theme/codela-storefront/assets/scripts/overlay-controller.js
           node --input-type=module --check < theme/codela-storefront/assets/scripts/dock-controller.js
           php tests/catalog.php
+          php tests/site-mode.php
+          php tests/site-mode.php --without-plugin
           php tests/product-composition.php
           node --check theme/codela-storefront/assets/scripts/product-information.js
           node --check theme/codela-storefront/assets/scripts/gallery-horizontal.js

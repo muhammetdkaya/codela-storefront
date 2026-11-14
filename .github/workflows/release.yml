@@ -40,6 +40,8 @@ jobs:
         run: |
           php tests/navigation.php
           php tests/theme-font.php
+          php tests/site-mode.php
+          php tests/site-mode.php --without-plugin
           node --check theme/codela-storefront/assets/scripts/product-information.js
           node --check tests/product-flow-browser.cjs
           node --check tests/product-sheet-browser.cjs

@@ -1,3 +1,15 @@
+## 14 Kasım 2026 — 0.1.312 → 0.1.313 ajans / e-ticaret seçimi
+
+**Tamamlandı:** Mevcut Codela → Ayarlar → Tema ekranının tema tarafından sağlanan şemasına “Site türü: E-ticaret / Ajans” seçimi eklendi. Tercih mevcut eklenti ayar altyapısında saklanır. Tema `codela_sf_site_mode()` üzerinden tercihi okur ve `sf-site-mode-commerce` / `sf-site-mode-agency` body sınıfını üretir. Eksik veya geçersiz değer E-ticaret'e döner; mevcut kullanıcı ayarlarına otomatik yazma yapılmaz. Türkçe etiketler eklendi. Eklenti kodu ve sürümü değişmedi.
+
+**Kalıcı kapsam kararı:** Ajans aynı temanın bir sunum modudur. Header, alt menü, footer ve hesap altyapısı ortaktır; ajans anasayfası ve hizmet bölümleri sonraki adımda bu seçime bağlanacaktır. Bu ilk adım mevcut sayfa içeriklerini veya menüleri değiştirmez ve WooCommerce bağımlılığını kaldırmaz. Kullanıcının sağladığı ajans HTML taslağı tasarım temelidir; tam ekran karşılama ve altında üçlü vitrin bölüm bölüm ele alınacaktır.
+
+**Doğrulama:** Yerelde 3 asset ve 27 paket testi geçti; `git diff --check` temiz. PHP/WASM üzerinde seçim, güvenli varsayılan, geçersiz değerler, eklenti yardımcı fonksiyonu yokluğu ve body sınıfı testleri geçti; functions.php ve Türkçe çeviri dosyası PHP sözdizimi kontrolünden geçti. Aynı PHP davranış testleri deploy/release doğrulamasına eklendi. GitHub Actions sonucu ve gerçek WordPress yönetim ekranındaki kayıt kabulü henüz doğrulanmadı.
+
+**GitHub / canlı durum:** Kod aktarımı ve otomatik deploy sonucu takip kaydında ayrıca doğrulanacaktır. Stable güncelleme beslemesi veya WordPress.org yayını bu adımın kapsamında değildir.
+
+**Sıradaki:** Ajans anasayfası bölümlerini mevcut ortak tema kabuğu içinde uygulamak.
+
 ## 11 Kasım 2026 — 0.1.281 → 0.1.282 ürün paneli kaydırma ve kargo metni (yayın doğrulandı)
 
 **Biten işler:** Tema fontu seçeneklerinde Apple markası kaldırıldı; Sistem / Arial kaldı, gerçek sistem font yığını değişmedi. Açık panelde tutamak–başlık mesafesi +10px ve bu ölçü gerçek panel, native prepaint ve destination skeleton üzerinde eşitlendi. Canlı Codela Delivery ETA kaynağından tahmini teslimat metni gün adı kaldırılarak, ay kısaltılarak ve "Tah. teslimat" başlığı korunarak kısaltıldı; tam özgün metin erişilebilir ad ve title içinde duruyor. Eklentinin hesaplayıcısı ve 2x2 güven kartları değişmedi. Ürün sonundaki eski 70% viewport'ta touchmove başına preventDefault/scrollTo devralımı kaldırıldı; önerilere girerken fotoğraf scroll-snap devreden daha erken çıkıyor ve panel yalnız gerçek belge sonunda parmak kaydırmasının devamıyla açılıyor.
