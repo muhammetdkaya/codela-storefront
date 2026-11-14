@@ -73,6 +73,7 @@ function codela_sf_transition_icon( string $name ): string {
         ? str_replace( '<svg ', '<svg class="sf-icon" aria-hidden="true" focusable="false" ', $svg ) : '';
 }
 require_once get_template_directory() . '/inc/site-mode.php';
+require_once get_template_directory() . '/inc/agency.php';
 require_once get_template_directory() . '/inc/typography.php';
 require_once get_template_directory() . '/inc/render.php';
 require_once get_template_directory() . '/inc/cart-shipping.php';
@@ -295,7 +296,7 @@ add_action( 'wp_enqueue_scripts', function() {
         wp_enqueue_style( 'codela-storefront-gallery' );
         wp_enqueue_script( 'codela-storefront-gallery-horizontal', $root_uri . 'scripts/gallery-horizontal.js', [], codela_sf_script_module_version( 'scripts/gallery-horizontal.js' ), true );
     }
-    if ( $sections['products'] || is_front_page() || is_search() ) { wp_enqueue_script( 'wc-add-to-cart' ); }
+    if ( $sections['products'] || ( is_front_page() && ! codela_sf_agency_front_page() ) || is_search() ) { wp_enqueue_script( 'wc-add-to-cart' ); }
     if ( codela_sf_document_continuity_allowed() ) {
         wp_enqueue_style( 'codela-storefront-document-continuity', $root_uri . ( $debug_assets ? 'styles/document-continuity.css' : 'styles/document-navigation.css' ), [ 'codela-storefront-components' ], $style_version );
         wp_register_style( 'codela-storefront-navigation-feedback', $debug_assets ? $root_uri . 'styles/navigation-feedback.css' : false, [ 'codela-storefront-document-continuity' ], $style_version );

@@ -84,6 +84,7 @@ jobs:
           php tests/catalog.php
           php tests/site-mode.php
           php tests/site-mode.php --without-plugin
+          php tests/agency.php
           php tests/product-composition.php
           node --check theme/codela-storefront/assets/scripts/product-information.js
           node --check theme/codela-storefront/assets/scripts/gallery-horizontal.js
@@ -140,6 +141,7 @@ jobs:
         run: |
           npm install --no-save --package-lock=false playwright@1.62.1
           npx playwright install --with-deps chromium webkit
+          node tests/agency-browser.cjs
           # Exercise the native checkout/gateway presentation before broader,
           # independently flaky product/gallery acceptance suites.
           node tests/checkout-steps-browser.cjs
@@ -208,7 +210,9 @@ jobs:
         if: always() && steps.tier.outputs.quick != 'true'
         with:
           name: codela-storefront-ui-reference
-          path: qa/storefront-ui-kit-*.png
+          path: |
+            qa/storefront-ui-kit-*.png
+            qa/agency-*.png
           if-no-files-found: error
           retention-days: 14
       - uses: actions/upload-artifact@v4

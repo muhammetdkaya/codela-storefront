@@ -225,6 +225,9 @@ function codela_sf_header(): string {
 }
 function codela_sf_home(): string {
     if ( ! codela_sf_ready() ) { return ''; }
+    if ( function_exists( 'codela_sf_agency_front_page' ) && codela_sf_agency_front_page() ) {
+        return codela_sf_agency_home();
+    }
     // WordPress Reading settings are the only homepage selector.
     if ( 'page' === get_option( 'show_on_front' ) ) {
         return do_blocks( '<!-- wp:post-content {"layout":{"type":"constrained"}} /-->' );

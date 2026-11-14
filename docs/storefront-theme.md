@@ -1,3 +1,15 @@
+## 14 Kasım 2026 — 0.1.313 → 0.1.314 ajans anasayfası ilk uygulama
+
+**Biten işler:** Ajans seçimi artık anasayfada yerel `agency-home` şablon parçasını açar. HyperUI'nin MIT lisanslı Split/Center Banner düzenleri Codela'nın açık cam yüzeylerine ve ortak Button bileşenine uyarlandı; kaynak sürüm ve lisans kaydedildi. Tam ekran karşılama altında Web Tasarım / E-ticaret / Özel Geliştirme üçlü vitrini, JavaScript gerektirmeyen detay açılımları ve kapanış alanı var. Kullanıcının HTML taslağındaki hizmet kapsamı esas alındı. Yeni SPA, React, CDN, font veya dış JavaScript bağımlılığı yok. Efekt reduced-motion'a uyar; ek CSS/JS yalnız ajans anasayfasında yüklenir.
+
+**Düzenleme ve bağlantılar:** Başlık/metinler native bloklarla `parts/agency-home.html` / `patterns/agency-home.php` içinde; Site Düzenleyicisi'ndeki şablon parçası kullanıcı düzenlemelerini saklar. İletişim CTA'sı yalnız yayınlanmış, parolasız `iletisim` veya `contact` sayfası varsa gerçek permalinkine gider; yoksa sayfa içi kapanışa yönelir ve mevcut Hesabım bağlantısı sunulur. İletişim sayfası/formu oluşturulmadı. E-ticaret modundaki mevcut WordPress Okuma ayarları ve sayfa içeriği korunur. Header, dock, footer ve hesap altyapısı ortak kalır. Ajans seçimi kullanıcı adına canlıda açılmadı.
+
+**Doğrulama:** PHP/WASM üzerinde ajans/commerce ayrımı, bağımlılık kapısı, varlıkların yalnız anasayfada yüklenmesi, iletişim sayfasının yayın/parola koşulları ve desenin çıktısı geçti. Mevcut front-page-source testi, 27 paket testi, 3 asset testi ve vendor-free kontrolü geçti. Yerel tarayıcı başlatma çalışma ortamının socket kısıtı nedeniyle tamamlanamadı. 320/390/768/1440px, tek H1, vitrin sırası, bağlantılar, klavye, reduced-motion ve JS kapalı testleri GitHub CI'ya eklendi; ekran görüntüleri aynı artifact'a eklenir. GitHub sonucu takip kaydında yazılacak; henüz görsel kabul iddia edilmez.
+
+**Yayın / kalanlar:** GitHub aktarımı ve canlı dağıtım henüz doğrulanmadı. Önceki 0.1.313 akışında genel ürün paneli testi zaman aşımıyla deploy'u engellemişti; bu çalışmada ürün paneli değiştirilmedi. Stabil paket veya WordPress.org yayını istenmedi.
+
+**Sıradaki:** CI ajans ekran görüntülerini incele; seçilen karşılama/vitrin düzenini kullanıcıyla bölüm bazında netleştir. Ayrı hizmetler ve iletişim sayfaları, ajans menü içerikleri ve müşteri alanının ajans özellikleri sonraki aşamalardır.
+
 ## 14 Kasım 2026 — 0.1.313 GitHub aktarımı ve CI sonucu
 
 **Kod:** Ajans / E-ticaret seçimi main üzerindeki [968a41530d166bba7677114910eed8165e41737c](https://github.com/muhammetdkaya/codela-storefront/commit/968a41530d166bba7677114910eed8165e41737c) commit'ine aktarıldı. Yerel kaynak ile bu commit'in içeriği karşılaştırılarak eşleştiği doğrulandı.

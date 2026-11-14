@@ -20,6 +20,9 @@ require_once __DIR__ . '/section-products.php';
 require_once __DIR__ . '/section-content.php';
 
 function codela_sf_sections_capabilities(): array {
+    if ( function_exists( 'codela_sf_agency_front_page' ) && codela_sf_agency_front_page() ) {
+        return [ 'layout' => false, 'gallery' => false, 'products' => false, 'managed' => true ];
+    }
     static $caps = null;
     if ( null !== $caps ) { return $caps; }
     $caps = [ 'layout' => false, 'gallery' => false, 'products' => false, 'managed' => false ];
