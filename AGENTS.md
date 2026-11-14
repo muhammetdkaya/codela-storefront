@@ -1,3 +1,13 @@
+## 14 Kasım 2026 — 0.1.313 GitHub aktarımı ve CI sonucu
+
+**Kod:** Ajans / E-ticaret seçimi main üzerindeki [968a41530d166bba7677114910eed8165e41737c](https://github.com/muhammetdkaya/codela-storefront/commit/968a41530d166bba7677114910eed8165e41737c) commit'ine aktarıldı. Yerel kaynak ile bu commit'in içeriği karşılaştırılarak eşleştiği doğrulandı.
+
+**Doğrulama:** [Deploy CI 43605083372](https://github.com/muhammetdkaya/codela-storefront/actions/runs/43605083372) içindeki PHP sözdizimi, işlev, paket ve build adımı başarılı. Yeni site-mode testleri eklenti yardımcı fonksiyonu varken ve yokken geçti. Genel tarayıcı adımı `tests/product-sheet-browser.cjs:277` içinde `.sf-product-sheet` görünürlüğünü beklerken 30 saniyelik zaman aşımıyla başarısız oldu. Bu test ve kullandığı ürün paneli kaynakları ajans seçimi değişikliğinde düzenlenmedi; kök neden bu adımda giderilmedi.
+
+**Canlı durum:** `deploy` işi doğrulama hatası nedeniyle atlandı. 0.1.313'ün canlıya yüklendiği veya yönetim ekranında gerçek kayıt kabulünün yapıldığı iddia edilmez. Stable feed / WordPress.org yayını yapılmadı; doğrulama kapısı atlanmadı.
+
+**Sıradaki:** Ürün paneli tarayıcı testindeki yükleme zaman aşımını ayrı olarak teşhis edip otomatik deploy'u tamamlamak; ardından ajans anasayfası bölümlerini ortak tema kabuğuna bağlamak. Bu kayıt yalnız belge güncellemesidir; sürüm değişmez.
+
 ## 14 Kasım 2026 — 0.1.312 → 0.1.313 ajans / e-ticaret seçimi
 
 **Tamamlandı:** Mevcut Codela → Ayarlar → Tema ekranının tema tarafından sağlanan şemasına “Site türü: E-ticaret / Ajans” seçimi eklendi. Tercih mevcut eklenti ayar altyapısında saklanır. Tema `codela_sf_site_mode()` üzerinden tercihi okur ve `sf-site-mode-commerce` / `sf-site-mode-agency` body sınıfını üretir. Eksik veya geçersiz değer E-ticaret'e döner; mevcut kullanıcı ayarlarına otomatik yazma yapılmaz. Türkçe etiketler eklendi. Eklenti kodu ve sürümü değişmedi.
