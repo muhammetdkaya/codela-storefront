@@ -32,6 +32,12 @@ const server = http.createServer((req, res) => {
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `No horizontal overflow at ${width}`);
       const bounds = await page.locator('.sf-agency-hero').boundingBox();
       assert(bounds.height >= height - (width <= 700 ? 68 : 76) - 2, 'Hero fills the available first screen');
+      if (width === 390) {
+        assert(bounds.height <= height - 68 + 2, 'Portrait hero fits one screen at the reference phone size');
+        const buttons = await page.locator('.sf-agency-intro .sf-ui-button').evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().toJSON()));
+        assert(Math.abs(buttons[0].top - buttons[1].top) < 2, 'Phone hero actions share one row');
+        assert(buttons.every(button => button.height >= 44), 'Compact buttons retain touch targets');
+      }
       const services = await page.locator('#sf-agency-services').boundingBox();
       assert(services.y >= bounds.y + bounds.height - 1, 'Three-card showcase is below hero');
       for (const link of await page.locator('a[href^="#"]').all()) {
@@ -44,6 +50,7 @@ const server = http.createServer((req, res) => {
       assert(await details.evaluate(node => node.open), 'Service detail opens by keyboard');
       await page.keyboard.press('Enter');
       if (width === 390 || width === 1440) {
+        await page.locator('.sf-agency-details summary').first().evaluate(node => node.blur());
         await page.evaluate(() => scrollTo(0, 0));
         await page.screenshot({ path: path.join(root, `qa/agency-${width}.png`), fullPage: true });
       }
