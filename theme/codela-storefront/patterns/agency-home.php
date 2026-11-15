@@ -20,8 +20,10 @@ $account = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( '
 <div class="wp-block-group sf-agency">
 <!-- wp:group {"tagName":"section","className":"sf-agency-hero"} -->
 <section class="wp-block-group sf-agency-hero">
-  <div class="sf-agency-hero-grid sf-agency-wrap">
-    <div class="sf-agency-intro">
+  <!-- wp:group {"className":"sf-agency-hero-grid sf-agency-wrap"} -->
+  <div class="wp-block-group sf-agency-hero-grid sf-agency-wrap">
+    <!-- wp:group {"className":"sf-agency-intro"} -->
+    <div class="wp-block-group sf-agency-intro">
       <!-- wp:paragraph {"className":"sf-agency-eyebrow"} -->
       <p class="sf-agency-eyebrow"><span class="sf-agency-status-dot" aria-hidden="true"></span> codela.dev · 360° WordPress &amp; Yazılım Ajansı</p>
       <!-- /wp:paragraph -->
@@ -42,7 +44,7 @@ $account = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( '
         <button type="button" class="sf-agency-swap-tab" data-agency-swap-to="2" aria-pressed="false">03 · Özel Geliştirme</button>
       </div>
       <!-- /wp:html -->
-    </div>
+    </div><!-- /wp:group -->
     <!-- wp:html -->
     <div class="sf-agency-swap-stage" data-agency-swap aria-label="Üç boyutlu hizmet vitrini">
       <article class="sf-agency-swap-card sf-agency-swap-card--web" data-agency-card="0" data-pos="0" role="button" tabindex="0" aria-label="Web tasarım kartı. Sonraki kartı göster">
@@ -74,7 +76,7 @@ $account = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( '
       </article>
     </div>
     <!-- /wp:html -->
-  </div>
+  </div><!-- /wp:group -->
   <!-- wp:html -->
   <div class="sf-agency-hero-foot sf-agency-wrap"><span>WordPress <i>·</i> Elementor <i>·</i> WooCommerce</span><a href="#sf-agency-services">Hizmetleri keşfet <span aria-hidden="true">↓</span></a></div>
   <!-- /wp:html -->
@@ -82,22 +84,24 @@ $account = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( '
 
 <!-- wp:group {"tagName":"section","className":"sf-agency-services","anchor":"sf-agency-services"} -->
 <section class="wp-block-group sf-agency-services" id="sf-agency-services">
-  <div class="sf-agency-wrap sf-agency-services-head">
-    <div>
+  <!-- wp:group {"className":"sf-agency-wrap sf-agency-services-head"} -->
+  <div class="wp-block-group sf-agency-wrap sf-agency-services-head">
+    <!-- wp:group {"className":"sf-agency-services-heading"} -->
+    <div class="wp-block-group sf-agency-services-heading">
       <!-- wp:paragraph {"className":"sf-agency-eyebrow"} -->
       <p class="sf-agency-eyebrow">HİZMET VİTRİNİ</p>
       <!-- /wp:paragraph -->
       <!-- wp:heading {"className":"sf-agency-heading"} -->
       <h2 class="wp-block-heading sf-agency-heading">WordPress üzerine her türlü çözüm.</h2>
       <!-- /wp:heading -->
-    </div>
+    </div><!-- /wp:group -->
     <!-- wp:html -->
     <div class="sf-agency-carousel-actions">
       <button type="button" class="sf-agency-carousel-arrow" data-agency-carousel-prev aria-label="Hizmetlerde sola kaydır">←</button>
       <button type="button" class="sf-agency-carousel-arrow" data-agency-carousel-next aria-label="Hizmetlerde sağa kaydır">→</button>
     </div>
     <!-- /wp:html -->
-  </div>
+  </div><!-- /wp:group -->
   <!-- wp:html -->
   <div class="sf-agency-service-track" data-agency-service-track aria-label="Kaydırılabilir hizmet kartları" tabindex="0">
     <article class="sf-agency-poster sf-agency-poster--web">
