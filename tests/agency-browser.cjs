@@ -62,7 +62,7 @@ const server = http.createServer((req, res) => {
       await page.locator('[data-agency-dialog-close]').click();
       assert(!(await page.locator('[data-agency-dialog]').evaluate(node => node.open)), 'Service dialog closes');
       if (width === 390 || width === 1440) {
-        await page.locator('.sf-agency-details summary').first().evaluate(node => node.blur());
+        await page.locator('[data-agency-detail="web"]').first().evaluate(node => node.blur());
         await page.evaluate(() => scrollTo(0, 0));
         await page.screenshot({ path: path.join(root, `qa/agency-${width}.png`), fullPage: true });
       }
