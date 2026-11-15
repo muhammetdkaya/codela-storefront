@@ -36,6 +36,12 @@
     },
     "agency-scroll": {
       "scroll3d": "3D Kaydırma"
+    },
+    "agency-services": {
+      "carousel": "Hizmet Vitrini"
+    },
+    "agency-process": {
+      "steps": "Çalışma Süreci"
     }
   }
 }

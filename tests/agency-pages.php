@@ -96,6 +96,31 @@ $widget_data['items'][0]['title'] = '<script>unsafe</script>';
 agency_page_check( ! str_contains( codela_sf_section_agency_cards( $widget_data ), '<script>' ), 'Widget escapes saved editorial text.' );
 agency_page_check( str_contains( codela_sf_section_agency_cards( $widget_data ), 'data-agency-widget="cards"' ),
     'Agency widget remains available without any site mode.' );
+
+$service_data = [
+    'id' => 'services-fixture', 'title' => 'Our Services', 'description' => 'Four independent cards',
+    'items' => [
+        [ 'enabled' => true, 'title' => 'Web', 'body' => 'Accessible websites' ],
+        [ 'enabled' => true, 'title' => 'Elementor', 'body' => 'Custom blocks' ],
+        [ 'enabled' => true, 'title' => 'Commerce', 'body' => 'Selling experiences' ],
+        [ 'enabled' => true, 'title' => 'Code', 'body' => 'Integrations' ],
+    ],
+];
+$services_widget = codela_sf_section_agency_services( $service_data );
+agency_page_check( substr_count( $services_widget, 'class="sf-agency-poster ' ) === 4, 'Reusable services use four reference-style posters.' );
+agency_page_check( str_contains( $services_widget, 'data-agency-widget="services"' ) && str_contains( $services_widget, 'Accessible websites' ), 'Service widget renders saved descriptions.' );
+$process_data = [
+    'id' => 'process-fixture', 'title' => 'Our Process', 'description' => 'Three independent steps',
+    'items' => [
+        [ 'enabled' => true, 'title' => 'Discover', 'body' => 'Study goals' ],
+        [ 'enabled' => true, 'title' => 'Build', 'body' => 'Create solutions' ],
+        [ 'enabled' => true, 'title' => 'Deliver', 'body' => 'Ship and support' ],
+    ],
+];
+$process_widget = codela_sf_section_agency_process( $process_data );
+agency_page_check( substr_count( $process_widget, 'data-agency-widget-step="' ) === 3, 'Reusable process has three steps.' );
+agency_page_check( str_contains( $process_widget, 'data-agency-widget="process"' ) && str_contains( $process_widget, 'Ship and support' ), 'Process widget preserves saved copy.' );
+
 $GLOBALS['mode'] = 'agency';
 
 
@@ -112,7 +137,7 @@ if ( in_array( '--render=widgets', $argv, true ) ) {
         echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/' . $style . '">';
     }
     echo '</head><body class="sf-site-mode-agency"><main class="sf-content"><h1 class="screen-reader-text">Agency Layout</h1><div class="codela-page-layout">';
-    echo $first_cards . $middle_scroll . $last_cards;
+    echo $first_cards . $services_widget . $process_widget . $middle_scroll . $last_cards;
     echo '</div></main><script src="/theme/codela-storefront/assets/scripts/agency-widgets.js"></script></body></html>';
     exit;
 }

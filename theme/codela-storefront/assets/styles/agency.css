@@ -392,3 +392,31 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
   .sf-agency-widget--scroll .sf-agency-scroll-specialties strong{font-size:11px}
   .sf-agency-widget--scroll .sf-agency-scroll-specialties small{font-size:10px}
 }
+
+
+/* Reusable agency sections preserve the approved services/process composition. */
+.codela-page-layout > .sf-agency-widget--services,
+.codela-page-layout > .sf-agency-widget--process{width:100%;max-width:none!important;margin:0}
+.sf-agency-widget--services .sf-agency-services{min-width:0;padding-block:90px 98px}
+.sf-agency-widget--services .sf-agency-services-heading{min-width:0}
+.sf-agency-widget-services-lead{margin-top:14px;max-width:650px;font-size:15px;line-height:1.7;color:#71717a}
+.sf-agency-widget--services .sf-agency-poster-main h3{overflow-wrap:anywhere}
+.sf-agency-widget--services .sf-agency-glass-info p{font-size:13px;line-height:1.65;overflow-wrap:anywhere}
+.sf-agency-widget--services .sf-agency-carousel-arrow{flex:0 0 44px}
+.sf-agency-widget--services [data-agency-widget-track]{outline-offset:4px}
+.sf-agency-widget--services .sf-agency-dialog-cta{display:inline-flex;align-items:center;margin-top:24px;min-height:44px}
+.sf-agency-widget--process .sf-agency-process{padding-block:94px 110px}
+.sf-agency-widget--process .sf-agency-process-stage-rows{min-width:0}
+.sf-agency-widget--process .sf-agency-process-stage-row{overflow-wrap:anywhere}
+.sf-agency-widget--process .sf-agency-process-step{min-height:170px}
+@media(max-width:767px){
+ .sf-agency-widget--services .sf-agency-services{padding-block:68px 74px}
+ .sf-agency-widget--services .sf-agency-services-head{align-items:flex-start;gap:18px}
+ .sf-agency-widget--services .sf-agency-service-track{scroll-padding-inline:18px}
+ .sf-agency-widget--process .sf-agency-process{padding-block:66px 75px}
+ .sf-agency-widget--process .sf-agency-process-step{min-height:0}
+}
+@media(prefers-reduced-motion:reduce){
+ .sf-agency-widget--services .sf-agency-poster{transition:none}
+ .sf-agency-widget--process .sf-agency-process-stage{transition:none}
+}

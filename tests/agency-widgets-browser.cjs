@@ -33,9 +33,20 @@ const server = http.createServer((req,res) => {
       const first = page.locator('[data-agency-widget="cards"]').first();
       const second = page.locator('[data-agency-widget="cards"]').last();
       const scroll = page.locator('[data-agency-widget="scroll"]');
-      assert.equal(await widgets.count(),3,'Two cards and one 3D section may coexist');
+      assert.equal(await widgets.count(),5,'Two cards, services, process and 3D sections may coexist');
       assert.equal(await page.locator('.sf-agency-swap-card').count(),6,'Duplicated cards each render their own content');
       assert.equal(await scroll.count(),1,'3D section is independently placed between Card Swap sections');
+      const services = page.locator('[data-agency-widget="services"]');
+      const process = page.locator('[data-agency-widget="process"]');
+      assert.equal(await services.locator('.sf-agency-poster').count(),4,'Four editable services render independently');
+      await services.locator('[data-agency-widget-detail="0"]').click();
+      assert(await services.locator('[data-agency-widget-dialog]').isVisible(),'Service opens its own detail dialog');
+      assert.equal(await services.locator('[data-agency-widget-detail-title]').textContent(),'Web');
+      await services.locator('[data-agency-widget-close]').click();
+      assert(!(await services.locator('[data-agency-widget-dialog]').isVisible()),'Dialog closes without changing page');
+      await process.locator('[data-agency-widget-step="1"]').click();
+      assert.equal(await process.locator('[data-agency-widget-stage]').getAttribute('data-step'),'1','Second phase updates only its process widget');
+      assert.equal(await process.locator('[data-agency-widget-stage-title]').textContent(),'Build');
       assert.equal(await page.locator('.sf-agency-hero-variant-switch').count(),0,'The old variant switch does not appear in managed layouts');
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth+1),'No horizontal overflow at '+width);
       await first.locator('[data-agency-swap-to="1"]').click();
@@ -51,7 +62,7 @@ const server = http.createServer((req,res) => {
     }
     const plain = await browser.newPage({javaScriptEnabled:false,viewport:{width:390,height:844}});
     await plain.goto('http://127.0.0.1:'+server.address().port+'/');
-    assert.equal(await plain.locator('[data-agency-widget]').count(),3,'All widget content survives disabled JavaScript');
+    assert.equal(await plain.locator('[data-agency-widget]').count(),5,'All five widgets survive disabled JavaScript');
     assert.deepEqual(errors,[],'No uncaught JS errors');
     console.log('Independent agency widgets: four viewports, duplicates, keyboard, 3D transform, no-JS passed.');
   } catch(error) {
