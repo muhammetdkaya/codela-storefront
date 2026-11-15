@@ -12,6 +12,8 @@ function codela_sf_agency_front_page(): bool {
  * With no managed layout, retain the existing agency landing-page pattern.
  */
 function codela_sf_agency_saved_layout(): string {
+    // Static theme-only fixtures and safe-mode shells may omit the WP post API.
+    if ( ! function_exists( 'get_post' ) || ! function_exists( 'get_post_meta' ) || ! function_exists( 'has_block' ) ) { return ''; }
     if ( 'page' !== get_option( 'show_on_front' ) ) { return ''; }
     $page = get_post( (int) get_option( 'page_on_front' ) );
     if ( ! $page || 'page' !== $page->post_type || post_password_required( $page ) ) { return ''; }
