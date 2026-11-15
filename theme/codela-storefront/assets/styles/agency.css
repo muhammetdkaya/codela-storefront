@@ -25,8 +25,9 @@
 .sf-content .sf-agency .sf-agency-hero .sf-ui-button--primary{background:#fff;color:#09090b;border:1px solid #fff;box-shadow:none}
 .sf-content .sf-agency .sf-agency-hero .sf-ui-button--primary .sf-icon{filter:none}
 .sf-content .sf-agency .sf-agency-hero .sf-ui-button--secondary{background:#18181b;color:#fff;border:1px solid #3f3f46;box-shadow:none}
-.sf-agency-swap-controls{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:26px}
-.sf-agency-swap-tab{min-height:36px;padding:7px 11px;font-size:11px;font-weight:600;font-family:inherit;line-height:1.2;border:1px solid transparent;border-radius:999px;background:transparent;color:#a1a1aa;cursor:pointer;white-space:nowrap;transition:background .25s,color .25s}
+.sf-agency-swap-controls{display:flex;flex-wrap:nowrap;align-items:center;gap:6px;margin-top:26px;max-width:100%;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.sf-agency-swap-controls::-webkit-scrollbar{display:none}
+ .sf-agency-swap-tab{flex:0 0 auto;min-height:36px;padding:7px 11px;font-size:11px;font-weight:600;font-family:inherit;line-height:1.2;border:1px solid transparent;border-radius:999px;background:transparent;color:#a1a1aa;cursor:pointer;white-space:nowrap;transition:background .25s,color .25s}
 .sf-agency-swap-tab[aria-pressed="true"]{background:#27272a;color:white;border-color:#3f3f46}
 .sf-agency-swap-tab:hover{background:#27272a;color:#fff}
 .sf-agency-swap-stage{width:min(100% - 26px,470px);height:405px;position:relative;isolation:isolate;perspective:1100px;transform-style:preserve-3d;margin-inline:auto 28px}
@@ -111,7 +112,7 @@
 .sf-content .sf-agency .sf-agency-hero .sf-agency-actions .sf-ui-button{flex:0 1 auto;min-width:0;white-space:nowrap;gap:7px;padding:10px 12px;font-size:11px}
 .sf-agency-hero .sf-agency-actions .sf-icon{width:18px;height:18px;flex-shrink:0}
 .sf-agency-swap-controls{gap:3px;margin-top:19px}
-.sf-agency-swap-tab{padding:8px 9px;font-size:10px;min-height:40px}
+.sf-agency-swap-tab{padding:8px 7px;font-size:9px;min-height:40px}
 .sf-agency-swap-stage{height:335px;width:min(calc(100% - 43px),420px);margin:0 auto 0 0;align-self:center}
 .sf-agency-swap-card{padding:18px;border-radius:20px}
 .sf-agency-swap-card[data-pos="1"]{transform:translate3d(18px,-22px,-60px) rotateZ(4deg) scale(.94)}
