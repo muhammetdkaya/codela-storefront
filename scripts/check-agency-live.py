@@ -26,8 +26,8 @@ def check() -> None:
     version = re.search(r"(?m)^Version:\s*(\S+)", style)
     assert version and version.group(1) == "0.1.319", "FTP theme version is not 0.1.319"
     agency_css = fetch("/wp-content/themes/codela-storefront/assets/styles/agency.css")
-    assert re.search(r"\\.sf-agency-home\\{[^}]*padding-top:0", agency_css), "Agency root still leaves the old white header band"
-    assert re.search(r"\\.sf-agency-hero\\{[^}]*padding-top:76px", agency_css), "Hero text is not offset from the glass header"
+    assert re.search(r"\.sf-agency-home\{[^}]*padding-top:0", agency_css), "Agency root still leaves the old white header band"
+    assert re.search(r"\.sf-agency-hero\{[^}]*padding-top:76px", agency_css), "Hero text is not offset from the glass header"
     assert ".sf-agency-hero{min-height:100svh;padding-top:68px}" in agency_css, "Mobile hero no longer has header-safe content spacing"
     print("Agency hero/header underlay: live CSS verified.", flush=True)
     expected = {
