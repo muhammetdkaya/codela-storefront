@@ -501,6 +501,20 @@ class DeploymentTests(unittest.TestCase):
         result,files,old,new=self.run_deploy("health");self.assertEqual(result,1);self.assertEqual(files,old)
 
 class DeploymentDeltaTests(unittest.TestCase):
+    def test_missing_manifest_skips_identical_existing_theme_files(self):
+        local={"style.css":b"new","assets/logo.svg":b"same","assets/layout.css":b"new"}
+        remote={"style.css":b"old","assets/logo.svg":b"same"}
+        read=[]
+        def names(folder):
+            return {path.rsplit("/",1)[-1] for path in remote if (path.rpartition("/")[0] or ".")==folder}
+        def get(path):
+            read.append(path)
+            return remote[path]
+        changed, originals=deploy.bootstrap_delta(local,names,get)
+        self.assertEqual(changed,{"style.css":b"new","assets/layout.css":b"new"})
+        self.assertEqual(originals,remote)
+        self.assertEqual(read,["assets/logo.svg","style.css"])
+
     def test_second_deploy_sends_only_modified_assets(self):
         files={"style.css":b"theme","assets/icons/bag.svg":b"v1","assets/styles/main.css":b"same"}
         before=deploy.checked_manifest(deploy.build_manifest(files))

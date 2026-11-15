@@ -8,11 +8,15 @@ const {load}=require('./product-sheet-browser.cjs');
  const touch=(type,x,y)=>cdp.send('Input.dispatchTouchEvent',{type,touchPoints:/End|Cancel/.test(type)?[]:[{x,y,id:1}]});
  await page.evaluate(()=>document.querySelector('.sf-product-discovery').scrollIntoView());
  await page.waitForFunction(()=>document.querySelector('.woocommerce-product-gallery').classList.contains('is-discovering'));
- await page.evaluate(()=>scrollTo({top:document.documentElement.scrollHeight-innerHeight-60,behavior:'instant'}));
+ // Discovery changes document geometry. Start at the stable real page end;
+ // native final-scroll handoff is covered separately by product-sheet-browser.
+ await page.evaluate(()=>scrollTo({top:document.documentElement.scrollHeight,behavior:'instant'}));
+ await page.waitForFunction(()=>document.documentElement.scrollHeight-(scrollY+innerHeight)<=3);
+ const endScroll=await page.evaluate(()=>scrollY);
  const before=await page.locator('.sf-product-sheet').boundingBox();
  await touch('touchStart',180,360);await touch('touchMove',180,330);await touch('touchMove',180,270);await touch('touchMove',180,150);
  await page.waitForFunction(h=>document.querySelector('.sf-product-sheet').getBoundingClientRect().height>h+100,before.height);
- assert(await page.evaluate(()=>document.documentElement.scrollHeight-scrollY-innerHeight<3),'Same gesture consumes document tail');
+ assert(Math.abs((await page.evaluate(()=>scrollY))-endScroll)<3,'Sheet gesture keeps the native document at its real end');
  await touch('touchEnd');
  // Release MUST carry on from the finger's last paint without zeroing the
  // content or running a second, unsynchronised backdrop/handle transition.

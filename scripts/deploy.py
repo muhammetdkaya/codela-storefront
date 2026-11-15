@@ -29,6 +29,19 @@ def delta_plan(files,previous):
     changed={path:data for path,data in files.items() if old.get(path)!=hashes[path]}
     retired=sorted(set(old)-set(files))
     return changed,retired
+def bootstrap_delta(files, names, get):
+    """No manifest yet: verify installed theme bytes instead of reuploading all."""
+    changed, originals = {}, {}
+    for path, data in sorted(files.items()):
+        directory, _, filename = path.rpartition("/")
+        if filename in names(directory or "."):
+            original = get(path)
+            originals[path] = original
+            if hashlib.sha256(original).digest() == hashlib.sha256(data).digest():
+                continue
+        changed[path] = data
+    return changed, originals
+
 def read_url(url):
     request=urllib.request.Request(url,headers={"Cache-Control":"no-cache"})
     with urllib.request.urlopen(request,timeout=30) as response:
@@ -86,8 +99,15 @@ def main():
         def put(path,data):
             ftp.storbinary("STOR "+path,io.BytesIO(data))
             if hashlib.sha256(get(path)).digest()!=hashlib.sha256(data).digest():raise RuntimeError("Readback mismatch")
+        listings={}
         def names(directory="."):
-            return {n for n,f in ftp.mlsd(directory) if f.get("type")=="file"}
+            if directory not in listings:
+                try:
+                    listings[directory]={n for n,f in ftp.mlsd(directory) if f.get("type")=="file"}
+                except ftplib.error_perm:
+                    # A not-yet-created theme subdirectory may be absent.
+                    listings[directory]=set()
+            return listings[directory]
         stage="verify theme identity";root_files=names()
         if "style.css" in root_files:
             if not valid_theme(get("style.css")):raise RuntimeError("Unexpected theme")
@@ -114,7 +134,14 @@ def main():
         if MANIFEST in root_files:
             marker_before=get(MANIFEST)
         previous=checked_manifest(marker_before) if marker_before is not None else None
-        changed_files,retired=delta_plan(files,previous)
+        bootstrap_originals={}
+        if previous is None:
+            stage="verify existing theme files for first deployment"
+            changed_files,bootstrap_originals=bootstrap_delta(files,names,get)
+            retired=[]
+            print("No deployment manifest: verified %d existing remote theme files by checksum." % len(bootstrap_originals),flush=True)
+        else:
+            changed_files,retired=delta_plan(files,previous)
         print("Theme delta: %d changed/new, %d unchanged, %d retired (of %d files)." % (
             len(changed_files),len(files)-len(changed_files),len(retired),len(files)),flush=True)
         stage="stage theme files";directories={"."}
@@ -126,7 +153,7 @@ def main():
                     try:ftp.mkd(directory)
                     except ftplib.error_perm:list(ftp.mlsd(directory))
                     directories.add(directory)
-            old=get(path) if path.split("/")[-1] in names("/".join(parts) or ".") else None
+            old=bootstrap_originals[path] if path in bootstrap_originals else (get(path) if path.split("/")[-1] in names("/".join(parts) or ".") else None)
             originals[path]=old
             if old is not None:
                 target=backup/path;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(old)
