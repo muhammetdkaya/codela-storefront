@@ -172,7 +172,7 @@
       if (returnFocus?.isConnected) returnFocus.focus({ preventScroll: true });
     });
   }
-}
+
   // Reference Services page: filter the six real WordPress service cards and
   // carry checked services to the real contact form; no fake submission.
   const servicePage = document.querySelector('[data-agency-services]');
