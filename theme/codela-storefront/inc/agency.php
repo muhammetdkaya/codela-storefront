@@ -54,6 +54,29 @@ function codela_sf_agency_contact_link(): string {
     return codela_sf_agency_contact_url() ?: home_url( '/#sf-agency-contact' );
 }
 
+/**
+ * Agency navigation replaces the store menu only while agency mode is active.
+ * It is a presentation projection: it never edits a customer's WordPress menu.
+ * Routes resolve through published pages, with safe home-section fallbacks.
+ */
+function codela_sf_agency_menu( bool $desktop = false ): string {
+    $items = [
+        [ 'label' => 'Ana Sayfa', 'url' => home_url( '/' ), 'active' => is_front_page() ],
+        [ 'label' => 'Hizmetler', 'url' => codela_sf_agency_page_url( 'hizmetler', home_url( '/#sf-agency-services' ) ), 'active' => function_exists( 'is_page' ) && is_page( 'hizmetler' ) ],
+        [ 'label' => 'Hakkımızda', 'url' => codela_sf_agency_page_url( 'hakkimizda', home_url( '/#sf-agency-process' ) ), 'active' => function_exists( 'is_page' ) && is_page( 'hakkimizda' ) ],
+        [ 'label' => 'İletişim', 'url' => codela_sf_agency_contact_link(), 'active' => function_exists( 'is_page' ) && is_page( 'iletisim' ) ],
+    ];
+    $id = $desktop ? 'sf-desktop-menu' : 'sf-panel-menu';
+    $class = $desktop ? 'sf-desktop-menu' : 'sf-menu-list';
+    $html = '<ul id="' . esc_attr( $id ) . '" class="' . esc_attr( $class ) . '">';
+    foreach ( $items as $item ) {
+        $active = $item['active'];
+        $html .= '<li class="menu-item' . ( $active ? ' current-menu-item' : '' ) . '">';
+        $html .= '<a class="' . ( $desktop ? 'sf-ui-pressable' : '' ) . '" href="' . esc_url( $item['url'] ) . '"' . ( $active ? ' aria-current="page"' : '' ) . '>' . esc_html( $item['label'] ) . '</a></li>';
+    }
+    return $html . '</ul>';
+}
+
 /** The agency gets a single scoped CSS/JS pair, only on its real public pages. */
 function codela_sf_agency_styles(): void {
     wp_enqueue_style( 'codela-storefront-agency', get_template_directory_uri() . '/assets/styles/agency.css', [], wp_get_theme()->get( 'Version' ) );
