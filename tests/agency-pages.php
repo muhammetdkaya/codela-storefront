@@ -9,6 +9,7 @@ $GLOBALS['front'] = false;
 $GLOBALS['current'] = '';
 $GLOBALS['assets'] = [];
 function add_action( $name, $callback, $priority = 10 ) { $GLOBALS['actions'][$name][] = $callback; }
+function add_filter( ...$args ) {}
 function codela_theme_settings() { return [ 'site_mode' => $GLOBALS['mode'] ]; }
 function codela_sf_ready() { return true; }
 function is_front_page() { return $GLOBALS['front']; }
