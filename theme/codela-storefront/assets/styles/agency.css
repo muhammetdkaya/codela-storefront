@@ -363,3 +363,32 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
 @media(prefers-reduced-motion:reduce){
 .sf-agency-process-step,.sf-agency-process-stage,.sf-agency-module{transition:none!important}
 }
+
+
+/* Native Codela layout sections: both agency heroes can be placed, moved and
+   duplicated independently. Keep the first section beneath the fixed header. */
+.codela-page-layout:has(> .sf-agency-widget){width:100%;max-width:none!important;margin:0}
+.codela-page-layout > .sf-agency-widget{width:100%;max-width:none!important;margin:0}
+.sf-agency-widget .sf-agency-hero{min-height:0;padding-top:36px;padding-bottom:36px}
+.codela-page-layout > .sf-agency-widget:first-child .sf-agency-hero{min-height:100svh;padding-top:76px}
+.sf-agency-widget--cards .sf-agency-hero-grid{min-height:590px}
+.sf-agency-widget .sf-agency-swap-body h3{font-size:clamp(22px,2vw,29px);line-height:1.25;font-weight:750;letter-spacing:-.035em;color:#fff}
+.sf-agency-widget .sf-agency-swap-body{min-width:0}
+.sf-agency-widget .sf-agency-swap-card{overflow-wrap:anywhere}
+.sf-agency-widget .sf-agency-swap-tab{max-width:170px;text-overflow:ellipsis;overflow:hidden}
+.sf-agency-widget--scroll .sf-agency-scroll-variant{min-height:0;padding-block:45px}
+.sf-agency-widget--scroll .sf-agency-scroll-sticky{min-height:0}
+.sf-agency-widget--scroll .sf-agency-scroll-intro h2{max-width:820px;overflow-wrap:anywhere}
+.sf-agency-widget--scroll .sf-agency-scroll-specialties{grid-template-columns:repeat(3,minmax(0,1fr))}
+.sf-agency-widget--scroll .sf-agency-scroll-specialties>*{min-width:0;overflow-wrap:anywhere}
+@media(max-width:700px){
+  .sf-agency-widget .sf-agency-hero{padding-top:28px;padding-bottom:42px}
+  .codela-page-layout > .sf-agency-widget:first-child .sf-agency-hero{min-height:100svh;padding-top:68px}
+  .sf-agency-widget--cards .sf-agency-hero-grid{min-height:0;padding-block:34px 48px;gap:46px}
+  .sf-agency-widget .sf-agency-swap-body h3{font-size:22px}
+  .sf-agency-widget--scroll .sf-agency-scroll-variant{padding-block:28px}
+  .sf-agency-widget--scroll .sf-agency-scroll-intro h2{font-size:clamp(30px,8.5vw,44px)}
+  .sf-agency-widget--scroll .sf-agency-scroll-specialties{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .sf-agency-widget--scroll .sf-agency-scroll-specialties strong{font-size:11px}
+  .sf-agency-widget--scroll .sf-agency-scroll-specialties small{font-size:10px}
+}
