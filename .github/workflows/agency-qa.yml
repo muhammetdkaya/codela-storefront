@@ -2,11 +2,12 @@ name: Agency reference visual QA (no deployment)
 on:
   pull_request:
     paths:
-      - 'theme/codela-storefront/patterns/agency-home.php'
+      - 'theme/codela-storefront/patterns/agency-*.php'
+      - 'theme/codela-storefront/inc/agency.php'
       - 'theme/codela-storefront/assets/styles/agency.css'
       - 'theme/codela-storefront/assets/scripts/agency.js'
-      - 'tests/agency.php'
-      - 'tests/agency-browser.cjs'
+      - 'tests/agency*.php'
+      - 'tests/agency*-browser.cjs'
       - '.github/workflows/agency-qa.yml'
   workflow_dispatch:
 permissions:
@@ -36,9 +37,13 @@ jobs:
         run: |
           php -l theme/codela-storefront/patterns/agency-home.php
           php tests/agency.php
+          php tests/agency-pages.php
+          find theme/codela-storefront/patterns/agency-*.php -type f -print0 | xargs -0 -n1 php -l
           node --check theme/codela-storefront/assets/scripts/agency.js
       - name: Test four viewports and real agency interactions
-        run: node tests/agency-browser.cjs
+        run: |
+          node tests/agency-browser.cjs
+          node tests/agency-pages-browser.cjs
       - name: Preserve phone/desktop reference screenshots
         if: always()
         uses: actions/upload-artifact@v4
