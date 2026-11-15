@@ -74,4 +74,24 @@ foreach ( [ 'agency-services', 'agency-about', 'agency-contact', 'agency-process
         agency_page_check( str_contains( $html, 'agency_consent' ) && str_contains( $html, 'agency_webpage' ), 'Contact consent and honeypot.' );
     }
 }
+foreach ( [ 'services', 'about', 'contact' ] as $page_slug ) {
+    if ( ! in_array( '--render=' . $page_slug, $argv, true ) ) { continue; }
+    ob_start();
+    require __DIR__ . '/../theme/codela-storefront/patterns/agency-' . $page_slug . '.php';
+    $body = ob_get_clean();
+    if ( 'about' === $page_slug ) {
+        ob_start();
+        require __DIR__ . '/../theme/codela-storefront/patterns/agency-process.php';
+        $process = ob_get_clean();
+        $body = str_replace( '<!-- wp:pattern {"slug":"codela-storefront/agency-process"} /-->', $process, $body );
+    }
+    echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
+    foreach ( [ 'storefront-base.css', 'agency.css' ] as $name ) {
+        echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/' . $name . '">';
+    }
+    echo '<style>body{font-family:system-ui}</style></head><body class="sf-site-mode-agency">';
+    echo '<main class="sf-content" id="sf-content">' . $body . '</main>';
+    echo '<script src="/theme/codela-storefront/assets/scripts/agency.js"></script></body></html>';
+    exit;
+}
 echo "Agency native pages, six services, process and contact form wiring passed.\n";
