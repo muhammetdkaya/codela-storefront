@@ -24,7 +24,7 @@ def fetch(path: str) -> str:
 def check() -> None:
     style = fetch("/wp-content/themes/codela-storefront/style.css")
     version = re.search(r"(?m)^Version:\s*(\S+)", style)
-    assert version and version.group(1) == "0.1.317", "FTP theme version is not 0.1.317"
+    assert version and version.group(1) == "0.1.318", "FTP theme version is not 0.1.318"
     expected = {
         "/": ["sf-agency-swap-stage", "sf-agency-service-track", "sf-agency-process"],
         "/hizmetler/": ["sf-agency-service-page", "data-agency-module-grid", "data-agency-selected-cta"],
@@ -44,8 +44,24 @@ def check() -> None:
             except (urllib.error.URLError, RuntimeError) as err:
                 errors.append(f"{path}: {type(err).__name__}")
         if not errors:
-            print("Agency 0.1.317: homepage, Services, About/Process and Contact verified.")
-            return
+            print("Agency pages render correctly on the public site.")
+            home = fetch("/")
+            desktop = re.search(r'<ul\\b[^>]*\\bid=["\\\']sf-desktop-menu["\\\'][^>]*>(.*?)</ul>', home, re.S)
+            if not desktop:
+                errors.append("Agency desktop nav not found")
+            else:
+                anchors = re.findall(r'<a\\b[^>]*>(.*?)</a>', desktop.group(1), re.S)
+                labels = [" ".join(re.sub(r"<[^>]+>", "", a).split()) for a in anchors]
+                expected_labels = ["Ana Sayfa", "Hizmetler", "Hakkımızda", "İletişim"]
+                if labels != expected_labels:
+                    errors.append("Agency menu mismatch: " + repr(labels))
+                elif "Shop" in labels:
+                    errors.append("Old Shop link still visible in agency nav")
+                else:
+                    print("Agency desktop nav verified:", " / ".join(labels), flush=True)
+            if not errors:
+                print("Agency 0.1.318: new navigation, homepage, Services, About/Process and Contact verified.")
+                return
         print("Agency smoke attempt", attempt + 1, "; ".join(errors), flush=True)
         if attempt < 2:
             time.sleep(5)
