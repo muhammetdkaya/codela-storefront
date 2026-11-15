@@ -262,14 +262,21 @@
       }));
       steps.forEach((button, i) => button.setAttribute('aria-pressed', String(i === index)));
     };
+    let interactionLockUntil = 0;
     steps.forEach((button, i) => {
-      button.addEventListener('click', () => activate(i));
+      button.addEventListener('click', () => {
+        interactionLockUntil = performance.now() + 800;
+        activate(i);
+      });
       button.addEventListener('pointerenter', event => {
-        if (event.pointerType === 'mouse') activate(i);
+        if (event.pointerType !== 'mouse') return;
+        interactionLockUntil = performance.now() + 500;
+        activate(i);
       });
     });
     if ('IntersectionObserver' in window) {
       const observer = new IntersectionObserver(entries => {
+        if (performance.now() < interactionLockUntil) return;
         const candidates = entries.filter(entry => entry.isIntersecting);
         if (!candidates.length) return;
         candidates.sort((a,b) => b.intersectionRatio - a.intersectionRatio);
