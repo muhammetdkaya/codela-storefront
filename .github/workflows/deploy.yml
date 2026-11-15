@@ -143,6 +143,8 @@ jobs:
           npx playwright install --with-deps chromium webkit
           node tests/agency-browser.cjs
           node tests/product-sheet-handoff-browser.cjs
+          node tests/product-desktop-browser.cjs
+          TEST_WEBKIT=1 node tests/product-desktop-browser.cjs
           node tests/product-sheet-browser.cjs
           # Exercise the native checkout/gateway presentation before broader,
           # independently flaky product/gallery acceptance suites.
@@ -188,8 +190,6 @@ jobs:
           node tests/checkout-browser.cjs
           node tests/catalog-browser.cjs
           node tests/catalog-filters-browser.cjs
-          node tests/product-desktop-browser.cjs
-          TEST_WEBKIT=1 node tests/product-desktop-browser.cjs
           node tests/product-browser.cjs
           node tests/product-modules-browser.cjs
           node tests/shell-navigation-browser.cjs

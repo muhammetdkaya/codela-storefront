@@ -60,7 +60,7 @@ async function resizeAndCheck(page, width, {description = true, originalOpen = t
   }), 'Additional information/reviews stay in the existing information container at ' + width);
   if (width <= 700) {
     assert.equal(await page.locator('.sf-product-sheet-body > .cdl-tb').count(), 1);
-    assert.equal(await page.locator('.sf-product-delivery .cdl-de').count(), 1);
+    assert.equal(await page.locator('.sf-product-shipping-source .cdl-de').count(), 1, 'Original delivery data remains in the single hidden shipping source');
     assert.equal(await page.locator('.sf-product-gallery-arrows').isVisible(), false, 'Desktop arrows stay absent on mobile');
   } else {
     assert.equal(await page.locator('.summary > .cdl-tb').count(), 1);
