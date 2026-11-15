@@ -1,0 +1,49 @@
+name: Agency reference visual QA (no deployment)
+on:
+  pull_request:
+    paths:
+      - 'theme/codela-storefront/patterns/agency-home.php'
+      - 'theme/codela-storefront/assets/styles/agency.css'
+      - 'theme/codela-storefront/assets/scripts/agency.js'
+      - 'tests/agency.php'
+      - 'tests/agency-browser.cjs'
+      - '.github/workflows/agency-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: agency-reference-qa-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  agency:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+      - name: Install test-only dependencies
+        run: |
+          npm ci --ignore-scripts
+          npx playwright install --with-deps chromium
+      - name: Validate agency source and native block pattern
+        run: |
+          php -l theme/codela-storefront/patterns/agency-home.php
+          php tests/agency.php
+          node --check theme/codela-storefront/assets/scripts/agency.js
+      - name: Test four viewports and real agency interactions
+        run: node tests/agency-browser.cjs
+      - name: Preserve phone/desktop reference screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agency-reference-screenshots
+          path: qa/agency-*.png
+          if-no-files-found: warn
+          retention-days: 14
