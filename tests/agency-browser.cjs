@@ -34,8 +34,12 @@ const server = http.createServer((req, res) => {
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `No horizontal overflow at ${width}`);
       const bounds = await page.locator('.sf-agency-hero').boundingBox();
       const header = await page.locator('.sf-header').boundingBox();
-      assert(bounds.y >= header.y + header.height - 1, 'Agency content clears the real fixed theme header');
-      assert(bounds.height >= height - (width <= 700 ? 68 : 76) - 2, 'Hero fills the available first screen');
+      // Floating header must overlay the dark hero; only hero controls need safe spacing.
+      assert(Math.abs(bounds.y - header.y) <= 1, 'Agency hero begins behind the real fixed glass header, with no white band');
+      const switchBounds = await page.locator('.sf-agency-hero-variant-switch').boundingBox();
+      assert(switchBounds.y >= header.y + header.height - 1, 'Hero display controls remain below the fixed header');
+      assert.equal(await page.locator('.sf-agency-hero').evaluate(node => getComputedStyle(node).backgroundColor), 'rgb(9, 9, 11)', 'Dark hero covers the header underlay');
+      assert(bounds.height >= height - 2, 'Hero extends across the complete first viewport');
       if (width === 390) {
         const buttons = await page.locator('.sf-agency-intro .sf-ui-button').evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().toJSON()));
         assert(Math.abs(buttons[0].top - buttons[1].top) < 2, 'Phone hero actions share one row');
