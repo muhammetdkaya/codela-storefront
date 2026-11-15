@@ -2,7 +2,7 @@
    React Bits-style Card Swap controls + Aceternity-style Apple Cards deck.
    No global handlers, third-party runtime or cross-page theme mutations. */
 (() => {
-  const root = document.querySelector('.sf-agency');
+  const root = document.querySelector('.sf-agency:not([data-agency-widget])');
   if (!root || root.dataset.agencyInitialized === 'true') return;
   root.dataset.agencyInitialized = 'true';
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');

@@ -72,7 +72,7 @@ $GLOBALS['current'] = '';
 $enqueue = $GLOBALS['actions']['wp_enqueue_scripts'][0];
 $GLOBALS['current'] = 'hizmetler';
 $enqueue();
-agency_page_check( count( $GLOBALS['assets'] ) === 2, 'Services page loads scoped assets.' );
+agency_page_check( count( $GLOBALS['assets'] ) === 3 && in_array( 'codela-storefront-agency-widgets', $GLOBALS['assets'], true ), 'Agency pages load the isolated widget script.' );
 $GLOBALS['assets'] = [];
 $GLOBALS['current'] = 'checkout';
 $enqueue();
@@ -90,6 +90,53 @@ foreach ( [ 'agency-services', 'agency-about', 'agency-contact', 'agency-process
         agency_page_check( str_contains( $html, 'admin-post.php' ) && str_contains( $html, 'agency_contact_nonce' ), 'Real WordPress form action and nonce.' );
         agency_page_check( str_contains( $html, 'agency_consent' ) && str_contains( $html, 'agency_webpage' ), 'Contact consent and honeypot.' );
     }
+}
+
+// Independent widgets reuse validated editorial text without mutating the
+// original pattern or the legacy variant switch.
+function sanitize_html_class( $value ) { return preg_replace( '/[^a-zA-Z0-9_-]/', '', $value ); }
+function codela_sf_ui_button( $label, $attrs ) { return '<a href="' . esc_url( $attrs['href'] ) . '">' . esc_html( $label ) . '</a>'; }
+require __DIR__ . '/../theme/codela-storefront/inc/section-agency.php';
+$widget_data = [
+    'id' => 'cards-demo', 'title' => 'Our Agency', 'description' => 'Independent and editable',
+    'items' => [
+        [ 'enabled' => true, 'title' => 'Design', 'body' => 'UI and UX' ],
+        [ 'enabled' => true, 'title' => 'Commerce', 'body' => 'WooCommerce' ],
+        [ 'enabled' => true, 'title' => 'Code', 'body' => 'APIs' ],
+    ],
+];
+$cards = codela_sf_section_agency_cards( $widget_data );
+agency_page_check( substr_count( $cards, 'data-agency-card="' ) === 3, 'Card Swap renders three distinct cards.' );
+agency_page_check( str_contains( $cards, 'Our Agency' ) && str_contains( $cards, 'UI and UX' ), 'Saved agency heading and item text appear.' );
+$widget_data['id'] = 'scroll-demo';
+$scroll = codela_sf_section_agency_scroll( $widget_data );
+agency_page_check( str_contains( $scroll, 'data-agency-container-scroll' ) && str_contains( $scroll, 'data-agency-scroll-device' ), '3D Scroll keeps isolated motion hooks.' );
+agency_page_check( str_contains( $scroll, 'Independent and editable' ) && substr_count( $scroll, '<strong>' ) === 3, 'Saved scroll content appears.' );
+$widget_data['id'] = 'cards-duplicate';
+agency_page_check( str_contains( codela_sf_section_agency_cards( $widget_data ), 'sf-agency-cards-cards-duplicate' ), 'Cloned widget gets independent accessible IDs.' );
+$widget_data['items'][0]['title'] = '<script>unsafe</script>';
+agency_page_check( ! str_contains( codela_sf_section_agency_cards( $widget_data ), '<script>' ), 'Widget escapes saved editorial text.' );
+$GLOBALS['mode'] = 'commerce';
+agency_page_check( '' === codela_sf_section_agency_cards( $widget_data ), 'Agency widgets do not render in commerce mode.' );
+$GLOBALS['mode'] = 'agency';
+
+
+if ( in_array( '--render=widgets', $argv, true ) ) {
+    $widget_data['items'][0]['title'] = 'Design';
+    $widget_data['id'] = 'widget-cards-a';
+    $first_cards = codela_sf_section_agency_cards( $widget_data );
+    $widget_data['id'] = 'widget-scroll-a';
+    $middle_scroll = codela_sf_section_agency_scroll( $widget_data );
+    $widget_data['id'] = 'widget-cards-b';
+    $last_cards = codela_sf_section_agency_cards( $widget_data );
+    echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
+    foreach ( [ 'storefront-base.css', 'agency.css' ] as $style ) {
+        echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/' . $style . '">';
+    }
+    echo '</head><body class="sf-site-mode-agency"><main class="sf-content"><h1 class="screen-reader-text">Agency Layout</h1><div class="codela-page-layout">';
+    echo $first_cards . $middle_scroll . $last_cards;
+    echo '</div></main><script src="/theme/codela-storefront/assets/scripts/agency-widgets.js"></script></body></html>';
+    exit;
 }
 foreach ( [ 'services', 'about', 'contact' ] as $page_slug ) {
     if ( ! in_array( '--render=' . $page_slug, $argv, true ) ) { continue; }
