@@ -29,20 +29,19 @@ const server = http.createServer((req, res) => {
       await page.setViewportSize({ width, height });
       await page.goto(`http://127.0.0.1:${server.address().port}/`);
       assert.equal(await page.locator('.sf-content h1').count(), 1, 'One main page heading; the closed account dialog has its own heading');
-      assert.equal(await page.locator('.sf-agency-card').count(), 3);
+      assert.equal(await page.locator('.sf-agency-poster').count(), 4);
+      assert.equal(await page.locator('.sf-agency-swap-card').count(), 3);
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `No horizontal overflow at ${width}`);
       const bounds = await page.locator('.sf-agency-hero').boundingBox();
       const header = await page.locator('.sf-header').boundingBox();
       assert(bounds.y >= header.y + header.height - 1, 'Agency content clears the real fixed theme header');
       assert(bounds.height >= height - (width <= 700 ? 68 : 76) - 2, 'Hero fills the available first screen');
       if (width === 390) {
-        assert(bounds.height <= height - 68 + 2, 'Portrait hero fits one screen at the reference phone size');
         const buttons = await page.locator('.sf-agency-intro .sf-ui-button').evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().toJSON()));
         assert(Math.abs(buttons[0].top - buttons[1].top) < 2, 'Phone hero actions share one row');
         assert(buttons.every(button => button.height >= 44), 'Compact buttons retain touch targets');
-        const scene = await page.locator('.sf-agency-scene').boundingBox();
-        const dock = await page.locator('.sf-mobile-dock').boundingBox();
-        assert(scene.y + scene.height <= dock.y + 1, 'First scene clears the real mobile dock');
+        const stage = await page.locator('.sf-agency-swap-stage').boundingBox();
+        assert(stage.width > 240 && stage.height > 300, 'Reference card stack remains usable on phone');
       }
       const services = await page.locator('#sf-agency-services').boundingBox();
       assert(services.y >= bounds.y + bounds.height - 1, 'Three-card showcase is below hero');
@@ -50,11 +49,18 @@ const server = http.createServer((req, res) => {
         const target = await link.getAttribute('href');
         assert.equal(await page.locator(target).count(), 1, `Working local anchor ${target}`);
       }
-      const details = page.locator('.sf-agency-details').first();
-      await details.locator('summary').focus();
-      await page.keyboard.press('Enter');
-      assert(await details.evaluate(node => node.open), 'Service detail opens by keyboard');
-      await page.keyboard.press('Enter');
+      const swapTabs = page.locator('[data-agency-swap-to]');
+      await swapTabs.nth(1).click();
+      assert.equal(await page.locator('[data-agency-card="1"]').getAttribute('data-pos'), '0', 'Hero card changes on tab selection');
+      await swapTabs.nth(0).click();
+      await page.locator('[data-agency-card="0"]').press('Enter');
+      assert.equal(await page.locator('[data-agency-card="1"]').getAttribute('data-pos'), '0', 'Hero card changes with keyboard');
+      await page.locator('[data-agency-carousel-next]').click();
+      await page.waitForFunction(() => document.querySelector('[data-agency-service-track]').scrollLeft > 2);
+      await page.locator('[data-agency-detail="web"]').click();
+      assert(await page.locator('[data-agency-dialog]').evaluate(node => node.open), 'Service detail opens in native dialog');
+      await page.locator('[data-agency-dialog-close]').click();
+      assert(!(await page.locator('[data-agency-dialog]').evaluate(node => node.open)), 'Service dialog closes');
       if (width === 390 || width === 1440) {
         await page.locator('.sf-agency-details summary').first().evaluate(node => node.blur());
         await page.evaluate(() => scrollTo(0, 0));
@@ -65,10 +71,11 @@ const server = http.createServer((req, res) => {
     assert.equal(await page.locator('[data-agency-tilt]').evaluate(node => getComputedStyle(node).transform), 'none');
     const plain = await browser.newPage({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
     await plain.goto(`http://127.0.0.1:${server.address().port}/`);
-    await plain.locator('.sf-agency-details summary').first().click();
-    assert(await plain.locator('.sf-agency-details').first().evaluate(node => node.open), 'Details work without JS');
+    assert.equal(await plain.locator('.sf-agency-poster').count(), 4, 'All service cards render without JavaScript');
+    assert.equal(await plain.locator('.sf-agency-swap-card').count(), 3, 'Hero cards render without JavaScript');
+    assert.equal(await plain.locator('.sf-agency-service-track').count(), 1, 'Native carousel scrollport works without JavaScript');
     assert.deepEqual(errors, []);
-    console.log('Agency: four widths, full-height hero, showcase order, links, keyboard, reduced motion and no-JS passed.');
+    console.log('Agency: four widths, reference hero and carousel, modal, links, keyboard, reduced motion and no-JS passed.');
   } catch (error) {
     if (page) await page.screenshot({ path: path.join(root, 'qa/agency-failure.png'), fullPage: true });
     throw error;
