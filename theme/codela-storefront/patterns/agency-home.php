@@ -9,7 +9,7 @@
  * Layout and interaction are adapted from the Codela agency reference HTML
  * (React Bits Card Swap / Aceternity Apple Cards Carousel inspired mockup).
  * No vendor React runtime is bundled; the original reference uses CSS + JS.
- * Visual and interaction styles are scoped to agency mode.
+ * Visual and interaction styles are scoped to the widget or pattern, not a site-wide mode.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 $contact = codela_sf_agency_contact_url();
