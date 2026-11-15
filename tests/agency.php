@@ -62,8 +62,8 @@ agency_check( substr_count( $html, '<details ' ) === 3, 'All service details wor
 agency_check( ! str_contains( $html, 'cdn.' ) && ! str_contains( $html, '<script' ), 'No third-party runtime in pattern.' );
 if ( in_array( '--render', $argv, true ) ) {
     echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
-    foreach ( [ 'tokens.css', 'components.css', 'agency.css' ] as $file ) { echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/' . $file . '">'; }
-    echo '<style>body{margin:0;font-family:system-ui;background:#f5f6ef}*{box-sizing:border-box}.qa-header{height:76px;display:flex;align-items:center;justify-content:space-between;padding:0 5%;border-bottom:1px solid #dce1d3}.qa-header strong{font-size:26px;letter-spacing:-1px}.qa-header span{font-size:12px;color:#687565}.sf-content{padding:0}@media(max-width:700px){.qa-header{height:68px}}</style></head><body class="home sf-site-mode-agency"><header class="qa-header"><strong>codela.</strong><span>Dijital stüdyo</span></header><main class="sf-content">' . $html . '</main><script src="/theme/codela-storefront/assets/scripts/agency.js"></script></body></html>';
+    foreach ( [ 'storefront-base.css', 'agency.css' ] as $file ) { echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/' . $file . '">'; }
+    echo '<style>body{font-family:system-ui}</style></head><body class="home sf-site-mode-agency"><!-- agency-shell --><main class="sf-content" id="sf-content"><div class="sf-agency-home">' . $html . '</div></main><script src="/theme/codela-storefront/assets/scripts/agency.js"></script></body></html>';
     exit;
 }
 echo "Agency mode isolation, editable part, dependency gate, published links and pattern passed.\n";

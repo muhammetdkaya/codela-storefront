@@ -6,7 +6,8 @@ const http = require('node:http');
 const { execFileSync } = require('node:child_process');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const root = path.resolve(__dirname, '..');
-const html = execFileSync(process.env.PHP_BIN || 'php', ['tests/agency.php', '--render'], { cwd: root, encoding: 'utf8' });
+const shell = execFileSync(process.env.PHP_BIN || 'php', ['tests/render-header.php'], { cwd: root, encoding: 'utf8' }).replaceAll('https://store.test/theme/', '/theme/codela-storefront/');
+const html = execFileSync(process.env.PHP_BIN || 'php', ['tests/agency.php', '--render'], { cwd: root, encoding: 'utf8' }).replace('<!-- agency-shell -->', shell);
 const server = http.createServer((req, res) => {
   const pathname = new URL(req.url, 'http://localhost').pathname;
   if (pathname === '/') { res.setHeader('Content-Type', 'text/html; charset=utf-8'); return res.end(html); }
@@ -31,16 +32,21 @@ const server = http.createServer((req, res) => {
       assert.equal(await page.locator('.sf-agency-card').count(), 3);
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `No horizontal overflow at ${width}`);
       const bounds = await page.locator('.sf-agency-hero').boundingBox();
+      const header = await page.locator('.sf-header').boundingBox();
+      assert(bounds.y >= header.y + header.height - 1, 'Agency content clears the real fixed theme header');
       assert(bounds.height >= height - (width <= 700 ? 68 : 76) - 2, 'Hero fills the available first screen');
       if (width === 390) {
         assert(bounds.height <= height - 68 + 2, 'Portrait hero fits one screen at the reference phone size');
         const buttons = await page.locator('.sf-agency-intro .sf-ui-button').evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().toJSON()));
         assert(Math.abs(buttons[0].top - buttons[1].top) < 2, 'Phone hero actions share one row');
         assert(buttons.every(button => button.height >= 44), 'Compact buttons retain touch targets');
+        const scene = await page.locator('.sf-agency-scene').boundingBox();
+        const dock = await page.locator('.sf-mobile-dock').boundingBox();
+        assert(scene.y + scene.height <= dock.y + 1, 'First scene clears the real mobile dock');
       }
       const services = await page.locator('#sf-agency-services').boundingBox();
       assert(services.y >= bounds.y + bounds.height - 1, 'Three-card showcase is below hero');
-      for (const link of await page.locator('a[href^="#"]').all()) {
+      for (const link of await page.locator('.sf-agency a[href^="#"]').all()) {
         const target = await link.getAttribute('href');
         assert.equal(await page.locator(target).count(), 1, `Working local anchor ${target}`);
       }

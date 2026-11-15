@@ -1,3 +1,11 @@
+## 15 Kasım 2026 — 0.1.314 ajans kabuğu ve yayın kontrolü
+
+**Biten işler:** 83578aa mobil düzeni CI 43640388072 üzerinde dört genişlik, 390×844 tek ekran/yan yana CTA, klavye, reduced-motion ve JS kapalı kontrollerini geçti. 390/1440px görüntüler incelendi. Ortak başlığın anasayfada sabit ve akış yüksekliğinin sıfır olduğu görüldü: ajans şablon parçasına gerçek 76/68px üst pay eklendi. Mobil dock açıkken sahnenin altında ortak alt menü tokenlarıyla yer ayrılır; dipteki ikincil kaydırma ipucu gizlenir. Tarayıcı fixture'ı artık örnek başlık yerine üretimdeki PHP header/dock ve storefront-base.css kullanır; başlık ve dock ile çakışmama kontrol edilir.
+
+**Doğrulama:** Yerel ajans PHP/WASM, JavaScript sözdizimi, asset ve 27 paket testi geçti. Yeni ortak kabuk geometrisinin GitHub tarayıcı sonucu bekleniyor. Önceki CI, ajans testlerinden sonra ürün panelindeki gecikmeli adapter senaryosunda durdu. 91e2550 test tanı commit'i JavaScript hatalarını, script yükleme durumlarını ve document.readyState'i kayda ekler; test beklentileri ve yayın kapıları korunur. Ürün çalışma kodu henüz değiştirilmedi.
+
+**Yayın / kalanlar:** Tema 0.1.314, eklenti değişmedi. 43640388072 deploy'u atlandı; yeni doğrulama/deploy sonucu kapanış kaydıyla güncellenecek. Ajans modu canlıda kullanıcı adına açılmadı. Gerçek WordPress oturumu ve fiziksel Safari kabulü ayrıca gerekir; native PHP/tema CSS fixture'ı tam WordPress testi değildir. Ayrı hizmetler/iletişim sayfaları ve ajans menü içeriği bu kapsamda oluşturulmadı.
+
 ## 14 Kasım 2026 — 0.1.313 → 0.1.314 ajans anasayfası ilk uygulama
 
 **Biten işler:** Ajans seçimi artık anasayfada yerel `agency-home` şablon parçasını açar. HyperUI'nin MIT lisanslı Split/Center Banner düzenleri Codela'nın açık cam yüzeylerine ve ortak Button bileşenine uyarlandı; kaynak sürüm ve lisans kaydedildi. Tam ekran karşılama altında Web Tasarım / E-ticaret / Özel Geliştirme üçlü vitrini, JavaScript gerektirmeyen detay açılımları ve kapanış alanı var. Kullanıcının HTML taslağındaki hizmet kapsamı esas alındı. Yeni SPA, React, CDN, font veya dış JavaScript bağımlılığı yok. Efekt reduced-motion'a uyar; ek CSS/JS yalnız ajans anasayfasında yüklenir.
