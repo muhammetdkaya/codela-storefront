@@ -1,29 +1,26 @@
 <?php
-/** Isolated coverage: native agency page seeding, scoped enqueue, contact form wiring. */
+/** Agency pages, native navigation ownership, pattern assets and independent widgets. */
 define( 'ABSPATH', __DIR__ );
-$GLOBALS['mode'] = 'commerce';
-$GLOBALS['pages'] = [];
-$GLOBALS['opts'] = [];
-$GLOBALS['actions'] = [];
-$GLOBALS['front'] = false;
-$GLOBALS['current'] = '';
+$GLOBALS['pages'] = [
+    'hizmetler' => (object) [ 'ID' => 2, 'post_type' => 'page', 'post_name' => 'hizmetler',
+        'post_status' => 'publish', 'post_content' => '<!-- wp:pattern {"slug":"codela-storefront/agency-services"} /-->' ],
+    'hakkimizda' => (object) [ 'ID' => 3, 'post_type' => 'page', 'post_name' => 'hakkimizda',
+        'post_status' => 'publish', 'post_content' => '<!-- wp:pattern {"slug":"codela-storefront/agency-about"} /-->' ],
+    'iletisim' => (object) [ 'ID' => 4, 'post_type' => 'page', 'post_name' => 'iletisim',
+        'post_status' => 'publish', 'post_content' => '<!-- wp:pattern {"slug":"codela-storefront/agency-contact"} /-->' ],
+];
+$GLOBALS['query'] = $GLOBALS['pages']['hizmetler'];
+$GLOBALS['layout'] = '';
 $GLOBALS['assets'] = [];
+$GLOBALS['actions'] = [];
 function add_action( $name, $callback, $priority = 10 ) { $GLOBALS['actions'][$name][] = $callback; }
 function add_filter( ...$args ) {}
-function codela_theme_settings() { return [ 'site_mode' => $GLOBALS['mode'] ]; }
 function codela_sf_ready() { return true; }
-function is_front_page() { return $GLOBALS['front']; }
-function is_page( $slugs ) { return in_array( $GLOBALS['current'], (array) $slugs, true ); }
-function get_option( $name, $default = false ) { return $GLOBALS['opts'][$name] ?? $default; }
-function update_option( $name, $value, $autoload = null ) { $GLOBALS['opts'][$name] = $value; return true; }
+function get_queried_object_id() { return $GLOBALS['query']->ID; }
+function get_post( $id ) { return $GLOBALS['query']->ID === $id ? $GLOBALS['query'] : null; }
+function get_post_meta( $id, $key, $single = true ) { return $GLOBALS['layout']; }
 function get_page_by_path( $slug ) { return $GLOBALS['pages'][$slug] ?? null; }
 function post_password_required( $post ) { return ! empty( $post->post_password ); }
-function wp_insert_post( $data, $wp_error = false ) {
-    $post = (object) $data; $post->ID = count( $GLOBALS['pages'] ) + 10;
-    $GLOBALS['pages'][ $data['post_name'] ] = $post;
-    return $post->ID;
-}
-function is_wp_error( $item ) { return false; }
 function get_permalink( $post ) { return 'https://codela.test/' . $post->post_name . '/'; }
 function home_url( $url = '/' ) { return 'https://codela.test' . $url; }
 function esc_attr( $value ) { return htmlspecialchars( (string) $value, ENT_QUOTES ); }
@@ -35,49 +32,26 @@ function get_privacy_policy_url() { return 'https://codela.test/gizlilik/'; }
 function wp_unslash( $value ) { return $value; }
 function sanitize_key( $value ) { return preg_replace( '/[^a-z0-9_-]/', '', strtolower( $value ) ); }
 function get_template_directory_uri() { return 'https://codela.test/wp-content/themes/codela-storefront'; }
-function wp_get_theme() { return new class { function get( $field ) { return '0.1.317'; } }; }
+function wp_get_theme() { return new class { function get( $field ) { return '0.1.321'; } }; }
 function wp_enqueue_style( $name ) { $GLOBALS['assets'][] = $name; }
 function wp_enqueue_script( $name ) { $GLOBALS['assets'][] = $name; }
-require __DIR__ . '/../theme/codela-storefront/inc/site-mode.php';
 require __DIR__ . '/../theme/codela-storefront/inc/agency.php';
 function agency_page_check( $check, $message ) { if ( ! $check ) throw new RuntimeException( $message ); }
-codela_sf_agency_seed_pages();
-agency_page_check( ! $GLOBALS['pages'], 'Commerce must never create agency pages.' );
-$GLOBALS['mode'] = 'agency';
-$GLOBALS['pages']['hizmetler'] = (object) [ 'ID' => 2, 'post_name' => 'hizmetler', 'post_status' => 'publish', 'post_content' => 'Existing custom content' ];
-codela_sf_agency_seed_pages();
-agency_page_check( count( $GLOBALS['pages'] ) === 3, 'Exactly three pages should exist after seeding, including the existing one.' );
-agency_page_check( $GLOBALS['pages']['hizmetler']->post_content === 'Existing custom content', 'Existing page content must remain unchanged.' );
-agency_page_check( str_contains( $GLOBALS['pages']['hakkimizda']->post_content, 'agency-about' ), 'About is a native block pattern.' );
-agency_page_check( str_contains( $GLOBALS['pages']['iletisim']->post_content, 'agency-contact' ), 'Contact is a native block pattern.' );
-codela_sf_agency_seed_pages();
-agency_page_check( count( $GLOBALS['pages'] ) === 3, 'Seeding is idempotent.' );
-agency_page_check( codela_sf_agency_contact_url() === 'https://codela.test/iletisim/', 'Only the published real contact page is linked.' );
-$agency_desktop = codela_sf_agency_menu( true );
-$agency_mobile = codela_sf_agency_menu();
-foreach ( [ 'Ana Sayfa', 'Hizmetler', 'Hakkımızda', 'İletişim' ] as $label ) {
-    agency_page_check( str_contains( $agency_desktop, '>' . $label . '</a>' ), 'Desktop agency menu includes ' . $label );
-    agency_page_check( str_contains( $agency_mobile, '>' . $label . '</a>' ), 'Mobile agency menu includes ' . $label );
-}
-agency_page_check( ! str_contains( $agency_desktop, 'Shop' ), 'Agency menu excludes the old shop link.' );
-agency_page_check( str_contains( $agency_desktop, 'id="sf-desktop-menu"' ), 'Native desktop menu ID is preserved.' );
-agency_page_check( str_contains( $agency_mobile, 'id="sf-panel-menu"' ), 'Native mobile menu ID is preserved.' );
-agency_page_check( str_contains( $agency_desktop, 'href="https://codela.test/hizmetler/"' ), 'Services resolves through a published WP page.' );
-agency_page_check( str_contains( $agency_desktop, 'href="https://codela.test/hakkimizda/"' ), 'About resolves through a published WP page.' );
-agency_page_check( str_contains( $agency_desktop, 'href="https://codela.test/iletisim/"' ), 'Contact resolves through a published WP page.' );
-$GLOBALS['current'] = 'hizmetler';
-agency_page_check( substr_count( codela_sf_agency_menu( true ), 'aria-current="page"' ) === 1, 'Exactly one active link in agency menu.' );
-$GLOBALS['current'] = '';
-
+agency_page_check( codela_sf_agency_contact_url() === 'https://codela.test/iletisim/', 'Contact URL resolves through normal published page.' );
 $enqueue = $GLOBALS['actions']['wp_enqueue_scripts'][0];
-$GLOBALS['current'] = 'hizmetler';
 $enqueue();
-agency_page_check( count( $GLOBALS['assets'] ) === 3 && in_array( 'codela-storefront-agency-widgets', $GLOBALS['assets'], true ), 'Agency pages load the isolated widget script.' );
+agency_page_check( count( $GLOBALS['assets'] ) === 2 && in_array( 'codela-storefront-agency', $GLOBALS['assets'], true ),
+    'Existing agency pattern loads theme CSS and pattern motion.' );
 $GLOBALS['assets'] = [];
-$GLOBALS['current'] = 'checkout';
+$GLOBALS['query'] = (object) [ 'ID' => 9, 'post_type' => 'page', 'post_content' => '' ];
 $enqueue();
-agency_page_check( ! $GLOBALS['assets'], 'WooCommerce and unrelated pages remain untouched.' );
-$GLOBALS['current'] = '';
+agency_page_check( [] === $GLOBALS['assets'], 'Unrelated page has no agency-specific assets.' );
+$GLOBALS['layout'] = '<!-- wp:codela/section-agency-scroll /-->';
+$enqueue();
+agency_page_check( count( $GLOBALS['assets'] ) === 2 && in_array( 'codela-storefront-agency-widgets', $GLOBALS['assets'], true ),
+    'Any WordPress page with an agency widget loads the correct independent script.' );
+$GLOBALS['layout'] = '';
+
 foreach ( [ 'agency-services', 'agency-about', 'agency-contact', 'agency-process' ] as $slug ) {
     ob_start(); require __DIR__ . '/../theme/codela-storefront/patterns/' . $slug . '.php'; $html = ob_get_clean();
     agency_page_check( strlen( $html ) > 500, $slug . ' renders actual content.' );
@@ -116,8 +90,8 @@ $widget_data['id'] = 'cards-duplicate';
 agency_page_check( str_contains( codela_sf_section_agency_cards( $widget_data ), 'sf-agency-cards-cards-duplicate' ), 'Cloned widget gets independent accessible IDs.' );
 $widget_data['items'][0]['title'] = '<script>unsafe</script>';
 agency_page_check( ! str_contains( codela_sf_section_agency_cards( $widget_data ), '<script>' ), 'Widget escapes saved editorial text.' );
-$GLOBALS['mode'] = 'commerce';
-agency_page_check( '' === codela_sf_section_agency_cards( $widget_data ), 'Agency widgets do not render in commerce mode.' );
+agency_page_check( str_contains( codela_sf_section_agency_cards( $widget_data ), 'data-agency-widget="cards"' ),
+    'Agency widget remains available without any site mode.' );
 $GLOBALS['mode'] = 'agency';
 
 
