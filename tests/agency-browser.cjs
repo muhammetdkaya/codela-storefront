@@ -68,7 +68,7 @@ const server = http.createServer((req, res) => {
       }
     }
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    assert.equal(await page.locator('[data-agency-tilt]').evaluate(node => getComputedStyle(node).transform), 'none');
+    assert.equal(await page.locator('.sf-agency-swap-card').first().evaluate(node => getComputedStyle(node).transitionDuration), '0s', 'Reduced motion disables animated card transitions');
     const plain = await browser.newPage({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
     await plain.goto(`http://127.0.0.1:${server.address().port}/`);
     assert.equal(await plain.locator('.sf-agency-poster').count(), 4, 'All service cards render without JavaScript');
