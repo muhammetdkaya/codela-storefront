@@ -24,14 +24,14 @@ def fetch(path: str) -> str:
 def check() -> None:
     style = fetch("/wp-content/themes/codela-storefront/style.css")
     version = re.search(r"(?m)^Version:\s*(\S+)", style)
-    assert version and version.group(1) == "0.1.320", "FTP theme version is not 0.1.319"
+    assert version and version.group(1) == "0.1.320", "FTP theme version is not 0.1.320"
     agency_css = fetch("/wp-content/themes/codela-storefront/assets/styles/agency.css")
     assert re.search(r"\.sf-agency-home\{[^}]*padding-top:0", agency_css), "Agency root still leaves the old white header band"
     assert re.search(r"\.sf-agency-hero\{[^}]*padding-top:76px", agency_css), "Hero text is not offset from the glass header"
     assert ".sf-agency-hero{min-height:100svh;padding-top:68px}" in agency_css, "Mobile hero no longer has header-safe content spacing"
     print("Agency hero/header underlay: live CSS verified.", flush=True)
     expected = {
-        "/": ["sf-agency-swap-stage", "sf-agency-service-track", "sf-agency-process"],
+        "/": [],  # Legacy reference pattern or a saved native Codela layout
         "/hizmetler/": ["sf-agency-service-page", "data-agency-module-grid", "data-agency-selected-cta"],
         "/hakkimizda/": ["sf-agency-about-page", "data-agency-step", "data-agency-process-stage"],
         "/iletisim/": ["sf-agency-contact-page", "admin-post.php", "agency_contact_nonce"],
@@ -41,7 +41,14 @@ def check() -> None:
         for path, markers in expected.items():
             try:
                 html = fetch(path)
-                missing = [marker for marker in markers if marker not in html]
+                if path == "/":
+                    legacy = all(marker in html for marker in ("sf-agency-swap-stage", "sf-agency-service-track", "sf-agency-process"))
+                    managed = "codela-page-layout" in html and (
+                        "sf-agency-widget" in html or "sf-section--" in html
+                    )
+                    missing = [] if legacy or managed else ["agency pattern or rendered managed sections"]
+                else:
+                    missing = [marker for marker in markers if marker not in html]
                 if missing:
                     errors.append(f"{path}: missing {', '.join(missing)}")
                 else:
@@ -65,7 +72,7 @@ def check() -> None:
                 else:
                     print("Agency desktop nav verified:", " / ".join(labels), flush=True)
             if not errors:
-                print("Agency 0.1.319: new navigation, homepage, Services, About/Process and Contact verified.")
+                print("Agency 0.1.320: navigation, legacy or managed homepage, Services, About and Contact verified.")
                 return
         print("Agency smoke attempt", attempt + 1, "; ".join(errors), flush=True)
         if attempt < 2:
