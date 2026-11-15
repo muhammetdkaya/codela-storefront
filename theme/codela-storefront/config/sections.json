@@ -30,6 +30,12 @@
     },
     "contact": {
       "grid": "İletişim bilgileri"
+    },
+    "agency-cards": {
+      "cardswap": "Kartlı Vitrin"
+    },
+    "agency-scroll": {
+      "scroll3d": "3D Kaydırma"
     }
   }
 }
