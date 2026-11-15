@@ -153,8 +153,8 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
 .sf-agency-hero-variant-switch button:first-child{border-radius:999px 0 0 999px}
 .sf-agency-hero-variant-switch button:last-child{border-radius:0 999px 999px 0}
 .sf-agency-hero-variant-switch button[aria-pressed="true"]{background:#fff;border-color:#fff;color:#18181b}
-.sf-agency-scroll-variant{position:relative;min-height:145svh;width:100%;padding-top:28px}
-.sf-agency-scroll-sticky{position:sticky;top:90px;min-height:min(760px,calc(100svh - 140px));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px;padding:22px 0 50px}
+.sf-agency-scroll-variant{position:relative;min-height:0;width:100%;padding:38px 0 46px}
+.sf-agency-scroll-sticky{position:relative;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding:10px 0}
 .sf-agency-scroll-intro{text-align:center;max-width:790px}
 .sf-agency-scroll-intro p{font-size:13px;color:#818cf8;margin-bottom:14px}
 .sf-agency-scroll-intro h2{font-size:clamp(36px,5.3vw,68px);font-weight:800;letter-spacing:-.055em;line-height:1.1}
@@ -179,8 +179,8 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
 @media(max-width:700px){
 .sf-agency-hero-variant-switch{padding-top:12px}
 .sf-agency-hero-variant-switch button{font-size:11px;min-height:40px;padding:9px 13px}
-.sf-agency-scroll-variant{min-height:118svh;padding-top:20px}
-.sf-agency-scroll-sticky{top:72px;min-height:calc(100svh - 135px);gap:22px;padding-block:20px 38px}
+.sf-agency-scroll-variant{min-height:0;padding:24px 0 36px}
+.sf-agency-scroll-sticky{min-height:0;gap:22px;padding:0}
 .sf-agency-scroll-intro p{font-size:10px}
 .sf-agency-scroll-intro h2{font-size:clamp(30px,8vw,47px)}
 .sf-agency-scroll-screen{grid-template-columns:1fr;padding:10px;gap:10px}
