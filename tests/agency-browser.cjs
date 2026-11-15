@@ -59,7 +59,12 @@ const server = http.createServer((req, res) => {
         const el = document.querySelector('[data-agency-scroll-device]');
         return el && Number.parseFloat(el.style.getPropertyValue('--agency-scroll-scale')) > 0.94;
       });
-      await stackButton.click();
+      if (width === 390 || width === 1440) {
+        await page.evaluate(() => scrollTo(0, 0));
+        await page.waitForTimeout(170);
+        await page.screenshot({ path: path.join(root, `qa/agency-scroll-${width}.png`), fullPage: true });
+      }
+            await stackButton.click();
       assert.equal(await stackButton.getAttribute('aria-pressed'), 'true');
       assert(!(await page.locator('[data-agency-hero-cards]').evaluate(node => node.hidden)), 'Card Swap is restored without a page reload');
       assert(await page.locator('[data-agency-container-scroll]').evaluate(node => node.hidden), 'Inactive 3D variant is excluded from layout');
@@ -82,8 +87,10 @@ const server = http.createServer((req, res) => {
       await page.locator('[data-agency-dialog-close]').click();
       assert(!(await page.locator('[data-agency-dialog]').evaluate(node => node.open)), 'Service dialog closes');
       if (width === 390 || width === 1440) {
+        await swapTabs.nth(0).click();
         await page.locator('[data-agency-detail="web"]').first().evaluate(node => node.blur());
         await page.evaluate(() => scrollTo(0, 0));
+        await page.waitForTimeout(820);
         await page.screenshot({ path: path.join(root, `qa/agency-${width}.png`), fullPage: true });
       }
     }
