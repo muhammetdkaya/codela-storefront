@@ -40,6 +40,8 @@ const server = http.createServer((req, res) => {
         const buttons = await page.locator('.sf-agency-intro .sf-ui-button').evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().toJSON()));
         assert(Math.abs(buttons[0].top - buttons[1].top) < 2, 'Phone hero actions share one row');
         assert(buttons.every(button => button.height >= 44), 'Compact buttons retain touch targets');
+        const tabs = await page.locator('.sf-agency-swap-tab').evaluateAll(nodes => nodes.map(node => node.getBoundingClientRect().toJSON()));
+        assert(tabs.every(tab => Math.abs(tab.top - tabs[0].top) < 2), 'Mobile swap tabs stay in a single horizontal row');
         const stage = await page.locator('.sf-agency-swap-stage').boundingBox();
         assert(stage.width > 240 && stage.height > 300, 'Reference card stack remains usable on phone');
       }
