@@ -60,7 +60,7 @@
     const slide = (direction) => {
       const step = getStep();
       if (!step) return;
-      track.scrollBy({ left: direction * step, behavior: reduced.matches ? 'instant' : 'smooth' });
+      track.scrollBy({ left: direction * step, behavior: reduced.matches ? 'auto' : 'smooth' });
     };
     prev.addEventListener('click', () => slide(-1));
     next.addEventListener('click', () => slide(1));
