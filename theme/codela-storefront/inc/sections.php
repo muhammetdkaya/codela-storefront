@@ -60,7 +60,7 @@ function codela_sf_render_section( $html, string $type, array $data, int $post_i
     // Reserve priority for the first rendered section, never a later image after
     // text/products. Mixed native content is deliberately left to normal loading.
     $priority = ! $content_rendered && ( ! $post_id || codela_sf_sections_capabilities()['managed'] );
-    $output = in_array( $type, [ 'hero', 'promo', 'story' ], true )
+    $output = in_array( $type, [ 'hero', 'promo', 'story', 'agency-cards', 'agency-scroll' ], true )
         ? $renderers[ $type ]( $data, $type, $priority ) : $renderers[ $type ]( $data, $type );
     if ( '' !== $output ) { $content_rendered = true; }
     return $output;
