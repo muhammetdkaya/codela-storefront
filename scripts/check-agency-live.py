@@ -46,11 +46,11 @@ def check() -> None:
         if not errors:
             print("Agency pages render correctly on the public site.")
             home = fetch("/")
-            desktop = re.search(r'<ul\\b[^>]*\\bid=["\\\']sf-desktop-menu["\\\'][^>]*>(.*?)</ul>', home, re.S)
+            desktop = re.search(r'<ul\b[^>]*\bid="sf-desktop-menu"[^>]*>(.*?)</ul>', home, re.S)
             if not desktop:
                 errors.append("Agency desktop nav not found")
             else:
-                anchors = re.findall(r'<a\\b[^>]*>(.*?)</a>', desktop.group(1), re.S)
+                anchors = re.findall(r'<a\b[^>]*>(.*?)</a>', desktop.group(1), re.S)
                 labels = [" ".join(re.sub(r"<[^>]+>", "", a).split()) for a in anchors]
                 expected_labels = ["Ana Sayfa", "Hizmetler", "Hakkımızda", "İletişim"]
                 if labels != expected_labels:
