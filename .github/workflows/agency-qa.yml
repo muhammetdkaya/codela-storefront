@@ -4,6 +4,8 @@ on:
     paths:
       - 'theme/codela-storefront/patterns/agency-*.php'
       - 'theme/codela-storefront/inc/agency.php'
+      - 'theme/codela-storefront/inc/render.php'
+      - 'scripts/check-agency-live.py'
       - 'theme/codela-storefront/assets/styles/agency.css'
       - 'theme/codela-storefront/assets/scripts/agency.js'
       - 'tests/agency*.php'
@@ -38,6 +40,7 @@ jobs:
           php -l theme/codela-storefront/patterns/agency-home.php
           php tests/agency.php
           php tests/agency-pages.php
+          python3 -m py_compile scripts/check-agency-live.py
           find theme/codela-storefront/patterns/agency-*.php -type f -print0 | xargs -0 -n1 php -l
           node --check theme/codela-storefront/assets/scripts/agency.js
       - name: Test four viewports and real agency interactions
