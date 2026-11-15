@@ -21,7 +21,9 @@ require_once __DIR__ . '/section-content.php';
 require_once __DIR__ . '/section-agency.php';
 
 function codela_sf_sections_capabilities(): array {
-    if ( function_exists( 'codela_sf_agency_front_page' ) && codela_sf_agency_front_page() ) {
+    $agency_front = function_exists( 'codela_sf_agency_front_page' ) && codela_sf_agency_front_page();
+    $agency_layout = $agency_front && function_exists( 'codela_sf_agency_saved_layout' ) ? codela_sf_agency_saved_layout() : '';
+    if ( $agency_front && '' === $agency_layout ) {
         return [ 'layout' => false, 'gallery' => false, 'products' => false, 'managed' => true ];
     }
     static $caps = null;
@@ -32,7 +34,7 @@ function codela_sf_sections_capabilities(): array {
     // The queried post contains native preview/autosave content; get_post(ID) can read the published original.
     $post = get_queried_object();
     if ( ! $post instanceof WP_Post || (int) $post->ID !== get_queried_object_id() ) { $post = get_post( get_queried_object_id() ); }
-    $content = $post ? ( function_exists( 'codela_sections_page_content' ) ? codela_sections_page_content( $post ) : $post->post_content ) : '';
+    $content = '' !== $agency_layout ? $agency_layout : ( $post ? ( function_exists( 'codela_sections_page_content' ) ? codela_sections_page_content( $post ) : $post->post_content ) : '' );
     if ( $post && has_block( 'codela/page-layout', $content ) ) {
         $blocks = parse_blocks( $content );
         $managed = true;
@@ -50,7 +52,7 @@ function codela_sf_sections_capabilities(): array {
                 if ( in_array( $type, [ 'hero', 'promo' ], true ) && count( $data['items'] ?? [] ) > 1 || 'categories' === $type && 'carousel' === ( $data['variant'] ?? '' ) ) { $caps['gallery'] = true; }
             }
         }
-        $caps['managed'] = $caps['layout'] && $managed;
+        $caps['managed'] = $caps['layout'] && ( $managed || '' !== $agency_layout );
     }
     return $caps;
 }
