@@ -120,6 +120,24 @@ $GLOBALS['mode'] = 'commerce';
 agency_page_check( '' === codela_sf_section_agency_cards( $widget_data ), 'Agency widgets do not render in commerce mode.' );
 $GLOBALS['mode'] = 'agency';
 
+
+if ( in_array( '--render=widgets', $argv, true ) ) {
+    $widget_data['items'][0]['title'] = 'Design';
+    $widget_data['id'] = 'widget-cards-a';
+    $first_cards = codela_sf_section_agency_cards( $widget_data );
+    $widget_data['id'] = 'widget-scroll-a';
+    $middle_scroll = codela_sf_section_agency_scroll( $widget_data );
+    $widget_data['id'] = 'widget-cards-b';
+    $last_cards = codela_sf_section_agency_cards( $widget_data );
+    echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
+    foreach ( [ 'storefront-base.css', 'agency.css' ] as $style ) {
+        echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/' . $style . '">';
+    }
+    echo '</head><body class="sf-site-mode-agency"><main class="sf-content"><h1 class="screen-reader-text">Agency Layout</h1><div class="codela-page-layout">';
+    echo $first_cards . $middle_scroll . $last_cards;
+    echo '</div></main><script src="/theme/codela-storefront/assets/scripts/agency-widgets.js"></script></body></html>';
+    exit;
+}
 foreach ( [ 'services', 'about', 'contact' ] as $page_slug ) {
     if ( ! in_array( '--render=' . $page_slug, $argv, true ) ) { continue; }
     ob_start();
