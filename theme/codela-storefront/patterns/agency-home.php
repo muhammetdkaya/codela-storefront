@@ -14,6 +14,7 @@
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 $contact = codela_sf_agency_contact_url();
 $contact_href = $contact ?: '#sf-agency-contact';
+$services_href = function_exists( 'codela_sf_agency_page_url' ) ? codela_sf_agency_page_url( 'hizmetler', home_url( '/#sf-agency-services' ) ) : '#sf-agency-services';
 $account = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'myaccount' ) : home_url( '/' );
 ?>
 <!-- wp:group {"className":"sf-agency"} -->
@@ -139,6 +140,7 @@ $account = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( '
     </div><!-- /wp:group -->
     <!-- wp:html -->
     <div class="sf-agency-carousel-actions">
+      <a class="sf-agency-all-services" href="<?php echo esc_url( $services_href ); ?>">Tüm Hizmetler <span aria-hidden="true">↗</span></a>
       <button type="button" class="sf-agency-carousel-arrow" data-agency-carousel-prev aria-label="Hizmetlerde sola kaydır">←</button>
       <button type="button" class="sf-agency-carousel-arrow" data-agency-carousel-next aria-label="Hizmetlerde sağa kaydır">→</button>
     </div>
@@ -173,6 +175,8 @@ $account = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( '
   <!-- /wp:html -->
 </section><!-- /wp:group -->
 
+<!-- wp:pattern {"slug":"codela-storefront/agency-process"} /-->
+
 <!-- wp:group {"tagName":"section","className":"sf-agency-contact sf-agency-wrap","anchor":"sf-agency-contact"} -->
 <section class="wp-block-group sf-agency-contact sf-agency-wrap" id="sf-agency-contact">
   <!-- wp:paragraph {"className":"sf-agency-eyebrow"} --><p class="sf-agency-eyebrow">Bir sonraki iyi fikir sizinki.</p><!-- /wp:paragraph -->
@@ -180,7 +184,7 @@ $account = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( '
   <!-- wp:paragraph --><p>Yeni bir başlangıç, daha iyi bir mağaza veya işinizi kolaylaştıracak bir çözüm.</p><!-- /wp:paragraph -->
   <!-- wp:html -->
   <div class="sf-agency-actions">
-    <?php if ( $contact ) { echo codela_sf_ui_button( 'Projemi anlatmak istiyorum', [ 'href' => $contact, 'icon' => 'arrow-right' ] ); } ?>
+    <?php echo codela_sf_ui_button( 'Projemi anlatmak istiyorum', [ 'href' => $contact ?: '#sf-agency-contact', 'icon' => 'arrow-right' ] ); ?>
     <?php echo codela_sf_ui_button( 'Müşteri alanına geç', [ 'variant' => $contact ? 'secondary' : 'primary', 'href' => $account, 'icon' => 'user-round' ] ); ?>
   </div>
   <!-- /wp:html -->

@@ -259,6 +259,9 @@ jobs:
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
         run: python3 scripts/deploy.py
+      - name: Verify live agency pages (no writes)
+        if: steps.head.outputs.current == 'true'
+        run: python3 scripts/check-agency-live.py
       - uses: actions/upload-artifact@v4
         if: always()
         with:
