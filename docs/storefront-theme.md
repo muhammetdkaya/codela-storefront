@@ -1,3 +1,13 @@
+## 15 Kasım 2026 — 0.1.314 → 0.1.315 ilk ürün paneli hizası
+
+**Biten işler:** Ajans anasayfası gerçek üretim header/dock'u ile CI [43675949300](https://github.com/muhammetdkaya/codela-storefront/actions/runs/43675949300) üzerinde dört genişlik, tek ekran 390×844, başlık/dock açıklığı, yan yana CTA, klavye, reduced-motion ve JS kapalı kontrollerini geçti. f1e6419 UTF-8 fixture düzeltmesi ürün adapter'ının parser sürerken ve DOMContentLoaded sonrasında hatasız yüklenmesini sağladı.
+
+**Bulgu ve düzeltme:** İlerleyen mevcut ürün testinde normal satın alma kontrolleri mount sırasında 4–5px aşağı kayıyordu: ilk boyamada 16px form üst boşluğu + 4px panel alt payı, hazır panelde 12px header altı + 8px gap ve alt pay olmaması aynı dış yüksekliği farklı dağıtıyordu. Yalnız normal (A olmayan) ürünün ilk boyamasında üst aralık 20px ve alt pay 0 yapıldı; kontroller hazır paneldeki gibi ortalanır. Hazır panelin tasarımı, A düzeni, Woo formu ve JS hareketi değişmedi.
+
+**Doğrulama:** Yerel asset kontrolü ve 27 paket testi geçti. Mevcut hassas ilk yükleme ölçümleri korunur; yeni geometri CI'de doğrulanmayı bekliyor. Sorunlu ürün paneli testi aynı tam test dizisinde ajans kontrolünün hemen sonrasına alındı; hiçbir test/yayın kapısı kaldırılmadı. Tema 0.1.315; Codela eklentisi değişmedi.
+
+**Yayın / sıradaki:** f1e6419 main'de; 43675949300 anasayfayı doğruladı fakat ürün hizası hatasında durdu ve deploy atlandı. Bu düzeltmenin commit, tam CI ve canlı aktarım sonucu kapanış kaydıyla tamamlanacak. Ajans seçimi kullanıcı adına açılmadı. Hizmetler/iletişim sayfaları ve ajans menü içerikleri sonraki bölüm kararlarıdır.
+
 ## 15 Kasım 2026 — 0.1.314 ajans kabuğu ve yayın kontrolü
 
 **Biten işler:** 83578aa mobil düzeni CI 43640388072 üzerinde dört genişlik, 390×844 tek ekran/yan yana CTA, klavye, reduced-motion ve JS kapalı kontrollerini geçti. 390/1440px görüntüler incelendi. Ortak başlığın anasayfada sabit ve akış yüksekliğinin sıfır olduğu görüldü: ajans şablon parçasına gerçek 76/68px üst pay eklendi. Mobil dock açıkken sahnenin altında ortak alt menü tokenlarıyla yer ayrılır; dipteki ikincil kaydırma ipucu gizlenir. Tarayıcı fixture'ı artık örnek başlık yerine üretimdeki PHP header/dock ve storefront-base.css kullanır; başlık ve dock ile çakışmama kontrol edilir.

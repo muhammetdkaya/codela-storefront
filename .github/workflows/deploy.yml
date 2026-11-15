@@ -142,6 +142,7 @@ jobs:
           npm install --no-save --package-lock=false playwright@1.62.1
           npx playwright install --with-deps chromium webkit
           node tests/agency-browser.cjs
+          node tests/product-sheet-browser.cjs
           # Exercise the native checkout/gateway presentation before broader,
           # independently flaky product/gallery acceptance suites.
           node tests/checkout-steps-browser.cjs
@@ -167,7 +168,6 @@ jobs:
           TEST_WEBKIT=1 node tests/product-menu-scroll-browser.cjs
           node tests/product-skeleton-geometry-browser.cjs
           TEST_WEBKIT=1 node tests/product-skeleton-geometry-browser.cjs
-          node tests/product-sheet-browser.cjs
           node tests/product-layout-a-browser.cjs
           node tests/product-sheet-handoff-browser.cjs
           # Verify shared logged-out Account chrome and instantaneous real

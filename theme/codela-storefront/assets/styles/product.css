@@ -752,6 +752,13 @@ body.single-product .stock.in-stock{display:none}
     flex:1 1 0;margin-inline-start:0;--sf-ui-button-height:44px;--sf-ui-button-padding-y:8px;--sf-ui-button-padding-x:var(--sf-ui-product-button-padding-x);
   }
   html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product .sf-product-overview > .summary > .stock{grid-column:1/-1;grid-row:2;margin:0}
+  /* The standard sheet's header ends with 12px padding + an 8px gap.
+     Keep that same 20px above the native footer, with no trailing 4px pad,
+     so mounting preserves both the outer panel and each purchase control.
+     Simple products keep the separate A layout's first-paint geometry. */
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product:not(.product-type-simple) .sf-product-overview > .summary:has(.sf-product-purchase){padding-bottom:0}
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product:not(.product-type-simple) .sf-product-overview > .summary > form.cart:has(.sf-product-purchase){margin-top:20px!important}
+  html.sf-product-sheet-pending body.single-product:not(.sf-product-sheet-ready) div.product:not(.product-type-simple) .sf-product-overview > .summary form.cart .sf-product-purchase{align-items:center}
   /* The real native price and Codela urgency share one semantic grid in the
      hydrated sheet AND the original Woo summary before JavaScript runs.
      A badge can never increase the height of the price column or push the
