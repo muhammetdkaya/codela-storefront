@@ -1,7 +1,7 @@
 /* Codela agency reference port — isolated from e-commerce shared UI.
    Reference: Codela HTML mockup, React Bits Card Swap / Aceternity Apple Cards.
    Native CSS/scroll-snap, no CDN, Tailwind, React or global selectors. */
-.sf-agency-home{width:100%;max-width:none!important;margin:0!important;padding-top:76px;background:#fafafa}
+.sf-agency-home{width:100%;max-width:none!important;margin:0!important;padding-top:0;background:#09090b}
 .sf-agency{--agency-ink:#09090b;--agency-muted:#71717a;color:var(--agency-ink);background:#fafafa;width:100%;max-width:none!important;margin:0!important;overflow:clip}
 .sf-agency :where(h1,h2,h3,p){margin:0}
 .sf-agency :where(h1,h2,h3){font-family:inherit;text-wrap:balance}
@@ -10,7 +10,7 @@
 .sf-agency :where(a){text-decoration:none}
 .sf-agency .sf-ui-button{border-radius:999px;min-height:44px}
 .sf-agency :where(a,button,summary):focus-visible{outline:3px solid #818cf8;outline-offset:3px}
-.sf-agency-hero{position:relative;min-height:calc(100svh - 76px);isolation:isolate;display:flex;flex-direction:column;justify-content:center;background:#09090b;color:#fff;overflow:hidden}
+.sf-agency-hero{position:relative;min-height:100svh;box-sizing:border-box;padding-top:76px;isolation:isolate;display:flex;flex-direction:column;justify-content:center;background:#09090b;color:#fff;overflow:hidden}
 .sf-agency-hero::before{position:absolute;content:"";inset:0;pointer-events:none;z-index:-1;background-image:linear-gradient(to right,#ffffff0a 1px,transparent 1px),linear-gradient(to bottom,#ffffff0a 1px,transparent 1px);background-size:36px 36px}
 .sf-agency-hero::after{position:absolute;content:"";width:760px;height:430px;border-radius:50%;background:#6366f136;filter:blur(125px);top:-265px;left:calc(50% - 380px);z-index:-1;pointer-events:none}
 .sf-agency-hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:6%;align-items:center;padding-block:80px 60px;flex:1}
@@ -100,9 +100,9 @@
 .sf-agency-contact .sf-agency-actions{justify-content:center}
 @media(max-width:1030px){.sf-agency-hero-grid{gap:4%}.sf-agency-title{font-size:clamp(37px,4.6vw,54px)}.sf-agency-swap-stage{height:360px}.sf-agency-swap-card{padding:20px}.sf-agency-swap-body h2{font-size:23px}.sf-agency-swap-foot{font-size:9px}.sf-agency-swap-foot span{padding:6px}}
 @media(max-width:700px){
-.sf-agency-home{padding-top:68px}
+.sf-agency-home{padding-top:0}
 .sf-agency-wrap{width:calc(100% - 40px)}
-.sf-agency-hero{min-height:calc(100svh - 68px)}
+.sf-agency-hero{min-height:100svh;padding-top:68px}
 .sf-agency-hero-grid{display:flex;flex-direction:column;align-items:stretch;gap:50px;padding:40px 0 60px}
 .sf-agency-hero .sf-agency-eyebrow{font-size:10px;padding:6px 10px;margin-bottom:20px}
 .sf-agency-title{font-size:clamp(40px,10vw,58px)}
