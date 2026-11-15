@@ -42,6 +42,69 @@
       const device = widget.querySelector('[data-agency-scroll-device]');
       if (container && device) scrollWidgets.push({ container, device });
     }
+
+    if (widget.dataset.agencyWidget === 'services') {
+      const track = widget.querySelector('[data-agency-widget-track]');
+      const prev = widget.querySelector('[data-agency-widget-prev]');
+      const next = widget.querySelector('[data-agency-widget-next]');
+      if (track && prev && next) {
+        const cardWidth = () => {
+          const card = track.querySelector('.sf-agency-poster');
+          return card ? card.getBoundingClientRect().width + (parseFloat(getComputedStyle(track).gap) || 0) : 0;
+        };
+        const syncArrows = () => {
+          const end = Math.max(0, track.scrollWidth - track.clientWidth);
+          prev.disabled = track.scrollLeft <= 2;
+          next.disabled = track.scrollLeft >= end - 2;
+        };
+        const slide = dir => track.scrollBy({left: dir * cardWidth(), behavior: reduced.matches ? 'auto' : 'smooth'});
+        prev.addEventListener('click', () => slide(-1));
+        next.addEventListener('click', () => slide(1));
+        track.addEventListener('scroll', syncArrows, {passive:true});
+        window.addEventListener('resize', syncArrows, {passive:true});
+        syncArrows();
+      }
+      const modal = widget.querySelector('[data-agency-widget-dialog]');
+      if (modal && typeof modal.showModal === 'function') {
+        let returnFocus = null;
+        const cards = [...widget.querySelectorAll('.sf-agency-poster')];
+        widget.querySelectorAll('[data-agency-widget-detail]').forEach(button => {
+          button.addEventListener('click', () => {
+            const card = cards[Number(button.dataset.agencyWidgetDetail)];
+            if (!card) return;
+            modal.querySelector('[data-agency-widget-detail-title]').textContent =
+              card.querySelector('h3')?.textContent || '';
+            modal.querySelector('[data-agency-widget-detail-description]').textContent =
+              card.querySelector('.sf-agency-glass-info p')?.textContent || '';
+            returnFocus = button;
+            modal.showModal();
+            modal.querySelector('[data-agency-widget-close]')?.focus({preventScroll:true});
+          });
+        });
+        modal.querySelector('[data-agency-widget-close]')?.addEventListener('click', () => modal.close());
+        modal.addEventListener('click', event => { if (event.target === modal) modal.close(); });
+        modal.addEventListener('close', () => { if (returnFocus?.isConnected) returnFocus.focus({preventScroll:true}); });
+      }
+    }
+
+    if (widget.dataset.agencyWidget === 'process') {
+      const steps = [...widget.querySelectorAll('[data-agency-widget-step]')];
+      const stage = widget.querySelector('[data-agency-widget-stage]');
+      const kicker = widget.querySelector('[data-agency-widget-stage-kicker]');
+      const title = widget.querySelector('[data-agency-widget-stage-title]');
+      const body = widget.querySelector('[data-agency-widget-stage-body]');
+      const activate = index => {
+        const step = steps[index];
+        if (!step || !stage || !kicker || !title || !body) return;
+        stage.dataset.step = String(index);
+        kicker.textContent = step.querySelector('.sf-agency-process-count')?.textContent || '';
+        title.textContent = step.querySelector('strong')?.textContent || '';
+        body.textContent = step.querySelector('span:last-child')?.textContent || '';
+        steps.forEach((button,i) => button.setAttribute('aria-pressed', String(i === index)));
+      };
+      steps.forEach((button,i) => button.addEventListener('click', () => activate(i)));
+      activate(0);
+    }
   });
 
   if (!scrollWidgets.length) return;
