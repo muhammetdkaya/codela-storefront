@@ -31,7 +31,7 @@ def check() -> None:
     assert ".sf-agency-hero{min-height:100svh;padding-top:68px}" in agency_css, "Mobile hero no longer has header-safe content spacing"
     print("Agency hero/header underlay: live CSS verified.", flush=True)
     expected = {
-        "/": [],  # Legacy reference pattern or a saved native Codela layout
+        "/": [],  # Dedicated native Agency starter checked separately below
         "/hizmetler/": ["sf-agency-service-page", "data-agency-module-grid", "data-agency-selected-cta"],
         "/hakkimizda/": ["sf-agency-about-page", "data-agency-step", "data-agency-process-stage"],
         "/iletisim/": ["sf-agency-contact-page", "admin-post.php", "agency_contact_nonce"],
@@ -42,11 +42,16 @@ def check() -> None:
             try:
                 html = fetch(path)
                 if path == "/":
-                    legacy = all(marker in html for marker in ("sf-agency-swap-stage", "sf-agency-service-track", "sf-agency-process"))
-                    managed = "codela-page-layout" in html and (
-                        "sf-agency-widget" in html or "sf-section--" in html
-                    )
-                    missing = [] if legacy or managed else ["agency pattern or rendered managed sections"]
+                    # This test site explicitly migrated from the old Agency
+                    # theme switch. A generic valid Codela layout could be the
+                    # old e-commerce product demo, so generic checks are unsafe.
+                    agency_markers = [
+                        "sf-agency-widget--cards",
+                        "sf-agency-widget--scroll",
+                        "data-agency-swap",
+                        "data-agency-container-scroll",
+                    ]
+                    missing = [marker for marker in agency_markers if marker not in html]
                 else:
                     missing = [marker for marker in markers if marker not in html]
                 if missing:
@@ -72,7 +77,7 @@ def check() -> None:
                 else:
                     print("Agency desktop nav verified:", " / ".join(labels), flush=True)
             if not errors:
-                print("Agency 0.1.321: navigation, legacy or managed homepage, Services, About and Contact verified.")
+                print("Agency 0.1.321: both native homepage widgets, navigation, Services, About and Contact verified.")
                 return
         print("Agency smoke attempt", attempt + 1, "; ".join(errors), flush=True)
         if attempt < 2:
