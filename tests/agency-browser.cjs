@@ -28,7 +28,7 @@ const server = http.createServer((req, res) => {
     for (const [width, height] of [[320,740], [390,844], [768,1024], [1440,900]]) {
       await page.setViewportSize({ width, height });
       await page.goto(`http://127.0.0.1:${server.address().port}/`);
-      assert.equal(await page.locator('h1').count(), 1);
+      assert.equal(await page.locator('.sf-content h1').count(), 1, 'One main page heading; the closed account dialog has its own heading');
       assert.equal(await page.locator('.sf-agency-card').count(), 3);
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `No horizontal overflow at ${width}`);
       const bounds = await page.locator('.sf-agency-hero').boundingBox();
