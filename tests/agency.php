@@ -38,7 +38,7 @@ agency_check( [] === $GLOBALS['enqueued'], 'No agency assets in commerce mode.' 
 $GLOBALS['mode'] = 'agency';
 agency_check( str_contains( codela_sf_home(), '"slug":"agency-home"' ), 'Agency renders the editable native template part.' );
 $enqueue();
-agency_check( count( $GLOBALS['enqueued'] ) === 2, 'Agency front page loads only its two additional assets.' );
+agency_check( count( $GLOBALS['enqueued'] ) === 3 && in_array( 'codela-storefront-agency-widgets', $GLOBALS['enqueued'], true ), 'Agency front page loads the original assets and independent widget controller.' );
 $GLOBALS['front'] = false;
 $GLOBALS['enqueued'] = [];
 $enqueue();
