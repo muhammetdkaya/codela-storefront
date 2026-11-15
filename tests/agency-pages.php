@@ -16,6 +16,7 @@ $GLOBALS['actions'] = [];
 function add_action( $name, $callback, $priority = 10 ) { $GLOBALS['actions'][$name][] = $callback; }
 function add_filter( ...$args ) {}
 function codela_sf_ready() { return true; }
+function is_front_page() { return true; }
 function get_queried_object_id() { return $GLOBALS['query']->ID; }
 function get_post( $id ) { return $GLOBALS['query']->ID === $id ? $GLOBALS['query'] : null; }
 function get_post_meta( $id, $key, $single = true ) { return $GLOBALS['layout']; }
@@ -81,10 +82,13 @@ $widget_data = [
 ];
 $cards = codela_sf_section_agency_cards( $widget_data );
 agency_page_check( substr_count( $cards, 'data-agency-card="' ) === 3, 'Card Swap renders three distinct cards.' );
+agency_page_check( substr_count( codela_sf_section_agency_cards( $widget_data, '', true ), '<h1 ' ) === 1, 'First homepage Card Swap owns a single H1.' );
+agency_page_check( ! str_contains( $cards, '<h1 ' ), 'Secondary Card Swap uses H2.' );
 agency_page_check( str_contains( $cards, 'Our Agency' ) && str_contains( $cards, 'UI and UX' ), 'Saved agency heading and item text appear.' );
 $widget_data['id'] = 'scroll-demo';
 $scroll = codela_sf_section_agency_scroll( $widget_data );
 agency_page_check( str_contains( $scroll, 'data-agency-container-scroll' ) && str_contains( $scroll, 'data-agency-scroll-device' ), '3D Scroll keeps isolated motion hooks.' );
+agency_page_check( substr_count( codela_sf_section_agency_scroll( $widget_data, '', true ), '<h1 ' ) === 1, 'First homepage 3D Scroll owns a single H1.' );
 agency_page_check( str_contains( $scroll, 'Independent and editable' ) && substr_count( $scroll, '<strong>' ) === 3, 'Saved scroll content appears.' );
 $widget_data['id'] = 'cards-duplicate';
 agency_page_check( str_contains( codela_sf_section_agency_cards( $widget_data ), 'sf-agency-cards-cards-duplicate' ), 'Cloned widget gets independent accessible IDs.' );
