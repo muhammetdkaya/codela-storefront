@@ -13,7 +13,6 @@ function codela_sf_section_agency_items( array $data ): array {
 }
 
 function codela_sf_section_agency_cards( array $data, string $type = '' ): string {
-    if ( 'agency' !== codela_sf_site_mode() ) { return ''; }
     $items = codela_sf_section_agency_items( $data );
     if ( ! $items ) { return ''; }
     $id = 'sf-agency-cards-' . sanitize_html_class( (string) $data['id'] );
@@ -61,7 +60,6 @@ function codela_sf_section_agency_cards( array $data, string $type = '' ): strin
 }
 
 function codela_sf_section_agency_scroll( array $data, string $type = '' ): string {
-    if ( 'agency' !== codela_sf_site_mode() ) { return ''; }
     $items = codela_sf_section_agency_items( $data );
     if ( ! $items ) { return ''; }
     $id = 'sf-agency-scroll-' . sanitize_html_class( (string) $data['id'] );
