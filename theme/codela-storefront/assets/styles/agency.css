@@ -21,8 +21,10 @@
 .sf-agency-title em{font-style:normal;color:#a5b4fc;background:linear-gradient(100deg,#a5b4fc 0%,#7dd3fc 45%,#6ee7b7 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .sf-agency-lead{color:#a1a1aa;font-size:16px;line-height:1.8;max-width:550px;margin-top:28px!important}
 .sf-agency-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:28px;--sf-ui-button-height:48px;--sf-ui-button-padding-x:22px;--sf-ui-button-padding-y:12px;--sf-ui-button-font-size:14px}
-.sf-agency-hero .sf-ui-button--primary{background:#fff;color:#09090b;border-color:#fff}
-.sf-agency-hero .sf-ui-button--secondary{background:#18181b;color:#fff;border-color:#3f3f46}
+/* Override only the agency CTA paints; leave the shared UI Kit components intact. */
+.sf-content .sf-agency .sf-agency-hero .sf-ui-button--primary{background:#fff;color:#09090b;border:1px solid #fff;box-shadow:none}
+.sf-content .sf-agency .sf-agency-hero .sf-ui-button--primary .sf-icon{filter:none}
+.sf-content .sf-agency .sf-agency-hero .sf-ui-button--secondary{background:#18181b;color:#fff;border:1px solid #3f3f46;box-shadow:none}
 .sf-agency-swap-controls{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:26px}
 .sf-agency-swap-tab{min-height:36px;padding:7px 11px;font-size:11px;font-weight:600;font-family:inherit;line-height:1.2;border:1px solid transparent;border-radius:999px;background:transparent;color:#a1a1aa;cursor:pointer;white-space:nowrap;transition:background .25s,color .25s}
 .sf-agency-swap-tab[aria-pressed="true"]{background:#27272a;color:white;border-color:#3f3f46}
@@ -105,6 +107,9 @@
 .sf-agency-title{font-size:clamp(40px,10vw,58px)}
 .sf-agency-lead{font-size:14px;line-height:1.65;margin-top:19px!important}
 .sf-agency-actions{--sf-ui-button-height:44px;--sf-ui-button-padding-x:14px;--sf-ui-button-font-size:12px;gap:8px;margin-top:24px}
+.sf-agency-hero .sf-agency-actions{flex-wrap:nowrap;max-width:100%;gap:8px}
+.sf-content .sf-agency .sf-agency-hero .sf-agency-actions .sf-ui-button{flex:0 1 auto;min-width:0;white-space:nowrap;gap:7px;padding:10px 12px;font-size:11px}
+.sf-agency-hero .sf-agency-actions .sf-icon{width:18px;height:18px;flex-shrink:0}
 .sf-agency-swap-controls{gap:3px;margin-top:19px}
 .sf-agency-swap-tab{padding:8px 9px;font-size:10px;min-height:40px}
 .sf-agency-swap-stage{height:335px;width:min(calc(100% - 43px),420px);margin:0 auto 0 0;align-self:center}
