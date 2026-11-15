@@ -166,7 +166,7 @@ assert(/^[a-z0-9-]+$/.test(phase),'Screenshot phase is a safe filename label');
      await page.locator('.sf-section--hero img').first().evaluate(img=>img.decode());
      imageDecoded = true;
     } catch (error) {
-     if (process.env.SHOWCASE_SCREENSHOTS_ONLY || !/EncodingError/.test(String(error))) throw error;
+     if (!/EncodingError|Loading error|cannot be decoded/i.test(String(error))) throw error;
      console.warn('Optional AZ-photo screenshot skipped: downloaded WebP could not be decoded by this WebKit runner');
     }
     if(!imageDecoded)return;

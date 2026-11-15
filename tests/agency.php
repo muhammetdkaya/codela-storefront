@@ -1,18 +1,21 @@
 <?php
-/** Agency selection, native template-part ownership, links and production fixture. */
+/** Legacy agency patterns and module assets no longer require a site mode. */
 define( 'ABSPATH', __DIR__ );
-$GLOBALS['mode'] = 'commerce';
 $GLOBALS['front'] = true;
 $GLOBALS['ready'] = true;
 $GLOBALS['contact'] = null;
 $GLOBALS['enqueued'] = [];
+$GLOBALS['page'] = (object) [ 'ID' => 7, 'post_type' => 'page', 'post_content' => '', 'post_password' => '' ];
+$GLOBALS['layout'] = '';
 function add_action( ...$args ) { $GLOBALS['actions'][$args[0]][] = $args[1]; }
 function add_filter( ...$args ) {}
-function codela_theme_settings() { return [ 'site_mode' => $GLOBALS['mode'] ]; }
 function is_front_page() { return $GLOBALS['front']; }
 function codela_sf_ready() { return $GLOBALS['ready']; }
-function get_option( $name ) { return $name === 'show_on_front' ? 'page' : null; }
+function get_option( $name ) { return 'show_on_front' === $name ? 'page' : null; }
 function do_blocks( $content ) { return $content; }
+function get_queried_object_id() { return 7; }
+function get_post( $id ) { return $GLOBALS['page']; }
+function get_post_meta( $id, $key, $single = true ) { return $GLOBALS['layout']; }
 function get_page_by_path( $path ) { return $GLOBALS['contact']; }
 function post_password_required( $post ) { return ! empty( $post->post_password ); }
 function get_permalink( $page ) { return 'https://example.test/iletisim/'; }
@@ -27,24 +30,26 @@ function esc_attr( $value ) { return htmlspecialchars( (string) $value, ENT_QUOT
 function esc_html( $value ) { return esc_attr( $value ); }
 function esc_url( $value ) { return esc_attr( $value ); }
 function sanitize_html_class( $value ) { return preg_replace( '/[^a-zA-Z0-9_-]/', '', $value ); }
-require __DIR__ . '/../theme/codela-storefront/inc/site-mode.php';
 require __DIR__ . '/../theme/codela-storefront/inc/agency.php';
 require __DIR__ . '/../theme/codela-storefront/inc/render.php';
 function agency_check( $condition, $message ) { if ( ! $condition ) { throw new RuntimeException( $message ); } }
-agency_check( str_contains( codela_sf_home(), 'wp:post-content' ), 'Commerce preserves Reading/post content.' );
+agency_check( str_contains( codela_sf_home(), 'wp:post-content' ), 'Homepage always uses native Reading/post content.' );
 $enqueue = $GLOBALS['actions']['wp_enqueue_scripts'][0];
 $enqueue();
-agency_check( [] === $GLOBALS['enqueued'], 'No agency assets in commerce mode.' );
-$GLOBALS['mode'] = 'agency';
-agency_check( str_contains( codela_sf_home(), '"slug":"agency-home"' ), 'Agency renders the editable native template part.' );
+agency_check( [] === $GLOBALS['enqueued'], 'No agency assets when a page has no agency sections.' );
+$GLOBALS['page']->post_content = '<!-- wp:pattern {"slug":"codela-storefront/agency-home"} /-->';
 $enqueue();
-agency_check( count( $GLOBALS['enqueued'] ) === 3 && in_array( 'codela-storefront-agency-widgets', $GLOBALS['enqueued'], true ), 'Agency front page loads the original assets and independent widget controller.' );
-$GLOBALS['front'] = false;
+agency_check( count( $GLOBALS['enqueued'] ) === 2 && in_array( 'codela-storefront-agency', $GLOBALS['enqueued'], true ), 'Agency reference pattern loads scoped CSS and interaction script.' );
 $GLOBALS['enqueued'] = [];
+$GLOBALS['page']->post_content = '';
+$GLOBALS['layout'] = '<!-- wp:codela/section-agency-cards /-->';
 $enqueue();
-agency_check( [] === $GLOBALS['enqueued'], 'Agency assets stay off product/account/other pages.' );
-agency_check( str_contains( codela_sf_home(), 'wp:post-content' ), 'Other pages are never replaced by the agency home.' );
-$GLOBALS['front'] = true;
+agency_check( count( $GLOBALS['enqueued'] ) === 2 && in_array( 'codela-storefront-agency-widgets', $GLOBALS['enqueued'], true ), 'Page-owned agency widgets load their own script in any shop.' );
+$GLOBALS['enqueued'] = [];
+$GLOBALS['layout'] = '';
+$GLOBALS['front'] = false;
+$enqueue();
+agency_check( [] === $GLOBALS['enqueued'], 'Unrelated pages do not pay for agency assets.' );
 $GLOBALS['ready'] = false;
 agency_check( codela_sf_home() === '', 'Dependency gate is preserved.' );
 $GLOBALS['ready'] = true;
@@ -68,7 +73,7 @@ agency_check( ! str_contains( $html, 'cdn.' ) && ! str_contains( $html, '<script
 if ( in_array( '--render', $argv, true ) ) {
     echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
     foreach ( [ 'storefront-base.css', 'agency.css' ] as $file ) { echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/' . $file . '">'; }
-    echo '<style>body{font-family:system-ui}</style></head><body class="home sf-site-mode-agency"><!-- agency-shell --><main class="sf-content" id="sf-content"><div class="sf-agency-home">' . $html . '</div></main><script src="/theme/codela-storefront/assets/scripts/agency.js"></script></body></html>';
+    echo '<style>body{font-family:system-ui}</style></head><body class="home"><!-- agency-shell --><main class="sf-content" id="sf-content"><div class="sf-agency-home">' . $html . '</div></main><script src="/theme/codela-storefront/assets/scripts/agency.js"></script></body></html>';
     exit;
 }
-echo "Agency mode isolation, editable part, dependency gate, published links and pattern passed.\n";
+echo "Mode-free agency pattern, editor assets, native homepage, contact links and dependency gate passed.\n";

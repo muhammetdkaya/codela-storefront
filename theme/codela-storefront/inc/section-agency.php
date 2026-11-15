@@ -12,11 +12,11 @@ function codela_sf_section_agency_items( array $data ): array {
     } ) ), 0, 3 );
 }
 
-function codela_sf_section_agency_cards( array $data, string $type = '' ): string {
-    if ( 'agency' !== codela_sf_site_mode() ) { return ''; }
+function codela_sf_section_agency_cards( array $data, string $type = '', bool $primary = false ): string {
     $items = codela_sf_section_agency_items( $data );
     if ( ! $items ) { return ''; }
     $id = 'sf-agency-cards-' . sanitize_html_class( (string) $data['id'] );
+    $heading = $primary && function_exists( 'is_front_page' ) && is_front_page() ? 'h1' : 'h2';
     $contact = codela_sf_agency_contact_link();
     $services = codela_sf_agency_page_url( 'hizmetler', home_url( '/#sf-agency-services' ) );
     $tones = [ 'web', 'commerce', 'code' ];
@@ -27,7 +27,7 @@ function codela_sf_section_agency_cards( array $data, string $type = '' ): strin
         <div class="sf-agency-hero-grid sf-agency-wrap">
           <div class="sf-agency-intro">
             <p class="sf-agency-eyebrow"><span class="sf-agency-status-dot" aria-hidden="true"></span> CODELA · DİJİTAL AJANS</p>
-            <h2 class="sf-agency-title" id="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $data['title'] ?: 'WordPress ve özel yazılım çözümleri.' ); ?></h2>
+            <<?php echo $heading; ?> class="sf-agency-title" id="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $data['title'] ?: 'WordPress ve özel yazılım çözümleri.' ); ?></<?php echo $heading; ?>>
             <?php if ( $data['description'] ) : ?><p class="sf-agency-lead"><?php echo esc_html( $data['description'] ); ?></p><?php endif; ?>
             <div class="sf-agency-actions">
               <?php echo codela_sf_ui_button( 'Projenizi konuşalım', [ 'href' => $contact, 'icon' => 'arrow-right' ] ); ?>
@@ -60,11 +60,11 @@ function codela_sf_section_agency_cards( array $data, string $type = '' ): strin
     return (string) ob_get_clean();
 }
 
-function codela_sf_section_agency_scroll( array $data, string $type = '' ): string {
-    if ( 'agency' !== codela_sf_site_mode() ) { return ''; }
+function codela_sf_section_agency_scroll( array $data, string $type = '', bool $primary = false ): string {
     $items = codela_sf_section_agency_items( $data );
     if ( ! $items ) { return ''; }
     $id = 'sf-agency-scroll-' . sanitize_html_class( (string) $data['id'] );
+    $heading = $primary && function_exists( 'is_front_page' ) && is_front_page() ? 'h1' : 'h2';
     $services = codela_sf_agency_page_url( 'hizmetler', home_url( '/#sf-agency-services' ) );
     ob_start();
     ?>
@@ -74,7 +74,7 @@ function codela_sf_section_agency_scroll( array $data, string $type = '' ): stri
           <div class="sf-agency-scroll-sticky sf-agency-wrap">
             <div class="sf-agency-scroll-intro">
               <p>CODELA · UÇTAN UCA WORDPRESS MÜHENDİSLİĞİ</p>
-              <h2 id="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $data['title'] ?: 'Dijital deneyiminiz, yeni bir boyutta.' ); ?></h2>
+              <<?php echo $heading; ?> id="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $data['title'] ?: 'Dijital deneyiminiz, yeni bir boyutta.' ); ?></<?php echo $heading; ?>>
             </div>
             <div class="sf-agency-scroll-perspective">
               <div class="sf-agency-scroll-device" data-agency-scroll-device>
