@@ -53,6 +53,22 @@ agency_page_check( str_contains( $GLOBALS['pages']['iletisim']->post_content, 'a
 codela_sf_agency_seed_pages();
 agency_page_check( count( $GLOBALS['pages'] ) === 3, 'Seeding is idempotent.' );
 agency_page_check( codela_sf_agency_contact_url() === 'https://codela.test/iletisim/', 'Only the published real contact page is linked.' );
+$agency_desktop = codela_sf_agency_menu( true );
+$agency_mobile = codela_sf_agency_menu();
+foreach ( [ 'Ana Sayfa', 'Hizmetler', 'Hakkımızda', 'İletişim' ] as $label ) {
+    agency_page_check( str_contains( $agency_desktop, '>' . $label . '</a>' ), 'Desktop agency menu includes ' . $label );
+    agency_page_check( str_contains( $agency_mobile, '>' . $label . '</a>' ), 'Mobile agency menu includes ' . $label );
+}
+agency_page_check( ! str_contains( $agency_desktop, 'Shop' ), 'Agency menu excludes the old shop link.' );
+agency_page_check( str_contains( $agency_desktop, 'id="sf-desktop-menu"' ), 'Native desktop menu ID is preserved.' );
+agency_page_check( str_contains( $agency_mobile, 'id="sf-panel-menu"' ), 'Native mobile menu ID is preserved.' );
+agency_page_check( str_contains( $agency_desktop, 'href="https://codela.test/hizmetler/"' ), 'Services resolves through a published WP page.' );
+agency_page_check( str_contains( $agency_desktop, 'href="https://codela.test/hakkimizda/"' ), 'About resolves through a published WP page.' );
+agency_page_check( str_contains( $agency_desktop, 'href="https://codela.test/iletisim/"' ), 'Contact resolves through a published WP page.' );
+$GLOBALS['current'] = 'hizmetler';
+agency_page_check( substr_count( codela_sf_agency_menu( true ), 'aria-current="page"' ) === 1, 'Exactly one active link in agency menu.' );
+$GLOBALS['current'] = '';
+
 $enqueue = $GLOBALS['actions']['wp_enqueue_scripts'][0];
 $GLOBALS['current'] = 'hizmetler';
 $enqueue();

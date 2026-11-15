@@ -29,6 +29,8 @@ $policy = function_exists( 'get_privacy_policy_url' ) ? (string) get_privacy_pol
         <p class="sf-agency-form-message sf-agency-form-message--error" role="alert">Talep şu anda iletilemedi. Lütfen tekrar deneyin.</p>
         <?php elseif ( 'invalid' === $status ) : ?>
         <p class="sf-agency-form-message sf-agency-form-message--error" role="alert">Bilgileri kontrol edip tekrar deneyin.</p>
+        <?php elseif ( 'wait' === $status ) : ?>
+        <p class="sf-agency-form-message" role="status">Kısa süre önce talep gönderdiniz. Bir dakika sonra yeniden deneyebilirsiniz.</p>
         <?php endif; ?>
         <form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" class="sf-agency-contact-form" data-agency-contact-form>
           <input type="hidden" name="action" value="codela_sf_agency_contact">

@@ -8,6 +8,9 @@ function codela_sf_icon( string $name ): string {
     return '<img class="sf-icon" width="24" height="24" alt="" src="' . esc_url( get_template_directory_uri() . '/assets/icons/' . $name . '.svg?ver=' . $versions[ $name ] ) . '">';
 }
 function codela_sf_menu( bool $desktop = false ): string {
+    if ( function_exists( 'codela_sf_agency_menu' ) && function_exists( 'codela_sf_site_mode' ) && 'agency' === codela_sf_site_mode() ) {
+        return codela_sf_agency_menu( $desktop );
+    }
     if ( ! has_nav_menu( 'primary' ) ) { return ''; }
     if ( $desktop ) { require_once __DIR__ . '/menu-walker.php'; }
     return (string) wp_nav_menu( [ 'menu_id' => $desktop ? 'sf-desktop-menu' : 'sf-panel-menu', 'walker' => $desktop ? new Codela_SF_Menu_Walker() : null, 'theme_location' => 'primary', 'echo' => false, 'container' => false, 'menu_class' => $desktop ? 'sf-desktop-menu' : 'sf-menu-list', 'fallback_cb' => false, 'depth' => 0 ] );
