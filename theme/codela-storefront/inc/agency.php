@@ -90,9 +90,10 @@ function codela_sf_agency_contact_submit(): void {
     $services = $field( 'agency_services' );
     $raw_message = $_POST['agency_message'] ?? '';
     $message = is_string( $raw_message ) ? trim( sanitize_textarea_field( wp_unslash( $raw_message ) ) ) : '';
-    if ( ! $name || mb_strlen( $name ) > 120 || ! is_email( $email ) || strlen( $email ) > 180
-        || mb_strlen( $phone ) > 30 || mb_strlen( $services ) > 450 || mb_strlen( $message ) < 10
-        || mb_strlen( $message ) > 4000 || '1' !== $field( 'agency_consent' ) ) { $redirect( 'invalid' ); }
+    $length = static function( string $text ): int { return function_exists( 'mb_strlen' ) ? mb_strlen( $text ) : strlen( $text ); };
+    if ( ! $name || $length( $name ) > 120 || ! is_email( $email ) || strlen( $email ) > 180
+        || $length( $phone ) > 30 || $length( $services ) > 450 || $length( $message ) < 10
+        || $length( $message ) > 4000 || '1' !== $field( 'agency_consent' ) ) { $redirect( 'invalid' ); }
 
     $identity = (string) ( $_SERVER['REMOTE_ADDR'] ?? 'unknown' );
     $throttle = 'codela_sf_contact_' . hash_hmac( 'sha256', $identity, wp_salt( 'auth' ) );
