@@ -43,7 +43,25 @@ const server = http.createServer((req, res) => {
         const stage = await page.locator('.sf-agency-swap-stage').boundingBox();
         assert(stage.width > 240 && stage.height > 300, 'Reference card stack remains usable on phone');
       }
-      const services = await page.locator('#sf-agency-services').boundingBox();
+      // The alternative is the real reference Container Scroll mockup, not a static link.
+      const scrollButton = page.locator('[data-agency-variant="scroll"]');
+      const stackButton = page.locator('[data-agency-variant="cardswap"]');
+      assert.equal(await scrollButton.count(), 1, '3D scroll mode exists');
+      await scrollButton.click();
+      assert.equal(await scrollButton.getAttribute('aria-pressed'), 'true');
+      assert(await page.locator('[data-agency-hero-cards]').evaluate(node => node.hidden), 'Card Swap layout is hidden in 3D mode');
+      assert(!(await page.locator('[data-agency-container-scroll]').evaluate(node => node.hidden)), '3D tablet layout becomes visible');
+      assert((await page.locator('[data-agency-scroll-device]').evaluate(node => getComputedStyle(node).transform)) !== 'none', '3D tablet has an initial transform');
+      await page.evaluate(() => scrollTo(0, 260));
+      await page.waitForFunction(() => {
+        const el = document.querySelector('[data-agency-scroll-device]');
+        return el && Number.parseFloat(el.style.getPropertyValue('--agency-scroll-scale')) > 0.94;
+      });
+      await stackButton.click();
+      assert.equal(await stackButton.getAttribute('aria-pressed'), 'true');
+      assert(!(await page.locator('[data-agency-hero-cards]').evaluate(node => node.hidden)), 'Card Swap is restored without a page reload');
+      assert(await page.locator('[data-agency-container-scroll]').evaluate(node => node.hidden), 'Inactive 3D variant is excluded from layout');
+            const services = await page.locator('#sf-agency-services').boundingBox();
       assert(services.y >= bounds.y + bounds.height - 1, 'Three-card showcase is below hero');
       for (const link of await page.locator('.sf-agency a[href^="#"]').all()) {
         const target = await link.getAttribute('href');
@@ -74,6 +92,7 @@ const server = http.createServer((req, res) => {
     assert.equal(await plain.locator('.sf-agency-poster').count(), 4, 'All service cards render without JavaScript');
     assert.equal(await plain.locator('.sf-agency-swap-card').count(), 3, 'Hero cards render without JavaScript');
     assert.equal(await plain.locator('.sf-agency-service-track').count(), 1, 'Native carousel scrollport works without JavaScript');
+    assert(await plain.locator('[data-agency-container-scroll]').evaluate(node => node.hidden), 'Non-JS fallback shows the initial card hero, not both modes');
     assert.deepEqual(errors, []);
     console.log('Agency: four widths, reference hero and carousel, modal, links, keyboard, reduced motion and no-JS passed.');
   } catch (error) {
