@@ -57,8 +57,10 @@ $GLOBALS['contact'] = (object) [ 'post_status' => 'publish' ];
 agency_check( 'https://example.test/iletisim/' === codela_sf_agency_contact_url(), 'Published contact permalink is used.' );
 ob_start();require __DIR__ . '/../theme/codela-storefront/patterns/agency-home.php';$html = ob_get_clean();
 agency_check( substr_count( $html, '<h1 ' ) === 1, 'One main heading.' );
-agency_check( substr_count( $html, '<article ' ) === 3, 'Three service showcases below hero.' );
-agency_check( substr_count( $html, '<details ' ) === 3, 'All service details work natively without JavaScript.' );
+agency_check( substr_count( $html, 'data-agency-card="' ) === 3, 'Three rotating hero cards.' );
+agency_check( substr_count( $html, 'class="sf-agency-poster ' ) === 4, 'Four service posters in the horizontal carousel.' );
+agency_check( str_contains( $html, 'data-agency-service-track' ), 'Native scrollable service deck.' );
+agency_check( str_contains( $html, '<dialog ' ), 'Service details modal is rendered.' );
 agency_check( ! str_contains( $html, 'cdn.' ) && ! str_contains( $html, '<script' ), 'No third-party runtime in pattern.' );
 if ( in_array( '--render', $argv, true ) ) {
     echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
