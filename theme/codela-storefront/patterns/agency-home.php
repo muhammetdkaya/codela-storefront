@@ -20,8 +20,14 @@ $account = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( '
 <div class="wp-block-group sf-agency">
 <!-- wp:group {"tagName":"section","className":"sf-agency-hero"} -->
 <section class="wp-block-group sf-agency-hero">
+  <!-- wp:html -->
+  <div class="sf-agency-hero-variant-switch sf-agency-wrap" role="group" aria-label="Karşılama görünümü">
+    <button type="button" data-agency-variant="cardswap" aria-pressed="true" aria-controls="sf-agency-cards-hero">Kartlı Vitrin</button>
+    <button type="button" data-agency-variant="scroll" aria-pressed="false" aria-controls="sf-agency-scroll-hero">3D Kaydırma</button>
+  </div>
+  <!-- /wp:html -->
   <!-- wp:group {"className":"sf-agency-hero-grid sf-agency-wrap"} -->
-  <div class="wp-block-group sf-agency-hero-grid sf-agency-wrap">
+  <div class="wp-block-group sf-agency-hero-grid sf-agency-wrap" id="sf-agency-cards-hero" data-agency-hero-cards>
     <!-- wp:group {"className":"sf-agency-intro"} -->
     <div class="wp-block-group sf-agency-intro">
       <!-- wp:paragraph {"className":"sf-agency-eyebrow"} -->
@@ -77,6 +83,42 @@ $account = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( '
     </div>
     <!-- /wp:html -->
   </div><!-- /wp:group -->
+  <!-- wp:html -->
+  <div class="sf-agency-scroll-variant" id="sf-agency-scroll-hero" data-agency-container-scroll hidden>
+    <div class="sf-agency-scroll-sticky sf-agency-wrap">
+      <div class="sf-agency-scroll-intro">
+        <p>codela.dev · Uçtan Uca WordPress Mühendisliği</p>
+        <h2>Tasarım, E-Ticaret ve Yazılım. <strong>Tek Ajansta.</strong></h2>
+      </div>
+      <div class="sf-agency-scroll-perspective">
+        <div class="sf-agency-scroll-device" data-agency-scroll-device>
+          <div class="sf-agency-scroll-screen">
+            <div class="sf-agency-scroll-screen-primary">
+              <span>CODELA AGENCY DASHBOARD</span>
+              <h3>Her Ölçekte WordPress Çözümü</h3>
+              <p>Kurumsal vitrin sitelerinden WooCommerce mağazalarına ve özel eklenti geliştirmeye kadar tüm süreç şeffaf ilerler.</p>
+              <div class="sf-agency-scroll-specialties">
+                <div><strong>Kurumsal</strong><small>Özel Tema &amp; Elementor</small></div>
+                <div><strong>E-Ticaret</strong><small>WooCommerce &amp; POS</small></div>
+                <div><strong>Yazılım</strong><small>Özel Eklenti &amp; API</small></div>
+              </div>
+            </div>
+            <div class="sf-agency-scroll-screen-aside">
+              <span>UZMANLIK ALANLARIMIZ</span>
+              <ul>
+                <li>✓ Kurumsal Web &amp; UI/UX Redesign</li>
+                <li>✓ Elementor Özel Widget &amp; Tema</li>
+                <li>✓ Sıfırdan Eklenti &amp; ERP Köprüsü</li>
+              </ul>
+              <a href="#sf-agency-services">Hizmetleri incele ↓</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="sf-agency-scroll-caption">Kaydırdıkça deneyim ortaya çıkar</p>
+    </div>
+  </div>
+  <!-- /wp:html -->
   <!-- wp:html -->
   <div class="sf-agency-hero-foot sf-agency-wrap"><span>WordPress <i>·</i> Elementor <i>·</i> WooCommerce</span><a href="#sf-agency-services">Hizmetleri keşfet <span aria-hidden="true">↓</span></a></div>
   <!-- /wp:html -->
