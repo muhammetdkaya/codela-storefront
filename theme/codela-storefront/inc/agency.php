@@ -6,8 +6,32 @@ function codela_sf_agency_front_page(): bool {
     return 'agency' === codela_sf_site_mode() && is_front_page();
 }
 
+/**
+ * The admin-owned Codela layout takes priority when the assigned front page
+ * has a valid saved section tree. Never rewrite its post_content or meta here.
+ * With no managed layout, retain the existing agency landing-page pattern.
+ */
+function codela_sf_agency_saved_layout(): string {
+    if ( 'page' !== get_option( 'show_on_front' ) ) { return ''; }
+    $page = get_post( (int) get_option( 'page_on_front' ) );
+    if ( ! $page || 'page' !== $page->post_type || post_password_required( $page ) ) { return ''; }
+    if ( has_block( 'codela/page-layout', $page->post_content ) && function_exists( 'codela_sections_validate_content' )
+        && ! is_wp_error( codela_sections_validate_content( $page->post_content ) ) ) {
+        return (string) $page->post_content;
+    }
+    if ( ! function_exists( 'codela_sections_validate_meta' ) ) { return ''; }
+    $layout = get_post_meta( $page->ID, '_codela_page_layout', true );
+    if ( ! is_string( $layout ) || '' === trim( $layout ) || is_wp_error( codela_sections_validate_meta( $layout ) ) ) { return ''; }
+    foreach ( parse_blocks( $layout ) as $root ) {
+        if ( 'codela/page-layout' === ( $root['blockName'] ?? '' ) && ! empty( $root['innerBlocks'] ) ) { return $layout; }
+    }
+    return '';
+}
+
 function codela_sf_agency_home(): string {
-    return do_blocks( '<!-- wp:template-part {"slug":"agency-home","theme":"codela-storefront","tagName":"div","align":"full","className":"sf-agency-home"} /-->' );
+    $saved = codela_sf_agency_saved_layout();
+    return '' !== $saved ? do_blocks( $saved )
+        : do_blocks( '<!-- wp:template-part {"slug":"agency-home","theme":"codela-storefront","tagName":"div","align":"full","className":"sf-agency-home"} /-->' );
 }
 
 /** Never overwrite an existing WordPress page; preserve editable page ownership. */
@@ -89,6 +113,7 @@ add_action( 'wp_enqueue_scripts', static function() {
     if ( ! codela_sf_ready() || ! codela_sf_agency_is_public_page() ) { return; }
     codela_sf_agency_styles();
     wp_enqueue_script( 'codela-storefront-agency', get_template_directory_uri() . '/assets/scripts/agency.js', [], wp_get_theme()->get( 'Version' ), true );
+    wp_enqueue_script( 'codela-storefront-agency-widgets', get_template_directory_uri() . '/assets/scripts/agency-widgets.js', [], wp_get_theme()->get( 'Version' ), true );
 }, 30 );
 add_action( 'enqueue_block_editor_assets', 'codela_sf_agency_styles' );
 
