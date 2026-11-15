@@ -24,7 +24,7 @@
 .sf-agency-hero .sf-ui-button--primary{background:#fff;color:#09090b;border-color:#fff}
 .sf-agency-hero .sf-ui-button--secondary{background:#18181b;color:#fff;border-color:#3f3f46}
 .sf-agency-swap-controls{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:26px}
-.sf-agency-swap-tab{min-height:36px;padding:7px 11px;font:600 11px/1.2 inherit;border:1px solid transparent;border-radius:999px;background:transparent;color:#a1a1aa;cursor:pointer;white-space:nowrap;transition:background .25s,color .25s}
+.sf-agency-swap-tab{min-height:36px;padding:7px 11px;font-size:11px;font-weight:600;font-family:inherit;line-height:1.2;border:1px solid transparent;border-radius:999px;background:transparent;color:#a1a1aa;cursor:pointer;white-space:nowrap;transition:background .25s,color .25s}
 .sf-agency-swap-tab[aria-pressed="true"]{background:#27272a;color:white;border-color:#3f3f46}
 .sf-agency-swap-tab:hover{background:#27272a;color:#fff}
 .sf-agency-swap-stage{width:min(100% - 26px,470px);height:405px;position:relative;isolation:isolate;perspective:1100px;transform-style:preserve-3d;margin-inline:auto 28px}
@@ -56,7 +56,7 @@
 .sf-agency-services .sf-agency-eyebrow{color:#4f46e5;text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px}
 .sf-agency-heading{font-size:clamp(31px,3.6vw,50px);font-weight:750!important;letter-spacing:-.048em;line-height:1.13;max-width:730px}
 .sf-agency-carousel-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.sf-agency-carousel-arrow{display:grid;place-items:center;width:44px;height:44px;border:0;border-radius:50%;background:#f4f4f5;color:#3f3f46;font:600 20px/1 inherit;cursor:pointer;transition:background .2s,color .2s}
+.sf-agency-carousel-arrow{display:grid;place-items:center;width:44px;height:44px;border:0;border-radius:50%;background:#f4f4f5;color:#3f3f46;font-size:20px;font-weight:600;font-family:inherit;line-height:1;cursor:pointer;transition:background .2s,color .2s}
 .sf-agency-carousel-arrow:hover:not(:disabled){background:#e4e4e7}
 .sf-agency-carousel-arrow:disabled{opacity:.32;cursor:default}
 .sf-agency-service-track{display:flex;gap:24px;overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x mandatory;scroll-padding-left:max(24px,calc((100vw - 1200px)/2));scrollbar-width:none;padding:0 max(24px,calc((100vw - 1200px)/2)) 14px;-webkit-overflow-scrolling:touch}
