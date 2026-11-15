@@ -7,6 +7,50 @@
   root.dataset.agencyInitialized = 'true';
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
 
+  // Reference hero presentation switch. Only the selected variant participates
+  // in layout and pointer/keyboard interaction; the shared shell is untouched.
+  const cardsHero = root.querySelector('[data-agency-hero-cards]');
+  const scrollHero = root.querySelector('[data-agency-container-scroll]');
+  const scrollDevice = root.querySelector('[data-agency-scroll-device]');
+  const variantButtons = Array.from(root.querySelectorAll('[data-agency-variant]'));
+  let scrollFrame = 0;
+  const syncScrollDevice = () => {
+    scrollFrame = 0;
+    if (!scrollHero || !scrollDevice || scrollHero.hidden) return;
+    if (reduced.matches) {
+      scrollDevice.style.removeProperty('--agency-scroll-rotate');
+      scrollDevice.style.removeProperty('--agency-scroll-scale');
+      return;
+    }
+    const bounds = scrollHero.getBoundingClientRect();
+    const distance = Math.max(1, bounds.height - window.innerHeight * 0.5);
+    const progress = Math.max(0, Math.min(1, (-bounds.top + window.innerHeight * 0.12) / distance));
+    scrollDevice.style.setProperty('--agency-scroll-rotate', (16 * (1 - progress)).toFixed(2) + 'deg');
+    scrollDevice.style.setProperty('--agency-scroll-scale', (0.94 + progress * 0.06).toFixed(3));
+  };
+  const requestScrollSync = () => {
+    if (scrollFrame) return;
+    scrollFrame = requestAnimationFrame(syncScrollDevice);
+  };
+  const selectVariant = (mode) => {
+    if (!cardsHero || !scrollHero || !['cardswap', 'scroll'].includes(mode)) return;
+    cardsHero.hidden = mode !== 'cardswap';
+    scrollHero.hidden = mode !== 'scroll';
+    variantButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.agencyVariant === mode)));
+    requestScrollSync();
+  };
+  variantButtons.forEach(button => {
+    button.addEventListener('click', () => selectVariant(button.dataset.agencyVariant));
+  });
+  window.addEventListener('scroll', requestScrollSync, { passive: true });
+  window.addEventListener('resize', requestScrollSync, { passive: true });
+  reduced.addEventListener('change', requestScrollSync);
+  window.addEventListener('pagehide', () => {
+    cancelAnimationFrame(scrollFrame);
+    scrollFrame = 0;
+  }, { once: true });
+  selectVariant('cardswap');
+
   // Three layered reference cards; clicks, keyboard and tabs select the front card.
   const stage = root.querySelector('[data-agency-swap]');
   const cards = Array.from(root.querySelectorAll('[data-agency-card]'));
