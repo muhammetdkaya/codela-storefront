@@ -235,7 +235,7 @@ class Tests(unittest.TestCase):
         self.assertIn('function mountDock()',js)
         self.assertIn('dialog.appendChild(dock);',js)
         self.assertIn('const relocated = dock.parentElement === getDialog();',js)
-         self.assertIn('if (relocated) dockHome.after(dock);',js)
+        self.assertIn('if (relocated) dockHome.after(dock);',js)
         self.assertIn('mountDock();',(build.ROOT/'assets/scripts/overlay-controller.js').read_text())
         self.assertIn('restoreDock();',(build.ROOT/'assets/scripts/overlay-controller.js').read_text())
         self.assertIn("dock.hidden = name === 'menu';",(build.ROOT/'assets/scripts/overlay-controller.js').read_text())
