@@ -281,7 +281,15 @@ export function createOverlayController({
         // Native dialog focuses this button even when a previous session focused the query.
         dialog.querySelectorAll('[autofocus]').forEach(el => el.removeAttribute('autofocus'));
         initialFocus.setAttribute('autofocus', '');
-        if (opening) dialog.showModal();
+        if (opening) {
+            // Opt-in experiment only. A non-modal native dialog keeps its
+            // fixed layout without joining Safari's top-layer compositor.
+            // Production traffic always uses showModal() as before.
+            const nonmodal = mobileHeader.matches && window.codelaSFDebug?.useNonModal?.();
+            dialog.classList.toggle('sf-perf-nonmodal',!!nonmodal);
+            if (nonmodal) dialog.show();
+            else dialog.showModal();
+        }
         window.codelaSFDebug?.mark('overlay.open.modal',{panel:name,elapsed:performance.now()-debugStart,visible:!!dialog.open});
         if (name === 'menu' && menuTrigger) {
             // Resolve initial line transforms before transitioning to an X.
@@ -306,6 +314,7 @@ export function createOverlayController({
         if (name === 'cart' && desktop.matches) animateDrawer(false, drawerFrom);
         else animatePanelContent(name === 'search' ? $('.sf-search-content') : $(`#sf-${name}`), previous === 'cart' && name === 'search' ? -1 : 1);
         window.codelaSFDebug?.mark('overlay.open.end',{panel:name,elapsed:performance.now()-debugStart});
+        window.codelaSFDebug?.postAction?.('open',name);
     }
     // Mobile transitions animate content only: transforming the dialog changes the
     // containing block of the fixed dock in some browsers. Repeated actions cancel cleanly.
@@ -367,14 +376,15 @@ export function createOverlayController({
     }
     function finishClose(navigating = false) {
         const debugStart=window.codelaSFDebug ? performance.now() : 0;
-        window.codelaSFDebug?.mark('overlay.finish.begin',{panel:current||'none',navigating});
+        const closingPanel=current||'none';
+        window.codelaSFDebug?.mark('overlay.finish.begin',{panel:closingPanel,navigating});
         surfaceMotion?.cancel(); surfaceMotion = null;
         panelMotion?.cancel(); panelMotion = null;
         closing = false;
         dialog.classList.remove('is-open', 'is-closing');
         document.querySelectorAll('[data-panel]').forEach(el => el.setAttribute('aria-expanded','false'));
         searchFeature.cancel();
-        dialog.close(); restoreMenuTrigger(); current = null;
+        dialog.close(); dialog.classList.remove('sf-perf-nonmodal'); restoreMenuTrigger(); current = null;
         window.codelaSFDebug?.mark('overlay.finish.dom-closed',{elapsed:performance.now()-debugStart});
         returnToPanel = null;
         restoreDock();
@@ -393,6 +403,7 @@ export function createOverlayController({
         // Native scrolling and the original body styles are restored above.
         document.documentElement.classList.remove('sf-overlay-scroll-locked');
         window.codelaSFDebug?.mark('overlay.finish.end',{elapsed:performance.now()-debugStart,scrollLocked:document.documentElement.classList.contains('sf-overlay-scroll-locked')});
+        window.codelaSFDebug?.postAction?.('close',closingPanel);
         opener = null;
     }
     

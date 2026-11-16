@@ -10,7 +10,7 @@
   const key='codela-performance-debug';
   const historyKey='codela-performance-debug-history';
   const modeKey='codela-performance-debug-mode';
-  const modes=['normal','no-animation','no-glass','both'];
+  const modes=['normal','no-animation','no-glass','both','nonmodal'];
   let mode='normal';
   try {const val=sessionStorage.getItem(modeKey);if(modes.includes(val))mode=val;}catch(e){}
   const noPanelMotion=()=>mode==='no-animation'||mode==='both';
@@ -40,7 +40,7 @@
     'visible','duration','opened','navigating','collapsed','delay','relocated',
     'index','target','afterInput','part','property','frames','firstFrame',
     'maxGap','p95Gap','droppedFrames','total','open','domReady','responseStart',
-    'guest','request','lag','fromInput','visibility']);
+    'guest','request','lag','fromInput','visibility','phase','planned']);
   const labels=new Set(['menu','search','cart','account','filters','home',
     'product','catalog','checkout','content','page','none','other']);
   function clean(key,value){
@@ -52,6 +52,7 @@
     if(key==='source')return ['pointer','touch','click'].includes(value)?value:null;
     if(key==='request')return ['read','write'].includes(value)?value:null;
     if(key==='visibility')return ['visible','hidden','prerender'].includes(value)?value:null;
+    if(key==='phase')return ['open','close'].includes(value)?value:null;
     if(key==='part')return ['dock','menu-trigger','panel'].includes(value)?value:null;
     if(key==='property')return ['transform','opacity','scale','visibility','other'].includes(value)?value:null;
     return null;
@@ -111,7 +112,7 @@
       return {
         tool:'codela-interaction-timing',
         schema:1,
-        theme:'0.1.333',
+        theme:'0.1.334',
         mode,
         pages:pageIndex,
         session:document.body?.classList.contains('logged-in')?'signed-in':'guest',
@@ -141,7 +142,35 @@
       try{sessionStorage.setItem(modeKey,mode)}catch(e){}
       applyMode();api.clear();record('debug.mode-changed');
     },
-    mode:()=>mode
+    mode:()=>mode,
+    useNonModal:()=>mode==='nonmodal',
+    // Unlike the pointerdown timer, these probes run AFTER showModal()/close().
+    // A 1.8s delay in both timers and frames implicates JS/event-loop blocking;
+    // on-time timers with missing frames isolate WebKit rendering/throttling.
+    postAction(phase,panel){
+      if(!['open','close'].includes(phase)||!labels.has(panel)||destroyed)return;
+      const started=now();
+      record('post-action.begin',{phase,panel,visibility:document.visibilityState});
+      for(const planned of [160,400,900]){
+        setTimeout(()=>{
+          if(destroyed)return;
+          const elapsed=now()-started;
+          record('post-action.timer',{
+            phase,panel,planned,elapsed,lag:Math.max(0,elapsed-planned),
+            visibility:document.visibilityState
+          });
+        },planned);
+      }
+      let previous=0,frames=0,maxGap=0;
+      function frame(ts){
+        if(destroyed)return;
+        if(previous)maxGap=Math.max(maxGap,ts-previous);
+        previous=ts;frames++;
+        if(ts-started<900 && frames<120)requestAnimationFrame(frame);
+        else record('post-action.frames',{phase,panel,frames,maxGap,elapsed:ts-started});
+      }
+      requestAnimationFrame(frame);
+    }
   };
   window.codelaSFDebug=api;
   const longTaskSupported=!!(window.PerformanceObserver &&
@@ -276,6 +305,8 @@
   #sf-performance-debug textarea{width:100%;height:145px;margin-top:8px;border:1px solid #d7d7db;border-radius:8px;
     padding:8px;font-size:10px;resize:vertical;display:none}
   #sf-performance-debug .sf-debug-modes{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:10px}
+  #sf-performance-debug .sf-debug-modes button[data-mode="nonmodal"]{grid-column:1/-1}
+  #sf-panel.sf-perf-nonmodal{z-index:2147481000!important}
   #sf-performance-debug .sf-debug-modes button{border-radius:10px;padding:7px 5px}
   #sf-performance-debug .sf-debug-modes button[aria-pressed="true"]{background:#262629;color:white;box-shadow:none}
   html.sf-perf-no-glass .sf-mobile-dock .sf-dock-surface,
@@ -300,7 +331,8 @@
       '<button type="button" data-mode="normal">Normal</button>'+
       '<button type="button" data-mode="no-animation">Animasyonsuz</button>'+
       '<button type="button" data-mode="no-glass">Camsız</button>'+
-      '<button type="button" data-mode="both">İkisi kapalı</button></div>'+
+      '<button type="button" data-mode="both">İkisi kapalı</button>'+
+      '<button type="button" data-mode="nonmodal">Yerel modal olmadan</button></div>'+
       '<div class="sf-debug-actions"><button type="button" data-action="copy">Raporu kopyala</button>'+
       '<button type="button" data-action="clear">Temizle</button>'+
       '<button type="button" data-action="stop">Kapat</button></div>'+
