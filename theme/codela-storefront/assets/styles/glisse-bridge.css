@@ -1,0 +1,127 @@
+/**
+ * Phase 1: genuine Glisse v0.6.0 surfaces on the Codela native shell.
+ * The source TabBar uses Glisse's lift/refraction/spring implementation.
+ * The PHP anchors remain as invisible event adapters after hydration.
+ */
+.sf-shell.sf-glisse-light{
+  --lg-foreground:rgb(0 0 0 / .88);
+  --lg-muted:rgb(60 60 67 / .62);
+  --lg-glass:rgb(255 255 255 / .60);
+  --lg-glass-active:rgb(236 236 240 / .85);
+  --lg-edge:rgb(0 0 0 / .08);
+  --lg-drop:rgb(0 0 0 / .06);
+  --lg-selection:rgb(0 0 0 / .10);
+  --lg-lens:rgb(0 0 0 / .03);
+  --lg-lens-drop:rgb(0 0 0 / .11);
+  --lg-fill:#1c1c1e;
+  --lg-tab-selected:#1c1c1e;
+  --lg-lens-shine:-1.5;
+  --lg-rim-shine:.30;
+}
+html body .sf-glisse-host.sf-ui-surface,
+html body .sf-glisse-host.sf-ui-button,
+html body .sf-glisse-host.sf-ui-icon-button--soft,
+html body:not(.codela-my-account-layout) .sf-content .sf-glisse-host.sf-ui-icon-button--soft{
+  position:relative;
+  isolation:isolate;
+  background:transparent!important;
+  background-image:none!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+.sf-glisse-glass-mount{
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  z-index:-1;
+  pointer-events:none;
+  display:block;
+}
+.sf-glisse-glass-plate{
+  display:block;
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+}
+@media(max-width:700px){
+  .sf-mobile-dock .sf-glisse-dock-root{
+    position:absolute;
+    inset:0 0 auto;
+    z-index:2;
+    height:var(--sf-ui-bottom-bar-height);
+    transform-origin:50% 100%;
+    transform:translate3d(0,var(--sf-dock-travel),0) scale(var(--sf-dock-scale));
+    opacity:1;
+    transition:transform var(--sf-ui-motion-dock) var(--sf-ui-ease-dock),
+      opacity 100ms ease;
+  }
+  .sf-mobile-dock.sf-glisse-ready .sf-dock-surface{
+    visibility:hidden;
+    pointer-events:none;
+  }
+  .sf-mobile-dock .sf-glisse-tabbar{
+    --lg-tab-inset:4px;
+    --lg-tab-height:var(--sf-ui-bottom-bar-control-height);
+    --lg-tab-width:calc((100% - 8px)/4);
+    --lg-lens-grow-x:24px;
+    --lg-lens-grow-y:16px;
+    display:flex;
+    box-sizing:border-box;
+    width:100%;
+    min-height:var(--sf-ui-bottom-bar-height);
+    padding:4px;
+    font-family:inherit;
+  }
+  .sf-mobile-dock .sf-glisse-tabbar .lg-tab{
+    min-width:0;
+    color:var(--sf-ui-glass-ink);
+    text-decoration:none!important;
+  }
+  .sf-mobile-dock .sf-glisse-tabbar :is(.lg-tab,.lg-tab-copy){
+    width:var(--lg-tab-width);
+    height:var(--lg-tab-height);
+    font-size:var(--sf-ui-nav-label-size);
+    font-weight:var(--sf-ui-nav-label-weight);
+  }
+  .sf-mobile-dock .sf-glisse-tabbar .lg-tab-icon{
+    display:grid;
+    position:relative;
+    place-items:center;
+  }
+  .sf-glisse-dock-icon{position:relative;display:grid;place-items:center;}
+  .sf-glisse-dock-icon .sf-icon{
+    width:var(--sf-ui-icon);
+    height:var(--sf-ui-icon);
+    display:block;
+    filter:brightness(0);
+  }
+  .sf-glisse-dock-badge{
+    position:absolute;top:-5px;right:-10px;
+    display:grid;place-items:center;min-width:16px;height:16px;
+    border-radius:100px;background:var(--sf-ui-ink);color:#fff;
+    font-size:10px;line-height:1;padding:0 3px;
+  }
+  .sf-mobile-dock.is-collapsed .sf-glisse-dock-root{
+    opacity:0;
+    pointer-events:none;
+    transition:transform var(--sf-ui-motion-dock) var(--sf-ui-ease-dock),
+      opacity 100ms ease 380ms;
+  }
+  .sf-mobile-dock.is-collapsed .sf-glisse-dock-root a{pointer-events:none}
+  .sf-mobile-dock .sf-glisse-tabbar .lg-tab-bar-glass{
+    border-radius:inherit;
+  }
+}
+@media(min-width:701px){.sf-glisse-dock-root{display:none}}
+@media(forced-colors:active){
+  .sf-glisse-dock-root{display:none!important}
+  .sf-mobile-dock.sf-glisse-ready .sf-dock-surface{visibility:visible!important;pointer-events:auto!important}
+  html body .sf-glisse-host.sf-ui-surface,
+  html body .sf-glisse-host.sf-ui-icon-button--soft{
+    background:Canvas!important;color:CanvasText!important;
+  }
+  .sf-glisse-glass-mount{display:none!important}
+}
