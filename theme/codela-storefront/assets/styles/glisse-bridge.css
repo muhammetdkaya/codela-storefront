@@ -253,3 +253,14 @@ html.sf-overlay-scroll-locked .sf-shell .sf-header .sf-glisse-glass-plate{
     transition:none!important;
   }
 }
+
+/* 0.1.328 fail-open safety: the native four-tab dock remains the only
+   mobile navigation. Never hide its hit targets for a decorative React layer.
+   A collapsed dock still follows its existing reveal-handle behavior. */
+@media(max-width:700px){
+  .sf-mobile-dock .sf-glisse-dock-root{display:none!important}
+  .sf-mobile-dock.sf-glisse-ready:not(.is-collapsed) .sf-dock-surface{
+    visibility:visible!important;
+    pointer-events:auto!important;
+  }
+}

@@ -136,6 +136,19 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     for(const type of ['pointerup','pointercancel','pointerleave'])el.addEventListener(type,press,{passive:true});
   }
 
+  // Safety hotfix: prefer native PHP tabs until the Glisse dock can prove
+  // visibility and input parity on physical iOS Safari. Keeping native
+  // navigation avoids making the whole storefront unusable when the Glisse
+  // replacement is hidden, fails to hydrate or is moved across modal layers.
+  function restoreNativeDock(dock) {
+    dock.classList.remove('sf-glisse-ready');
+    dock.querySelectorAll('.sf-dock-surface .sf-dock-item').forEach(anchor=>{
+      if(anchor.getAttribute('aria-hidden')==='true')anchor.removeAttribute('aria-hidden');
+      if(anchor.tabIndex===-1)anchor.removeAttribute('tabindex');
+    });
+    dock.querySelector('.sf-glisse-dock-root')?.remove();
+  }
+
   function mountDock(dock) {
     if(docks.has(dock) || window.matchMedia('(forced-colors: active)').matches)return;
     const native=dock.querySelector('.sf-dock-surface');
@@ -248,7 +261,9 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     const shell=doc.querySelector('.sf-shell');
     if(!shell)return;
     shell.classList.add('sf-glisse-light');
-    doc.querySelectorAll('.sf-mobile-dock').forEach(mountDock);
+    // Do not mount Glisse's mobile TabBar while restoring navigation safety.
+    // Native Codela dock already has active state, touch gestures and panels.
+    doc.querySelectorAll('.sf-mobile-dock').forEach(restoreNativeDock);
     doc.querySelectorAll(selector).forEach(mountGlass);
     doc.querySelectorAll(buttonSelector).forEach(el=>{
       if(buttonRoots.has(el) || buttonQueued.has(el))return;

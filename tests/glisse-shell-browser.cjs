@@ -53,31 +53,23 @@ const html='<div class="sf-shell has-mobile-dock"><header class="sf-header">'+
     }));
   });
   await page.addScriptTag({content:read(root+'scripts/glisse-bridge.js')});
-  await page.waitForSelector('.sf-mobile-dock.sf-glisse-ready .sf-glisse-tabbar.lg-tab-bar');
-  assert.equal(await page.locator('.sf-mobile-dock .lg-tab').count(),4,'Real Glisse generates four tabs');
-  const dims=await page.evaluate(()=>{
-    const dock=document.querySelector('.sf-mobile-dock'),tabs=[...document.querySelectorAll('.sf-glisse-tabbar .lg-tab')];
-    return {dock:dock.clientWidth,tabWidth:tabs[0].getBoundingClientRect().width,lastRight:tabs[3].getBoundingClientRect().right,barRight:document.querySelector('.sf-glisse-tabbar').getBoundingClientRect().right};
+  await page.waitForSelector('.sf-shell.sf-glisse-light .sf-mobile-dock .sf-dock-item');
+  assert.equal(await page.locator('.sf-mobile-dock .sf-dock-item').count(),4,'Four native tabs remain visible');
+  assert.equal(await page.locator('.sf-mobile-dock .sf-glisse-tabbar').count(),0,'No fragile Glisse replacement mounted');
+  const nativeStyle=await page.evaluate(()=>{
+    const dock=document.querySelector('.sf-mobile-dock');
+    const surface=dock.querySelector('.sf-dock-surface');
+    const rect=surface.getBoundingClientRect();
+    const style=getComputedStyle(surface);
+    return {width:rect.width,height:rect.height,visibility:style.visibility,pointerEvents:style.pointerEvents};
   });
-  assert(Math.abs(dims.tabWidth-(dims.dock-8)/4)<=2,'All four Glisse tabs share actual dock width: '+JSON.stringify(dims));
-  assert(Math.abs(dims.lastRight-(dims.barRight-4))<=3,'Fourth tab reaches the right inset');
-  await page.locator('.sf-glisse-tabbar .lg-tab').nth(1).click();
+  assert(nativeStyle.width>200 && nativeStyle.height>40 &&
+    nativeStyle.visibility==='visible' && nativeStyle.pointerEvents!=='none',
+    'Native dock remains usable: '+JSON.stringify(nativeStyle));
+  await page.locator('.sf-dock-item').nth(1).click();
   await page.waitForFunction(()=>document.querySelector('.sf-dock-item[data-dock-view="search"]').classList.contains('is-active'));
-  await page.waitForTimeout(80);
-  const renders=await page.evaluate(()=>window.__glisseDockRenders);
-  for(let k=0;k<8;k++){
-    await page.evaluate(()=>{
-      const dock=document.querySelector('.sf-mobile-dock');
-      dock.classList.toggle('is-pressing');
-      dock.querySelector('.sf-dock-item').classList.toggle('is-pressed');
-    });
-    await page.waitForTimeout(32);
-  }
-  await page.waitForTimeout(80);
-  const nextRenders=await page.evaluate(()=>window.__glisseDockRenders);
-  assert.equal(nextRenders,renders,'Cosmetic dock motion never rerenders real Glisse TabBar');
   const counter=await page.evaluate(()=>window.nativeClicks);
-  assert.equal(counter.search,1,'Glisse forwards exactly one activation to native Search');
+  assert.equal(counter.search,1,'Native Search action runs exactly once');
   assert.equal(counter.home,0);
   assert(await page.locator('.sf-glisse-glass-plate').count()>=2,'Header islands use real Glisse Glass');
   await page.waitForSelector('.sf-glisse-button-host#soft-control');
@@ -94,15 +86,15 @@ const html='<div class="sf-shell has-mobile-dock"><header class="sf-header">'+
   await page.evaluate(()=>window.dispatchEvent(new PointerEvent('pointerup',{pointerId:987,pointerType:'touch',isPrimary:true,button:0})));
   await page.waitForFunction(()=>!document.querySelector('.sf-glisse-paint-button')?.hasAttribute('data-pressed'));
   const nativeHidden=await page.locator('.sf-dock-item').first().getAttribute('aria-hidden');
-  assert.equal(nativeHidden,'true','Native anchor remains available as event owner but not duplicate tab stop');
+  assert.equal(nativeHidden,null,'Original native anchor stays accessible');
+  assert.equal(await page.locator('.sf-dock-item').first().getAttribute('tabindex'),null,
+    'Native tabs retain keyboard focus');
   await page.setViewportSize({width:320,height:750});
   await page.waitForFunction(()=>{
-    const bar=document.querySelector('.sf-glisse-tabbar');
-    const tab=bar?.querySelectorAll('.lg-tab')[3];
-    return !!tab && Math.abs(tab.getBoundingClientRect().right-(bar.getBoundingClientRect().right-4))<3;
-  },null,{timeout:4000});
-  const gap=await page.evaluate(()=>{const bar=document.querySelector('.sf-glisse-tabbar'),tabs=bar.querySelectorAll('.lg-tab');return Math.abs(tabs[3].getBoundingClientRect().right-(bar.getBoundingClientRect().right-4));});
-  assert(gap<3,'Dock slots remain aligned after resize: gap '+gap);
+    const surface=document.querySelector('.sf-dock-surface');
+    const rect=surface?.getBoundingClientRect();
+    return !!rect && rect.width>=300 && getComputedStyle(surface).visibility==='visible';
+  });
   // Reparent the movable header menu control into an open native dialog:
   // do not create more React button/Glass instances during the animation.
   const beforePanel=await page.locator('.sf-glisse-button-mount').count();
@@ -132,6 +124,10 @@ const html='<div class="sf-shell has-mobile-dock"><header class="sf-header">'+
     document.querySelector('.sf-header').append(menu);
     dialog.remove();
   });
+  assert.equal(await page.locator('.sf-dock-item').count(),4,
+    'All four native tabs survive dialog open/close');
+  assert.equal(await page.locator('.sf-mobile-dock .sf-glisse-tabbar').count(),0,
+    'Dialog transitions cannot hide native tabs behind a stale Glisse root');
   await page.setViewportSize({width:1280,height:800});
   await page.locator('#head-control').click();
   assert(await page.locator('.sf-glisse-glass-plate').count()>=2,'Glisse visual layers do not swallow native button input');
