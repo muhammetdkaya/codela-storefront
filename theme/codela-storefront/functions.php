@@ -140,6 +140,39 @@ add_action( 'init', function() {
     register_block_type( 'codela/storefront-footer', [ 'api_version' => 3, 'render_callback' => 'codela_sf_footer', 'supports' => [ 'html' => false, 'inserter' => false ] ] );
 } );
 /**
+ * Tiny guest/customer diagnostics loader: no performance sampler, network call
+ * or extra stylesheet for ordinary visitors. Only the explicitly opted-in
+ * browser tab loads the existing privacy-scrubbed timing instrument.
+ * A PHP-only query check would fail on cached pages and lose measurements
+ * when the user navigates away from ?codela_debug=1.
+ */
+add_action( 'wp_head', static function() {
+    if ( ! codela_sf_ready() || current_user_can( 'manage_options' ) ) { return; }
+    $url = get_template_directory_uri() . '/assets/scripts/interaction-diagnostics.js?ver='
+        . rawurlencode( codela_sf_script_module_version( 'scripts/interaction-diagnostics.js' ) );
+    ?>
+    <script id="codela-storefront-guest-performance-optin">
+    (function(){
+        try {
+            var query = new URLSearchParams(location.search).get('codela_debug');
+            if (query === '0') {
+                sessionStorage.removeItem('codela-performance-debug');
+                sessionStorage.removeItem('codela-performance-debug-history');
+                return;
+            }
+            if (query !== '1' &&
+                sessionStorage.getItem('codela-performance-debug') !== '1') return;
+            var script = document.createElement('script');
+            script.src = <?php echo wp_json_encode( $url, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT ); ?>;
+            script.async = true;
+            document.head.appendChild(script);
+        } catch (_) {}
+    }());
+    </script>
+    <?php
+}, 2 );
+
+/**
  * Checkout payment/thank-you endpoints must remain completely untouched.
  * Only the native checkout form document receives an inert loading preview.
  */

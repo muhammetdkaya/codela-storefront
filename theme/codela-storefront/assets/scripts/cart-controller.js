@@ -138,6 +138,10 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
     }
 
     async function requestCart(path = '', payload = null, { signal, acceptNonce = true } = {}) {
+        const debugStart = window.codelaSFDebug ? performance.now() : 0;
+        const request = payload ? 'write' : 'read';
+        window.codelaSFDebug?.mark('cart.request.begin', {request});
+        try {
         const response = await fetch(config().api + 'cart' + path, {
             method:payload ? 'POST':'GET', credentials:'same-origin', cache:'no-store', signal,
             headers:payload ? {'Content-Type':'application/json', 'Nonce':cartNonce} : {},
@@ -148,8 +152,13 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
         if (nonce && (typeof acceptNonce === 'function' ? acceptNonce() : acceptNonce)) cartNonce = nonce;
         if (!response.ok) { const error = new Error(decode(data.message || t('Something went wrong. Please try again.'))); error.code = data.code; error.cart = data.data?.cart; throw error; }
         return data;
+        } finally {
+            window.codelaSFDebug?.mark('cart.request.end', {request,
+                elapsed:performance.now()-debugStart});
+        }
     }
     function paintCart(data) {
+        const debugStart = window.codelaSFDebug ? performance.now() : 0;
         cartData = data;
         document.querySelectorAll('.sf-badge').forEach(badge => { badge.textContent = data.items_count || ''; });
         document.querySelectorAll('[data-panel="cart"]').forEach(link => {
@@ -169,6 +178,7 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
             window.codelaSFCartBoot?.ready();
             document.documentElement.classList.remove('sf-cart-awaiting', 'sf-cart-fallback');
         }
+        window.codelaSFDebug?.mark('cart.paint', {elapsed:performance.now()-debugStart});
     }
     function showPageFallback() {
         if (!pageActive() || pageHost.classList.contains('is-ready')) return;

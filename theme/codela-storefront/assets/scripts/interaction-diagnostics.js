@@ -1,7 +1,8 @@
 /**
- * Codela mobile interaction diagnostics (opt-in, administrators only).
- * No network calls, no URLs, form values, cookies, account data or storage of
- * reports. Only numeric timings and fixed UI action names are captured.
+ * Codela mobile interaction diagnostics (opt-in).
+ * No report uploads, URLs, form values, cookies or account identifiers. Only
+ * numeric timings, a guest/signed-in flag and fixed UI action names are stored
+ * in the tab's sessionStorage until cleared.
  * Enable with ?codela_debug=1; disable with ?codela_debug=0 or Stop.
  */
 (function(){
@@ -30,7 +31,8 @@
     'dockCollapsed','scrollLocked','panel','from','alreadyOpen','elapsed',
     'visible','duration','opened','navigating','collapsed','delay','relocated',
     'index','target','afterInput','part','property','frames','firstFrame',
-    'maxGap','p95Gap','droppedFrames','total','open','domReady','responseStart']);
+    'maxGap','p95Gap','droppedFrames','total','open','domReady','responseStart',
+    'guest','request']);
   const labels=new Set(['menu','search','cart','account','filters','home',
     'product','catalog','checkout','content','page','none','other']);
   function clean(key,value){
@@ -40,6 +42,7 @@
     if(['panel','from','target'].includes(key))return labels.has(value)?value:'other';
     if(key==='control')return /^(?:dock\.(?:home|search|cart|account|other)|panel\.(?:menu|search|cart|account|filters|close|other))$/.test(value)?value:'other';
     if(key==='source')return ['pointer','touch','click'].includes(value)?value:null;
+    if(key==='request')return ['read','write'].includes(value)?value:null;
     if(key==='part')return ['dock','menu-trigger','panel'].includes(value)?value:null;
     if(key==='property')return ['transform','opacity','scale','visibility','other'].includes(value)?value:null;
     return null;
@@ -99,8 +102,9 @@
       return {
         tool:'codela-interaction-timing',
         schema:1,
-        theme:'0.1.331',
+        theme:'0.1.332',
         pages:pageIndex,
+        session:document.body?.classList.contains('logged-in')?'signed-in':'guest',
         device:{
           width:innerWidth,height:innerHeight,
           pixelRatio:Math.round((devicePixelRatio||1)*10)/10,
@@ -143,6 +147,7 @@
     const modal=document.querySelector('#sf-panel');
     const dock=document.querySelector('.sf-mobile-dock');
     return {
+      guest:!document.body?.classList.contains('logged-in'),
       modal:!!modal?.open,
       dockHidden:!!dock?.hidden,
       dockCollapsed:!!dock?.classList.contains('is-collapsed'),
