@@ -45,6 +45,8 @@ const browserType=process.env.TEST_WEBKIT?webkit:chromium;
   assert(data.samples.some(x=>x.control==='dock.search'),'Dock timing sampled');
   assert(data.events.some(x=>x.type==='overlay.open.begin'),'Controller markers stored');
   assert(data.events.some(x=>x.type==='frames.summary'),'Frame spikes summarised');
+  assert(data.events.some(x=>x.type==='timer.probe' && x.lag >= 0),
+    'Independent JavaScript timer measures main-thread stalls');
   assert(data.events.some(x=>x.type==='dialog.state'),'Dialog state changes tracked');
   const json=JSON.stringify(data);
   assert(!/SECRET-CUSTOMER-EMAIL|MY-PRIVATE-ID|perf.test|https?:/.test(json),'PII and URL never leak into report');
@@ -61,6 +63,23 @@ const browserType=process.env.TEST_WEBKIT?webkit:chromium;
   await page.locator('[data-action="copy"]').click();
   await page.waitForFunction(()=>window.__copied!==null);
   assert((await page.evaluate(()=>window.__copied)).includes('codela-interaction-timing'),'Clipboard contains report');
+  assert.equal(await page.evaluate(()=>window.codelaSFDebug.mode()),'normal');
+  await page.locator('[data-mode="no-animation"]').click();
+  assert.equal(await page.evaluate(()=>window.codelaSFDebug.report().mode),'no-animation');
+  assert.equal(await page.evaluate(()=>window.codelaSFDebug.skipPanelAnimation(document.createElement('div'))),false);
+  assert.equal(await page.evaluate(()=>{
+    const element=document.createElement('div');element.id='sf-menu';
+    return window.codelaSFDebug.skipPanelAnimation(element);
+  }),true,'Only Menu and Search wide-panel entrance motion is isolated');
+  await page.locator('[data-mode="no-glass"]').click();
+  assert(await page.locator('html').evaluate(el=>el.classList.contains('sf-perf-no-glass')),
+    'Diagnostic-only no-glass mode is scoped to html');
+  assert.equal(await page.evaluate(()=>window.codelaSFDebug.report().mode),'no-glass');
+  await page.locator('[data-mode="both"]').click();
+  assert.equal(await page.evaluate(()=>window.codelaSFDebug.report().mode),'both');
+  await page.locator('[data-mode="normal"]').click();
+  assert.equal(await page.evaluate(()=>document.documentElement.classList.contains('sf-perf-no-glass')),false,
+    'Normal mode restores all native appearance');
   await page.locator('[data-action="clear"]').click();
   assert.equal(await page.evaluate(()=>window.codelaSFDebug.report().samples.length),0,'Clear resets samples');
   await page.locator('[data-action="stop"]').click();
