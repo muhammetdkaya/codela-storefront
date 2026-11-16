@@ -13,8 +13,8 @@ const browserType=process.env.TEST_WEBKIT?webkit:chromium;
   await page.route('https://perf.test/**',route=>route.fulfill({contentType:'text/html',body:`
     <!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head>
     <body><nav class="sf-mobile-dock"><div class="sf-dock-surface">
-      <a href="/home/" class="sf-dock-item" data-dock-view="home">Home</a>
-      <a href="/search/" class="sf-dock-item" data-dock-view="search">Search</a>
+      <a href="#home" class="sf-dock-item" data-dock-view="home">Home</a>
+      <a href="#search" class="sf-dock-item" data-dock-view="search">Search</a>
     </div></nav>
     <button data-panel="menu" id="menu">Menu</button>
     <dialog id="sf-panel"><button class="sf-close">Close</button></dialog>
@@ -46,7 +46,7 @@ const browserType=process.env.TEST_WEBKIT?webkit:chromium;
   const json=JSON.stringify(data);
   assert(!/SECRET-CUSTOMER-EMAIL|MY-PRIVATE-ID|perf.test|https?:/.test(json),'PII and URL never leak into report');
   await page.locator('.sf-debug-toggle').click();
-  await page.evaluate(()=>{window.__copied=null;navigator.clipboard.writeText=async t=>window.__copied=t});
+  await page.evaluate(()=>{window.__copied=null;Object.defineProperty(navigator,'clipboard',{value:{writeText:async t=>{window.__copied=t;}},configurable:true});});
   await page.locator('[data-action="copy"]').click();
   await page.waitForFunction(()=>window.__copied!==null);
   assert((await page.evaluate(()=>window.__copied)).includes('codela-interaction-timing'),'Clipboard contains report');

@@ -17,6 +17,7 @@
   if(window.codelaSFDebug)return;
   const born=performance.now(), records=[], summaries=[];
   const limit=240;
+  let longTaskObserver=null;
   let sequence=0, lastInput=null, expanded=false, hud=null, output=null, status=null, destroyed=false;
   const round=n=>Math.round(n*10)/10;
   const now=()=>performance.now();
@@ -69,10 +70,10 @@
     PerformanceObserver.supportedEntryTypes?.includes('longtask'));
   if(longTaskSupported){
     try {
-      const observer=new PerformanceObserver(list=>{
+      longTaskObserver=new PerformanceObserver(list=>{
         for(const entry of list.getEntries())record('long-task',{duration:entry.duration});
       });
-      observer.observe({type:'longtask'});
+      longTaskObserver.observe({type:'longtask'});
     }catch(e){}
   }
   function identify(el){
@@ -96,6 +97,7 @@
     };
   }
   function start(label,source,stamp){
+    if(destroyed)return;
     const id=++sequence,begin=now();
     lastInput={id,label,at:begin};
     const inputDelay=Math.max(0,begin-(stamp||begin));
@@ -208,7 +210,7 @@
     hud.querySelector('[data-action="clear"]').addEventListener('click',()=>api.clear());
     hud.querySelector('[data-action="stop"]').addEventListener('click',()=>{
       try{sessionStorage.removeItem(key)}catch(e){}
-      destroyed=true;observer.disconnect();hud.remove();sheet.remove();
+      destroyed=true;observer.disconnect();longTaskObserver?.disconnect();hud.remove();sheet.remove();
       delete window.codelaSFDebug;
     });
     hud.querySelector('[data-action="copy"]').addEventListener('click',async()=>{
