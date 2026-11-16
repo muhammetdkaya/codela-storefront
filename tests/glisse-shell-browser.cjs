@@ -52,7 +52,20 @@ const html='<div class="sf-shell has-mobile-dock"><header class="sf-header">'+
   const counter=await page.evaluate(()=>window.nativeClicks);
   assert.equal(counter.search,1,'Glisse forwards exactly one activation to native Search');
   assert.equal(counter.home,0);
-  assert(await page.locator('.sf-glisse-glass-plate').count()>=2,'Header and common soft controls use real Glisse Glass');
+  assert(await page.locator('.sf-glisse-glass-plate').count()>=2,'Header islands use real Glisse Glass');
+  await page.waitForSelector('.sf-glisse-button-host#soft-control');
+  assert(await page.locator('.sf-glisse-paint-button').count()>=1,'Real Glisse Button paints general soft control');
+  await page.evaluate(()=>{
+    const host=document.querySelector('#soft-control');
+    const box=host.getBoundingClientRect();
+    host.dispatchEvent(new PointerEvent('pointerdown',{
+      bubbles:true,pointerId:987,pointerType:'touch',isPrimary:true,button:0,buttons:1,
+      clientX:box.left+box.width/2,clientY:box.top+box.height/2
+    }));
+  });
+  await page.waitForFunction(()=>document.querySelector('.sf-glisse-paint-button')?.hasAttribute('data-pressed'));
+  await page.evaluate(()=>window.dispatchEvent(new PointerEvent('pointerup',{pointerId:987,pointerType:'touch',isPrimary:true,button:0})));
+  await page.waitForFunction(()=>!document.querySelector('.sf-glisse-paint-button')?.hasAttribute('data-pressed'));
   const nativeHidden=await page.locator('.sf-dock-item').first().getAttribute('aria-hidden');
   assert.equal(nativeHidden,'true','Native anchor remains available as event owner but not duplicate tab stop');
   await page.setViewportSize({width:320,height:750});
@@ -66,6 +79,7 @@ const html='<div class="sf-shell has-mobile-dock"><header class="sf-header">'+
   await page.setViewportSize({width:1280,height:800});
   await page.locator('#head-control').click();
   assert(await page.locator('.sf-glisse-glass-plate').count()>=2,'Glisse visual layers do not swallow native button input');
+  assert.equal(await page.locator('#head-control').count(),1,'Original header control still exists');
   await page.close();
   console.log('Glisse shell browser integration passed on '+(process.env.TEST_WEBKIT?'WebKit':'Chromium'));
  }finally{await browser.close();}
