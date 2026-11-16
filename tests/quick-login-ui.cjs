@@ -159,3 +159,17 @@ assertImeSafeEnter(smart,'email');
 assertImeSafeEnter(js,'pin');
 
 console.log('Quick login browser contracts passed');
+
+/* The head bootstrap covers Woo's real fallback without duplicating forms. */
+{
+  const accountCss=fs.readFileSync('theme/codela-storefront/assets/styles/account.css','utf8');
+  const smartJs=fs.readFileSync('theme/codela-storefront/assets/scripts/auth-smart.js','utf8');
+  assert(php.includes('sf-auth-booting') && php.includes('8000'),
+    'Direct Account first paint is masked with a bounded fallback');
+  assert(accountCss.includes('html.sf-auth-booting:not(.sf-quick-checking)') &&
+    accountCss.includes('visibility:hidden!important'),'Only the loading view is masked');
+  assert(smartJs.includes("classList.remove('sf-auth-booting')"),
+    'Email login reveals only after progressive fields are mounted');
+  assert(js.includes("classList.remove('sf-auth-booting')"),
+    'Remembered account atomically reveals after device check');
+}

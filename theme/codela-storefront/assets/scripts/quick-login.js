@@ -758,6 +758,7 @@
       // Woo form; never paint the form first while the status request is pending.
       if (!document.documentElement.classList.contains('sf-quick-auth-redirect')) {
         document.documentElement.classList.remove('sf-quick-checking');
+        document.documentElement.classList.remove('sf-auth-booting');
       }
       // The one-time redirect token is needed for the request, not for the
       // visible address. Keep the canonical /my-account/ URL after loading.

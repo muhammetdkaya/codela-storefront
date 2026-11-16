@@ -322,6 +322,12 @@
     for(const root of document.querySelectorAll('.woocommerce')){
       if(root.querySelector('.sf-account-intro'))initRoot(root);
     }
+    // Only reveal after enhanced controls actually exist. If a remembered
+    // device is being verified, quick-login owns the final atomic reveal.
+    if(!document.documentElement.classList.contains('sf-quick-checking') &&
+       document.querySelector('body.woocommerce-account .woocommerce.sf-smart-auth-active')){
+      document.documentElement.classList.remove('sf-auth-booting');
+    }
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
   else start();

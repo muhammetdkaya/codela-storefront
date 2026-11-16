@@ -500,6 +500,11 @@ add_action( 'wp_head', static function(): void {
     // Prepaint protection also covers the instant Account panel on other
     // storefront pages. Only the visible view is masked; no navigation waits.
     if ( is_user_logged_in() ) { return; }
+    // Direct My Account includes Woo's no-JS form in the document. Keep its
+    // first paint covered until the progressive Codela login is ready.
+    if ( function_exists( 'is_account_page' ) && is_account_page() ) {
+        echo '<script>(function(){document.documentElement.classList.add("sf-auth-booting");window.setTimeout(function(){document.documentElement.classList.remove("sf-auth-booting")},8000)})();</script>';
+    }
     echo '<script>(function(){try{var a=function(n){try{return JSON.parse(localStorage.getItem(n)||"null")}catch(e){return null}};var p=a("codela_sf_quick_profile_v1"),q=a("codela_sf_passkey_hint_v1"),ps=a("codela_sf_quick_profiles_v2"),ks=a("codela_sf_passkey_hints_v2");var pin=function(x){return x&&Number.isSafeInteger(x.userId)&&/^[0-9a-f]{32}$/.test(x.deviceId||"")};var bio=function(x){return x&&Number.isSafeInteger(x.userId)&&typeof x.credentialId==="string"&&!x.paused};if(pin(p)||bio(q)||(Array.isArray(ps)&&ps.some(pin))||(Array.isArray(ks)&&ks.some(bio))){document.documentElement.classList.add("sf-quick-checking");if(bio(q)||(Array.isArray(ks)&&ks.some(bio))){document.documentElement.classList.add("sf-quick-passkey-hint")}window.setTimeout(function(){document.documentElement.classList.remove("sf-quick-checking")},7000)}}catch(e){}})();</script>';
 }, 1 );
 
