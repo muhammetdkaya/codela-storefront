@@ -19,7 +19,8 @@ const dockController=read('theme/codela-storefront/assets/scripts/dock-controlle
 assert.match(dockController,/sf-glisse-ready/);
 assert.match(src,/anchors\[at\]\?\.click\(\)/);
 assert.match(src,/MutationObserver/);
-assert.match(src,/if\(!ready\)requestAnimationFrame/);
+assert.match(src,/readyObserver\.observe\(mount/);
+assert.match(src,/readyObserver\.disconnect\(\)/);
 assert.match(src,/root\.unmount\(\)/);
 assert.match(render,/data-wp-on--click="actions\.search"/);
 assert.match(render,/data-wp-on--click="actions\.cart"/);
