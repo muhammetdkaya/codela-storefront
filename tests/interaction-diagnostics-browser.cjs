@@ -39,6 +39,9 @@ const browserType=process.env.TEST_WEBKIT?webkit:chromium;
   await page.waitForTimeout(850);
   const data=await page.evaluate(()=>window.codelaSFDebug.report());
   assert.equal(data.tool,'codela-interaction-timing');
+  assert.equal(data.session,'guest','Default unregistered browser is labeled guest');
+  assert(data.events.some(x=>x.type==='input' && x.guest === true),
+    'Guest flag is present in each sampled interaction');
   assert(data.samples.some(x=>x.control==='dock.search'),'Dock timing sampled');
   assert(data.events.some(x=>x.type==='overlay.open.begin'),'Controller markers stored');
   assert(data.events.some(x=>x.type==='frames.summary'),'Frame spikes summarised');
@@ -66,6 +69,12 @@ const browserType=process.env.TEST_WEBKIT?webkit:chromium;
   await page.goto('https://perf.test/?codela_debug=0');
   await page.addScriptTag({content:source});
   assert.equal(await page.locator('#sf-performance-debug').count(),0,'Explicit opt out');
+  await page.goto('https://perf.test/?codela_debug=1');
+  await page.addScriptTag({content:source});
+  await page.waitForSelector('#sf-performance-debug');
+  await page.evaluate(()=>document.body.classList.add('logged-in'));
+  assert.equal(await page.evaluate(()=>window.codelaSFDebug.report().session),'signed-in',
+    'Admin/customer comparison uses a coarse signed-in flag, never an account identifier');
   assert.deepEqual(errors,[]);
   console.log('Opt-in mobile diagnostics and privacy passed ('+(process.env.TEST_WEBKIT?'WebKit':'Chromium')+')');
  }finally{await browser.close();}
