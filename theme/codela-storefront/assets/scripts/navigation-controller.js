@@ -84,6 +84,7 @@ document.addEventListener('click', event => {
     const generation = ++navigationGeneration;
     finishLoading();
     feedbackToken = window.codelaSFFeedback?.begin({ url, link, owner: 'router' });
+    window.codelaSFDebug?.mark('router.navigate.begin',{target:link.dataset.sfRoute||'page'});
     const token = feedbackToken;
     let fallingBack = false;
     // Dynamic import means the router is paid for only on actual navigation.
@@ -101,6 +102,7 @@ document.addEventListener('click', event => {
         if (ownsFeedback) {
             finishLoading();
             commitLocation({ focus: true });
+            window.codelaSFDebug?.mark('router.navigate.end',{target:link.dataset.sfRoute||'page'});
         } else feedbackToken = null;
     });
 });

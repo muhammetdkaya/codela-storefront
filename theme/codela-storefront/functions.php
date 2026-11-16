@@ -466,6 +466,16 @@ add_action( 'wp_enqueue_scripts', function() {
     // four-tab store shell and working menu/cart/search module as the shop.
     // WooCommerce still owns its native guest login form and auth processing.
     wp_enqueue_script_module( 'codela-storefront' );
+    // Administrator-only, explicit opt-in performance recorder. The small
+    // bootstrap is inert unless ?codela_debug=1 has enabled this tab's session.
+    // No public visitor receives the asset, and reports never leave the device.
+    if ( function_exists( 'current_user_can' ) && current_user_can( 'manage_options' ) ) {
+        wp_enqueue_script(
+            'codela-storefront-interaction-diagnostics',
+            $root_uri . 'scripts/interaction-diagnostics.js',
+            [], codela_sf_script_module_version( 'scripts/interaction-diagnostics.js' ), false
+        );
+    }
     // Glisse phase 1 is progressively enhanced: keep native PHP navigation
     // intact if the optional compiled adapter is missing or JavaScript fails.
     // wp-element supplies React; do not ship a competing React runtime.
