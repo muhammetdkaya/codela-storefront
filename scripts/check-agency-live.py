@@ -57,13 +57,17 @@ def check() -> None:
                     # This test site explicitly migrated from the old Agency
                     # theme switch. A generic valid Codela layout could be the
                     # old e-commerce product demo, so generic checks are unsafe.
-                    agency_markers = [
-                        "sf-agency-widget--cards",
-                        "sf-agency-widget--scroll",
-                        "data-agency-swap",
-                        "data-agency-container-scroll",
+                    # A page can legitimately select Card Swap *or* 3D
+                    # Scroll (not both). Verify a complete, real widget
+                    # contract rather than demanding an unused alternative.
+                    valid_hero_variants = [
+                        ("sf-agency-widget--cards", "data-agency-swap"),
+                        ("sf-agency-widget--scroll", "data-agency-container-scroll"),
                     ]
-                    missing = [marker for marker in agency_markers if marker not in html]
+                    missing = [] if any(all(token in html for token in pair)
+                                        for pair in valid_hero_variants) else [
+                        "a complete Card Swap or 3D Scroll widget"
+                    ]
                 else:
                     missing = [marker for marker in markers if marker not in html]
                 if missing:
