@@ -56,9 +56,13 @@ const html='<div class="sf-shell has-mobile-dock"><header class="sf-header">'+
   const nativeHidden=await page.locator('.sf-dock-item').first().getAttribute('aria-hidden');
   assert.equal(nativeHidden,'true','Native anchor remains available as event owner but not duplicate tab stop');
   await page.setViewportSize({width:320,height:750});
-  await page.waitForTimeout(120);
+  await page.waitForFunction(()=>{
+    const bar=document.querySelector('.sf-glisse-tabbar');
+    const tab=bar?.querySelectorAll('.lg-tab')[3];
+    return !!tab && Math.abs(tab.getBoundingClientRect().right-(bar.getBoundingClientRect().right-4))<3;
+  },null,{timeout:4000});
   const gap=await page.evaluate(()=>{const bar=document.querySelector('.sf-glisse-tabbar'),tabs=bar.querySelectorAll('.lg-tab');return Math.abs(tabs[3].getBoundingClientRect().right-(bar.getBoundingClientRect().right-4));});
-  assert(gap<3,'Dock slots remain aligned after resize');
+  assert(gap<3,'Dock slots remain aligned after resize: gap '+gap);
   await page.setViewportSize({width:1280,height:800});
   await page.locator('#head-control').click();
   assert(await page.locator('.sf-glisse-glass-plate').count()>=2,'Glisse visual layers do not swallow native button input');
