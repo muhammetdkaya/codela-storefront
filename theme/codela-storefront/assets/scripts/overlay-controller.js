@@ -175,7 +175,7 @@ export function createOverlayController({
         } else open('menu', event);
     }
     function open(name, event) {
-        const debugStart=performance.now();
+        const debugStart=window.codelaSFDebug ? performance.now() : 0;
         window.codelaSFDebug?.mark('overlay.open.begin',{panel:name,from:current||'none',alreadyOpen:!!dialog?.open});
         if (event && (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) return;
         // The native Cart page already displays the *actual* cart dialog
@@ -358,7 +358,7 @@ export function createOverlayController({
         finishClose();
     }
     function finishClose(navigating = false) {
-        const debugStart=performance.now();
+        const debugStart=window.codelaSFDebug ? performance.now() : 0;
         window.codelaSFDebug?.mark('overlay.finish.begin',{panel:current||'none',navigating});
         surfaceMotion?.cancel(); surfaceMotion = null;
         panelMotion?.cancel(); panelMotion = null;

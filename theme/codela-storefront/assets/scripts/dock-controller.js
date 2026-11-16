@@ -90,7 +90,7 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
     }
     // A native modal makes outside nodes inert; move the one real dock into its top layer.
     function mountDock() {
-        const debugStart=performance.now();
+        const debugStart=window.codelaSFDebug ? performance.now() : 0;
         const dock = mobileDock();
         const dialog = getDialog();
         if (dock && dock.parentElement !== dialog) {
@@ -103,7 +103,7 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
         }
     }
     function restoreDock() {
-        const debugStart=performance.now();
+        const debugStart=window.codelaSFDebug ? performance.now() : 0;
         const dock = mobileDock();
         if (!dock) return;
         // The native dock remains in the document when Menu opens. Avoid
