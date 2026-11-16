@@ -67,6 +67,7 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     native.after(mount);
     const root=React.createRoot(mount);
     let ready=false;
+    let widthObserver;
     const base=anchors.map((anchor,index)=>({
       value:anchor.dataset.dockView,
       label:anchor.querySelector(':scope > span:last-child')?.textContent?.trim()||anchor.getAttribute('aria-label')||'',
@@ -102,6 +103,7 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
         value:current,
         link:BridgeLink,
         className:'sf-glisse-tabbar',
+        style:{'--lg-tab-width':Math.max(0,(dock.clientWidth-8)/4)+'px'},
         'aria-label':dock.getAttribute('aria-label')||'Mobile navigation'
       }));
       if(!ready)requestAnimationFrame(()=>{
@@ -122,14 +124,16 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     watch.observe(native,{attributes:true,childList:true,characterData:true,subtree:true,
       attributeFilter:['class','aria-current','aria-expanded','aria-hidden','style']});
     watch.observe(dock,{attributes:true,attributeFilter:['class','hidden']});
-    docks.set(dock,{root,watch,mount,anchors});
+    widthObserver=new ResizeObserver(schedule);
+    widthObserver.observe(dock);
+    docks.set(dock,{root,watch,widthObserver,mount,anchors});
     sync();
   }
   let queued=false;
   function refresh() {
     queued=false;
     for(const [el,root] of roots)if(!el.isConnected){root.unmount();roots.delete(el);}
-    for(const [el,entry] of docks)if(!el.isConnected){entry.watch.disconnect();entry.root.unmount();docks.delete(el);}
+    for(const [el,entry] of docks)if(!el.isConnected){entry.watch.disconnect();entry.widthObserver.disconnect();entry.root.unmount();docks.delete(el);}
     const shell=doc.querySelector('.sf-shell');
     if(!shell)return;
     shell.classList.add('sf-glisse-light');
