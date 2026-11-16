@@ -14,6 +14,15 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
   const roots = new Map();
   const buttonRoots = new Map();
   const docks = new Map();
+  const buttonQueued = new WeakSet();
+  const buttonObserver = typeof IntersectionObserver === 'function'
+    ? new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        buttonObserver.unobserve(entry.target);
+        mountButton(entry.target);
+      }
+    }, {rootMargin:'80px'}) : null;
   // Header capsules are genuine Glisse Glass; individual soft controls
   // use a genuine Glisse Button paint-layer without replacing native actions.
   const selector = [
@@ -29,9 +38,11 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
   ].join(',');
 
   function mountButton(el) {
-    if (buttonRoots.has(el) || buttonRoots.size >= 18 ||
-        el.closest('.sf-mobile-dock,.sf-actions.sf-ui-surface,[hidden]') ||
-        el.hidden || !el.getClientRects().length) return;
+    if (buttonRoots.has(el) || buttonRoots.size >= 8 ||
+        el.closest('.sf-mobile-dock,.sf-header,#sf-panel,[hidden]') ||
+        el.matches('.sf-menu-trigger') || el.hidden || !el.getClientRects().length) return;
+    const visible=el.getBoundingClientRect();
+    if(visible.bottom < -80 || visible.top > window.innerHeight + 80) return;
     const parent = el.parentElement;
     if (!parent || !parent.isConnected) return;
     // Keep the native link/button, its Interactivity API handlers, its ID,
@@ -87,7 +98,6 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     const observer = new ResizeObserver(measure);
     observer.observe(el);
     observer.observe(parent);
-    window.addEventListener('resize',measure,{passive:true});
     buttonRoots.set(el,{root,mount,parent,observer,measure,forwardDown});
     measure();
 
@@ -137,6 +147,19 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     const root=React.createRoot(mount);
     let ready=false;
     let widthObserver;
+    let lastState = '';
+    let width = dock.clientWidth;
+    // React may commit after the next animation frame on WebKit. A short-lived
+    // mount observer promotes the replacement only when Glisse really exists.
+    const reveal=()=>{
+      if(ready || !dock.isConnected || !mount.querySelector('.lg-tab-bar'))return;
+      anchors.forEach(a=>{a.setAttribute('aria-hidden','true');a.tabIndex=-1;});
+      dock.classList.add('sf-glisse-ready');
+      ready=true;
+      readyObserver.disconnect();
+    };
+    const readyObserver=new MutationObserver(reveal);
+    readyObserver.observe(mount,{childList:true,subtree:true});
     const base=anchors.map((anchor,index)=>({
       value:anchor.dataset.dockView,
       label:anchor.querySelector(':scope > span:last-child')?.textContent?.trim()||anchor.getAttribute('aria-label')||'',
@@ -155,7 +178,14 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     }
     function sync() {
       if(!dock.isConnected)return;
+      mount.inert=dock.hidden || dock.classList.contains('is-collapsed');
+      if(dock.hidden || width<=0)return;
       const current=anchors.find(a=>a.classList.contains('is-active'))?.dataset.dockView ?? null;
+      // Ignore cosmetic pressed/preview/collapsed class changes: Glisse already
+      // owns the spring animation and a React render would interrupt it.
+      const state=[current??'',width,...anchors.map(a=>a.querySelector('.sf-badge')?.textContent?.trim()??'')].join('|');
+      if(ready && state===lastState)return;
+      lastState=state;
       const items=base.map(({value,label,href,index})=>{
         const icon=anchors[index].querySelector('.sf-icon');
         const svg=icon?.outerHTML||'';
@@ -166,22 +196,17 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
           dangerouslySetInnerHTML:{__html:svg+(badgeText ? '<span class="sf-glisse-dock-badge">'+badgeText.replace(/[^0-9+]/g,'')+'</span>' : '')}
         })};
       });
-      mount.inert=dock.classList.contains('is-collapsed');
       root.render(h(TabBar,{
         items,
         value:current,
         link:BridgeLink,
         className:'sf-glisse-tabbar',
-        style:{'--lg-tab-width':Math.max(0,(dock.clientWidth-8)/4)+'px'},
+        style:{'--lg-tab-width':Math.max(0,(width-8)/4)+'px'},
         'aria-label':dock.getAttribute('aria-label')||'Mobile navigation'
       }));
-      if(!ready)requestAnimationFrame(()=>{
-        if(!dock.isConnected || !mount.querySelector('.lg-tab-bar'))return;
-        // Never hide the accessible native links before the new controls exist.
-        anchors.forEach(a=>{ a.setAttribute('aria-hidden','true'); a.tabIndex=-1; });
-        dock.classList.add('sf-glisse-ready');
-        ready=true;
-      });
+      // If React commits synchronously, promote immediately; otherwise the
+      // one-shot MutationObserver above promotes at the actual commit.
+      reveal();
     }
     let scheduled=false;
     const schedule=()=>{
@@ -191,14 +216,19 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     };
     const watch=new MutationObserver(schedule);
     watch.observe(native,{attributes:true,childList:true,characterData:true,subtree:true,
-      attributeFilter:['class','aria-current','aria-expanded','aria-hidden','style']});
+      attributeFilter:['class','aria-current','aria-expanded']});
     watch.observe(dock,{attributes:true,attributeFilter:['class','hidden']});
-    widthObserver=new ResizeObserver(schedule);
+    // Width changes matter; a CSS class/scroll frame must not re-measure layout.
+    const resize=()=>{
+      const next=dock.clientWidth;
+      if(next===width)return;
+      width=next;
+      schedule();
+    };
+    widthObserver=new ResizeObserver(resize);
     widthObserver.observe(dock);
-    // WebKit may report viewport changes before its fixed dock is reflowed.
-    // A resize event alongside ResizeObserver ensures the second measurement.
-    window.addEventListener('resize',schedule,{passive:true});
-    docks.set(dock,{root,watch,widthObserver,resize:schedule,mount,anchors});
+    window.addEventListener('resize',resize,{passive:true});
+    docks.set(dock,{root,watch,widthObserver,readyObserver,resize,mount,anchors});
     sync();
   }
   let queued=false;
@@ -207,7 +237,6 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     for(const [el,root] of roots)if(!el.isConnected){root.unmount();roots.delete(el);}
     for(const [el,entry] of buttonRoots)if(!el.isConnected){
       entry.observer.disconnect();
-      window.removeEventListener('resize',entry.measure);
       el.removeEventListener('pointerdown',entry.forwardDown);
       entry.root.unmount();
       entry.mount.remove();
@@ -215,13 +244,20 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
         entry.parent.classList.remove('sf-glisse-button-parent');
       buttonRoots.delete(el);
     }
-    for(const [el,entry] of docks)if(!el.isConnected){entry.watch.disconnect();entry.widthObserver.disconnect();window.removeEventListener('resize',entry.resize);entry.root.unmount();docks.delete(el);}
+    for(const [el,entry] of docks)if(!el.isConnected){entry.watch.disconnect();entry.readyObserver.disconnect();entry.widthObserver.disconnect();window.removeEventListener('resize',entry.resize);entry.root.unmount();docks.delete(el);}
     const shell=doc.querySelector('.sf-shell');
     if(!shell)return;
     shell.classList.add('sf-glisse-light');
     doc.querySelectorAll('.sf-mobile-dock').forEach(mountDock);
     doc.querySelectorAll(selector).forEach(mountGlass);
-    doc.querySelectorAll(buttonSelector).forEach(mountButton);
+    doc.querySelectorAll(buttonSelector).forEach(el=>{
+      if(buttonRoots.has(el) || buttonQueued.has(el))return;
+      if(el.closest('#sf-panel,.sf-header,.sf-mobile-dock'))return;
+      if(buttonObserver){
+        buttonQueued.add(el);
+        buttonObserver.observe(el);
+      } else mountButton(el);
+    });
   }
   function scheduleRefresh() {
     if(queued)return;
@@ -231,9 +267,23 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
   if(doc.readyState==='loading')doc.addEventListener('DOMContentLoaded',refresh,{once:true});
   else refresh();
   // WordPress router, account overlay and WooCommerce can swap parts of the shell.
-  const changes=new MutationObserver(scheduleRefresh);
-  changes.observe(doc.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['open']});
+  // React material internals mutate DOM while animating. Observe *structural*
+  // additions only; do not rescan the entire document on each overlay state,
+  // class update, menu morph or page scroll.
+  const structural='.sf-shell,.sf-header,.sf-mobile-dock,#sf-content,.sf-ui-icon-button--soft,.sf-ui-button--secondary';
+  const changes=new MutationObserver(records=>{
+    for(const record of records){
+      for(const node of [...record.addedNodes,...record.removedNodes]){
+        if(node.nodeType!==1)continue;
+        if(node.closest?.('.sf-glisse-dock-root,.sf-glisse-glass-mount,.sf-glisse-button-mount'))continue;
+        if(node.matches(structural) || node.querySelector(structural)){
+          scheduleRefresh();
+          return;
+        }
+      }
+    }
+  });
+  changes.observe(doc.documentElement,{childList:true,subtree:true});
   doc.addEventListener('codela:navigation-complete',scheduleRefresh);
-  // Lazily enhance controls as they enter the viewport; never spawn 100 lenses.
-  window.addEventListener('scroll',scheduleRefresh,{passive:true});
+  window.addEventListener('pageshow',scheduleRefresh);
 }

@@ -25,6 +25,20 @@ const html='<div class="sf-shell has-mobile-dock"><header class="sf-header">'+
   page.on('pageerror',error=>{throw error;});
   await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body>'+html+'</body></html>');
   await page.addScriptTag({content:boot.outputFiles[0].text});
+  // Count genuine Glisse TabBar React commits; cosmetic native dock changes
+  // must not tear down/reset Glisse's in-flight spring animation.
+  await page.evaluate(()=>{
+    const original=window.wp.element.createRoot;
+    window.__glisseDockRenders=0;
+    window.wp.element.createRoot=(node)=>{
+      const root=original(node);
+      if(node.classList.contains('sf-glisse-dock-root')){
+        const render=root.render.bind(root);
+        root.render=content=>{window.__glisseDockRenders++;render(content);};
+      }
+      return root;
+    };
+  });
   await page.evaluate(()=>{
     window.nativeClicks={home:0,search:0,cart:0,account:0};
     document.querySelectorAll('.sf-dock-item').forEach(a=>a.addEventListener('click',e=>{
@@ -49,6 +63,19 @@ const html='<div class="sf-shell has-mobile-dock"><header class="sf-header">'+
   assert(Math.abs(dims.lastRight-(dims.barRight-4))<=3,'Fourth tab reaches the right inset');
   await page.locator('.sf-glisse-tabbar .lg-tab').nth(1).click();
   await page.waitForFunction(()=>document.querySelector('.sf-dock-item[data-dock-view="search"]').classList.contains('is-active'));
+  await page.waitForTimeout(80);
+  const renders=await page.evaluate(()=>window.__glisseDockRenders);
+  for(let k=0;k<8;k++){
+    await page.evaluate(()=>{
+      const dock=document.querySelector('.sf-mobile-dock');
+      dock.classList.toggle('is-pressing');
+      dock.querySelector('.sf-dock-item').classList.toggle('is-pressed');
+    });
+    await page.waitForTimeout(32);
+  }
+  await page.waitForTimeout(80);
+  const nextRenders=await page.evaluate(()=>window.__glisseDockRenders);
+  assert.equal(nextRenders,renders,'Cosmetic dock motion never rerenders real Glisse TabBar');
   const counter=await page.evaluate(()=>window.nativeClicks);
   assert.equal(counter.search,1,'Glisse forwards exactly one activation to native Search');
   assert.equal(counter.home,0);
@@ -76,6 +103,35 @@ const html='<div class="sf-shell has-mobile-dock"><header class="sf-header">'+
   },null,{timeout:4000});
   const gap=await page.evaluate(()=>{const bar=document.querySelector('.sf-glisse-tabbar'),tabs=bar.querySelectorAll('.lg-tab');return Math.abs(tabs[3].getBoundingClientRect().right-(bar.getBoundingClientRect().right-4));});
   assert(gap<3,'Dock slots remain aligned after resize: gap '+gap);
+  // Reparent the movable header menu control into an open native dialog:
+  // do not create more React button/Glass instances during the animation.
+  const beforePanel=await page.locator('.sf-glisse-button-mount').count();
+  await page.evaluate(()=>{
+    const shell=document.querySelector('.sf-shell');
+    const menu=document.createElement('button');
+    menu.id='menu-control';
+    menu.className='sf-menu-trigger sf-ui-icon-button sf-ui-icon-button--soft';
+    menu.textContent='Menu';
+    shell.querySelector('.sf-header').append(menu);
+    const dialog=document.createElement('dialog');
+    dialog.id='sf-panel';
+    dialog.innerHTML='<button class="sf-ui-icon-button sf-ui-icon-button--soft">Close</button>';
+    shell.append(dialog);
+    dialog.showModal();
+    dialog.append(menu);
+  });
+  await page.waitForTimeout(140);
+  assert.equal(await page.locator('#sf-panel .sf-glisse-button-mount').count(),0,
+    'Modal opening does not allocate expensive Glisse Button surfaces');
+  assert.equal(await page.locator('.sf-glisse-button-mount').count(),beforePanel,
+    'Opening the menu does not add decorative React layers');
+  await page.evaluate(()=>{
+    const dialog=document.querySelector('#sf-panel');
+    const menu=dialog.querySelector('#menu-control');
+    dialog.close();
+    document.querySelector('.sf-header').append(menu);
+    dialog.remove();
+  });
   await page.setViewportSize({width:1280,height:800});
   await page.locator('#head-control').click();
   assert(await page.locator('.sf-glisse-glass-plate').count()>=2,'Glisse visual layers do not swallow native button input');
