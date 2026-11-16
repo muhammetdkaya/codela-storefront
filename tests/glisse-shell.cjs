@@ -1,0 +1,23 @@
+/** Static contracts for the Glisse phase-1 WordPress shell adapter. */
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const read=p=>fs.readFileSync(p,'utf8');
+const src=read('scripts/glisse-bridge.jsx');
+const build=read('scripts/build-glisse.mjs');
+const functions=read('theme/codela-storefront/functions.php');
+const css=read('theme/codela-storefront/assets/styles/glisse-bridge.css');
+const render=read('theme/codela-storefront/inc/render.php');
+assert.match(src,/import \{ TabBar, Glass \} from 'glisse'/);
+assert.match(src,/anchors\[at\]\?\.click\(\)/);
+assert.match(src,/MutationObserver/);
+assert.match(src,/if\(!ready\)requestAnimationFrame/);
+assert.match(src,/root\.unmount\(\)/);
+assert.match(render,/data-wp-on--click="actions\.search"/);
+assert.match(render,/data-wp-on--click="actions\.cart"/);
+assert.match(functions,/\[ 'wp-element' \]/);
+assert.match(functions,/is_file\( \$glisse_asset \)/);
+assert.match(build,/glisse\.version!=='0\.6\.0'/);
+assert.match(css,/\.sf-mobile-dock\.sf-glisse-ready/);
+assert.match(css,/@media\(forced-colors:active\)/);
+assert.doesNotMatch(src,/preventDefault\(\);\s*window\.location/);
+console.log('Glisse shell adapter source contracts pass');

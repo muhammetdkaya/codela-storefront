@@ -55,6 +55,13 @@ jobs:
             esac
           done < /tmp/codela-changes
           echo 'quick=true' >> "$GITHUB_OUTPUT"
+      - name: Build pinned Glisse shell bundle
+        if: steps.tier.outputs.quick != 'true'
+        run: |
+          npm install --no-save --package-lock=false glisse@0.6.0
+          node scripts/build-glisse.mjs
+          node --check theme/codela-storefront/assets/scripts/glisse-bridge.js
+          node tests/glisse-shell.cjs
       - name: Quick presentation checks (no browser download)
         if: steps.tier.outputs.quick == 'true'
         run: |
@@ -229,6 +236,10 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+      - name: Compile pinned Glisse shell assets for FTP deploy
+        run: |
+          npm install --no-save --package-lock=false glisse@0.6.0
+          node scripts/build-glisse.mjs
       - name: Require FTP secrets
         env:
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}

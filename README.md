@@ -37,3 +37,17 @@ CI also lints PHP and checks JavaScript syntax. Real device visuals and producti
 ### Fast codela.dev iteration (November 2026)
 
 Main-branch pushes changing at most five presentation-only CSS/SVG or noncritical theme-part HTML files use quick asset, PHP syntax, SVG, and deterministic package checks; changes to theme logic, checkout, account/auth, tests or deployment workflows retain full browser validation. Manual dispatch always requests the full suite. The FTPS deployment now writes a scoped, checksum-verified theme manifest after a successful health check and transfers only changed/new files on later deployments; previously listed removed files are retired with rollback copies. An absent manifest causes one initial full synchronization. The marker also changes the theme's CSS cache key *on codela.dev* without advancing the WordPress update feed; other sites still receive changes only via the separate versioned release process. Heavy live audits are manually dispatchable or run when their own test scripts change, rather than starting automatically after every deploy.
+
+
+## Glisse shell integration (phase 1)
+
+The mobile dock uses the **real Glisse 0.6.0 TabBar** with its spring/lens/refraction engine. Header islands and shared soft icon/glass buttons use **Glisse Glass**. The native PHP links, WooCommerce actions and WordPress Interactivity bindings remain authoritative and functional when this enhancement is not built, not supported, or disabled. No runtime CDN request or second React bundle is used: the adapter delegates React hooks/JSX to WordPress `wp-element`.
+
+To build the optional production asset locally (Node 20+):
+
+```sh
+npm install --no-save --package-lock=false glisse@0.6.0
+node scripts/build-glisse.mjs
+```
+
+Generated `theme/codela-storefront/assets/scripts/glisse-bridge.js` is **not tracked**; the deploy and release workflows compile it before deploying or packaging. Source: `scripts/glisse-bridge.jsx`; theme stylesheet: `assets/styles/glisse-bridge.css`. Scope deliberately excludes product gallery, checkout, account form and product sheet. The MIT license is distributed in `THIRD-PARTY-NOTICES.txt`.

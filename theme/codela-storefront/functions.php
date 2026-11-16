@@ -466,6 +466,21 @@ add_action( 'wp_enqueue_scripts', function() {
     // four-tab store shell and working menu/cart/search module as the shop.
     // WooCommerce still owns its native guest login form and auth processing.
     wp_enqueue_script_module( 'codela-storefront' );
+    // Glisse phase 1 is progressively enhanced: keep native PHP navigation
+    // intact if the optional compiled adapter is missing or JavaScript fails.
+    // wp-element supplies React; do not ship a competing React runtime.
+    $glisse_asset = get_template_directory() . '/assets/scripts/glisse-bridge.js';
+    if ( is_file( $glisse_asset ) ) {
+        wp_enqueue_style(
+            'codela-storefront-glisse', $root_uri . 'styles/glisse-bridge.css',
+            [ 'codela-storefront-components' ],
+            codela_sf_script_module_version( 'styles/glisse-bridge.css' )
+        );
+        wp_enqueue_script(
+            'codela-storefront-glisse', $root_uri . 'scripts/glisse-bridge.js',
+            [ 'wp-element' ], codela_sf_script_module_version( 'scripts/glisse-bridge.js' ), true
+        );
+    }
     if ( codela_sf_seamless_allowed() ) {
         wp_enqueue_script_module( 'codela-storefront/navigation' );
     }
