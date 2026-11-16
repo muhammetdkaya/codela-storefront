@@ -23,18 +23,32 @@
   const now=()=>performance.now();
   const time=()=>round(now()-born);
   const allowed=/^[a-z0-9][a-z0-9._-]{0,65}$/i;
-  function clean(value){
-    if(value===null || typeof value==='boolean')return value;
+  // A safe schema: no arbitrary strings/properties from external plugins or
+  // user content can enter the diagnostic export.
+  const fields=new Set(['id','control','source','inputDelay','modal','dockHidden',
+    'dockCollapsed','scrollLocked','panel','from','alreadyOpen','elapsed',
+    'visible','duration','opened','navigating','collapsed','delay','relocated',
+    'index','target','afterInput','part','property','frames','firstFrame',
+    'maxGap','p95Gap','droppedFrames','total','open']);
+  const labels=new Set(['menu','search','cart','account','filters','home',
+    'product','catalog','checkout','content','page','none','other']);
+  function clean(key,value){
+    if(typeof value==='boolean')return value;
     if(typeof value==='number')return Number.isFinite(value)?round(value):null;
-    if(typeof value==='string' && allowed.test(value))return value;
+    if(typeof value!=='string')return null;
+    if(['panel','from','target'].includes(key))return labels.has(value)?value:'other';
+    if(key==='control')return /^(?:dock\\.(?:home|search|cart|account|other)|panel\\.(?:menu|search|cart|account|filters|close|other))$/.test(value)?value:'other';
+    if(key==='source')return ['pointer','touch','click'].includes(value)?value:null;
+    if(key==='part')return ['dock','menu-trigger','panel'].includes(value)?value:null;
+    if(key==='property')return ['transform','opacity','scale','visibility','other'].includes(value)?value:null;
     return null;
   }
-  function record(type, fields={}){
+  function record(type, data={}){
     if(destroyed)return;
     const item={ms:time(),type};
-    for(const [k,v] of Object.entries(fields)){
-      if(!allowed.test(k))continue;
-      const safe=clean(v);
+    for(const [k,v] of Object.entries(data)){
+      if(!fields.has(k))continue;
+      const safe=clean(k,v);
       if(safe!==null)item[k]=safe;
     }
     records.push(item);
