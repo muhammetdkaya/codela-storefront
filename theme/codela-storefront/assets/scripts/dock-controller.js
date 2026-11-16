@@ -29,6 +29,7 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
         if (!dock || dock.hidden || dock.classList.contains('is-collapsed') === collapsed) return;
         if (collapsed && dock.contains(document.activeElement) && document.activeElement.matches(':focus-visible')) return;
         dock.classList.toggle('is-collapsed', collapsed);
+        window.codelaSFDebug?.mark('dock.collapse.applied',{collapsed});
         lastDockChangeAt = Date.now();
         const handle = dock.querySelector('.sf-dock-handle');
         if (handle) {
@@ -43,6 +44,7 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
         if (!dock || dock.hidden || dock.classList.contains('is-collapsed') === collapsed) return;
         const remaining = DOCK_REST_MS - (Date.now() - lastDockChangeAt);
         if (remaining <= 0) { setDockCollapsed(collapsed); return; }
+        window.codelaSFDebug?.mark('dock.collapse.wait',{collapsed,delay:remaining});
         if (pendingDockTransition?.collapsed === collapsed) return;
         cancelPendingDockTransition();
         const pending = {collapsed, direction:collapsed ? 1 : -1, reverse:0, timer:null};
@@ -88,6 +90,7 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
     }
     // A native modal makes outside nodes inert; move the one real dock into its top layer.
     function mountDock() {
+        const debugStart=window.codelaSFDebug ? performance.now() : 0;
         const dock = mobileDock();
         const dialog = getDialog();
         if (dock && dock.parentElement !== dialog) {
@@ -96,9 +99,11 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
             dock.before(dockHome);
             dialog.appendChild(dock);
             resume();
+            window.codelaSFDebug?.mark('dock.mount',{elapsed:performance.now()-debugStart});
         }
     }
     function restoreDock() {
+        const debugStart=window.codelaSFDebug ? performance.now() : 0;
         const dock = mobileDock();
         if (!dock) return;
         // The native dock remains in the document when Menu opens. Avoid
@@ -111,6 +116,7 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
         setDockCollapsed(false);
         markDockActive(null);
         resume();
+        window.codelaSFDebug?.mark('dock.restore',{elapsed:performance.now()-debugStart,relocated});
     }
     function markDockActive(name) {
         const dock = mobileDock();
@@ -124,6 +130,7 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
         });
         dock.style.setProperty('--sf-dock-index', Math.max(0, activeIndex));
         dock.classList.toggle('has-selection', activeIndex !== -1);
+        window.codelaSFDebug?.mark('dock.selection',{panel:name||'page',index:activeIndex});
     }
     // Home/Account are actual pages, but tapping the page already underneath a
     // popup should only dismiss the popup. WordPress renders aria-current on the
@@ -212,6 +219,7 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
         const activate = () => {
             if (!press || press.dragging) return;
             press.dragging = true;
+            window.codelaSFDebug?.mark('dock.gesture.scrub',{panel:press.item.dataset.dockView||'other'});
             if (press.pointer) dock.setPointerCapture(press.id);
             dock.classList.add('is-scrubbing');
             press.item.classList.remove('is-pressed');
@@ -223,6 +231,7 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
             if (!item || dock.classList.contains('is-collapsed')) return;
             stop();
             dock.classList.add('is-pressing');
+            window.codelaSFDebug?.mark('dock.gesture.begin',{panel:item.dataset.dockView||'other'});
             press = {id, item, choice:item, x, y, lastX:x, dragging:false, timer:null};
             item.classList.add('is-pressed');
             preview(item);
@@ -246,12 +255,14 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
         const finish = (event, x, y, id) => {
             if (!press || press.id !== id) return;
             if (!press.dragging) {
+                window.codelaSFDebug?.mark('dock.gesture.tap',{panel:press.item.dataset.dockView||'other'});
                 // Keep the touched capsule while the native click/navigation catches up.
                 stop(dockCandidate(dock, x, y) !== press.item);
                 return;
             }
             if (event.cancelable !== false) event.preventDefault();
             const item = dockCandidate(dock, x, y);
+            window.codelaSFDebug?.mark('dock.gesture.release',{panel:item?.dataset.dockView||'none'});
             stop(!item);
             blockUntil = Date.now() + 700; // Consume browser-generated click.
             if (!item) return;

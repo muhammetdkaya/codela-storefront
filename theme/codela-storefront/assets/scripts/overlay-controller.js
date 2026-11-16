@@ -175,6 +175,8 @@ export function createOverlayController({
         } else open('menu', event);
     }
     function open(name, event) {
+        const debugStart=window.codelaSFDebug ? performance.now() : 0;
+        window.codelaSFDebug?.mark('overlay.open.begin',{panel:name,from:current||'none',alreadyOpen:!!dialog?.open});
         if (event && (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) return;
         // The native Cart page already displays the *actual* cart dialog
         // nodes. Do not open a second/empty cart dialog on that destination.
@@ -231,6 +233,7 @@ export function createOverlayController({
             // blurred navigation bar into the modal top layer forces WebKit
             // to recompose the whole page; only dock-bearing panels need it.
             if (name !== 'menu') mountDock();
+            window.codelaSFDebug?.mark('overlay.open.scroll-lock',{panel:name,elapsed:performance.now()-debugStart});
         }
         // Section switch Menu -> Search/Cart keeps the same open dialog.
         // Native navigation must join its top layer before being unhidden.
@@ -279,6 +282,7 @@ export function createOverlayController({
         dialog.querySelectorAll('[autofocus]').forEach(el => el.removeAttribute('autofocus'));
         initialFocus.setAttribute('autofocus', '');
         if (opening) dialog.showModal();
+        window.codelaSFDebug?.mark('overlay.open.modal',{panel:name,elapsed:performance.now()-debugStart,visible:!!dialog.open});
         if (name === 'menu' && menuTrigger) {
             // Resolve initial line transforms before transitioning to an X.
             menuTrigger.getBoundingClientRect();
@@ -301,6 +305,7 @@ export function createOverlayController({
         }
         if (name === 'cart' && desktop.matches) animateDrawer(false, drawerFrom);
         else animatePanelContent(name === 'search' ? $('.sf-search-content') : $(`#sf-${name}`), previous === 'cart' && name === 'search' ? -1 : 1);
+        window.codelaSFDebug?.mark('overlay.open.end',{panel:name,elapsed:performance.now()-debugStart});
     }
     // Mobile transitions animate content only: transforming the dialog changes the
     // containing block of the fixed dock in some browsers. Repeated actions cancel cleanly.
@@ -314,11 +319,17 @@ export function createOverlayController({
             {opacity:1, transform:'translate3d(0,0,0)'},
         ], panelTiming(element));
         panelMotion = motion;
+        window.codelaSFDebug?.mark('overlay.animation.begin',{panel:menu?'menu':'other',duration:motion.effect?.getTiming().duration||0});
         // finish events are queued: a completed older entrance must never
         // clear a replacement/closing animation's cancellation ownership.
-        motion.onfinish = () => { if (panelMotion === motion) panelMotion = null; };
+        motion.onfinish = () => {
+            if (panelMotion !== motion)return;
+            window.codelaSFDebug?.mark('overlay.animation.end',{panel:menu?'menu':'other'});
+            panelMotion = null;
+        };
     }
     function close() {
+        window.codelaSFDebug?.mark('overlay.close.begin',{panel:current||'none',opened:!!dialog?.open});
         if (inlineSearch) { closeInlineSearch(); return; }
         if (!dialog?.open || closing) return;
         if (current === 'menu' && mobileHeader.matches && returnToPanel) {
@@ -347,6 +358,8 @@ export function createOverlayController({
         finishClose();
     }
     function finishClose(navigating = false) {
+        const debugStart=window.codelaSFDebug ? performance.now() : 0;
+        window.codelaSFDebug?.mark('overlay.finish.begin',{panel:current||'none',navigating});
         surfaceMotion?.cancel(); surfaceMotion = null;
         panelMotion?.cancel(); panelMotion = null;
         closing = false;
@@ -354,6 +367,7 @@ export function createOverlayController({
         document.querySelectorAll('[data-panel]').forEach(el => el.setAttribute('aria-expanded','false'));
         searchFeature.cancel();
         dialog.close(); restoreMenuTrigger(); current = null;
+        window.codelaSFDebug?.mark('overlay.finish.dom-closed',{elapsed:performance.now()-debugStart});
         returnToPanel = null;
         restoreDock();
         restoreStyle(document.body, savedBodyStyle); savedBodyStyle = null;
@@ -370,6 +384,7 @@ export function createOverlayController({
         // the old root-lock state survives to a later rAF callback.
         // Native scrolling and the original body styles are restored above.
         document.documentElement.classList.remove('sf-overlay-scroll-locked');
+        window.codelaSFDebug?.mark('overlay.finish.end',{elapsed:performance.now()-debugStart,scrollLocked:document.documentElement.classList.contains('sf-overlay-scroll-locked')});
         opener = null;
     }
     
