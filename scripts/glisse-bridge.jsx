@@ -1,6 +1,6 @@
 /**
  * Codela Storefront · Glisse shell adapter, phase 1.
- * Real Glisse v0.6.0 TabBar and Glass, not a CSS imitation.
+ * Real Glisse v0.5.0 TabBar and Glass, not a CSS imitation.
  * Native WordPress Interactivity actions and URLs remain authoritative.
  * If this enhancement fails or JavaScript is unavailable, the PHP shell
  * stays fully interactive, including search/cart/account dialogs.
@@ -28,7 +28,11 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     if (roots.has(el) || el.closest('.sf-mobile-dock') || el.hidden ||
         el.matches('[aria-hidden="true"]') || el.closest('[hidden]')) return;
     // Protect the production route on pages with dozens of product controls.
-    if (roots.size >= 32) return;
+    if (roots.size >= 18) return;
+    if(!el.closest('.sf-header')) {
+      const bounds=el.getBoundingClientRect();
+      if(bounds.top>window.innerHeight+120 || bounds.bottom < -120)return;
+    }
     const mount = doc.createElement('span');
     mount.className = 'sf-glisse-glass-mount';
     mount.setAttribute('aria-hidden','true');
@@ -54,7 +58,7 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
   }
 
   function mountDock(dock) {
-    if(docks.has(dock))return;
+    if(docks.has(dock) || window.matchMedia('(forced-colors: active)').matches)return;
     const native=dock.querySelector('.sf-dock-surface');
     const anchors=[...native?.querySelectorAll('.sf-dock-item')||[]];
     if(anchors.length!==4)return;
@@ -143,4 +147,6 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
   const changes=new MutationObserver(scheduleRefresh);
   changes.observe(doc.documentElement,{childList:true,subtree:true});
   doc.addEventListener('codela:navigation-complete',scheduleRefresh);
+  // Lazily enhance controls as they enter the viewport; never spawn 100 lenses.
+  window.addEventListener('scroll',scheduleRefresh,{passive:true});
 }

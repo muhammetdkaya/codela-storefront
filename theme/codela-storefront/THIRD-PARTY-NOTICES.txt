@@ -77,7 +77,7 @@ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 
-glisse 0.6.0 — original unmodified source packaged into an isolated WordPress shell adapter
+glisse 0.5.0 — original unmodified source packaged into an isolated WordPress shell adapter
 https://github.com/0kzh/glisse
 React and JSX runtime are provided by WordPress wp-element; no duplicate React ships.
 

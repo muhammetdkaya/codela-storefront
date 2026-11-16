@@ -41,12 +41,12 @@ Main-branch pushes changing at most five presentation-only CSS/SVG or noncritica
 
 ## Glisse shell integration (phase 1)
 
-The mobile dock uses the **real Glisse 0.6.0 TabBar** with its spring/lens/refraction engine. Header islands and shared soft icon/glass buttons use **Glisse Glass**. The native PHP links, WooCommerce actions and WordPress Interactivity bindings remain authoritative and functional when this enhancement is not built, not supported, or disabled. No runtime CDN request or second React bundle is used: the adapter delegates React hooks/JSX to WordPress `wp-element`.
+The mobile dock uses the **real Glisse 0.5.0 TabBar** with its spring/lens/refraction engine. Header islands and shared soft icon/glass buttons use **Glisse Glass**. The native PHP links, WooCommerce actions and WordPress Interactivity bindings remain authoritative and functional when this enhancement is not built, not supported, or disabled. No runtime CDN request or second React bundle is used: the adapter delegates React hooks/JSX to WordPress `wp-element`.
 
 To build the optional production asset locally (Node 20+):
 
 ```sh
-npm install --no-save --package-lock=false glisse@0.6.0
+npm install --no-save --package-lock=false glisse@0.5.0
 node scripts/build-glisse.mjs
 ```
 
