@@ -39,7 +39,8 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     const mount = doc.createElement('span');
     mount.className = 'sf-glisse-button-mount';
     mount.setAttribute('aria-hidden', 'true');
-    parent.classList.add('sf-glisse-button-parent');
+    if (getComputedStyle(parent).position === 'static')
+      parent.classList.add('sf-glisse-button-parent');
     parent.append(mount);
     const root = React.createRoot(mount);
     const measure = () => {
