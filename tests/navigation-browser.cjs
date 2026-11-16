@@ -225,7 +225,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
   return {scale:new DOMMatrix(s.transform).a,wholeScale:parseFloat(getComputedStyle(el).scale),index:dock.style.getPropertyValue('--sf-dock-index'),blur:getComputedStyle(el).backdropFilter,bg:getComputedStyle(el).backgroundColor,thumbTravel:new DOMMatrix(getComputedStyle(el,'::after').transform).e/parseFloat(getComputedStyle(el,'::after').width)};
  });
  assert(pressed.scale>1.02 && pressed.scale<1.08,'Touch expands the background capsule');
- assert(Math.abs(pressed.wholeScale-1.018)<.001,'Touch also expands the whole floating surface');
+ assert.equal(pressed.wholeScale,1,'Touch keeps the expensive blurred dock layer static; only the selection and icon animate');
  assert.equal(pressed.bg,'rgba(255, 255, 255, 0.75)','Dock retains the lighter glass tint while the transparent Header controls use stronger local glass');
  assert.equal(pressed.index,'1','Touch previews the touched tab before navigation');
  assert(pressed.thumbTravel>.03&&pressed.thumbTravel<.99,'Pressed tab background glides toward its target instead of teleporting');
