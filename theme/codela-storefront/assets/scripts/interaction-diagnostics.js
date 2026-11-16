@@ -38,7 +38,7 @@
     if(typeof value==='number')return Number.isFinite(value)?round(value):null;
     if(typeof value!=='string')return null;
     if(['panel','from','target'].includes(key))return labels.has(value)?value:'other';
-    if(key==='control')return /^(?:dock\\.(?:home|search|cart|account|other)|panel\\.(?:menu|search|cart|account|filters|close|other))$/.test(value)?value:'other';
+    if(key==='control')return /^(?:dock\.(?:home|search|cart|account|other)|panel\.(?:menu|search|cart|account|filters|close|other))$/.test(value)?value:'other';
     if(key==='source')return ['pointer','touch','click'].includes(value)?value:null;
     if(key==='part')return ['dock','menu-trigger','panel'].includes(value)?value:null;
     if(key==='property')return ['transform','opacity','scale','visibility','other'].includes(value)?value:null;
