@@ -149,6 +149,17 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     let widthObserver;
     let lastState = '';
     let width = dock.clientWidth;
+    // React may commit after the next animation frame on WebKit. A short-lived
+    // mount observer promotes the replacement only when Glisse really exists.
+    const reveal=()=>{
+      if(ready || !dock.isConnected || !mount.querySelector('.lg-tab-bar'))return;
+      anchors.forEach(a=>{a.setAttribute('aria-hidden','true');a.tabIndex=-1;});
+      dock.classList.add('sf-glisse-ready');
+      ready=true;
+      readyObserver.disconnect();
+    };
+    const readyObserver=new MutationObserver(reveal);
+    readyObserver.observe(mount,{childList:true,subtree:true});
     const base=anchors.map((anchor,index)=>({
       value:anchor.dataset.dockView,
       label:anchor.querySelector(':scope > span:last-child')?.textContent?.trim()||anchor.getAttribute('aria-label')||'',
@@ -193,13 +204,9 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
         style:{'--lg-tab-width':Math.max(0,(width-8)/4)+'px'},
         'aria-label':dock.getAttribute('aria-label')||'Mobile navigation'
       }));
-      if(!ready)requestAnimationFrame(()=>{
-        if(!dock.isConnected || !mount.querySelector('.lg-tab-bar'))return;
-        // Never hide the accessible native links before the new controls exist.
-        anchors.forEach(a=>{ a.setAttribute('aria-hidden','true'); a.tabIndex=-1; });
-        dock.classList.add('sf-glisse-ready');
-        ready=true;
-      });
+      // If React commits synchronously, promote immediately; otherwise the
+      // one-shot MutationObserver above promotes at the actual commit.
+      reveal();
     }
     let scheduled=false;
     const schedule=()=>{
@@ -221,7 +228,7 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     widthObserver=new ResizeObserver(resize);
     widthObserver.observe(dock);
     window.addEventListener('resize',resize,{passive:true});
-    docks.set(dock,{root,watch,widthObserver,resize,mount,anchors});
+    docks.set(dock,{root,watch,widthObserver,readyObserver,resize,mount,anchors});
     sync();
   }
   let queued=false;
@@ -237,7 +244,7 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
         entry.parent.classList.remove('sf-glisse-button-parent');
       buttonRoots.delete(el);
     }
-    for(const [el,entry] of docks)if(!el.isConnected){entry.watch.disconnect();entry.widthObserver.disconnect();window.removeEventListener('resize',entry.resize);entry.root.unmount();docks.delete(el);}
+    for(const [el,entry] of docks)if(!el.isConnected){entry.watch.disconnect();entry.readyObserver.disconnect();entry.widthObserver.disconnect();window.removeEventListener('resize',entry.resize);entry.root.unmount();docks.delete(el);}
     const shell=doc.querySelector('.sf-shell');
     if(!shell)return;
     shell.classList.add('sf-glisse-light');
