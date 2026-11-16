@@ -45,6 +45,14 @@ const browserType=process.env.TEST_WEBKIT?webkit:chromium;
   assert(data.events.some(x=>x.type==='dialog.state'),'Dialog state changes tracked');
   const json=JSON.stringify(data);
   assert(!/SECRET-CUSTOMER-EMAIL|MY-PRIVATE-ID|perf.test|https?:/.test(json),'PII and URL never leak into report');
+  // A full document navigation must not discard the latest dock timings.
+  await page.goto('https://perf.test/other/');
+  await page.addScriptTag({content:source});
+  await page.waitForSelector('#sf-performance-debug .sf-debug-toggle');
+  const persisted=await page.evaluate(()=>window.codelaSFDebug.report());
+  assert(persisted.pages>=2,'Timings persist across same-tab page loads');
+  assert(persisted.events.some(x=>x.type==='overlay.open.begin'),'Whitelisted prior events restored');
+  assert(persisted.samples.some(x=>x.control==='dock.search'),'Prior frame metrics survive navigation');
   await page.locator('.sf-debug-toggle').click();
   await page.evaluate(()=>{window.__copied=null;Object.defineProperty(navigator,'clipboard',{value:{writeText:async t=>{window.__copied=t;}},configurable:true});});
   await page.locator('[data-action="copy"]').click();

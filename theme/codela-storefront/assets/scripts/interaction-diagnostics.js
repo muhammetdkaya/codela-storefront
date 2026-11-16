@@ -7,6 +7,7 @@
 (function(){
   'use strict';
   const key='codela-performance-debug';
+  const historyKey='codela-performance-debug-history';
   const query=new URLSearchParams(location.search).get('codela_debug');
   try {
     if(query==='1') sessionStorage.setItem(key,'1');
@@ -29,7 +30,7 @@
     'dockCollapsed','scrollLocked','panel','from','alreadyOpen','elapsed',
     'visible','duration','opened','navigating','collapsed','delay','relocated',
     'index','target','afterInput','part','property','frames','firstFrame',
-    'maxGap','p95Gap','droppedFrames','total','open']);
+    'maxGap','p95Gap','droppedFrames','total','open','domReady','responseStart']);
   const labels=new Set(['menu','search','cart','account','filters','home',
     'product','catalog','checkout','content','page','none','other']);
   function clean(key,value){
@@ -43,9 +44,42 @@
     if(key==='property')return ['transform','opacity','scale','visibility','other'].includes(value)?value:null;
     return null;
   }
+  // Retain bounded, whitelisted timings across same-tab document navigations.
+  // Everything stays inside sessionStorage and is wiped by Clear/Stop.
+  let pageIndex=1;
+  try {
+    const saved=JSON.parse(sessionStorage.getItem(historyKey)||'null');
+    if(saved && Array.isArray(saved.events)){
+      pageIndex=Math.min(30,Math.max(1,Number(saved.pageIndex)||1)+1);
+      for(const old of saved.events.slice(-140)){
+        if(!old || typeof old.type!=='string' || !allowed.test(old.type))continue;
+        const entry={type:old.type,ms:Number.isFinite(old.ms)?round(old.ms):0,page:Number.isFinite(old.page)?old.page:1};
+        for(const [k,v] of Object.entries(old)){
+          if(!fields.has(k))continue;
+          const value=clean(k,v);
+          if(value!==null)entry[k]=value;
+        }
+        records.push(entry);
+      }
+      if(Array.isArray(saved.samples)){
+        for(const item of saved.samples.slice(-20)){
+          if(!item || !Number.isFinite(item.firstFrame))continue;
+          summaries.push({
+            id:Number(item.id)||0,page:Number(item.page)||1,
+            control:clean('control',item.control)||'other',
+            frames:Number(item.frames)||0,firstFrame:round(item.firstFrame),
+            maxGap:round(Number(item.maxGap)||0),
+            p95Gap:round(Number(item.p95Gap)||0),
+            droppedFrames:Number(item.droppedFrames)||0,
+            total:round(Number(item.total)||0)
+          });
+        }
+      }
+    }
+  } catch(e){}
   function record(type, data={}){
     if(destroyed)return;
-    const item={ms:time(),type};
+    const item={ms:time(),page:pageIndex,type};
     for(const [k,v] of Object.entries(data)){
       if(!fields.has(k))continue;
       const safe=clean(k,v);
@@ -66,6 +100,7 @@
         tool:'codela-interaction-timing',
         schema:1,
         theme:'0.1.331',
+        pages:pageIndex,
         device:{
           width:innerWidth,height:innerHeight,
           pixelRatio:Math.round((devicePixelRatio||1)*10)/10,
@@ -77,7 +112,11 @@
         events:records.slice()
       };
     },
-    clear(){records.length=0;summaries.length=0;sequence=0;lastInput=null;update();}
+    clear(){
+      records.length=0;summaries.length=0;sequence=0;lastInput=null;
+      try{sessionStorage.removeItem(historyKey)}catch(e){}
+      update();
+    }
   };
   window.codelaSFDebug=api;
   const longTaskSupported=!!(window.PerformanceObserver &&
@@ -130,7 +169,7 @@
       if(ts-begin<750 && intervals.length<90){requestAnimationFrame(frame);return;}
       const sorted=intervals.slice().sort((a,b)=>a-b);
       const result={
-        id,control:label,frames:intervals.length+1,
+        id,page:pageIndex,control:label,frames:intervals.length+1,
         firstFrame:round(first-begin),
         maxGap:round(Math.max(0,...intervals)),
         p95Gap:round(sorted[Math.max(0,Math.ceil(sorted.length*.95)-1)]||0),
@@ -223,7 +262,7 @@
     toggle.addEventListener('click',()=>{expanded=!expanded;body.hidden=!expanded;toggle.setAttribute('aria-expanded',String(expanded));update()});
     hud.querySelector('[data-action="clear"]').addEventListener('click',()=>api.clear());
     hud.querySelector('[data-action="stop"]').addEventListener('click',()=>{
-      try{sessionStorage.removeItem(key)}catch(e){}
+      try{sessionStorage.removeItem(key);sessionStorage.removeItem(historyKey)}catch(e){}
       destroyed=true;observer.disconnect();longTaskObserver?.disconnect();hud.remove();sheet.remove();
       delete window.codelaSFDebug;
     });
@@ -240,7 +279,15 @@
     });
     update();
     record('debug.ready',{...snapshot()});
+    const nav=performance.getEntriesByType('navigation')[0];
+    if(nav)record('page.navigation',{duration:nav.duration,
+      domReady:nav.domContentLoadedEventEnd,responseStart:nav.responseStart});
   }
+  window.addEventListener('pagehide',()=>{
+    try {sessionStorage.setItem(historyKey,JSON.stringify({
+      pageIndex,events:records.slice(-140),samples:summaries.slice(-20)
+    }))}catch(e){}
+  });
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bootstrap,{once:true});
   else bootstrap();
 })();
