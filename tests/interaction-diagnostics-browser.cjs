@@ -79,9 +79,9 @@ const browserType=process.env.TEST_WEBKIT?webkit:chromium;
   // Exercise the exact opt-in script embedded by functions.php on guest pages,
   // rather than assuming an administrator is logged in.
   const php=fs.readFileSync('theme/codela-storefront/functions.php','utf8');
-  const inline=php.match(/<script id="codela-storefront-guest-performance-optin">([\\s\\S]*?)<\\/script>/);
+  const inline=php.match(/<script id="codela-storefront-guest-performance-optin">([\s\S]*?)<\/script>/);
   assert(inline,'Guest bootstrap emitted as a tiny, independent script');
-  const guestScript=inline[1].replace(/<\\?php[\\s\\S]*?\\?>/,
+  const guestScript=inline[1].replace(/<\?php[\s\S]*?\?>/,
     JSON.stringify('https://guest.test/assets/scripts/interaction-diagnostics.js'));
   assert(!guestScript.includes('<?php'),'PHP-generated script URL is syntactically replaced for the browser fixture');
   const guest=await browser.newPage({viewport:{width:390,height:844},hasTouch:true});
