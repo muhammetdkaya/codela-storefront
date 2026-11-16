@@ -59,6 +59,7 @@ const html='<div class="sf-shell has-mobile-dock"><header class="sf-header">'+
   await page.waitForTimeout(120);
   const gap=await page.evaluate(()=>{const bar=document.querySelector('.sf-glisse-tabbar'),tabs=bar.querySelectorAll('.lg-tab');return Math.abs(tabs[3].getBoundingClientRect().right-(bar.getBoundingClientRect().right-4));});
   assert(gap<3,'Dock slots remain aligned after resize');
+  await page.setViewportSize({width:1280,height:800});
   await page.locator('#head-control').click();
   assert(await page.locator('.sf-glisse-glass-plate').count()>=2,'Glisse visual layers do not swallow native button input');
   await page.close();
