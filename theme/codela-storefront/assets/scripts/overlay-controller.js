@@ -313,6 +313,14 @@ export function createOverlayController({
         panelMotion?.cancel();
         panelMotion = null;
         if (reducedMotion.matches || !element?.animate) return;
+        // Opt-in diagnostic only: isolate expensive full-content animations on
+        // WebKit. Default motion remains identical for ordinary visitors.
+        if (window.codelaSFDebug?.skipPanelAnimation?.(element)) {
+            window.codelaSFDebug.mark('overlay.animation.skipped',{
+                panel:element.id==='sf-menu'?'menu':'search'
+            });
+            return;
+        }
         const menu = element.id === 'sf-menu';
         const motion = element.animate([
             {opacity:0, transform:menu ? 'translate3d(0,-16px,0)' : `translate3d(${direction * 8}px,0,0)`},
