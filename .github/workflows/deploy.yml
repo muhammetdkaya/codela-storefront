@@ -12,7 +12,8 @@ permissions:
 # Keep the previous production group separate while a legacy PR run drains.
 concurrency:
   group: ${{ github.event_name == 'pull_request' && format('codela-storefront-pr-{0}', github.event.pull_request.number) || 'codela-storefront-production-main' }}
-  cancel-in-progress: false
+  # Cancel superseded PR checks; never interrupt a live main-branch deployment.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   validate:
     runs-on: ubuntu-24.04
