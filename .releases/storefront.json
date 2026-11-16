@@ -2,5 +2,5 @@
   "confirm": "PUBLISH_STABLE",
   "version": "0.1.327",
   "source_sha": "46c71501b927915c7ad7335a9d26ef9df04cba8b",
-  "publish_feed": false
+  "publish_feed": true
 }
