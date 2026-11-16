@@ -13,6 +13,7 @@ export function createOverlayController({
     let dialog = null, current = null, opener = null, savedY = 0;
     let savedBodyStyle = null, savedAdminStyle = null, panelMotion = null;
     let surfaceMotion = null, closing = false, restoreScrollFrame = 0;
+    let debugStaticBody = false;
     let menuTrigger = null, menuHome = null, menuLabel = '';
     const desktop = window.matchMedia('(min-width:901px)');
     const desktopMenu = window.matchMedia('(min-width:1100px)');
@@ -213,22 +214,28 @@ export function createOverlayController({
         else if (name !== 'menu') returnToPanel = null;
         if (opening) {
             cancelAnimationFrame(restoreScrollFrame);
+            // Debug-only A/B. Native showModal() stays active, but we skip the
+            // body position:fixed -> restore -> scrollTo() cycle to isolate an
+            // iOS WebKit re-composition of the page's scroll root.
+            debugStaticBody = mobileHeader.matches && !!window.codelaSFDebug?.skipBodyFix?.();
             document.documentElement.classList.add('sf-overlay-scroll-locked');
             opener = event?.target?.closest?.('[data-panel]') || event?.currentTarget || document.activeElement; savedY = window.scrollY;
-            const bodyRect = document.body.getBoundingClientRect();
-            savedBodyStyle = rememberStyle(document.body, ['position', 'top', 'width', 'padding-right']);
-            const bar = $('#wpadminbar');
-            if (bar) {
-                const barRect = bar.getBoundingClientRect();
-                savedAdminStyle = rememberStyle(bar, ['position', 'top']);
-                // Mobile WordPress uses an absolute toolbar; keep its visible position
-                // when the body becomes a new containing block.
-                bar.style.position = 'fixed'; bar.style.top = `${barRect.top}px`;
+            if (!debugStaticBody) {
+                const bodyRect = document.body.getBoundingClientRect();
+                savedBodyStyle = rememberStyle(document.body, ['position', 'top', 'width', 'padding-right']);
+                const bar = $('#wpadminbar');
+                if (bar) {
+                    const barRect = bar.getBoundingClientRect();
+                    savedAdminStyle = rememberStyle(bar, ['position', 'top']);
+                    // Mobile WordPress uses an absolute toolbar; keep its visible position
+                    // when the body becomes a new containing block.
+                    bar.style.position = 'fixed'; bar.style.top = `${barRect.top}px`;
+                }
+                const scrollbar = window.innerWidth - document.documentElement.clientWidth;
+                if (scrollbar > 0) document.body.style.paddingRight = `${parseFloat(getComputedStyle(document.body).paddingRight) + scrollbar}px`;
+                // Preserve the rendered body origin, including WordPress's html top margin.
+                document.body.style.position = 'fixed'; document.body.style.top = `${bodyRect.top}px`; document.body.style.width = '100%';
             }
-            const scrollbar = window.innerWidth - document.documentElement.clientWidth;
-            if (scrollbar > 0) document.body.style.paddingRight = `${parseFloat(getComputedStyle(document.body).paddingRight) + scrollbar}px`;
-            // Preserve the rendered body origin, including WordPress's html top margin.
-            document.body.style.position = 'fixed'; document.body.style.top = `${bodyRect.top}px`; document.body.style.width = '100%';
             adminOffset();
             // The full-screen menu hides the dock anyway. Moving a fixed,
             // blurred navigation bar into the modal top layer forces WebKit
@@ -291,7 +298,8 @@ export function createOverlayController({
             if (nonmodal) dialog.show();
             else dialog.showModal();
         }
-        window.codelaSFDebug?.mark('overlay.open.modal',{panel:name,elapsed:performance.now()-debugStart,visible:!!dialog.open});
+        window.codelaSFDebug?.mark('overlay.open.modal',{panel:name,elapsed:performance.now()-debugStart,visible:!!dialog.open,
+            formIsolated:!!window.codelaSFDebug?.isGuestFormIsolated?.(),bodyFixed:!debugStaticBody});
         if (name === 'menu' && menuTrigger) {
             // Resolve initial line transforms before transitioning to an X.
             menuTrigger.getBoundingClientRect();
@@ -393,7 +401,7 @@ export function createOverlayController({
         const bar = $('#wpadminbar'); if (bar) restoreStyle(bar, savedAdminStyle);
         savedAdminStyle = null; dialog.style.removeProperty('--sf-admin-offset');
         if (!navigating) {
-            window.scrollTo({top:savedY, left:0, behavior:'instant'});
+            if (!debugStaticBody) window.scrollTo({top:savedY, left:0, behavior:'instant'});
             dockScrollPositions.set(window, {position:savedY, distance:0});
             if (opener?.isConnected) opener.focus({preventScroll:true});
         }
@@ -403,6 +411,7 @@ export function createOverlayController({
         // the old root-lock state survives to a later rAF callback.
         // Native scrolling and the original body styles are restored above.
         document.documentElement.classList.remove('sf-overlay-scroll-locked');
+        debugStaticBody = false;
         window.codelaSFDebug?.mark('overlay.finish.end',{elapsed:performance.now()-debugStart,scrollLocked:document.documentElement.classList.contains('sf-overlay-scroll-locked')});
         window.codelaSFDebug?.postAction?.('close',closingPanel);
         opener = null;

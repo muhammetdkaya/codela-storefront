@@ -10,7 +10,7 @@
   const key='codela-performance-debug';
   const historyKey='codela-performance-debug-history';
   const modeKey='codela-performance-debug-mode';
-  const modes=['normal','no-animation','no-glass','both','nonmodal','guest-form-outside'];
+  const modes=['normal','no-animation','no-glass','both','nonmodal','guest-form-outside','static-body'];
   let mode='normal';
   try {const val=sessionStorage.getItem(modeKey);if(modes.includes(val))mode=val;}catch(e){}
   const noPanelMotion=()=>mode==='no-animation'||mode==='both';
@@ -40,7 +40,8 @@
     'visible','duration','opened','navigating','collapsed','delay','relocated',
     'index','target','afterInput','part','property','frames','firstFrame',
     'maxGap','p95Gap','droppedFrames','total','open','domReady','responseStart',
-    'guest','request','lag','fromInput','visibility','phase','planned']);
+    'guest','request','lag','fromInput','visibility','phase','planned',
+    'formIsolated','bodyFixed']);
   const labels=new Set(['menu','search','cart','account','filters','home',
     'product','catalog','checkout','content','page','none','other']);
   function clean(key,value){
@@ -145,7 +146,7 @@
       return {
         tool:'codela-interaction-timing',
         schema:1,
-        theme:'0.1.335',
+        theme:'0.1.336',
         mode,
         pages:pageIndex,
         session:document.body?.classList.contains('logged-in')?'signed-in':'guest',
@@ -176,6 +177,8 @@
       applyMode();preparePanel('menu');api.clear();record('debug.mode-changed');
     },
     mode:()=>mode,
+    skipBodyFix:()=>mode==='static-body',
+    isGuestFormIsolated:()=>!!guestForm,
     preparePanel,
     useNonModal:()=>mode==='nonmodal',
     // Unlike the pointerdown timer, these probes run AFTER showModal()/close().
@@ -339,7 +342,7 @@
   #sf-performance-debug textarea{width:100%;height:145px;margin-top:8px;border:1px solid #d7d7db;border-radius:8px;
     padding:8px;font-size:10px;resize:vertical;display:none}
   #sf-performance-debug .sf-debug-modes{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:10px}
-  #sf-performance-debug .sf-debug-modes button:is([data-mode="nonmodal"],[data-mode="guest-form-outside"]){grid-column:1/-1}
+  #sf-performance-debug .sf-debug-modes button:is([data-mode="nonmodal"],[data-mode="guest-form-outside"],[data-mode="static-body"]){grid-column:1/-1}
   #sf-panel.sf-perf-nonmodal{z-index:2147481000!important}
   #sf-performance-debug .sf-debug-modes button{border-radius:10px;padding:7px 5px}
   #sf-performance-debug .sf-debug-modes button[aria-pressed="true"]{background:#262629;color:white;box-shadow:none}
@@ -368,7 +371,8 @@
       '<button type="button" data-mode="no-glass">Camsız</button>'+
       '<button type="button" data-mode="both">İkisi kapalı</button>'+
       '<button type="button" data-mode="nonmodal">Yerel modal olmadan</button>'+
-       '<button type="button" data-mode="guest-form-outside">Misafir formu dialog dışında</button></div>'+
+       '<button type="button" data-mode="guest-form-outside">Misafir formu dialog dışında</button>'+
+       '<button type="button" data-mode="static-body">Body sabitleme olmadan</button></div>'+
       '<div class="sf-debug-actions"><button type="button" data-action="copy">Raporu kopyala</button>'+
       '<button type="button" data-action="clear">Temizle</button>'+
       '<button type="button" data-action="stop">Kapat</button></div>'+

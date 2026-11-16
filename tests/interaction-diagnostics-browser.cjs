@@ -88,16 +88,21 @@ const browserType=process.env.TEST_WEBKIT?webkit:chromium;
   assert.equal(await page.evaluate(()=>window.codelaSFDebug.useNonModal()),true,
     'Diagnostic-only nonmodal mode is explicitly opted into');
   await page.locator('#sf-panel').evaluate(el=>{el.show();el.close()});
+  await page.locator('[data-mode="static-body"]').click();
+  assert.equal(await page.evaluate(()=>window.codelaSFDebug.skipBodyFix()),true,'Static body A/B enabled only on explicit debug selection');
   await page.locator('[data-mode="guest-form-outside"]').click();
+  assert.equal(await page.evaluate(()=>window.codelaSFDebug.skipBodyFix()),false,'Switching debug mode restores normal body fixation');
   assert.equal(await page.evaluate(()=>window.codelaSFDebug.mode()),'guest-form-outside');
   assert.equal(await page.locator('#sf-panel #sf-account').count(),0,'Guest form leaves dialog top layer');
   assert.equal(await page.locator('body > #sf-account[hidden]').count(),1,'Guest form stays hidden in body');
+  assert.equal(await page.evaluate(()=>window.codelaSFDebug.isGuestFormIsolated()),true,'Report can confirm the guest DOM was actually isolated');
   await page.evaluate(()=>window.codelaSFDebug.preparePanel('account'));
   assert.equal(await page.locator('#sf-panel #sf-account').count(),1,'Account restores original Woo form');
   await page.evaluate(()=>window.codelaSFDebug.preparePanel('menu'));
   assert.equal(await page.locator('body > #sf-account[hidden]').count(),1,'Next menu isolates form again');
   await page.locator('[data-mode="normal"]').click();
   assert.equal(await page.locator('#sf-panel #sf-account').count(),1,'Normal restores exact DOM location');
+  assert.equal(await page.evaluate(()=>window.codelaSFDebug.isGuestFormIsolated()),false,'Normal mode returns full guest DOM');
   assert.equal(await page.evaluate(()=>window.codelaSFDebug.useNonModal()),false,
     'Restoring Normal returns modal semantics');
   assert.equal(await page.evaluate(()=>document.documentElement.classList.contains('sf-perf-no-glass')),false,
