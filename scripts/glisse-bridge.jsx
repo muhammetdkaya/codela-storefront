@@ -60,6 +60,12 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     };
     root.render(h(Button, {
       className:'sf-glisse-paint-button',
+      ref:node=>{
+        if (node && el.isConnected) {
+          el.classList.add('sf-glisse-button-host');
+          measure();
+        }
+      },
       type:'button',
       tabIndex:-1,
       'aria-hidden':'true',
@@ -84,9 +90,7 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     window.addEventListener('resize',measure,{passive:true});
     buttonRoots.set(el,{root,mount,parent,observer,measure,forwardDown});
     measure();
-    requestAnimationFrame(() => {
-      if (mount.querySelector('.lg-button') && el.isConnected) el.classList.add('sf-glisse-button-host');
-    });
+
   }
 
   function mountGlass(el) {
