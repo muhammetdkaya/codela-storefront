@@ -202,6 +202,7 @@ export function createOverlayController({
             closing = false;
             dialog.classList.remove('is-closing');
         }
+        window.codelaSFDebug?.preparePanel?.(name);
         const opening = !dialog.open;
         if (!opening && current === name && !wasClosing) return;
         surfaceMotion?.cancel(); surfaceMotion = null;

@@ -10,7 +10,7 @@
   const key='codela-performance-debug';
   const historyKey='codela-performance-debug-history';
   const modeKey='codela-performance-debug-mode';
-  const modes=['normal','no-animation','no-glass','both','nonmodal'];
+  const modes=['normal','no-animation','no-glass','both','nonmodal','guest-form-outside'];
   let mode='normal';
   try {const val=sessionStorage.getItem(modeKey);if(modes.includes(val))mode=val;}catch(e){}
   const noPanelMotion=()=>mode==='no-animation'||mode==='both';
@@ -103,6 +103,39 @@
     if(status && expanded)update();
     return item;
   }
+  // Guest-only A/B: while testing Menu/Search/Cart, keep the native login
+  // section outside the dialog top layer. This simulates the signed-in DOM
+  // difference without dropping the Woo form or touching normal visitors.
+  let guestForm=null;
+  function restoreGuestForm(){
+    if(!guestForm)return;
+    const {section,marker,display,priority}=guestForm;
+    if(marker.isConnected) marker.after(section);
+    else document.querySelector('#sf-panel')?.append(section);
+    if(display)section.style.setProperty('display',display,priority);
+    else section.style.removeProperty('display');
+    marker.remove();
+    guestForm=null;
+  }
+  function preparePanel(name){
+    if(mode!=='guest-form-outside' || name==='account' || document.body?.classList.contains('logged-in')){
+      restoreGuestForm();
+      return;
+    }
+    if(guestForm)return;
+    const dialog=document.querySelector('#sf-panel');
+    const section=dialog?.querySelector('#sf-account');
+    // Never alter active account controls, and move only an already-hidden form.
+    if(!section || !section.hidden || dialog.open)return;
+    const marker=document.createComment('sf-guest-form-debug-home');
+    const display=section.style.getPropertyValue('display');
+    const priority=section.style.getPropertyPriority('display');
+    section.before(marker);
+    section.style.setProperty('display','none','important');
+    document.body.append(section);
+    guestForm={section,marker,display,priority};
+    record('debug.guest-form-isolated',{guest:true});
+  }
   const api={
     mark(type,details={}) {
       if(typeof type!=='string'||!allowed.test(type))return;
@@ -112,7 +145,7 @@
       return {
         tool:'codela-interaction-timing',
         schema:1,
-        theme:'0.1.334',
+        theme:'0.1.335',
         mode,
         pages:pageIndex,
         session:document.body?.classList.contains('logged-in')?'signed-in':'guest',
@@ -140,9 +173,10 @@
       if(!modes.includes(val)||val===mode)return;
       mode=val;
       try{sessionStorage.setItem(modeKey,mode)}catch(e){}
-      applyMode();api.clear();record('debug.mode-changed');
+      applyMode();preparePanel('menu');api.clear();record('debug.mode-changed');
     },
     mode:()=>mode,
+    preparePanel,
     useNonModal:()=>mode==='nonmodal',
     // Unlike the pointerdown timer, these probes run AFTER showModal()/close().
     // A 1.8s delay in both timers and frames implicates JS/event-loop blocking;
@@ -305,7 +339,7 @@
   #sf-performance-debug textarea{width:100%;height:145px;margin-top:8px;border:1px solid #d7d7db;border-radius:8px;
     padding:8px;font-size:10px;resize:vertical;display:none}
   #sf-performance-debug .sf-debug-modes{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:10px}
-  #sf-performance-debug .sf-debug-modes button[data-mode="nonmodal"]{grid-column:1/-1}
+  #sf-performance-debug .sf-debug-modes button:is([data-mode="nonmodal"],[data-mode="guest-form-outside"]){grid-column:1/-1}
   #sf-panel.sf-perf-nonmodal{z-index:2147481000!important}
   #sf-performance-debug .sf-debug-modes button{border-radius:10px;padding:7px 5px}
   #sf-performance-debug .sf-debug-modes button[aria-pressed="true"]{background:#262629;color:white;box-shadow:none}
@@ -321,6 +355,7 @@
   function bootstrap(){
     if(!document.body || destroyed)return;
     connect();
+    preparePanel('menu');
     const sheet=document.createElement('style');sheet.id='sf-performance-debug-style';sheet.textContent=style;
     document.head.append(sheet);
     hud=document.createElement('div');hud.id='sf-performance-debug';
@@ -332,7 +367,8 @@
       '<button type="button" data-mode="no-animation">Animasyonsuz</button>'+
       '<button type="button" data-mode="no-glass">Camsız</button>'+
       '<button type="button" data-mode="both">İkisi kapalı</button>'+
-      '<button type="button" data-mode="nonmodal">Yerel modal olmadan</button></div>'+
+      '<button type="button" data-mode="nonmodal">Yerel modal olmadan</button>'+
+       '<button type="button" data-mode="guest-form-outside">Misafir formu dialog dışında</button></div>'+
       '<div class="sf-debug-actions"><button type="button" data-action="copy">Raporu kopyala</button>'+
       '<button type="button" data-action="clear">Temizle</button>'+
       '<button type="button" data-action="stop">Kapat</button></div>'+
@@ -352,7 +388,7 @@
     hud.querySelector('[data-action="stop"]').addEventListener('click',()=>{
       try{sessionStorage.removeItem(key);sessionStorage.removeItem(historyKey);sessionStorage.removeItem(modeKey)}catch(e){}
       document.documentElement.classList.remove('sf-perf-no-glass');
-      destroyed=true;observer.disconnect();longTaskObserver?.disconnect();hud.remove();sheet.remove();
+      restoreGuestForm();destroyed=true;observer.disconnect();longTaskObserver?.disconnect();hud.remove();sheet.remove();
       delete window.codelaSFDebug;
     });
     hud.querySelector('[data-action="copy"]').addEventListener('click',async()=>{
