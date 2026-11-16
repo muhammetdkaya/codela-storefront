@@ -5,24 +5,93 @@
  * If this enhancement fails or JavaScript is unavailable, the PHP shell
  * stays fully interactive, including search/cart/account dialogs.
  */
-import { TabBar, Glass } from 'glisse';
+import { TabBar, Glass, Button } from 'glisse';
 
 const React = window.wp?.element;
 const doc = document;
 if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
   const h = React.createElement;
   const roots = new Map();
+  const buttonRoots = new Map();
   const docks = new Map();
+  // Header capsules are genuine Glisse Glass; individual soft controls
+  // use a genuine Glisse Button paint-layer without replacing native actions.
   const selector = [
     '.sf-shell .sf-header .sf-brand.sf-ui-surface',
     '.sf-shell .sf-header .sf-actions.sf-ui-surface',
-    '.sf-shell .sf-header .sf-desktop-navigation.sf-ui-surface',
-    '.sf-shell .sf-header .sf-ui-icon-button--soft',
-    '.sf-shell .sf-ui-icon-button--soft:not(.sf-dock-item)',
-    '.sf-shell .sf-ui-button.sf-ui-surface',
-    'body:not(.codela-my-account-layout) .sf-content .sf-ui-icon-button--soft',
-    'body:not(.codela-my-account-layout) .sf-content .sf-ui-button.sf-ui-surface'
+    '.sf-shell .sf-header .sf-desktop-navigation.sf-ui-surface'
   ].join(',');
+  const buttonSelector = [
+    '.sf-shell :is(a,button).sf-ui-icon-button--soft',
+    '#sf-content :is(a,button).sf-ui-icon-button--soft',
+    '.sf-shell :is(a,button).sf-ui-button--secondary',
+    '#sf-content :is(a,button).sf-ui-button--secondary'
+  ].join(',');
+
+  function mountButton(el) {
+    if (buttonRoots.has(el) || buttonRoots.size >= 18 ||
+        el.closest('.sf-mobile-dock,.sf-actions.sf-ui-surface,[hidden]') ||
+        el.hidden || !el.getClientRects().length) return;
+    const parent = el.parentElement;
+    if (!parent || !parent.isConnected) return;
+    // Keep the native link/button, its Interactivity API handlers, its ID,
+    // keyboard focus, disabled state, and WooCommerce actions untouched.
+    const mount = doc.createElement('span');
+    mount.className = 'sf-glisse-button-mount';
+    mount.setAttribute('aria-hidden', 'true');
+    if (getComputedStyle(parent).position === 'static')
+      parent.classList.add('sf-glisse-button-parent');
+    parent.append(mount);
+    const root = React.createRoot(mount);
+    const measure = () => {
+      if (!el.isConnected) return;
+      const box = el.getBoundingClientRect();
+      const container = parent.getBoundingClientRect();
+      const parentStyle = getComputedStyle(parent);
+      const scaleX = container.width / (parent.offsetWidth || container.width || 1);
+      const scaleY = container.height / (parent.offsetHeight || container.height || 1);
+      const x = (box.left - container.left - (parseFloat(parentStyle.borderLeftWidth) || 0)) / (scaleX || 1) + parent.scrollLeft;
+      const y = (box.top - container.top - (parseFloat(parentStyle.borderTopWidth) || 0)) / (scaleY || 1) + parent.scrollTop;
+      mount.style.left = x + 'px';
+      mount.style.top = y + 'px';
+      mount.style.width = box.width / (scaleX || 1) + 'px';
+      mount.style.height = box.height / (scaleY || 1) + 'px';
+      mount.style.borderRadius = getComputedStyle(el).borderRadius;
+    };
+    root.render(h(Button, {
+      className:'sf-glisse-paint-button',
+      ref:node=>{
+        if (node && el.isConnected) {
+          el.classList.add('sf-glisse-button-host');
+          measure();
+        }
+      },
+      type:'button',
+      tabIndex:-1,
+      'aria-hidden':'true',
+      style:{width:'100%',height:'100%',borderRadius:'inherit',padding:0}
+    }));
+    const forwardDown = event => {
+      if (event.button !== 0 || !event.isPrimary ||
+          el.matches(':disabled,[aria-disabled="true"],[aria-busy="true"]')) return;
+      const paint = mount.querySelector('.lg-button');
+      if (!paint || typeof PointerEvent === 'undefined') return;
+      paint.dispatchEvent(new PointerEvent('pointerdown', {
+        bubbles:false, cancelable:false, pointerId:event.pointerId,
+        pointerType:event.pointerType, isPrimary:event.isPrimary,
+        button:event.button, buttons:event.buttons,
+        clientX:event.clientX, clientY:event.clientY
+      }));
+    };
+    el.addEventListener('pointerdown',forwardDown,{passive:true});
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    observer.observe(parent);
+    window.addEventListener('resize',measure,{passive:true});
+    buttonRoots.set(el,{root,mount,parent,observer,measure,forwardDown});
+    measure();
+
+  }
 
   function mountGlass(el) {
     if (roots.has(el) || el.closest('.sf-mobile-dock') || el.hidden ||
@@ -136,12 +205,23 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
   function refresh() {
     queued=false;
     for(const [el,root] of roots)if(!el.isConnected){root.unmount();roots.delete(el);}
+    for(const [el,entry] of buttonRoots)if(!el.isConnected){
+      entry.observer.disconnect();
+      window.removeEventListener('resize',entry.measure);
+      el.removeEventListener('pointerdown',entry.forwardDown);
+      entry.root.unmount();
+      entry.mount.remove();
+      if(!entry.parent.querySelector('.sf-glisse-button-mount'))
+        entry.parent.classList.remove('sf-glisse-button-parent');
+      buttonRoots.delete(el);
+    }
     for(const [el,entry] of docks)if(!el.isConnected){entry.watch.disconnect();entry.widthObserver.disconnect();window.removeEventListener('resize',entry.resize);entry.root.unmount();docks.delete(el);}
     const shell=doc.querySelector('.sf-shell');
     if(!shell)return;
     shell.classList.add('sf-glisse-light');
     doc.querySelectorAll('.sf-mobile-dock').forEach(mountDock);
     doc.querySelectorAll(selector).forEach(mountGlass);
+    doc.querySelectorAll(buttonSelector).forEach(mountButton);
   }
   function scheduleRefresh() {
     if(queued)return;
@@ -152,7 +232,7 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
   else refresh();
   // WordPress router, account overlay and WooCommerce can swap parts of the shell.
   const changes=new MutationObserver(scheduleRefresh);
-  changes.observe(doc.documentElement,{childList:true,subtree:true});
+  changes.observe(doc.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['open']});
   doc.addEventListener('codela:navigation-complete',scheduleRefresh);
   // Lazily enhance controls as they enter the viewport; never spawn 100 lenses.
   window.addEventListener('scroll',scheduleRefresh,{passive:true});
