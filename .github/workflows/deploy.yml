@@ -8,8 +8,10 @@ on:
     paths: ['theme/**', 'scripts/**', 'tests/**', '.github/workflows/deploy.yml']
 permissions:
   contents: read
+# PR validation never writes to FTP; only main deploys serialize with each other.
+# Keep the previous production group separate while a legacy PR run drains.
 concurrency:
-  group: codela-storefront-production
+  group: ${{ github.event_name == 'pull_request' && format('codela-storefront-pr-{0}', github.event.pull_request.number) || 'codela-storefront-production-main' }}
   cancel-in-progress: false
 jobs:
   validate:
