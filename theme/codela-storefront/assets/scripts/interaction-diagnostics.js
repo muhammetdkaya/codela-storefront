@@ -9,6 +9,14 @@
   'use strict';
   const key='codela-performance-debug';
   const historyKey='codela-performance-debug-history';
+  const modeKey='codela-performance-debug-mode';
+  const modes=['normal','no-animation','no-glass','both'];
+  let mode='normal';
+  try {const val=sessionStorage.getItem(modeKey);if(modes.includes(val))mode=val;}catch(e){}
+  const noPanelMotion=()=>mode==='no-animation'||mode==='both';
+  const noGlass=()=>mode==='no-glass'||mode==='both';
+  const applyMode=()=>document.documentElement.classList.toggle('sf-perf-no-glass',noGlass());
+  applyMode();
   const query=new URLSearchParams(location.search).get('codela_debug');
   try {
     if(query==='1') sessionStorage.setItem(key,'1');
@@ -32,7 +40,7 @@
     'visible','duration','opened','navigating','collapsed','delay','relocated',
     'index','target','afterInput','part','property','frames','firstFrame',
     'maxGap','p95Gap','droppedFrames','total','open','domReady','responseStart',
-    'guest','request']);
+    'guest','request','lag','fromInput','visibility']);
   const labels=new Set(['menu','search','cart','account','filters','home',
     'product','catalog','checkout','content','page','none','other']);
   function clean(key,value){
@@ -43,6 +51,7 @@
     if(key==='control')return /^(?:dock\.(?:home|search|cart|account|other)|panel\.(?:menu|search|cart|account|filters|close|other))$/.test(value)?value:'other';
     if(key==='source')return ['pointer','touch','click'].includes(value)?value:null;
     if(key==='request')return ['read','write'].includes(value)?value:null;
+    if(key==='visibility')return ['visible','hidden','prerender'].includes(value)?value:null;
     if(key==='part')return ['dock','menu-trigger','panel'].includes(value)?value:null;
     if(key==='property')return ['transform','opacity','scale','visibility','other'].includes(value)?value:null;
     return null;
@@ -102,7 +111,8 @@
       return {
         tool:'codela-interaction-timing',
         schema:1,
-        theme:'0.1.332',
+        theme:'0.1.333',
+        mode,
         pages:pageIndex,
         session:document.body?.classList.contains('logged-in')?'signed-in':'guest',
         device:{
@@ -120,7 +130,18 @@
       records.length=0;summaries.length=0;sequence=0;lastInput=null;
       try{sessionStorage.removeItem(historyKey)}catch(e){}
       update();
-    }
+    },
+    skipPanelAnimation(element){
+      return noPanelMotion() && !!element &&
+        (element.id==='sf-menu'||element.classList?.contains('sf-search-content'));
+    },
+    setMode(val){
+      if(!modes.includes(val)||val===mode)return;
+      mode=val;
+      try{sessionStorage.setItem(modeKey,mode)}catch(e){}
+      applyMode();api.clear();record('debug.mode-changed');
+    },
+    mode:()=>mode
   };
   window.codelaSFDebug=api;
   const longTaskSupported=!!(window.PerformanceObserver &&
@@ -151,7 +172,8 @@
       modal:!!modal?.open,
       dockHidden:!!dock?.hidden,
       dockCollapsed:!!dock?.classList.contains('is-collapsed'),
-      scrollLocked:document.documentElement.classList.contains('sf-overlay-scroll-locked')
+      scrollLocked:document.documentElement.classList.contains('sf-overlay-scroll-locked'),
+      visibility:document.visibilityState
     };
   }
   function start(label,source,stamp){
@@ -160,6 +182,12 @@
     lastInput={id,label,at:begin};
     const inputDelay=Math.max(0,begin-(stamp||begin));
     record('input',{id,control:label,source,inputDelay,...snapshot()});
+    // Independent timer distinguishes JS event-loop stalls from rAF starvation.
+    setTimeout(()=>{
+      if(destroyed)return;
+      const elapsed=now()-begin;
+      record('timer.probe',{id,elapsed,lag:Math.max(0,elapsed-120),visibility:document.visibilityState});
+    },120);
     // rAF timestamps are measured independently of handler work, with a short
     // bounded sample. A 200ms animation can finish while long JS blocks frames.
     const intervals=[];
@@ -207,6 +235,7 @@
     else start(label,'click',stamp(e));
   },true);
   // Fixed status events do not include route paths or any user content.
+  document.addEventListener('visibilitychange',()=>record('page.visibility',{visibility:document.visibilityState}));
   document.addEventListener('transitionend',e=>{
     if(!e.target.closest?.('.sf-mobile-dock,.sf-menu-trigger,#sf-panel'))return;
     const part=e.target.closest('.sf-mobile-dock')?'dock':
@@ -246,6 +275,17 @@
   #sf-performance-debug .sf-debug-status{font-variant-numeric:tabular-nums;font-weight:600;word-break:break-word}
   #sf-performance-debug textarea{width:100%;height:145px;margin-top:8px;border:1px solid #d7d7db;border-radius:8px;
     padding:8px;font-size:10px;resize:vertical;display:none}
+  #sf-performance-debug .sf-debug-modes{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:10px}
+  #sf-performance-debug .sf-debug-modes button{border-radius:10px;padding:7px 5px}
+  #sf-performance-debug .sf-debug-modes button[aria-pressed="true"]{background:#262629;color:white;box-shadow:none}
+  html.sf-perf-no-glass .sf-mobile-dock .sf-dock-surface,
+  html.sf-perf-no-glass .sf-shell .sf-header .sf-glisse-glass-plate,
+  html.sf-perf-no-glass .sf-shell .sf-header .sf-ui-surface,
+  html.sf-perf-no-glass #sf-panel .sf-ui-surface,
+  html.sf-perf-no-glass #sf-panel button.sf-ui-icon-button--soft{
+    -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+    background:rgba(249,250,252,.97)!important;
+  }
   `;
   function bootstrap(){
     if(!document.body || destroyed)return;
@@ -256,6 +296,11 @@
     hud.innerHTML='<button type="button" class="sf-debug-toggle" aria-expanded="false">PERF · DEBUG</button>'+
       '<div class="sf-debug-body" hidden><div class="sf-debug-status" aria-live="polite"></div>'+
       '<div class="sf-debug-desc">Menü ve alt menüyü 5–6 kez kullan. Rapor yalnızca süreleri ve arayüz durumlarını içerir; otomatik gönderilmez.</div>'+
+      '<div class="sf-debug-modes" role="group" aria-label="Performans deneme modu">'+
+      '<button type="button" data-mode="normal">Normal</button>'+
+      '<button type="button" data-mode="no-animation">Animasyonsuz</button>'+
+      '<button type="button" data-mode="no-glass">Camsız</button>'+
+      '<button type="button" data-mode="both">İkisi kapalı</button></div>'+
       '<div class="sf-debug-actions"><button type="button" data-action="copy">Raporu kopyala</button>'+
       '<button type="button" data-action="clear">Temizle</button>'+
       '<button type="button" data-action="stop">Kapat</button></div>'+
@@ -265,9 +310,16 @@
     output=hud.querySelector('textarea');
     const toggle=hud.querySelector('.sf-debug-toggle'),body=hud.querySelector('.sf-debug-body');
     toggle.addEventListener('click',()=>{expanded=!expanded;body.hidden=!expanded;toggle.setAttribute('aria-expanded',String(expanded));update()});
+    const paintMode=()=>hud.querySelectorAll('[data-mode]').forEach(button=>
+      button.setAttribute('aria-pressed',String(button.dataset.mode===mode)));
+    hud.querySelectorAll('[data-mode]').forEach(button=>button.addEventListener('click',()=>{
+      api.setMode(button.dataset.mode);paintMode();
+    }));
+    paintMode();
     hud.querySelector('[data-action="clear"]').addEventListener('click',()=>api.clear());
     hud.querySelector('[data-action="stop"]').addEventListener('click',()=>{
-      try{sessionStorage.removeItem(key);sessionStorage.removeItem(historyKey)}catch(e){}
+      try{sessionStorage.removeItem(key);sessionStorage.removeItem(historyKey);sessionStorage.removeItem(modeKey)}catch(e){}
+      document.documentElement.classList.remove('sf-perf-no-glass');
       destroyed=true;observer.disconnect();longTaskObserver?.disconnect();hud.remove();sheet.remove();
       delete window.codelaSFDebug;
     });
