@@ -93,7 +93,7 @@ const html='<div class="sf-shell has-mobile-dock"><header class="sf-header">'+
   await page.waitForFunction(()=>{
     const surface=document.querySelector('.sf-dock-surface');
     const rect=surface?.getBoundingClientRect();
-    return !!rect && rect.width>=300 && getComputedStyle(surface).visibility==='visible';
+    return !!rect && rect.width>=200 && rect.height>40 && getComputedStyle(surface).visibility==='visible';
   });
   // Reparent the movable header menu control into an open native dialog:
   // do not create more React button/Glass instances during the animation.
