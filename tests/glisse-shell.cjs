@@ -16,7 +16,7 @@ assert.match(render,/data-wp-on--click="actions\.search"/);
 assert.match(render,/data-wp-on--click="actions\.cart"/);
 assert.match(functions,/\[ 'wp-element' \]/);
 assert.match(functions,/is_file\( \$glisse_asset \)/);
-assert.match(build,/glisse\.version!=='0\.6\.0'/);
+assert.match(build,/glisse\.version!=='0\.5\.0'/);
 assert.match(css,/\.sf-mobile-dock\.sf-glisse-ready/);
 assert.match(css,/@media\(forced-colors:active\)/);
 assert.doesNotMatch(src,/preventDefault\(\);\s*window\.location/);
