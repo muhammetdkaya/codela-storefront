@@ -47,6 +47,13 @@ const browserType=process.env.TEST_WEBKIT?webkit:chromium;
   assert(data.events.some(x=>x.type==='frames.summary'),'Frame spikes summarised');
   assert(data.events.some(x=>x.type==='timer.probe' && x.lag >= 0),
     'Independent JavaScript timer measures main-thread stalls');
+  await page.evaluate(()=>window.codelaSFDebug.postAction('open','menu'));
+  await page.waitForTimeout(960);
+  const action=await page.evaluate(()=>window.codelaSFDebug.report().events);
+  assert(action.some(x=>x.type==='post-action.timer'&&x.phase==='open'&&x.planned===160),
+    'Timers begin after real modal handler, not prematurely on pointerdown');
+  assert(action.some(x=>x.type==='post-action.frames'&&x.phase==='open'),
+    'Post-action frame counter measured independently');
   assert(data.events.some(x=>x.type==='dialog.state'),'Dialog state changes tracked');
   const json=JSON.stringify(data);
   assert(!/SECRET-CUSTOMER-EMAIL|MY-PRIVATE-ID|perf.test|https?:/.test(json),'PII and URL never leak into report');
@@ -77,7 +84,13 @@ const browserType=process.env.TEST_WEBKIT?webkit:chromium;
   assert.equal(await page.evaluate(()=>window.codelaSFDebug.report().mode),'no-glass');
   await page.locator('[data-mode="both"]').click();
   assert.equal(await page.evaluate(()=>window.codelaSFDebug.report().mode),'both');
+  await page.locator('[data-mode="nonmodal"]').click();
+  assert.equal(await page.evaluate(()=>window.codelaSFDebug.useNonModal()),true,
+    'Diagnostic-only nonmodal mode is explicitly opted into');
+  await page.locator('#sf-panel').evaluate(el=>{el.show();el.close()});
   await page.locator('[data-mode="normal"]').click();
+  assert.equal(await page.evaluate(()=>window.codelaSFDebug.useNonModal()),false,
+    'Restoring Normal returns modal semantics');
   assert.equal(await page.evaluate(()=>document.documentElement.classList.contains('sf-perf-no-glass')),false,
     'Normal mode restores all native appearance');
   await page.locator('[data-action="clear"]').click();
