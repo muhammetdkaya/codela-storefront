@@ -7,8 +7,17 @@ import time
 import urllib.error
 import urllib.request
 import uuid
+from pathlib import Path
 
 BASE = "https://codela.dev"
+
+
+def release_version() -> str:
+    """Use the validated Storefront tree, never a hard-coded old release."""
+    stylesheet = (Path(__file__).resolve().parents[1] / 'theme' / 'codela-storefront' / 'style.css').read_text(encoding='utf-8')
+    match = re.search(r'(?m)^Version:\s*(\S+)', stylesheet)
+    assert match, 'Local Storefront style.css is missing its version'
+    return match.group(1)
 
 def fetch(path: str) -> str:
     sep = "&" if "?" in path else "?"
@@ -24,7 +33,10 @@ def fetch(path: str) -> str:
 def check() -> None:
     style = fetch("/wp-content/themes/codela-storefront/style.css")
     version = re.search(r"(?m)^Version:\s*(\S+)", style)
-    assert version and version.group(1) == "0.1.321", "FTP theme version is not 0.1.321"
+    expected_version = release_version()
+    assert version and version.group(1) == expected_version, (
+        f"FTP theme version {version.group(1) if version else 'missing'} is not {expected_version}"
+    )
     agency_css = fetch("/wp-content/themes/codela-storefront/assets/styles/agency.css")
     assert re.search(r"\.sf-agency-home\{[^}]*padding-top:0", agency_css), "Agency root still leaves the old white header band"
     assert re.search(r"\.sf-agency-hero\{[^}]*padding-top:76px", agency_css), "Hero text is not offset from the glass header"
@@ -77,7 +89,7 @@ def check() -> None:
                 else:
                     print("Agency desktop nav verified:", " / ".join(labels), flush=True)
             if not errors:
-                print("Agency 0.1.321: both native homepage widgets, navigation, Services, About and Contact verified.")
+                print(f"Agency {expected_version}: both native homepage widgets, navigation, Services, About and Contact verified.")
                 return
         print("Agency smoke attempt", attempt + 1, "; ".join(errors), flush=True)
         if attempt < 2:
