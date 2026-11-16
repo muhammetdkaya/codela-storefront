@@ -155,6 +155,8 @@ jobs:
           npx playwright install --with-deps chromium webkit
           node tests/glisse-shell-browser.cjs
           TEST_WEBKIT=1 node tests/glisse-shell-browser.cjs
+          node tests/menu-dismiss-browser.cjs
+          TEST_WEBKIT=1 node tests/menu-dismiss-browser.cjs
           node tests/agency-browser.cjs
           node tests/product-sheet-handoff-browser.cjs
           node tests/product-desktop-browser.cjs

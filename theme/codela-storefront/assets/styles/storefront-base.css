@@ -1121,6 +1121,8 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
 .sf-mobile-dock{display:none}
 @media(max-width:700px){
   .sf-mobile-dock{
+    /* Keep the native selection quick without animating a blurred capsule. */
+    --sf-ui-motion-selection:180ms;
     --sf-dock-bottom:calc(var(--sf-ui-bottom-bar-gap) + env(safe-area-inset-bottom,0px));
     --sf-dock-travel:0px;
     --sf-dock-scale:1;
@@ -1189,10 +1191,10 @@ body{background:var(--sf-ui-page);margin:0;-webkit-font-smoothing:antialiased}
   .sf-mobile-dock.has-selection.is-pressing:not(.is-scrubbing) .sf-dock-surface::before{opacity:0!important;transition:transform var(--sf-ui-motion-selection) var(--sf-ui-ease-press),opacity 0ms linear!important}
   .sf-mobile-dock.has-selection.is-pressing:not(.is-scrubbing) .sf-dock-surface::after{opacity:1!important;transition:transform var(--sf-ui-motion-selection) var(--sf-ui-ease-press),opacity 0ms linear!important}
   .sf-mobile-dock.is-pressing{--sf-dock-press-scale:1.04}
-  .sf-mobile-dock:not(.is-collapsed):is(.is-pressing,:has(.sf-dock-item:active)) .sf-dock-surface{
-    scale:var(--sf-ui-scale-dock);
-    transition:transform var(--sf-ui-motion-dock) var(--sf-ui-ease-dock),
-      scale var(--sf-ui-motion-engage) var(--sf-ui-ease-press),opacity 100ms ease;
+  /* Individual icons still respond to touch. Scaling the whole 16px-blurred
+     bar forces a costly iOS backdrop re-raster on every short tab press. */
+  .sf-mobile-dock:not(.is-collapsed).is-pressing .sf-dock-surface{
+    scale:1;
   }
   /* Finger tracking is continuous; release/taps use the normal slide above. */
   .sf-mobile-dock.is-scrubbing .sf-dock-surface::before,

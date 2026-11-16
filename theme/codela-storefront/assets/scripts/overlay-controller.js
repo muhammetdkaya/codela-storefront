@@ -227,7 +227,10 @@ export function createOverlayController({
             // Preserve the rendered body origin, including WordPress's html top margin.
             document.body.style.position = 'fixed'; document.body.style.top = `${bodyRect.top}px`; document.body.style.width = '100%';
             adminOffset();
-            mountDock();
+            // The full-screen menu hides the dock anyway. Moving a fixed,
+            // blurred navigation bar into the modal top layer forces WebKit
+            // to recompose the whole page; only dock-bearing panels need it.
+            if (name !== 'menu') mountDock();
         }
         if (current === 'search' && name !== 'search') searchFeature.cancel();
         current = name;
@@ -332,16 +335,10 @@ export function createOverlayController({
             dialog.classList.add('is-closing');
             return;
         }
-        if (current === 'menu' && !reducedMotion.matches && $('#sf-menu')?.animate) {
-            closing = true;
-            const motion = $('#sf-menu').animate([
-                {opacity:1,transform:'translate3d(0,0,0)'},
-                {opacity:0,transform:'translate3d(0,-12px,0)'},
-            ], {...panelTiming($('#sf-menu'), true),fill:'forwards'});
-            panelMotion = motion;
-            motion.onfinish = () => { if (panelMotion === motion) finishClose(); };
-            return;
-        }
+        // Do not animate the content away while the opaque full-screen native
+        // dialog stays open. On iOS WebKit its white background can otherwise
+        // remain visible until a delayed animation-finish event is delivered.
+        // The menu button's existing icon morph supplies exit feedback.
         finishClose();
     }
     function finishClose(navigating = false) {
@@ -363,14 +360,11 @@ export function createOverlayController({
             if (opener?.isConnected) opener.focus({preventScroll:true});
         }
         cancelAnimationFrame(restoreScrollFrame);
-        // Restore layout/position while native root snapping is still suspended.
-        // Re-enable it only after the original product anchor is back in layout.
-        document.documentElement.getBoundingClientRect();
-        if (navigating) document.documentElement.classList.remove('sf-overlay-scroll-locked');
-        else restoreScrollFrame = requestAnimationFrame(() => {
-            restoreScrollFrame = 0;
-            if (!dialog.open) document.documentElement.classList.remove('sf-overlay-scroll-locked');
-        });
+        // Never leave scroll-lock on for an additional blank frame after
+        // dialog.close(): iOS can paint the restored fixed body as white while
+        // the old root-lock state survives to a later rAF callback.
+        // Native scrolling and the original body styles are restored above.
+        document.documentElement.classList.remove('sf-overlay-scroll-locked');
         opener = null;
     }
     

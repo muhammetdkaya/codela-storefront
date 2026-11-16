@@ -101,9 +101,13 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
     function restoreDock() {
         const dock = mobileDock();
         if (!dock) return;
-        const resume = preserveDockPosition(dock);
+        // The native dock remains in the document when Menu opens. Avoid
+        // expensive pseudo-element style reads and forced layout unless it
+        // actually moved to the modal top layer for Search/Cart/Account.
+        const relocated = dock.parentElement === getDialog();
+        const resume = relocated ? preserveDockPosition(dock) : () => {};
         dock.hidden = false;
-        if (dock.parentElement === getDialog()) dockHome.after(dock);
+        if (relocated) dockHome.after(dock);
         setDockCollapsed(false);
         markDockActive(null);
         resume();
