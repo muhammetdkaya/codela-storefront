@@ -232,6 +232,9 @@ export function createOverlayController({
             // to recompose the whole page; only dock-bearing panels need it.
             if (name !== 'menu') mountDock();
         }
+        // Section switch Menu -> Search/Cart keeps the same open dialog.
+        // Native navigation must join its top layer before being unhidden.
+        if (!opening && previous === 'menu' && name !== 'menu') mountDock();
         if (current === 'search' && name !== 'search') searchFeature.cancel();
         current = name;
         if (name === 'menu' || appPanel) mountMenuTrigger();
@@ -249,7 +252,9 @@ export function createOverlayController({
         dialog.classList.toggle('is-account-panel', name === 'account');
         dialog.classList.toggle('is-filters-panel', name === 'filters');
         const dock = mobileDock();
-        if (dock && dock.parentElement === dialog) dock.hidden = name === 'menu';
+        // Hide native tabs under the full-screen Menu, even when left in
+        // the document to avoid reparenting a costly blurred surface.
+        if (dock) dock.hidden = name === 'menu';
         markDockActive(name);
         const menuTrigger = findMenuTrigger();
         dialog.setAttribute('aria-label', name === 'menu' ? menuLabel : name === 'search' ? t('Search products') : name === 'account' ? t('My account') : name === 'filters' ? t('Filters') : t('Your cart'));
