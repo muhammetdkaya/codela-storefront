@@ -18,7 +18,13 @@ function add_filter( ...$args ) {}
 function codela_sf_ready() { return true; }
 function is_front_page() { return true; }
 function get_queried_object_id() { return $GLOBALS['query']->ID; }
-function get_post( $id ) { return $GLOBALS['query']->ID === $id ? $GLOBALS['query'] : null; }
+function get_post( $id ) {
+    foreach ( $GLOBALS['pages'] as $page ) { if ( (int) $page->ID === (int) $id ) { return $page; } }
+    return $GLOBALS['query']->ID === $id ? $GLOBALS['query'] : null;
+}
+function get_option( $name, $default = false ) {
+    return 'codela_agency_demo_state_v1' === $name ? ( $GLOBALS['agency_state'] ?? [] ) : $default;
+}
 function get_post_meta( $id, $key, $single = true ) { return $GLOBALS['layout']; }
 function get_page_by_path( $slug ) { return $GLOBALS['pages'][$slug] ?? null; }
 function post_password_required( $post ) { return ! empty( $post->post_password ); }
@@ -39,6 +45,17 @@ function wp_enqueue_script( $name ) { $GLOBALS['assets'][] = $name; }
 require __DIR__ . '/../theme/codela-storefront/inc/agency.php';
 function agency_page_check( $check, $message ) { if ( ! $check ) throw new RuntimeException( $message ); }
 agency_page_check( codela_sf_agency_contact_url() === 'https://codela.test/iletisim/', 'Contact URL resolves through normal published page.' );
+$GLOBALS['pages']['codela-ajans-hizmetler'] = (object) [ 'ID' => 12, 'post_type' => 'page', 'post_name' => 'codela-ajans-hizmetler', 'post_status' => 'publish' ];
+$GLOBALS['pages']['codela-ajans-iletisim'] = (object) [ 'ID' => 14, 'post_type' => 'page', 'post_name' => 'codela-ajans-iletisim', 'post_status' => 'publish' ];
+$GLOBALS['agency_state'] = [ 'done' => true, 'pages' => [ 'hizmetler' => 12, 'iletisim' => 14 ] ];
+agency_page_check( codela_sf_agency_page_url( 'hizmetler' ) === 'https://codela.test/codela-ajans-hizmetler/',
+    'Installed Agency service URL takes priority over reused merchant slug.' );
+agency_page_check( codela_sf_agency_contact_url() === 'https://codela.test/codela-ajans-iletisim/',
+    'Installed Agency contact link targets its recorded page ID.' );
+unset( $GLOBALS['agency_state'] );
+agency_page_check( codela_sf_agency_contact_url() === 'https://codela.test/iletisim/',
+    'A site without installed Agency keeps its ordinary contact page.' );
+
 $enqueue = $GLOBALS['actions']['wp_enqueue_scripts'][0];
 $enqueue();
 agency_page_check( count( $GLOBALS['assets'] ) === 2 && in_array( 'codela-storefront-agency', $GLOBALS['assets'], true ),

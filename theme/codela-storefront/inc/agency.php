@@ -6,12 +6,29 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
  * Agency layouts are ordinary WordPress pages and widgets. Site identity is
  * chosen by installed demo content, never a permanent agency/commerce switch.
  */
+/** Resolve an installed Agency page by its recorded ID, not a colliding slug. */
+function codela_sf_agency_installed_page_url( string $slug ): string {
+    $keys = [ 'hizmetler' => 'hizmetler', 'hakkimizda' => 'hakkimizda', 'iletisim' => 'iletisim' ];
+    if ( ! isset( $keys[ $slug ] ) ) { return ''; }
+    $state = get_option( 'codela_agency_demo_state_v1', [] );
+    $id = is_array( $state ) && ! empty( $state['done'] )
+        ? (int) ( $state['pages'][ $keys[ $slug ] ] ?? 0 ) : 0;
+    $page = $id ? get_post( $id ) : null;
+    return $page && 'page' === $page->post_type
+        && 'publish' === $page->post_status && ! post_password_required( $page )
+        ? (string) get_permalink( $page ) : '';
+}
+
 function codela_sf_agency_page_url( string $slug, string $fallback = '' ): string {
+    $installed = codela_sf_agency_installed_page_url( $slug );
+    if ( $installed ) { return $installed; }
     $page = get_page_by_path( $slug );
     return $page && 'publish' === $page->post_status && ! post_password_required( $page )
         ? (string) get_permalink( $page ) : ( $fallback ?: home_url( '/' ) );
 }
 function codela_sf_agency_contact_url(): string {
+    $installed = codela_sf_agency_installed_page_url( 'iletisim' );
+    if ( $installed ) { return $installed; }
     foreach ( [ 'iletisim', 'contact' ] as $slug ) {
         $page = get_page_by_path( $slug );
         if ( $page && 'publish' === $page->post_status && ! post_password_required( $page ) ) {
