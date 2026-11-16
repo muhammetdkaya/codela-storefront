@@ -155,8 +155,13 @@ add_action( 'wp_head', static function() {
     (function(){
         try {
             var query = new URLSearchParams(location.search).get('codela_debug');
-            if (query !== '1' && (query === '0' ||
-                sessionStorage.getItem('codela-performance-debug') !== '1')) return;
+            if (query === '0') {
+                sessionStorage.removeItem('codela-performance-debug');
+                sessionStorage.removeItem('codela-performance-debug-history');
+                return;
+            }
+            if (query !== '1' &&
+                sessionStorage.getItem('codela-performance-debug') !== '1') return;
             var script = document.createElement('script');
             script.src = <?php echo wp_json_encode( $url, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT ); ?>;
             script.async = true;
