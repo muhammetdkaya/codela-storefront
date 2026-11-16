@@ -55,6 +55,13 @@ jobs:
             esac
           done < /tmp/codela-changes
           echo 'quick=true' >> "$GITHUB_OUTPUT"
+      - name: Build pinned Glisse shell bundle
+        if: steps.tier.outputs.quick != 'true'
+        run: |
+          npm install --no-save --package-lock=false glisse@0.5.0
+          node scripts/build-glisse.mjs
+          node --check theme/codela-storefront/assets/scripts/glisse-bridge.js
+          node tests/glisse-shell.cjs
       - name: Quick presentation checks (no browser download)
         if: steps.tier.outputs.quick == 'true'
         run: |
@@ -139,8 +146,12 @@ jobs:
       - name: Browser navigation regression checks
         if: steps.tier.outputs.quick != 'true'
         run: |
-          npm install --no-save --package-lock=false playwright@1.62.1
+          # React is for the isolated Glisse browser fixture only; production
+          # reuses WordPress wp-element and ships no second React runtime.
+          npm install --no-save --package-lock=false playwright@1.62.1 react@18.3.1 react-dom@18.3.1
           npx playwright install --with-deps chromium webkit
+          node tests/glisse-shell-browser.cjs
+          TEST_WEBKIT=1 node tests/glisse-shell-browser.cjs
           node tests/agency-browser.cjs
           node tests/product-sheet-handoff-browser.cjs
           node tests/product-desktop-browser.cjs
@@ -229,6 +240,10 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+      - name: Compile pinned Glisse shell assets for FTP deploy
+        run: |
+          npm install --no-save --package-lock=false glisse@0.5.0
+          node scripts/build-glisse.mjs
       - name: Require FTP secrets
         env:
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
