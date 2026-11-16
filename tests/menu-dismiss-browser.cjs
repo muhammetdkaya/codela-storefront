@@ -83,6 +83,26 @@ window.overlay=overlay;window.testReady=true;`;
   });
   assert.deepEqual(swapped,{menuOutside:true,searchInside:true,closed:true,restored:true},
     'Switching Menu to Search restores live dock into the dialog top layer');
+  // Static-body diagnostic mode preserves a real modal without replacing
+  // the existing body scroll-lock strategy for normal traffic.
+  const staticBody=await page.evaluate(()=>{
+    window.codelaSFDebug={skipBodyFix:()=>true,mark(){},postAction(){},preparePanel(){},isGuestFormIsolated:()=>false};
+    const before=window.scrollY,oldPosition=document.body.style.position;
+    overlay.open('menu');
+    const locked=document.documentElement.classList.contains('sf-overlay-scroll-locked');
+    const modal=document.querySelector('#sf-panel').matches(':modal');
+    const duringPosition=document.body.style.position;
+    overlay.close();
+    const after=window.scrollY,afterPosition=document.body.style.position;
+    delete window.codelaSFDebug;
+    return {before,after,oldPosition,duringPosition,afterPosition,locked,modal,
+      unlocked:!document.documentElement.classList.contains('sf-overlay-scroll-locked')};
+  });
+  assert(staticBody.before>=300,'Fixture starts away from page top');
+  assert.equal(staticBody.duringPosition,staticBody.oldPosition,'Diagnostic never fixes body');
+  assert.equal(staticBody.afterPosition,staticBody.oldPosition,'Closing leaves body untouched');
+  assert.equal(staticBody.after,staticBody.before,'No scroll restoration is needed');
+  assert(staticBody.locked&&staticBody.unlocked&&staticBody.modal,'Original modal and CSS lock lifecycle remain intact');
   assert.deepEqual(errors,[]);
   console.log('Menu dismissal and native dock stability passed ('+engine+')');
  }finally{await browser.close();}
