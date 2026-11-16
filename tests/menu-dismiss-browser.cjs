@@ -48,13 +48,15 @@ window.overlay=overlay;window.testReady=true;`;
     overlay.open('menu');
     if(!dialog.open)throw Error('Menu failed to open');
     const relocated=dock.parentElement===dialog;
+    const hidden=dock.hidden;
     const start=performance.now();overlay.close();const elapsed=performance.now()-start;
-    return {relocated,open:dialog.open,locked:document.documentElement.classList.contains('sf-overlay-scroll-locked'),
+    return {relocated,hidden,open:dialog.open,locked:document.documentElement.classList.contains('sf-overlay-scroll-locked'),
       position:document.body.style.position,collapsed:dock.classList.contains('is-collapsed'),
       dockVisible:getComputedStyle(dock.querySelector('.sf-dock-surface')).visibility,
       animations:document.querySelector('#sf-menu').getAnimations().length,elapsed};
    });
    assert.equal(state.relocated,false,'Menu does not move dock into the top layer');
+   assert.equal(state.hidden,true,'Full-screen Menu hides native dock while not reparenting it');
    assert.equal(state.open,false,'Menu top layer closes in the same click task');
    assert.equal(state.locked,false,'No white frame from deferred scroll unlock');
    assert.notEqual(state.position,'fixed','Document body restored synchronously');
@@ -70,6 +72,17 @@ window.overlay=overlay;window.testReady=true;`;
     return {mounted,closed:!dialog.open,restored:dock.parentElement!==dialog};
   });
   assert.deepEqual(search,{mounted:true,closed:true,restored:true},'Search retains modal dock relocation');
+  const swapped=await page.evaluate(()=>{
+    overlay.open('menu');
+    const dialog=document.querySelector('#sf-panel'),dock=document.querySelector('.sf-mobile-dock');
+    const menuOutside=dock.parentElement!==dialog && dock.hidden;
+    overlay.open('search');
+    const searchInside=dock.parentElement===dialog && !dock.hidden;
+    overlay.close();
+    return {menuOutside,searchInside,closed:!dialog.open,restored:dock.parentElement!==dialog};
+  });
+  assert.deepEqual(swapped,{menuOutside:true,searchInside:true,closed:true,restored:true},
+    'Switching Menu to Search restores live dock into the dialog top layer');
   assert.deepEqual(errors,[]);
   console.log('Menu dismissal and native dock stability passed ('+engine+')');
  }finally{await browser.close();}

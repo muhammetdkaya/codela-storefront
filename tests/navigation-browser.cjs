@@ -542,7 +542,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
   assert(strokes.every(x=>x!=='none'),'The two lines turn into an X');
   assert.equal(await dock.isVisible(),false,'Menu hides the dock');
   await moved.click();
-  assert.equal(await moved.getAttribute('aria-expanded'),'false','Tapping X reverses its motion');
+  assert.equal(await trigger.getAttribute('aria-expanded'),'false','Tapping X reverses its motion');
   await page.locator('#sf-panel').waitFor({state:'hidden'});
   assert.equal(await trigger.count(),1,'The node returns to the header');
   assert.equal(await page.locator('.sf-menu-trigger').count(),1,'Never duplicate the menu button');
@@ -550,15 +550,15 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
   assert.equal(await page.evaluate(()=>scrollY),0);
  }
  await page.setViewportSize({width:390,height:844});
- // Menu opening/closing is animated; reopening cancels a pending close.
+ // Menu entrance remains animated, but exit immediately removes the
+ // opaque white top layer, rather than waiting for a 180ms opacity fade.
  await page.evaluate(()=>window.sfActions.menu());
- assert(await page.locator('#sf-menu').evaluate(el=>el.getAnimations().length>0),'Menu content has opening animation');
+ assert(await page.locator('#sf-menu').evaluate(el=>el.getAnimations().length>0),'Menu content retains entrance motion');
  await page.waitForTimeout(280);
  await page.evaluate(()=>window.sfActions.close());
- assert(await page.locator('#sf-panel').evaluate(el=>el.open),'Menu stays open during icon reverse morph');
+ assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),false,'Menu closes without a blank white frame');
  await page.evaluate(()=>window.sfActions.menu());
- await page.waitForTimeout(220);
- assert(await page.locator('#sf-panel').evaluate(el=>el.open),'Reopen cancels pending menu close');
+ assert(await page.locator('#sf-panel').evaluate(el=>el.open),'Menu opens immediately after close');
  await page.evaluate(()=>window.sfActions.close());
  await page.locator('#sf-panel').waitFor({state:'hidden'});
  await page.emulateMedia({reducedMotion:'reduce'});
