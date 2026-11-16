@@ -221,3 +221,16 @@ html body .sf-glisse-button-host:is(.sf-ui-icon-button--soft,.sf-ui-button--seco
     border:1px solid ButtonText!important;
   }
 }
+
+/* Codela's shell is light even when iOS is in dark system appearance.
+   A soft control rendered inside #sf-content is not a child of .sf-shell,
+   so it must carry the same explicit light material tokens. */
+.sf-glisse-button-mount{
+  --lg-foreground:rgb(0 0 0 / .88);
+  --lg-glass:rgb(247 248 252 / .64);
+  --lg-glass-active:rgb(235 237 244 / .86);
+  --lg-edge:rgb(25 28 40 / .105);
+  --lg-drop:rgb(0 0 0 / .10);
+  --lg-rim-shine:.42;
+  --lg-lens-shine:-1.5;
+}
