@@ -126,14 +126,17 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     watch.observe(dock,{attributes:true,attributeFilter:['class','hidden']});
     widthObserver=new ResizeObserver(schedule);
     widthObserver.observe(dock);
-    docks.set(dock,{root,watch,widthObserver,mount,anchors});
+    // WebKit may report viewport changes before its fixed dock is reflowed.
+    // A resize event alongside ResizeObserver ensures the second measurement.
+    window.addEventListener('resize',schedule,{passive:true});
+    docks.set(dock,{root,watch,widthObserver,resize:schedule,mount,anchors});
     sync();
   }
   let queued=false;
   function refresh() {
     queued=false;
     for(const [el,root] of roots)if(!el.isConnected){root.unmount();roots.delete(el);}
-    for(const [el,entry] of docks)if(!el.isConnected){entry.watch.disconnect();entry.widthObserver.disconnect();entry.root.unmount();docks.delete(el);}
+    for(const [el,entry] of docks)if(!el.isConnected){entry.watch.disconnect();entry.widthObserver.disconnect();window.removeEventListener('resize',entry.resize);entry.root.unmount();docks.delete(el);}
     const shell=doc.querySelector('.sf-shell');
     if(!shell)return;
     shell.classList.add('sf-glisse-light');
