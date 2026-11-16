@@ -228,7 +228,7 @@ const cart = {items_count:1, items:[{key:'one',name:'Codela Demo Tote Bag',perma
  assert.equal(pressed.wholeScale,1,'Touch keeps the expensive blurred dock layer static; only the selection and icon animate');
  assert.equal(pressed.bg,'rgba(255, 255, 255, 0.75)','Dock retains the lighter glass tint while the transparent Header controls use stronger local glass');
  assert.equal(pressed.index,'1','Touch previews the touched tab before navigation');
- assert(pressed.thumbTravel>.03&&pressed.thumbTravel<.99,'Pressed tab background glides toward its target instead of teleporting');
+ assert(pressed.thumbTravel>.03&&pressed.thumbTravel<=1.01,'Fast pressed-tab background responds immediately and may settle by the 140ms sample');
  assert.equal(await page.locator('#sf-panel').getAttribute('open'),null,'Press alone never opens a panel');
  assert(pressed.blur.includes('blur('),'Glass surface uses one backdrop blur layer');
  if(process.env.DOCK_QA)await page.screenshot({path:process.env.DOCK_QA});
