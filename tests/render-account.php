@@ -2,7 +2,7 @@
 // Woo account hook fixture; native authentication remains WooCommerce-owned.
 define( 'ABSPATH', __DIR__ );
 $GLOBALS['hooks'] = [];
-function add_action( $name, $fn, $priority = 10 ) { $GLOBALS['hooks'][ $name ] = $fn; }
+function add_action( $name, $fn, $priority = 10 ) { $GLOBALS['hooks'][ $name ][ $priority ][] = $fn; }
 function add_filter( $name, $fn, $priority = 10 ) { $GLOBALS['filters'][ $name ] = $fn; }
 function is_account_page() { return getenv( 'ACCOUNT_OUTSIDE' ) !== '1'; }
 function is_user_logged_in() { return getenv( 'ACCOUNT_SIGNED_IN' ) === '1'; }
@@ -11,11 +11,15 @@ function __( $text, $domain = '' ) { return $text; }
 function esc_html_e( $text, $domain = '' ) { echo esc_html( $text ); }
 function esc_attr_e( $text, $domain = '' ) { echo esc_html( $text ); }
 function esc_html( $text ) { return htmlspecialchars((string)$text, ENT_QUOTES, 'UTF-8'); }
+function esc_attr( $text ) { return esc_html( $text ); }
 function codela_sf_icon( $name ) { return '<span class="sf-icon" data-icon="' . htmlspecialchars((string)$name, ENT_QUOTES, 'UTF-8') . '"></span>'; }
 require __DIR__ . '/../theme/codela-storefront/inc/account.php';
 $hook = getenv( 'ACCOUNT_SIGNED_IN' ) === '1' ? 'woocommerce_before_account_navigation' : 'woocommerce_before_customer_login_form';
 if (getenv('ACCOUNT_ACTION') === 'login') { codela_sf_account_register_action(); exit; }
 if (getenv('ACCOUNT_ACTION') === 'register') { codela_sf_account_login_return(); exit; }
 if ( isset( $GLOBALS['hooks'][ $hook ] ) ) {
-    call_user_func( $GLOBALS['hooks'][ $hook ] );
+    ksort( $GLOBALS['hooks'][ $hook ] );
+    foreach ( $GLOBALS['hooks'][ $hook ] as $callbacks ) {
+        foreach ( $callbacks as $callback ) { call_user_func( $callback ); }
+    }
 }
