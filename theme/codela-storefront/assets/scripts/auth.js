@@ -266,6 +266,7 @@ function preventInitialAccountAutoFocus() {
         const headingWave = heading?.querySelector('.sf-auth-heading-wave');
         const description = heading?.querySelector('.sf-auth-description');
         const root = container.closest('.woocommerce');
+        let initialSelection = true;
         login.id = 'sf-auth-login';
         register.id = 'sf-auth-register';
 
@@ -273,8 +274,10 @@ function preventInitialAccountAutoFocus() {
             const active = view === 'register' ? 'register' : 'login';
             container.dataset.authView = active;
             root?.classList.toggle('sf-auth-register-view', active === 'register');
-            // Do not overwrite the PHP-rendered final welcome before hydration.
-            if (heading && !root?.querySelector(':scope > .sf-smart-auth')) {
+            // Never overwrite PHP's first-paint welcome during initial setup.
+            // Subsequent native register/back actions still update their title
+            // when Smart Auth is unavailable and Woo is the accessible fallback.
+            if (heading && (!initialSelection || !root?.querySelector(':scope > .sf-smart-auth'))) {
                 if (headingText) headingText.textContent = active === 'register'
                     ? heading.dataset.authRegisterTitle : heading.dataset.authLoginTitle;
                 if (description) description.textContent = active === 'register'
@@ -285,6 +288,7 @@ function preventInitialAccountAutoFocus() {
                 panel.hidden = key !== active;
                 panel.setAttribute('aria-labelledby', 'sf-auth-view-title');
             }
+            initialSelection = false;
         }
 
         // Register CTA is a sibling AFTER #customer_login (before Google).
