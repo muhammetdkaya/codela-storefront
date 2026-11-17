@@ -17,6 +17,35 @@ async function check(browser, engine, flag) {
     reducedMotion:'no-preference'
   });
   const page=await context.newPage();
+  await page.addInitScript(()=>{
+    window.__glisseTrace=[];
+    const record=(type,node,extra={})=>{
+      if(window.__glisseTrace.length>=100)return;
+      window.__glisseTrace.push({
+        t:Math.round(performance.now()),type,
+        node:node?.tagName,classes:node?.className,
+        connected:node?.isConnected,parent:node?.parentElement?.className,
+        ...extra
+      });
+    };
+    const obs=new MutationObserver(records=>{
+      for(const m of records){
+        if(m.type==='attributes' && m.target?.matches?.('.sf-mobile-dock'))
+          record('dock.class-change',m.target,{old:m.oldValue});
+        if(m.type!=='childList')continue;
+        for(const [name,items] of [['added',m.addedNodes],['removed',m.removedNodes]]){
+          for(const node of items){
+            if(node.nodeType!==1)continue;
+            if(node.matches?.('.sf-glisse-dock-root,.lg-tab-bar,.sf-mobile-dock'))
+              record(name,node);
+            for(const el of node.querySelectorAll?.('.sf-glisse-dock-root,.lg-tab-bar,.sf-mobile-dock')||[])
+              record(name+'-nested',el);
+          }
+        }
+      }
+    });
+    obs.observe(document,{subtree:true,childList:true,attributes:true,attributeFilter:['class'],attributeOldValue:true});
+  });
   const errors=[];
   const failures=[];
   page.on('pageerror',e=>errors.push(e.message.slice(0,500)));
@@ -59,6 +88,13 @@ async function check(browser, engine, flag) {
         docHeight:document.documentElement.scrollHeight,bodyClass:document.body.className,
         htmlClass:document.documentElement.className,glisseStyleTag:!!document.getElementById('glisse-styles'),
         dockCount:document.querySelectorAll('.sf-mobile-dock').length,
+        glisseRootCount:document.querySelectorAll('.sf-glisse-dock-root').length,
+        allGlisseRoots:[...document.querySelectorAll('.sf-glisse-dock-root')].map(node=>({
+          html:node.outerHTML.slice(0,850),children:node.children.length,
+          parent:node.parentElement?.className,
+          tabs:node.querySelectorAll('.lg-tab-bar').length
+        })),
+        glisseTrace:window.__glisseTrace,
         dock:css(dock),surface:css(surface),root:css(root),tabBar:css(tabBar),
         lens:css(root?.querySelector('.lg-tab-lens')),
         nativeDockBars:anchors,
