@@ -195,6 +195,10 @@ const html='<div class="sf-shell has-mobile-dock"><header class="sf-header">'+
   await pilot.locator('[data-dock-view="account"]').focus();
   assert.equal(await pilot.evaluate(()=>document.activeElement.dataset.dockView),'account',
     'Keyboard focus stays on the native account anchor');
+  // Let the final account selection commit before testing a cosmetics-only
+  // class change; otherwise the previous click's scheduled React commit
+  // incorrectly counts as a rerender caused by the press state.
+  await pilot.waitForTimeout(120);
   const renderCount=await pilot.evaluate(()=>window.__glisseDockRenders);
   await pilot.evaluate(()=>{
     document.querySelector('.sf-mobile-dock').classList.add('is-pressing');
