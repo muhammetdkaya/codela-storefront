@@ -4,14 +4,21 @@ on:
     paths:
       - '.github/workflows/auth-live-first-paint-probe.yml'
       - 'tools/auth-live-first-paint-probe.py'
+      - 'tools/auth-live-first-paint-browser.cjs'
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
   probe:
     runs-on: ubuntu-24.04
-    timeout-minutes: 3
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - name: Compare canonical, cache-busted guest HTML and theme CSS
         run: python3 tools/auth-live-first-paint-probe.py
+      - name: Install WebKit and Chromium
+        run: |
+          npm install --no-save --package-lock=false playwright@1.62.1
+          npx playwright install --with-deps webkit chromium
+      - name: Verify initial live screen without enhancement JS
+        run: node tools/auth-live-first-paint-browser.cjs
