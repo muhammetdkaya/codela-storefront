@@ -1,11 +1,11 @@
 /**
  * Codela Storefront · Glisse shell adapter, phase 1.
- * Real Glisse v0.5.0 TabBar and Glass, not a CSS imitation.
+ * Glisse v0.5.0 Glass and Button enhancements for the native shell.
  * Native WordPress Interactivity actions and URLs remain authoritative.
  * If this enhancement fails or JavaScript is unavailable, the PHP shell
  * stays fully interactive, including search/cart/account dialogs.
  */
-import { TabBar, Glass, Button } from 'glisse';
+import { Glass, Button } from 'glisse';
 
 const React = window.wp?.element;
 const doc = document;
@@ -13,21 +13,8 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
   const h = React.createElement;
   const roots = new Map();
   const buttonRoots = new Map();
-  const docks = new Map();
-  // Progressive Glisse dock pilot: explicitly enabled per browser tab.
-  // ?codela_glisse_dock=0 restores the native paint on the next page.
-  const dockPilot=(() => {
-    const flag=new URLSearchParams(location.search).get('codela_glisse_dock');
-    try {
-      if(flag==='0'||flag==='1') sessionStorage.setItem('codela-glisse-dock-pilot',flag);
-      return (flag==='0'||flag==='1'?flag:sessionStorage.getItem('codela-glisse-dock-pilot'))==='1';
-    } catch { return flag==='1'; }
-  })();
+  // Mobile navigation stays fully native. No optional React mount.
   const buttonQueued = new WeakSet();
-  // The WordPress Interactivity API hydrates .sf-shell with Preact. On
-  // WebKit it can run *after* React initially mounts and remove Glisse's
-  // foreign DOM subtree. Do not mount the pilot until WP hydration settles.
-  let pilotHydrated = !dockPilot;
   const buttonObserver = typeof IntersectionObserver === 'function'
     ? new IntersectionObserver(entries => {
       for (const entry of entries) {
@@ -149,140 +136,9 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     for(const type of ['pointerup','pointercancel','pointerleave'])el.addEventListener(type,press,{passive:true});
   }
 
-  // Safety contract: native PHP links remain the only interactive dock.
-  // Glisse provides visual paint, never a replacement hit target.
-  function restoreNativeDock(dock) {
-    dock.classList.remove('sf-glisse-ready');
-    dock.querySelectorAll('.sf-dock-surface .sf-dock-item').forEach(anchor=>{
-      if(anchor.getAttribute('aria-hidden')==='true')anchor.removeAttribute('aria-hidden');
-      if(anchor.tabIndex===-1)anchor.removeAttribute('tabindex');
-    });
-    dock.querySelector('.sf-glisse-dock-root')?.remove();
-  }
-
-  function mountDock(dock) {
-    if(docks.has(dock) || window.matchMedia('(forced-colors: active)').matches)return;
-    const native=dock.querySelector('.sf-dock-surface');
-    const anchors=[...native?.querySelectorAll('.sf-dock-item')||[]];
-    if(anchors.length!==4)return;
-    const mount=doc.createElement('div');
-    mount.className='sf-glisse-dock-root';
-    mount.setAttribute('aria-hidden','true');
-    mount.inert=true; // Glisse is entirely decorative and unfocusable.
-    native.after(mount);
-    const root=React.createRoot(mount);
-    let ready=false;
-    let widthObserver;
-    let lastState = '';
-    let width = dock.clientWidth;
-    let mountedBar=null;
-    let rescueCount=0;
-    // Keep the observer after activation: WordPress Preact can remove a
-    // React-owned child without altering .sf-glisse-ready, particularly on
-    // WebKit. That left an empty glass dock on the real website in 0.1.339.
-    const reveal=()=>{
-      if(!dock.isConnected || !mount.isConnected)return;
-      const bar=mount.querySelector('.lg-tab-bar');
-      if(ready && !bar){
-        dock.classList.remove('sf-glisse-ready');
-        // WordPress reconciled the child away. React still owns the node,
-        // refs and native event listeners: reattach it, rather than creating
-        // a second React root or dispatching duplicate clicks.
-        if(mountedBar && !mountedBar.isConnected && rescueCount++<2){
-          requestAnimationFrame(()=>{
-            if(!dock.isConnected || !mount.isConnected || mount.querySelector('.lg-tab-bar'))return;
-            mount.appendChild(mountedBar);
-          });
-        }
-        return;
-      }
-      if(ready){
-        dock.classList.add('sf-glisse-ready');
-        return;
-      }
-      if(!bar || bar.querySelectorAll('.lg-tab').length!==anchors.length)return;
-      const bounds=bar.getBoundingClientRect();
-      if(bounds.width<Math.max(160,dock.clientWidth*.7) || bounds.height<32)return;
-      mountedBar=bar;
-      dock.classList.add('sf-glisse-ready');
-      ready=true;
-    };
-    const readyObserver=new MutationObserver(reveal);
-    // Direct children only: Glisse's own lens animation must not wake a
-    // subtree-wide observer on each visual update.
-    readyObserver.observe(mount,{childList:true});
-    const base=anchors.map((anchor,index)=>({
-      value:anchor.dataset.dockView,
-      label:anchor.querySelector(':scope > span:last-child')?.textContent?.trim()||anchor.getAttribute('aria-label')||'',
-      href:anchor.href,
-      index
-    }));
-    function PaintOnlyLink(props) {
-      // Glisse paints the spring lens. The native anchor above owns clicks,
-      // WordPress Interactivity actions, hover and keyboard focus.
-      return h('a',{...props,tabIndex:-1,'aria-hidden':'true',onClick:event=>event.preventDefault()});
-    }
-    function sync() {
-      if(!dock.isConnected)return;
-      mount.inert=true;
-      if(dock.hidden || width<=0)return;
-      const preview=dock.classList.contains('is-scrubbing')
-        ? anchors.find(a=>a.classList.contains('is-preview')) : null;
-      const current=(preview||anchors.find(a=>a.classList.contains('is-active')))?.dataset.dockView ?? null;
-      // Ignore cosmetic pressed/preview/collapsed class changes: Glisse already
-      // owns the spring animation and a React render would interrupt it.
-      const state=[current??'',width,...anchors.map(a=>a.querySelector('.sf-badge')?.textContent?.trim()??'')].join('|');
-      if(ready && state===lastState)return;
-      lastState=state;
-      const items=base.map(({value,label,href,index})=>{
-        const icon=anchors[index].querySelector('.sf-icon');
-        const svg=icon?.outerHTML||'';
-        const badge=anchors[index].querySelector('.sf-badge');
-        const badgeText=badge?.textContent?.trim();
-        return {value,label,href,icon:h('span',{
-          className:'sf-glisse-dock-icon',
-          dangerouslySetInnerHTML:{__html:svg+(badgeText ? '<span class="sf-glisse-dock-badge">'+badgeText.replace(/[^0-9+]/g,'')+'</span>' : '')}
-        })};
-      });
-      root.render(h(TabBar,{
-        items,
-        value:current,
-        link:PaintOnlyLink,
-        className:'sf-glisse-tabbar',
-        style:{'--lg-tab-width':Math.max(0,(width-8)/4)+'px'},
-        'aria-label':dock.getAttribute('aria-label')||'Mobile navigation'
-      }));
-      // If React commits synchronously, promote immediately; otherwise the
-      // one-shot MutationObserver above promotes at the actual commit.
-      reveal();
-    }
-    let scheduled=false;
-    const schedule=()=>{
-      if(scheduled)return;
-      scheduled=true;
-      requestAnimationFrame(()=>{scheduled=false;sync();});
-    };
-    const watch=new MutationObserver(schedule);
-    watch.observe(native,{attributes:true,childList:true,characterData:true,subtree:true,
-      attributeFilter:['class','aria-current','aria-expanded']});
-    watch.observe(dock,{attributes:true,attributeFilter:['class','hidden']});
-    // Width changes matter; a CSS class/scroll frame must not re-measure layout.
-    const resize=()=>{
-      const next=dock.clientWidth;
-      if(next===width)return;
-      width=next;
-      schedule();
-    };
-    widthObserver=new ResizeObserver(resize);
-    widthObserver.observe(dock);
-    window.addEventListener('resize',resize,{passive:true});
-    docks.set(dock,{root,watch,widthObserver,readyObserver,resize,mount,anchors});
-    sync();
-  }
   let queued=false;
   function refresh() {
     queued=false;
-    if(!pilotHydrated)return;
     for(const [el,root] of roots)if(!el.isConnected){root.unmount();roots.delete(el);}
     for(const [el,entry] of buttonRoots)if(!el.isConnected){
       entry.observer.disconnect();
@@ -293,12 +149,10 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
         entry.parent.classList.remove('sf-glisse-button-parent');
       buttonRoots.delete(el);
     }
-    for(const [el,entry] of docks)if(!el.isConnected){entry.watch.disconnect();entry.readyObserver.disconnect();entry.widthObserver.disconnect();window.removeEventListener('resize',entry.resize);entry.root.unmount();docks.delete(el);}
     const shell=doc.querySelector('.sf-shell');
     if(!shell)return;
     shell.classList.add('sf-glisse-light');
-    // Only the opt-in pilot mounts Glisse; default stays proven-native.
-    doc.querySelectorAll('.sf-mobile-dock').forEach(dockPilot ? mountDock : restoreNativeDock);
+    // Native mobile dock is not touched by this adapter.
     doc.querySelectorAll(selector).forEach(mountGlass);
     doc.querySelectorAll(buttonSelector).forEach(el=>{
       if(buttonRoots.has(el) || buttonQueued.has(el))return;
@@ -314,20 +168,8 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     queued=true;
     requestAnimationFrame(refresh);
   }
-  if(dockPilot){
-    const afterWpHydration=()=>{
-      // Module hydration runs asynchronously; defer the optional React paint
-      // past window.load while the working native Codela dock remains visible.
-      window.setTimeout(()=>{
-        pilotHydrated=true;
-        scheduleRefresh();
-      },300);
-    };
-    if(doc.readyState==='complete')afterWpHydration();
-    else window.addEventListener('load',afterWpHydration,{once:true});
-  }else if(doc.readyState==='loading'){
-    doc.addEventListener('DOMContentLoaded',refresh,{once:true});
-  }else refresh();
+  if(doc.readyState==='loading')doc.addEventListener('DOMContentLoaded',refresh,{once:true});
+  else refresh();
   // WordPress router, account overlay and WooCommerce can swap parts of the shell.
   // React material internals mutate DOM while animating. Observe *structural*
   // additions only; do not rescan the entire document on each overlay state,
