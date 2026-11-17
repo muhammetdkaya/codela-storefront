@@ -174,9 +174,13 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     // React may commit after the next animation frame on WebKit. A short-lived
     // mount observer promotes the replacement only when Glisse really exists.
     const reveal=()=>{
-      if(ready || !dock.isConnected || !mount.querySelector('.lg-tab-bar'))return;
-      // The real links are never hidden, disabled or reparented separately.
-      // Missing/late React paint can therefore never remove navigation.
+      if(ready || !dock.isConnected)return;
+      const bar=mount.querySelector('.lg-tab-bar');
+      if(!bar || bar.querySelectorAll('.lg-tab').length!==anchors.length)return;
+      const bounds=bar.getBoundingClientRect();
+      if(bounds.width<Math.max(160,dock.clientWidth*.7) || bounds.height<32)return;
+      // Promote only when four genuine Glisse tabs have measurable geometry.
+      // Native focus and hit targets remain present even after promotion.
       dock.classList.add('sf-glisse-ready');
       ready=true;
       readyObserver.disconnect();
