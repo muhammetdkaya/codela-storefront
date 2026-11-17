@@ -123,6 +123,16 @@ placeholder="Your email address" aria-label="Your email address" aria-describedb
    assert.equal(await prepaint.locator('.sf-auth-heading-text').innerText(),'Welcome',
      'Legacy auth.js cannot overwrite the initial welcome');
    await prepaint.close();
+   const nativeContext=await browser.newContext({
+     viewport:{width:390,height:844},javaScriptEnabled:false
+   });
+   const noJS=await nativeContext.newPage();
+   await noJS.goto(url+'direct');
+   assert.equal(await noJS.locator('.sf-smart-identity').isVisible(),false,
+     'No-JS clients get the actual WooCommerce form rather than an inert email-only screen');
+   assert.equal(await noJS.locator('form.woocommerce-form-login').isVisible(),true,
+     'Native Woo form works when all enhancement JavaScript is disabled');
+   await nativeContext.close();
    const direct=await browser.newPage({viewport:{width:390,height:844}});
    await direct.goto(url+'direct');
    assert.equal(await direct.locator('.sf-smart-identity').isVisible(),true,
