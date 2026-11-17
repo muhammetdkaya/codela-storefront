@@ -14,6 +14,15 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
   const roots = new Map();
   const buttonRoots = new Map();
   const docks = new Map();
+  // Progressive Glisse dock pilot: explicitly enabled per browser tab.
+  // ?codela_glisse_dock=0 restores the native paint on the next page.
+  const dockPilot=(() => {
+    const flag=new URLSearchParams(location.search).get('codela_glisse_dock');
+    try {
+      if(flag==='0'||flag==='1') sessionStorage.setItem('codela-glisse-dock-pilot',flag);
+      return (flag==='0'||flag==='1'?flag:sessionStorage.getItem('codela-glisse-dock-pilot'))==='1';
+    } catch { return flag==='1'; }
+  })();
   const buttonQueued = new WeakSet();
   const buttonObserver = typeof IntersectionObserver === 'function'
     ? new IntersectionObserver(entries => {
@@ -136,10 +145,8 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     for(const type of ['pointerup','pointercancel','pointerleave'])el.addEventListener(type,press,{passive:true});
   }
 
-  // Safety hotfix: prefer native PHP tabs until the Glisse dock can prove
-  // visibility and input parity on physical iOS Safari. Keeping native
-  // navigation avoids making the whole storefront unusable when the Glisse
-  // replacement is hidden, fails to hydrate or is moved across modal layers.
+  // Safety contract: native PHP links remain the only interactive dock.
+  // Glisse provides visual paint, never a replacement hit target.
   function restoreNativeDock(dock) {
     dock.classList.remove('sf-glisse-ready');
     dock.querySelectorAll('.sf-dock-surface .sf-dock-item').forEach(anchor=>{
@@ -156,6 +163,8 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     if(anchors.length!==4)return;
     const mount=doc.createElement('div');
     mount.className='sf-glisse-dock-root';
+    mount.setAttribute('aria-hidden','true');
+    mount.inert=true; // Glisse is entirely decorative and unfocusable.
     native.after(mount);
     const root=React.createRoot(mount);
     let ready=false;
@@ -165,8 +174,13 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     // React may commit after the next animation frame on WebKit. A short-lived
     // mount observer promotes the replacement only when Glisse really exists.
     const reveal=()=>{
-      if(ready || !dock.isConnected || !mount.querySelector('.lg-tab-bar'))return;
-      anchors.forEach(a=>{a.setAttribute('aria-hidden','true');a.tabIndex=-1;});
+      if(ready || !dock.isConnected)return;
+      const bar=mount.querySelector('.lg-tab-bar');
+      if(!bar || bar.querySelectorAll('.lg-tab').length!==anchors.length)return;
+      const bounds=bar.getBoundingClientRect();
+      if(bounds.width<Math.max(160,dock.clientWidth*.7) || bounds.height<32)return;
+      // Promote only when four genuine Glisse tabs have measurable geometry.
+      // Native focus and hit targets remain present even after promotion.
       dock.classList.add('sf-glisse-ready');
       ready=true;
       readyObserver.disconnect();
@@ -179,21 +193,18 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
       href:anchor.href,
       index
     }));
-    function BridgeLink(props) {
-      return h('a', {...props, onClick:event=>{
-        if(props.onClick)props.onClick(event);
-        if(event.defaultPrevented || event.metaKey || event.ctrlKey ||
-           event.shiftKey || event.altKey || event.button!==0)return;
-        event.preventDefault();
-        const at=[...event.currentTarget.parentElement.querySelectorAll('.lg-tab')].indexOf(event.currentTarget);
-        if(at>=0)anchors[at]?.click();
-      }});
+    function PaintOnlyLink(props) {
+      // Glisse paints the spring lens. The native anchor above owns clicks,
+      // WordPress Interactivity actions, hover and keyboard focus.
+      return h('a',{...props,tabIndex:-1,'aria-hidden':'true',onClick:event=>event.preventDefault()});
     }
     function sync() {
       if(!dock.isConnected)return;
-      mount.inert=dock.hidden || dock.classList.contains('is-collapsed');
+      mount.inert=true;
       if(dock.hidden || width<=0)return;
-      const current=anchors.find(a=>a.classList.contains('is-active'))?.dataset.dockView ?? null;
+      const preview=dock.classList.contains('is-scrubbing')
+        ? anchors.find(a=>a.classList.contains('is-preview')) : null;
+      const current=(preview||anchors.find(a=>a.classList.contains('is-active')))?.dataset.dockView ?? null;
       // Ignore cosmetic pressed/preview/collapsed class changes: Glisse already
       // owns the spring animation and a React render would interrupt it.
       const state=[current??'',width,...anchors.map(a=>a.querySelector('.sf-badge')?.textContent?.trim()??'')].join('|');
@@ -212,7 +223,7 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
       root.render(h(TabBar,{
         items,
         value:current,
-        link:BridgeLink,
+        link:PaintOnlyLink,
         className:'sf-glisse-tabbar',
         style:{'--lg-tab-width':Math.max(0,(width-8)/4)+'px'},
         'aria-label':dock.getAttribute('aria-label')||'Mobile navigation'
@@ -261,9 +272,8 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     const shell=doc.querySelector('.sf-shell');
     if(!shell)return;
     shell.classList.add('sf-glisse-light');
-    // Do not mount Glisse's mobile TabBar while restoring navigation safety.
-    // Native Codela dock already has active state, touch gestures and panels.
-    doc.querySelectorAll('.sf-mobile-dock').forEach(restoreNativeDock);
+    // Only the opt-in pilot mounts Glisse; default stays proven-native.
+    doc.querySelectorAll('.sf-mobile-dock').forEach(dockPilot ? mountDock : restoreNativeDock);
     doc.querySelectorAll(selector).forEach(mountGlass);
     doc.querySelectorAll(buttonSelector).forEach(el=>{
       if(buttonRoots.has(el) || buttonQueued.has(el))return;

@@ -133,6 +133,104 @@ const html='<div class="sf-shell has-mobile-dock"><header class="sf-header">'+
   assert(await page.locator('.sf-glisse-glass-plate').count()>=2,'Glisse visual layers do not swallow native button input');
   assert.equal(await page.locator('#head-control').count(),1,'Original header control still exists');
   await page.close();
+
+  // Explicit opt-in: real Glisse TabBar renders, but only the native anchors
+  // can be reached by pointer or keyboard. Exercise Chromium and WebKit.
+  const pilot=await browser.newPage({viewport:{width:390,height:800},hasTouch:true});
+  pilot.on('pageerror',error=>{throw error;});
+  await pilot.route('https://codela.test/**',route=>route.fulfill({
+    status:200,contentType:'text/html',
+    body:'<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body>'+html+'</body></html>'
+  }));
+  await pilot.goto('https://codela.test/?codela_glisse_dock=1');
+  await pilot.addScriptTag({content:boot.outputFiles[0].text});
+  await pilot.evaluate(()=>{
+    const original=window.wp.element.createRoot;
+    window.__glisseDockRenders=0;
+    window.wp.element.createRoot=mount=>{
+      const root=original(mount);
+      if(mount.classList.contains('sf-glisse-dock-root')){
+        const render=root.render.bind(root);
+        root.render=value=>{window.__glisseDockRenders++;render(value);};
+      }
+      return root;
+    };
+    window.nativeClicks={home:0,search:0,cart:0,account:0};
+    document.querySelectorAll('.sf-dock-item').forEach(anchor=>anchor.addEventListener('click',event=>{
+      window.nativeClicks[anchor.dataset.dockView]++;
+      event.preventDefault();
+      anchor.closest('.sf-mobile-dock').querySelectorAll('.sf-dock-item').forEach(a=>
+        a.classList.toggle('is-active',a===anchor));
+    }));
+  });
+  await pilot.addScriptTag({content:read(root+'scripts/glisse-bridge.js')});
+  await pilot.waitForSelector('.sf-mobile-dock.sf-glisse-ready .lg-tab-bar');
+  assert.equal(await pilot.locator('.sf-mobile-dock .lg-tab').count(),4,
+    'The real Glisse TabBar paints all four navigation items');
+  const hitState=await pilot.evaluate(()=>{
+    const dock=document.querySelector('.sf-mobile-dock');
+    const mount=dock.querySelector('.sf-glisse-dock-root');
+    const surface=dock.querySelector('.sf-dock-surface');
+    const rect=dock.querySelector('[data-dock-view="search"]').getBoundingClientRect();
+    const hit=document.elementFromPoint(rect.left+rect.width/2,rect.top+rect.height/2);
+    return {
+      inert:mount.inert,ariaHidden:mount.getAttribute('aria-hidden'),
+      visibility:getComputedStyle(surface).visibility,
+      pointerEvents:getComputedStyle(surface).pointerEvents,
+      hit:hit?.closest('.sf-dock-item')?.dataset.dockView,
+      ariaHiddenNative:surface.querySelector('.sf-dock-item').getAttribute('aria-hidden'),
+      tabIndexNative:surface.querySelector('.sf-dock-item').getAttribute('tabindex')
+    };
+  });
+  assert.deepEqual(hitState,{
+    inert:true,ariaHidden:'true',visibility:'visible',pointerEvents:'auto',
+    hit:'search',ariaHiddenNative:null,tabIndexNative:null
+  },'Native links remain visible, focusable and physically above the decorative Glisse paint');
+  await pilot.locator('[data-dock-view="search"]').click();
+  await pilot.locator('[data-dock-view="cart"]').click();
+  await pilot.locator('[data-dock-view="account"]').click();
+  assert.deepEqual(await pilot.evaluate(()=>window.nativeClicks),
+    {home:0,search:1,cart:1,account:1},
+    'Glisse never dispatches an extra Search, Cart or Account action');
+  await pilot.locator('[data-dock-view="account"]').focus();
+  assert.equal(await pilot.evaluate(()=>document.activeElement.dataset.dockView),'account',
+    'Keyboard focus stays on the native account anchor');
+  // Let the final account selection commit before testing a cosmetics-only
+  // class change; otherwise the previous click's scheduled React commit
+  // incorrectly counts as a rerender caused by the press state.
+  await pilot.waitForTimeout(120);
+  const renderCount=await pilot.evaluate(()=>window.__glisseDockRenders);
+  await pilot.evaluate(()=>{
+    document.querySelector('.sf-mobile-dock').classList.add('is-pressing');
+    document.querySelector('.sf-mobile-dock .sf-dock-item').classList.add('is-pressed');
+  });
+  await pilot.waitForTimeout(80);
+  assert.equal(await pilot.evaluate(()=>window.__glisseDockRenders),renderCount,
+    'Cosmetic press state does not restart the Glisse spring tree');
+  await pilot.evaluate(()=>{
+    const dialog=document.createElement('dialog');
+    dialog.id='sf-panel';
+    document.querySelector('.sf-shell').append(dialog);
+    dialog.showModal();
+    dialog.append(document.querySelector('.sf-mobile-dock'));
+  });
+  assert.equal(await pilot.locator('#sf-panel .sf-mobile-dock.sf-glisse-ready .lg-tab-bar').count(),1,
+    'The single Glisse paint stays with the native dock in the modal top layer');
+  await pilot.evaluate(()=>{
+    const dialog=document.querySelector('#sf-panel');
+    dialog.close();
+    document.querySelector('.sf-shell').append(dialog.querySelector('.sf-mobile-dock'));
+    dialog.remove();
+  });
+  await pilot.waitForSelector('.sf-shell > .sf-mobile-dock.sf-glisse-ready .lg-tab-bar');
+  assert.equal(await pilot.locator('.sf-mobile-dock .sf-dock-item').count(),4,
+    'All native links remain after modal reparenting');
+  await pilot.evaluate(()=>document.querySelector('.sf-mobile-dock').classList.add('is-collapsed'));
+  await pilot.evaluate(()=>document.querySelector('.sf-mobile-dock').classList.remove('is-collapsed','is-pressing'));
+  await pilot.locator('[data-dock-view="home"]').click();
+  assert.equal(await pilot.evaluate(()=>window.nativeClicks.home),1,
+    'Native Home action still works after collapse and reveal');
+  await pilot.close();
   console.log('Glisse shell browser integration passed on '+(process.env.TEST_WEBKIT?'WebKit':'Chromium'));
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exit(1)});

@@ -254,13 +254,39 @@ html.sf-overlay-scroll-locked .sf-shell .sf-header .sf-glisse-glass-plate{
   }
 }
 
-/* 0.1.328 fail-open safety: the native four-tab dock remains the only
-   mobile navigation. Never hide its hit targets for a decorative React layer.
-   A collapsed dock still follows its existing reveal-handle behavior. */
+/* 0.1.338: opt-in real Glisse is exclusively a visual plate.
+   Native PHP anchors remain ABOVE it as sole pointer, touch, keyboard and
+   WordPress action owners. Late React hydration cannot hide navigation. */
 @media(max-width:700px){
-  .sf-mobile-dock .sf-glisse-dock-root{display:none!important}
-  .sf-mobile-dock.sf-glisse-ready:not(.is-collapsed) .sf-dock-surface{
+  .sf-mobile-dock .sf-glisse-dock-root,
+  .sf-mobile-dock .sf-glisse-dock-root *{
+    pointer-events:none!important;
+  }
+  .sf-mobile-dock .sf-glisse-dock-root{z-index:2}
+  .sf-mobile-dock.sf-glisse-ready .sf-dock-surface{
+    position:relative;
+    z-index:3;
     visibility:visible!important;
     pointer-events:auto!important;
+    background:transparent!important;
+    background-image:none!important;
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
+    border-color:transparent!important;
+    box-shadow:none!important;
   }
+  .sf-mobile-dock.sf-glisse-ready .sf-dock-surface::before,
+  .sf-mobile-dock.sf-glisse-ready .sf-dock-surface::after{
+    display:none!important;
+  }
+  .sf-mobile-dock.sf-glisse-ready .sf-dock-item > *{opacity:0!important}
+  .sf-mobile-dock.sf-glisse-ready .sf-dock-item:focus-visible{
+    outline:2px solid currentColor;
+  }
+  .sf-mobile-dock:not(.sf-glisse-ready) .sf-glisse-dock-root{
+    visibility:hidden!important;
+  }
+}
+@media(forced-colors:active){
+  .sf-mobile-dock.sf-glisse-ready .sf-dock-item > *{opacity:1!important}
 }
