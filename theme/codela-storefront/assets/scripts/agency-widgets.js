@@ -120,8 +120,8 @@
       const bounds = container.getBoundingClientRect();
       const distance = Math.max(1, bounds.height - window.innerHeight * 0.5);
       const progress = Math.max(0, Math.min(1, (-bounds.top + window.innerHeight * 0.12) / distance));
-      device.style.setProperty('--agency-scroll-rotate', (16 * (1 - progress)).toFixed(2) + 'deg');
-      device.style.setProperty('--agency-scroll-scale', (0.94 + progress * 0.06).toFixed(3));
+      device.style.setProperty('--agency-scroll-rotate', (11 * (1 - progress)).toFixed(2) + 'deg');
+      device.style.setProperty('--agency-scroll-scale', (0.965 + progress * 0.035).toFixed(3));
     });
   };
   const schedule = () => {
