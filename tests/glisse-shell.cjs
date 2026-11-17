@@ -25,6 +25,8 @@ const dockController=read('theme/codela-storefront/assets/scripts/dock-controlle
 assert.match(dockController,/sf-glisse-ready/);
 assert.doesNotMatch(src,/anchors\[at\]\?\.click\(\)/);
 assert.match(css,/\.sf-mobile-dock\.sf-glisse-ready \.sf-dock-item > \*/);
+assert.match(css,/opacity:1!important;/);
+assert.doesNotMatch(css,/\.sf-mobile-dock\.sf-glisse-ready \.sf-dock-item > \*\{opacity:0!important\}/);
 assert.match(src,/MutationObserver/);
 assert.match(src,/readyObserver\.observe\(mount/);
 assert.match(src,/readyObserver\.disconnect\(\)/);
