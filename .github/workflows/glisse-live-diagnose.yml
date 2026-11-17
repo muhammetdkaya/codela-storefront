@@ -1,0 +1,28 @@
+name: Codela live Glisse dock read-only diagnosis
+on:
+  pull_request:
+    paths:
+      - 'tools/glisse-live-diagnose.cjs'
+      - '.github/workflows/glisse-live-diagnose.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm install --no-save --package-lock=false playwright@1.62.1
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Compare live native and Glisse modes without mutations
+        run: node tools/glisse-live-diagnose.cjs
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: glisse-live-screens-and-state
+          path: qa/glisse-live/
+          if-no-files-found: warn
