@@ -509,8 +509,8 @@ add_action( 'wp_enqueue_scripts', function() {
             [], codela_sf_script_module_version( 'scripts/interaction-diagnostics.js' ), false
         );
     }
-    // Glisse phase 1 is progressively enhanced: keep native PHP navigation
-    // intact if the optional compiled adapter is missing or JavaScript fails.
+    // Glisse enhances header and soft button surfaces only; the native Codela
+    // mobile navigation must never depend on this optional React adapter.
     // wp-element supplies React; do not ship a competing React runtime.
     $glisse_asset = get_template_directory() . '/assets/scripts/glisse-bridge.js';
     if ( is_file( $glisse_asset ) ) {

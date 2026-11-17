@@ -25,20 +25,6 @@ const html='<div class="sf-shell has-mobile-dock"><header class="sf-header">'+
   page.on('pageerror',error=>{throw error;});
   await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body>'+html+'</body></html>');
   await page.addScriptTag({content:boot.outputFiles[0].text});
-  // Count genuine Glisse TabBar React commits; cosmetic native dock changes
-  // must not tear down/reset Glisse's in-flight spring animation.
-  await page.evaluate(()=>{
-    const original=window.wp.element.createRoot;
-    window.__glisseDockRenders=0;
-    window.wp.element.createRoot=(node)=>{
-      const root=original(node);
-      if(node.classList.contains('sf-glisse-dock-root')){
-        const render=root.render.bind(root);
-        root.render=content=>{window.__glisseDockRenders++;render(content);};
-      }
-      return root;
-    };
-  });
   await page.evaluate(()=>{
     window.nativeClicks={home:0,search:0,cart:0,account:0};
     document.querySelectorAll('.sf-dock-item').forEach(a=>a.addEventListener('click',e=>{
@@ -134,170 +120,36 @@ const html='<div class="sf-shell has-mobile-dock"><header class="sf-header">'+
   assert.equal(await page.locator('#head-control').count(),1,'Original header control still exists');
   await page.close();
 
-  // Explicit opt-in: real Glisse TabBar renders, but only the native anchors
-  // can be reached by pointer or keyboard. Exercise Chromium and WebKit.
-  const pilot=await browser.newPage({viewport:{width:390,height:800},hasTouch:true});
-  pilot.on('pageerror',error=>{throw error;});
-  await pilot.route('https://codela.test/**',route=>route.fulfill({
+  // Legacy Glisse URL and session flag are deliberately inert: old browser
+  // tabs cannot accidentally revive a second mobile navigation system.
+  const retired=await browser.newPage({viewport:{width:402,height:666},hasTouch:true});
+  await retired.route('https://codela.test/**',route=>route.fulfill({
     status:200,contentType:'text/html',
     body:'<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+css+'</style></head><body>'+html+'</body></html>'
   }));
-  await pilot.goto('https://codela.test/?codela_glisse_dock=1');
-  await pilot.addScriptTag({content:boot.outputFiles[0].text});
-  await pilot.evaluate(()=>{
-    const original=window.wp.element.createRoot;
-    window.__glisseDockRenders=0;
-    window.wp.element.createRoot=mount=>{
-      const root=original(mount);
-      if(mount.classList.contains('sf-glisse-dock-root')){
-        const render=root.render.bind(root);
-        root.render=value=>{window.__glisseDockRenders++;render(value);};
-      }
-      return root;
-    };
-    window.nativeClicks={home:0,search:0,cart:0,account:0};
-    document.querySelectorAll('.sf-dock-item').forEach(anchor=>anchor.addEventListener('click',event=>{
-      window.nativeClicks[anchor.dataset.dockView]++;
-      event.preventDefault();
-      anchor.closest('.sf-mobile-dock').querySelectorAll('.sf-dock-item').forEach(a=>
-        a.classList.toggle('is-active',a===anchor));
-    }));
+  await retired.goto('https://codela.test/?codela_glisse_dock=1');
+  await retired.evaluate(()=>sessionStorage.setItem('codela-glisse-dock-pilot','1'));
+  await retired.addScriptTag({content:boot.outputFiles[0].text});
+  await retired.addScriptTag({content:read(root+'scripts/glisse-bridge.js')});
+  await retired.waitForSelector('.sf-mobile-dock .sf-dock-item');
+  assert.equal(await retired.locator('.sf-mobile-dock .sf-glisse-dock-root').count(),0,
+    'Legacy test flag must not mount a decorative React navigation');
+  assert.equal(await retired.locator('.sf-mobile-dock .lg-tab-bar').count(),0,
+    'Glisse TabBar is completely retired');
+  assert.equal(await retired.locator('.sf-mobile-dock .sf-dock-item').count(),4,
+    'The original four native Codela links remain');
+  const state=await retired.locator('.sf-dock-surface').evaluate(el=>{
+    const paint=getComputedStyle(el);
+    const bounds=el.getBoundingClientRect();
+    return {display:paint.display,visibility:paint.visibility,opacity:paint.opacity,
+      pointerEvents:paint.pointerEvents,width:bounds.width,height:bounds.height,
+      anchors:[...el.querySelectorAll('.sf-dock-item')].map(a=>a.getBoundingClientRect().width)};
   });
-  await pilot.addScriptTag({content:read(root+'scripts/glisse-bridge.js')});
-  await pilot.waitForSelector('.sf-mobile-dock.sf-glisse-ready .lg-tab-bar');
-  assert.equal(await pilot.locator('.sf-mobile-dock .lg-tab').count(),4,
-    'The real Glisse TabBar paints all four navigation items');
-  // Reproduce the physical iPhone's compact 402×666 viewport. The earlier
-  // pilot only verified visible hit targets; its *icons and labels* could
-  // silently become opacity:0 while the decorative Glisse layer was absent.
-  await pilot.setViewportSize({width:402,height:666});
-  const visibleIcons=await pilot.evaluate(()=>
-    [...document.querySelectorAll('.sf-mobile-dock .sf-dock-item')].map(anchor=>{
-      const icon=anchor.querySelector('.sf-icon');
-      const label=anchor.querySelector(':scope > span:last-child');
-      const iconStyle=icon&&getComputedStyle(icon);
-      const labelStyle=label&&getComputedStyle(label);
-      const r=anchor.getBoundingClientRect();
-      const p=anchor.parentElement.getBoundingClientRect();
-      return {
-        view:anchor.dataset.dockView,
-        iconOpacity:iconStyle?.opacity,
-        labelOpacity:labelStyle?.opacity,
-        iconVisibility:iconStyle?.visibility,
-        labelVisibility:labelStyle?.visibility,
-        iconSize:icon?.getBoundingClientRect().width,
-        touchTarget:r.width,
-        insideDock:r.left>=p.left-1 && r.right<=p.right+1
-      };
-    })
-  );
-  assert.equal(visibleIcons.length,4,'Four Codela icons and labels exist in the pilot');
-  assert(visibleIcons.every(t=>t.iconOpacity==='1' && t.labelOpacity==='1' &&
-    t.iconVisibility==='visible' && t.labelVisibility==='visible' &&
-    t.iconSize>=16 && t.touchTarget>=45 && t.insideDock),
-    'Glisse pilot must NEVER make native tab labels/icons invisible: '+JSON.stringify(visibleIcons));
-  const glissePaint=await pilot.evaluate(()=>{
-    const bar=document.querySelector('.sf-glisse-tabbar');
-    const lens=bar.querySelector('.lg-tab-lens');
-    return {
-      visible:getComputedStyle(bar).visibility,
-      display:getComputedStyle(bar).display,
-      tabs:bar.querySelectorAll('.lg-tab').length,
-      lensSize:lens.getBoundingClientRect().width,
-      duplicateHidden:getComputedStyle(bar.querySelector('.lg-tab-face')).visibility
-    };
-  });
-  assert(glissePaint.visible==='visible' && glissePaint.display!=='none' &&
-    glissePaint.tabs===4 && glissePaint.lensSize>20 && glissePaint.duplicateHidden==='hidden',
-    'Glisse lens remains behind the visible native icons without duplicate labels: '+JSON.stringify(glissePaint));
-  // Reproduce live WordPress Interactivity hydration on iOS: Preact directly
-  // removes the React-owned <div class="lg-tab-bar"> while leaving the mount
-  // and stale .sf-glisse-ready state behind. The pilot must restore the SAME
-  // rendered React child, not duplicate its root or lose native navigation.
-  const originalBar=await pilot.evaluate(()=>{
-    const bar=document.querySelector('.sf-mobile-dock .lg-tab-bar');
-    window.__glisseOriginalBar=bar;
-    bar.remove();
-    return !!bar;
-  });
-  assert(originalBar,'Glisse tab bar existed before the simulated WP hydration');
-  await pilot.waitForFunction(()=>
-    document.querySelector('.sf-mobile-dock.sf-glisse-ready .lg-tab-bar')===window.__glisseOriginalBar,
-    null,{timeout:5000});
-  assert.equal(await pilot.locator('.sf-glisse-dock-root').count(),1,
-    'Hydration recovery reattaches the original React tree; no duplicate mount');
-  assert.equal(await pilot.locator('.sf-dock-surface .sf-dock-item').count(),4,
-    'Native Codela dock remains functional through hydration recovery');
-  const hitState=await pilot.evaluate(()=>{
-    const dock=document.querySelector('.sf-mobile-dock');
-    const mount=dock.querySelector('.sf-glisse-dock-root');
-    const surface=dock.querySelector('.sf-dock-surface');
-    const rect=dock.querySelector('[data-dock-view="search"]').getBoundingClientRect();
-    const hit=document.elementFromPoint(rect.left+rect.width/2,rect.top+rect.height/2);
-    return {
-      inert:mount.inert,ariaHidden:mount.getAttribute('aria-hidden'),
-      visibility:getComputedStyle(surface).visibility,
-      pointerEvents:getComputedStyle(surface).pointerEvents,
-      hit:hit?.closest('.sf-dock-item')?.dataset.dockView,
-      ariaHiddenNative:surface.querySelector('.sf-dock-item').getAttribute('aria-hidden'),
-      tabIndexNative:surface.querySelector('.sf-dock-item').getAttribute('tabindex')
-    };
-  });
-  assert.deepEqual(hitState,{
-    inert:true,ariaHidden:'true',visibility:'visible',pointerEvents:'auto',
-    hit:'search',ariaHiddenNative:null,tabIndexNative:null
-  },'Native links remain visible, focusable and physically above the decorative Glisse paint');
-  await pilot.locator('[data-dock-view="search"]').click();
-  await pilot.locator('[data-dock-view="cart"]').click();
-  await pilot.locator('[data-dock-view="account"]').click();
-  assert.deepEqual(await pilot.evaluate(()=>window.nativeClicks),
-    {home:0,search:1,cart:1,account:1},
-    'Glisse never dispatches an extra Search, Cart or Account action');
-  await pilot.locator('[data-dock-view="account"]').focus();
-  assert.equal(await pilot.evaluate(()=>document.activeElement.dataset.dockView),'account',
-    'Keyboard focus stays on the native account anchor');
-  // Let the final account selection commit before testing a cosmetics-only
-  // class change; otherwise the previous click's scheduled React commit
-  // incorrectly counts as a rerender caused by the press state.
-  await pilot.waitForTimeout(120);
-  const renderCount=await pilot.evaluate(()=>window.__glisseDockRenders);
-  await pilot.evaluate(()=>{
-    document.querySelector('.sf-mobile-dock').classList.add('is-pressing');
-    document.querySelector('.sf-mobile-dock .sf-dock-item').classList.add('is-pressed');
-  });
-  await pilot.waitForTimeout(80);
-  assert.equal(await pilot.evaluate(()=>window.__glisseDockRenders),renderCount,
-    'Cosmetic press state does not restart the Glisse spring tree');
-  await pilot.evaluate(()=>{
-    const dialog=document.createElement('dialog');
-    dialog.id='sf-panel';
-    document.querySelector('.sf-shell').append(dialog);
-    dialog.showModal();
-    dialog.append(document.querySelector('.sf-mobile-dock'));
-  });
-  assert.equal(await pilot.locator('#sf-panel .sf-mobile-dock.sf-glisse-ready .lg-tab-bar').count(),1,
-    'The single Glisse paint stays with the native dock in the modal top layer');
-  await pilot.evaluate(()=>{
-    const dialog=document.querySelector('#sf-panel');
-    dialog.close();
-    document.querySelector('.sf-shell').append(dialog.querySelector('.sf-mobile-dock'));
-    dialog.remove();
-  });
-  await pilot.waitForSelector('.sf-shell > .sf-mobile-dock.sf-glisse-ready .lg-tab-bar');
-  assert.equal(await pilot.locator('.sf-mobile-dock .sf-dock-item').count(),4,
-    'All native links remain after modal reparenting');
-  const stillVisible=await pilot.evaluate(()=>[...document.querySelectorAll('.sf-mobile-dock .sf-dock-item')].every(a=>{
-    const icon=getComputedStyle(a.querySelector('.sf-icon'));
-    const label=getComputedStyle(a.querySelector(':scope > span:last-child'));
-    return icon.opacity==='1' && label.opacity==='1' && icon.visibility==='visible';
-  }));
-  assert(stillVisible,'Modal closing restores all four visible native icons and labels');
-  await pilot.evaluate(()=>document.querySelector('.sf-mobile-dock').classList.add('is-collapsed'));
-  await pilot.evaluate(()=>document.querySelector('.sf-mobile-dock').classList.remove('is-collapsed','is-pressing'));
-  await pilot.locator('[data-dock-view="home"]').click();
-  assert.equal(await pilot.evaluate(()=>window.nativeClicks.home),1,
-    'Native Home action still works after collapse and reveal');
-  await pilot.close();
+  assert(state.display==='grid' && state.visibility==='visible' && state.opacity==='1' &&
+    state.pointerEvents==='auto' && state.width>200 && state.height>40 &&
+    state.anchors.length===4 && state.anchors.every(w=>w>=45),
+    'Codela dock geometry and hit targets unchanged by legacy Glisse flag: '+JSON.stringify(state));
+  await retired.close();
   console.log('Glisse shell browser integration passed on '+(process.env.TEST_WEBKIT?'WebKit':'Chromium'));
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exit(1)});

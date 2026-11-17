@@ -1,5 +1,5 @@
 /**
- * Compile genuine, pinned Glisse 0.5.0 into a self-contained shell adapter.
+ * Compile genuine, pinned Glisse 0.5.0 Glass and Button into the shell adapter.
  * React and JSX runtime are delegated to wp-element (WordPress 6.5+).
  * Build from: npm install --no-save --package-lock=false glisse@0.5.0
  * This produces a theme-owned file: no external CDN requests at runtime.
