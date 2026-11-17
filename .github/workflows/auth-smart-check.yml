@@ -10,6 +10,16 @@ on:
       - 'theme/codela-storefront/assets/styles/auth-smart.css'
       - 'tests/account-smart.php'
       - 'tests/account-smart-browser.cjs'
+  pull_request:
+    paths:
+      - '.github/workflows/auth-smart-check.yml'
+      - 'theme/codela-storefront/inc/account.php'
+      - 'theme/codela-storefront/inc/quick-login.php'
+      - 'theme/codela-storefront/assets/scripts/auth.js'
+      - 'theme/codela-storefront/assets/scripts/auth-smart.js'
+      - 'theme/codela-storefront/assets/styles/auth-smart.css'
+      - 'theme/codela-storefront/assets/styles/account.css'
+      - 'tests/account-smart-browser.cjs'
   workflow_dispatch:
 permissions:
   contents: read
