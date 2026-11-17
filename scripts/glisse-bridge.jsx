@@ -24,6 +24,10 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     } catch { return flag==='1'; }
   })();
   const buttonQueued = new WeakSet();
+  // The WordPress Interactivity API hydrates .sf-shell with Preact. On
+  // WebKit it can run *after* React initially mounts and remove Glisse's
+  // foreign DOM subtree. Do not mount the pilot until WP hydration settles.
+  let pilotHydrated = !dockPilot;
   const buttonObserver = typeof IntersectionObserver === 'function'
     ? new IntersectionObserver(entries => {
       for (const entry of entries) {
@@ -171,22 +175,42 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     let widthObserver;
     let lastState = '';
     let width = dock.clientWidth;
-    // React may commit after the next animation frame on WebKit. A short-lived
-    // mount observer promotes the replacement only when Glisse really exists.
+    let mountedBar=null;
+    let rescueCount=0;
+    // Keep the observer after activation: WordPress Preact can remove a
+    // React-owned child without altering .sf-glisse-ready, particularly on
+    // WebKit. That left an empty glass dock on the real website in 0.1.339.
     const reveal=()=>{
-      if(ready || !dock.isConnected)return;
+      if(!dock.isConnected || !mount.isConnected)return;
       const bar=mount.querySelector('.lg-tab-bar');
+      if(ready && !bar){
+        dock.classList.remove('sf-glisse-ready');
+        // WordPress reconciled the child away. React still owns the node,
+        // refs and native event listeners: reattach it, rather than creating
+        // a second React root or dispatching duplicate clicks.
+        if(mountedBar && !mountedBar.isConnected && rescueCount++<2){
+          requestAnimationFrame(()=>{
+            if(!dock.isConnected || !mount.isConnected || mount.querySelector('.lg-tab-bar'))return;
+            mount.appendChild(mountedBar);
+          });
+        }
+        return;
+      }
+      if(ready){
+        dock.classList.add('sf-glisse-ready');
+        return;
+      }
       if(!bar || bar.querySelectorAll('.lg-tab').length!==anchors.length)return;
       const bounds=bar.getBoundingClientRect();
       if(bounds.width<Math.max(160,dock.clientWidth*.7) || bounds.height<32)return;
-      // Promote only when four genuine Glisse tabs have measurable geometry.
-      // Native focus and hit targets remain present even after promotion.
+      mountedBar=bar;
       dock.classList.add('sf-glisse-ready');
       ready=true;
-      readyObserver.disconnect();
     };
     const readyObserver=new MutationObserver(reveal);
-    readyObserver.observe(mount,{childList:true,subtree:true});
+    // Direct children only: Glisse's own lens animation must not wake a
+    // subtree-wide observer on each visual update.
+    readyObserver.observe(mount,{childList:true});
     const base=anchors.map((anchor,index)=>({
       value:anchor.dataset.dockView,
       label:anchor.querySelector(':scope > span:last-child')?.textContent?.trim()||anchor.getAttribute('aria-label')||'',
@@ -258,6 +282,7 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
   let queued=false;
   function refresh() {
     queued=false;
+    if(!pilotHydrated)return;
     for(const [el,root] of roots)if(!el.isConnected){root.unmount();roots.delete(el);}
     for(const [el,entry] of buttonRoots)if(!el.isConnected){
       entry.observer.disconnect();
@@ -289,8 +314,20 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     queued=true;
     requestAnimationFrame(refresh);
   }
-  if(doc.readyState==='loading')doc.addEventListener('DOMContentLoaded',refresh,{once:true});
-  else refresh();
+  if(dockPilot){
+    const afterWpHydration=()=>{
+      // Module hydration runs asynchronously; defer the optional React paint
+      // past window.load while the working native Codela dock remains visible.
+      window.setTimeout(()=>{
+        pilotHydrated=true;
+        scheduleRefresh();
+      },300);
+    };
+    if(doc.readyState==='complete')afterWpHydration();
+    else window.addEventListener('load',afterWpHydration,{once:true});
+  }else if(doc.readyState==='loading'){
+    doc.addEventListener('DOMContentLoaded',refresh,{once:true});
+  }else refresh();
   // WordPress router, account overlay and WooCommerce can swap parts of the shell.
   // React material internals mutate DOM while animating. Observe *structural*
   // additions only; do not rescan the entire document on each overlay state,
