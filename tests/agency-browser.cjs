@@ -31,6 +31,14 @@ const server = http.createServer((req, res) => {
       assert.equal(await page.locator('.sf-content h1').count(), 1, 'One main page heading; the closed account dialog has its own heading');
       assert.equal(await page.locator('.sf-agency-poster').count(), 4);
       assert.equal(await page.locator('.sf-agency-swap-card').count(), 3);
+      if (width <= 700) {
+        const paint = await page.locator('.sf-agency-hero').evaluate(el => {
+          const effect = getComputedStyle(el, '::after');
+          return {filter:effect.filter,background:effect.backgroundImage};
+        });
+        assert.equal(paint.filter,'none','Legacy Card Swap hero avoids oversized mobile CSS blur');
+        assert(paint.background.startsWith('radial-gradient('),'Legacy halo retained without filtered render surface');
+      }
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `No horizontal overflow at ${width}`);
       const bounds = await page.locator('.sf-agency-hero').boundingBox();
       const header = await page.locator('.sf-header').boundingBox();
