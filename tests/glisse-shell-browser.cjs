@@ -167,6 +167,49 @@ const html='<div class="sf-shell has-mobile-dock"><header class="sf-header">'+
   await pilot.waitForSelector('.sf-mobile-dock.sf-glisse-ready .lg-tab-bar');
   assert.equal(await pilot.locator('.sf-mobile-dock .lg-tab').count(),4,
     'The real Glisse TabBar paints all four navigation items');
+  // Reproduce the physical iPhone's compact 402×666 viewport. The earlier
+  // pilot only verified visible hit targets; its *icons and labels* could
+  // silently become opacity:0 while the decorative Glisse layer was absent.
+  await pilot.setViewportSize({width:402,height:666});
+  const visibleIcons=await pilot.evaluate(()=>
+    [...document.querySelectorAll('.sf-mobile-dock .sf-dock-item')].map(anchor=>{
+      const icon=anchor.querySelector('.sf-icon');
+      const label=anchor.querySelector(':scope > span:last-child');
+      const iconStyle=icon&&getComputedStyle(icon);
+      const labelStyle=label&&getComputedStyle(label);
+      const r=anchor.getBoundingClientRect();
+      const p=anchor.parentElement.getBoundingClientRect();
+      return {
+        view:anchor.dataset.dockView,
+        iconOpacity:iconStyle?.opacity,
+        labelOpacity:labelStyle?.opacity,
+        iconVisibility:iconStyle?.visibility,
+        labelVisibility:labelStyle?.visibility,
+        iconSize:icon?.getBoundingClientRect().width,
+        touchTarget:r.width,
+        insideDock:r.left>=p.left-1 && r.right<=p.right+1
+      };
+    })
+  );
+  assert.equal(visibleIcons.length,4,'Four Codela icons and labels exist in the pilot');
+  assert(visibleIcons.every(t=>t.iconOpacity==='1' && t.labelOpacity==='1' &&
+    t.iconVisibility==='visible' && t.labelVisibility==='visible' &&
+    t.iconSize>=16 && t.touchTarget>=45 && t.insideDock),
+    'Glisse pilot must NEVER make native tab labels/icons invisible: '+JSON.stringify(visibleIcons));
+  const glissePaint=await pilot.evaluate(()=>{
+    const bar=document.querySelector('.sf-glisse-tabbar');
+    const lens=bar.querySelector('.lg-tab-lens');
+    return {
+      visible:getComputedStyle(bar).visibility,
+      display:getComputedStyle(bar).display,
+      tabs:bar.querySelectorAll('.lg-tab').length,
+      lensSize:lens.getBoundingClientRect().width,
+      duplicateHidden:getComputedStyle(bar.querySelector('.lg-tab-face')).visibility
+    };
+  });
+  assert(glissePaint.visible==='visible' && glissePaint.display!=='none' &&
+    glissePaint.tabs===4 && glissePaint.lensSize>20 && glissePaint.duplicateHidden==='hidden',
+    'Glisse lens remains behind the visible native icons without duplicate labels: '+JSON.stringify(glissePaint));
   const hitState=await pilot.evaluate(()=>{
     const dock=document.querySelector('.sf-mobile-dock');
     const mount=dock.querySelector('.sf-glisse-dock-root');
@@ -225,6 +268,12 @@ const html='<div class="sf-shell has-mobile-dock"><header class="sf-header">'+
   await pilot.waitForSelector('.sf-shell > .sf-mobile-dock.sf-glisse-ready .lg-tab-bar');
   assert.equal(await pilot.locator('.sf-mobile-dock .sf-dock-item').count(),4,
     'All native links remain after modal reparenting');
+  const stillVisible=await pilot.evaluate(()=>[...document.querySelectorAll('.sf-mobile-dock .sf-dock-item')].every(a=>{
+    const icon=getComputedStyle(a.querySelector('.sf-icon'));
+    const label=getComputedStyle(a.querySelector(':scope > span:last-child'));
+    return icon.opacity==='1' && label.opacity==='1' && icon.visibility==='visible';
+  }));
+  assert(stillVisible,'Modal closing restores all four visible native icons and labels');
   await pilot.evaluate(()=>document.querySelector('.sf-mobile-dock').classList.add('is-collapsed'));
   await pilot.evaluate(()=>document.querySelector('.sf-mobile-dock').classList.remove('is-collapsed','is-pressing'));
   await pilot.locator('[data-dock-view="home"]').click();
