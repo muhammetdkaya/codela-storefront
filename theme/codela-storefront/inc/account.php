@@ -47,13 +47,46 @@ function codela_sf_account_intro(): void {
         data-auth-smart-last="<?php esc_attr_e( 'Last name', 'codela-storefront' ); ?>"
         data-auth-smart-title="<?php esc_attr_e( 'Welcome', 'codela-storefront' ); ?>"
         data-auth-smart-description="<?php esc_attr_e( 'Sign in or register.', 'codela-storefront' ); ?>">
-        <h1 id="sf-auth-view-title"><span class="sf-auth-heading-text"><?php esc_html_e( 'Welcome back', 'codela-storefront' ); ?></span> <span class="sf-auth-heading-wave" aria-hidden="true">👋</span></h1>
-        <p class="sf-auth-description"><?php esc_html_e( 'Sign in to your account.', 'codela-storefront' ); ?></p>
+        <h1 id="sf-auth-view-title"><span class="sf-auth-heading-text"><?php esc_html_e( 'Welcome', 'codela-storefront' ); ?></span> <span class="sf-auth-heading-wave" aria-hidden="true">👋</span></h1>
+        <p class="sf-auth-description"><?php esc_html_e( 'Sign in or register.', 'codela-storefront' ); ?></p>
     </header>
     <?php
 }
 
 add_action( 'woocommerce_before_customer_login_form', 'codela_sf_account_intro', 5 );
+
+/**
+ * Render the final email UI in PHP BEFORE WooCommerce's original forms.
+ * JavaScript binds behavior only; Woo retains auth, validation and nonces.
+ * A disabled/failed JS enhancement keeps the native login accessible.
+ */
+function codela_sf_account_identity_markup(): void {
+    if ( ! function_exists( 'is_account_page' )
+        || ( ! is_account_page() && empty( $GLOBALS['codela_sf_auth_overlay'] ) )
+        || is_user_logged_in() ) { return; }
+    // Standalone Account and account dialog can coexist in one document.
+    $hint_id = ! empty( $GLOBALS['codela_sf_auth_overlay'] )
+        ? 'sf-smart-message-overlay' : 'sf-smart-message-account';
+    ?>
+    <div class="sf-smart-auth" data-sf-auth-rendered="server">
+        <label class="sf-smart-label">
+            <?php esc_html_e( 'Your email address', 'codela-storefront' ); ?>
+            <input class="sf-smart-identity" type="email" inputmode="email" maxlength="254"
+                autocomplete="email" autocapitalize="none" spellcheck="false"
+                placeholder="<?php esc_attr_e( 'Your email address', 'codela-storefront' ); ?>"
+                aria-label="<?php esc_attr_e( 'Your email address', 'codela-storefront' ); ?>"
+                aria-describedby="<?php echo esc_attr( $hint_id ); ?>">
+            <span class="sf-smart-progress" hidden aria-hidden="true"></span>
+            <span class="sf-smart-mail-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg></span>
+        </label>
+        <p class="sf-smart-message" id="<?php echo esc_attr( $hint_id ); ?>" role="status" aria-live="polite"></p>
+        <div class="sf-smart-actions" hidden>
+            <button class="sf-smart-manual-register" type="button" hidden><?php esc_html_e( 'Continue with email', 'codela-storefront' ); ?></button>
+        </div>
+    </div>
+    <?php
+}
+add_action( 'woocommerce_before_customer_login_form', 'codela_sf_account_identity_markup', 6 );
 
 /**
  * Render registration BETWEEN the completed Woo account forms and Google's
