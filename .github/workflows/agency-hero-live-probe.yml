@@ -1,0 +1,17 @@
+name: Agency 3D homepage live verification (read only)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/agency-hero-live-probe.yml'
+      - 'tools/agency-hero-live-probe.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check actual live theme version and 3D widget on canonical and uncached homepage
+        run: python3 tools/agency-hero-live-probe.py
