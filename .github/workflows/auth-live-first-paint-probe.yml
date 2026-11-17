@@ -1,0 +1,17 @@
+name: Read-only live Account first-paint probe
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/auth-live-first-paint-probe.yml'
+      - 'tools/auth-live-first-paint-probe.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare canonical, cache-busted guest HTML and theme CSS
+        run: python3 tools/auth-live-first-paint-probe.py
