@@ -106,7 +106,15 @@ $widget_data['id'] = 'scroll-demo';
 $scroll = codela_sf_section_agency_scroll( $widget_data );
 agency_page_check( str_contains( $scroll, 'data-agency-container-scroll' ) && str_contains( $scroll, 'data-agency-scroll-device' ), '3D Scroll keeps isolated motion hooks.' );
 agency_page_check( substr_count( codela_sf_section_agency_scroll( $widget_data, '', true ), '<h1 ' ) === 1, 'First homepage 3D Scroll owns a single H1.' );
-agency_page_check( str_contains( $scroll, 'Independent and editable' ) && substr_count( $scroll, '<strong>' ) === 3, 'Saved scroll content appears.' );
+agency_page_check( str_contains( $scroll, 'Independent and editable' ) &&
+    str_contains( $scroll, 'CODELA / ARAYÜZ ÖNİZLEMESİ' ) &&
+    substr_count( $scroll, 'class="sf-agency-scroll-expertise"' ) === 1,
+    'Saved headline, single mock storefront and dynamic specialties appear.' );
+agency_page_check( str_contains( $scroll, 'https://codela.test/iletisim/' ) &&
+    str_contains( $scroll, 'https://codela.test/hizmetler/' ),
+    '3D hero CTA links resolve to real WordPress pages.' );
+agency_page_check( ! str_contains( $scroll, '<iframe' ) && ! str_contains( $scroll, 'cdn.' ),
+    '3D preview is self-contained and requires no third-party embed.' );
 $widget_data['id'] = 'cards-duplicate';
 agency_page_check( str_contains( codela_sf_section_agency_cards( $widget_data ), 'sf-agency-cards-cards-duplicate' ), 'Cloned widget gets independent accessible IDs.' );
 $widget_data['items'][0]['title'] = '<script>unsafe</script>';

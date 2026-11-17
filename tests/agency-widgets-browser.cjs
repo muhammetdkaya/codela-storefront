@@ -47,6 +47,14 @@ const server = http.createServer((req,res) => {
       }
       assert.notEqual(await first.locator('.sf-agency-swap-stage').evaluate(el => getComputedStyle(el).perspective),'none','3D card stack remains intact');
       assert.equal(await scroll.count(),1,'3D section is independently placed between Card Swap sections');
+      assert.equal(await scroll.locator('.sf-agency-preview-browser').count(),1,
+        '3D widget shows one product-style interface, not a repeated service dashboard');
+      assert.equal(await scroll.locator('.sf-agency-scroll-expertise > div').count(),3,
+        'Three saved editor specialties remain editable and visible');
+      assert.equal(await scroll.locator('.sf-agency-scroll-actions a').count(),2,
+        'Hero has direct contact and services actions');
+      assert.equal(await scroll.locator('iframe').count(),0,
+        'Embedded concept uses no cross-origin iframe');
       const services = page.locator('[data-agency-widget="services"]');
       const process = page.locator('[data-agency-widget="process"]');
       assert.equal(await services.locator('.sf-agency-poster').count(),4,'Four editable services render independently');
