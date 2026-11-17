@@ -254,7 +254,7 @@ html.sf-overlay-scroll-locked .sf-shell .sf-header .sf-glisse-glass-plate{
   }
 }
 
-/* 0.1.338: opt-in real Glisse is exclusively a visual plate.
+/* 0.1.339: opt-in real Glisse is exclusively a decorative lens and glass.
    Native PHP anchors remain ABOVE it as sole pointer, touch, keyboard and
    WordPress action owners. Late React hydration cannot hide navigation. */
 @media(max-width:700px){
@@ -279,7 +279,18 @@ html.sf-overlay-scroll-locked .sf-shell .sf-header .sf-glisse-glass-plate{
   .sf-mobile-dock.sf-glisse-ready .sf-dock-surface::after{
     display:none!important;
   }
-  .sf-mobile-dock.sf-glisse-ready .sf-dock-item > *{opacity:0!important}
+  /* Never hide the only four real labels and icons. Earlier pilot hid them
+     before its decorative Glisse counterpart was reliably visible on iOS. */
+  .sf-mobile-dock.sf-glisse-ready .sf-dock-item > *{
+    opacity:1!important;
+    visibility:visible!important;
+  }
+  /* The genuine Glisse component supplies only its glass and moving lens.
+     Keep duplicate decorative labels invisible (but in layout) so they cannot
+     cover or double-render the original accessible Codela navigation. */
+  .sf-mobile-dock.sf-glisse-ready .sf-glisse-tabbar :is(.lg-tab-face,.lg-tab-copy){
+    visibility:hidden!important;
+  }
   .sf-mobile-dock.sf-glisse-ready .sf-dock-item:focus-visible{
     outline:2px solid currentColor;
   }
