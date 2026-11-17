@@ -210,6 +210,24 @@ const html='<div class="sf-shell has-mobile-dock"><header class="sf-header">'+
   assert(glissePaint.visible==='visible' && glissePaint.display!=='none' &&
     glissePaint.tabs===4 && glissePaint.lensSize>20 && glissePaint.duplicateHidden==='hidden',
     'Glisse lens remains behind the visible native icons without duplicate labels: '+JSON.stringify(glissePaint));
+  // Reproduce live WordPress Interactivity hydration on iOS: Preact directly
+  // removes the React-owned <div class="lg-tab-bar"> while leaving the mount
+  // and stale .sf-glisse-ready state behind. The pilot must restore the SAME
+  // rendered React child, not duplicate its root or lose native navigation.
+  const originalBar=await pilot.evaluate(()=>{
+    const bar=document.querySelector('.sf-mobile-dock .lg-tab-bar');
+    window.__glisseOriginalBar=bar;
+    bar.remove();
+    return !!bar;
+  });
+  assert(originalBar,'Glisse tab bar existed before the simulated WP hydration');
+  await pilot.waitForFunction(()=>
+    document.querySelector('.sf-mobile-dock.sf-glisse-ready .lg-tab-bar')===window.__glisseOriginalBar,
+    null,{timeout:5000});
+  assert.equal(await pilot.locator('.sf-glisse-dock-root').count(),1,
+    'Hydration recovery reattaches the original React tree; no duplicate mount');
+  assert.equal(await pilot.locator('.sf-dock-surface .sf-dock-item').count(),4,
+    'Native Codela dock remains functional through hydration recovery');
   const hitState=await pilot.evaluate(()=>{
     const dock=document.querySelector('.sf-mobile-dock');
     const mount=dock.querySelector('.sf-glisse-dock-root');
