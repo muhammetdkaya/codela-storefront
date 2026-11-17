@@ -14,7 +14,7 @@ def fetch(path):
         return res.status,res.headers,res.read().decode('utf-8','replace')
 
 status,head,style=fetch('/wp-content/themes/codela-storefront/style.css')
-m=re.search(r'(?m)^Version:\\s*([0-9.]+)',style)
+m=re.search(r'(?m)^Version:\s*([0-9.]+)',style)
 ver=m.group(1) if m else 'unknown'
 print('LIVE_THEME_VERSION',ver,flush=True)
 assert ver=='0.1.343', 'Theme FTP version is not 0.1.343'
