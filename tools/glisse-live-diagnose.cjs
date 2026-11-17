@@ -79,9 +79,25 @@ async function check(browser, engine, flag) {
       failures.push({url:req.url(),error:req.failure()?.errorText});
   });
   const url='https://codela.dev/?codela_glisse_dock='+flag;
+  // Experiment: let WP Interactivity finish its initial hydration first,
+  // then attach the genuine Glisse bridge to the already hydrated DOM.
+  const delayedBridge=true;
+  if(delayedBridge){
+    await page.route('**/assets/scripts/glisse-bridge.js*',route=>
+      route.fulfill({status:200,contentType:'application/javascript',body:'/* diagnostic: delayed Glisse bridge */'}));
+  }
   let response=null;
   try {
     response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:55000});
+    await page.waitForLoadState('load');
+    await page.waitForTimeout(500);
+    if(delayedBridge){
+      const bridgeUrl=await page.locator('script[src*="glisse-bridge.js"]').first().getAttribute('src');
+      if(!bridgeUrl)throw new Error('Live site has no Glisse bridge script');
+      const original=await context.request.get(new URL(bridgeUrl,page.url()).href,{timeout:15000});
+      if(!original.ok())throw new Error('Cannot fetch genuine bridge: '+original.status());
+      await page.addScriptTag({content:await original.text()});
+    }
     await page.waitForTimeout(1600);
     const snapshot=await page.evaluate(()=>{
       const css=e=>{if(!e)return null;const c=getComputedStyle(e);
@@ -129,7 +145,7 @@ async function check(browser, engine, flag) {
       };
     });
     await page.screenshot({path:path.join(outputDir,engine+'-'+flag+'.png'),fullPage:false});
-    const result={engine,flag,response:response?.status(),errors,failures,snapshot};
+    const result={engine,flag,delayedBridge,response:response?.status(),errors,failures,snapshot};
     console.log('LIVE_GLISSE_DIAG '+JSON.stringify(result));
     return result;
   }catch(e){
