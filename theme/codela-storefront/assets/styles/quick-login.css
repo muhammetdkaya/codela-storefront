@@ -21,6 +21,7 @@
    Without a remembered hint, Woo login/register is visible immediately. */
 html.sf-quick-checking body.woocommerce-account .sf-account-intro,
 html.sf-quick-checking body.woocommerce-account #customer_login,
+html.sf-quick-checking body.woocommerce-account .sf-smart-auth,
 html.sf-quick-checking body.woocommerce-account .sf-auth-social,
 html.sf-quick-checking body.woocommerce-account .sf-google-error,
 html.sf-quick-checking #sf-account .sf-account-intro,

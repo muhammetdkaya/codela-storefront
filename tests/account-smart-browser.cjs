@@ -7,6 +7,7 @@ const smart=fs.readFileSync('theme/codela-storefront/assets/scripts/auth-smart.j
 const css=['theme/codela-storefront/assets/styles/account-overlay.css',
   'theme/codela-storefront/assets/styles/auth-smart.css'].map(f=>fs.readFileSync(f,'utf8')).join('\n');
 const html=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<script>document.documentElement.classList.add('sf-auth-ssr-enabled')</script>
 <style>body{margin:0;font:16px -apple-system,system-ui}#sf-panel{max-width:430px;margin:auto;padding:16px}#customer_login{display:block}.u-column1,.u-column2{width:100%}.sf-auth-focus-scrim{position:fixed}#sf-panel>.sf-menu-trigger.is-in-panel{position:fixed;right:14px;top:14px;z-index:30}</style>
 <style>${css}</style></head>
 <body><div id="sf-panel" class="is-account-panel">
@@ -25,9 +26,16 @@ data-auth-smart-password-link="Password link emailed" data-auth-smart-register-p
 data-auth-smart-strength-min="At least 8 characters" data-auth-smart-strength-mix="Include letters and a number or symbol"
 data-auth-smart-strength-ok="Password meets requirements" data-auth-smart-strength-strong="Strong password"
 data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or register.">
-<h1><span class="sf-auth-heading-text">Welcome back</span>
+<h1><span class="sf-auth-heading-text">Welcome</span>
 <span class="sf-auth-heading-wave">👋</span></h1>
-<p class="sf-auth-description">Sign in to your account.</p></header>
+<p class="sf-auth-description">Sign in or register.</p></header>
+<div class="sf-smart-auth" data-sf-auth-rendered="server"><label class="sf-smart-label">Your email address
+<input class="sf-smart-identity" type="email" inputmode="email" maxlength="254" autocomplete="email" autocapitalize="none" spellcheck="false"
+placeholder="Your email address" aria-label="Your email address" aria-describedby="sf-smart-message-page">
+<span class="sf-smart-progress" hidden aria-hidden="true"></span>
+<span class="sf-smart-mail-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg></span>
+</label><p class="sf-smart-message" id="sf-smart-message-page" role="status" aria-live="polite"></p>
+<div class="sf-smart-actions" hidden><button class="sf-smart-manual-register" type="button" hidden>Continue with email</button></div></div>
 <div id="customer_login">
 <div class="u-column1"><form class="woocommerce-form-login" action="/submitted" method="post">
 <p class="form-row"><label for="username">Email or username</label>
@@ -96,6 +104,21 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or register
  const url='http://127.0.0.1:'+server.address().port+'/';
  const browser=await (process.env.TEST_WEBKIT==='1'?webkit:chromium).launch({headless:true});
  try{
+   // Pre-hydration regression: no smart JS, but the final PHP UI is visible.
+   const prepaint=await browser.newPage({viewport:{width:390,height:844}});
+   await prepaint.route('**/auth-smart.js',route=>route.fulfill({
+     status:200,contentType:'text/javascript',body:''
+   }));
+   await prepaint.goto(url);
+   assert.equal(await prepaint.locator('.sf-smart-identity').count(),1,
+     'One PHP email field exists before smart JS');
+   assert.equal(await prepaint.locator('.sf-smart-identity').isVisible(),true,
+     'The server field is visible without hydration');
+   assert.equal(await prepaint.locator('#customer_login').isVisible(),false,
+     'Woo native form does not flash before hydration');
+   assert.equal(await prepaint.locator('.sf-auth-heading-text').innerText(),'Welcome',
+     'Legacy auth.js cannot overwrite the initial welcome');
+   await prepaint.close();
    const page=await browser.newPage({viewport:{width:390,height:844}});
    await page.goto(url);
    const nestedPage=await browser.newPage({viewport:{width:390,height:844}});
@@ -110,6 +133,10 @@ data-auth-smart-title="Welcome" data-auth-smart-description="Sign in or register
      'The one smart identity remains visible in nested WooCommerce markup');
    await nestedPage.close();
    const uid=page.locator('.sf-smart-identity');
+   assert.equal(await page.locator('.sf-smart-auth').count(),1,
+     'Hydration reuses the PHP field instead of duplicating it');
+   assert.equal(await page.locator('.sf-smart-auth').getAttribute('data-sf-smart-bound'),'1',
+     'The server field is bound to the Woo controller');
    assert(await uid.isVisible(),'Initial page exposes one shared identity input');
    assert.equal(await page.locator('.u-column1').isVisible(),false,'Native login stays folded');
    assert.equal(await page.locator('.u-column2').isVisible(),false,'Native registration stays folded');

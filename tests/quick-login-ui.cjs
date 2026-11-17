@@ -164,12 +164,19 @@ console.log('Quick login browser contracts passed');
 {
   const accountCss=fs.readFileSync('theme/codela-storefront/assets/styles/account.css','utf8');
   const smartJs=fs.readFileSync('theme/codela-storefront/assets/scripts/auth-smart.js','utf8');
-  assert(php.includes('sf-auth-booting') && php.includes('8000'),
-    'Direct Account first paint is masked with a bounded fallback');
-  assert(accountCss.includes('html.sf-auth-booting:not(.sf-quick-checking)') &&
-    accountCss.includes('visibility:hidden!important'),'Only the loading view is masked');
-  assert(smartJs.includes("classList.remove('sf-auth-booting')"),
-    'Email login reveals only after progressive fields are mounted');
-  assert(js.includes("classList.remove('sf-auth-booting')"),
-    'Remembered account atomically reveals after device check');
+  const accountPhp=fs.readFileSync('theme/codela-storefront/inc/account.php','utf8');
+  const smartCss=fs.readFileSync('theme/codela-storefront/assets/styles/auth-smart.css','utf8');
+  assert(php.includes('sf-auth-ssr-enabled') && php.includes('8000'),
+    'Direct Account uses PHP first-paint with bounded native fallback');
+  assert(accountPhp.includes("add_action( 'woocommerce_before_customer_login_form', 'codela_sf_account_identity_markup', 6 )") &&
+    accountPhp.includes('data-sf-auth-rendered="server"'),
+    'The visible email field is server-rendered before Woo forms');
+  assert(smartCss.includes('html.sf-auth-ssr-enabled .woocommerce') &&
+    smartCss.includes('> :is(#customer_login,form.woocommerce-form-login'),
+    'Woo native form remains hidden on first paint');
+  assert(smartJs.includes("shell.dataset.sfSmartBound='1'") &&
+    !smartJs.includes("const shell=document.createElement('div')"),
+    'Smart JS hydrates rather than constructs visible markup');
+  assert(!accountCss.includes('sf-auth-booting') && !php.includes('sf-auth-booting'),
+    'Old skeleton masking workaround is removed');
 }

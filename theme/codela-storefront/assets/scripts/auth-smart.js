@@ -10,12 +10,12 @@
   function initRoot(root) {
     const intro = query(root,'.sf-account-intro');
     const loginForm = query(root,'form.woocommerce-form-login');
-    if (!intro?.dataset.authLookupUrl || !loginForm || root.classList.contains('sf-smart-auth-active')) return;
+    const shell = query(root,':scope > .sf-smart-auth');
+    if (!intro?.dataset.authLookupUrl || !loginForm || !shell || shell.dataset.sfSmartBound === '1') return;
     // WooCommerce can nest .woocommerce wrappers (especially page/overlay shells).
-    // Only the wrapper that OWNS both the intro and the native form may create
-    // the progressive field. Otherwise the outer wrapper creates a duplicate.
-    if (intro.closest('.woocommerce') !== root || loginForm.closest('.woocommerce') !== root) return;
-    if (query(root,':scope > .sf-smart-auth')) return;
+    // Bind only the wrapper owning the server field and genuine Woo forms.
+    if (intro.closest('.woocommerce') !== root || loginForm.closest('.woocommerce') !== root
+        || shell.closest('.woocommerce') !== root) return;
     const container = query(root,'#customer_login');
     const registerForm = query(root,'form.woocommerce-form-register');
     const loginUser = query(loginForm,'input[name="username"],input#username');
@@ -64,43 +64,15 @@
       return {level:strong?3:2,eligible:true,message:strong?(intro.dataset.authSmartStrengthStrong||'Strong password'):(intro.dataset.authSmartStrengthOk||'Password meets requirements')};
     };
 
-    const shell=document.createElement('div');
-    shell.className='sf-smart-auth';
-    const label=document.createElement('label');
-    label.className='sf-smart-label';
-    label.textContent=intro.dataset.authSmartLabel||'Your email address';
-    const input=document.createElement('input');
-    input.className='sf-smart-identity';
-    input.type='email';input.inputMode='email';input.maxLength=254;input.autocomplete='email';
-    input.autocapitalize='none';input.spellcheck=false;
-    input.placeholder=intro.dataset.authSmartLabel||'Your email address';
-    input.setAttribute('aria-label',input.placeholder);
-    input.setAttribute('aria-describedby','sf-smart-message');
-    label.append(input);
-    const indicator=document.createElement('span');
-    indicator.className='sf-smart-progress';
-    indicator.setAttribute('aria-hidden','true');indicator.hidden=true;
-    label.append(indicator);
-    // The envelope is decorative and yields to the existing lookup/status glyph.
-    const mailIcon=document.createElement('span');
-    mailIcon.className='sf-smart-mail-icon';
-    mailIcon.setAttribute('aria-hidden','true');
-    mailIcon.innerHTML='<svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>';
-    label.append(mailIcon);
-    const hint=document.createElement('p');
-    hint.className='sf-smart-message';hint.id='sf-smart-message';
-    hint.setAttribute('role','status');hint.setAttribute('aria-live','polite');
-    // An editable email input is the only identity control. No separate
-    // "change email" action, login/register tabs or username prompt.
-    const actions=document.createElement('div');actions.className='sf-smart-actions';
-    const manual=document.createElement('button');
-    manual.type='button';manual.className='sf-smart-manual-register';
-    manual.textContent=intro.dataset.authSmartContinue||'Continue with email';
-    manual.hidden=true;actions.append(manual);
-    actions.hidden=true;
-    shell.append(label,hint,actions);
-    const insertion=container||loginForm;
-    insertion.before(shell);
+    // Hydrate existing, server-rendered controls; never manufacture a new UI.
+    const input=query(shell,'.sf-smart-identity');
+    const indicator=query(shell,'.sf-smart-progress');
+    const mailIcon=query(shell,'.sf-smart-mail-icon');
+    const hint=query(shell,'.sf-smart-message');
+    const actions=query(shell,'.sf-smart-actions');
+    const manual=query(shell,'.sf-smart-manual-register');
+    if (!input || !indicator || !mailIcon || !hint || !actions || !manual) return;
+    shell.dataset.sfSmartBound='1';
     root.classList.add('sf-smart-auth-active','sf-smart-start');
     const loginRow=loginUser.closest('.form-row,.woocommerce-form-row');
     loginRow?.classList.add('sf-smart-native-identity');
@@ -322,11 +294,11 @@
     for(const root of document.querySelectorAll('.woocommerce')){
       if(root.querySelector('.sf-account-intro'))initRoot(root);
     }
-    // Only reveal after enhanced controls actually exist. If a remembered
-    // device is being verified, quick-login owns the final atomic reveal.
+    // PHP first paint is already final. Hydrated stage CSS now owns the UI.
+    // Remembered PIN/passkey verification may still keep the choice concealed.
     if(!document.documentElement.classList.contains('sf-quick-checking') &&
-       document.querySelector('body.woocommerce-account .woocommerce.sf-smart-auth-active')){
-      document.documentElement.classList.remove('sf-auth-booting');
+       document.querySelector('body.woocommerce-account .woocommerce.sf-smart-auth-active:not(.sf-overlay-auth)')){
+      document.documentElement.classList.remove('sf-auth-ssr-enabled');
     }
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});

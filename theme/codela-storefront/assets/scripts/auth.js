@@ -273,7 +273,8 @@ function preventInitialAccountAutoFocus() {
             const active = view === 'register' ? 'register' : 'login';
             container.dataset.authView = active;
             root?.classList.toggle('sf-auth-register-view', active === 'register');
-            if (heading) {
+            // Do not overwrite the PHP-rendered final welcome before hydration.
+            if (heading && !root?.querySelector(':scope > .sf-smart-auth')) {
                 if (headingText) headingText.textContent = active === 'register'
                     ? heading.dataset.authRegisterTitle : heading.dataset.authLoginTitle;
                 if (description) description.textContent = active === 'register'

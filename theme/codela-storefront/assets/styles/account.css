@@ -701,19 +701,3 @@ body.woocommerce-account.logged-in:not(.codela-my-account-layout)
  body.woocommerce-account.logged-in:not(.codela-my-account-layout)
   .woocommerce-MyAccount-content .woocommerce-EditAccountForm :is(input.woocommerce-Input,input.input-text,select){transition:none}
 }
-
-/* Guest Account prepaint. Native Woo forms remain in the DOM, retaining all
-   non-JS and failed-enhancement behavior; never expose them mid-transition.
-   sf-quick-checking owns the remembered-device skeleton when applicable. */
-html.sf-auth-booting:not(.sf-quick-checking) body.woocommerce-account:not(.logged-in) .woocommerce:has(> .sf-account-intro){position:relative;min-height:340px}
-html.sf-auth-booting:not(.sf-quick-checking) body.woocommerce-account:not(.logged-in) .woocommerce:has(> .sf-account-intro)>*{visibility:hidden!important;pointer-events:none!important}
-html.sf-auth-booting:not(.sf-quick-checking) body.woocommerce-account:not(.logged-in) .woocommerce:has(> .sf-account-intro)::after{
-  content:"";visibility:visible;position:absolute;z-index:1;left:50%;top:54px;
-  transform:translateX(-50%);pointer-events:none;
-  width:min(460px,calc(100% - 30px));height:170px;border-radius:18px;
-  border:1px solid #e5e7ea;
-  background:linear-gradient(#e4e6ea 0 0) 20px 24px / 42% 17px no-repeat,
-             linear-gradient(#eceef1 0 0) 20px 56px / 68% 10px no-repeat,
-             linear-gradient(#eff0f3 0 0) 20px 92px / calc(100% - 40px) 51px no-repeat,
-             #fff;box-shadow:0 8px 26px rgba(30,35,45,.035)
-}
