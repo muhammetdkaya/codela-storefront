@@ -146,7 +146,7 @@
       return {
         tool:'codela-interaction-timing',
         schema:1,
-        theme:'0.1.341',
+        theme:'0.1.342',
         mode,
         pages:pageIndex,
         session:document.body?.classList.contains('logged-in')?'signed-in':'guest',
