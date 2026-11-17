@@ -7,7 +7,7 @@ const smart=fs.readFileSync('theme/codela-storefront/assets/scripts/auth-smart.j
 const css=['theme/codela-storefront/assets/styles/account-overlay.css',
   'theme/codela-storefront/assets/styles/auth-smart.css'].map(f=>fs.readFileSync(f,'utf8')).join('\n');
 const html=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<script>document.documentElement.classList.add('sf-auth-ssr-enabled')</script>
+<script>if(location.pathname==='/direct')document.documentElement.classList.add('sf-auth-ssr-enabled')</script>
 <style>body{margin:0;font:16px -apple-system,system-ui}#sf-panel{max-width:430px;margin:auto;padding:16px}#customer_login{display:block}.u-column1,.u-column2{width:100%}.sf-auth-focus-scrim{position:fixed}#sf-panel>.sf-menu-trigger.is-in-panel{position:fixed;right:14px;top:14px;z-index:30}</style>
 <style>${css}</style></head>
 <body><div id="sf-panel" class="is-account-panel">
@@ -74,6 +74,10 @@ placeholder="Your email address" aria-label="Your email address" aria-describedb
      res.writeHead(status,{'Content-Type':type,'Cache-Control':'no-store'});res.end(body);
    };
    if(req.url==='/'&&req.method==='GET')return send(200,html,'text/html; charset=utf-8');
+   if(req.url==='/direct'&&req.method==='GET')return send(200,html
+     .replace('<body>','<body class="woocommerce-account">')
+     .replace('class="woocommerce sf-overlay-auth"','class="woocommerce"'),
+     'text/html; charset=utf-8');
    if(req.url==='/nested'&&req.method==='GET'){
      // A surrounding Woo shortcode wrapper must NOT create a second email pill.
      const nestedHtml=html
@@ -109,7 +113,7 @@ placeholder="Your email address" aria-label="Your email address" aria-describedb
    await prepaint.route('**/auth-smart.js',route=>route.fulfill({
      status:200,contentType:'text/javascript',body:''
    }));
-   await prepaint.goto(url);
+   await prepaint.goto(url+'direct');
    assert.equal(await prepaint.locator('.sf-smart-identity').count(),1,
      'One PHP email field exists before smart JS');
    assert.equal(await prepaint.locator('.sf-smart-identity').isVisible(),true,
@@ -119,6 +123,15 @@ placeholder="Your email address" aria-label="Your email address" aria-describedb
    assert.equal(await prepaint.locator('.sf-auth-heading-text').innerText(),'Welcome',
      'Legacy auth.js cannot overwrite the initial welcome');
    await prepaint.close();
+   const direct=await browser.newPage({viewport:{width:390,height:844}});
+   await direct.goto(url+'direct');
+   assert.equal(await direct.locator('.sf-smart-identity').isVisible(),true,
+     'Hydrated direct My Account retains the first-paint field');
+   assert.equal(await direct.locator('#customer_login').isVisible(),false,
+     'Direct Account stays folded at its initial stage');
+   assert.equal(await direct.evaluate(()=>document.documentElement.classList.contains('sf-auth-ssr-enabled')),false,
+     'After hydration the direct Account stops using the prepaint bridge');
+   await direct.close();
    const page=await browser.newPage({viewport:{width:390,height:844}});
    await page.goto(url);
    const nestedPage=await browser.newPage({viewport:{width:390,height:844}});
