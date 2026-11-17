@@ -61,10 +61,6 @@ export function createDockController({ getDialog, getCurrent, open, close }) {
     // Reparenting resets CSS transitions. Carry the rendered capsule position
     // into the new layer, then let the existing CSS transition reach its target.
     function preserveDockPosition(dock) {
-        // Glisse keeps its own spring position when the real dock moves to
-        // the dialog top layer. Reading the hidden native pseudo-element here
-        // forces a style/layout flush during Menu opening and closing.
-        if (dock.classList.contains('sf-glisse-ready')) return () => {};
         const surface = dock.querySelector('.sf-dock-surface');
         if (!surface) return () => {};
         if (dockPositionFrame) cancelAnimationFrame(dockPositionFrame);
