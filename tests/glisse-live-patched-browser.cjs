@@ -65,8 +65,11 @@ const bridge=fs.readFileSync('theme/codela-storefront/assets/scripts/glisse-brid
       await page.waitForTimeout(300);
       assert.equal(await page.locator('.sf-mobile-dock .lg-tab-bar').count(),1,
         'Glisse remains mounted when the real dock moves into native dialog');
-      await page.locator('#sf-panel .sf-search-cancel').click();
-      await page.waitForFunction(()=>!document.querySelector('#sf-panel')?.open);
+      // Search on this managed Agency homepage can use the inline-header
+      // variant; .sf-search-cancel then exists but is intentionally hidden.
+      // Escape exercises the shared dialog's genuine close path in both modes.
+      await page.keyboard.press('Escape');
+      await page.waitForFunction(()=>!document.querySelector('#sf-panel')?.open,{timeout:9000});
       assert.equal(await page.locator('.sf-mobile-dock .lg-tab-bar').count(),1,
         'Glisse remains mounted after Search dialog closes');
       console.log('GLISSE_PATCHED_LIVE_PASS '+engine);
