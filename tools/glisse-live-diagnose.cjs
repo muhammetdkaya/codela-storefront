@@ -19,6 +19,29 @@ async function check(browser, engine, flag) {
   const page=await context.newPage();
   await page.addInitScript(()=>{
     window.__glisseTrace=[];
+    // Intercept only removal of Glisse's actual React root child. The stack
+    // distinguishes WordPress/Preact hydration from React's own unmount.
+    const originalRemoveChild=Node.prototype.removeChild;
+    Node.prototype.removeChild=function(child){
+      if(child?.matches?.('.lg-tab-bar') || (child?.querySelector?.('.lg-tab-bar') && this.matches?.('.sf-glisse-dock-root'))){
+        window.__glisseTrace.push({
+          t:Math.round(performance.now()),type:'REMOVE_CHILD_STACK',
+          target:this.className,child:child.className,
+          stack:(new Error('glisse removed')).stack?.slice(0,2200)
+        });
+      }
+      return originalRemoveChild.call(this,child);
+    };
+    const originalReplaceChildren=Element.prototype.replaceChildren;
+    Element.prototype.replaceChildren=function(...args){
+      if(this.matches?.('.sf-glisse-dock-root')){
+        window.__glisseTrace.push({
+          t:Math.round(performance.now()),type:'REPLACE_CHILDREN_STACK',
+          target:this.className,stack:(new Error('glisse replaced')).stack?.slice(0,2200)
+        });
+      }
+      return originalReplaceChildren.apply(this,args);
+    };
     const record=(type,node,extra={})=>{
       if(window.__glisseTrace.length>=100)return;
       window.__glisseTrace.push({
@@ -36,6 +59,8 @@ async function check(browser, engine, flag) {
         for(const [name,items] of [['added',m.addedNodes],['removed',m.removedNodes]]){
           for(const node of items){
             if(node.nodeType!==1)continue;
+            if(node.matches?.('.lg-tab-bar'))
+              record(name+'.tabBar',node,{target:m.target?.className});
             if(node.matches?.('.sf-glisse-dock-root,.lg-tab-bar,.sf-mobile-dock'))
               record(name,node);
             for(const el of node.querySelectorAll?.('.sf-glisse-dock-root,.lg-tab-bar,.sf-mobile-dock')||[])
@@ -115,12 +140,11 @@ async function check(browser, engine, flag) {
 }
 (async()=>{
   const results=[];
-  for (const [engine,launcher] of Object.entries({chromium,webkit})){
+  // Lifecycle stack reproducer: WebKit Glisse only.
+  for (const [engine,launcher] of Object.entries({webkit})){
     const browser=await launcher.launch({headless:true});
-    try{
-      results.push(await check(browser,engine,'0'));
-      results.push(await check(browser,engine,'1'));
-    }finally{await browser.close()}
+    try{ results.push(await check(browser,engine,'1')); }
+    finally{await browser.close()}
   }
   fs.writeFileSync(path.join(outputDir,'report.json'),JSON.stringify(results,null,2));
 })().catch(error=>{console.error(error);process.exitCode=1});
