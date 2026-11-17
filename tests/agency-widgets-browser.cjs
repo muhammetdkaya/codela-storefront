@@ -35,6 +35,17 @@ const server = http.createServer((req,res) => {
       const scroll = page.locator('[data-agency-widget="scroll"]');
       assert.equal(await widgets.count(),5,'Two cards, services, process and 3D sections may coexist');
       assert.equal(await page.locator('.sf-agency-swap-card').count(),6,'Duplicated cards each render their own content');
+      const halo = await first.locator('.sf-agency-hero').evaluate(el => {
+        const paint = getComputedStyle(el, '::after');
+        return {filter:paint.filter,background:paint.backgroundImage};
+      });
+      if (width <= 700) {
+        assert.equal(halo.filter,'none','Card hero uses a paint-only halo on phones');
+        assert(halo.background.startsWith('radial-gradient('),'Mobile visual halo is retained as a radial gradient');
+      } else {
+        assert.notEqual(halo.filter,'none','Desktop reference presentation remains unchanged');
+      }
+      assert.notEqual(await first.locator('.sf-agency-swap-stage').evaluate(el => getComputedStyle(el).perspective),'none','3D card stack remains intact');
       assert.equal(await scroll.count(),1,'3D section is independently placed between Card Swap sections');
       const services = page.locator('[data-agency-widget="services"]');
       const process = page.locator('[data-agency-widget="process"]');

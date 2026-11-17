@@ -35,6 +35,15 @@
 .sf-agency-swap-card[data-pos="0"]{transform:translate3d(0,0,0) rotateZ(0) scale(1);z-index:3;opacity:1}
 .sf-agency-swap-card[data-pos="1"]{transform:translate3d(25px,-30px,-60px) rotateZ(4deg) scale(.94);z-index:2;opacity:.86}
 .sf-agency-swap-card[data-pos="2"]{transform:translate3d(50px,-58px,-120px) rotateZ(8deg) scale(.88);z-index:1;opacity:.62}
+/* Mobile: replace the oversized 125px filtered halo with a painted equivalent.
+   The 3D card geometry and interaction remain completely unchanged. */
+@media(max-width:700px){
+ .sf-agency-widget--cards .sf-agency-hero::after,
+ .sf-agency:not([data-agency-widget]) .sf-agency-hero::after{
+  background:radial-gradient(ellipse farthest-side at center,#6366f136 0%,#6366f12a 28%,#6366f110 62%,transparent 100%);
+  filter:none;
+ }
+}
 .sf-agency-swap-card--web{background:linear-gradient(145deg,#18181b,#10112a 80%,#312e81)}
 .sf-agency-swap-card--commerce{background:linear-gradient(145deg,#18181b,#052e26 80%,#065f46)}
 .sf-agency-swap-card--code{background:linear-gradient(145deg,#18181b,#241439 80%,#581c87)}
