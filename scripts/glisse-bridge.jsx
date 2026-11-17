@@ -179,7 +179,7 @@ if (React?.createRoot && typeof ResizeObserver !== 'undefined') {
     for(const record of records){
       for(const node of [...record.addedNodes,...record.removedNodes]){
         if(node.nodeType!==1)continue;
-        if(node.closest?.('.sf-glisse-dock-root,.sf-glisse-glass-mount,.sf-glisse-button-mount'))continue;
+        if(node.closest?.('.sf-glisse-glass-mount,.sf-glisse-button-mount'))continue;
         if(node.matches(structural) || node.querySelector(structural)){
           scheduleRefresh();
           return;
