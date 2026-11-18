@@ -19,22 +19,27 @@ for regex in ['<html[^>]+>','<body[^>]+>']:
  m=re.search(regex,data,re.I|re.S)
  print('TAG',m.group(0)[:800] if m else 'absent')
 for key in ['auth-smart.css','account.css','quick-login.css','auth-smart.js','auth.js']:
- tags=re.findall(r'<(?:link|script)\\b[^>]*'+re.escape(key)+r'[^>]*>',data,re.I|re.S)
- print('ASSET',key,'tags',len(tags))
- for tag in tags[:2]:
-  print(' ',tag[:600])
-  found=re.search(r'(?:href|src)=["\\x27]([^"\\x27]+)',tag,re.I)
-  if not found:continue
-  addr=unescape(found.group(1))
-  if addr.startswith('//'):addr='https:'+addr
-  elif addr.startswith('/'):addr='https://codela.dev'+addr
-  try:
-   with urllib.request.urlopen(urllib.request.Request(addr,headers={'User-Agent':'Mozilla/5.0','Cache-Control':'no-cache'}),timeout=22) as res:
-    body=res.read().decode('utf-8','replace')
-    print('  HTTP',res.status,'bytes',len(body),'MIME',res.headers.get('Content-Type'))
-    if key=='auth-smart.css':
-     print('  CSS has SSR selector','html.sf-auth-ssr-enabled .woocommerce > .sf-smart-auth' in body)
-    if key=='auth-smart.js':
-     print('  JS has hydrate marker',"shell.dataset.sfSmartBound='1'" in body)
-  except Exception as e:
-   print('  FETCH_FAIL',type(e).__name__,str(e)[:180])
+    idx=data.find(key)
+    print('ASSET',key,'position',idx)
+    if idx<0:continue
+    before=data.rfind('<',0,idx)
+    after=data.find('>',idx)
+    tag=data[before:after+1] if before>=0 and after>idx else ''
+    print('  TAG',tag[:600])
+    found=re.search(r'(?:href|src)=["\x27]([^"\x27]+)',tag,re.I)
+    if not found:
+        print('  NO_SRC_HREF')
+        continue
+    addr=unescape(found.group(1))
+    if addr.startswith('//'):addr='https:'+addr
+    elif addr.startswith('/'):addr='https://codela.dev'+addr
+    try:
+        with urllib.request.urlopen(urllib.request.Request(addr,headers={'User-Agent':'Mozilla/5.0','Cache-Control':'no-cache'}),timeout=22) as res:
+            body=res.read().decode('utf-8','replace')
+            print('  HTTP',res.status,'bytes',len(body),'MIME',res.headers.get('Content-Type'))
+            if key=='auth-smart.css':
+                print('  CSS_HAS_SSR_SELECTOR','html.sf-auth-ssr-enabled' in body)
+            if key=='auth-smart.js':
+                print('  JS_HAS_HYDRATE',"shell.dataset.sfSmartBound='1'" in body)
+    except Exception as e:
+        print('  FETCH_FAIL',type(e).__name__,str(e)[:180])
