@@ -78,10 +78,29 @@ const server=http.createServer((req,res)=>{
       }
       assert(handoff.radius>=25,'Services surface remains rounded');
       assert.equal(await services.locator('.sf-agency-poster').count(),4,'Four editable service cards remain');
-      await services.locator('[data-agency-widget-detail="0"]').click();
-      assert(await services.locator('[data-agency-widget-dialog]').isVisible(),'Service details still open');
-      await services.locator('[data-agency-widget-close]').click();
-      assert(!(await services.locator('[data-agency-widget-dialog]').isVisible()),'Service details close');
+      assert.equal(await services.locator('.sf-agency-poster-link').count(),4,'Only one link per service poster');
+      assert.equal(await services.locator('[data-agency-widget-dialog]').count(),0,'Editorial service links do not open redundant modals');
+      assert.equal(await services.locator('.sf-agency-poster-visual').count(),4,'Each service has its own lightweight CSS interface illustration');
+      assert((await services.locator('.sf-agency-poster-link').first().getAttribute('href')).includes('hizmetler'),
+        'The poster resolves to a real services page if a service-specific page is not published');
+      const serviceTrack=services.locator('[data-agency-widget-track]');
+      assert.equal(await serviceTrack.getAttribute('role'),'region','Accessible native service-card region');
+      if(width<740){
+        assert.equal(await serviceTrack.evaluate(el=>getComputedStyle(el).display),'flex',
+          'Phone keeps a horizontal native scroll-snap carousel');
+        await services.locator('[data-agency-widget-next]').click();
+        await page.waitForTimeout(600);
+        assert.equal(await services.getAttribute('data-agency-active-service'),'1','Mobile scroll selects the second service');
+        assert.equal(await services.locator('.sf-agency-eyebrow').evaluate(el=>getComputedStyle(el).color),
+          'rgb(130, 118, 106)','Eyebrow softly follows the active service tone');
+        assert.equal(await services.locator('.sf-agency-poster').first().evaluate(el=>getComputedStyle(el).height!=='0px'),
+          true,'Poster height remains content-aware');
+      }else{
+        assert.equal(await serviceTrack.evaluate(el=>getComputedStyle(el).display),'grid',
+          'Tablet and desktop use an uncropped services grid');
+        assert.equal(await serviceTrack.evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length),
+          width>=1100?4:2,'Four columns on desktop; two on tablet');
+      }
       await process.locator('[data-agency-widget-step="1"]').click();
       assert.equal(await process.locator('[data-agency-widget-stage]').getAttribute('data-step'),'1','Process steps remain interactive');
       await first.locator('[data-agency-swap-to="1"]').click();
