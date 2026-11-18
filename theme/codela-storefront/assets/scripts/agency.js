@@ -6,6 +6,7 @@
   if (!root || root.dataset.agencyInitialized === 'true') return;
   root.dataset.agencyInitialized = 'true';
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const mobile = window.matchMedia('(max-width:700px)');
 
   // Reference hero presentation switch. Only the selected variant participates
   // in layout and pointer/keyboard interaction; the shared shell is untouched.
@@ -16,7 +17,7 @@
   let scrollFrame = 0;
   const syncScrollDevice = () => {
     scrollFrame = 0;
-    if (!scrollHero || !scrollDevice || scrollHero.hidden) return;
+    if (!scrollHero || !scrollDevice || scrollHero.hidden || mobile.matches) return;
     if (reduced.matches) {
       scrollDevice.style.removeProperty('--agency-scroll-rotate');
       scrollDevice.style.removeProperty('--agency-scroll-scale');
@@ -29,7 +30,7 @@
     scrollDevice.style.setProperty('--agency-scroll-scale', (0.94 + progress * 0.06).toFixed(3));
   };
   const requestScrollSync = () => {
-    if (scrollFrame) return;
+    if (mobile.matches || scrollFrame) return;
     scrollFrame = requestAnimationFrame(syncScrollDevice);
   };
   const selectVariant = (mode) => {
@@ -45,6 +46,14 @@
   window.addEventListener('scroll', requestScrollSync, { passive: true });
   window.addEventListener('resize', requestScrollSync, { passive: true });
   reduced.addEventListener('change', requestScrollSync);
+  mobile.addEventListener('change', () => {
+    if (mobile.matches) {
+      cancelAnimationFrame(scrollFrame);
+      scrollFrame = 0;
+      scrollDevice?.style.removeProperty('--agency-scroll-rotate');
+      scrollDevice?.style.removeProperty('--agency-scroll-scale');
+    } else requestScrollSync();
+  });
   window.addEventListener('pagehide', () => {
     cancelAnimationFrame(scrollFrame);
     scrollFrame = 0;
