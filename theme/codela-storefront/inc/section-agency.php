@@ -162,7 +162,7 @@ function codela_sf_section_agency_services( array $data, string $type = '' ): st
         'İhtiyacınıza göre tasarlanan, kullanımı kolay ve hızlı dijital çözümler.' ];
     $editorial_title = $untouched && in_array( $heading_title, $known_titles, true );
     if ( $untouched && in_array( $lead, $known_leads, true ) ) {
-        $lead = 'Markanızı dijitalde büyütmek için tasarım, e-ticaret ve yazılım çözümleri geliştiriyoruz.';
+        $lead = 'Markanız için web, e-ticaret ve özel yazılım çözümleri geliştiriyoruz.';
     }
 
     ob_start();
@@ -170,6 +170,7 @@ function codela_sf_section_agency_services( array $data, string $type = '' ): st
     <div class="sf-agency sf-agency-widget sf-agency-widget--services sf-agency-widget--services-v3"
          data-agency-widget="services" data-agency-active-service="0">
       <section class="sf-agency-services" aria-labelledby="<?php echo esc_attr( $id ); ?>">
+        <div class="sf-agency-services-stage">
         <div class="sf-agency-wrap sf-agency-services-head">
           <div class="sf-agency-services-heading">
             <p class="sf-agency-eyebrow">CODELA / HİZMETLERİMİZ</p>
@@ -232,6 +233,7 @@ function codela_sf_section_agency_services( array $data, string $type = '' ): st
             </article>
           <?php endforeach; ?>
         </div>
+        </div><!-- /service stage -->
         <div class="sf-agency-wrap sf-agency-services-footer">
           <div><strong>Projeniz için doğru çözümü birlikte belirleyelim.</strong>
             <p>İhtiyacınızı anlatın, nereden başlayacağımızı konuşalım.</p></div>
