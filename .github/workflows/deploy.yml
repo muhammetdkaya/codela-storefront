@@ -4,6 +4,12 @@ on:
     branches: [main]
     paths: ['theme/**', 'scripts/**', 'tests/**', '.github/workflows/deploy.yml']
   workflow_dispatch:
+    inputs:
+      full_qa_only:
+        description: 'Run the complete browser test suite without deploying over FTP'
+        type: boolean
+        required: false
+        default: false
   pull_request:
     paths: ['theme/**', 'scripts/**', 'tests/**', '.github/workflows/deploy.yml']
 permissions:
@@ -19,45 +25,36 @@ jobs:
     runs-on: ubuntu-24.04
     outputs:
       quick: ${{ steps.tier.outputs.quick }}
+      scope: ${{ steps.tier.outputs.scope }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
-      - name: Classify small presentation-only changes
+      - name: Classify safe scoped changes
         id: tier
         shell: bash
         env:
           BEFORE_SHA: ${{ github.event.before }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           echo 'quick=false' >> "$GITHUB_OUTPUT"
-          if [ "$GITHUB_EVENT_NAME" != 'push' ] || [ -z "$BEFORE_SHA" ] || [ "$BEFORE_SHA" = '0000000000000000000000000000000000000000' ]; then exit 0; fi
-          git cat-file -e "$BEFORE_SHA^{commit}" 2>/dev/null || git fetch --quiet --depth=1 origin "$BEFORE_SHA" || exit 0
-          git diff --name-only "$BEFORE_SHA" "$GITHUB_SHA" > /tmp/codela-changes
-          test -s /tmp/codela-changes || exit 0
-          test "$(wc -l < /tmp/codela-changes)" -le 5 || exit 0
-          if git diff --name-only --diff-filter=D "$BEFORE_SHA" "$GITHUB_SHA" | grep -q .; then exit 0; fi
-          # Version-only changes are not functional theme changes.
-          # Require an exact patch increment and otherwise identical file.
-          if [ "$(cat /tmp/codela-changes)" = "theme/codela-storefront/style.css" ]; then
-            BEFORE_VERSION=$(git show "$BEFORE_SHA:theme/codela-storefront/style.css" | sed -n "s/^Version: //p")
-            AFTER_VERSION=$(sed -n "s/^Version: //p" theme/codela-storefront/style.css)
-            if [[ "$BEFORE_VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
-              EXPECTED_VERSION="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.$((10#${BASH_REMATCH[3]} + 1))"
-              if [ "$AFTER_VERSION" = "$EXPECTED_VERSION" ] && diff -q <(git show "$BEFORE_SHA:theme/codela-storefront/style.css" | sed "s/^Version: $BEFORE_VERSION$/Version: $AFTER_VERSION/") theme/codela-storefront/style.css >/dev/null; then
-                echo "quick=true" >> "$GITHUB_OUTPUT"
-              fi
-            fi
-            exit 0
-          fi
-          while IFS= read -r FILE; do
-            case "$FILE" in
-              theme/codela-storefront/assets/*.css|theme/codela-storefront/assets/*.svg|theme/codela-storefront/parts/*.html)
-                case "$FILE" in *checkout*|*cart*|*auth*|*account*|*payment*|*login*) exit 0;; esac
-                ;;
-              *) exit 0;;
-            esac
-          done < /tmp/codela-changes
-          echo 'quick=true' >> "$GITHUB_OUTPUT"
+          echo 'scope=full' >> "$GITHUB_OUTPUT"
+          # Manual runs are always full QA, with a separate QA-only option.
+          case "$GITHUB_EVENT_NAME" in
+            push) BASE_SHA="$BEFORE_SHA" ;;
+            pull_request) BASE_SHA="$PR_BASE_SHA" ;;
+            *) exit 0 ;;
+          esac
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = '0000000000000000000000000000000000000000' ]; then exit 0; fi
+          git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null || git fetch --quiet --depth=1 origin "$BASE_SHA" || exit 0
+          python3 scripts/classify-deploy.py "$BASE_SHA" "$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+      - name: Verify CI classification cannot bypass critical changes
+        run: python3 tests/ci-classify.py
+      - name: Report selected validation scope
+        run: |
+          echo "Validation scope: ${{ steps.tier.outputs.scope }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Fast deployment validation: ${{ steps.tier.outputs.quick }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "Full QA is available through workflow_dispatch → full_qa_only=true." >> "$GITHUB_STEP_SUMMARY"
       - name: Build pinned Glisse shell bundle
         if: steps.tier.outputs.quick != 'true'
         run: |
@@ -65,11 +62,26 @@ jobs:
           node scripts/build-glisse.mjs
           node --check theme/codela-storefront/assets/scripts/glisse-bridge.js
           node tests/glisse-shell.cjs
-      - name: Quick presentation checks (no browser download)
+      - name: Scoped presentation / Agency validation (no browser download)
         if: steps.tier.outputs.quick == 'true'
         run: |
+          # Quick does not mean unvalidated. Validate every PHP file and the
+          # native security contracts before shipping a scoped change.
+          find theme/codela-storefront -type f -name '*.php' -print0 | xargs -0 -n1 php -l
           python3 scripts/build-assets.py --check
-          php -l theme/codela-storefront/functions.php
+          python3 tests/build-assets.py
+          node --input-type=module --check < theme/codela-storefront/assets/scripts/agency-widgets.js
+          node --check theme/codela-storefront/assets/scripts/agency.js
+          node --check theme/codela-storefront/assets/scripts/glisse-bridge.js
+          php tests/agency.php
+          php tests/agency-pages.php
+          php tests/navigation.php
+          php tests/account-nonces.php
+          php tests/quick-login.php
+          php tests/passkeys.php
+          node tests/quick-login-ui.cjs
+          node tests/passkeys-ui.cjs
+          node tests/glisse-shell.cjs
           python3 - <<'PY'
           from pathlib import Path
           from xml.etree import ElementTree
@@ -241,16 +253,22 @@ jobs:
           retention-days: 14
   deploy:
     # [github-only] release merge must never deploy FTP; other pushes and manual deploys stay unchanged.
-    if: github.event_name != 'pull_request' && !contains(github.event.head_commit.message, '[github-only]')
+    if: github.event_name != 'pull_request' && inputs.full_qa_only != true && !contains(github.event.head_commit.message, '[github-only]')
     needs: validate
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - name: Compile pinned Glisse shell assets for FTP deploy
+        if: needs.validate.outputs.quick != 'true'
         run: |
           npm install --no-save --package-lock=false glisse@0.5.0
           node scripts/build-glisse.mjs
+      - name: Verify already-bundled pinned shell on fast deploy
+        if: needs.validate.outputs.quick == 'true'
+        run: |
+          node --check theme/codela-storefront/assets/scripts/glisse-bridge.js
+          node tests/glisse-shell.cjs
       - name: Require FTP secrets
         env:
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
