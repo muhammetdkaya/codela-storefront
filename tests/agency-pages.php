@@ -105,7 +105,7 @@ agency_page_check( str_contains( $cards, 'Our Agency' ) && str_contains( $cards,
 $widget_data['id'] = 'scroll-demo';
 $scroll = codela_sf_section_agency_scroll( $widget_data );
 agency_page_check( str_contains( $scroll, 'data-agency-container-scroll' ) && str_contains( $scroll, 'data-agency-scroll-device' ), '3D Scroll keeps isolated motion hooks.' );
-agency_page_check( str_contains( $scroll, 'data-agency-scroll-next' ) && str_contains( $scroll, 'href="https://codela.test/codela-ajans-hizmetler/"' ),
+agency_page_check( str_contains( $scroll, 'data-agency-scroll-next' ) && str_contains( $scroll, 'href="https://codela.test/hizmetler/"' ),
     '3D Scroll has a real Services permalink as its no-JS and standalone fallback.' );
 agency_page_check( substr_count( codela_sf_section_agency_scroll( $widget_data, '', true ), '<h1 ' ) === 1, 'First homepage 3D Scroll owns a single H1.' );
 agency_page_check( str_contains( $scroll, 'Independent and editable' ) &&
