@@ -41,43 +41,53 @@
       const track = widget.querySelector('[data-agency-widget-track]');
       const prev = widget.querySelector('[data-agency-widget-prev]');
       const next = widget.querySelector('[data-agency-widget-next]');
+      const cards = track ? Array.from(track.querySelectorAll('.sf-agency-poster')) : [];
+      const counter = widget.querySelector('[data-agency-widget-count]');
+      let frame = 0;
+
+      const sync = () => {
+        frame = 0;
+        if (!track || !cards.length) return;
+        // Desktop/tablet are static grids: no carousel, no changing headline.
+        if (window.matchMedia('(min-width: 740px)').matches) {
+          widget.style.removeProperty('--sf-service-accent');
+          widget.dataset.agencyActiveService = '0';
+          if (prev) prev.disabled = true;
+          if (next) next.disabled = true;
+          if (counter) counter.textContent = '01 / ' + String(cards.length).padStart(2, '0');
+          return;
+        }
+        const step = cards.length > 1
+          ? cards[1].offsetLeft - cards[0].offsetLeft
+          : cards[0].getBoundingClientRect().width;
+        const index = Math.max(0, Math.min(cards.length - 1,
+          step ? Math.round(track.scrollLeft / step) : 0));
+        widget.style.setProperty('--sf-service-accent',
+          cards[index].dataset.agencyServiceAccent || '#4452d1');
+        widget.dataset.agencyActiveService = String(index);
+        if (prev) prev.disabled = index === 0;
+        if (next) next.disabled = index === cards.length - 1;
+        if (counter) counter.textContent =
+          String(index + 1).padStart(2, '0') + ' / ' + String(cards.length).padStart(2, '0');
+      };
+      const scheduleSync = () => {
+        if (!frame) frame = window.requestAnimationFrame(sync);
+      };
       if (track && prev && next) {
-        const cardWidth = () => {
-          const card = track.querySelector('.sf-agency-poster');
-          return card ? card.getBoundingClientRect().width + (parseFloat(getComputedStyle(track).gap) || 0) : 0;
+        const slide = dir => {
+          const index = Number(widget.dataset.agencyActiveService || 0);
+          const target = cards[Math.max(0, Math.min(cards.length - 1, index + dir))];
+          if (!target) return;
+          track.scrollTo({
+            left: target.offsetLeft - cards[0].offsetLeft,
+            behavior: reduced.matches ? 'auto' : 'smooth'
+          });
         };
-        const syncArrows = () => {
-          const end = Math.max(0, track.scrollWidth - track.clientWidth);
-          prev.disabled = track.scrollLeft <= 2;
-          next.disabled = track.scrollLeft >= end - 2;
-        };
-        const slide = dir => track.scrollBy({left: dir * cardWidth(), behavior: reduced.matches ? 'auto' : 'smooth'});
         prev.addEventListener('click', () => slide(-1));
         next.addEventListener('click', () => slide(1));
-        track.addEventListener('scroll', syncArrows, {passive:true});
-        window.addEventListener('resize', syncArrows, {passive:true});
-        syncArrows();
-      }
-      const modal = widget.querySelector('[data-agency-widget-dialog]');
-      if (modal && typeof modal.showModal === 'function') {
-        let returnFocus = null;
-        const cards = [...widget.querySelectorAll('.sf-agency-poster')];
-        widget.querySelectorAll('[data-agency-widget-detail]').forEach(button => {
-          button.addEventListener('click', () => {
-            const card = cards[Number(button.dataset.agencyWidgetDetail)];
-            if (!card) return;
-            modal.querySelector('[data-agency-widget-detail-title]').textContent =
-              card.querySelector('h3')?.textContent || '';
-            modal.querySelector('[data-agency-widget-detail-description]').textContent =
-              card.querySelector('.sf-agency-glass-info p')?.textContent || '';
-            returnFocus = button;
-            modal.showModal();
-            modal.querySelector('[data-agency-widget-close]')?.focus({preventScroll:true});
-          });
-        });
-        modal.querySelector('[data-agency-widget-close]')?.addEventListener('click', () => modal.close());
-        modal.addEventListener('click', event => { if (event.target === modal) modal.close(); });
-        modal.addEventListener('close', () => { if (returnFocus?.isConnected) returnFocus.focus({preventScroll:true}); });
+        track.addEventListener('scroll', scheduleSync, { passive: true });
+        window.addEventListener('resize', scheduleSync, { passive: true });
+        sync();
       }
     }
 
