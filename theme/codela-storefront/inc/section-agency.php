@@ -126,54 +126,117 @@ function codela_sf_section_agency_services( array $data, string $type = '' ): st
     $id = 'sf-agency-services-' . sanitize_html_class( (string) $data['id'] );
     $services = codela_sf_agency_page_url( 'hizmetler', home_url( '/#sf-agency-services' ) );
     $contact = codela_sf_agency_contact_link();
-    $tones = [ 'web', 'elementor', 'commerce', 'code' ];
+
+    // Restyle only the untouched starter copy; editor-customized services remain authoritative.
+    $starter = 'agency-starter-services' === (string) ( $data['id'] ?? '' );
+    $legacy_titles = [
+        'Kurumsal Web & Redesign', 'Elementor & Özel Widget',
+        'WooCommerce & E-Ticaret', 'Özel Eklenti & API',
+    ];
+    $untouched = $starter && count( $items ) === 4
+        && array_column( $items, 'title' ) === $legacy_titles;
+    $labels = [ 'E-TİCARET', 'WEB TASARIMI', 'ÖZEL YAZILIM', 'GELİŞTİRME & DESTEK' ];
+    $tones = [ 'commerce', 'web', 'code', 'support' ];
+    $colors = [ '#647961', '#82766a', '#5968b6', '#9b7364' ];
+    $chips = [ [ 'WooCommerce', 'Sanal POS', 'Sipariş' ],
+        [ 'WordPress', 'Özel tasarım', 'Elementor' ],
+        [ 'Özel eklenti', 'API', 'ERP / CRM' ],
+        [ 'Hız', 'Güvenlik', 'Bakım' ] ];
+    $slugs = [ 'e-ticaret', 'web-tasarimi', 'ozel-yazilim', 'gelistirme-destek' ];
+    if ( $untouched ) {
+        $items = [
+            [ 'title' => 'Satışa hazır e-ticaret siteleri.',
+              'body' => 'Markanıza özel mağaza tasarımı, ürün yönetimi, güvenli ödeme ve kargo entegrasyonları.' ],
+            [ 'title' => 'Markanıza özel web siteleri.',
+              'body' => 'Kurumsal web siteleri, özgün arayüzler ve mevcut sitelerin modern tasarımla yenilenmesi.' ],
+            [ 'title' => 'İşinize özel yazılım çözümleri.',
+              'body' => 'İşletmenizin ihtiyaçlarına uygun eklentiler, entegrasyonlar ve otomasyonlar.' ],
+            [ 'title' => 'Mevcut sitenizi ileri taşıyın.',
+              'body' => 'Performans iyileştirmeleri, yeni özellikler, teknik bakım ve altyapı geliştirmeleri.' ],
+        ];
+    }
     $heading_title = trim( (string) ( $data['title'] ?? '' ) );
     $lead = trim( (string) ( $data['description'] ?? '' ) );
-    if ( 'agency-starter-services' === (string) ( $data['id'] ?? '' ) ) {
-        if ( 'WordPress üzerine her türlü çözüm.' === $heading_title ) { $heading_title = 'Fikirden yayına, yanınızdayız.'; }
-        if ( 'İhtiyaca uygun tasarım, e-ticaret ve özel geliştirme hizmetleri.' === $lead ) {
-            $lead = 'İhtiyacınıza göre tasarlanan, kullanımı kolay ve hızlı dijital çözümler.';
-        }
+    $known_titles = [ 'WordPress üzerine her türlü çözüm.', 'Fikirden yayına, yanınızdayız.' ];
+    $known_leads = [ 'İhtiyaca uygun tasarım, e-ticaret ve özel geliştirme hizmetleri.',
+        'İhtiyacınıza göre tasarlanan, kullanımı kolay ve hızlı dijital çözümler.' ];
+    $editorial_title = $untouched && in_array( $heading_title, $known_titles, true );
+    if ( $untouched && in_array( $lead, $known_leads, true ) ) {
+        $lead = 'Markanızı dijitalde büyütmek için tasarım, e-ticaret ve yazılım çözümleri geliştiriyoruz.';
     }
+
     ob_start();
     ?>
-    <div class="sf-agency sf-agency-widget sf-agency-widget--services" data-agency-widget="services">
+    <div class="sf-agency sf-agency-widget sf-agency-widget--services sf-agency-widget--services-v3"
+         data-agency-widget="services" data-agency-active-service="0">
       <section class="sf-agency-services" aria-labelledby="<?php echo esc_attr( $id ); ?>">
         <div class="sf-agency-wrap sf-agency-services-head">
           <div class="sf-agency-services-heading">
-            <p class="sf-agency-eyebrow">HİZMETLERİMİZ</p>
-            <h2 class="sf-agency-heading" id="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $heading_title ?: 'Fikirden yayına, yanınızdayız.' ); ?></h2>
+            <p class="sf-agency-eyebrow">CODELA / HİZMETLERİMİZ</p>
+            <?php if ( $editorial_title ) : ?>
+              <h2 class="sf-agency-heading" id="<?php echo esc_attr( $id ); ?>">Web sitenizden <span class="sf-agency-service-accent">özel yazılıma.</span></h2>
+            <?php else : ?>
+              <h2 class="sf-agency-heading" id="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $heading_title ?: 'Web sitenizden özel yazılıma.' ); ?></h2>
+            <?php endif; ?>
             <?php if ( $lead ) : ?><p class="sf-agency-widget-services-lead"><?php echo esc_html( $lead ); ?></p><?php endif; ?>
           </div>
           <div class="sf-agency-carousel-actions">
-            <a class="sf-agency-all-services" href="<?php echo esc_url( $services ); ?>">Tüm Hizmetler <span aria-hidden="true">↗</span></a>
+            <span class="sf-agency-service-counter" data-agency-widget-count aria-live="off">01 / <?php echo esc_html( sprintf( '%02d', count( $items ) ) ); ?></span>
             <button class="sf-agency-carousel-arrow" type="button" data-agency-widget-prev aria-label="Önceki hizmet">←</button>
             <button class="sf-agency-carousel-arrow" type="button" data-agency-widget-next aria-label="Sonraki hizmet">→</button>
           </div>
         </div>
-        <div class="sf-agency-service-track" data-agency-widget-track tabindex="0" aria-label="Hizmet kartları">
+        <div class="sf-agency-service-track" data-agency-widget-track role="region" tabindex="0" aria-label="Hizmet kartları">
           <?php foreach ( $items as $index => $item ) : ?>
-            <article class="sf-agency-poster sf-agency-poster--<?php echo esc_attr( $tones[ $index ] ); ?>">
+            <?php
+            $label = $untouched ? $labels[ $index ] : (string) $item['title'];
+            $chips_for_item = $untouched ? $chips[ $index ] : [];
+            $slug = $slugs[ $index ];
+            // Never invent an unpublished service permalink: fall back to the real Services page.
+            $detail_href = codela_sf_agency_page_url( 'hizmetler/' . $slug, $services );
+            ?>
+            <article class="sf-agency-poster sf-agency-poster--<?php echo esc_attr( $tones[ $index ] ); ?>"
+                     data-agency-service-accent="<?php echo esc_attr( $colors[ $index ] ); ?>">
               <div class="sf-agency-poster-main">
-                <span><?php echo esc_html( sprintf( '%02d · %s', $index + 1, $item['title'] ) ); ?></span>
-                <h3><?php echo esc_html( $item['title'] ); ?></h3>
-              </div>
-              <div class="sf-agency-poster-bottom">
-                <div class="sf-agency-glass-info"><p><?php echo esc_html( $item['body'] ); ?></p></div>
-                <div class="sf-agency-poster-actions">
-                  <button type="button" data-agency-widget-detail="<?php echo (int) $index; ?>">Kapsamı İncele ↗</button>
-                  <a href="<?php echo esc_url( $contact ); ?>">Teklif Al →</a>
+                <div class="sf-agency-poster-meta">
+                  <span><?php echo esc_html( $label ); ?></span>
+                  <span><?php echo esc_html( sprintf( '%02d / %02d', $index + 1, count( $items ) ) ); ?></span>
                 </div>
               </div>
+              <div class="sf-agency-poster-visual" aria-hidden="true">
+                <div class="sf-agency-mini-ui">
+                  <div class="sf-agency-mini-bar"><i></i><i></i><i></i><small><?php echo esc_html( [ 'SHOP', 'STUDIO', 'WORKSPACE', 'PERFORMANCE' ][ $index ] ); ?></small></div>
+                  <?php if ( 0 === $index ) : ?>
+                    <div class="sf-agency-mini-products"><span><i></i><b></b></span><span><i></i><b></b></span><span><i></i><b></b></span></div>
+                  <?php elseif ( 1 === $index ) : ?>
+                    <div class="sf-agency-mini-site"><div><b></b><b></b><i></i><i></i><em></em></div><figure></figure></div>
+                  <?php elseif ( 2 === $index ) : ?>
+                    <div class="sf-agency-mini-dashboard"><div class="sf-agency-mini-sidebar"><i></i><i></i><i></i></div><div class="sf-agency-mini-stats"><b>1.248</b><b>+24%</b><div class="sf-agency-mini-chart"><i></i><i></i><i></i><i></i><i></i></div></div></div>
+                  <?php else : ?>
+                    <div class="sf-agency-mini-speed"><div class="sf-agency-mini-ring"><div><b>92</b><small>PERFORMANS</small></div></div><div class="sf-agency-mini-bars"><i></i><i></i><i></i></div></div>
+                  <?php endif; ?>
+                </div>
+              </div>
+              <div class="sf-agency-poster-body">
+                <h3><?php echo esc_html( $item['title'] ); ?></h3>
+                <p class="sf-agency-poster-description"><?php echo esc_html( $item['body'] ); ?></p>
+                <?php if ( $chips_for_item ) : ?>
+                  <div class="sf-agency-poster-chips">
+                    <?php foreach ( $chips_for_item as $chip ) : ?><span><?php echo esc_html( $chip ); ?></span><?php endforeach; ?>
+                  </div>
+                <?php endif; ?>
+              </div>
+              <a class="sf-agency-poster-link" href="<?php echo esc_url( $detail_href ); ?>">
+                Hizmeti keşfet <span aria-hidden="true">↗</span>
+              </a>
             </article>
           <?php endforeach; ?>
         </div>
-        <dialog class="sf-agency-service-dialog" data-agency-widget-dialog aria-labelledby="<?php echo esc_attr( $id . '-detail' ); ?>">
-          <div class="sf-agency-dialog-head"><span>HİZMET DETAYI</span><button type="button" data-agency-widget-close aria-label="Kapat">×</button></div>
-          <h2 id="<?php echo esc_attr( $id . '-detail' ); ?>" data-agency-widget-detail-title></h2>
-          <p data-agency-widget-detail-description></p>
-          <a class="sf-agency-dialog-cta" href="<?php echo esc_url( $contact ); ?>">Bu hizmet için teklif iste →</a>
-        </dialog>
+        <div class="sf-agency-wrap sf-agency-services-footer">
+          <div><strong>Projeniz için doğru çözümü birlikte belirleyelim.</strong>
+            <p>İhtiyacınızı anlatın, nereden başlayacağımızı konuşalım.</p></div>
+          <a class="sf-agency-services-cta" href="<?php echo esc_url( $contact ); ?>">Projenizi anlatın <span aria-hidden="true">↗</span></a>
+        </div>
       </section>
     </div>
     <?php
