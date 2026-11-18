@@ -334,9 +334,12 @@ function codela_sf_account_overlay_form(): string {
     return (string) ob_get_clean();
 }
 
-/** The signed-in account starts at its navigation, without a duplicate page title. */
+/** Both guest and signed-in Account use Codela's own heading/navigation.
+ * Never emit WordPress's extra "My Account" title above the custom screen.
+ * This server-side filter works even if a stylesheet or script is unavailable.
+ */
 add_filter( 'render_block_core/post-title', function ( string $html, array $block, $instance ): string {
-    if ( ! function_exists( 'is_account_page' ) || ! is_account_page() || ! is_user_logged_in() ) { return $html; }
+    if ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) { return $html; }
     $is_page_title = (int) ( $instance->context['postId'] ?? 0 ) === (int) wc_get_page_id( 'myaccount' );
     return $is_page_title ? '' : $html;
 }, 10, 3 );
