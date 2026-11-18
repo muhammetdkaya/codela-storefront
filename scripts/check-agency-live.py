@@ -38,10 +38,11 @@ def check() -> None:
         f"FTP theme version {version.group(1) if version else 'missing'} is not {expected_version}"
     )
     agency_css = fetch("/wp-content/themes/codela-storefront/assets/styles/agency.css")
-    assert re.search(r"\.sf-agency-home\{[^}]*padding-top:0", agency_css), "Agency root still leaves the old white header band"
-    assert re.search(r"\.sf-agency-hero\{[^}]*padding-top:76px", agency_css), "Hero text is not offset from the glass header"
-    assert ".sf-agency-hero{min-height:100svh;padding-top:68px}" in agency_css, "Mobile hero no longer has header-safe content spacing"
-    print("Agency hero/header underlay: live CSS verified.", flush=True)
+    assert "0.1.350 — Agency Editorial Light" in agency_css, "Published Agency CSS is not the approved Editorial Light design"
+    assert "background:#f3f0e9" in agency_css, "Editorial Light warm background is absent"
+    assert "min-height:100svh" in agency_css, "Mobile first-screen height rule is absent"
+    assert "margin-top:-31px!important" in agency_css, "Mobile Services handoff has regressed"
+    print("Editorial Light hero and mobile full-viewport CSS verified.", flush=True)
     expected = {
         "/": [],  # Dedicated native Agency starter checked separately below
         "/hizmetler/": ["sf-agency-service-page", "data-agency-module-grid", "data-agency-selected-cta"],
@@ -57,16 +58,16 @@ def check() -> None:
                     # This test site explicitly migrated from the old Agency
                     # theme switch. A generic valid Codela layout could be the
                     # old e-commerce product demo, so generic checks are unsafe.
-                    # A page can legitimately select Card Swap *or* 3D
-                    # Scroll (not both). Verify a complete, real widget
-                    # contract rather than demanding an unused alternative.
+                    # The live Agency homepage now uses the lightweight
+                    # editor-managed Editorial Light welcome, not the legacy
+                    # 3D Scroll model. Keep optional Card Swap compatibility.
                     valid_hero_variants = [
+                        ("sf-agency-widget--minimal", "sf-agency-minimal-title", "sf-agency-minimal-cta"),
                         ("sf-agency-widget--cards", "data-agency-swap"),
-                        ("sf-agency-widget--scroll", "data-agency-container-scroll"),
                     ]
-                    missing = [] if any(all(token in html for token in pair)
-                                        for pair in valid_hero_variants) else [
-                        "a complete Card Swap or 3D Scroll widget"
+                    missing = [] if any(all(token in html for token in variant)
+                                        for variant in valid_hero_variants) else [
+                        "a complete Editorial Light or Card Swap welcome widget"
                     ]
                 else:
                     missing = [marker for marker in markers if marker not in html]
@@ -93,7 +94,7 @@ def check() -> None:
                 else:
                     print("Agency desktop nav verified:", " / ".join(labels), flush=True)
             if not errors:
-                print(f"Agency {expected_version}: both native homepage widgets, navigation, Services, About and Contact verified.")
+                print(f"Agency {expected_version}: homepage welcome, navigation, Services, About and Contact verified.")
                 return
         print("Agency smoke attempt", attempt + 1, "; ".join(errors), flush=True)
         if attempt < 2:
