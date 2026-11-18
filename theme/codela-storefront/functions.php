@@ -510,7 +510,7 @@ add_action( 'wp_enqueue_scripts', function() {
         );
     }
     // Header, dock and soft controls use Codela's native UI Kit.
-    // Never mount decorative React/Glisse layers during guest menu transitions.
+    // Do not mount decorative framework layers during guest menu transitions.
     if ( codela_sf_seamless_allowed() ) {
         wp_enqueue_script_module( 'codela-storefront/navigation' );
     }
