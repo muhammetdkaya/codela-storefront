@@ -4,6 +4,8 @@ const URL_BASE='https://codela.dev/';
 const checks=[
  {name:'home-base',path:'/'},
  {name:'home-no-3d-transform',path:'/',disable3d:true},
+ {name:'home-hide-3d-widget',path:'/',hide3d:true},
+ {name:'home-hide-all-agency-widgets',path:'/',hideAgency:true},
  {name:'home-no-agency-widgets',path:'/',stripAgency:true},
  {name:'services-base',path:'/hizmetler/'},
  {name:'account-base',path:'/hesabim/'}
@@ -68,6 +70,12 @@ async function capture(page,trigger){
         el.style.setProperty('box-shadow','none','important');
       });
     });
+   }
+   if(choice.hide3d){
+     await page.evaluate(()=>document.querySelectorAll('[data-agency-widget="scroll"]').forEach(el=>el.style.setProperty('visibility','hidden','important')));
+   }
+   if(choice.hideAgency){
+     await page.evaluate(()=>document.querySelectorAll('[data-agency-widget]').forEach(el=>el.style.setProperty('visibility','hidden','important')));
    }
    if(choice.stripAgency){
      await page.evaluate(()=>document.querySelectorAll('[data-agency-widget]').forEach(x=>x.remove()));
