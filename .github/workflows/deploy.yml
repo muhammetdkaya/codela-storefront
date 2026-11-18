@@ -44,11 +44,13 @@ jobs:
             *) BASE_SHA="" ;;
           esac
           if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = '0000000000000000000000000000000000000000' ]; then
-            printf 'quick=false\\nscope=full\\n' >> "$GITHUB_OUTPUT"
+            echo 'quick=false' >> "$GITHUB_OUTPUT"
+            echo 'scope=full' >> "$GITHUB_OUTPUT"
             exit 0
           fi
           if ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null && ! git fetch --quiet --depth=1 origin "$BASE_SHA"; then
-            printf 'quick=false\\nscope=full\\n' >> "$GITHUB_OUTPUT"
+            echo 'quick=false' >> "$GITHUB_OUTPUT"
+            echo 'scope=full' >> "$GITHUB_OUTPUT"
             exit 0
           fi
           python3 scripts/classify-deploy.py "$BASE_SHA" "$GITHUB_SHA" >> "$GITHUB_OUTPUT"
