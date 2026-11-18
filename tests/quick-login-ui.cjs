@@ -47,6 +47,10 @@ assert(php.includes('sf-quick-choice-alternatives') && php.includes('sf-quick-em
 assert(php.includes('sf-quick-google') && php.includes('disabled aria-label='),'Google button stays visible but safely disabled without configured OAuth');
 assert(css.includes('.sf-quick-or') && css.includes('.sf-quick-google'),'Divider and Google CTA have dedicated styles');
 const accountIcons=fs.readFileSync('theme/codela-storefront/inc/account.php','utf8');
+assert(accountIcons.includes("if ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) { return $html; }") &&
+  !accountIcons.includes("! is_account_page() || ! is_user_logged_in() ) { return $html; }"),
+  'Native duplicate My Account page title is suppressed for guest and signed-in displays');
+
 const iconRenderer=fs.readFileSync('theme/codela-storefront/inc/render.php','utf8');
 for(const iconName of ['account-orders','account-address','account-security','account-preferences','account-profile','account-sign-out']){
   const file='theme/codela-storefront/assets/icons/'+iconName+'.svg';
@@ -166,7 +170,11 @@ console.log('Quick login browser contracts passed');
   const smartJs=fs.readFileSync('theme/codela-storefront/assets/scripts/auth-smart.js','utf8');
   const accountPhp=fs.readFileSync('theme/codela-storefront/inc/account.php','utf8');
   const smartCss=fs.readFileSync('theme/codela-storefront/assets/styles/auth-smart.css','utf8');
-  assert(php.includes('sf-auth-ssr-enabled') && php.includes('8000'),
+  assert(php.includes('<style id="sf-auth-critical-first-paint">') &&
+  php.includes('html.sf-auth-ssr-enabled body.woocommerce-account .woocommerce > :is(#customer_login') &&
+  php.includes('html:not(.sf-auth-ssr-enabled) body.woocommerce-account .woocommerce:not(.sf-smart-auth-active) > .sf-smart-auth'),
+  'Direct guest first paint has its own tiny blocking CSS for both safe initial and no-JS fallback');
+assert(php.includes('sf-auth-ssr-enabled') && php.includes('8000'),
     'Direct Account uses PHP first-paint with bounded native fallback');
   assert(accountPhp.includes("add_action( 'woocommerce_before_customer_login_form', 'codela_sf_account_identity_markup', 6 )") &&
     accountPhp.includes('data-sf-auth-rendered="server"'),

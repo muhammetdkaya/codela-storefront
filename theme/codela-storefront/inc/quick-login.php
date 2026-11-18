@@ -503,6 +503,57 @@ add_action( 'wp_head', static function(): void {
     // JS-enabled direct Account uses the PHP-rendered screen at first paint.
     // Without hydration, release the native form after a bounded fallback.
     if ( function_exists( 'is_account_page' ) && is_account_page() ) {
+        // This tiny blocking critical rule is not a second design system.
+        // The native Woo form must NEVER share first paint with the PHP email
+        // control when a CDN/optimization plugin delays or drops the CSS file.
+        // The ordinary authored styles still own every hydrated stage.
+        echo <<<'SF_AUTH_CRITICAL'
+<style id="sf-auth-critical-first-paint">
+/* Guaranteed initial Account layout even before/without external styles. */
+html:not(.sf-auth-ssr-enabled) body.woocommerce-account .woocommerce:not(.sf-smart-auth-active) > .sf-smart-auth{display:none!important}
+html.sf-auth-ssr-enabled body.woocommerce-account .woocommerce > :is(#customer_login,form.woocommerce-form-login,h2,.sf-auth-register-cta),
+body.woocommerce-account .woocommerce.sf-smart-auth-active:is(.sf-smart-start,.sf-smart-checking,.sf-smart-closed) > #customer_login,
+body.woocommerce-account .woocommerce.sf-smart-auth-active > :is(h2,.sf-auth-register-cta){display:none!important}
+html.sf-auth-ssr-enabled body.woocommerce-account:not(.logged-in) .sf-content .wp-block-post-title{display:none!important}
+html.sf-auth-ssr-enabled body.woocommerce-account .woocommerce > .sf-smart-auth,
+body.woocommerce-account .woocommerce.sf-smart-auth-active > .sf-smart-auth{
+display:block!important;box-sizing:border-box;max-width:480px;width:100%;margin:0 auto 7px
+}
+html.sf-auth-ssr-enabled body.woocommerce-account:not(.logged-in) .sf-content:has(.sf-account-intro){
+box-sizing:border-box;max-width:560px;margin-inline:auto;padding-inline:20px
+}
+html.sf-auth-ssr-enabled body.woocommerce-account:not(.logged-in) .sf-account-intro{
+text-align:center;margin:0 auto 28px;max-width:520px
+}
+html.sf-auth-ssr-enabled body.woocommerce-account:not(.logged-in) .sf-account-intro h1{
+font:500 clamp(32px,5vw,42px)/1.18 -apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+letter-spacing:-.045em;color:#25272a;margin:0
+}
+html.sf-auth-ssr-enabled body.woocommerce-account:not(.logged-in) .sf-account-intro .sf-auth-description{
+font:400 14px/1.55 -apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+color:#797d83;margin:9px auto 0
+}
+body.woocommerce-account .woocommerce > .sf-smart-auth .sf-smart-label{
+display:block;position:relative;font-size:0;color:transparent
+}
+body.woocommerce-account .woocommerce > .sf-smart-auth .sf-smart-label .sf-smart-identity{
+appearance:none;display:block;box-sizing:border-box;width:100%;height:54px;min-height:54px;
+border:1px solid #dedee2;border-radius:999px;background:#fff;color:#252628;
+padding:0 48px 0 18px;outline:0;box-shadow:none;font:400 16px/1.35 -apple-system,BlinkMacSystemFont,system-ui,sans-serif
+}
+body.woocommerce-account .woocommerce > .sf-smart-auth .sf-smart-label .sf-smart-identity:focus-visible{
+border-color:#74777f;box-shadow:0 0 0 3px #2526280d
+}
+body.woocommerce-account .woocommerce > .sf-smart-auth .sf-smart-mail-icon{
+position:absolute;right:18px;top:50%;transform:translateY(-50%);
+display:grid;place-items:center;width:21px;height:21px;pointer-events:none;color:#777980
+}
+body.woocommerce-account .woocommerce > .sf-smart-auth .sf-smart-mail-icon svg{display:block;width:21px;height:21px}
+body.woocommerce-account .woocommerce > .sf-smart-auth :is(.sf-smart-progress[hidden],.sf-smart-actions[hidden]){display:none!important}
+body.woocommerce-account .woocommerce > .sf-smart-auth .sf-smart-message:empty{display:none}
+html.sf-quick-checking body.woocommerce-account .woocommerce > .sf-smart-auth{display:none!important}
+</style>
+SF_AUTH_CRITICAL;
         echo '<script>(function(){var h=document.documentElement;h.classList.add("sf-auth-ssr-enabled");window.setTimeout(function(){if(!document.querySelector("body.woocommerce-account .woocommerce.sf-smart-auth-active"))h.classList.remove("sf-auth-ssr-enabled")},8000)})();</script>';
     }
     echo '<script>(function(){try{var a=function(n){try{return JSON.parse(localStorage.getItem(n)||"null")}catch(e){return null}};var p=a("codela_sf_quick_profile_v1"),q=a("codela_sf_passkey_hint_v1"),ps=a("codela_sf_quick_profiles_v2"),ks=a("codela_sf_passkey_hints_v2");var pin=function(x){return x&&Number.isSafeInteger(x.userId)&&/^[0-9a-f]{32}$/.test(x.deviceId||"")};var bio=function(x){return x&&Number.isSafeInteger(x.userId)&&typeof x.credentialId==="string"&&!x.paused};if(pin(p)||bio(q)||(Array.isArray(ps)&&ps.some(pin))||(Array.isArray(ks)&&ks.some(bio))){document.documentElement.classList.add("sf-quick-checking");if(bio(q)||(Array.isArray(ks)&&ks.some(bio))){document.documentElement.classList.add("sf-quick-passkey-hint")}window.setTimeout(function(){document.documentElement.classList.remove("sf-quick-checking")},7000)}}catch(e){}})();</script>';

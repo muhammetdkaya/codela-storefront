@@ -4,10 +4,15 @@ const http=require('node:http');
 const {chromium,webkit}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const auth=fs.readFileSync('theme/codela-storefront/assets/scripts/auth.js','utf8');
 const smart=fs.readFileSync('theme/codela-storefront/assets/scripts/auth-smart.js','utf8');
+const criticalMatch=fs.readFileSync('theme/codela-storefront/inc/quick-login.php','utf8')
+  .match(/<style id="sf-auth-critical-first-paint">([\s\S]*?)<\/style>/);
+assert(criticalMatch,'Actual theme PHP contains a blocking first-paint stylesheet');
+const critical='<style id="sf-auth-critical-first-paint">'+criticalMatch[1]+'</style>';
 const css=['theme/codela-storefront/assets/styles/account-overlay.css',
   'theme/codela-storefront/assets/styles/auth-smart.css'].map(f=>fs.readFileSync(f,'utf8')).join('\n');
 const html=`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<script>if(location.pathname==='/direct')document.documentElement.classList.add('sf-auth-ssr-enabled')</script>
+<script>if(location.pathname.startsWith('/direct'))document.documentElement.classList.add('sf-auth-ssr-enabled')</script>
+${critical}
 <style>body{margin:0;font:16px -apple-system,system-ui}#sf-panel{max-width:430px;margin:auto;padding:16px}#customer_login{display:block}.u-column1,.u-column2{width:100%}.sf-auth-focus-scrim{position:fixed}#sf-panel>.sf-menu-trigger.is-in-panel{position:fixed;right:14px;top:14px;z-index:30}</style>
 <style>${css}</style></head>
 <body><div id="sf-panel" class="is-account-panel">
@@ -74,7 +79,8 @@ placeholder="Your email address" aria-label="Your email address" aria-describedb
      res.writeHead(status,{'Content-Type':type,'Cache-Control':'no-store'});res.end(body);
    };
    if(req.url==='/'&&req.method==='GET')return send(200,html,'text/html; charset=utf-8');
-   if(req.url==='/direct'&&req.method==='GET')return send(200,html
+   if((req.url==='/direct'||req.url==='/direct-no-external')&&req.method==='GET')return send(200,(
+     req.url==='/direct-no-external' ? html.replace('<style>'+css+'</style>','') : html)
      .replace('<body>','<body class="woocommerce-account">')
      .replace('class="woocommerce sf-overlay-auth"','class="woocommerce"'),
      'text/html; charset=utf-8');
@@ -123,6 +129,27 @@ placeholder="Your email address" aria-label="Your email address" aria-describedb
    assert.equal(await prepaint.locator('.sf-auth-heading-text').innerText(),'Welcome',
      'Legacy auth.js cannot overwrite the initial welcome');
    await prepaint.close();
+   // Reproduce the actual bug: the two PHP forms are delivered but the
+   // external account/auth stylesheet fails to arrive. Only critical CSS and
+   // the real server markup are present, and Woo cannot leak onto first paint.
+   const withoutExternal=await browser.newPage({viewport:{width:390,height:844}});
+   await withoutExternal.route('**/auth-smart.js',route=>route.fulfill({
+     status:200,contentType:'text/javascript',body:''
+   }));
+   await withoutExternal.goto(url+'direct-no-external');
+   assert.equal(await withoutExternal.locator('.sf-smart-identity').isVisible(),true,
+     'PHP email control remains visible when external auth stylesheet is missing');
+   assert.equal(await withoutExternal.locator('#customer_login').isVisible(),false,
+     'Native Woo form never leaks when the external stylesheet is missing');
+   assert((await withoutExternal.locator('.sf-smart-identity').evaluate(node =>
+       parseFloat(getComputedStyle(node).borderTopLeftRadius)))>=26,
+     'Critical email control is already rounded, not an unstyled inline label');
+   await withoutExternal.evaluate(()=>document.documentElement.classList.remove('sf-auth-ssr-enabled'));
+   assert.equal(await withoutExternal.locator('.sf-smart-identity').isVisible(),false,
+     'Explicit failed-enhancement fallback hides the server email field');
+   assert.equal(await withoutExternal.locator('#customer_login').isVisible(),true,
+     'Fallback exposes one usable native WooCommerce form, never both');
+   await withoutExternal.close();
    const nativeContext=await browser.newContext({
      viewport:{width:390,height:844},javaScriptEnabled:false
    });
