@@ -47,6 +47,25 @@ const server = http.createServer((req,res) => {
       }
       assert.notEqual(await first.locator('.sf-agency-swap-stage').evaluate(el => getComputedStyle(el).perspective),'none','3D card stack remains intact');
       assert.equal(await scroll.count(),1,'3D section is independently placed between Card Swap sections');
+      const handoff = await scroll.evaluate(el => {
+        const next = el.nextElementSibling;
+        const expertise = el.querySelector('.sf-agency-scroll-expertise');
+        const sheet = next?.querySelector('.sf-agency-services');
+        return {
+          next:next?.dataset.agencyWidget || '',
+          overlap:next ? el.getBoundingClientRect().bottom - next.getBoundingClientRect().top : 0,
+          radius:sheet ? parseFloat(getComputedStyle(sheet).borderTopLeftRadius) : 0,
+          expertise:getComputedStyle(expertise).display
+        };
+      });
+      assert.equal(handoff.next,'services','Real homepage order starts with 3D hero → Services');
+      assert(handoff.overlap>=25 && handoff.overlap<=48,'Hero and services form a deliberate overlapping sheet');
+      assert(handoff.radius>=24,'Light services surface rises with a rounded top edge');
+      assert.equal(handoff.expertise,'none','Duplicated services recap disappears only when a service widget follows');
+      const goNext = scroll.locator('[data-agency-scroll-next]');
+      assert.equal(await goNext.count(),1,'Hero contains an accessible next-section link');
+      assert((await goNext.getAttribute('href')).includes('hizmetler'),
+        'Next-section link degrades to real Services page without JavaScript');
       assert.equal(await scroll.locator('.sf-agency-preview-browser').count(),1,
         '3D widget shows one product-style interface, not a repeated service dashboard');
       assert.equal(await scroll.locator('.sf-agency-scroll-expertise > div').count(),3,
@@ -76,12 +95,22 @@ const server = http.createServer((req,res) => {
       assert.equal(await first.locator('[data-agency-card="1"]').getAttribute('data-pos'),'0','First widget keeps its selection');
       await scroll.scrollIntoViewIfNeeded();
       assert(await scroll.locator('[data-agency-scroll-device]').evaluate(el=>getComputedStyle(el).transform!=='none'),'3D device retains perspective transform');
+      await goNext.click();
+      await page.waitForFunction(() => {
+        const services = document.querySelector('[data-agency-widget="services"] .sf-agency-services');
+        if (!services) return false;
+        const top = services.getBoundingClientRect().top;
+        return top >= 30 && top <= 140;
+      });
+      assert.equal(new URL(page.url()).pathname,'/','Next-section cue moves within homepage without navigation');
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth+1),'No overflow after interactions at '+width);
       if(width===390||width===1440)await page.screenshot({path:path.join(root,'qa/agency-widgets-'+width+'.png'),fullPage:true});
     }
     const plain = await browser.newPage({javaScriptEnabled:false,viewport:{width:390,height:844}});
     await plain.goto('http://127.0.0.1:'+server.address().port+'/');
     assert.equal(await plain.locator('[data-agency-widget]').count(),5,'All five widgets survive disabled JavaScript');
+    assert(await plain.locator('[data-agency-scroll-next]').isVisible(),
+      'Without JS the native Services link is still visible');
     assert.deepEqual(errors,[],'No uncaught JS errors');
     console.log('Independent agency widgets: four viewports, duplicates, keyboard, 3D transform, no-JS passed.');
   } catch(error) {
