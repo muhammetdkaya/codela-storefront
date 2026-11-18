@@ -1,0 +1,24 @@
+name: Menu stutter / production WebKit A-B (read only)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/menu-freeze-browser.yml'
+      - 'tools/menu-freeze-live-browser.cjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install browser fixtures
+        run: |
+          npm ci --ignore-scripts
+          npx playwright install --with-deps chromium webkit
+      - name: Compare real public navigation with and without 3D rendering
+        run: node tools/menu-freeze-live-browser.cjs
