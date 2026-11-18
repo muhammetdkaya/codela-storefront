@@ -118,12 +118,14 @@
   });
 
   if (!scrollWidgets.length) return;
+  const mobile = window.matchMedia('(max-width:700px)');
   let frame = 0;
   const sync = () => {
     frame = 0;
-    // Body fixation and native showModal may recompose the entire scroll root.
-    // The invisible Agency backdrop does not need forced rect/style updates.
-    if (document.documentElement.classList.contains('sf-overlay-scroll-locked')) return;
+    // Mobile uses the same product-style preview without a continuously
+    // transformed 3D layer. Keep scroll reads/writes desktop-only so Safari
+    // can open native menus without recompositing the hero on each frame.
+    if (mobile.matches) return;
     scrollWidgets.forEach(({ container, device }) => {
       if (reduced.matches) {
         device.style.removeProperty('--agency-scroll-rotate');
@@ -138,11 +140,22 @@
     });
   };
   const schedule = () => {
+    if (mobile.matches) return;
     if (!frame) frame = requestAnimationFrame(sync);
   };
   window.addEventListener('scroll', schedule, { passive: true });
   window.addEventListener('resize', schedule, { passive: true });
   reduced.addEventListener('change', schedule);
+  mobile.addEventListener('change', () => {
+    if (mobile.matches) {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      scrollWidgets.forEach(({ device }) => {
+        device.style.removeProperty('--agency-scroll-rotate');
+        device.style.removeProperty('--agency-scroll-scale');
+      });
+    } else schedule();
+  });
   window.addEventListener('pagehide', () => { cancelAnimationFrame(frame); frame = 0; }, { once: true });
   schedule();
 })();

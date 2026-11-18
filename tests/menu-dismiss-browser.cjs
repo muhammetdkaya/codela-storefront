@@ -5,7 +5,7 @@ const {chromium,webkit}=require('playwright');
 const theme='theme/codela-storefront/assets/';
 const engine=process.env.TEST_WEBKIT?'webkit':'chromium';
 const header=execFileSync(process.env.PHP_BIN||'php',['tests/render-header.php'],{encoding:'utf8'}).replaceAll('https://store.test','https://menu.test');
-const css=['styles/tokens.css','storefront.css','styles/components.css','styles/navigation.css','styles/overlay.css','styles/glisse-bridge.css','styles/agency.css'].map(x=>fs.readFileSync(theme+x,'utf8')).join('\n');
+const css=['styles/tokens.css','storefront.css','styles/components.css','styles/navigation.css','styles/overlay.css','styles/glisse-bridge.css'].map(x=>fs.readFileSync(theme+x,'utf8')).join('\n');
 const setup=`
 import {createOverlayController} from '/assets/scripts/overlay-controller.js';
 import {createDockController} from '/assets/scripts/dock-controller.js';
@@ -36,10 +36,7 @@ window.overlay=overlay;window.testReady=true;`;
    return route.fulfill({contentType:'text/html; charset=utf-8',body:
     '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+
     '<style>'+css+'</style><script type="importmap">'+JSON.stringify({imports:{'codela-storefront/panel-motion':'/assets/scripts/panel-motion.js'}})+'</script></head><body>'+
-    header+'<main id="test-main" style="min-height:2400px;background:#fafafa;padding:24px"><h1>Ürünler</h1><p>Current page</p>'+
-    '<div class="codela-page-layout"><section data-agency-widget="scroll" class="sf-agency-widget sf-agency-widget--scroll" style="height:800px">'+
-    '<div class="sf-agency-scroll-device">Rendered 3D content</div></section>'+
-    '<section data-agency-widget="services" class="sf-agency-widget sf-agency-widget--services">Services</section></div></main>'+
+    header+'<main id="test-main" style="min-height:2400px;background:#fafafa;padding:24px"><h1>Ürünler</h1><p>Current page</p></main>'+
     '<script type="module">'+setup+'</script></body></html>'});
   });
   await page.goto('https://menu.test/',{waitUntil:'domcontentloaded'});
@@ -52,19 +49,14 @@ window.overlay=overlay;window.testReady=true;`;
     if(!dialog.open)throw Error('Menu failed to open');
     const relocated=dock.parentElement===dialog;
     const hidden=dock.hidden;
-    const backgroundPaused=[...document.querySelectorAll('.codela-page-layout > .sf-agency-widget')].every(el=>getComputedStyle(el).visibility==='hidden');
     const start=performance.now();overlay.close();const elapsed=performance.now()-start;
-    return {relocated,hidden,backgroundPaused,
-      backgroundRestored:[...document.querySelectorAll('.codela-page-layout > .sf-agency-widget')].every(el=>getComputedStyle(el).visibility==='visible'),
-      open:dialog.open,locked:document.documentElement.classList.contains('sf-overlay-scroll-locked'),
+    return {relocated,hidden,open:dialog.open,locked:document.documentElement.classList.contains('sf-overlay-scroll-locked'),
       position:document.body.style.position,collapsed:dock.classList.contains('is-collapsed'),
       dockVisible:getComputedStyle(dock.querySelector('.sf-dock-surface')).visibility,
       animations:document.querySelector('#sf-menu').getAnimations().length,elapsed};
    });
    assert.equal(state.relocated,false,'Menu does not move dock into the top layer');
    assert.equal(state.hidden,true,'Full-screen Menu hides native dock while not reparenting it');
-   assert.equal(state.backgroundPaused,true,'Paint behind native mobile dialog must be suspended');
-   assert.equal(state.backgroundRestored,true,'Background widgets return on the same task as close');
    assert.equal(state.open,false,'Menu top layer closes in the same click task');
    assert.equal(state.locked,false,'No white frame from deferred scroll unlock');
    assert.notEqual(state.position,'fixed','Document body restored synchronously');
@@ -86,12 +78,10 @@ window.overlay=overlay;window.testReady=true;`;
     const menuOutside=dock.parentElement!==dialog && dock.hidden;
     overlay.open('search');
     const searchInside=dock.parentElement===dialog && !dock.hidden;
-    const backgroundPaused=getComputedStyle(document.querySelector('.sf-agency-widget')).visibility==='hidden';
     overlay.close();
-    const backgroundRestored=getComputedStyle(document.querySelector('.sf-agency-widget')).visibility==='visible';
-    return {menuOutside,searchInside,backgroundPaused,backgroundRestored,closed:!dialog.open,restored:dock.parentElement!==dialog};
+    return {menuOutside,searchInside,closed:!dialog.open,restored:dock.parentElement!==dialog};
   });
-  assert.deepEqual(swapped,{menuOutside:true,searchInside:true,backgroundPaused:true,backgroundRestored:true,closed:true,restored:true},
+  assert.deepEqual(swapped,{menuOutside:true,searchInside:true,closed:true,restored:true},
     'Switching Menu to Search restores live dock into the dialog top layer');
   // Static-body diagnostic mode preserves a real modal without replacing
   // the existing body scroll-lock strategy for normal traffic.
