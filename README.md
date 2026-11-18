@@ -38,18 +38,20 @@ CI also lints PHP and checks JavaScript syntax. Real device visuals and producti
 
 Main-branch pushes changing at most five presentation-only CSS/SVG or noncritical theme-part HTML files use quick asset, PHP syntax, SVG, and deterministic package checks; changes to theme logic, checkout, account/auth, tests or deployment workflows retain full browser validation. Manual dispatch always requests the full suite. The FTPS deployment now writes a scoped, checksum-verified theme manifest after a successful health check and transfers only changed/new files on later deployments; previously listed removed files are retired with rollback copies. An absent manifest causes one initial full synchronization. The marker also changes the theme's CSS cache key *on codela.dev* without advancing the WordPress update feed; other sites still receive changes only via the separate versioned release process. Heavy live audits are manually dispatchable or run when their own test scripts change, rather than starting automatically after every deploy.
 
+## Native Codela shell (0.1.348+)
 
-## Glisse header and button enhancement
+The header, menu, four-tab mobile dock, and shared UI Kit buttons are native
+Codela HTML/CSS/WordPress Interactivity controls. The retired Glisse prototype
+has been removed from runtime, distribution, compilation and test dependencies.
+No decorative React mount, MutationObserver, ResizeObserver, Glisse runtime,
+or Glisse-specific stylesheet is shipped.
 
-**The mobile Codela dock remains fully native.** The Glisse TabBar trial is retired as of 0.1.341: `?codela_glisse_dock=1` is ignored, no Glisse TabBar is mounted, and the old sessionStorage preference is not read. The existing icons, selection capsule, touch gestures, scroll-collapse, search/cart/account panels and WordPress actions stay unchanged.
+The original header glass and soft-control appearance is supplied directly
+by `assets/styles/components.css` and `assets/styles/navigation.css`, with
+native keyboard, focus and disabled semantics. The optional historical
+`?codela_glisse_dock=1` flag does nothing.
 
-Header islands and selected shared soft controls continue to use genuine **Glisse Glass and Button** visual surfaces. These are separate from the abandoned dock experiment. Native PHP controls remain responsible for all clicks, keyboard focus and WooCommerce actions. If the optional adapter is absent, the original Codela controls remain available. The adapter uses WordPress `wp-element` and no separate React bundle.
-
-To build the optional production asset locally (Node 20+):
-
-```sh
-npm install --no-save --package-lock=false glisse@0.5.0
-node scripts/build-glisse.mjs
-```
-
-Generated `theme/codela-storefront/assets/scripts/glisse-bridge.js` is **not tracked**; the deploy and release workflows compile it before deploying or packaging. Source: `scripts/glisse-bridge.jsx`; theme stylesheet: `assets/styles/glisse-bridge.css`. Scope deliberately excludes product gallery, checkout, account form and product sheet. The MIT license is distributed in `THIRD-PARTY-NOTICES.txt`.
+For development, run `node tests/native-shell.cjs`. The deployment pipeline
+uses scoped security/visual validation for known Agency changes and a smaller
+cross-browser smoke suite for structural changes; comprehensive browser QA
+remains manually runnable without FTP uploads.

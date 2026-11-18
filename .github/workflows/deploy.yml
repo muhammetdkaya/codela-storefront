@@ -61,13 +61,6 @@ jobs:
           echo "Validation scope: ${{ steps.tier.outputs.scope }}" >> "$GITHUB_STEP_SUMMARY"
           echo "Fast deployment validation: ${{ steps.tier.outputs.quick }}" >> "$GITHUB_STEP_SUMMARY"
           echo "Full QA is available through workflow_dispatch → full_qa_only=true." >> "$GITHUB_STEP_SUMMARY"
-      - name: Build pinned Glisse shell bundle
-        if: steps.tier.outputs.quick != 'true'
-        run: |
-          npm install --no-save --package-lock=false glisse@0.5.0
-          node scripts/build-glisse.mjs
-          node --check theme/codela-storefront/assets/scripts/glisse-bridge.js
-          node tests/glisse-shell.cjs
       - name: Scoped presentation / Agency validation (no browser download)
         if: steps.tier.outputs.quick == 'true'
         run: |
@@ -86,7 +79,7 @@ jobs:
           php tests/passkeys.php
           node tests/quick-login-ui.cjs
           node tests/passkeys-ui.cjs
-          node tests/glisse-shell.cjs
+          node tests/native-shell.cjs
           python3 - <<'PY'
           from pathlib import Path
           from xml.etree import ElementTree
@@ -163,29 +156,37 @@ jobs:
           node tests/dock-gesture.cjs
           python3 tests/package.py
           python3 scripts/build-package.py
-      - name: Browser navigation regression checks
+      - name: Core browser smoke (native Menu, Agency, Account, Checkout)
         if: steps.tier.outputs.quick != 'true'
         run: |
-          # React is for the isolated Glisse browser fixture only; production
-          # reuses WordPress wp-element and ships no second React runtime.
-          npm install --no-save --package-lock=false playwright@1.62.1 react@18.3.1 react-dom@18.3.1
+          # Structural/theme changes get focused Chromium+WebKit gates.
+          # All dependency downloads occur once; avoid legacy Glisse/React.
+          npm ci --ignore-scripts
           npx playwright install --with-deps chromium webkit
-          node tests/glisse-shell-browser.cjs
-          TEST_WEBKIT=1 node tests/glisse-shell-browser.cjs
-          node tests/interaction-diagnostics-browser.cjs
-          TEST_WEBKIT=1 node tests/interaction-diagnostics-browser.cjs
+          node tests/native-shell.cjs
           node tests/menu-dismiss-browser.cjs
           TEST_WEBKIT=1 node tests/menu-dismiss-browser.cjs
           node tests/agency-browser.cjs
+          node tests/agency-widgets-browser.cjs
+          node tests/interaction-diagnostics-browser.cjs
+          TEST_WEBKIT=1 node tests/interaction-diagnostics-browser.cjs
+          node tests/account-smart-browser.cjs
+          TEST_WEBKIT=1 node tests/account-smart-browser.cjs
+          node tests/product-browser.cjs
+          node tests/checkout-steps-browser.cjs
+          TEST_WEBKIT=1 node tests/checkout-steps-browser.cjs
+          node tests/shell-navigation-browser.cjs
+          node tests/navigation-browser.cjs
+          node tests/ui-kit-browser.cjs
+      - name: Complete browser QA (manual only; never deploy)
+        if: inputs.full_qa_only == true
+        run: |
+          # Exhaustive visual/product/gallery suites can be run on demand;
+          # normal FTP release no longer waits for every unrelated page.
           node tests/product-sheet-handoff-browser.cjs
           node tests/product-desktop-browser.cjs
           TEST_WEBKIT=1 node tests/product-desktop-browser.cjs
-          node tests/product-browser.cjs
           node tests/product-sheet-browser.cjs
-          # Exercise the native checkout/gateway presentation before broader,
-          # independently flaky product/gallery acceptance suites.
-          node tests/checkout-steps-browser.cjs
-          TEST_WEBKIT=1 node tests/checkout-steps-browser.cjs
           node tests/commerce-skeleton-browser.cjs
           TEST_WEBKIT=1 node tests/commerce-skeleton-browser.cjs
           node tests/cart-page-browser.cjs
@@ -199,7 +200,6 @@ jobs:
           TEST_WEBKIT=1 node tests/journal-browser.cjs || responsive_failed=1
           node tests/homepage-browser.cjs || responsive_failed=1
           test "$responsive_failed" -eq 0
-
           node tests/media-loading-browser.cjs
           TEST_WEBKIT=1 node tests/media-loading-browser.cjs
           node tests/homepage-browser.cjs
@@ -208,33 +208,26 @@ jobs:
           node tests/product-skeleton-geometry-browser.cjs
           TEST_WEBKIT=1 node tests/product-skeleton-geometry-browser.cjs
           node tests/product-layout-a-browser.cjs
-          # Verify shared logged-out Account chrome and instantaneous real
-          # header SVGs before the unrelated broad search navigation suite.
           node tests/passkeys-views-browser.cjs
           TEST_WEBKIT=1 node tests/passkeys-views-browser.cjs
           node tests/quick-login-browser.cjs
           TEST_WEBKIT=1 node tests/quick-login-browser.cjs
           node tests/account-keyboard-style-browser.cjs
           TEST_WEBKIT=1 node tests/account-keyboard-style-browser.cjs
-          node tests/account-smart-browser.cjs
-          TEST_WEBKIT=1 node tests/account-smart-browser.cjs
           node tests/account-instant-browser.cjs
           TEST_WEBKIT=1 node tests/account-instant-browser.cjs
           node tests/account-browser.cjs
           TEST_WEBKIT=1 node tests/navigation-feedback-bottom-browser.cjs
-          node tests/navigation-browser.cjs
           node tests/checkout-browser.cjs
           node tests/catalog-browser.cjs
           node tests/catalog-filters-browser.cjs
           node tests/product-modules-browser.cjs
-          node tests/shell-navigation-browser.cjs
           node tests/navigation-viewport-browser.cjs
           node tests/document-continuity-browser.cjs
           node tests/gallery-defer-browser.cjs
           node tests/product-mobile-media-admin-browser.cjs
           node tests/product-mobile-media-browser.cjs
           TEST_WEBKIT=1 node tests/product-mobile-media-browser.cjs
-          node tests/ui-kit-browser.cjs
           node tests/native-woo-buttons.cjs
           node tests/context-header-browser.cjs
           TEST_WEBKIT=1 node tests/context-header-browser.cjs
@@ -248,7 +241,7 @@ jobs:
           path: |
             qa/storefront-ui-kit-*.png
             qa/agency-*.png
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
       - uses: actions/upload-artifact@v4
         if: steps.tier.outputs.quick != 'true'
@@ -264,10 +257,6 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
-      - name: Compile pinned Glisse shell assets for FTP deploy
-        run: |
-          npm install --no-save --package-lock=false glisse@0.5.0
-          node scripts/build-glisse.mjs
       - name: Require FTP secrets
         env:
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}

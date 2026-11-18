@@ -681,3 +681,23 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
     z-index:auto;
   }
 }
+/* 0.1.348 — Mobile Safari: the Container Scroll (not just Card Swap)
+   still inherited a 760×430px CSS filter:blur(125px) halo. This huge
+   filtered backdrop was retained through 0.1.347 and got recomposited when
+   the native top-layer menu opened and the page body was scroll-locked.
+   Draw the same soft halo as a gradient, with no filter/compositor layer.
+   Service information glass is also a static tint on touch screens; no
+   ongoing background sampling from four poster cards. */
+@media(max-width:700px){
+  .sf-agency-widget--scroll .sf-agency-hero::after{
+    background:radial-gradient(ellipse farthest-side at center,
+      rgb(99 102 241 / .23) 0%,rgb(99 102 241 / .13) 38%,
+      rgb(99 102 241 / .05) 67%,transparent 100%);
+    filter:none!important;
+  }
+  .sf-agency-widget--services .sf-agency-glass-info{
+    background:rgb(255 255 255 / .18);
+    -webkit-backdrop-filter:none;
+    backdrop-filter:none;
+  }
+}

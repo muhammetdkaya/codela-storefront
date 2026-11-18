@@ -509,21 +509,8 @@ add_action( 'wp_enqueue_scripts', function() {
             [], codela_sf_script_module_version( 'scripts/interaction-diagnostics.js' ), false
         );
     }
-    // Glisse enhances header and soft button surfaces only; the native Codela
-    // mobile navigation must never depend on this optional React adapter.
-    // wp-element supplies React; do not ship a competing React runtime.
-    $glisse_asset = get_template_directory() . '/assets/scripts/glisse-bridge.js';
-    if ( is_file( $glisse_asset ) ) {
-        wp_enqueue_style(
-            'codela-storefront-glisse', $root_uri . 'styles/glisse-bridge.css',
-            [ 'codela-storefront-components' ],
-            codela_sf_script_module_version( 'styles/glisse-bridge.css' )
-        );
-        wp_enqueue_script(
-            'codela-storefront-glisse', $root_uri . 'scripts/glisse-bridge.js',
-            [ 'wp-element' ], codela_sf_script_module_version( 'scripts/glisse-bridge.js' ), true
-        );
-    }
+    // Header, dock and soft controls use Codela's native UI Kit.
+    // Never mount decorative React/Glisse layers during guest menu transitions.
     if ( codela_sf_seamless_allowed() ) {
         wp_enqueue_script_module( 'codela-storefront/navigation' );
     }

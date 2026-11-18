@@ -5,7 +5,7 @@ const {chromium,webkit}=require('playwright');
 const theme='theme/codela-storefront/assets/';
 const engine=process.env.TEST_WEBKIT?'webkit':'chromium';
 const header=execFileSync(process.env.PHP_BIN||'php',['tests/render-header.php'],{encoding:'utf8'}).replaceAll('https://store.test','https://menu.test');
-const css=['styles/tokens.css','storefront.css','styles/components.css','styles/navigation.css','styles/overlay.css','styles/glisse-bridge.css'].map(x=>fs.readFileSync(theme+x,'utf8')).join('\n');
+const css=['styles/tokens.css','storefront.css','styles/components.css','styles/navigation.css','styles/overlay.css'].map(x=>fs.readFileSync(theme+x,'utf8')).join('\n');
 const setup=`
 import {createOverlayController} from '/assets/scripts/overlay-controller.js';
 import {createDockController} from '/assets/scripts/dock-controller.js';
@@ -57,6 +57,8 @@ window.overlay=overlay;window.testReady=true;`;
    });
    assert.equal(state.relocated,false,'Menu does not move dock into the top layer');
    assert.equal(state.hidden,true,'Full-screen Menu hides native dock while not reparenting it');
+   assert.equal(await page.locator('[class*="glisse"],[class*="lg-"]').count(),0,
+     'Menu operates with native controls only, without decorative Glisse nodes');
    assert.equal(state.open,false,'Menu top layer closes in the same click task');
    assert.equal(state.locked,false,'No white frame from deferred scroll unlock');
    assert.notEqual(state.position,'fixed','Document body restored synchronously');
