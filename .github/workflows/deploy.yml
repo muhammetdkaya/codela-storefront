@@ -156,13 +156,23 @@ jobs:
           node tests/dock-gesture.cjs
           python3 tests/package.py
           python3 scripts/build-package.py
+      - name: Cache Playwright engines for cross-browser smoke
+        if: steps.tier.outputs.quick != 'true'
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: codela-webkit-chromium-${{ runner.os }}-playwright-1.62.1
       - name: Core browser smoke (native Menu, Agency, Account, Checkout)
         if: steps.tier.outputs.quick != 'true'
         run: |
-          # Structural/theme changes get focused Chromium+WebKit gates.
-          # All dependency downloads occur once; avoid legacy Glisse/React.
+          # Engine binaries are cached between runs; use locked test packages.
           npm ci --ignore-scripts
-          npx playwright install --with-deps chromium webkit
+          if [ "${{ steps.playwright-cache.outputs.cache-hit }}" != 'true' ]; then
+            npx playwright install --with-deps chromium webkit
+          else
+            npx playwright install chromium webkit
+          fi
           node tests/native-shell.cjs
           node tests/menu-dismiss-browser.cjs
           TEST_WEBKIT=1 node tests/menu-dismiss-browser.cjs
