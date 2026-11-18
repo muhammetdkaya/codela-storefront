@@ -6,11 +6,11 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Ajans anasayfasında Açık Editoryal karşılama düzeni, özgün başlık ve mobilde tam ekran ilk görünüm.",
-    "Hizmetler bölümünde dört açık tonlu, görselli kart: E-ticaret, Web Tasarımı, Özel Yazılım, Geliştirme ve Destek.",
-    "Mobil hizmet kartları yatay kaydırıldığında vurgulu başlık ve üst etiketin rengi yumuşak geçişle değişir; hareket azaltma tercihine uyulur.",
-    "Hizmetlerde tek bağlantı ve bölüm sonunda ortak proje iletişim çağrısı; mevcut sayfalar ve kullanıcı düzenlemeleri korunur.",
-    "Geniş ekranda dört, tablette iki sütunlu ızgara; mobilde hafif, yerel CSS arayüz illüstrasyonları ve scroll-snap.",
-    "Mevcut karşılama, performans ve FTP dağıtım doğrulama iyileştirmeleri korunur; Codela eklentisi ve mağaza akışı değiştirilmez."
+    "Ajans karşılama ekranında temiz porselen beyazı (#FBFAF8) ve dekoratif büyük harf kaldırıldı.",
+    "Karşılama alanının mobil metin, açıklama, buton ve sabit alt menü boşlukları 667px dahil farklı ekran yüksekliklerine uyarlandı.",
+    "Hizmetler vitrini mobilde tek ekranlık sahneye yerleştirildi; bölüm sonu proje iletişim bağlantısı altındaki akışta korundu.",
+    "Hizmet kartlarında açıklama–etiket arasındaki otomatik boşluk kaldırıldı; 9px ve kısa ekranlarda 6px olarak düzenlendi.",
+    "Hizmetlerin açık tonlu posterleri, yerel kaydırma, duyarlı 2/4 sütunlu ızgara ve renk geçişleri korundu.",
+    "Diğer modüller, WooCommerce ve Codela Commerce Toolkit eklentisi değiştirilmedi."
   ]
 }
