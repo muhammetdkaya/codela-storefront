@@ -1,0 +1,43 @@
+name: Scoped deploy preflight (no FTP)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/deploy.yml'
+      - '.github/workflows/scoped-deploy-check.yml'
+      - 'scripts/classify-deploy.py'
+      - 'tests/ci-classify.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  scoped-acceptance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Fail closed for high-risk changes
+        run: python3 tests/ci-classify.py
+      - name: Run exactly the fast deploy security and scoped gates
+        run: |
+          find theme/codela-storefront -name '*.php' -type f -print0 | xargs -0 -n1 php -l > /dev/null
+          python3 scripts/build-assets.py --check
+          python3 tests/build-assets.py
+          node --input-type=module --check < theme/codela-storefront/assets/scripts/agency-widgets.js
+          node --check theme/codela-storefront/assets/scripts/agency.js
+          php tests/agency.php
+          php tests/agency-pages.php
+          php tests/navigation.php
+          php tests/account-nonces.php
+          php tests/quick-login.php
+          php tests/passkeys.php
+          node tests/quick-login-ui.cjs
+          node tests/passkeys-ui.cjs
+          node tests/glisse-shell.cjs
+          python3 tests/package.py
