@@ -47,6 +47,10 @@ assert(php.includes('sf-quick-choice-alternatives') && php.includes('sf-quick-em
 assert(php.includes('sf-quick-google') && php.includes('disabled aria-label='),'Google button stays visible but safely disabled without configured OAuth');
 assert(css.includes('.sf-quick-or') && css.includes('.sf-quick-google'),'Divider and Google CTA have dedicated styles');
 const accountIcons=fs.readFileSync('theme/codela-storefront/inc/account.php','utf8');
+assert(accountIcons.includes("if ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) { return $html; }") &&
+  !accountIcons.includes("! is_account_page() || ! is_user_logged_in() ) { return $html; }"),
+  'Native duplicate My Account page title is suppressed for guest and signed-in displays');
+
 const iconRenderer=fs.readFileSync('theme/codela-storefront/inc/render.php','utf8');
 for(const iconName of ['account-orders','account-address','account-security','account-preferences','account-profile','account-sign-out']){
   const file='theme/codela-storefront/assets/icons/'+iconName+'.svg';
