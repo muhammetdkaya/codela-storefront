@@ -41,6 +41,16 @@
       const container = widget.querySelector('[data-agency-container-scroll]');
       const device = widget.querySelector('[data-agency-scroll-device]');
       if (container && device) scrollWidgets.push({ container, device });
+      // On editor-managed homepages the next block can be the services deck.
+      // Let the cue scroll locally in that case; when users reorder/remove it,
+      // keep the real Services permalink as a no-JS and missing-block fallback.
+      widget.querySelector('[data-agency-scroll-next]')?.addEventListener('click', event => {
+        const next = widget.nextElementSibling;
+        if (!next?.matches('[data-agency-widget="services"]')) return;
+        const target = next.querySelector('.sf-agency-services') || next;
+        event.preventDefault();
+        target.scrollIntoView({ behavior: reduced.matches ? 'auto' : 'smooth', block: 'start' });
+      });
     }
 
     if (widget.dataset.agencyWidget === 'services') {

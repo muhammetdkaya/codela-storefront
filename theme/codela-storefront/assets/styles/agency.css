@@ -591,3 +591,74 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
 @media(prefers-reduced-motion:reduce){
   .sf-agency-widget--scroll .sf-agency-scroll-device{will-change:auto;transform:none!important;transition:none}
 }
+
+/* 0.1.344 — Adjacent 3D hero → services composition.
+   The page editor can move/remove either widget. No global theme mode, scroll
+   observer, image, extra DOM overlay, or additional animation dependency. */
+.sf-agency-widget--scroll .sf-agency-scroll-hint{
+  display:inline-flex;align-items:center;min-height:40px;
+  color:#a8a8b3;text-decoration:none;transition:color .18s ease
+}
+.sf-agency-widget--scroll .sf-agency-scroll-hint:hover{color:#f5f5f7}
+.sf-agency-widget--scroll .sf-agency-scroll-hint:focus-visible{
+  outline:2px solid #a5b4fc;outline-offset:4px;border-radius:3px
+}
+/* When services immediately follow, do not repeat the same three specialties
+   just above the four more detailed service cards. Editorial data is retained
+   and appears again if the blocks are reordered independently. */
+.codela-page-layout > .sf-agency-widget--scroll:has(+ .sf-agency-widget--services) .sf-agency-scroll-expertise{
+  display:none
+}
+.codela-page-layout > .sf-agency-widget--scroll + .sf-agency-widget--services{
+  position:relative;z-index:2;isolation:isolate;
+  margin-top:-42px!important;
+  background:#fafaf9;border-radius:38px 38px 0 0
+}
+.codela-page-layout > .sf-agency-widget--scroll + .sf-agency-widget--services .sf-agency-services{
+  border-radius:38px 38px 0 0;
+  background:#fafaf9;padding-top:86px
+}
+/* Native scroll-snap and actual WordPress service links remain unchanged. */
+.sf-agency-widget--services .sf-agency-poster{
+  height:430px;border-radius:24px
+}
+.sf-agency-widget--services .sf-agency-services-head{
+  margin-bottom:32px!important
+}
+.sf-agency-widget--services .sf-agency-widget-services-lead{
+  max-width:610px;line-height:1.55
+}
+.sf-agency-widget--services .sf-agency-services{
+  scroll-margin-top:76px
+}
+@media(max-width:767px){
+  .codela-page-layout > .sf-agency-widget--scroll + .sf-agency-widget--services{
+    margin-top:-31px!important;border-radius:25px 25px 0 0
+  }
+  .codela-page-layout > .sf-agency-widget--scroll + .sf-agency-widget--services .sf-agency-services{
+    border-radius:25px 25px 0 0;padding-top:59px
+  }
+  .sf-agency-widget--services .sf-agency-services-head{
+    flex-direction:column;align-items:stretch;gap:18px;margin-bottom:25px!important
+  }
+  .sf-agency-widget--services .sf-agency-carousel-actions{
+    width:100%;min-width:0;gap:7px;justify-content:flex-end
+  }
+  .sf-agency-widget--services .sf-agency-all-services{
+    width:auto;margin-right:auto;padding:0 12px;font-size:11px;justify-content:center
+  }
+  .sf-agency-widget--services .sf-agency-all-services span{font-size:13px}
+  .sf-agency-widget--services .sf-agency-poster{
+    height:400px;border-radius:20px
+  }
+  .sf-agency-widget--services .sf-agency-services{
+    scroll-margin-top:68px
+  }
+}
+@media(hover:none){
+  .sf-agency-widget--services .sf-agency-poster:hover{transform:none}
+  .sf-agency-widget--services .sf-agency-poster:hover::before{transform:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .sf-agency-widget--scroll .sf-agency-scroll-hint{transition:none}
+}

@@ -105,6 +105,8 @@ agency_page_check( str_contains( $cards, 'Our Agency' ) && str_contains( $cards,
 $widget_data['id'] = 'scroll-demo';
 $scroll = codela_sf_section_agency_scroll( $widget_data );
 agency_page_check( str_contains( $scroll, 'data-agency-container-scroll' ) && str_contains( $scroll, 'data-agency-scroll-device' ), '3D Scroll keeps isolated motion hooks.' );
+agency_page_check( str_contains( $scroll, 'data-agency-scroll-next' ) && str_contains( $scroll, 'href="https://codela.test/hizmetler/"' ),
+    '3D Scroll has a real Services permalink as its no-JS and standalone fallback.' );
 agency_page_check( substr_count( codela_sf_section_agency_scroll( $widget_data, '', true ), '<h1 ' ) === 1, 'First homepage 3D Scroll owns a single H1.' );
 agency_page_check( str_contains( $scroll, 'Independent and editable' ) &&
     str_contains( $scroll, 'CODELA / ARAYÜZ ÖNİZLEMESİ' ) &&
@@ -162,7 +164,7 @@ if ( in_array( '--render=widgets', $argv, true ) ) {
         echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/' . $style . '">';
     }
     echo '</head><body class="sf-site-mode-agency"><main class="sf-content"><h1 class="screen-reader-text">Agency Layout</h1><div class="codela-page-layout">';
-    echo $first_cards . $services_widget . $process_widget . $middle_scroll . $last_cards;
+    echo $first_cards . $middle_scroll . $services_widget . $process_widget . $last_cards;
     echo '</div></main><script src="/theme/codela-storefront/assets/scripts/agency-widgets.js"></script></body></html>';
     exit;
 }

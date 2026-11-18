@@ -125,7 +125,7 @@ function codela_sf_section_agency_scroll( array $data, string $type = '', bool $
             </div>
             <div class="sf-agency-scroll-caption">
               <span>WordPress <i>·</i> Elementor <i>·</i> WooCommerce</span>
-              <span class="sf-agency-scroll-hint">Kaydırarak keşfet ↓</span>
+              <a class="sf-agency-scroll-hint" data-agency-scroll-next href="<?php echo esc_url( $services ); ?>">Sonraki bölüm ↓</a>
             </div>
             <div class="sf-agency-scroll-expertise" aria-label="Ajansın uzmanlık alanları">
               <?php foreach ( $items as $item ) : ?>
