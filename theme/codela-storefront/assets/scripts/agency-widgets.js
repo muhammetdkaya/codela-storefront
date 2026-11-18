@@ -121,6 +121,9 @@
   let frame = 0;
   const sync = () => {
     frame = 0;
+    // Body fixation and native showModal may recompose the entire scroll root.
+    // The invisible Agency backdrop does not need forced rect/style updates.
+    if (document.documentElement.classList.contains('sf-overlay-scroll-locked')) return;
     scrollWidgets.forEach(({ container, device }) => {
       if (reduced.matches) {
         device.style.removeProperty('--agency-scroll-rotate');

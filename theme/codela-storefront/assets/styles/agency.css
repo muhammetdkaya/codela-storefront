@@ -662,3 +662,13 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
 @media(prefers-reduced-motion:reduce){
   .sf-agency-widget--scroll .sf-agency-scroll-hint{transition:none}
 }
+
+/* iOS Safari native mobile dialogs cover the viewport. While the full-screen
+   modal has locked scrolling, retain the Agency layout/scroll position but
+   suspend the expensive 3D/widget painting behind the native top layer.
+   Both state transitions happen synchronously in overlay-controller.js. */
+@media(max-width:700px){
+  html.sf-overlay-scroll-locked .codela-page-layout > .sf-agency-widget{
+    visibility:hidden!important;
+  }
+}
