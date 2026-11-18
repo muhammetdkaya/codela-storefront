@@ -80,7 +80,7 @@ function codela_sf_section_agency_scroll( array $data, string $type = '', bool $
         $description = 'İşinizi büyüten dijital deneyimleri tasarlıyor, geliştiriyor ve yayına alıyoruz.';
     }
     if ( '' === $title ) { $title = 'Web siteleri. E-ticaret. Özel yazılım.'; }
-    $parts = preg_split( '/(?<=[.!?])\\s+/u', $title, -1, PREG_SPLIT_NO_EMPTY );
+    $parts = preg_split( '/(?<=[.!?])\s+/u', $title, -1, PREG_SPLIT_NO_EMPTY );
     if ( ! is_array( $parts ) || 3 !== count( $parts ) ) { $parts = [ $title ]; }
     $contact = codela_sf_agency_contact_link();
     ob_start();
