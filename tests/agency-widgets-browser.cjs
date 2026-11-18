@@ -37,29 +37,46 @@ const server=http.createServer((req,res)=>{
       assert.equal(await page.locator('[data-agency-widget]').count(),5,'Independent editor widgets remain intact');
       assert.equal(await page.locator('.sf-agency-swap-card').count(),6,'Two optional Card Swap widgets still work');
       assert.equal(await hero.count(),1,'One minimal welcome is rendered');
-      assert.equal(await hero.locator('.sf-agency-minimal-title .sf-agency-reveal').count(),3,'The approved welcome contains three editorial title lines');
+      assert.equal(await hero.locator('.sf-agency-minimal-title .sf-agency-reveal').count(),4,
+        'The editorial welcome contains four typographic lines');
+      assert.equal((await hero.locator('.sf-agency-minimal-title').textContent()).replace(/\s+/g,' ').trim(),
+        'Markanıza özel web siteleri, e-ticaret ve yazılım.','The approved headline is coherent and editable');
       assert.equal(await hero.locator('.sf-agency-minimal-cta').count(),1,'Only one contact CTA remains');
-      assert((await hero.locator('.sf-agency-minimal-cta').getAttribute('href')).includes('iletisim'),'CTA uses actual WordPress Contact page');
+      assert((await hero.locator('.sf-agency-minimal-cta').getAttribute('href')).includes('iletisim'),
+        'CTA uses the actual WordPress Contact page');
       assert.equal(await hero.locator('.sf-agency-preview-browser,[data-agency-scroll-device],[data-agency-scroll-next]').count(),0,
-        'No UI mockup, scroll hint or 3D compositor survives');
+        'No fake product UI, scroll hint or 3D compositor');
       const paint=await hero.locator('.sf-agency-minimal-hero').evaluate(el=>{
-        const halo=getComputedStyle(el,'::after'),line=getComputedStyle(el.querySelector('.sf-agency-reveal'));
-        return {filter:halo.filter,background:halo.backgroundImage,haloAnimation:halo.animationName,
-          fillMode:line.animationFillMode,animation:line.animationName};
+        const mark=getComputedStyle(el,'::after');
+        const line=getComputedStyle(el.querySelector('.sf-agency-reveal'));
+        const title=getComputedStyle(el.querySelector('.sf-agency-minimal-title'));
+        return {filter:mark.filter,background:mark.backgroundImage,animation:mark.animationName,
+          mark:mark.content,fill:line.animationFillMode,entrance:line.animationName,
+          canvas:getComputedStyle(el).backgroundColor,align:title.textAlign,ink:title.color};
       });
-      assert.equal(paint.filter,'none','No filtered halo on any viewport');
-      assert(paint.background.startsWith('radial-gradient('),'The light uses paint-only gradient');
-      assert.equal(paint.fillMode,'backwards','Animation cannot override CTA hover after entry');
-      assert.equal(paint.animation,'sf-agency-hero-enter','Entry animation is CSS-driven on initial render');
-      assert.equal(paint.haloAnimation,width<=700?'none':'sf-agency-ambient-breath','Ambient motion is desktop-only');
+      assert.equal(paint.filter,'none','Typographic watermark does not use Safari blur');
+      assert.equal(paint.background,'none','Old AI grid and purple light are absent');
+      assert.equal(paint.animation,'none','No perpetual background animation');
+      assert.equal(paint.canvas,'rgb(243, 240, 233)','Editorial Light uses warm neutral paper');
+      assert.equal(paint.align,'left','Editorial composition uses left-aligned type');
+      assert.notEqual(paint.ink,'rgb(255, 255, 255)','Headline uses dark text');
+      assert(paint.mark.includes('C'),'The subtle signature is static typography');
+      assert.equal(paint.fill,'backwards','Entry animation releases CTA hover');
+      assert.equal(paint.entrance,'sf-agency-hero-enter','Entry animation is CSS-only');
       const handoff=await hero.evaluate(el=>{
         const next=el.nextElementSibling,layer=next?.querySelector('.sf-agency-services');
         return {type:next?.dataset.agencyWidget,overlap:el.getBoundingClientRect().bottom-next.getBoundingClientRect().top,
-          radius:layer?parseFloat(getComputedStyle(layer).borderTopLeftRadius):0};
+          radius:layer?parseFloat(getComputedStyle(layer).borderTopLeftRadius):0,
+          heroHeight:el.querySelector('.sf-agency-minimal-hero').getBoundingClientRect().height};
       });
-      assert.equal(handoff.type,'services','Services follow the welcome without extra blocks');
-      assert(handoff.overlap>=22&&handoff.overlap<=40,'Clean rounded services surface overlaps slightly');
-      assert(handoff.radius>=25,'The light services transition is rounded');
+      assert.equal(handoff.type,'services','Services follow the welcome');
+      if(width<=700){
+        assert(Math.abs(handoff.overlap)<=1,'Services do not overlap the full mobile welcome screen');
+        assert(handoff.heroHeight>=height-1,'Welcome itself fills at least one visible mobile viewport');
+      }else{
+        assert(handoff.overlap>=22&&handoff.overlap<=40,'Desktop keeps the rounded editorial handoff');
+      }
+      assert(handoff.radius>=25,'Services surface remains rounded');
       assert.equal(await services.locator('.sf-agency-poster').count(),4,'Four editable service cards remain');
       await services.locator('[data-agency-widget-detail="0"]').click();
       assert(await services.locator('[data-agency-widget-dialog]').isVisible(),'Service details still open');

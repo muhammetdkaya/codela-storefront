@@ -123,11 +123,22 @@ $starter_data['id'] = 'agency-starter-scroll';
 $starter_data['title'] = 'Tasarım, e-ticaret ve yazılım. Tek bir deneyimde.';
 $starter_data['description'] = 'WordPress, WooCommerce ve özel yazılım çözümlerini aynı ekipte buluşturuyoruz.';
 $starter_html = codela_sf_section_agency_scroll( $starter_data );
-agency_page_check( str_contains( $starter_html, 'Web siteleri.' ) &&
-    str_contains( $starter_html, 'E-ticaret.' ) &&
-    str_contains( $starter_html, 'Özel yazılım.' ) &&
-    str_contains( $starter_html, 'İşinizi büyüten dijital deneyimleri' ),
-    'Untouched 1.2.17 Agency starter displays approved V2 copy during staggered theme/plugin upgrades.' );
+agency_page_check( str_contains( $starter_html, 'Markanıza özel' ) &&
+    str_contains( $starter_html, 'web siteleri,' ) &&
+    str_contains( $starter_html, 'e-ticaret' ) &&
+    str_contains( $starter_html, 've yazılım.' ) &&
+    str_contains( $starter_html, 'İşiniz için doğru dijital deneyimi' ),
+    'Untouched 1.2.17 Agency starter displays Editorial Light before plugin update.' );
+$starter_data['title'] = 'Web siteleri. E-ticaret. Özel yazılım.';
+$starter_data['description'] = 'İşinizi büyüten dijital deneyimleri tasarlıyor, geliştiriyor ve yayına alıyoruz.';
+$starter_v2 = codela_sf_section_agency_scroll( $starter_data );
+agency_page_check( str_contains( $starter_v2, 'Markanıza özel' ) &&
+    str_contains( $starter_v2, 'İşiniz için doğru dijital deneyimi' ),
+    'Untouched 1.2.18 Agency starter also displays approved Editorial Light.' );
+$custom_editorial = $starter_data;
+$custom_editorial['title'] = 'Bize özel ajans başlığı.';
+agency_page_check( str_contains( codela_sf_section_agency_scroll( $custom_editorial ), 'Bize özel ajans başlığı.' ),
+    'User-edited agency copy always takes precedence over pristine starter text.' );
 $widget_data['id'] = 'cards-duplicate';
 agency_page_check( str_contains( codela_sf_section_agency_cards( $widget_data ), 'sf-agency-cards-cards-duplicate' ), 'Cloned widget gets independent accessible IDs.' );
 $widget_data['items'][0]['title'] = '<script>unsafe</script>';
@@ -167,8 +178,8 @@ if ( in_array( '--render=widgets', $argv, true ) ) {
     $widget_data['id'] = 'widget-cards-a';
     $first_cards = codela_sf_section_agency_cards( $widget_data );
     $widget_data['id'] = 'widget-scroll-a';
-    $widget_data['title'] = 'Web siteleri. E-ticaret. Özel yazılım.';
-    $widget_data['description'] = 'İşinizi büyüten dijital deneyimleri tasarlıyor, geliştiriyor ve yayına alıyoruz.';
+    $widget_data['title'] = 'Markanıza özel web siteleri, e-ticaret ve yazılım.';
+    $widget_data['description'] = 'İşiniz için doğru dijital deneyimi tasarlıyor, geliştiriyor ve yayına alıyoruz.';
     $middle_scroll = codela_sf_section_agency_scroll( $widget_data );
     $widget_data['id'] = 'widget-cards-b';
     $last_cards = codela_sf_section_agency_cards( $widget_data );
