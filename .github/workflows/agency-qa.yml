@@ -38,7 +38,13 @@ jobs:
       - name: Install test-only dependencies
         run: |
           npm ci --ignore-scripts
-          npx playwright install --with-deps chromium
+          # The Ubuntu GitHub image already has Chrome; avoid re-downloading
+          # Chromium for an Agency-only visual check when it is available.
+          if command -v google-chrome >/dev/null; then
+            echo "CHROMIUM_BIN=$(command -v google-chrome)" >> "$GITHUB_ENV"
+          else
+            npx playwright install --with-deps chromium
+          fi
       - name: Validate agency source and native block pattern
         run: |
           php -l theme/codela-storefront/patterns/agency-home.php
