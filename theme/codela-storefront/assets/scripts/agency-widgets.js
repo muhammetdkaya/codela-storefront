@@ -3,7 +3,6 @@
   const widgets = Array.from(document.querySelectorAll('[data-agency-widget]'));
   if (!widgets.length) return;
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const scrollWidgets = [];
 
   widgets.forEach(widget => {
     if (widget.dataset.agencyWidgetInitialized === 'true') return;
@@ -37,21 +36,6 @@
       select(0);
     }
 
-    if (widget.dataset.agencyWidget === 'scroll') {
-      const container = widget.querySelector('[data-agency-container-scroll]');
-      const device = widget.querySelector('[data-agency-scroll-device]');
-      if (container && device) scrollWidgets.push({ container, device });
-      // On editor-managed homepages the next block can be the services deck.
-      // Let the cue scroll locally in that case; when users reorder/remove it,
-      // keep the real Services permalink as a no-JS and missing-block fallback.
-      widget.querySelector('[data-agency-scroll-next]')?.addEventListener('click', event => {
-        const next = widget.nextElementSibling;
-        if (!next?.matches('[data-agency-widget="services"]')) return;
-        const target = next.querySelector('.sf-agency-services') || next;
-        event.preventDefault();
-        target.scrollIntoView({ behavior: reduced.matches ? 'auto' : 'smooth', block: 'start' });
-      });
-    }
 
     if (widget.dataset.agencyWidget === 'services') {
       const track = widget.querySelector('[data-agency-widget-track]');
@@ -117,45 +101,4 @@
     }
   });
 
-  if (!scrollWidgets.length) return;
-  const mobile = window.matchMedia('(max-width:700px)');
-  let frame = 0;
-  const sync = () => {
-    frame = 0;
-    // Mobile uses the same product-style preview without a continuously
-    // transformed 3D layer. Keep scroll reads/writes desktop-only so Safari
-    // can open native menus without recompositing the hero on each frame.
-    if (mobile.matches) return;
-    scrollWidgets.forEach(({ container, device }) => {
-      if (reduced.matches) {
-        device.style.removeProperty('--agency-scroll-rotate');
-        device.style.removeProperty('--agency-scroll-scale');
-        return;
-      }
-      const bounds = container.getBoundingClientRect();
-      const distance = Math.max(1, bounds.height - window.innerHeight * 0.5);
-      const progress = Math.max(0, Math.min(1, (-bounds.top + window.innerHeight * 0.12) / distance));
-      device.style.setProperty('--agency-scroll-rotate', (11 * (1 - progress)).toFixed(2) + 'deg');
-      device.style.setProperty('--agency-scroll-scale', (0.965 + progress * 0.035).toFixed(3));
-    });
-  };
-  const schedule = () => {
-    if (mobile.matches) return;
-    if (!frame) frame = requestAnimationFrame(sync);
-  };
-  window.addEventListener('scroll', schedule, { passive: true });
-  window.addEventListener('resize', schedule, { passive: true });
-  reduced.addEventListener('change', schedule);
-  mobile.addEventListener('change', () => {
-    if (mobile.matches) {
-      cancelAnimationFrame(frame);
-      frame = 0;
-      scrollWidgets.forEach(({ device }) => {
-        device.style.removeProperty('--agency-scroll-rotate');
-        device.style.removeProperty('--agency-scroll-scale');
-      });
-    } else schedule();
-  });
-  window.addEventListener('pagehide', () => { cancelAnimationFrame(frame); frame = 0; }, { once: true });
-  schedule();
 })();
