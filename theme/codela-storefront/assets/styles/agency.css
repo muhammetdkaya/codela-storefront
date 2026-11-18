@@ -628,3 +628,275 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
     border-radius:27px 27px 0 0
   }
 }
+
+
+/* 0.1.351 — Editorial Light service posters.
+   Native scroll-snap on phones, static 2/4-column grids above phone widths.
+   No image/CDN, background blur, scroll-driven layout, or perpetual animation. */
+.sf-agency-widget--services-v3{--sf-service-accent:#647961;color:#252521}
+.sf-agency-widget--services-v3 .sf-agency-services{
+  background:#f8f7f3!important;border-color:#e1ded7;
+  padding-top:76px;padding-bottom:86px
+}
+.codela-page-layout > .sf-agency-widget--minimal + .sf-agency-widget--services-v3,
+.codela-page-layout > .sf-agency-widget--scroll + .sf-agency-widget--services-v3{
+  background:#f8f7f3
+}
+.codela-page-layout > .sf-agency-widget--minimal + .sf-agency-widget--services-v3 .sf-agency-services,
+.codela-page-layout > .sf-agency-widget--scroll + .sf-agency-widget--services-v3 .sf-agency-services{
+  background:#f8f7f3!important
+}
+.sf-agency-widget--services-v3 .sf-agency-services-head{
+  align-items:flex-end;gap:24px;margin-bottom:28px!important
+}
+.sf-agency-widget--services-v3 .sf-agency-services-heading{max-width:750px}
+.sf-agency-widget--services-v3 .sf-agency-eyebrow{
+  margin-bottom:17px;color:var(--sf-service-accent);font-size:10px;
+  font-weight:750;letter-spacing:.15em;
+  transition:color .28s ease
+}
+.sf-agency-widget--services-v3 .sf-agency-heading{
+  margin:0;color:#252521;max-width:730px;
+  font-size:clamp(36px,4.8vw,66px);line-height:1.065;
+  font-weight:790;letter-spacing:-.055em;text-wrap:balance
+}
+.sf-agency-widget--services-v3 .sf-agency-service-accent{
+  color:var(--sf-service-accent);transition:color .28s ease
+}
+.sf-agency-widget--services-v3 .sf-agency-widget-services-lead{
+  margin:20px 0 0;max-width:540px;color:#66645f;
+  font-size:clamp(13px,1.2vw,16px);line-height:1.67;letter-spacing:-.01em
+}
+.sf-agency-widget--services-v3 .sf-agency-service-counter{
+  color:#575650;font-size:11px;font-weight:700;letter-spacing:.07em;
+  padding-right:8px;white-space:nowrap
+}
+.sf-agency-widget--services-v3 .sf-agency-carousel-arrow{
+  border:1px solid #dedbd4;background:transparent;color:#33322d
+}
+.sf-agency-widget--services-v3 .sf-agency-carousel-arrow:hover:not(:disabled){background:#e9e7e1}
+.sf-agency-widget--services-v3 .sf-agency-service-track{gap:13px}
+.sf-agency-widget--services-v3 .sf-agency-poster{
+  box-sizing:border-box;flex:0 0 min(82vw,330px);
+  height:auto!important;min-height:466px;border-radius:22px;
+  padding:21px;display:flex;flex-direction:column;
+  color:#252521;box-shadow:none;border:1px solid rgb(32 30 23 / .045);
+  transform:none!important;transition:none!important;
+  min-width:0;overflow:hidden
+}
+.sf-agency-widget--services-v3 .sf-agency-poster::before{content:none!important;background:none!important}
+.sf-agency-widget--services-v3 .sf-agency-poster--commerce{background:#e5e9e1}
+.sf-agency-widget--services-v3 .sf-agency-poster--web{background:#e9e8e3}
+.sf-agency-widget--services-v3 .sf-agency-poster--code{background:#e5e7f0}
+.sf-agency-widget--services-v3 .sf-agency-poster--support{background:#ede6df}
+.sf-agency-widget--services-v3 .sf-agency-poster-meta{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+  color:#55534e;font-size:10px;font-weight:740;letter-spacing:.06em;
+  line-height:1.35
+}
+.sf-agency-widget--services-v3 .sf-agency-poster-meta span{color:inherit;font-size:inherit;letter-spacing:inherit;font-weight:inherit}
+.sf-agency-widget--services-v3 .sf-agency-poster-meta span:first-child{
+  min-width:0;overflow-wrap:anywhere
+}
+.sf-agency-widget--services-v3 .sf-agency-poster-meta span:last-child{white-space:nowrap}
+.sf-agency-widget--services-v3 .sf-agency-poster-visual{
+  height:161px;display:grid;place-items:center;flex:none;pointer-events:none
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-ui{
+  background:rgb(255 255 255 / .87);border:1px solid rgb(35 34 29 / .12);
+  border-radius:11px;box-shadow:0 12px 22px rgb(33 33 27 / .12);
+  width:min(91%,260px);height:130px;overflow:hidden;
+  transform:rotate(-2.5deg);color:#4e554e
+}
+.sf-agency-widget--services-v3 .sf-agency-poster:nth-child(even) .sf-agency-mini-ui{transform:rotate(2.5deg)}
+.sf-agency-widget--services-v3 .sf-agency-mini-bar{
+  display:flex;align-items:center;gap:4px;height:23px;
+  padding:0 9px;background:#fafaf9;border-bottom:1px solid #2b2a2114
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-bar i{
+  width:5px;height:5px;background:#c3c5c2;border-radius:50%
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-bar small{
+  margin-left:auto;font-size:6px;letter-spacing:.11em;font-weight:700;color:#92928f
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-products{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:11px
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-products span{
+  height:84px;padding:5px;background:#f3f3ef;border-radius:6px
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-products i{
+  display:block;height:57px;border-radius:4px;
+  background:linear-gradient(145deg,#d0d7cc,#a9b7a6);position:relative
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-products i::after{
+  content:"";display:block;position:absolute;left:39%;top:20%;
+  width:23%;height:57%;background:#f2f4ed;border-radius:9px 9px 3px 3px
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-products span:nth-child(2) i{background:linear-gradient(145deg,#d9d5cb,#b6aa9f)}
+.sf-agency-widget--services-v3 .sf-agency-mini-products span:nth-child(3) i{background:linear-gradient(145deg,#c9d6cf,#9bafa5)}
+.sf-agency-widget--services-v3 .sf-agency-mini-products b{
+  display:block;height:4px;width:65%;background:#c6c8c0;border-radius:3px;margin-top:5px
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-site{
+  display:flex;gap:9px;padding:12px 11px
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-site>div{flex:1;padding-top:10px}
+.sf-agency-widget--services-v3 .sf-agency-mini-site b{
+  display:block;width:90%;height:6px;border-radius:3px;margin-bottom:6px;background:#58655b
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-site b:nth-child(2){width:66%}
+.sf-agency-widget--services-v3 .sf-agency-mini-site i{
+  display:block;width:85%;height:4px;border-radius:3px;margin-top:7px;background:#cccfcb
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-site em{
+  display:block;width:50%;height:12px;border-radius:10px;margin-top:11px;background:#536053
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-site figure{
+  flex:1;margin:0;height:86px;border-radius:5px;
+  background:linear-gradient(140deg,#d8ded7,#a2b2a6);position:relative;overflow:hidden
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-site figure::after{
+  content:"";position:absolute;left:34%;top:12%;width:45%;height:120%;
+  border-radius:22px;background:#f0f0eb;transform:rotate(26deg)
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-dashboard{
+  display:flex;gap:10px;padding:12px 10px
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-sidebar{
+  flex:0 0 24%;border-right:1px solid #d9dbe6;padding-right:8px
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-sidebar i{
+  display:block;width:82%;height:5px;border-radius:3px;background:#d7dae7;margin-bottom:10px
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-sidebar i:first-child{background:#929dc5}
+.sf-agency-widget--services-v3 .sf-agency-mini-stats{
+  flex:1;display:grid;grid-template-columns:1fr 1fr;gap:6px
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-stats b{
+  font-size:11px;color:#6572af;background:#eef0f8;border-radius:5px;padding:6px
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-chart{
+  grid-column:span 2;display:flex;align-items:flex-end;gap:9px;
+  height:49px;border-radius:5px;background:#f6f6fa;padding:8px 12px
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-chart i{
+  flex:1;min-height:5px;height:36%;border-radius:3px 3px 0 0;background:#a9b4db
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-chart i:nth-child(2){height:59%}
+.sf-agency-widget--services-v3 .sf-agency-mini-chart i:nth-child(3){height:42%}
+.sf-agency-widget--services-v3 .sf-agency-mini-chart i:nth-child(4){height:85%}
+.sf-agency-widget--services-v3 .sf-agency-mini-chart i:nth-child(5){height:100%;background:#7180bb}
+.sf-agency-widget--services-v3 .sf-agency-mini-speed{
+  height:104px;display:flex;align-items:center;gap:14px;padding:11px
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-ring{
+  width:78px;height:78px;flex:none;border-radius:50%;
+  display:grid;place-items:center;background:conic-gradient(#728b74 0 92%,#e0e7de 92%)
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-ring>div{
+  width:61px;height:61px;border-radius:50%;background:white;
+  display:flex;flex-direction:column;align-items:center;justify-content:center
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-ring b{font-size:25px;line-height:1;color:#343b34}
+.sf-agency-widget--services-v3 .sf-agency-mini-ring small{font-size:6px;color:#728b74}
+.sf-agency-widget--services-v3 .sf-agency-mini-bars{flex:1}
+.sf-agency-widget--services-v3 .sf-agency-mini-bars i{
+  display:block;width:80%;height:5px;background:#96a898;border-radius:3px;margin:13px 0
+}
+.sf-agency-widget--services-v3 .sf-agency-mini-bars i:nth-child(2){width:66%}
+.sf-agency-widget--services-v3 .sf-agency-mini-bars i:nth-child(3){width:91%}
+.sf-agency-widget--services-v3 .sf-agency-poster-body{
+  flex:1;min-width:0;display:flex;flex-direction:column
+}
+.sf-agency-widget--services-v3 .sf-agency-poster-body h3{
+  margin:0 0 13px;color:#252521;font-size:clamp(23px,2.15vw,30px);
+  font-weight:760;line-height:1.14;letter-spacing:-.049em;
+  overflow-wrap:anywhere
+}
+.sf-agency-widget--services-v3 .sf-agency-poster-description{
+  margin:0;color:#5a5953;font-size:12.5px;line-height:1.63;overflow-wrap:anywhere
+}
+.sf-agency-widget--services-v3 .sf-agency-poster-chips{
+  display:flex;gap:5px;flex-wrap:wrap;margin-top:auto;padding-top:16px
+}
+.sf-agency-widget--services-v3 .sf-agency-poster-chips span{
+  font-size:10px;line-height:1.25;color:#51504b;border:1px solid rgb(35 33 25 / .14);
+  background:rgb(255 255 255 / .43);border-radius:999px;padding:7px 8px
+}
+.sf-agency-widget--services-v3 .sf-agency-poster-link{
+  margin-top:18px;border-top:1px solid rgb(34 33 29 / .16);
+  min-height:46px;padding:12px 0 0;
+  color:#252521;text-decoration:none;display:flex;align-items:center;
+  justify-content:space-between;font-size:12px;font-weight:730
+}
+.sf-agency-widget--services-v3 .sf-agency-poster-link span{font-size:19px;font-weight:400}
+.sf-agency-widget--services-v3 .sf-agency-poster-link:hover{color:#4452d1}
+.sf-agency-widget--services-v3 :is(.sf-agency-poster-link,.sf-agency-services-cta,.sf-agency-carousel-arrow):focus-visible{
+  outline:2px solid #4452d1;outline-offset:3px
+}
+.sf-agency-widget--services-v3 .sf-agency-services-footer{
+  display:flex;gap:16px;align-items:center;justify-content:space-between;
+  margin-top:26px!important;padding-top:24px;border-top:1px solid #dcd9d2
+}
+.sf-agency-widget--services-v3 .sf-agency-services-footer strong{
+  display:block;color:#292823;font-size:16px;letter-spacing:-.025em;line-height:1.35
+}
+.sf-agency-widget--services-v3 .sf-agency-services-footer p{
+  margin:6px 0 0;color:#67645f;font-size:12px;line-height:1.6
+}
+.sf-agency-widget--services-v3 .sf-agency-services-cta{
+  display:inline-flex;align-items:center;justify-content:center;gap:24px;
+  flex:none;border-radius:999px;min-height:46px;padding:0 19px;
+  background:#24231f;color:#fff;text-decoration:none;font-size:12px;font-weight:700;
+  white-space:nowrap
+}
+@media(min-width:740px){
+  .sf-agency-widget--services-v3 .sf-agency-service-track{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));max-width:1200px;
+    width:calc(100% - 48px);margin:0 auto;padding:0!important;
+    overflow:visible;scroll-snap-type:none
+  }
+  .sf-agency-widget--services-v3 .sf-agency-poster{flex:auto;min-height:464px}
+  .sf-agency-widget--services-v3 .sf-agency-carousel-actions{display:none}
+  .sf-agency-widget--services-v3 .sf-agency-service-accent,
+  .sf-agency-widget--services-v3 .sf-agency-eyebrow{color:#4452d1}
+}
+@media(min-width:1100px){
+  .sf-agency-widget--services-v3 .sf-agency-service-track{
+    grid-template-columns:repeat(4,minmax(0,1fr))
+  }
+}
+@media(max-width:739px){
+  .sf-agency-widget--services-v3 .sf-agency-services{
+    padding-top:58px;padding-bottom:64px
+  }
+  .sf-agency-widget--services-v3 .sf-agency-services-head{
+    flex-direction:column;align-items:stretch;gap:18px;margin-bottom:23px!important
+  }
+  .sf-agency-widget--services-v3 .sf-agency-heading{
+    font-size:clamp(32px,9.5vw,47px)
+  }
+  .sf-agency-widget--services-v3 .sf-agency-widget-services-lead{
+    font-size:13px;line-height:1.7;margin-top:16px
+  }
+  .sf-agency-widget--services-v3 .sf-agency-service-track{
+    display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;
+    scroll-padding-inline:20px;padding:0 20px 12px!important;
+    -webkit-overflow-scrolling:touch
+  }
+  .sf-agency-widget--services-v3 .sf-agency-poster{
+    flex:0 0 min(83vw,330px);min-height:456px;border-radius:20px;padding:20px
+  }
+  .sf-agency-widget--services-v3 .sf-agency-carousel-actions{
+    display:flex;justify-content:flex-end;gap:8px
+  }
+  .sf-agency-widget--services-v3 .sf-agency-service-counter{margin-right:auto}
+  .sf-agency-widget--services-v3 .sf-agency-services-footer{
+    align-items:flex-start;flex-direction:column;gap:16px;margin-top:18px!important
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .sf-agency-widget--services-v3 .sf-agency-service-accent,
+  .sf-agency-widget--services-v3 .sf-agency-eyebrow{transition:none!important}
+}
