@@ -57,10 +57,10 @@ const server=http.createServer((req,res)=>{
       assert.equal(paint.filter,'none','Typographic watermark does not use Safari blur');
       assert.equal(paint.background,'none','Old AI grid and purple light are absent');
       assert.equal(paint.animation,'none','No perpetual background animation');
-      assert.equal(paint.canvas,'rgb(243, 240, 233)','Editorial Light uses warm neutral paper');
+      assert.equal(paint.canvas,'rgb(251, 250, 248)','V4.1 uses clean porcelain paper');
       assert.equal(paint.align,'left','Editorial composition uses left-aligned type');
       assert.notEqual(paint.ink,'rgb(255, 255, 255)','Headline uses dark text');
-      assert(paint.mark.includes('C'),'The subtle signature is static typography');
+      assert.equal(paint.mark,'none','V4.1 removes the oversized decorative letter');
       assert.equal(paint.fill,'backwards','Entry animation releases CTA hover');
       assert.equal(paint.entrance,'sf-agency-hero-enter','Entry animation is CSS-only');
       const handoff=await hero.evaluate(el=>{
@@ -81,6 +81,21 @@ const server=http.createServer((req,res)=>{
       assert.equal(await services.locator('.sf-agency-poster-link').count(),4,'Only one link per service poster');
       assert.equal(await services.locator('[data-agency-widget-dialog]').count(),0,'Editorial service links do not open redundant modals');
       assert.equal(await services.locator('.sf-agency-poster-visual').count(),4,'Each service has its own lightweight CSS interface illustration');
+      const posterSpace=await services.locator('.sf-agency-poster').first().evaluate(card=>{
+        const desc=card.querySelector('.sf-agency-poster-description');
+        const chips=card.querySelector('.sf-agency-poster-chips');
+        const bottom=card.querySelector('.sf-agency-poster-link');
+        return {gap:chips.getBoundingClientRect().top-desc.getBoundingClientRect().bottom,
+          actionsVisible:bottom.getBoundingClientRect().bottom<=window.innerHeight+4};
+      });
+      if(width<=700){
+        assert(posterSpace.gap<=15,'Description and chips keep the approved V4.1 compact spacing');
+        assert(posterSpace.actionsVisible,'Service action stays above the bottom dock');
+        const stage=services.locator('.sf-agency-services-stage');
+        const size=await stage.evaluate(el=>Math.abs(el.getBoundingClientRect().height-window.innerHeight));
+        assert(size<=2,'Services V4.1 stage occupies one mobile viewport');
+      }
+
       assert((await services.locator('.sf-agency-poster-link').first().getAttribute('href')).includes('hizmetler'),
         'The poster resolves to a real services page if a service-specific page is not published');
       const serviceTrack=services.locator('[data-agency-widget-track]');
