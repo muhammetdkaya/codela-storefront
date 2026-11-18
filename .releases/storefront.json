@@ -1,6 +1,6 @@
 {
   "confirm": "PUBLISH_STABLE",
-  "version": "0.1.334",
-  "source_sha": "8886f53abcff723af7134056d8f55c85e8d7fcf4",
-  "publish_feed": false
+  "version": "0.1.351",
+  "source_sha": "95c5276d44f17543f27762770cf543a72b1e7e66",
+  "publish_feed": true
 }
