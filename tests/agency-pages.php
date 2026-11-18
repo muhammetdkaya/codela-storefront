@@ -104,19 +104,30 @@ agency_page_check( ! str_contains( $cards, '<h1 ' ), 'Secondary Card Swap uses H
 agency_page_check( str_contains( $cards, 'Our Agency' ) && str_contains( $cards, 'UI and UX' ), 'Saved agency heading and item text appear.' );
 $widget_data['id'] = 'scroll-demo';
 $scroll = codela_sf_section_agency_scroll( $widget_data );
-agency_page_check( str_contains( $scroll, 'data-agency-container-scroll' ) && str_contains( $scroll, 'data-agency-scroll-device' ), '3D Scroll keeps isolated motion hooks.' );
-agency_page_check( str_contains( $scroll, 'data-agency-scroll-next' ) && str_contains( $scroll, 'href="https://codela.test/hizmetler/"' ),
-    '3D Scroll has a real Services permalink as its no-JS and standalone fallback.' );
-agency_page_check( substr_count( codela_sf_section_agency_scroll( $widget_data, '', true ), '<h1 ' ) === 1, 'First homepage 3D Scroll owns a single H1.' );
-agency_page_check( str_contains( $scroll, 'Independent and editable' ) &&
-    str_contains( $scroll, 'CODELA / ARAYÜZ ÖNİZLEMESİ' ) &&
-    substr_count( $scroll, 'class="sf-agency-scroll-expertise"' ) === 1,
-    'Saved headline, single mock storefront and dynamic specialties appear.' );
-agency_page_check( str_contains( $scroll, 'https://codela.test/iletisim/' ) &&
-    str_contains( $scroll, 'https://codela.test/hizmetler/' ),
-    '3D hero CTA links resolve to real WordPress pages.' );
-agency_page_check( ! str_contains( $scroll, '<iframe' ) && ! str_contains( $scroll, 'cdn.' ),
-    '3D preview is self-contained and requires no third-party embed.' );
+agency_page_check( str_contains( $scroll, 'sf-agency-widget--minimal' ) &&
+    ! str_contains( $scroll, 'data-agency-scroll-device' ) &&
+    ! str_contains( $scroll, 'ARAYÜZ ÖNİZLEMESİ' ),
+    'Agency starter uses the light minimal welcome, without a 3D store mockup.' );
+agency_page_check( substr_count( codela_sf_section_agency_scroll( $widget_data, '', true ), '<h1 ' ) === 1,
+    'Primary minimal welcome owns one H1.' );
+agency_page_check( str_contains( $scroll, 'Our Agency' ) &&
+    str_contains( $scroll, 'Independent and editable' ) &&
+    str_contains( $scroll, 'https://codela.test/iletisim/' ),
+    'Minimal welcome respects the editor heading/description and links to contact.' );
+agency_page_check( ! str_contains( $scroll, 'https://codela.test/hizmetler/' ) &&
+    ! str_contains( $scroll, '<iframe' ) &&
+    ! str_contains( $scroll, 'data-agency-scroll-next' ),
+    'No unnecessary second CTA, mockup or scroll hint remains.' );
+$starter_data = $widget_data;
+$starter_data['id'] = 'agency-starter-scroll';
+$starter_data['title'] = 'Tasarım, e-ticaret ve yazılım. Tek bir deneyimde.';
+$starter_data['description'] = 'WordPress, WooCommerce ve özel yazılım çözümlerini aynı ekipte buluşturuyoruz.';
+$starter_html = codela_sf_section_agency_scroll( $starter_data );
+agency_page_check( str_contains( $starter_html, 'Web siteleri.' ) &&
+    str_contains( $starter_html, 'E-ticaret.' ) &&
+    str_contains( $starter_html, 'Özel yazılım.' ) &&
+    str_contains( $starter_html, 'İşinizi büyüten dijital deneyimleri' ),
+    'Untouched 1.2.17 Agency starter displays approved V2 copy during staggered theme/plugin upgrades.' );
 $widget_data['id'] = 'cards-duplicate';
 agency_page_check( str_contains( codela_sf_section_agency_cards( $widget_data ), 'sf-agency-cards-cards-duplicate' ), 'Cloned widget gets independent accessible IDs.' );
 $widget_data['items'][0]['title'] = '<script>unsafe</script>';
@@ -156,6 +167,8 @@ if ( in_array( '--render=widgets', $argv, true ) ) {
     $widget_data['id'] = 'widget-cards-a';
     $first_cards = codela_sf_section_agency_cards( $widget_data );
     $widget_data['id'] = 'widget-scroll-a';
+    $widget_data['title'] = 'Web siteleri. E-ticaret. Özel yazılım.';
+    $widget_data['description'] = 'İşinizi büyüten dijital deneyimleri tasarlıyor, geliştiriyor ve yayına alıyoruz.';
     $middle_scroll = codela_sf_section_agency_scroll( $widget_data );
     $widget_data['id'] = 'widget-cards-b';
     $last_cards = codela_sf_section_agency_cards( $widget_data );

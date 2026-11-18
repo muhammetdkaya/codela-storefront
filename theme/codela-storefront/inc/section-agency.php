@@ -60,79 +60,46 @@ function codela_sf_section_agency_cards( array $data, string $type = '', bool $p
     return (string) ob_get_clean();
 }
 
+/**
+ * Minimal V2 Agency welcome. Keep the existing editor section ID so previously
+ * installed sites retain their layout, but remove the 3D mock storefront and
+ * all scroll-driven render work. The saved editor title/description remain
+ * authoritative. A pristine 1.2.17 starter is presented with the new copy
+ * even if the plugin/theme update reaches the server in a different order.
+ */
 function codela_sf_section_agency_scroll( array $data, string $type = '', bool $primary = false ): string {
-    $items = codela_sf_section_agency_items( $data );
-    if ( ! $items ) { return ''; }
-    $id = 'sf-agency-scroll-' . sanitize_html_class( (string) $data['id'] );
+    $id = 'sf-agency-scroll-' . sanitize_html_class( (string) ( $data['id'] ?? 'welcome' ) );
     $heading = $primary && function_exists( 'is_front_page' ) && is_front_page() ? 'h1' : 'h2';
-    $services = codela_sf_agency_page_url( 'hizmetler', home_url( '/#sf-agency-services' ) );
+    $title = trim( (string) ( $data['title'] ?? '' ) );
+    $description = trim( (string) ( $data['description'] ?? '' ) );
+    $starter = 'agency-starter-scroll' === (string) ( $data['id'] ?? '' );
+    if ( $starter && 'Tasarım, e-ticaret ve yazılım. Tek bir deneyimde.' === $title ) {
+        $title = 'Web siteleri. E-ticaret. Özel yazılım.';
+    }
+    if ( $starter && 'WordPress, WooCommerce ve özel yazılım çözümlerini aynı ekipte buluşturuyoruz.' === $description ) {
+        $description = 'İşinizi büyüten dijital deneyimleri tasarlıyor, geliştiriyor ve yayına alıyoruz.';
+    }
+    if ( '' === $title ) { $title = 'Web siteleri. E-ticaret. Özel yazılım.'; }
+    $parts = preg_split( '/(?<=[.!?])\s+/u', $title, -1, PREG_SPLIT_NO_EMPTY );
+    if ( ! is_array( $parts ) || 3 !== count( $parts ) ) { $parts = [ $title ]; }
     $contact = codela_sf_agency_contact_link();
     ob_start();
     ?>
-    <div class="sf-agency sf-agency-widget sf-agency-widget--scroll" data-agency-widget="scroll">
-      <section class="sf-agency-hero" aria-labelledby="<?php echo esc_attr( $id ); ?>">
-        <div class="sf-agency-scroll-variant" data-agency-container-scroll>
-          <div class="sf-agency-scroll-sticky sf-agency-wrap">
-            <div class="sf-agency-scroll-intro">
-              <p>CODELA · CREATIVE DEVELOPMENT</p>
-              <<?php echo $heading; ?> id="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $data['title'] ?: 'Tasarım ve teknoloji, birlikte.' ); ?></<?php echo $heading; ?>>
-              <?php if ( $data['description'] ) : ?><p class="sf-agency-scroll-lead"><?php echo esc_html( $data['description'] ); ?></p><?php endif; ?>
-              <div class="sf-agency-actions sf-agency-scroll-actions">
-                <?php echo codela_sf_ui_button( 'Projenizi konuşalım', [ 'href' => $contact, 'icon' => 'arrow-right' ] ); ?>
-                <?php echo codela_sf_ui_button( 'Hizmetleri keşfet', [ 'href' => $services, 'variant' => 'secondary' ] ); ?>
-              </div>
-            </div>
-            <div class="sf-agency-scroll-perspective">
-              <div class="sf-agency-scroll-device" data-agency-scroll-device>
-                <div class="sf-agency-scroll-screen" aria-label="Codela tarafından hazırlanmış örnek e-ticaret arayüzü">
-                  <div class="sf-agency-preview-browser" aria-hidden="true">
-                    <span class="sf-agency-preview-dots"><i></i><i></i><i></i></span>
-                    <span>CODELA / ARAYÜZ ÖNİZLEMESİ</span>
-                    <span class="sf-agency-preview-browser-state">ÖRNEK TASARIM</span>
-                  </div>
-                  <div class="sf-agency-preview-app">
-                    <div class="sf-agency-preview-topbar" aria-hidden="true">
-                      <strong>studio<span>.</span></strong>
-                      <span>Yeni gelenler&nbsp; / &nbsp;Koleksiyon</span>
-                      <span class="sf-agency-preview-top-icon">＋</span>
-                    </div>
-                    <div class="sf-agency-preview-content">
-                      <div class="sf-agency-preview-editorial">
-                        <span class="sf-agency-preview-kicker">DİJİTAL MAĞAZA / DENEYİM</span>
-                        <h3>İyi tasarım. <em>Akıcı alışveriş.</em></h3>
-                        <p>Keşiften ödemeye, her adımda özenle tasarlanmış bir arayüz.</p>
-                        <span class="sf-agency-preview-fake-action">Koleksiyonu keşfet <span aria-hidden="true">↗</span></span>
-                      </div>
-                      <div class="sf-agency-preview-products" aria-hidden="true">
-                        <div class="sf-agency-preview-product">
-                          <div class="sf-agency-preview-product-art sf-agency-preview-product-art--one"></div>
-                          <span>Ürün keşfi</span><small>Mobil öncelikli</small>
-                        </div>
-                        <div class="sf-agency-preview-product">
-                          <div class="sf-agency-preview-product-art sf-agency-preview-product-art--two"></div>
-                          <span>Detay deneyimi</span><small>Hızlı ve sade</small>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="sf-agency-preview-journey" aria-hidden="true">
-                      <span>ALIŞVERİŞ AKIŞI</span>
-                      <div><span>Ürün</span><b>→</b><span>Sepet</span><b>→</b><span>Ödeme</span></div>
-                      <strong>WooCommerce</strong>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="sf-agency-scroll-caption">
-              <span>WordPress <i>·</i> Elementor <i>·</i> WooCommerce</span>
-              <a class="sf-agency-scroll-hint" data-agency-scroll-next href="<?php echo esc_url( $services ); ?>">Sonraki bölüm ↓</a>
-            </div>
-            <div class="sf-agency-scroll-expertise" aria-label="Ajansın uzmanlık alanları">
-              <?php foreach ( $items as $item ) : ?>
-                <div><strong><?php echo esc_html( $item['title'] ); ?></strong><?php if ( ! empty( $item['body'] ) ) : ?><span><?php echo esc_html( $item['body'] ); ?></span><?php endif; ?></div>
-              <?php endforeach; ?>
-            </div>
-          </div>
+    <div class="sf-agency sf-agency-widget sf-agency-widget--scroll sf-agency-widget--minimal" data-agency-widget="scroll">
+      <section class="sf-agency-hero sf-agency-minimal-hero is-playing" aria-labelledby="<?php echo esc_attr( $id ); ?>">
+        <div class="sf-agency-minimal-content">
+          <<?php echo $heading; ?> id="<?php echo esc_attr( $id ); ?>" class="sf-agency-minimal-title">
+            <?php foreach ( $parts as $index => $part ) : ?>
+              <span class="sf-agency-reveal sf-agency-reveal-<?php echo (int) min( $index + 1, 3 ); ?><?php echo count( $parts ) > 1 && 2 === $index ? ' sf-agency-minimal-tint' : ''; ?>"><?php echo esc_html( trim( $part ) ); ?></span>
+            <?php endforeach; ?>
+          </<?php echo $heading; ?>>
+          <?php if ( '' !== $description ) : ?>
+            <p class="sf-agency-minimal-lead sf-agency-reveal sf-agency-reveal-4"><?php echo esc_html( $description ); ?></p>
+          <?php endif; ?>
+          <a class="sf-agency-minimal-cta sf-agency-reveal sf-agency-reveal-5" href="<?php echo esc_url( $contact ); ?>">
+            <span>Projenizi konuşalım</span>
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 12h16m-7-7 7 7-7 7"/></svg>
+          </a>
         </div>
       </section>
     </div>
@@ -151,15 +118,23 @@ function codela_sf_section_agency_services( array $data, string $type = '' ): st
     $services = codela_sf_agency_page_url( 'hizmetler', home_url( '/#sf-agency-services' ) );
     $contact = codela_sf_agency_contact_link();
     $tones = [ 'web', 'elementor', 'commerce', 'code' ];
+    $heading_title = trim( (string) ( $data['title'] ?? '' ) );
+    $lead = trim( (string) ( $data['description'] ?? '' ) );
+    if ( 'agency-starter-services' === (string) ( $data['id'] ?? '' ) ) {
+        if ( 'WordPress üzerine her türlü çözüm.' === $heading_title ) { $heading_title = 'Fikirden yayına, yanınızdayız.'; }
+        if ( 'İhtiyaca uygun tasarım, e-ticaret ve özel geliştirme hizmetleri.' === $lead ) {
+            $lead = 'İhtiyacınıza göre tasarlanan, kullanımı kolay ve hızlı dijital çözümler.';
+        }
+    }
     ob_start();
     ?>
     <div class="sf-agency sf-agency-widget sf-agency-widget--services" data-agency-widget="services">
       <section class="sf-agency-services" aria-labelledby="<?php echo esc_attr( $id ); ?>">
         <div class="sf-agency-wrap sf-agency-services-head">
           <div class="sf-agency-services-heading">
-            <p class="sf-agency-eyebrow">HİZMET VİTRİNİ</p>
-            <h2 class="sf-agency-heading" id="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $data['title'] ?: 'WordPress üzerine her türlü çözüm.' ); ?></h2>
-            <?php if ( $data['description'] ) : ?><p class="sf-agency-widget-services-lead"><?php echo esc_html( $data['description'] ); ?></p><?php endif; ?>
+            <p class="sf-agency-eyebrow">HİZMETLERİMİZ</p>
+            <h2 class="sf-agency-heading" id="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $heading_title ?: 'Fikirden yayına, yanınızdayız.' ); ?></h2>
+            <?php if ( $lead ) : ?><p class="sf-agency-widget-services-lead"><?php echo esc_html( $lead ); ?></p><?php endif; ?>
           </div>
           <div class="sf-agency-carousel-actions">
             <a class="sf-agency-all-services" href="<?php echo esc_url( $services ); ?>">Tüm Hizmetler <span aria-hidden="true">↗</span></a>

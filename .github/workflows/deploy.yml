@@ -171,6 +171,9 @@ jobs:
           if [ "${{ steps.playwright-cache.outputs.cache-hit }}" != 'true' ]; then
             npx playwright install --with-deps chromium webkit
           else
+            # Cached browser binaries do not include Ubuntu shared libraries.
+            # Always install the matching WebKit/Chromium OS dependencies.
+            npx playwright install-deps chromium webkit
             npx playwright install chromium webkit
           fi
           node tests/native-shell.cjs

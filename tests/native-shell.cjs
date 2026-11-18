@@ -32,7 +32,7 @@ assert.match(dock,/sf-dock-item/,'Native dock interactions remain in the control
 assert.match(overlay,/showModal\(/,'Menu stays a native accessible dialog');
 assert.match(overlay,/finishClose\(/,'The native menu keeps its synchronous close');
 const agencyCSS=read(theme+'/assets/styles/agency.css');
-assert.match(agencyCSS,/\.sf-agency-widget--scroll \.sf-agency-hero::after\s*\{/);
-assert.match(agencyCSS,/filter:none!important/);
+assert.match(agencyCSS,/\.sf-agency-widget--minimal \.sf-agency-minimal-hero::after\s*\{/);
+assert.match(agencyCSS,/filter:none/);
 assert.match(agencyCSS,/\.sf-agency-widget--services \.sf-agency-glass-info/);
 console.log('Native Codela shell, no Glisse runtime and mobile Agency compositor contracts passed');
