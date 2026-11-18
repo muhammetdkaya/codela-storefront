@@ -86,7 +86,7 @@ const server=http.createServer((req,res)=>{
         const chips=card.querySelector('.sf-agency-poster-chips');
         const bottom=card.querySelector('.sf-agency-poster-link');
         return {gap:chips.getBoundingClientRect().top-desc.getBoundingClientRect().bottom,
-          actionsVisible:bottom.getBoundingClientRect().bottom<=window.innerHeight+4};
+          actionsVisible:bottom.getBoundingClientRect().bottom <= card.closest('.sf-agency-services-stage').getBoundingClientRect().bottom - 70};
       });
       if(width<=700){
         assert(posterSpace.gap<=15,'Description and chips keep the approved V4.1 compact spacing');
