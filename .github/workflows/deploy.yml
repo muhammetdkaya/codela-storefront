@@ -37,16 +37,20 @@ jobs:
           BEFORE_SHA: ${{ github.event.before }}
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          echo 'quick=false' >> "$GITHUB_OUTPUT"
-          echo 'scope=full' >> "$GITHUB_OUTPUT"
-          # Manual runs are always full QA, with a separate QA-only option.
+          # Fail closed, and emit each output exactly once.
           case "$GITHUB_EVENT_NAME" in
             push) BASE_SHA="$BEFORE_SHA" ;;
             pull_request) BASE_SHA="$PR_BASE_SHA" ;;
-            *) exit 0 ;;
+            *) BASE_SHA="" ;;
           esac
-          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = '0000000000000000000000000000000000000000' ]; then exit 0; fi
-          git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null || git fetch --quiet --depth=1 origin "$BASE_SHA" || exit 0
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = '0000000000000000000000000000000000000000' ]; then
+            printf 'quick=false\\nscope=full\\n' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null && ! git fetch --quiet --depth=1 origin "$BASE_SHA"; then
+            printf 'quick=false\\nscope=full\\n' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           python3 scripts/classify-deploy.py "$BASE_SHA" "$GITHUB_SHA" >> "$GITHUB_OUTPUT"
       - name: Verify CI classification cannot bypass critical changes
         run: python3 tests/ci-classify.py
