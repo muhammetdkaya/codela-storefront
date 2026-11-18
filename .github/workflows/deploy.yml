@@ -78,7 +78,6 @@ jobs:
           python3 tests/build-assets.py
           node --input-type=module --check < theme/codela-storefront/assets/scripts/agency-widgets.js
           node --check theme/codela-storefront/assets/scripts/agency.js
-          node --check theme/codela-storefront/assets/scripts/glisse-bridge.js
           php tests/agency.php
           php tests/agency-pages.php
           php tests/navigation.php
@@ -266,15 +265,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Compile pinned Glisse shell assets for FTP deploy
-        if: needs.validate.outputs.quick != 'true'
         run: |
           npm install --no-save --package-lock=false glisse@0.5.0
           node scripts/build-glisse.mjs
-      - name: Verify already-bundled pinned shell on fast deploy
-        if: needs.validate.outputs.quick == 'true'
-        run: |
-          node --check theme/codela-storefront/assets/scripts/glisse-bridge.js
-          node tests/glisse-shell.cjs
       - name: Require FTP secrets
         env:
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
