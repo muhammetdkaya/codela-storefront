@@ -600,3 +600,15 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
     backdrop-filter:none;
   }
 }
+
+/* Preserve the archived agency pattern's original iPhone Safari safety.
+   It may still be inserted manually even though the starter is minimal. */
+@media(max-width:700px){
+  .sf-agency-scroll-perspective{perspective:none!important}
+  .sf-agency-scroll-device{
+    transform:none!important;
+    transition:none!important;
+    will-change:auto!important;
+    box-shadow:0 6px 14px rgb(0 0 0 / .2)!important;
+  }
+}
