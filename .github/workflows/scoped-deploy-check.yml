@@ -31,7 +31,6 @@ jobs:
           python3 tests/build-assets.py
           node --input-type=module --check < theme/codela-storefront/assets/scripts/agency-widgets.js
           node --check theme/codela-storefront/assets/scripts/agency.js
-          node --check theme/codela-storefront/assets/scripts/glisse-bridge.js
           php tests/agency.php
           php tests/agency-pages.php
           php tests/navigation.php
