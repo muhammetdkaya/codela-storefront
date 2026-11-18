@@ -158,6 +158,31 @@ $service_data = [
 $services_widget = codela_sf_section_agency_services( $service_data );
 agency_page_check( substr_count( $services_widget, 'class="sf-agency-poster ' ) === 4, 'Reusable services use four reference-style posters.' );
 agency_page_check( str_contains( $services_widget, 'data-agency-widget="services"' ) && str_contains( $services_widget, 'Accessible websites' ), 'Service widget renders saved descriptions.' );
+
+// A pristine installed Agency starter adopts the approved offer/order without changing saved editor data.
+$editorial_starter = [
+    'id' => 'agency-starter-services',
+    'title' => 'Fikirden yayına, yanınızdayız.',
+    'description' => 'İhtiyacınıza göre tasarlanan, kullanımı kolay ve hızlı dijital çözümler.',
+    'items' => [
+        [ 'enabled' => true, 'title' => 'Kurumsal Web & Redesign', 'body' => 'Mobil öncelikli arayüzler.' ],
+        [ 'enabled' => true, 'title' => 'Elementor & Özel Widget', 'body' => 'Özel bileşenler.' ],
+        [ 'enabled' => true, 'title' => 'WooCommerce & E-Ticaret', 'body' => 'Satış akışları.' ],
+        [ 'enabled' => true, 'title' => 'Özel Eklenti & API', 'body' => 'ERP köprüleri.' ],
+    ],
+];
+$editorial_html = codela_sf_section_agency_services( $editorial_starter );
+agency_page_check( str_contains( $editorial_html, 'Web sitenizden <span class="sf-agency-service-accent">özel yazılıma.</span>' ),
+    'Default service heading adopts the approved editorial text and animated accent.' );
+agency_page_check( strpos( $editorial_html, 'Satışa hazır e-ticaret siteleri.' ) <
+    strpos( $editorial_html, 'Markanıza özel web siteleri.' ), 'E-commerce comes first on the pristine starter.' );
+agency_page_check( substr_count( $editorial_html, 'class="sf-agency-poster-link"' ) === 4 &&
+    ! str_contains( $editorial_html, 'data-agency-widget-dialog' ), 'One semantic destination per editorial poster and no redundant modal.' );
+agency_page_check( str_contains( $editorial_html, 'data-agency-service-accent="#647961"' ),
+    'First card exposes its theme tone for lightweight scroll-driven color changes.' );
+agency_page_check( str_contains( $services_widget, 'Our Services' ) &&
+    str_contains( $services_widget, 'Accessible websites' ), 'Customized editor copy is never overwritten.' );
+
 $process_data = [
     'id' => 'process-fixture', 'title' => 'Our Process', 'description' => 'Three independent steps',
     'items' => [
