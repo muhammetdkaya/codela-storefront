@@ -1,0 +1,17 @@
+name: Menu freeze / agency DOM inventory (read only)
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/menu-freeze-probe.yml'
+      - 'tools/menu-freeze-probe.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect unauthenticated production homepage and service/account documents
+        run: python3 tools/menu-freeze-probe.py
