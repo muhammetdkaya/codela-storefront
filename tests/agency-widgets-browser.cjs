@@ -60,7 +60,7 @@ const server=http.createServer((req,res)=>{
       assert.equal(paint.canvas,'rgb(251, 250, 248)','V4.1 uses clean porcelain paper');
       assert.equal(paint.align,'left','Editorial composition uses left-aligned type');
       assert.notEqual(paint.ink,'rgb(255, 255, 255)','Headline uses dark text');
-      assert.equal(paint.mark,'none','V4.1 removes the oversized decorative letter');
+      assert.equal(paint.mark,'"C"','Original Editorial A letter is a subtle typographic watermark');
       assert.equal(paint.fill,'backwards','Entry animation releases CTA hover');
       assert.equal(paint.entrance,'sf-agency-hero-enter','Entry animation is CSS-only');
       const handoff=await hero.evaluate(el=>{
@@ -78,6 +78,9 @@ const server=http.createServer((req,res)=>{
       }
       assert(handoff.radius>=25,'Services surface remains rounded');
       assert.equal(await services.locator('.sf-agency-poster').count(),4,'Four editable service cards remain');
+      assert.equal(await hero.locator('.sf-agency-minimal-signoff').count(),1,'Editorial A signoff is present');
+      assert.notEqual(await services.locator('.sf-agency-services').evaluate(el=>getComputedStyle(el).backgroundColor),
+        paint.canvas,'Services use a distinct warm surface from the porcelain hero');
       assert.equal(await services.locator('.sf-agency-poster-link').count(),4,'Only one link per service poster');
       assert.equal(await services.locator('[data-agency-widget-dialog]').count(),0,'Editorial service links do not open redundant modals');
       assert.equal(await services.locator('.sf-agency-poster-visual').count(),4,'Each service has its own lightweight CSS interface illustration');
@@ -92,8 +95,10 @@ const server=http.createServer((req,res)=>{
         if(posterSpace.gap!==null)assert(posterSpace.gap<=15,'Description and chips keep the approved V4.1 compact spacing');
         assert(posterSpace.actionsVisible,'Service action stays above the bottom dock');
         const stage=services.locator('.sf-agency-services-stage');
-        const size=await stage.evaluate(el=>Math.abs(el.getBoundingClientRect().height-window.innerHeight));
-        assert(size<=2,'Services V4.1 stage occupies one mobile viewport');
+        const size=await stage.evaluate(el=>el.getBoundingClientRect().height);
+        assert(size>=height-2,'Services stage fills at least one viewport without clipping content');
+        const cardHeight=await services.locator('.sf-agency-poster').first().evaluate(el=>el.getBoundingClientRect().height);
+        assert(cardHeight<height*.65,'Service poster is content-sized instead of filling the viewport');
       }
 
       assert((await services.locator('.sf-agency-poster-link').first().getAttribute('href')).includes('hizmetler'),

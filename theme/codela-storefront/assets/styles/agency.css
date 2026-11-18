@@ -902,7 +902,7 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
 }
 
 
-/* 0.1.352 — Approved V4.1 Porcelain: two legible mobile stages.
+/* 0.1.353 — Editorial A rhythm and responsive services: two legible mobile stages.
    Existing Elementor/editor content, native navigation and service links are unchanged. */
 .sf-agency-widget--minimal .sf-agency-minimal-hero,
 .codela-page-layout > .sf-agency-widget--minimal:first-child .sf-agency-minimal-hero{
@@ -912,10 +912,14 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
   background:#fbfaf8;color:#20211f
 }
 .sf-agency-widget--minimal .sf-agency-minimal-hero::after{
-  content:none!important;display:none!important
+  content:"C"!important;display:block!important;
+  right:-.08em;bottom:clamp(114px,15svh,160px);left:auto;top:auto;
+  font-size:clamp(235px,38vw,490px);line-height:.82;
+  color:#e7e3dc;opacity:.38;z-index:0;
+  filter:none;pointer-events:none
 }
 .sf-agency-widget--minimal .sf-agency-minimal-content{
-  width:min(100%,1150px);max-width:1150px;transform:translateY(-12px)
+  position:relative;z-index:1;width:min(100%,1150px);max-width:1150px;transform:translateY(-12px)
 }
 .sf-agency-widget--minimal .sf-agency-minimal-eyebrow{
   margin-bottom:23px!important;color:#51524d;letter-spacing:.14em
@@ -929,19 +933,26 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
 .sf-agency-widget--minimal .sf-agency-minimal-cta{
   background:#20211f;min-height:52px;margin-top:28px;padding-inline:21px
 }
+.sf-agency-widget--minimal .sf-agency-minimal-signoff{
+  position:absolute;z-index:1;left:clamp(24px,5vw,76px);right:clamp(24px,5vw,76px);
+  bottom:52px;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  border-top:1px solid #d9d6d0;padding-top:13px;
+  color:#68645e;font-size:10px;font-weight:720;letter-spacing:.055em;line-height:1.3
+}
 
 /* The footer belongs AFTER the full mobile services stage, not underneath the dock. */
 .sf-agency-widget--services-v3 .sf-agency-services{
-  background:#fbfaf8!important;padding:0!important;
-  display:flex;flex-direction:column
+  background:#f3f1ec!important;padding:0!important;
+  display:flex;flex-direction:column;
+  border-top:1px solid #e4dfd8;border-radius:30px 30px 0 0
 }
 .codela-page-layout > .sf-agency-widget--scroll + .sf-agency-widget--services-v3,
 .codela-page-layout > .sf-agency-widget--minimal + .sf-agency-widget--services-v3{
-  background:#fbfaf8!important
+  background:#f3f1ec!important
 }
 .codela-page-layout > .sf-agency-widget--scroll + .sf-agency-widget--services-v3 .sf-agency-services,
 .codela-page-layout > .sf-agency-widget--minimal + .sf-agency-widget--services-v3 .sf-agency-services{
-  background:#fbfaf8!important;padding:0!important
+  background:#f3f1ec!important;padding:0!important
 }
 .sf-agency-widget--services-v3 .sf-agency-services-stage{width:100%;box-sizing:border-box}
 .sf-agency-widget--services-v3 .sf-agency-poster--commerce{background:#e9efe8}
@@ -954,21 +965,26 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
 .sf-agency-widget--services-v3 .sf-agency-poster-description{color:#595b56}
 .sf-agency-widget--services-v3 .sf-agency-services-footer{
   margin:0 auto!important;padding-block:30px 38px;
-  background:#fbfaf8
+  background:#f3f1ec
 }
 @media (max-width:739px){
   .sf-agency-widget--minimal .sf-agency-minimal-hero,
   .codela-page-layout > .sf-agency-widget--minimal:first-child .sf-agency-minimal-hero{
     height:100svh;min-height:100svh;
-    padding:calc(99px + env(safe-area-inset-top,0px)) 25px
-      calc(103px + env(safe-area-inset-bottom,0px))
+    align-items:flex-start;justify-content:flex-start;
+    padding:clamp(146px,19svh,180px) 25px
+      calc(140px + env(safe-area-inset-bottom,0px))
   }
-  .sf-agency-widget--minimal .sf-agency-minimal-content{transform:translateY(-12px)}
+  .sf-agency-widget--minimal .sf-agency-minimal-content{transform:none}
+  .sf-agency-widget--minimal .sf-agency-minimal-signoff{
+    left:25px;right:25px;bottom:calc(145px + env(safe-area-inset-bottom,0px));
+    font-size:9px
+  }
   .sf-agency-widget--minimal .sf-agency-minimal-eyebrow{
     font-size:9.5px;line-height:1.5;margin-bottom:23px!important
   }
   .sf-agency-widget--minimal .sf-agency-minimal-title{
-    font-size:clamp(37px,10.7vw,48px);line-height:1.065;
+    font-size:clamp(37px,10.9vw,49px);line-height:1.055;
     letter-spacing:-.058em;text-wrap:initial
   }
   .sf-agency-widget--minimal .sf-agency-minimal-lead{
@@ -979,13 +995,14 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
     min-height:52px;margin-top:28px;padding-inline:21px
   }
   .sf-agency-widget--services-v3 .sf-agency-services-stage{
-    box-sizing:border-box;height:100svh;min-height:0;max-height:none;
+    box-sizing:border-box;height:auto;min-height:100svh;max-height:none;
     display:flex;flex-direction:column;
-    padding:clamp(82px,12svh,97px) 0 clamp(85px,13svh,100px);
-    overflow:hidden
+    padding:clamp(66px,9svh,82px) 0
+      calc(105px + env(safe-area-inset-bottom,0px));
+    overflow:visible
   }
   .sf-agency-widget--services-v3 .sf-agency-services-head{
-    padding-inline:25px;gap:13px;margin-bottom:11px!important;
+    padding-inline:25px;gap:11px;margin-bottom:14px!important;
     flex:none;flex-direction:column;align-items:stretch
   }
   .sf-agency-widget--services-v3 .sf-agency-services-heading{
@@ -1013,22 +1030,22 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
     margin-right:auto;font-size:11px;color:#575852
   }
   .sf-agency-widget--services-v3 .sf-agency-service-track{
-    flex:1 1 0;min-height:0;height:auto;max-width:none;
+    flex:0 0 auto;min-height:0;height:auto;max-width:none;
     display:flex;align-items:stretch;gap:12px;
     overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;
-    scroll-padding-inline:25px;padding:0 25px!important
+    scroll-padding-inline:25px;padding:0 25px 10px!important
   }
   .sf-agency-widget--services-v3 .sf-agency-poster{
     flex:0 0 calc(100% - 37px);box-sizing:border-box;
-    height:100%!important;min-height:0!important;
-    padding:15px 17px 13px;border-radius:19px
+    height:auto!important;min-height:0!important;
+    padding:17px 17px 14px;border-radius:19px
   }
   .sf-agency-widget--services-v3 .sf-agency-poster-meta{
     font-size:9px;letter-spacing:.08em
   }
   .sf-agency-widget--services-v3 .sf-agency-poster-visual{
-    flex:1 1 0;min-height:99px;height:auto;
-    display:grid;place-items:end center;padding-bottom:12px
+    flex:0 0 auto;min-height:0;height:clamp(112px,15svh,138px);
+    display:grid;place-items:center;padding:4px 0 1px
   }
   .sf-agency-widget--services-v3 .sf-agency-mini-ui{
     width:min(100%,205px);height:88px;
@@ -1056,9 +1073,8 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
     margin:4px 0 9px
   }
   .sf-agency-widget--services-v3 .sf-agency-poster-description{
-    font-size:11.5px;line-height:1.48;margin:0;
-    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
-    overflow:hidden
+    font-size:11.8px;line-height:1.48;margin:0;
+    display:block;-webkit-line-clamp:unset;overflow:visible
   }
   .sf-agency-widget--services-v3 .sf-agency-poster-chips{
     padding-top:9px!important;gap:5px
@@ -1077,10 +1093,12 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
 @media (max-width:739px) and (max-height:720px){
   .sf-agency-widget--minimal .sf-agency-minimal-hero,
   .codela-page-layout > .sf-agency-widget--minimal:first-child .sf-agency-minimal-hero{
-    padding-top:calc(88px + env(safe-area-inset-top,0px));
-    padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))
+    height:auto;min-height:100svh;
+    padding-top:calc(132px + env(safe-area-inset-top,0px));
+    padding-bottom:calc(102px + env(safe-area-inset-bottom,0px))
   }
-  .sf-agency-widget--minimal .sf-agency-minimal-content{transform:translateY(-6px)}
+  .sf-agency-widget--minimal .sf-agency-minimal-content{transform:none}
+  .sf-agency-widget--minimal .sf-agency-minimal-signoff{display:none}
   .sf-agency-widget--minimal .sf-agency-minimal-title{font-size:clamp(34px,9.9vw,41px)}
   .sf-agency-widget--minimal .sf-agency-minimal-eyebrow{margin-bottom:17px!important}
   .sf-agency-widget--minimal .sf-agency-minimal-lead{
@@ -1090,7 +1108,7 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
     margin-top:20px;min-height:47px
   }
   .sf-agency-widget--services-v3 .sf-agency-services-stage{
-    padding:79px 0 79px
+    padding:54px 0 calc(81px + env(safe-area-inset-bottom,0px))
   }
   .sf-agency-widget--services-v3 .sf-agency-eyebrow{
     margin-bottom:8px
@@ -1107,7 +1125,7 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
   }
   .sf-agency-widget--services-v3 .sf-agency-poster{padding:11px 14px 10px}
   .sf-agency-widget--services-v3 .sf-agency-poster-visual{
-    min-height:71px;padding-bottom:9px
+    height:86px;min-height:0;padding:0
   }
   .sf-agency-widget--services-v3 .sf-agency-mini-ui{
     width:min(100%,166px);height:68px
