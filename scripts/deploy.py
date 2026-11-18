@@ -67,21 +67,28 @@ def main():
     if not password or not server or not username:
         print("Missing FTP_PASSWORD, FTP_SERVER or FTP_USERNAME; no connection attempted.");return 1
     files=package_files()
-    ftp=ftplib.FTP_TLS(context=ssl.create_default_context(),timeout=30)
+    # The theme account can hit a transient TCP connect timeout even when
+    # the plugin's separate FTPS account has just reached the same host.
+    # Retry network/4xx failures only; never retry invalid credentials,
+    # invalid certificates, wrong account root or public mapping mismatches.
+    ftp=ftplib.FTP_TLS(context=ssl.create_default_context(),timeout=45)
     stage="connect";originals={};changed=[];temporary=[];marker_temp=None;marker_switched=False;marker_before=None
     backup=Path(os.environ["RUNNER_TEMP"])/"storefront-rollback";backup.mkdir(exist_ok=True)
     try:
         for attempt in range(3):
             try:
+                stage="connect"
                 ftp.connect(server,21);stage="TLS/authentication"
                 ftp.auth();ftp.login(username,password);ftp.prot_p();ftp.set_pasv(True)
                 break
-            except ftplib.error_temp:
-                ftp.close()
+            except (ftplib.error_temp, TimeoutError, ConnectionResetError, ConnectionRefusedError):
+                try:ftp.close()
+                except OSError:pass
                 if attempt==2:raise
                 import time
-                time.sleep(20)
-                ftp=ftplib.FTP_TLS(context=ssl.create_default_context(),timeout=30)
+                print("Temporary FTPS connection failure; retrying verified connection ("+str(attempt+2)+"/3).",flush=True)
+                time.sleep(20*(attempt+1))
+                ftp=ftplib.FTP_TLS(context=ssl.create_default_context(),timeout=45)
         stage="select fixed theme directory"
         account_root=ftp.pwd()
         base_entries={name for name,facts in ftp.mlsd()}
