@@ -34,5 +34,7 @@ assert.match(overlay,/finishClose\(/,'The native menu keeps its synchronous clos
 const agencyCSS=read(theme+'/assets/styles/agency.css');
 assert.match(agencyCSS,/\.sf-agency-widget--minimal \.sf-agency-minimal-hero::after\s*\{/);
 assert.match(agencyCSS,/filter:none/);
+assert.match(agencyCSS,/background:#f3f0e9/,'Editorial Light uses a single warm paper color');
+assert.doesNotMatch(agencyCSS,/sf-agency-ambient-breath/,'Old ambient purple glow is removed');
 assert.match(agencyCSS,/\.sf-agency-widget--services \.sf-agency-glass-info/);
 console.log('Native Codela shell, no Glisse runtime and mobile Agency compositor contracts passed');
