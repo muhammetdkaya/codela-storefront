@@ -52,7 +52,8 @@ const server=http.createServer((req,res)=>{
         const title=getComputedStyle(el.querySelector('.sf-agency-minimal-title'));
         return {filter:mark.filter,background:mark.backgroundImage,animation:mark.animationName,
           mark:mark.content,fill:line.animationFillMode,entrance:line.animationName,
-          canvas:getComputedStyle(el).backgroundColor,align:title.textAlign,ink:title.color};
+          canvas:getComputedStyle(el).backgroundColor,markBackground:mark.backgroundColor,
+          align:title.textAlign,ink:title.color};
       });
       assert.equal(paint.filter,'none','Typographic watermark does not use Safari blur');
       assert.equal(paint.background,'none','Old AI grid and purple light are absent');
@@ -61,6 +62,8 @@ const server=http.createServer((req,res)=>{
       assert.equal(paint.align,'left','Editorial composition uses left-aligned type');
       assert.notEqual(paint.ink,'rgb(255, 255, 255)','Headline uses dark text');
       assert.equal(paint.mark,'"C"','Original Editorial A letter is a subtle typographic watermark');
+      assert.equal(paint.markBackground,'rgba(0, 0, 0, 0)',
+        'Legacy purple halo must never paint a rectangle behind the editorial C');
       assert.equal(paint.fill,'backwards','Entry animation releases CTA hover');
       assert.equal(paint.entrance,'sf-agency-hero-enter','Entry animation is CSS-only');
       const handoff=await hero.evaluate(el=>{
@@ -79,6 +82,10 @@ const server=http.createServer((req,res)=>{
       assert(handoff.radius>=25,'Services surface remains rounded');
       assert.equal(await services.locator('.sf-agency-poster').count(),4,'Four editable service cards remain');
       assert.equal(await hero.locator('.sf-agency-minimal-signoff').count(),1,'Editorial A signoff is present');
+      if(width===390){
+        assert(await hero.locator('.sf-agency-minimal-signoff').isVisible(),
+          'Editorial signoff stays visible in a realistic short mobile Safari viewport');
+      }
       assert.notEqual(await services.locator('.sf-agency-services').evaluate(el=>getComputedStyle(el).backgroundColor),
         paint.canvas,'Services use a distinct warm surface from the porcelain hero');
       assert.equal(await services.locator('.sf-agency-poster-link').count(),4,'Only one link per service poster');

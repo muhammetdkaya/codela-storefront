@@ -446,7 +446,8 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
 .sf-agency-widget--minimal .sf-agency-minimal-hero::before{content:none;background:none}
 .sf-agency-widget--minimal .sf-agency-minimal-hero::after{
   content:"C";position:absolute;left:auto;top:auto;right:-.04em;bottom:42px;
-  width:auto;height:auto;border:0;border-radius:0;filter:none;
+  width:auto;height:auto;border:0;border-radius:0;
+  background:transparent;box-shadow:none;filter:none;
   font:850 clamp(230px,36vw,500px)/.78 system-ui,-apple-system,sans-serif;
   letter-spacing:-.16em;color:#e0ddd4;opacity:.72;
   pointer-events:none;z-index:-1;animation:none
@@ -902,7 +903,7 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
 }
 
 
-/* 0.1.353 — Editorial A rhythm and responsive services: two legible mobile stages.
+/* 0.1.354 — Editorial A rhythm and responsive services: two legible mobile stages.
    Existing Elementor/editor content, native navigation and service links are unchanged. */
 .sf-agency-widget--minimal .sf-agency-minimal-hero,
 .codela-page-layout > .sf-agency-widget--minimal:first-child .sf-agency-minimal-hero{
@@ -915,8 +916,10 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
   content:"C"!important;display:block!important;
   right:-.08em;bottom:clamp(114px,15svh,160px);left:auto;top:auto;
   font-size:clamp(235px,38vw,490px);line-height:.82;
-  color:#e7e3dc;opacity:.38;z-index:0;
-  filter:none;pointer-events:none
+  color:#e3ded6;opacity:.52;z-index:0;
+  background:transparent!important;background-image:none!important;
+  border:0!important;box-shadow:none!important;
+  filter:none!important;pointer-events:none
 }
 .sf-agency-widget--minimal .sf-agency-minimal-content{
   position:relative;z-index:1;width:min(100%,1150px);max-width:1150px;transform:translateY(-12px)
@@ -972,12 +975,12 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
   .codela-page-layout > .sf-agency-widget--minimal:first-child .sf-agency-minimal-hero{
     height:100svh;min-height:100svh;
     align-items:flex-start;justify-content:flex-start;
-    padding:clamp(146px,19svh,180px) 25px
+    padding:clamp(132px,16svh,154px) 25px
       calc(140px + env(safe-area-inset-bottom,0px))
   }
   .sf-agency-widget--minimal .sf-agency-minimal-content{transform:none}
   .sf-agency-widget--minimal .sf-agency-minimal-signoff{
-    left:25px;right:25px;bottom:calc(145px + env(safe-area-inset-bottom,0px));
+    left:25px;right:25px;bottom:calc(166px + env(safe-area-inset-bottom,0px));
     font-size:9px
   }
   .sf-agency-widget--minimal .sf-agency-minimal-eyebrow{
@@ -1098,7 +1101,10 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
     padding-bottom:calc(102px + env(safe-area-inset-bottom,0px))
   }
   .sf-agency-widget--minimal .sf-agency-minimal-content{transform:none}
-  .sf-agency-widget--minimal .sf-agency-minimal-signoff{display:none}
+  .sf-agency-widget--minimal .sf-agency-minimal-signoff{
+    display:flex;bottom:calc(98px + env(safe-area-inset-bottom,0px));
+    padding-top:8px;font-size:8.3px
+  }
   .sf-agency-widget--minimal .sf-agency-minimal-title{font-size:clamp(34px,9.9vw,41px)}
   .sf-agency-widget--minimal .sf-agency-minimal-eyebrow{margin-bottom:17px!important}
   .sf-agency-widget--minimal .sf-agency-minimal-lead{
@@ -1163,6 +1169,9 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
   }
   .sf-agency-widget--services-v3 .sf-agency-poster-body{flex:0 0 auto}
   .sf-agency-widget--services-v3 .sf-agency-poster-link{margin-top:13px}
+}
+@media(max-width:360px){
+  .sf-agency-widget--minimal .sf-agency-minimal-signoff{display:none}
 }
 @media(prefers-reduced-motion:reduce){
   .sf-agency-widget--services-v3 :is(.sf-agency-eyebrow,.sf-agency-service-accent){transition:none!important}
