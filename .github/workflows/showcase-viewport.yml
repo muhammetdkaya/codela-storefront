@@ -4,7 +4,22 @@ on:
     branches: [fix/showcase-bottom-align-20261028]
     paths: ['theme/**', 'tests/**', '.github/workflows/showcase-viewport.yml']
   pull_request:
-    paths: ['theme/**', 'tests/**', '.github/workflows/showcase-viewport.yml']
+    paths:
+      # Only the homepage showcase needs both screenshot browser engines.
+      - 'theme/codela-storefront/assets/scripts/gallery-horizontal.js'
+      - 'theme/codela-storefront/assets/styles/sections.css'
+      - 'theme/codela-storefront/assets/styles/gallery.css'
+      - 'theme/codela-storefront/inc/sections.php'
+      - 'theme/codela-storefront/inc/section-media.php'
+      - 'theme/codela-storefront/inc/section-content.php'
+      - 'theme/codela-storefront/inc/render.php'
+      - 'theme/codela-storefront/patterns/home*.php'
+      - 'tests/showcase*.cjs'
+      - 'tests/showcase*.php'
+      - 'tests/homepage*.cjs'
+      - 'tests/homepage*.php'
+      - 'tests/sections-preview.php'
+      - '.github/workflows/showcase-viewport.yml'
   workflow_dispatch:
 permissions:
   contents: read
