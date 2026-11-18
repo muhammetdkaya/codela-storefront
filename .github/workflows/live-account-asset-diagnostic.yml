@@ -1,0 +1,15 @@
+name: Read-only live Account CSS diagnosis
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/live-account-asset-diagnostic.yml'
+      - 'tools/live-account-asset-diagnostic.py'
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/live-account-asset-diagnostic.py
