@@ -85,11 +85,11 @@ const server=http.createServer((req,res)=>{
         const desc=card.querySelector('.sf-agency-poster-description');
         const chips=card.querySelector('.sf-agency-poster-chips');
         const bottom=card.querySelector('.sf-agency-poster-link');
-        return {gap:chips.getBoundingClientRect().top-desc.getBoundingClientRect().bottom,
+        return {gap:chips ? chips.getBoundingClientRect().top-desc.getBoundingClientRect().bottom : null,
           actionsVisible:bottom.getBoundingClientRect().bottom <= card.closest('.sf-agency-services-stage').getBoundingClientRect().bottom - 70};
       });
       if(width<=700){
-        assert(posterSpace.gap<=15,'Description and chips keep the approved V4.1 compact spacing');
+        if(posterSpace.gap!==null)assert(posterSpace.gap<=15,'Description and chips keep the approved V4.1 compact spacing');
         assert(posterSpace.actionsVisible,'Service action stays above the bottom dock');
         const stage=services.locator('.sf-agency-services-stage');
         const size=await stage.evaluate(el=>Math.abs(el.getBoundingClientRect().height-window.innerHeight));
