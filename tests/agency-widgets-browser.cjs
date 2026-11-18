@@ -96,8 +96,10 @@ const server = http.createServer((req,res) => {
         }));
         assert.equal(glass.standard,'none',
           'Mobile service posters do not continuously sample blurred backgrounds');
-        assert.equal(glass.webkit,'none',
-          'Mobile service posters disable WebKit backdrop compositing as well');
+        if (typeof glass.webkit === 'string') {
+          assert.equal(glass.webkit,'none',
+            'WebKit-prefixed backdrop compositing is disabled where exposed by the engine');
+        }
       }
       await services.locator('[data-agency-widget-detail="0"]').click();
       assert(await services.locator('[data-agency-widget-dialog]').isVisible(),'Service opens its own detail dialog');
