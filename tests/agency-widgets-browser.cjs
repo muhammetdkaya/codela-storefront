@@ -87,6 +87,8 @@ const server=http.createServer((req,res)=>{
           'Approved four-line editorial headline does not unexpectedly wrap on a phone');
         assert(typography.contentClearance>=18,
           'Headline and CTA remain clear of the closing signature');
+        assert(await hero.locator('.sf-agency-minimal-signoff').isVisible(),
+          'Editorial signature stays visible even on narrow mobile phones');
         if(width===390)assert(typography.fontSize>=43.5,
           'Phone title uses the slightly enlarged editorial scale');
       }
