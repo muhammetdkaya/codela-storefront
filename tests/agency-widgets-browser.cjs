@@ -94,7 +94,22 @@ const server = http.createServer((req,res) => {
       assert.equal(await second.locator('[data-agency-card="1"]').getAttribute('data-pos'),'0','Duplicated widget responds to keyboard independently');
       assert.equal(await first.locator('[data-agency-card="1"]').getAttribute('data-pos'),'0','First widget keeps its selection');
       await scroll.scrollIntoViewIfNeeded();
-      assert(await scroll.locator('[data-agency-scroll-device]').evaluate(el=>getComputedStyle(el).transform!=='none'),'3D device retains perspective transform');
+      const devicePaint=await scroll.locator('[data-agency-scroll-device]').evaluate(el=>({
+        transform:getComputedStyle(el).transform,
+        willChange:getComputedStyle(el).willChange,
+        inlineRotate:el.style.getPropertyValue('--agency-scroll-rotate'),
+        inlineScale:el.style.getPropertyValue('--agency-scroll-scale'),
+        visible:getComputedStyle(el).visibility
+      }));
+      if (width <= 700) {
+        assert.equal(devicePaint.transform,'none','Mobile 3D compositor is removed at its source');
+        assert.equal(devicePaint.willChange,'auto','Mobile hero does not permanently allocate a transformed layer');
+        assert.equal(devicePaint.inlineRotate,'','Mobile scroll never updates 3D rotation');
+        assert.equal(devicePaint.inlineScale,'','Mobile scroll never updates 3D scale');
+        assert.equal(devicePaint.visible,'visible','Hero is not hidden by overlay workaround');
+      } else {
+        assert.notEqual(devicePaint.transform,'none','Desktop keeps the approved 3D motion');
+      }
       await goNext.click();
       await page.waitForFunction(() => {
         const services = document.querySelector('[data-agency-widget="services"] .sf-agency-services');

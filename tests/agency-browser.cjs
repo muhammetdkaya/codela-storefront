@@ -65,12 +65,23 @@ const server = http.createServer((req, res) => {
       assert.equal(await scrollButton.getAttribute('aria-pressed'), 'true');
       assert(await page.locator('[data-agency-hero-cards]').evaluate(node => node.hidden), 'Card Swap layout is hidden in 3D mode');
       assert(!(await page.locator('[data-agency-container-scroll]').evaluate(node => node.hidden)), '3D tablet layout becomes visible');
-      assert((await page.locator('[data-agency-scroll-device]').evaluate(node => getComputedStyle(node).transform)) !== 'none', '3D tablet has an initial transform');
-      await page.evaluate(() => scrollTo(0, 260));
-      await page.waitForFunction(() => {
-        const el = document.querySelector('[data-agency-scroll-device]');
-        return el && Number.parseFloat(el.style.getPropertyValue('--agency-scroll-scale')) > 0.94;
-      });
+      if (width <= 700) {
+        const state=await page.locator('[data-agency-scroll-device]').evaluate(el=>({
+          transform:getComputedStyle(el).transform,
+          willChange:getComputedStyle(el).willChange,
+          scale:el.style.getPropertyValue('--agency-scroll-scale')
+        }));
+        assert.equal(state.transform,'none','Mobile reference hero avoids animated 3D surface');
+        assert.equal(state.willChange,'auto','Mobile reference hero does not allocate a 3D layer');
+        assert.equal(state.scale,'','Mobile reference hero does not continuously update scale');
+      } else {
+        assert.notEqual(await page.locator('[data-agency-scroll-device]').evaluate(node => getComputedStyle(node).transform),'none','Desktop 3D tablet has an initial transform');
+        await page.evaluate(() => scrollTo(0, 260));
+        await page.waitForFunction(() => {
+          const el = document.querySelector('[data-agency-scroll-device]');
+          return el && Number.parseFloat(el.style.getPropertyValue('--agency-scroll-scale')) > 0.94;
+        });
+      }
       if (width === 390 || width === 1440) {
         await page.evaluate(() => scrollTo(0, 0));
         await page.waitForTimeout(170);

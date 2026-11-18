@@ -663,12 +663,21 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
   .sf-agency-widget--scroll .sf-agency-scroll-hint{transition:none}
 }
 
-/* iOS Safari native mobile dialogs cover the viewport. While the full-screen
-   modal has locked scrolling, retain the Agency layout/scroll position but
-   suspend the expensive 3D/widget painting behind the native top layer.
-   Both state transitions happen synchronously in overlay-controller.js. */
+/* 0.1.347 — Remove mobile 3D compositor cost at its source, not by hiding
+   the homepage during menu transitions. The same interface remains visible;
+   3D scroll transforms remain on desktop only. */
 @media(max-width:700px){
-  html.sf-overlay-scroll-locked .codela-page-layout > .sf-agency-widget{
-    visibility:hidden!important;
+  .sf-agency-scroll-perspective{perspective:none!important}
+  .sf-agency-scroll-device,
+  .sf-agency-widget--scroll .sf-agency-scroll-device{
+    transform:none!important;
+    transition:none!important;
+    will-change:auto!important;
+    box-shadow:0 6px 14px rgb(0 0 0 / .2)!important;
+  }
+  .sf-agency-preview-product-art::before{box-shadow:none}
+  .codela-page-layout > .sf-agency-widget--scroll + .sf-agency-widget--services{
+    isolation:auto;
+    z-index:auto;
   }
 }
