@@ -3,11 +3,15 @@
 import re, urllib.request, urllib.parse, time
 from html import unescape
 
-u='https://codela.dev/hesabim/?sf_account_probe=0344-'+str(int(time.time()))
-req=urllib.request.Request(u,headers={'User-Agent':'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Safari/604.1','Cache-Control':'no-store','Pragma':'no-cache'})
-with urllib.request.urlopen(req,timeout=30) as r:
-    data=r.read().decode('utf-8','replace')
-    print('HTML_STATUS',r.status,'LEN',len(data),'FINAL_URL',r.url.split('?')[0],flush=True)
+u='https://codela.dev/hesabim/'
+data=''
+for attempt in range(4):
+    req=urllib.request.Request(u,headers={'User-Agent':'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1','Accept':'text/html,application/xhtml+xml','Accept-Language':'tr-TR,tr;q=0.9','Cache-Control':'no-store'})
+    with urllib.request.urlopen(req,timeout=30) as r:
+        data=r.read().decode('utf-8','replace')
+        print('HTML_TRY',attempt,'STATUS',r.status,'LEN',len(data),'FINAL_URL',r.url.split('?')[0],flush=True)
+    if 'data-sf-auth-rendered="server"' in data:break
+    time.sleep(1.0)
 print('HAS SSR markup', 'data-sf-auth-rendered="server"' in data)
 print('HAS native woo form','woocommerce-form-login' in data)
 print('HAS head boot','sf-auth-ssr-enabled' in data)
