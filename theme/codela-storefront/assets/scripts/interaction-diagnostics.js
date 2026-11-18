@@ -347,7 +347,6 @@
   #sf-performance-debug .sf-debug-modes button{border-radius:10px;padding:7px 5px}
   #sf-performance-debug .sf-debug-modes button[aria-pressed="true"]{background:#262629;color:white;box-shadow:none}
   html.sf-perf-no-glass .sf-mobile-dock .sf-dock-surface,
-  html.sf-perf-no-glass .sf-shell .sf-header .sf-glisse-glass-plate,
   html.sf-perf-no-glass .sf-shell .sf-header .sf-ui-surface,
   html.sf-perf-no-glass #sf-panel .sf-ui-surface,
   html.sf-perf-no-glass #sf-panel button.sf-ui-icon-button--soft{

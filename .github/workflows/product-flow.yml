@@ -2,7 +2,27 @@ name: Product purchase flow (no deployment)
 on:
   pull_request:
     paths:
-      - 'theme/codela-storefront/**'
+      # Purchase flow is independent of Agency and theme release metadata.
+      # Keep shared product/button/overlay changes in scope.
+      - 'theme/codela-storefront/woocommerce/single-product/**'
+      - 'theme/codela-storefront/inc/product.php'
+      - 'theme/codela-storefront/inc/product-mobile-media.php'
+      - 'theme/codela-storefront/inc/render.php'
+      - 'theme/codela-storefront/functions.php'
+      - 'theme/codela-storefront/assets/scripts/product*.js'
+      - 'theme/codela-storefront/assets/scripts/gallery*.js'
+      - 'theme/codela-storefront/assets/scripts/cart-controller.js'
+      - 'theme/codela-storefront/assets/scripts/overlay-controller.js'
+      - 'theme/codela-storefront/assets/scripts/dock-controller.js'
+      - 'theme/codela-storefront/assets/scripts/commerce-links.js'
+      - 'theme/codela-storefront/assets/styles/product.css'
+      - 'theme/codela-storefront/assets/styles/gallery.css'
+      - 'theme/codela-storefront/assets/styles/components.css'
+      - 'theme/codela-storefront/assets/styles/overlay.css'
+      - 'theme/codela-storefront/assets/styles/navigation.css'
+      - 'tests/product*.cjs'
+      - 'tests/product*.php'
+      - 'tests/gallery*.cjs'
       - 'tests/product-flow-browser.cjs'
       - '.github/workflows/product-flow.yml'
 permissions:

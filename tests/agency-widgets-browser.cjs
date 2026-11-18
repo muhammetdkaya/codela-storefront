@@ -47,6 +47,18 @@ const server = http.createServer((req,res) => {
       }
       assert.notEqual(await first.locator('.sf-agency-swap-stage').evaluate(el => getComputedStyle(el).perspective),'none','3D card stack remains intact');
       assert.equal(await scroll.count(),1,'3D section is independently placed between Card Swap sections');
+      const scrollHalo = await scroll.locator('.sf-agency-hero').evaluate(el => {
+        const style=getComputedStyle(el,'::after');
+        return {filter:style.filter,background:style.backgroundImage};
+      });
+      if (width <= 700) {
+        assert.equal(scrollHalo.filter,'none',
+          'Mobile Scroll hero must not leave the 125px GPU blur active (old 0.1.347 regression)');
+        assert(scrollHalo.background.startsWith('radial-gradient('),
+          'Welcome glow keeps its appearance as a cheap static radial gradient');
+      } else {
+        assert.notEqual(scrollHalo.filter,'none','Desktop 3D scroll hero remains visually unchanged');
+      }
       const handoff = await scroll.evaluate(el => {
         const next = el.nextElementSibling;
         const expertise = el.querySelector('.sf-agency-scroll-expertise');
@@ -77,6 +89,18 @@ const server = http.createServer((req,res) => {
       const services = page.locator('[data-agency-widget="services"]');
       const process = page.locator('[data-agency-widget="process"]');
       assert.equal(await services.locator('.sf-agency-poster').count(),4,'Four editable services render independently');
+      if (width <= 700) {
+        const glass=await services.locator('.sf-agency-glass-info').first().evaluate(el => ({
+          webkit:getComputedStyle(el).webkitBackdropFilter,
+          standard:getComputedStyle(el).backdropFilter
+        }));
+        assert.equal(glass.standard,'none',
+          'Mobile service posters do not continuously sample blurred backgrounds');
+        if (typeof glass.webkit === 'string') {
+          assert.equal(glass.webkit,'none',
+            'WebKit-prefixed backdrop compositing is disabled where exposed by the engine');
+        }
+      }
       await services.locator('[data-agency-widget-detail="0"]').click();
       assert(await services.locator('[data-agency-widget-dialog]').isVisible(),'Service opens its own detail dialog');
       assert.equal(await services.locator('[data-agency-widget-detail-title]').textContent(),'Web');

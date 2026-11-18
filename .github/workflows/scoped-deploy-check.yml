@@ -39,5 +39,5 @@ jobs:
           php tests/passkeys.php
           node tests/quick-login-ui.cjs
           node tests/passkeys-ui.cjs
-          node tests/glisse-shell.cjs
+          node tests/native-shell.cjs
           python3 tests/package.py
