@@ -66,6 +66,32 @@ const server=http.createServer((req,res)=>{
         'Legacy purple halo must never paint a rectangle behind the editorial C');
       assert.equal(paint.fill,'backwards','Entry animation releases CTA hover');
       assert.equal(paint.entrance,'sf-agency-hero-enter','Entry animation is CSS-only');
+      if(width<=390){
+        const typography=await hero.evaluate(el=>{
+          const heading=el.querySelector('.sf-agency-minimal-title');
+          const titleStyle=getComputedStyle(heading);
+          const titleLines=[...heading.querySelectorAll('span')];
+          const cta=el.querySelector('.sf-agency-minimal-cta');
+          const signoff=el.querySelector('.sf-agency-minimal-signoff');
+          const lh=parseFloat(titleStyle.lineHeight);
+          return {
+            fontSize:parseFloat(titleStyle.fontSize),
+            lineSpacingRatio:lh/parseFloat(titleStyle.fontSize),
+            singleLine: titleLines.every(line=>line.getBoundingClientRect().height<=lh*1.2),
+            contentClearance:signoff.getBoundingClientRect().top-cta.getBoundingClientRect().bottom
+          };
+        });
+        assert(typography.lineSpacingRatio>=1.09,
+          'Editorial title has deliberate leading rather than compressed lines');
+        assert(typography.singleLine,
+          'Approved four-line editorial headline does not unexpectedly wrap on a phone');
+        assert(typography.contentClearance>=18,
+          'Headline and CTA remain clear of the closing signature');
+        assert(await hero.locator('.sf-agency-minimal-signoff').isVisible(),
+          'Editorial signature stays visible even on narrow mobile phones');
+        if(width===390)assert(typography.fontSize>=43.5,
+          'Phone title uses the slightly enlarged editorial scale');
+      }
       const handoff=await hero.evaluate(el=>{
         const next=el.nextElementSibling,layer=next?.querySelector('.sf-agency-services');
         return {type:next?.dataset.agencyWidget,overlap:el.getBoundingClientRect().bottom-next.getBoundingClientRect().top,
