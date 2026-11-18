@@ -1177,7 +1177,13 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
   .sf-agency-widget--services-v3 .sf-agency-poster-link{margin-top:13px}
 }
 @media(max-width:360px){
-  .sf-agency-widget--minimal .sf-agency-minimal-signoff{display:none}
+  /* Keep the editorial signature visible without colliding with the larger
+     headline on narrow phones. Do not inherit the previous display:none. */
+  .sf-agency-widget--minimal .sf-agency-minimal-signoff{
+    display:flex;left:18px;right:18px;
+    bottom:calc(116px + env(safe-area-inset-bottom,0px));
+    font-size:7.6px;padding-top:7px
+  }
 }
 @media(prefers-reduced-motion:reduce){
   .sf-agency-widget--services-v3 :is(.sf-agency-eyebrow,.sf-agency-service-accent){transition:none!important}
