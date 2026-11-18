@@ -166,7 +166,11 @@ console.log('Quick login browser contracts passed');
   const smartJs=fs.readFileSync('theme/codela-storefront/assets/scripts/auth-smart.js','utf8');
   const accountPhp=fs.readFileSync('theme/codela-storefront/inc/account.php','utf8');
   const smartCss=fs.readFileSync('theme/codela-storefront/assets/styles/auth-smart.css','utf8');
-  assert(php.includes('sf-auth-ssr-enabled') && php.includes('8000'),
+  assert(php.includes('<style id="sf-auth-critical-first-paint">') &&
+  php.includes('html.sf-auth-ssr-enabled body.woocommerce-account .woocommerce > :is(#customer_login') &&
+  php.includes('html:not(.sf-auth-ssr-enabled) body.woocommerce-account .woocommerce:not(.sf-smart-auth-active) > .sf-smart-auth'),
+  'Direct guest first paint has its own tiny blocking CSS for both safe initial and no-JS fallback');
+assert(php.includes('sf-auth-ssr-enabled') && php.includes('8000'),
     'Direct Account uses PHP first-paint with bounded native fallback');
   assert(accountPhp.includes("add_action( 'woocommerce_before_customer_login_form', 'codela_sf_account_identity_markup', 6 )") &&
     accountPhp.includes('data-sf-auth-rendered="server"'),
