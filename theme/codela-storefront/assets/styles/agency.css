@@ -2120,3 +2120,72 @@ body:has(.codela-page-layout>.sf-agency-widget--contact-bento) .sf-footer a{colo
   .sf-agency-widget--process .sf-agency-process-next,
   .sf-agency-widget--process .sf-agency-process-prev{transition:none!important}
 }
+
+/* Agency document canvas / viewport: one native page surface, not isolated
+   full-height colored islands above the white storefront canvas.
+   Only the current obsidian Agency widgets qualify; legacy light Agency
+   layouts and every WooCommerce/store page retain their existing palette. */
+html:has(body .sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)),
+body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)){
+  background:#09090c;
+}
+body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)){
+  --sf-agency-header-clearance:0px;
+  --sf-agency-dock-clearance:0px;
+  --sf-agency-screen-block:calc(100dvh - var(--sf-agency-header-clearance) - var(--sf-agency-dock-clearance));
+}
+body:not(.home):has(.sf-shell):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)){
+  --sf-agency-header-clearance:76px;
+}
+body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)) .sf-content,
+body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)) .codela-page-layout{
+  background:#09090c;
+}
+body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)) .sf-content{padding:0!important}
+body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)) .sf-footer{
+  margin-top:0;background:#09090c;border-top-color:rgba(255,255,255,.10);
+  color:#aaa5af;
+}
+body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)) .sf-footer a,
+body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)) .sf-footer-brand{color:#d8d4df}
+body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)) .sf-footer-copyright{color:#96929e}
+
+/* A stage fits the *usable* viewport. Its content may still make it taller;
+   never clip the long service, process, contact, or project forms. */
+.sf-agency-widget--studio .codela-studio-hero,
+.sf-agency-widget--bento .cdl-bento,
+.sf-agency-widget--process .sf-agency-process,
+.sf-agency-widget--detail .cdl-service-detail,
+.sf-agency-widget--contact-bento .cdl-contact,
+.sf-agency-widget--project .cdl-project{
+  min-height:var(--sf-agency-screen-block,100svh);
+}
+@media(max-width:700px){
+  body:not(.home):has(.sf-shell):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)){
+    --sf-agency-header-clearance:68px;
+  }
+  /* The PHP shell adds has-mobile-dock only when the setting is enabled.
+     Do not reserve navigation space on pages where no dock was rendered. */
+  body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)):has(.sf-shell.has-mobile-dock){
+    --sf-agency-dock-clearance:calc(var(--sf-ui-bottom-bar-height,58px) + var(--sf-ui-bottom-bar-gap,4px) + 8px + env(safe-area-inset-bottom,0px));
+  }
+  /* The storefront's generic dock padding creates a blank strip after the
+     footer. The Agency footer now owns its own conditional clearance. */
+  body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)){padding-bottom:0!important}
+  body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)) .sf-footer{
+    padding-bottom:calc(18px + var(--sf-agency-dock-clearance));
+  }
+}
+@media(max-width:739px){
+  /* Studio's flexible photo needs a definite stage height on taller phones. */
+  .sf-agency-widget--studio .codela-studio-hero{
+    height:var(--sf-agency-screen-block,100svh);
+  }
+}
+@media(max-width:739px) and (max-height:700px){
+  /* Small-height phones must scroll rather than squeeze or crop the photo. */
+  .sf-agency-widget--studio .codela-studio-hero{
+    height:auto;
+    min-height:var(--sf-agency-screen-block,100svh);
+  }
+}
