@@ -28,7 +28,7 @@ jobs:
                   return r.read().decode('utf-8',errors='replace')
           style=get('/wp-content/themes/codela-storefront/style.css')
           ver=re.search(r'(?m)^Version:\s*(\S+)',style)
-          assert ver and ver.group(1)=='0.1.358', 'Unexpected live theme version'
+          assert ver and ver.group(1)=='0.1.359', 'Unexpected live theme version'
           expected=[
               ('Web Tasarım','mona-bento-web.jpg'),
               ('E-Ticaret','mona-bento-web.jpg'),
@@ -70,4 +70,13 @@ jobs:
               print('Check attempt',attempt+1,'; '.join(failures),flush=True)
               if attempt<2: time.sleep(5)
               else: raise AssertionError('Live service details failed validation')
+          contact=get('/iletisim/')
+          required=['sf-agency-widget--contact-bento','cdl-contact__card--primary',
+                    'cdl-contact__card--small','cdl-contact__card--strip',
+                    'cdl-contact__form','admin-post.php','agency_contact_nonce',
+                    'agency_webpage','agency_consent','data-agency-contact-services']
+          missing=[m for m in required if m not in contact]
+          assert not missing, 'Contact Bento and secured form missing: '+repr(missing)
+          assert '<h1' in contact and 'Birlikte başlayalım.' in contact, 'Approved contact header missing'
+          print('OK /iletisim/: 1+2+1 Bento, secure native WP form, consent and nonce',flush=True)
           PY
