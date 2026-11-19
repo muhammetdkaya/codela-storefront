@@ -1,4 +1,4 @@
-name: Verify live Codela Agency Studio, Bento and four Service Details
+name: Verify live Codela Agency including real Project Start
 on:
   push:
     branches: [main]
@@ -9,14 +9,14 @@ permissions:
 jobs:
   public-pages:
     runs-on: ubuntu-24.04
-    timeout-minutes: 3
+    timeout-minutes: 6
     steps:
       - name: Verify four real service pages and native Studio/Bento homepage
         run: |
           python3 - <<'PY'
           import re, time, uuid
           from html import unescape
-          from urllib.parse import urljoin, urlparse
+          from urllib.parse import urljoin, urlparse, parse_qs
           from urllib.request import Request, urlopen
           BASE='https://codela.dev'
           def get(path):
@@ -28,7 +28,7 @@ jobs:
                   return r.read().decode('utf-8',errors='replace')
           style=get('/wp-content/themes/codela-storefront/style.css')
           ver=re.search(r'(?m)^Version:\s*(\S+)',style)
-          assert ver and ver.group(1)=='0.1.359', 'Unexpected live theme version'
+          assert ver and ver.group(1)=='0.1.360', 'Unexpected live theme version'
           expected=[
               ('Web Tasarım','mona-bento-web.jpg'),
               ('E-Ticaret','mona-bento-web.jpg'),
@@ -65,7 +65,7 @@ jobs:
                   else:
                       print('OK',name,parsed.path,'4 scope tags / correct image / real CTA',flush=True)
               if not failures:
-                  print('Studio 0.1.358, Bento and all 4 WordPress service details are live.',flush=True)
+                  print('Studio 0.1.360, Bento and all 4 WordPress service details are live.',flush=True)
                   break
               print('Check attempt',attempt+1,'; '.join(failures),flush=True)
               if attempt<2: time.sleep(5)
@@ -79,4 +79,47 @@ jobs:
           assert not missing, 'Contact Bento and secured form missing: '+repr(missing)
           assert '<h1' in contact and 'Birlikte başlayalım.' in contact, 'Approved contact header missing'
           print('OK /iletisim/: 1+2+1 Bento, secure native WP form, consent and nonce',flush=True)
+          # Ownership-aware links come from the rendered Contact Bento, never
+          # an assumed '/proje-baslat/' slug that may belong to someone else.
+          primary=re.search(
+              r'<a\b[^>]*class="cdl-contact__card cdl-contact__card--primary"[^>]*href="([^"]+)"',
+              contact,re.S)
+          assert primary, 'Contact CTA missing'
+          project_url=urljoin(BASE,unescape(primary.group(1)))
+          project_path=urlparse(project_url).path
+          assert urlparse(project_url).netloc==urlparse(BASE).netloc and project_path not in ('/','/iletisim/'), 'Project CTA still points to fallback'
+          print('Contact primary link:',project_path,flush=True)
+          # A new page can be installed only after plugin 1.2.24 has reached FTP.
+          for i in range(5):
+              project=get(project_path)
+              if 'sf-agency-widget--project' in project:
+                  break
+              if i==4: raise AssertionError('Project Start WordPress page not installed')
+              time.sleep(8)
+          expected_controls=[
+             'sf-agency-widget--project','data-project-step="1"',
+             'data-project-step="2"','data-project-next','data-project-back',
+             'agency_project_nonce','agency_project_webpage',
+             'agency_project_consent','codela_sf_agency_project',
+             'agency_project_name','agency_project_contact',
+             'agency_project_note','admin-post.php'
+          ]
+          missing=[x for x in expected_controls if x not in project]
+          assert not missing, 'Project form missing secured native controls: '+repr(missing)
+          counts={'agency_project_service':4,'agency_project_time':3,'agency_project_scale':3}
+          for field,n in counts.items():
+              actual=len(re.findall(r'name="'+field+r'"',project))
+              assert actual==n, f'Project Start {field}: {actual}, expected {n}'
+          assert 'Neye odaklanıyoruz?' in project, 'Project stage 1 headline missing'
+          # Merely adding a query parameter cannot fake a successful submission.
+          spoofed=get(project_path+'?codela_status=sent')
+          assert 'cdl-project__success' not in spoofed and 'data-project-form' in spoofed, 'Project success can be spoofed without receipt'
+          for (name,_),raw_href in zip(expected,hrefs):
+              detail=get(urlparse(urljoin(BASE,unescape(raw_href))).path)
+              button=re.search(r'<a\b[^>]*class="cdl-service-detail__cta"[^>]*href="([^"]+)"',detail,re.S)
+              assert button, 'Missing Project Start CTA: '+name
+              target=urlparse(urljoin(BASE,unescape(button.group(1))))
+              selected=parse_qs(target.query).get('hizmetler',[''])[0]
+              assert target.path==project_path and selected==name, 'Detail links to wrong project / service: '+name
+          print('OK Project Start: 2 steps, 4/3/3 options, nonce/consent/honeypot, verified links from all four services, and no spoofed success',flush=True)
           PY
