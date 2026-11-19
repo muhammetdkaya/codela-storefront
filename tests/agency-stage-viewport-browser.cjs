@@ -73,6 +73,9 @@ const rect=e=>{
             footer:rect(document.querySelector('.sf-footer')),
             bodyPadding:getComputedStyle(document.body).paddingBottom,
             snap:getComputedStyle(document.documentElement).scrollSnapType,
+            snapMatch:document.documentElement.matches('html:has(body.home .codela-page-layout > .sf-agency-widget--studio + .sf-agency-widget--bento)'),
+            direct:!!document.querySelector('body.home .codela-page-layout > .sf-agency-widget--studio + .sf-agency-widget--bento'),
+            supported:CSS.supports('scroll-snap-type','y proximity'),
             overflow:document.documentElement.scrollWidth-innerWidth};
         });
         assert(boxes.hero&&boxes.photo&&boxes.bento,'Real Studio + Bento rendered');
@@ -85,7 +88,7 @@ const rect=e=>{
           assert(boxes.bodyPadding==='0px','No trailing body dock reserve on Agency');
         }
         assert(boxes.overflow<=2,'No horizontal overflow: '+JSON.stringify(boxes));
-        assert(/proximity/.test(boxes.snap),'Home sections use gentle proximity snap');
+        assert(/proximity/.test(boxes.snap),'Home sections use gentle proximity snap: '+JSON.stringify(boxes));
         console.log('Agency stage:',width,height,'dock',dock,'photo-tail',Math.round(boxes.hero.bottom-boxes.photo.bottom),
           'snap',boxes.snap,'overflow',boxes.overflow);
         if(width===390){
