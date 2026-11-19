@@ -19,7 +19,31 @@ function codela_sf_agency_installed_page_url( string $slug ): string {
         ? (string) get_permalink( $page ) : '';
 }
 
+/** Return only the verified owned service subpage, including renamed parents. */
+function codela_sf_agency_owned_service_detail_url( string $slug ): string {
+    $allowed = [ 'web-tasarimi', 'e-ticaret', 'ozel-yazilim', 'gelistirme-destek' ];
+    if ( ! in_array( $slug, $allowed, true ) ) { return ''; }
+    $state = get_option( 'codela_agency_demo_state_v1', [] );
+    $parent_id = is_array( $state ) && ! empty( $state['done'] )
+        ? (int) ( $state['pages']['hizmetler'] ?? 0 ) : 0;
+    if ( ! $parent_id || get_post_meta( $parent_id, '_codela_agency_demo_key', true ) !== 'codela-agency-starter:1:hizmetler' ) { return ''; }
+    $ids = get_posts( [
+        'post_type' => 'page', 'post_status' => 'publish', 'post_parent' => $parent_id,
+        'meta_key' => '_codela_agency_service_detail_key',
+        'meta_value' => 'codela-agency-detail:1:' . $slug,
+        'fields' => 'ids', 'numberposts' => 2, 'suppress_filters' => true,
+    ] );
+    if ( 1 !== count( $ids ) ) { return ''; }
+    $page = get_post( (int) $ids[0] );
+    return $page && $page->post_name && ! post_password_required( $page )
+        ? (string) get_permalink( $page ) : '';
+}
+
 function codela_sf_agency_page_url( string $slug, string $fallback = '' ): string {
+    if ( 0 === strpos( $slug, 'hizmetler/' ) ) {
+        $detail = codela_sf_agency_owned_service_detail_url( substr( $slug, strlen( 'hizmetler/' ) ) );
+        if ( $detail ) { return $detail; }
+    }
     $installed = codela_sf_agency_installed_page_url( $slug );
     if ( $installed ) { return $installed; }
     $page = get_page_by_path( $slug );
