@@ -63,7 +63,7 @@ def check_service_detail_pages() -> None:
         ]
         missing = [marker for marker in required if marker not in html]
         heading = re.search(
-            r'<h1\b[^>]*>(.*?)</h1>', html, flags=re.S,
+            r'<h1\b[^>]*id="codela-detail-[^"]+"[^>]*>(.*?)</h1>', html, flags=re.S,
         )
         heading_text = " ".join(unescape(re.sub(r'<[^>]*>', '', heading.group(1))).split()) if heading else ""
         scope = re.search(
