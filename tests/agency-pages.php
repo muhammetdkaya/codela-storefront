@@ -105,7 +105,9 @@ if ( in_array( '--render=studio', $argv, true ) ) {
     echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
     echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/storefront-base.css">';
     echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/agency.css">';
-    echo '</head><body><main class="sf-content"><div class="codela-page-layout">' . $studio_html . '</div></main></body></html>';
+    // In the CLI fixture only, rewrite codela.test theme URI to the local QA HTTP server.
+    $local_studio = str_replace( 'https://codela.test/wp-content/themes/codela-storefront/', '/theme/codela-storefront/', $studio_html );
+    echo '</head><body><main class="sf-content"><div class="codela-page-layout">' . $local_studio . '</div></main></body></html>';
     exit;
 }
 
