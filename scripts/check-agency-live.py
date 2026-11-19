@@ -98,7 +98,7 @@ def check() -> None:
         "/": [],  # Dedicated native Agency starter checked separately below
         "/hizmetler/": ["sf-agency-service-page", "data-agency-module-grid", "data-agency-selected-cta"],
         "/hakkimizda/": ["sf-agency-about-page", "data-agency-step", "data-agency-process-stage"],
-        "/iletisim/": ["sf-agency-contact-page", "admin-post.php", "agency_contact_nonce"],
+        "/iletisim/": ["sf-agency-widget--contact-bento", "cdl-contact__grid", "cdl-contact__card--primary", "cdl-contact__form", "admin-post.php", "agency_contact_nonce", "agency_webpage", "agency_consent", "data-agency-contact-services"],
     }
     for attempt in range(3):
         errors = []
