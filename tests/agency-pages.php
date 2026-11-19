@@ -39,6 +39,7 @@ function wp_nonce_field( $action, $field = '_wpnonce' ) { echo '<input type="hid
 function checked( $value, $expected ) { if ( $value === $expected ) echo ' checked="checked"'; }
 function get_privacy_policy_url() { return 'https://codela.test/gizlilik/'; }
 function wp_unslash( $value ) { return $value; }
+function get_transient( $key ) { return $key === 'codela_sf_project_receipt_' . str_repeat( 'a', 32 ); }
 function is_email( $value ) { return (bool) filter_var( $value, FILTER_VALIDATE_EMAIL ); }
 function sanitize_key( $value ) { return preg_replace( '/[^a-z0-9_-]/', '', strtolower( $value ) ); }
 function get_template_directory_uri() { return 'https://codela.test/wp-content/themes/codela-storefront'; }
@@ -171,6 +172,10 @@ agency_page_check( str_contains($project_html,'agency_project_nonce') &&
     'Project Start has real WordPress submission, consent, nonce and honeypot' );
 $original_query=$_GET;
 $_GET['codela_status']='sent';
+$spoofed = codela_sf_section_agency_project( $project_data );
+agency_page_check( str_contains($spoofed,'data-project-form') && !str_contains($spoofed,'cdl-project__success'),
+    'Manually crafted sent query never fakes a successful project request' );
+$_GET['codela_receipt']=str_repeat('a',32);
 $confirmed = codela_sf_section_agency_project( $project_data );
 agency_page_check( str_contains($confirmed,'Talebiniz alındı.') &&
     !str_contains($confirmed,'data-project-form'),
