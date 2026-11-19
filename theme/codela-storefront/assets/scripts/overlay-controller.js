@@ -217,6 +217,9 @@ export function createOverlayController({
             (name === 'menu' || name === 'account');
         if (name === 'menu' && mobileHeader.matches && ['search','cart','account'].includes(previous)) returnToPanel = previous;
         else if (name !== 'menu') returnToPanel = null;
+        // Agency's dedicated X always dismisses the entire dialog, never
+        // unexpectedly returns to a previous shop/account view.
+        if (agencyClose) returnToPanel = null;
         if (opening) {
             cancelAnimationFrame(restoreScrollFrame);
             // Debug-only A/B. Native showModal() stays active, but we skip the
