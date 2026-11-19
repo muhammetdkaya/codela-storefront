@@ -162,10 +162,10 @@ function codela_sf_header(): string {
             </a>
             <?php if ( $agency_navigation ) : ?>
             <a data-dock-view="services" class="sf-dock-item sf-ui-nav-tab" href="<?php echo esc_url( function_exists( 'codela_sf_agency_page_url' ) ? codela_sf_agency_page_url( 'hizmetler', home_url( '/hizmetler/' ) ) : home_url( '/hizmetler/' ) ); ?>">
-                <?php echo codela_sf_icon( 'house' ); ?><span><?php esc_html_e( 'Services', 'codela-storefront' ); ?></span>
+                <?php echo codela_sf_icon( 'arrow-right' ); ?><span><?php esc_html_e( 'Services', 'codela-storefront' ); ?></span>
             </a>
             <a data-dock-view="contact" class="sf-dock-item sf-ui-nav-tab" href="<?php echo esc_url( function_exists( 'codela_sf_agency_contact_url' ) ? codela_sf_agency_contact_url() : home_url( '/iletisim/' ) ); ?>">
-                <?php echo codela_sf_icon( 'user-round' ); ?><span><?php esc_html_e( 'Contact', 'codela-storefront' ); ?></span>
+                <?php echo codela_sf_icon( 'map-pin' ); ?><span><?php esc_html_e( 'Contact', 'codela-storefront' ); ?></span>
             </a>
             <?php else : ?>
             <a data-dock-view="search" class="sf-dock-item sf-ui-nav-tab" href="<?php echo esc_url( add_query_arg( [ 's' => '', 'post_type' => 'product' ], home_url( '/' ) ) ); ?>" data-wp-on--click="actions.search" data-panel="search" aria-haspopup="dialog" aria-expanded="false" aria-label="<?php esc_attr_e( 'Search', 'codela-storefront' ); ?>">
