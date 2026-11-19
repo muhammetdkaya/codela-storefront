@@ -88,7 +88,7 @@ function codela_sf_agency_project_link(): string {
 
 /** Load visual assets only for a page that actually contains agency modules. */
 function codela_sf_agency_asset_flags(): array {
-    $flags = [ 'pattern' => false, 'widgets' => false ];
+    $flags = [ 'pattern' => false, 'widgets' => false, 'project' => false ];
     if ( ! function_exists( 'get_queried_object_id' ) || ! function_exists( 'get_post' ) ) { return $flags; }
     $id = (int) get_queried_object_id();
     $post = $id ? get_post( $id ) : null;
@@ -100,6 +100,7 @@ function codela_sf_agency_asset_flags(): array {
     }
     $flags['pattern'] = str_contains( $content, 'codela-storefront/agency-' );
     $flags['widgets'] = str_contains( $content, 'codela/section-agency-' ); // Includes agency-studio without a theme-mode flag.
+    $flags['project'] = str_contains( $content, 'codela/section-agency-project' );
     return $flags;
 }
 function codela_sf_agency_styles(): void {
@@ -110,6 +111,9 @@ add_action( 'wp_enqueue_scripts', static function() {
     $flags = codela_sf_agency_asset_flags();
     if ( ! $flags['pattern'] && ! $flags['widgets'] ) { return; }
     codela_sf_agency_styles();
+    if ( $flags['project'] ) {
+        wp_enqueue_style( 'codela-storefront-agency-project', get_template_directory_uri() . '/assets/styles/agency-project.css', [ 'codela-storefront-agency' ], wp_get_theme()->get( 'Version' ) );
+    }
     if ( $flags['pattern'] ) {
         wp_enqueue_script( 'codela-storefront-agency', get_template_directory_uri() . '/assets/scripts/agency.js', [], wp_get_theme()->get( 'Version' ), true );
     }
