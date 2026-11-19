@@ -64,6 +64,12 @@ function init() {
     // page visits or browser history from an external website.
     function restoreSearchReturn() {
         const key = 'sf-search-return-state';
+        // An Agency has no product search: discard any stale Woo search return
+        // left by a previous Commerce session after the setting changes.
+        if (document.querySelector('.sf-shell.has-agency-profile')) {
+            sessionStorage.removeItem(key);
+            return;
+        }
         let saved;
         try { saved = JSON.parse(sessionStorage.getItem(key) || 'null'); }
         catch { sessionStorage.removeItem(key); return; }
