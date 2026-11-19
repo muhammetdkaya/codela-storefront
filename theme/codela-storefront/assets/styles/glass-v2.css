@@ -1,0 +1,115 @@
+/**
+ * Codela Glass V2 — opt-in optical material for floating navigation only.
+ * No additional runtime, backdrop animation, geometry changes or modal copy.
+ * A single translucent paint combines with the shared UI Kit's existing blur.
+ */
+body.sf-glass-v2 {
+  --sf-glass-v2-fill:rgba(252,252,255,.51);
+  --sf-glass-v2-opaque:#f5f5f8;
+  --sf-glass-v2-ink:#1b1b23;
+  --sf-glass-v2-rim:rgba(255,255,255,.80);
+  --sf-glass-v2-border:rgba(88,91,107,.16);
+  --sf-glass-v2-shadow:inset 0 1px 0 var(--sf-glass-v2-rim),inset 1px 0 0 rgba(255,255,255,.26),inset 0 -1px 0 rgba(42,43,53,.07),0 7px 23px rgba(24,26,39,.12);
+  --sf-glass-v2-control-shadow:inset 0 1px 0 var(--sf-glass-v2-rim),inset 0 -1px 0 rgba(28,32,40,.06),0 4px 14px rgba(24,26,39,.11);
+  --sf-glass-v2-selection:rgba(39,42,55,.10);
+  --sf-glass-v2-icon-filter:brightness(0);
+  --sf-glass-v2-shine:linear-gradient(155deg,rgba(255,255,255,.17),rgba(255,255,255,0) 48%);
+}
+/* Agency layouts are dark: translucent graphite, not 91% opaque white.
+   :has is evaluated on the document structure, never on each scroll frame.
+   Non-:has browsers keep the legible light material above. */
+body.sf-glass-v2:has(.sf-agency-widget) {
+  --sf-glass-v2-fill:rgba(41,43,53,.46);
+  --sf-glass-v2-opaque:#262830;
+  --sf-glass-v2-ink:#f8f8fb;
+  --sf-glass-v2-rim:rgba(255,255,255,.31);
+  --sf-glass-v2-border:rgba(255,255,255,.22);
+  --sf-glass-v2-shadow:inset 0 1px 0 var(--sf-glass-v2-rim),inset 1px 0 0 rgba(255,255,255,.12),inset 0 -1px 0 rgba(0,0,0,.18),0 8px 28px rgba(0,0,0,.28);
+  --sf-glass-v2-control-shadow:inset 0 1px 0 var(--sf-glass-v2-rim),inset 0 -1px 0 rgba(0,0,0,.16),0 5px 16px rgba(0,0,0,.25);
+  --sf-glass-v2-selection:rgba(255,255,255,.14);
+  --sf-glass-v2-icon-filter:brightness(0) invert(1);
+  --sf-glass-v2-shine:linear-gradient(150deg,rgba(255,255,255,.13),rgba(255,255,255,0) 46%);
+}
+/* Only shared navigation islands receive the material. Product sheet,
+   purchase bar, dock, account, cart and checkout remain exactly as before. */
+body.sf-glass-v2 .sf-shell .sf-header :is(
+  .sf-brand.sf-ui-surface,
+  .sf-actions.sf-ui-surface,
+  .sf-desktop-navigation.sf-ui-surface,
+  .sf-header-menu .sf-ui-icon-button--soft,
+  .sf-product-home.sf-ui-icon-button--soft
+),
+body.sf-glass-v2 .sf-shell .sf-desktop-submenu.sf-ui-surface {
+  --sf-ui-glass-surface:var(--sf-glass-v2-fill);
+  --sf-ui-glass-opaque:var(--sf-glass-v2-opaque);
+  --sf-ui-glass-ink:var(--sf-glass-v2-ink);
+  --sf-ui-glass-border:var(--sf-glass-v2-border);
+  --sf-ui-glass-shadow:var(--sf-glass-v2-shadow);
+  --sf-ui-glass-control-shadow:var(--sf-glass-v2-control-shadow);
+  --sf-ui-glass-blur:20px;
+  --sf-ui-glass-saturation:130%;
+  --sf-ui-glass-contrast:1;
+  --sf-ui-glass-brightness:1;
+  --sf-ui-nav-selection:var(--sf-glass-v2-selection);
+  --sf-ui-nav-selection-pressed:var(--sf-glass-v2-selection);
+  --sf-ui-surface-shadow:var(--sf-glass-v2-shadow);
+  background-image:var(--sf-glass-v2-shine)!important;
+}
+body.sf-glass-v2 .sf-shell .sf-header :is(
+  .sf-header-menu .sf-ui-icon-button--soft,
+  .sf-product-home.sf-ui-icon-button--soft
+) {
+  --sf-ui-surface-shadow:var(--sf-glass-v2-control-shadow);
+}
+/* Leave custom logo assets untouched; native glyphs adapt their ink. */
+body.sf-glass-v2 .sf-shell .sf-header .sf-actions .sf-ui-icon-button .sf-icon,
+body.sf-glass-v2 .sf-shell .sf-desktop-submenu-toggle .sf-icon {
+  filter:var(--sf-glass-v2-icon-filter);
+}
+/* The menu trigger is moved to the light dialog top layer on opening:
+   use a light optical surface there rather than leaving dark ink on white. */
+body.sf-glass-v2 #sf-panel.is-menu-panel :is(
+  .sf-menu-trigger.is-in-panel,
+  .sf-menu-tools .sf-ui-icon-button--soft,
+  .sf-close.sf-ui-icon-button--soft
+) {
+  --sf-ui-glass-surface:rgba(252,252,255,.62);
+  --sf-ui-glass-opaque:#f5f5f8;
+  --sf-ui-glass-ink:#1b1b23;
+  --sf-ui-glass-border:rgba(81,83,100,.16);
+  --sf-ui-glass-blur:20px;
+  --sf-ui-glass-saturation:130%;
+  --sf-ui-surface-shadow:inset 0 1px 0 rgba(255,255,255,.88),0 4px 14px rgba(24,26,39,.11);
+  background-image:linear-gradient(155deg,rgba(255,255,255,.2),transparent 50%)!important;
+}
+/* Accessibility and unsupported-filter fallbacks never leave translucent
+   text floating above the underlying page content. */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {
+  body.sf-glass-v2,body.sf-glass-v2:has(.sf-agency-widget) {
+    --sf-glass-v2-fill:var(--sf-glass-v2-opaque);
+    --sf-glass-v2-shine:none;
+  }
+}
+@media (prefers-reduced-transparency:reduce) {
+  body.sf-glass-v2,body.sf-glass-v2:has(.sf-agency-widget) {
+    --sf-glass-v2-shine:none;
+  }
+  body.sf-glass-v2 .sf-shell .sf-header :is(.sf-ui-surface,.sf-ui-icon-button--soft),
+  body.sf-glass-v2 .sf-shell .sf-desktop-submenu.sf-ui-surface,
+  body.sf-glass-v2 #sf-panel.is-menu-panel .sf-ui-icon-button--soft {
+    background-image:none!important;
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
+  }
+}
+@media (forced-colors:active) {
+  body.sf-glass-v2 .sf-shell .sf-header :is(.sf-ui-surface,.sf-ui-icon-button--soft),
+  body.sf-glass-v2 .sf-shell .sf-desktop-submenu.sf-ui-surface,
+  body.sf-glass-v2 #sf-panel.is-menu-panel .sf-ui-icon-button--soft {
+    background:Canvas!important;background-image:none!important;
+    border:1px solid CanvasText!important;color:CanvasText!important;
+    box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  }
+  body.sf-glass-v2 .sf-shell .sf-header .sf-actions .sf-ui-icon-button .sf-icon,
+  body.sf-glass-v2 .sf-shell .sf-desktop-submenu-toggle .sf-icon {filter:none}
+}
