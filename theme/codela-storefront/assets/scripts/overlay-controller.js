@@ -210,6 +210,11 @@ export function createOverlayController({
         const previous = current;
         // Cart has one presentation on every page, including single products.
         const appPanel = mobileHeader.matches && ['search','account','cart'].includes(name);
+        // Agency navigates without commerce actions. Keep an independent
+        // visible Close control instead of moving the header Menu button into
+        // a native top-layer dialog (a source of iOS WebKit dismissal glitches).
+        const agencyClose = !!dialog.closest('.sf-shell.has-agency-profile') &&
+            (name === 'menu' || name === 'account');
         if (name === 'menu' && mobileHeader.matches && ['search','cart','account'].includes(previous)) returnToPanel = previous;
         else if (name !== 'menu') returnToPanel = null;
         if (opening) {
@@ -248,7 +253,7 @@ export function createOverlayController({
         if (!opening && previous === 'menu' && name !== 'menu') mountDock();
         if (current === 'search' && name !== 'search') searchFeature.cancel();
         current = name;
-        if (name === 'menu' || appPanel) mountMenuTrigger();
+        if ((name === 'menu' || appPanel) && !agencyClose) mountMenuTrigger();
         else restoreMenuTrigger();
         if (appPanel) {
             const trigger = findMenuTrigger();
@@ -269,7 +274,7 @@ export function createOverlayController({
         markDockActive(name);
         const menuTrigger = findMenuTrigger();
         dialog.setAttribute('aria-label', name === 'menu' ? menuLabel : name === 'search' ? t('Search products') : name === 'account' ? t('My account') : name === 'filters' ? t('Filters') : t('Your cart'));
-        $('.sf-panel-top .sf-close').hidden = name === 'menu';
+        $('.sf-panel-top .sf-close').hidden = name === 'menu' && !agencyClose;
         dialog.removeAttribute('aria-labelledby');
         for (const section of ['menu','search','cart','account','filters']) {
             const panel = $(`#sf-${section}`);
@@ -283,8 +288,9 @@ export function createOverlayController({
         // Automatically focused controls should not display a giant focus ring
         // when opening a panel; keyboard navigation must still show its indicator.
         dialog.querySelectorAll('.sf-initial-focus').forEach(el => el.classList.remove('sf-initial-focus'));
-        const initialFocus = (name === 'menu' || appPanel) ? (menuTrigger || $('.sf-close'))
-            : name === 'search' ? $('.sf-search-cancel') : $('.sf-panel-top .sf-close');
+        const initialFocus = agencyClose ? $('.sf-panel-top .sf-close') :
+            (name === 'menu' || appPanel) ? (menuTrigger || $('.sf-close')) :
+            name === 'search' ? $('.sf-search-cancel') : $('.sf-panel-top .sf-close');
         initialFocus.classList.add('sf-initial-focus');
         // Native dialog focuses this button even when a previous session focused the query.
         dialog.querySelectorAll('[autofocus]').forEach(el => el.removeAttribute('autofocus'));
@@ -300,7 +306,7 @@ export function createOverlayController({
         }
         window.codelaSFDebug?.mark('overlay.open.modal',{panel:name,elapsed:performance.now()-debugStart,visible:!!dialog.open,
             formIsolated:!!window.codelaSFDebug?.isGuestFormIsolated?.(),bodyFixed:!debugStaticBody});
-        if (name === 'menu' && menuTrigger) {
+        if (name === 'menu' && menuTrigger && !agencyClose) {
             // Resolve initial line transforms before transitioning to an X.
             menuTrigger.getBoundingClientRect();
             menuTrigger.setAttribute('aria-label', t('Close'));
