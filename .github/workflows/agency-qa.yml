@@ -64,6 +64,7 @@ jobs:
           node --check theme/codela-storefront/assets/scripts/agency-widgets.js
       - name: Test four viewports and real agency interactions
         run: |
+          node tests/agency-stage-viewport-browser.cjs
           node tests/agency-browser.cjs
           node tests/agency-pages-browser.cjs
           node tests/agency-widgets-browser.cjs
