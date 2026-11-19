@@ -191,6 +191,7 @@ jobs:
           node tests/shell-navigation-browser.cjs
           node tests/navigation-browser.cjs
           node tests/ui-kit-browser.cjs
+          node tests/glass-v2-browser.cjs
       - name: Complete browser QA (manual only; never deploy)
         if: inputs.full_qa_only == true
         run: |

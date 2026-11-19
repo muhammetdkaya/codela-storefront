@@ -42,6 +42,21 @@ add_action( 'template_redirect', function() {
     }
 }, 1 );
 /**
+ * Opt-in header glass material. Existing storefront, WooCommerce and theme
+ * component materials are unchanged when the setting is absent or disabled.
+ */
+function codela_sf_glass_v2_enabled(): bool {
+    if ( ! function_exists( 'codela_theme_settings' ) ) { return false; }
+    $settings = codela_theme_settings();
+    return is_array( $settings )
+        && in_array( $settings['glass_v2_enabled'] ?? false, [ true, 1, '1', 'on' ], true );
+}
+add_filter( 'body_class', static function( $classes ) {
+    if ( codela_sf_glass_v2_enabled() ) { $classes[] = 'sf-glass-v2'; }
+    return $classes;
+} );
+
+/**
  * Unified stylesheet cache key. WordPress caches the theme's Version metadata
  * and every registered/enqueued CSS handle receives the same release key.
  */
@@ -535,6 +550,20 @@ add_action( 'wp_print_styles', function() {
     wp_dequeue_style( 'codela-checkout-pro' );
 }, 100 );
 
+
+/**
+ * Glass V2 is opt-in. Its tiny overlay stylesheet runs after the existing
+ * production bundle, keeping shared tokens and commerce UI untouched.
+ */
+add_action( 'wp_enqueue_scripts', static function() {
+    if ( ! codela_sf_ready() || ! codela_sf_glass_v2_enabled() ) { return; }
+    wp_enqueue_style(
+        'codela-storefront-glass-v2',
+        get_template_directory_uri() . '/assets/styles/glass-v2.css',
+        [ 'codela-storefront-components' ],
+        codela_sf_style_version()
+    );
+}, 100 );
 
 // Expose the core menu manager even though this block theme uses a fixed shell.
 add_action( 'admin_menu', static function() {

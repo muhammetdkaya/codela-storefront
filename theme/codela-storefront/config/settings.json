@@ -4,7 +4,7 @@
     {
       "id": "appearance",
       "label": "Appearance",
-      "description": "Site-wide font for the storefront, product panels, cart and guest account.",
+      "description": "Site-wide font and optional floating Glass V2 appearance.",
       "fields": [
         {
           "id": "site_font",
@@ -16,6 +16,13 @@
             "system": "System",
             "arial": "Arial / Helvetica"
           }
+        },
+        {
+          "id": "glass_v2_enabled",
+          "type": "checkbox",
+          "default": false,
+          "label": "Glass V2",
+          "description": "Use adaptive optical glass for the floating header, desktop navigation and menu controls. Existing product, cart and checkout surfaces stay unchanged."
         }
       ]
     },
