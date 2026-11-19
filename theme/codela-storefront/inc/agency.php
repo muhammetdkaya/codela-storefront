@@ -54,7 +54,7 @@ function codela_sf_agency_asset_flags(): array {
         if ( is_string( $layout ) ) { $content .= $layout; }
     }
     $flags['pattern'] = str_contains( $content, 'codela-storefront/agency-' );
-    $flags['widgets'] = str_contains( $content, 'codela/section-agency-' );
+    $flags['widgets'] = str_contains( $content, 'codela/section-agency-' ); // Includes agency-studio without a theme-mode flag.
     return $flags;
 }
 function codela_sf_agency_styles(): void {
