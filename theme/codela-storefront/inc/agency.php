@@ -65,9 +65,30 @@ function codela_sf_agency_contact_link(): string {
     return codela_sf_agency_contact_url() ?: home_url( '/#sf-agency-contact' );
 }
 
+
+/** Resolve only the installed and Codela-owned Project Start page. */
+function codela_sf_agency_project_url(): string {
+    $state = get_option( 'codela_agency_demo_state_v1', [] );
+    $home = is_array( $state ) && ! empty( $state['done'] ) ? (int) ( $state['pages']['home'] ?? 0 ) : 0;
+    if ( ! $home || 'codela-agency-starter:1:home' !== get_post_meta( $home, '_codela_agency_demo_key', true ) ) { return ''; }
+    $ids = get_posts( [
+        'post_type' => 'page', 'post_status' => 'publish',
+        'meta_key' => '_codela_agency_project_key',
+        'meta_value' => 'codela-agency-project:1',
+        'fields' => 'ids', 'numberposts' => 2, 'suppress_filters' => true,
+    ] );
+    if ( 1 !== count( $ids ) ) { return ''; }
+    $page = get_post( (int) $ids[0] );
+    return $page && 'page' === $page->post_type
+        && ! post_password_required( $page ) ? (string) get_permalink( $page ) : '';
+}
+function codela_sf_agency_project_link(): string {
+    return codela_sf_agency_project_url() ?: codela_sf_agency_contact_link();
+}
+
 /** Load visual assets only for a page that actually contains agency modules. */
 function codela_sf_agency_asset_flags(): array {
-    $flags = [ 'pattern' => false, 'widgets' => false ];
+    $flags = [ 'pattern' => false, 'widgets' => false, 'project' => false ];
     if ( ! function_exists( 'get_queried_object_id' ) || ! function_exists( 'get_post' ) ) { return $flags; }
     $id = (int) get_queried_object_id();
     $post = $id ? get_post( $id ) : null;
@@ -79,6 +100,7 @@ function codela_sf_agency_asset_flags(): array {
     }
     $flags['pattern'] = str_contains( $content, 'codela-storefront/agency-' );
     $flags['widgets'] = str_contains( $content, 'codela/section-agency-' ); // Includes agency-studio without a theme-mode flag.
+    $flags['project'] = str_contains( $content, 'codela/section-agency-project' );
     return $flags;
 }
 function codela_sf_agency_styles(): void {
@@ -89,6 +111,9 @@ add_action( 'wp_enqueue_scripts', static function() {
     $flags = codela_sf_agency_asset_flags();
     if ( ! $flags['pattern'] && ! $flags['widgets'] ) { return; }
     codela_sf_agency_styles();
+    if ( $flags['project'] ) {
+        wp_enqueue_style( 'codela-storefront-agency-project', get_template_directory_uri() . '/assets/styles/agency-project.css', [ 'codela-storefront-agency' ], wp_get_theme()->get( 'Version' ) );
+    }
     if ( $flags['pattern'] ) {
         wp_enqueue_script( 'codela-storefront-agency', get_template_directory_uri() . '/assets/scripts/agency.js', [], wp_get_theme()->get( 'Version' ), true );
     }
@@ -137,3 +162,67 @@ function codela_sf_agency_contact_submit(): void {
 }
 add_action( 'admin_post_nopriv_codela_sf_agency_contact', 'codela_sf_agency_contact_submit' );
 add_action( 'admin_post_codela_sf_agency_contact', 'codela_sf_agency_contact_submit' );
+
+
+/**
+ * Reference two-step project form: REAL WordPress mail result, not the mockup's
+ * JS-only success animation. Uses the existing agency mail destination.
+ */
+function codela_sf_agency_project_submit(): void {
+    $base = codela_sf_agency_project_link();
+    $redirect = static function( string $status ) use ( $base ): void {
+        wp_safe_redirect( add_query_arg( 'codela_status', $status, $base ) );
+        exit;
+    };
+    if ( ! codela_sf_ready() || ! codela_sf_agency_project_url() ) { $redirect( 'invalid' ); }
+    $field = static function( string $key ): string {
+        $value = $_POST[ $key ] ?? '';
+        return is_string( $value ) ? trim( sanitize_text_field( wp_unslash( $value ) ) ) : '';
+    };
+    if ( ! wp_verify_nonce( $field( 'agency_project_nonce' ), 'codela_sf_agency_project' ) ) { $redirect( 'invalid' ); }
+    if ( '' !== $field( 'agency_project_webpage' ) ) { $redirect( 'invalid' ); }
+    $service = $field( 'agency_project_service' );
+    $time = $field( 'agency_project_time' );
+    $scale = $field( 'agency_project_scale' );
+    $name = $field( 'agency_project_name' );
+    $contact = $field( 'agency_project_contact' );
+    $raw_note = $_POST['agency_project_note'] ?? '';
+    $note = is_string( $raw_note ) ? trim( sanitize_textarea_field( wp_unslash( $raw_note ) ) ) : '';
+    $length = static function( string $value ): int { return function_exists( 'mb_strlen' ) ? mb_strlen( $value ) : strlen( $value ); };
+    $allowed_services = [ 'Web Tasarım', 'E-Ticaret', 'Özel Yazılım', 'Optimizasyon / Destek' ];
+    $allowed_times = [ 'Hemen', '1–2 Ay', 'Esnek' ];
+    $allowed_scales = [ 'Başlangıç', 'Büyüme', 'Kurumsal' ];
+    if ( ! in_array( $service, $allowed_services, true )
+        || ! in_array( $time, $allowed_times, true )
+        || ! in_array( $scale, $allowed_scales, true )
+        || $length( $name ) < 2 || $length( $name ) > 120
+        || ! $contact || $length( $contact ) > 180
+        || $length( $note ) > 2000
+        || '1' !== $field( 'agency_project_consent' ) ) { $redirect( 'invalid' ); }
+    $is_email = is_email( $contact );
+    $digits = preg_replace( '/\D+/', '', $contact );
+    $is_phone = preg_match( '/^\+?[0-9 ()-]{10,30}$/D', $contact )
+        && strlen( $digits ) >= 10 && strlen( $digits ) <= 15;
+    if ( ! $is_email && ! $is_phone ) { $redirect( 'invalid' ); }
+    $remote = (string) ( $_SERVER['REMOTE_ADDR'] ?? 'unknown' );
+    $throttle = 'codela_sf_project_' . hash_hmac( 'sha256', $remote, wp_salt( 'auth' ) );
+    if ( get_transient( $throttle ) ) { $redirect( 'wait' ); }
+    $to = sanitize_email( (string) get_option( 'admin_email' ) );
+    if ( ! is_email( $to ) ) { $redirect( 'failed' ); }
+    $headers = [ 'Content-Type: text/plain; charset=UTF-8' ];
+    if ( $is_email ) { $headers[] = 'Reply-To: ' . sanitize_email( $contact ); }
+    $body = "Yeni Codela Proje Başlat Talebi\n\n"
+        . "Hizmet: $service\nHedef zaman: $time\nProje ölçeği: $scale\n"
+        . "Ad Soyad / Marka: $name\nİletişim: $contact\n"
+        . "Kısa not:\n" . ( $note ?: 'Belirtilmedi' ) . "\n";
+    if ( ! wp_mail( $to, '[Codela] Yeni proje başlat talebi', $body, $headers ) ) { $redirect( 'failed' ); }
+    set_transient( $throttle, 1, MINUTE_IN_SECONDS );
+    // Only a genuinely accepted WordPress mail submission can create the receipt.
+    // The receipt makes a manually typed ?codela_status=sent insufficient.
+    $receipt = bin2hex( random_bytes( 16 ) );
+    set_transient( 'codela_sf_project_receipt_' . $receipt, 1, 5 * MINUTE_IN_SECONDS );
+    wp_safe_redirect( add_query_arg( [ 'codela_status' => 'sent', 'codela_receipt' => $receipt ], $base ) );
+    exit;
+}
+add_action( 'admin_post_codela_sf_agency_project', 'codela_sf_agency_project_submit' );
+add_action( 'admin_post_nopriv_codela_sf_agency_project', 'codela_sf_agency_project_submit' );

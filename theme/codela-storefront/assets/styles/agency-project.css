@@ -1,0 +1,86 @@
+
+/* MONA Stage 5 / approved two-step Project Start. Isolated, no generic AI gradient. */
+.codela-page-layout>.sf-agency-widget--project,.sf-agency-widget--project{margin:0!important;max-width:none!important;width:100%}
+.sf-agency-widget--project .cdl-project,.sf-agency-widget--project .cdl-project *{box-sizing:border-box}
+.sf-agency-widget--project .cdl-project{
+  width:100vw;max-width:100vw;min-height:100svh;position:relative;
+  margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);
+  color:#f7f5f8;background:#09090c;
+  padding:clamp(104px,12svh,142px) clamp(16px,4vw,56px) calc(110px + env(safe-area-inset-bottom,0px));
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif
+}
+.sf-agency-widget--project .cdl-project__shell{width:min(100%,750px);margin:0 auto}
+.sf-agency-widget--project .cdl-project__topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:22px}
+.sf-agency-widget--project .cdl-project__back{display:inline-flex;align-items:center;gap:12px;text-decoration:none;color:#e0dce4;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:rgba(255,255,255,.05);font-size:13px;min-height:44px;padding:9px 16px}
+.sf-agency-widget--project .cdl-project__back:hover{background:rgba(255,255,255,.10)}
+.sf-agency-widget--project .cdl-project__back>span:first-child{font-size:19px}
+.sf-agency-widget--project .cdl-project__wordmark{font-size:11px;letter-spacing:.21em;color:#aaa5b0}
+.sf-agency-widget--project .cdl-project__panel{position:relative;overflow:hidden;background:linear-gradient(160deg,#1b1921 0%,#101015 60%,#121014 100%);border:1px solid rgba(255,255,255,.095);border-radius:34px;padding:clamp(22px,4vw,43px);min-height:540px;box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 30px 80px -45px rgba(0,0,0,.82)}
+.sf-agency-widget--project .cdl-project__panel::before{content:'';position:absolute;right:-180px;top:-210px;width:440px;height:400px;pointer-events:none;background:radial-gradient(ellipse,rgba(202,153,111,.15),transparent 65%)}
+.sf-agency-widget--project .cdl-project__progress,.sf-agency-widget--project .cdl-project__form,.sf-agency-widget--project .cdl-project__alert{position:relative;z-index:1}
+.sf-agency-widget--project .cdl-project__progress-label{display:flex;justify-content:space-between;align-items:center;color:#a7a2af;font-size:11px;letter-spacing:.14em;font-weight:540}
+.sf-agency-widget--project .cdl-project__progress-track{height:3px;width:100%;background:rgba(255,255,255,.11);border-radius:99px;margin:13px 0 28px;overflow:hidden}
+.sf-agency-widget--project .cdl-project__progress-track>span{display:block;width:50%;height:100%;background:#d6a676;border-radius:inherit;transition:width .3s ease}
+.sf-agency-widget--project .cdl-project__kicker{margin:0 0 7px!important;color:#b2a9af;font-size:11px;letter-spacing:.19em;line-height:1.4;font-weight:540}
+.sf-agency-widget--project .cdl-project__heading h1,.sf-agency-widget--project .cdl-project__heading h2,.sf-agency-widget--project .cdl-project__success h1{color:#f7f5f8;font-family:inherit;font-size:clamp(27px,4.3vw,43px);font-weight:560;line-height:1.11;letter-spacing:-.045em;margin:0!important}
+.sf-agency-widget--project .cdl-project__heading>p:last-child{color:#aaa5af;line-height:1.55;font-size:13px;margin:10px 0 0!important;max-width:450px}
+.sf-agency-widget--project .cdl-project__form,.sf-agency-widget--project .cdl-project__step{min-width:0}
+.sf-agency-widget--project .cdl-project__step{display:flex;flex-direction:column;gap:25px}
+.sf-agency-widget--project .cdl-project__step[hidden]{display:none!important}
+.sf-agency-widget--project .cdl-project__fieldset{border:0;margin:0!important;min-width:0;padding:0!important}
+.sf-agency-widget--project .cdl-project__fieldset legend{font-size:13px;color:#b1acb7;margin:0 0 13px;padding:0;line-height:1.3}
+.sf-agency-widget--project .cdl-project__choices{display:grid;gap:10px}
+.sf-agency-widget--project .cdl-project__choices--services{grid-template-columns:repeat(2,minmax(0,1fr))}
+.sf-agency-widget--project .cdl-project__choices--three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.sf-agency-widget--project .cdl-project__choice{min-width:0;position:relative;display:block;cursor:pointer}
+.sf-agency-widget--project .cdl-project__choice input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+.sf-agency-widget--project .cdl-project__choice span{display:flex;justify-content:center;align-items:center;text-align:center;min-width:0;min-height:47px;padding:11px 10px;border-radius:17px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.045);color:#dad6df;font-size:12px;line-height:1.27;transition:background .2s ease,border-color .2s ease}
+.sf-agency-widget--project .cdl-project__choices--three .cdl-project__choice span{border-radius:999px;min-height:42px}
+.sf-agency-widget--project .cdl-project__choice input:checked+span{color:#fff;border-color:rgba(214,166,118,.72);background:rgba(214,166,118,.17)}
+.sf-agency-widget--project .cdl-project__choice input:focus-visible+span{outline:3px solid #d6a676;outline-offset:3px}
+.sf-agency-widget--project .cdl-project__button{min-height:52px;width:100%;border:0;border-radius:999px;padding:13px 21px;background:#f8f6f9;color:#18151c!important;text-decoration:none!important;display:flex;align-items:center;justify-content:center;gap:16px;font:inherit;font-size:13px;font-weight:630;cursor:pointer;transition:background .2s ease,transform .2s ease;margin-top:4px}
+.sf-agency-widget--project .cdl-project__button:hover{background:#e6d8c7;transform:translateY(-2px)}
+.sf-agency-widget--project .cdl-project__button:focus-visible,.sf-agency-widget--project .cdl-project__back:focus-visible,.sf-agency-widget--project .cdl-project__summary button:focus-visible{outline:3px solid #d6a676;outline-offset:3px}
+.sf-agency-widget--project .cdl-project__summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 15px;min-width:0;border:1px solid rgba(255,255,255,.1);border-radius:18px;background:rgba(255,255,255,.05)}
+.sf-agency-widget--project .cdl-project__summary span{min-width:0;font-size:12px;color:#e1dce4;overflow-wrap:anywhere}
+.sf-agency-widget--project .cdl-project__summary button{color:#d8c3ac;border:0;background:none;cursor:pointer;font:inherit;font-size:12px;min-height:32px;padding:4px 6px}
+.sf-agency-widget--project .cdl-project__fields{display:grid;gap:17px}
+.sf-agency-widget--project .cdl-project__fields>label{display:block;color:#bcb6c2;font-size:12px;line-height:1.5}
+.sf-agency-widget--project .cdl-project__fields input,.sf-agency-widget--project .cdl-project__fields textarea{display:block;width:100%;min-width:0;min-height:49px;margin:7px 0 0;padding:13px 15px;border:1px solid rgba(255,255,255,.1);border-radius:17px;background:rgba(255,255,255,.05);color:#fff;font:inherit;font-size:14px;outline:none;box-shadow:none}
+.sf-agency-widget--project .cdl-project__fields textarea{min-height:90px;resize:vertical}
+.sf-agency-widget--project .cdl-project__fields input:focus,.sf-agency-widget--project .cdl-project__fields textarea:focus{border-color:rgba(214,166,118,.8)}
+.sf-agency-widget--project .cdl-project__fields input::placeholder,.sf-agency-widget--project .cdl-project__fields textarea::placeholder{color:#77727f;opacity:1}
+.sf-agency-widget--project .cdl-project__honey{position:absolute!important;left:-9999px!important;opacity:0!important;pointer-events:none}
+.sf-agency-widget--project .cdl-project__consent{display:flex;align-items:flex-start;gap:10px;color:#afa9b5;font-size:11.5px;line-height:1.55}
+.sf-agency-widget--project .cdl-project__consent input{accent-color:#d6a676;flex:0 0 auto;margin-top:3px;width:17px;height:17px}
+.sf-agency-widget--project .cdl-project__consent a{color:#e9d7c2;text-decoration:underline}
+.sf-agency-widget--project .cdl-project__alert{padding:12px 15px;border-radius:13px;background:rgba(229,139,139,.09);border:1px solid rgba(229,139,139,.4);color:#f0d6d6;font-size:12px;margin:0 0 18px!important}
+.sf-agency-widget--project .cdl-project__success{position:relative;min-height:480px;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;gap:15px}
+.sf-agency-widget--project .cdl-project__success-icon{width:67px;height:67px;display:grid;place-items:center;border:1px solid rgba(214,166,118,.5);border-radius:50%;font-size:29px;color:#d6a676;background:rgba(214,166,118,.13)}
+.sf-agency-widget--project .cdl-project__success>p:not(.cdl-project__kicker){max-width:410px;color:#b0abb7;line-height:1.65;font-size:13px}
+.sf-agency-widget--project .cdl-project__success .cdl-project__button{max-width:280px;margin-top:15px}
+body:has(.codela-page-layout>.sf-agency-widget--project){background:#09090c}
+body:has(.codela-page-layout>.sf-agency-widget--project) .sf-content{padding:0!important;background:#09090c}
+body:has(.codela-page-layout>.sf-agency-widget--project) .sf-footer{margin-top:0;background:#09090c;color:#aaa5af;border-top-color:rgba(255,255,255,.1)}
+body:has(.codela-page-layout>.sf-agency-widget--project) .sf-footer a{color:#d8d4df}
+@media(max-width:739px){
+ .sf-agency-widget--project .cdl-project{padding:calc(100px + env(safe-area-inset-top,0px)) 16px calc(104px + env(safe-area-inset-bottom,0px))}
+ .sf-agency-widget--project .cdl-project__topbar{margin-bottom:15px}
+ .sf-agency-widget--project .cdl-project__panel{padding:22px 18px;border-radius:28px;min-height:500px}
+ .sf-agency-widget--project .cdl-project__step{gap:20px}
+ .sf-agency-widget--project .cdl-project__fieldset legend{margin-bottom:9px}
+ .sf-agency-widget--project .cdl-project__choice span{min-height:45px;font-size:11.5px;padding:10px 8px}
+ .sf-agency-widget--project .cdl-project__choices--three .cdl-project__choice span{min-height:40px}
+ .sf-agency-widget--project .cdl-project__progress-track{margin:10px 0 22px}
+ .sf-agency-widget--project .cdl-project__success{min-height:420px}
+}
+@media(max-width:359px){
+ .sf-agency-widget--project .cdl-project{padding-top:calc(91px + env(safe-area-inset-top,0px))}
+ .sf-agency-widget--project .cdl-project__panel{padding:18px 14px}
+ .sf-agency-widget--project .cdl-project__step{gap:17px}
+ .sf-agency-widget--project .cdl-project__choices{gap:7px}
+ .sf-agency-widget--project .cdl-project__choice span{font-size:10.5px}
+}
+@media(prefers-reduced-motion:reduce){
+ .sf-agency-widget--project .cdl-project__button,.sf-agency-widget--project .cdl-project__choice span,.sf-agency-widget--project .cdl-project__progress-track>span{transition:none}
+}

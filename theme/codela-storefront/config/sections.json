@@ -54,6 +54,9 @@
     },
     "agency-contact-bento": {
       "bento": "İletişim Bento"
+    },
+    "agency-project": {
+      "flow": "İki Adımlı Proje Başlat"
     }
   }
 }

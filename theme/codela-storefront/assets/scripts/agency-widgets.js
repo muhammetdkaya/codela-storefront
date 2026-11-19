@@ -8,6 +8,55 @@
     if (widget.dataset.agencyWidgetInitialized === 'true') return;
     widget.dataset.agencyWidgetInitialized = 'true';
 
+    if (widget.dataset.agencyWidget === 'project') {
+      const form = widget.querySelector('[data-project-form]');
+      const first = widget.querySelector('[data-project-step="1"]');
+      const second = widget.querySelector('[data-project-step="2"]');
+      const next = widget.querySelector('[data-project-next]');
+      const back = widget.querySelector('[data-project-back]');
+      const progress = widget.querySelector('[data-project-progress-bar]');
+      const indicator = widget.querySelector('[data-project-progress-label]');
+      const summary = widget.querySelector('[data-project-summary]');
+      if (form && first && second && next && back && progress && indicator && summary) {
+        const detailFields = [...second.querySelectorAll('input,textarea')];
+        const selected = name => form.querySelector('input[name="' + name + '"]:checked')?.value || '';
+        const show = step => {
+          first.hidden = step !== 1;
+          second.hidden = step !== 2;
+          detailFields.forEach(input => { input.disabled = step !== 2; });
+          progress.style.width = step === 1 ? '50%' : '100%';
+          indicator.textContent = step === 1 ? '1 / 2' : '2 / 2';
+          if (step === 2) {
+            summary.textContent = [selected('agency_project_service'),
+              selected('agency_project_time'),
+              selected('agency_project_scale')].filter(Boolean).join(' · ');
+          }
+          const heading = (step === 1 ? first : second).querySelector('h1,h2');
+          if (heading) {
+            heading.tabIndex = -1;
+            heading.focus({preventScroll:true});
+          }
+        };
+        next.addEventListener('click', () => show(2));
+        back.addEventListener('click', () => show(1));
+        form.addEventListener('submit', event => {
+          if (!form.checkValidity()) {
+            event.preventDefault();
+            form.reportValidity();
+            return;
+          }
+          const submit = form.querySelector('[data-project-submit]');
+          if (submit) {
+            submit.disabled = true;
+            submit.setAttribute('aria-busy', 'true');
+            submit.firstChild.textContent = 'Gönderiliyor ';
+          }
+        });
+        const requestedError = /(?:[?&])codela_status=(?:invalid|failed|wait)(?:&|$)/.test(window.location.search);
+        show(requestedError ? 2 : 1);
+      }
+    }
+
     if (widget.dataset.agencyWidget === 'cards') {
       const cards = Array.from(widget.querySelectorAll('[data-agency-card]'));
       const tabs = Array.from(widget.querySelectorAll('[data-agency-swap-to]'));

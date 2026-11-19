@@ -35,9 +35,11 @@ function esc_html( $value ) { return esc_attr( $value ); }
 function esc_url( $value ) { return esc_attr( $value ); }
 function add_query_arg( $key, $value, $url ) { return $url . ( str_contains( $url, '?' ) ? '&' : '?' ) . rawurlencode( $key ) . '=' . rawurlencode( $value ); }
 function admin_url( $path ) { return 'https://codela.test/wp-admin/' . $path; }
-function wp_nonce_field( ...$args ) { echo '<input type="hidden" name="agency_contact_nonce" value="testnonce">'; }
+function wp_nonce_field( $action, $field = '_wpnonce' ) { echo '<input type="hidden" name="' . esc_attr( $field ) . '" value="testnonce">'; }
+function checked( $value, $expected ) { if ( $value === $expected ) echo ' checked="checked"'; }
 function get_privacy_policy_url() { return 'https://codela.test/gizlilik/'; }
 function wp_unslash( $value ) { return $value; }
+function get_transient( $key ) { return $key === 'codela_sf_project_receipt_' . str_repeat( 'a', 32 ); }
 function is_email( $value ) { return (bool) filter_var( $value, FILTER_VALIDATE_EMAIL ); }
 function sanitize_key( $value ) { return preg_replace( '/[^a-z0-9_-]/', '', strtolower( $value ) ); }
 function get_template_directory_uri() { return 'https://codela.test/wp-content/themes/codela-storefront'; }
@@ -95,6 +97,7 @@ require __DIR__ . '/../theme/codela-storefront/inc/section-agency-studio.php';
 require __DIR__ . '/../theme/codela-storefront/inc/section-agency-bento.php';
 require __DIR__ . '/../theme/codela-storefront/inc/section-agency-detail.php';
 require __DIR__ . '/../theme/codela-storefront/inc/section-agency-contact-bento.php';
+require __DIR__ . '/../theme/codela-storefront/inc/section-agency-project.php';
 
 $detail_reference = [
     'web' => [ 'title'=>'Web Tasarım',
@@ -147,6 +150,47 @@ if ( in_array( '--render=detail', $argv, true ) ) {
     exit;
 }
 
+
+
+$project_data = [
+    'id' => 'agency-project-start', 'enabled'=>true,'variant'=>'flow',
+    'title'=>'Neye odaklanıyoruz?','description'=>'',
+    'items'=>[]
+];
+$project_html = codela_sf_section_agency_project( $project_data );
+agency_page_check( str_contains($project_html,'data-agency-widget="project"') &&
+    substr_count($project_html,'name="agency_project_service"')===4 &&
+    substr_count($project_html,'name="agency_project_time"')===3 &&
+    substr_count($project_html,'name="agency_project_scale"')===3 &&
+    substr_count($project_html,'data-project-step=')===2,
+    'Project Start preserves 4 services, 3 target times and 3 scales in 2 steps' );
+agency_page_check( str_contains($project_html,'agency_project_nonce') &&
+    str_contains($project_html,'agency_project_consent') &&
+    str_contains($project_html,'agency_project_webpage') &&
+    str_contains($project_html,'codela_sf_agency_project') &&
+    str_contains($project_html,'admin-post.php'),
+    'Project Start has real WordPress submission, consent, nonce and honeypot' );
+$original_query=$_GET;
+$_GET['codela_status']='sent';
+$spoofed = codela_sf_section_agency_project( $project_data );
+agency_page_check( str_contains($spoofed,'data-project-form') && !str_contains($spoofed,'cdl-project__success'),
+    'Manually crafted sent query never fakes a successful project request' );
+$_GET['codela_receipt']=str_repeat('a',32);
+$confirmed = codela_sf_section_agency_project( $project_data );
+agency_page_check( str_contains($confirmed,'Talebiniz alındı.') &&
+    !str_contains($confirmed,'data-project-form'),
+    'Server-confirmed-only success screen does not expose active form' );
+$_GET=$original_query;
+if ( in_array('--render=project',$argv,true) ) {
+    $local=$project_html;
+    echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
+    echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/storefront-base.css">';
+    echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/agency.css">';
+    echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/agency-project.css">';
+    echo '</head><body class="home"><main class="sf-content"><div class="codela-page-layout">'.$local.'</div></main>';
+    echo '<script src="/theme/codela-storefront/assets/scripts/agency-widgets.js"></script></body></html>';
+    exit;
+}
 
 $contact_bento = [ 'id'=>'agency-starter-contact-bento','enabled'=>true,'variant'=>'bento',
   'title'=>'Birlikte başlayalım.','description'=>'İhtiyacını paylaş, birlikte netleştirelim.',
