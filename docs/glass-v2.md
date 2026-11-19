@@ -18,3 +18,18 @@ No external library is loaded. The existing Framework7-derived shared UI Kit rem
 - Custom logos are not filtered; native dark-surface action glyphs invert.
 - Theme settings saved as an allowlisted `checkbox`; user can disable without reinstalling.
 - Run `python3 tests/package.py`, `node tests/glass-v2-browser.cjs`, and existing UI Kit and navigation tests.
+
+## Approved Canvas optical preview, 0.1.362
+
+The preview is translated into a one-time static Canvas 2D lens for the
+floating Agency header. It reuses the real brand, menu, account and search
+controls (no duplicated controls and no layout change). Its local virtual
+scene is displaced through the capsule edges, with subtle dispersion and
+specular light. It **does not capture or refract the real page DOM**:
+Safari does not reliably support SVG displacement through backdrop-filter.
+
+The JS is enqueued only for Glass V2, initializes only on Agency pages,
+does not run a continuous render loop, and redraws on resize/pageshow.
+If Canvas cannot initialize or the user prefers reduced transparency,
+the original V2 CSS remains active. This change does not alter the
+mobile dock, any commerce surface, or header control positions.
