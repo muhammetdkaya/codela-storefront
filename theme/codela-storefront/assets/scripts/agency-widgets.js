@@ -37,6 +37,32 @@
     }
 
 
+    if (widget.dataset.agencyWidget === 'contact-bento') {
+      const copyButton = widget.querySelector('[data-agency-copy-email]');
+      if (copyButton) {
+        copyButton.addEventListener('click', async () => {
+          const email = copyButton.dataset.email || '';
+          const hint = copyButton.querySelector('[data-agency-copy-hint]');
+          if (!email || !hint) return;
+          try {
+            if (!navigator.clipboard?.writeText) throw new Error('unavailable');
+            await navigator.clipboard.writeText(email);
+            hint.textContent = 'Kopyalandı ✓';
+          } catch (_) {
+            // Do not claim it was copied when the browser denies clipboard access.
+            hint.textContent = 'E-posta uygulamasını açın';
+            window.location.href = 'mailto:' + encodeURIComponent(email);
+          }
+        });
+      }
+      // WordPress redirects after form POST with a status query. The message
+      // must be visible without requiring visitors to scroll back down.
+      const notice = widget.querySelector('.cdl-contact__notice');
+      if (notice && window.location.search.includes('codela_status=')) {
+        widget.querySelector('#sf-agency-contact-form')?.scrollIntoView({block:'start'});
+      }
+    }
+
     if (widget.dataset.agencyWidget === 'bento') {
       if (!reduced.matches && 'IntersectionObserver' in window) {
         widget.dataset.bentoReady = '1';
