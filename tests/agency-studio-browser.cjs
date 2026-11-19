@@ -34,6 +34,9 @@ const server=http.createServer((req,res)=>{
         return {photoLoaded:photo.complete&&photo.naturalWidth===1200,
           background:getComputedStyle(el).backgroundColor,
           title:getComputedStyle(el.querySelector('h1')).color,
+          fontFamily:getComputedStyle(el.querySelector('h1')).fontFamily,
+          viewportLeft:el.getBoundingClientRect().left,
+          viewportRight:el.getBoundingClientRect().right,
           heroHeight:el.getBoundingClientRect().height,
           photoHeight:photoBox.height,
           ctaVisible:ctaBox.bottom<=photoBox.bottom&&ctaBox.left>=photoBox.left,
@@ -42,6 +45,9 @@ const server=http.createServer((req,res)=>{
       assert(ui.photoLoaded,'Exact referenced hero photograph loads');
       assert.equal(ui.background,'rgb(9, 9, 12)','Obsidian surface stays isolated');
       assert.equal(ui.title,'rgb(245, 243, 247)','Title remains white');
+      assert(!/Times New Roman/i.test(ui.fontFamily),'Studio typography uses system sans-serif');
+      assert(Math.abs(ui.viewportLeft)<=1&&Math.abs(ui.viewportRight-width)<=1,
+        'Hero fills the entire viewport without fixture browser margins');
       assert(ui.heroHeight>=height-1,'Hero at least fills mobile viewport');
       assert(ui.photoHeight>=200,'Cinematic photo stays legible on short phones');
       assert(ui.ctaVisible,'Services CTA is inside photograph safe area');
