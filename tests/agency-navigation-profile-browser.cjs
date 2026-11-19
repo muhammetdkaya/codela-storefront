@@ -55,7 +55,7 @@ const moduleInit=[
  'document.querySelector(".sf-header-menu .sf-menu-trigger").addEventListener("click",e=>overlay.toggleMenu(e));',
  'document.querySelectorAll(".sf-account-link,.sf-dock-item[data-dock-view=account]").forEach(el=>el.addEventListener("click",e=>overlay.open("account",e)));',
  'document.querySelector(".sf-panel-top .sf-close").addEventListener("click",()=>overlay.close());',
- 'window.testReady=true;'
+ 'window.overlay=overlay;window.testReady=true;'
 ].join('\n');
 (async()=>{
  const browser=await chromium.launch({executablePath:process.env.CHROMIUM_BIN||undefined});
@@ -101,6 +101,12 @@ const moduleInit=[
     assert(await x.isVisible(),'Agency Account close control must be visible');
     await x.click();
     assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),false);
+    // A panel transition must never turn the Agency X into a Back button.
+    await page.evaluate(()=>{window.overlay.open('account');window.overlay.open('menu');});
+    assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),true);
+    await page.locator('#sf-panel.is-menu-panel .sf-panel-top .sf-close').click();
+    assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),false,
+      'Agency Close must dismiss the whole overlay, not reopen Account');
    }
    assert.deepEqual(errors,[],'No browser errors');
    console.log('Agency menu/account dismissal passed',width,'dock',dock);
