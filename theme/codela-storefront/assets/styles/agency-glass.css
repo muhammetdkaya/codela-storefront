@@ -1,0 +1,213 @@
+/**
+ * Codela Agency Glass V2 — CSS material from the user-supplied
+ * "Codela — Dijital Tasarım & Yazılım Stüdyosu" reference.
+ * Enqueued ONLY on Agency pages with Glass V2 enabled.
+ *
+ * Material roles:
+ *   ios-glass         = translucent secondary glass / navigation
+ *   ios-glass-primary = luminous primary action
+ *   bento-box         = elevated obsidian card (not translucent glass)
+ *   select-chip       = compact selectable service/time/scale surface
+ *   codela-input      = quiet dark form control
+ *
+ * One backdrop-filter per translucent surface; no Canvas, false background
+ * capture, duplicate header, external library or ongoing render loop.
+ */
+body.sf-glass-v2{
+  --cdl-agency-amber:#d6a676;
+  --cdl-agency-glass-back:linear-gradient(180deg,rgba(255,255,255,.075) 0%,rgba(16,16,22,.28) 55%,rgba(255,255,255,.045) 100%);
+  --cdl-agency-glass-main:linear-gradient(180deg,rgba(255,255,255,.15) 0%,rgba(255,255,255,.055) 55%,rgba(255,255,255,.10) 100%);
+  --cdl-agency-glass-rim:linear-gradient(140deg,rgba(255,255,255,.48),rgba(255,255,255,.12) 30%,rgba(255,255,255,.025) 58%,rgba(255,255,255,.30));
+  --cdl-agency-glass-rim-main:linear-gradient(140deg,rgba(255,255,255,.62),rgba(255,255,255,.16) 30%,rgba(255,255,255,.04) 58%,rgba(255,255,255,.40));
+  --cdl-agency-glass-filter:blur(18px) saturate(175%) brightness(1.06);
+  --cdl-agency-glass-shadow:inset 0 1.5px 4px rgba(255,255,255,.13),inset 0 -2px 6px rgba(0,0,0,.36),0 12px 28px -8px rgba(0,0,0,.75);
+  --cdl-agency-glass-shadow-main:inset 0 1.5px 5px rgba(255,255,255,.22),inset 0 -2px 8px rgba(0,0,0,.30),0 14px 32px -8px rgba(0,0,0,.80);
+  --cdl-agency-bento:linear-gradient(165deg,rgba(28,27,36,.93),rgba(14,14,19,.98));
+  --cdl-agency-bento-border:rgba(255,255,255,.09);
+  --cdl-agency-bento-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 14px 30px -18px rgba(0,0,0,.95);
+}
+
+/* Equivalent to reference ios-glass and ios-glass-primary. Two background
+   layers produce the slim spectral rim without occupying ::before pseudo
+   elements, which are already used by some native Codela controls. */
+body.sf-glass-v2 .sf-shell .sf-header :is(
+  .sf-brand.sf-ui-surface,
+  .sf-actions.sf-ui-surface,
+  .sf-desktop-navigation.sf-ui-surface,
+  .sf-header-menu .sf-ui-icon-button--soft,
+  .sf-product-home.sf-ui-icon-button--soft
+),
+body.sf-glass-v2 .sf-shell .sf-desktop-submenu.sf-ui-surface,
+body.sf-glass-v2 .sf-agency-widget :is(
+  .cdl-bento__pill,.cdl-bento__circle-arrow,
+  .cdl-service-detail__back,.cdl-service-detail__tag,
+  .cdl-contact__pill,.cdl-contact__arrow:not(.cdl-contact__arrow--solid),
+  .cdl-project__back,
+  .sf-agency-process-stage-top,.sf-agency-process-stage-foot a
+){
+  --sf-ui-glass-ink:#f4f4f5;
+  color:#f4f4f5;
+  border:1.15px solid transparent!important;
+  background:var(--cdl-agency-glass-back) padding-box,var(--cdl-agency-glass-rim) border-box!important;
+  -webkit-backdrop-filter:var(--cdl-agency-glass-filter)!important;
+  backdrop-filter:var(--cdl-agency-glass-filter)!important;
+  box-shadow:var(--cdl-agency-glass-shadow)!important;
+}
+body.sf-glass-v2 .sf-shell .sf-header .sf-brand a,
+body.sf-glass-v2 .sf-shell .sf-desktop-navigation :is(a,button),
+body.sf-glass-v2 .sf-shell .sf-desktop-submenu a {color:#f4f4f5}
+body.sf-glass-v2 .sf-shell .sf-header .sf-actions .sf-ui-icon-button,
+body.sf-glass-v2 .sf-shell .sf-header .sf-header-menu .sf-ui-icon-button{color:#f4f4f5}
+body.sf-glass-v2 .sf-shell .sf-header :is(.sf-actions,.sf-header-menu) .sf-icon,
+body.sf-glass-v2 .sf-shell .sf-desktop-submenu-toggle .sf-icon{
+  filter:brightness(0) invert(1)!important;
+}
+/* Original custom brand logos are deliberately not color-filtered. */
+
+/* Reference ios-glass-primary. Preserve exact native button dimensions,
+   hrefs, form submit behavior and focus semantics. */
+body.sf-glass-v2 .sf-agency-widget :is(
+  .codela-studio-hero__visual-foot a,
+  .cdl-bento__support-action,
+  .cdl-service-detail__cta,
+  .cdl-contact__submit,
+  .cdl-project__button,
+  .sf-agency-services-cta
+){
+  color:#fff!important;
+  text-shadow:0 1px 2px rgba(0,0,0,.30);
+  border:1.15px solid transparent!important;
+  background:var(--cdl-agency-glass-main) padding-box,var(--cdl-agency-glass-rim-main) border-box!important;
+  -webkit-backdrop-filter:var(--cdl-agency-glass-filter)!important;
+  backdrop-filter:var(--cdl-agency-glass-filter)!important;
+  box-shadow:var(--cdl-agency-glass-shadow-main)!important;
+  transition:transform .18s cubic-bezier(.22,1,.36,1),background .2s ease,box-shadow .2s ease;
+}
+body.sf-glass-v2 .sf-agency-widget :is(
+  .codela-studio-hero__visual-foot a,
+  .cdl-bento__support-action,
+  .cdl-service-detail__cta,
+  .cdl-contact__submit,
+  .cdl-project__button,
+  .sf-agency-services-cta
+):is(:hover,:focus-visible){
+  background:linear-gradient(180deg,rgba(255,255,255,.21),rgba(255,255,255,.08) 55%,rgba(255,255,255,.13)) padding-box,var(--cdl-agency-glass-rim-main) border-box!important;
+}
+body.sf-glass-v2 .sf-agency-widget :is(
+  .codela-studio-hero__visual-foot a,
+  .cdl-service-detail__cta,
+  .cdl-contact__submit,
+  .cdl-project__button
+):active {transform:scale(.97)}
+/* CTA inside a linked bento card should not gain its own pointer hit target. */
+body.sf-glass-v2 .sf-agency-widget .cdl-bento__support-action {pointer-events:none}
+
+/* Reference bento-box: purposely near-opaque so text and imagery read well. */
+body.sf-glass-v2 .sf-agency-widget :is(
+  .cdl-bento__card,.cdl-contact__card,
+  .cdl-project__panel,.sf-agency-process-stage
+){
+  border:1px solid var(--cdl-agency-bento-border);
+  background:var(--cdl-agency-bento);
+  box-shadow:var(--cdl-agency-bento-shadow);
+}
+body.sf-glass-v2 .sf-agency-widget :is(.cdl-bento__card,.cdl-contact__card):is(:hover,:focus-visible){
+  border-color:rgba(214,166,118,.44);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 18px 36px -16px rgba(0,0,0,.95);
+}
+body.sf-glass-v2 .sf-agency-widget .sf-agency-process-stage[data-step]{
+  background:var(--cdl-agency-bento);
+  color:#f4f4f5;
+}
+body.sf-glass-v2 .sf-agency-widget .sf-agency-process-step[aria-pressed="true"]{
+  border:1.15px solid transparent;
+  background:var(--cdl-agency-glass-back) padding-box,var(--cdl-agency-glass-rim) border-box;
+  -webkit-backdrop-filter:var(--cdl-agency-glass-filter);
+  backdrop-filter:var(--cdl-agency-glass-filter);
+  box-shadow:var(--cdl-agency-glass-shadow);
+  opacity:1;
+}
+
+/* Quiet surface accents: match reference small glass chips and selected tags. */
+body.sf-glass-v2 .sf-agency-widget :is(
+  .cdl-service-detail__scope li,
+  .cdl-project__summary,
+  .sf-agency-process-stage-row
+){
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.045);
+  color:#e1dce5;
+}
+body.sf-glass-v2 .sf-agency-widget .cdl-project__choice span{
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.04);
+  color:#d4d4d8;
+  transition:background .2s ease,border-color .2s ease,color .2s ease;
+}
+body.sf-glass-v2 .sf-agency-widget .cdl-project__choice:hover span{
+  border-color:rgba(214,166,118,.42);
+  color:#fff;
+}
+body.sf-glass-v2 .sf-agency-widget .cdl-project__choice input:checked+span{
+  border-color:rgba(214,166,118,.65);
+  background:rgba(214,166,118,.16);
+  color:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12);
+}
+/* Reference codela-input, preserve live WordPress form IDs, nonce and labels. */
+body.sf-glass-v2 .sf-agency-widget :is(
+  .cdl-contact__form input:not([type="checkbox"]):not([type="hidden"]),
+  .cdl-contact__form textarea,
+  .cdl-project__fields input:not([type="checkbox"]):not([type="hidden"]),
+  .cdl-project__fields textarea
+){
+  border:1px solid rgba(255,255,255,.10)!important;
+  background:rgba(255,255,255,.035)!important;
+  color:#fff!important;
+  box-shadow:none!important;
+}
+body.sf-glass-v2 .sf-agency-widget :is(
+  .cdl-contact__form input:not([type="checkbox"]):not([type="hidden"]),
+  .cdl-contact__form textarea,
+  .cdl-project__fields input:not([type="checkbox"]):not([type="hidden"]),
+  .cdl-project__fields textarea
+):focus{
+  border-color:rgba(214,166,118,.60)!important;
+  background:rgba(255,255,255,.055)!important;
+}
+body.sf-glass-v2 .sf-agency-widget :is(a,button,input,textarea):focus-visible{
+  outline:3px solid #d6a676;
+  outline-offset:3px;
+}
+/* Do not restyle success/error notices, honeypots, hidden fields or any
+   e-commerce, product, payment, account or mobile-dock surface. */
+
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+ body.sf-glass-v2 .sf-shell .sf-header :is(.sf-ui-surface,.sf-ui-icon-button--soft),
+ body.sf-glass-v2 .sf-agency-widget :is(.cdl-project__button,.cdl-contact__submit,.cdl-service-detail__back,.cdl-service-detail__cta,.cdl-bento__pill,.cdl-contact__pill){
+   background:#25242d!important;
+   border:1px solid rgba(255,255,255,.3)!important;
+   -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+ }
+}
+@media (prefers-reduced-transparency:reduce){
+ body.sf-glass-v2 .sf-shell .sf-header :is(.sf-ui-surface,.sf-ui-icon-button--soft),
+ body.sf-glass-v2 .sf-agency-widget :is(.cdl-project__button,.cdl-contact__submit,.cdl-service-detail__back,.cdl-service-detail__cta,.cdl-bento__pill,.cdl-contact__pill){
+   background:#25242d!important;border:1px solid rgba(255,255,255,.3)!important;
+   -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+ }
+}
+@media (forced-colors:active){
+ body.sf-glass-v2 .sf-shell .sf-header :is(.sf-ui-surface,.sf-ui-icon-button--soft),
+ body.sf-glass-v2 .sf-agency-widget :is(a,button,.cdl-project__choice span){
+   background:Canvas!important;border:1px solid CanvasText!important;
+   color:CanvasText!important;box-shadow:none!important;
+   -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+ }
+}
+@media (prefers-reduced-motion:reduce){
+ body.sf-glass-v2 .sf-agency-widget :is(
+   .cdl-project__button,.cdl-contact__submit,.cdl-service-detail__cta,
+   .cdl-bento__card,.cdl-contact__card,.sf-agency-process-step
+ ){transition:none!important}
+}
