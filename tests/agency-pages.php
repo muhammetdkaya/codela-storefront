@@ -62,7 +62,7 @@ agency_page_check( codela_sf_agency_contact_url() === 'https://codela.test/ileti
 
 $enqueue = $GLOBALS['actions']['wp_enqueue_scripts'][0];
 $enqueue();
-agency_page_check( count( $GLOBALS['assets'] ) === 2 && in_array( 'codela-storefront-agency', $GLOBALS['assets'], true ),
+agency_page_check( count( $GLOBALS['assets'] ) === 3 && in_array( 'codela-storefront-agency', $GLOBALS['assets'], true ) && in_array( 'codela-storefront-agency-widgets', $GLOBALS['assets'], true ),
     'Existing agency pattern loads theme CSS and pattern motion.' );
 $GLOBALS['assets'] = [];
 $GLOBALS['query'] = (object) [ 'ID' => 9, 'post_type' => 'page', 'post_content' => '' ];
@@ -74,6 +74,8 @@ agency_page_check( count( $GLOBALS['assets'] ) === 2 && in_array( 'codela-storef
     'Any WordPress page with an agency widget loads the correct independent script.' );
 $GLOBALS['layout'] = '';
 
+function sanitize_html_class( $value ) { return preg_replace( '/[^a-zA-Z0-9_-]/', '', $value ); }
+require __DIR__ . '/../theme/codela-storefront/inc/section-agency.php';
 foreach ( [ 'agency-services', 'agency-about', 'agency-contact', 'agency-process' ] as $slug ) {
     ob_start(); require __DIR__ . '/../theme/codela-storefront/patterns/' . $slug . '.php'; $html = ob_get_clean();
     agency_page_check( strlen( $html ) > 500, $slug . ' renders actual content.' );
@@ -81,7 +83,7 @@ foreach ( [ 'agency-services', 'agency-about', 'agency-contact', 'agency-process
         agency_page_check( substr_count( $html, 'class="sf-agency-module"' ) === 6, 'Exactly six services from the reference.' );
         agency_page_check( substr_count( $html, 'data-agency-filter="' ) === 4, 'Category filter has four selections.' );
     } elseif ( $slug === 'agency-process' ) {
-        agency_page_check( substr_count( $html, 'data-agency-step="' ) === 3, 'Process has three reference steps.' );
+        agency_page_check( substr_count( $html, 'data-agency-widget-step="' ) === 3 && str_contains( $html, 'Nasıl Çalışıyoruz?' ), 'Process has three reference steps.' );
     } elseif ( $slug === 'agency-contact' ) {
         agency_page_check( str_contains( $html, 'admin-post.php' ) && str_contains( $html, 'agency_contact_nonce' ), 'Real WordPress form action and nonce.' );
         agency_page_check( str_contains( $html, 'agency_consent' ) && str_contains( $html, 'agency_webpage' ), 'Contact consent and honeypot.' );
@@ -90,9 +92,7 @@ foreach ( [ 'agency-services', 'agency-about', 'agency-contact', 'agency-process
 
 // Independent widgets reuse validated editorial text without mutating the
 // original pattern or the legacy variant switch.
-function sanitize_html_class( $value ) { return preg_replace( '/[^a-zA-Z0-9_-]/', '', $value ); }
 function codela_sf_ui_button( $label, $attrs ) { return '<a href="' . esc_url( $attrs['href'] ) . '">' . esc_html( $label ) . '</a>'; }
-require __DIR__ . '/../theme/codela-storefront/inc/section-agency.php';
 require __DIR__ . '/../theme/codela-storefront/inc/section-agency-studio.php';
 require __DIR__ . '/../theme/codela-storefront/inc/section-agency-bento.php';
 require __DIR__ . '/../theme/codela-storefront/inc/section-agency-detail.php';

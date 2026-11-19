@@ -248,12 +248,20 @@ function codela_sf_section_agency_services( array $data, string $type = '' ): st
     return (string) ob_get_clean();
 }
 
-/** Independent three-step agency process with per-instance interaction state. */
+/** Agency process: editorial image stage and three-section progress navigation. */
 function codela_sf_section_agency_process( array $data, string $type = '' ): string {
-    $items = codela_sf_section_agency_items( $data );
+    $items = codela_sf_section_agency_items( $data, 3 );
     if ( ! $items ) { return ''; }
-    $id = 'sf-agency-process-' . sanitize_html_class( (string) $data['id'] );
-    $contact = codela_sf_agency_contact_link();
+    $id = 'sf-agency-process-' . sanitize_html_class( (string) ( $data['id'] ?? 'process' ) );
+    $labels = [ 'Keşif', 'Üretim', 'Yayın' ];
+    $outcomes = [ 'Net Yol Haritası', 'Hazır Dijital Ürün', 'Sorunsuz Canlı Yayın' ];
+    $images = [ 'mona-studio-hero.jpg', 'mona-bento-web.jpg', 'mona-studio-hero.jpg' ];
+    $count = count( $items );
+    $next = static function( int $index ) use ( $labels, $count ): string {
+        return $index === $count - 1 ? 'Süreci Başlat' : 'Sonraki: ' . $labels[ $index + 1 ];
+    };
+    $project_url = codela_sf_agency_project_link();
+    $media = trailingslashit( get_template_directory_uri() ) . 'assets/media/';
     $first = $items[0];
     ob_start();
     ?>
@@ -261,28 +269,47 @@ function codela_sf_section_agency_process( array $data, string $type = '' ): str
       <section class="sf-agency-process" aria-labelledby="<?php echo esc_attr( $id ); ?>">
         <div class="sf-agency-wrap">
           <header class="sf-agency-process-head">
-            <span class="sf-agency-process-kicker">ÇALIŞMA SÜRECİ</span>
-            <h2 id="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $data['title'] ?: 'Birlikte nasıl çalışıyoruz?' ); ?></h2>
-            <?php if ( $data['description'] ) : ?><p><?php echo esc_html( $data['description'] ); ?></p><?php endif; ?>
+            <div>
+              <span class="sf-agency-process-kicker">ÇALIŞMA SÜRECİ</span>
+              <h2 id="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( trim( (string) ( $data['title'] ?? '' ) ) ?: 'Nasıl Çalışıyoruz?' ); ?></h2>
+              <?php if ( ! empty( $data['description'] ) ) : ?><p><?php echo esc_html( $data['description'] ); ?></p><?php endif; ?>
+            </div>
+            <span class="sf-agency-process-counter" data-agency-widget-counter aria-live="polite">1 / <?php echo (int) $count; ?></span>
           </header>
           <div class="sf-agency-process-layout">
             <div class="sf-agency-process-steps" role="group" aria-label="Çalışma aşamaları">
               <?php foreach ( $items as $index => $item ) : ?>
-                <button type="button" class="sf-agency-process-step" data-agency-widget-step="<?php echo (int) $index; ?>" aria-pressed="<?php echo 0 === $index ? 'true' : 'false'; ?>">
-                  <span class="sf-agency-process-count"><?php echo esc_html( sprintf( '%02d · %s', $index + 1, $item['title'] ) ); ?></span>
-                  <strong><?php echo esc_html( $item['title'] ); ?></strong>
-                  <span><?php echo esc_html( $item['body'] ); ?></span>
+                <button type="button" class="sf-agency-process-step"
+                  data-agency-widget-step="<?php echo (int) $index; ?>"
+                  data-agency-stage-image="<?php echo esc_url( $media . $images[ $index ] ); ?>"
+                  data-agency-stage-outcome="<?php echo esc_attr( $outcomes[ $index ] ); ?>"
+                  data-agency-stage-title="<?php echo esc_attr( $item['title'] ); ?>"
+                  data-agency-stage-body="<?php echo esc_attr( (string) ( $item['body'] ?? '' ) ); ?>"
+                  data-agency-stage-next-label="<?php echo esc_attr( $next( $index ) ); ?>"
+                  aria-pressed="<?php echo $index === 0 ? 'true' : 'false'; ?>">
+                  <span class="sf-agency-process-bar" aria-hidden="true"><span class="sf-agency-process-bar-fill"></span></span>
+                  <span class="sf-agency-process-step-label"><?php echo esc_html( ( $index + 1 ) . '. ' . $labels[ $index ] ); ?></span>
                 </button>
               <?php endforeach; ?>
             </div>
-            <div class="sf-agency-process-sticky">
-              <div class="sf-agency-process-stage" data-agency-widget-stage data-step="0" aria-live="polite">
-                <div class="sf-agency-process-stage-top"><span data-agency-widget-stage-kicker><?php echo esc_html( '01 · ' . $first['title'] ); ?></span><span>AŞAMA</span></div>
-                <div class="sf-agency-process-stage-rows">
-                  <div class="sf-agency-process-stage-row"><span data-agency-widget-stage-title><?php echo esc_html( $first['title'] ); ?></span><em>Adım 1</em></div>
-                  <div class="sf-agency-process-stage-row"><span data-agency-widget-stage-body><?php echo esc_html( $first['body'] ); ?></span></div>
+            <div class="sf-agency-process-stage" data-agency-widget-stage data-step="0">
+              <div class="sf-agency-process-stage-visual">
+                <img data-agency-widget-stage-image
+                  src="<?php echo esc_url( $media . $images[0] ); ?>"
+                  alt="" width="1376" height="768" loading="lazy" decoding="async">
+              </div>
+              <div class="sf-agency-process-stage-content">
+                <div class="sf-agency-process-stage-copy" aria-live="polite" aria-atomic="true">
+                  <span class="sf-agency-process-stage-outcome" data-agency-widget-stage-kicker><?php echo esc_html( $outcomes[0] ); ?></span>
+                  <h3 data-agency-widget-stage-title><?php echo esc_html( $first['title'] ); ?></h3>
+                  <p data-agency-widget-stage-body><?php echo esc_html( (string) ( $first['body'] ?? '' ) ); ?></p>
                 </div>
-                <div class="sf-agency-process-stage-foot"><span>Projenize uygun bir yol haritası çıkaralım.</span><a href="<?php echo esc_url( $contact ); ?>">Süreci Başlat →</a></div>
+                <div class="sf-agency-process-stage-foot">
+                  <button type="button" class="sf-agency-process-prev" data-agency-widget-prev aria-label="Önceki aşama" disabled><span aria-hidden="true">←</span></button>
+                  <a class="sf-agency-process-next" href="<?php echo esc_url( $project_url ); ?>" data-agency-widget-next>
+                    <span data-agency-widget-next-label><?php echo esc_html( $next( 0 ) ); ?></span><span aria-hidden="true">→</span>
+                  </a>
+                </div>
               </div>
             </div>
           </div>

@@ -183,20 +183,47 @@
     if (widget.dataset.agencyWidget === 'process') {
       const steps = [...widget.querySelectorAll('[data-agency-widget-step]')];
       const stage = widget.querySelector('[data-agency-widget-stage]');
-      const kicker = widget.querySelector('[data-agency-widget-stage-kicker]');
+      const counter = widget.querySelector('[data-agency-widget-counter]');
+      const image = widget.querySelector('[data-agency-widget-stage-image]');
+      const outcome = widget.querySelector('[data-agency-widget-stage-kicker]');
       const title = widget.querySelector('[data-agency-widget-stage-title]');
       const body = widget.querySelector('[data-agency-widget-stage-body]');
-      const activate = index => {
-        const step = steps[index];
-        if (!step || !stage || !kicker || !title || !body) return;
-        stage.dataset.step = String(index);
-        kicker.textContent = step.querySelector('.sf-agency-process-count')?.textContent || '';
-        title.textContent = step.querySelector('strong')?.textContent || '';
-        body.textContent = step.querySelector('span:last-child')?.textContent || '';
-        steps.forEach((button,i) => button.setAttribute('aria-pressed', String(i === index)));
-      };
-      steps.forEach((button,i) => button.addEventListener('click', () => activate(i)));
-      activate(0);
+      const previous = widget.querySelector('[data-agency-widget-prev]');
+      const next = widget.querySelector('[data-agency-widget-next]');
+      const nextLabel = widget.querySelector('[data-agency-widget-next-label]');
+      if (steps.length && stage && counter && image && outcome && title && body && previous && next && nextLabel) {
+        let active = 0;
+        const activate = (index, animate = true) => {
+          const step = steps[index];
+          if (!step) return;
+          active = index;
+          stage.dataset.step = String(index);
+          counter.textContent = (index + 1) + ' / ' + steps.length;
+          image.src = step.dataset.agencyStageImage || image.src;
+          outcome.textContent = step.dataset.agencyStageOutcome || '';
+          title.textContent = step.dataset.agencyStageTitle || '';
+          body.textContent = step.dataset.agencyStageBody || '';
+          nextLabel.textContent = step.dataset.agencyStageNextLabel || 'Süreci Başlat';
+          previous.disabled = index === 0;
+          steps.forEach((button, i) => button.setAttribute('aria-pressed', String(i === index)));
+          if (animate && !reduced.matches && typeof stage.animate === 'function') {
+            stage.animate(
+              [{ opacity: .75, transform: 'translateY(5px)' }, { opacity: 1, transform: 'translateY(0)' }],
+              { duration: 230, easing: 'cubic-bezier(.16,1,.3,1)' }
+            );
+          }
+        };
+        steps.forEach((button, i) => button.addEventListener('click', () => activate(i)));
+        previous.addEventListener('click', () => { if (active > 0) activate(active - 1); });
+        next.addEventListener('click', event => {
+          if (active < steps.length - 1) {
+            event.preventDefault();
+            activate(active + 1);
+          }
+          // At the final step this is a normal WordPress project-page link.
+        });
+        activate(0, false);
+      }
     }
   });
 

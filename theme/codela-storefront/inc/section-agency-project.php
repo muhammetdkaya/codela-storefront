@@ -30,12 +30,6 @@ function codela_sf_section_agency_project( array $data, string $type = '' ): str
     <div class="sf-agency-widget sf-agency-widget--project" data-agency-widget="project">
       <section class="cdl-project" aria-labelledby="<?php echo esc_attr( $id ); ?>">
         <div class="cdl-project__shell">
-          <header class="cdl-project__topbar">
-            <a class="cdl-project__back" href="<?php echo esc_url( $contact ); ?>" aria-label="İletişim sayfasına dön">
-              <span aria-hidden="true">←</span><span>İletişim</span>
-            </a>
-            <span class="cdl-project__wordmark">CODELA</span>
-          </header>
           <div class="cdl-project__panel">
             <?php if ( $confirmed ) : ?>
               <div class="cdl-project__success" role="status">
