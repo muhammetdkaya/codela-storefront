@@ -42,6 +42,9 @@
     },
     "agency-process": {
       "steps": "Çalışma Süreci"
+    },
+    "agency-bento": {
+      "bento": "Bento Hizmetler"
     }
   }
 }
