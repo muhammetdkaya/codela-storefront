@@ -156,6 +156,7 @@ const server=http.createServer((req,res)=>{
       }
       await process.locator('[data-agency-widget-step="1"]').click();
       assert.equal(await process.locator('[data-agency-widget-stage]').getAttribute('data-step'),'1','Process steps remain interactive');
+      assert.equal(await process.locator('[data-agency-widget-counter]').textContent(),'2 / 3','Independent process counter follows stage');
       await first.locator('[data-agency-swap-to="1"]').click();
       assert.equal(await first.locator('[data-agency-card="1"]').getAttribute('data-pos'),'0','Optional first Card Swap changes');
       assert.equal(await second.locator('[data-agency-card="0"]').getAttribute('data-pos'),'0','Optional second Card Swap remains independent');

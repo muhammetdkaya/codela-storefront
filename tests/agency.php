@@ -39,7 +39,7 @@ $enqueue();
 agency_check( [] === $GLOBALS['enqueued'], 'No agency assets when a page has no agency sections.' );
 $GLOBALS['page']->post_content = '<!-- wp:pattern {"slug":"codela-storefront/agency-home"} /-->';
 $enqueue();
-agency_check( count( $GLOBALS['enqueued'] ) === 2 && in_array( 'codela-storefront-agency', $GLOBALS['enqueued'], true ), 'Agency reference pattern loads scoped CSS and interaction script.' );
+agency_check( count( $GLOBALS['enqueued'] ) === 3 && in_array( 'codela-storefront-agency', $GLOBALS['enqueued'], true ) && in_array( 'codela-storefront-agency-widgets', $GLOBALS['enqueued'], true ), 'Agency reference pattern loads scoped CSS and interaction script.' );
 $GLOBALS['enqueued'] = [];
 $GLOBALS['page']->post_content = '';
 $GLOBALS['layout'] = '<!-- wp:codela/section-agency-cards /-->';

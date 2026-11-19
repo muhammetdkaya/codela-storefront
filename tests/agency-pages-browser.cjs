@@ -52,12 +52,13 @@ const server = http.createServer((req, res) => {
 
       await page.goto('http://127.0.0.1:'+port+'/?page=about');
       assert.equal(await page.locator('.sf-agency-about-page h1').count(),1,'About page has one heading');
-      assert.equal(await page.locator('[data-agency-step]').count(),3,'Three process steps');
+      assert.equal(await page.locator('[data-agency-widget-step]').count(),3,'Three process steps');
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth+1),'No about overflow at '+width);
-      await page.locator('[data-agency-step="1"]').click();
-      assert.equal(await page.locator('[data-agency-process-stage]').getAttribute('data-step'),'1','Process stage changes by click');
-      await page.locator('[data-agency-step="2"]').press('Enter');
-      assert.equal(await page.locator('[data-agency-process-stage]').getAttribute('data-step'),'2','Process stage keyboard interaction');
+      await page.locator('[data-agency-widget-step="1"]').click();
+      assert.equal(await page.locator('[data-agency-widget-stage]').getAttribute('data-step'),'1','Process stage changes by click');
+      assert.equal(await page.locator('[data-agency-widget-counter]').textContent(),'2 / 3','Process counter follows active stage');
+      await page.locator('[data-agency-widget-step="2"]').press('Enter');
+      assert.equal(await page.locator('[data-agency-widget-stage]').getAttribute('data-step'),'2','Process stage keyboard interaction');
       if (width === 390 || width === 1440) await page.screenshot({path:path.join(root,'qa/agency-about-'+width+'.png'),fullPage:true});
 
       await page.goto('http://127.0.0.1:'+port+'/?page=contact&hizmetler='+encodeURIComponent('WooCommerce E-Ticaret Mağazası'));
@@ -77,7 +78,7 @@ const server = http.createServer((req, res) => {
     await noJs.goto('http://127.0.0.1:'+port+'/?page=services');
     assert.equal(await noJs.locator('.sf-agency-module').count(),6,'All services are visible without JavaScript');
     await noJs.goto('http://127.0.0.1:'+port+'/?page=about');
-    assert.equal(await noJs.locator('[data-agency-step]').count(),3,'Process text remains visible without JavaScript');
+    assert.equal(await noJs.locator('[data-agency-widget-step]').count(),3,'Process text remains visible without JavaScript');
     assert.deepEqual(errors,[],'No uncaught errors');
     console.log('Agency Services/About/Contact: four widths, filter, scope handoff, process, form and no-JS passed.');
   } catch(error) {

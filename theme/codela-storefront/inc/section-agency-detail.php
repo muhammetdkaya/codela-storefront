@@ -26,7 +26,6 @@ function codela_sf_section_agency_detail( array $data, string $type = '', bool $
             && '' !== trim( (string) ( $item['title'] ?? '' ) );
     } ) );
     $image = get_template_directory_uri() . '/assets/media/' . $settings[ $variant ]['image'];
-    $services = codela_sf_agency_page_url( 'hizmetler', home_url( '/' ) );
     // The real project flow replaces the temporary contact-form fallback only
     // after its WordPress page is published and ownership-verified.
     $contact = add_query_arg( 'hizmetler', $title, codela_sf_agency_project_link() );
@@ -36,11 +35,6 @@ function codela_sf_section_agency_detail( array $data, string $type = '', bool $
     <div class="sf-agency-widget sf-agency-widget--detail" data-agency-widget="detail">
       <section class="cdl-service-detail" aria-labelledby="<?php echo esc_attr( $id ); ?>">
         <div class="cdl-service-detail__shell">
-          <div class="cdl-service-detail__header">
-            <a class="cdl-service-detail__back" href="<?php echo esc_url( $services ); ?>"
-               aria-label="Hizmetlere dön"><span aria-hidden="true">←</span><span>Hizmetler</span></a>
-            <span class="cdl-service-detail__brand">CODELA</span>
-          </div>
           <div class="cdl-service-detail__content">
             <div class="cdl-service-detail__visual">
               <img src="<?php echo esc_url( $image ); ?>" alt="" width="1376" height="768"

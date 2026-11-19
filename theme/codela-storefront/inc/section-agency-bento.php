@@ -34,7 +34,6 @@ function codela_sf_section_agency_bento( array $data, string $type = '' ): strin
               <p class="cdl-bento__eyebrow">HİZMETLER</p>
               <h2 id="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $title ); ?></h2>
             </div>
-            <span class="cdl-bento__brand">Codela</span>
           </header>
           <div class="cdl-bento__grid" aria-label="Codela hizmetlerimiz">
             <?php foreach ( $items as $index => $item ) : ?>

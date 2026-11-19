@@ -1977,3 +1977,146 @@ body:has(.codela-page-layout>.sf-agency-widget--contact-bento) .sf-footer a{colo
 }
 
 /* MONA project start style is shipped as an isolated asset to avoid unnecessary CSS parsing on unrelated agency pages. */
+
+
+/* MONA process v2 — three progress tabs + one outcome-focused editorial card.
+   Scoped to the native Agency widget and its WordPress pattern: no second
+   header, dock, fake phone chrome, sticky trigger or scroll-driven JS. */
+.sf-agency-widget--process .sf-agency-process{
+  background:#09090c;color:#f4f4f5;min-height:100svh;
+  padding:clamp(108px,12svh,148px) 16px calc(110px + env(safe-area-inset-bottom,0px));
+  scroll-margin-top:80px;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+.sf-agency-widget--process .sf-agency-process *{box-sizing:border-box}
+.sf-agency-widget--process .sf-agency-process .sf-agency-wrap{width:min(100%,940px);max-width:940px!important;margin:0 auto}
+.sf-agency-widget--process .sf-agency-process-head{
+  display:flex;justify-content:space-between;align-items:flex-end;gap:14px;
+  margin:0 0 23px;padding:0 5px 0;
+}
+.sf-agency-widget--process .sf-agency-process-kicker{
+  color:#92909a;font-size:10px;font-weight:500;letter-spacing:.22em;line-height:1.4;
+}
+.sf-agency-widget--process .sf-agency-process-head h2{
+  font-family:inherit;color:#f5f4f7;
+  font-size:clamp(27px,3.4vw,43px);font-weight:550;line-height:1.09;
+  letter-spacing:-.043em;margin:8px 0 0!important;
+}
+.sf-agency-widget--process .sf-agency-process-head p{
+  font-size:13px;line-height:1.5;color:#aaa7b0;margin:8px 0 0!important;
+}
+.sf-agency-widget--process .sf-agency-process-counter{
+  color:#d6a676;font-size:12px;font-weight:600;white-space:nowrap;
+  font-variant-numeric:tabular-nums;padding-bottom:3px;
+}
+.sf-agency-widget--process .sf-agency-process-layout{display:block;min-width:0}
+.sf-agency-widget--process .sf-agency-process-steps{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;padding:0;margin:0 0 15px;
+}
+.sf-agency-widget--process .sf-agency-process-step,
+.sf-agency-widget--process .sf-agency-process-step[aria-pressed="true"]{
+  display:flex;flex-direction:column;justify-content:flex-start;align-items:stretch;gap:8px;
+  min-width:0;min-height:44px;margin:0;padding:0;
+  font:inherit;text-align:left;cursor:pointer;border:0;border-radius:0;background:none;
+  box-shadow:none;opacity:1;transition:none;
+}
+.sf-agency-widget--process .sf-agency-process-bar{
+  display:block;width:100%;height:4px;border-radius:99px;overflow:hidden;
+  background:rgba(255,255,255,.10);
+}
+.sf-agency-widget--process .sf-agency-process-bar-fill{
+  display:block;width:0;height:100%;border-radius:inherit;background:#d6a676;
+  transition:width .3s ease;
+}
+.sf-agency-widget--process .sf-agency-process-step[data-complete="true"] .sf-agency-process-bar-fill{width:100%}
+.sf-agency-widget--process .sf-agency-process-step-label{
+  color:#85818c;font-size:11px;line-height:1.3;font-weight:550;transition:color .2s ease;
+}
+.sf-agency-widget--process .sf-agency-process-step[aria-pressed="true"] .sf-agency-process-step-label{color:#fff}
+.sf-agency-widget--process .sf-agency-process-step:hover .sf-agency-process-step-label{color:#dedbe3}
+.sf-agency-widget--process .sf-agency-process-step:focus-visible{
+  outline:3px solid #d6a676;outline-offset:4px;border-radius:4px;
+}
+.sf-agency-widget--process .sf-agency-process-stage,
+.sf-agency-widget--process .sf-agency-process-stage[data-step]{
+  display:flex;flex-direction:column;justify-content:flex-start;gap:0;
+  min-width:0;min-height:0;position:relative;isolation:isolate;overflow:hidden;
+  border:1px solid rgba(255,255,255,.10);border-radius:30px;padding:14px;
+  background:linear-gradient(165deg,rgba(28,27,36,.95),rgba(14,14,19,.99));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.11),0 16px 36px -20px rgba(0,0,0,.95);
+  color:#f5f4f7;transition:none;
+}
+.sf-agency-widget--process .sf-agency-process-stage-visual{
+  width:100%;height:clamp(190px,34svh,330px);flex:0 0 auto;
+  position:relative;overflow:hidden;border-radius:22px;
+  background:#0b0b0f;border:1px solid rgba(255,255,255,.07);
+}
+.sf-agency-widget--process .sf-agency-process-stage-visual img{
+  display:block;width:100%;height:100%;object-fit:cover;object-position:center;
+}
+.sf-agency-widget--process .sf-agency-process-stage-content{
+  display:flex;flex-direction:column;justify-content:space-between;gap:20px;
+  min-height:190px;padding:20px 9px 5px;
+}
+.sf-agency-widget--process .sf-agency-process-stage-copy{min-width:0}
+.sf-agency-widget--process .sf-agency-process-stage-outcome{
+  display:block;color:#d6a676;font-size:10.5px;letter-spacing:.18em;
+  font-weight:570;line-height:1.4;text-transform:uppercase;
+}
+.sf-agency-widget--process .sf-agency-process-stage-copy h3{
+  color:#f5f4f7;font-size:clamp(23px,2.5vw,33px);
+  line-height:1.14;font-weight:550;letter-spacing:-.035em;margin:7px 0 0!important;
+}
+.sf-agency-widget--process .sf-agency-process-stage-copy p{
+  font-size:clamp(12px,1.1vw,15px);font-weight:400;
+  line-height:1.62;color:#aaa6b1;margin:10px 0 0!important;
+}
+.sf-agency-widget--process .sf-agency-process-stage-foot{
+  display:flex;align-items:center;gap:10px;
+  padding:14px 0 0;border-top:1px solid rgba(255,255,255,.07);
+}
+.sf-agency-widget--process .sf-agency-process-prev,
+.sf-agency-widget--process .sf-agency-process-next{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:44px;border:1px solid rgba(255,255,255,.18);border-radius:999px;
+  background:rgba(255,255,255,.09);color:#f5f4f7;
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  font:inherit;font-size:12px;font-weight:560;cursor:pointer;
+  text-decoration:none!important;transition:background .2s ease,transform .2s ease;
+}
+.sf-agency-widget--process .sf-agency-process-prev{width:44px;flex:0 0 44px;padding:0;font-size:20px}
+.sf-agency-widget--process .sf-agency-process-next{flex:1;gap:12px;padding:10px 15px;text-align:center}
+.sf-agency-widget--process .sf-agency-process-prev:disabled{opacity:.30;cursor:default}
+.sf-agency-widget--process .sf-agency-process-next:hover,
+.sf-agency-widget--process .sf-agency-process-prev:not(:disabled):hover{background:rgba(255,255,255,.17)}
+.sf-agency-widget--process .sf-agency-process-stage-foot :is(button,a):focus-visible{
+  outline:3px solid #d6a676;outline-offset:3px;
+}
+@media(min-width:850px){
+  .sf-agency-widget--process .sf-agency-process-stage{
+    display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    gap:22px;align-items:stretch;min-height:410px;
+  }
+  .sf-agency-widget--process .sf-agency-process-stage-visual{height:auto;min-height:370px}
+  .sf-agency-widget--process .sf-agency-process-stage-content{
+    min-height:0;padding:28px 20px 14px 4px;
+  }
+}
+@media(max-width:739px){
+  .sf-agency-widget--process .sf-agency-process{
+    padding:calc(105px + env(safe-area-inset-top,0px)) 16px
+    calc(107px + env(safe-area-inset-bottom,0px));
+  }
+  .sf-agency-widget--process .sf-agency-process-head{margin-bottom:19px}
+  .sf-agency-widget--process .sf-agency-process-head h2{font-size:26px}
+  .sf-agency-widget--process .sf-agency-process-steps{gap:8px;margin-bottom:13px}
+  .sf-agency-widget--process .sf-agency-process-stage-visual{height:clamp(180px,33svh,300px)}
+  .sf-agency-widget--process .sf-agency-process-stage-content{min-height:200px;padding:17px 7px 3px}
+}
+@media(prefers-reduced-motion:reduce){
+  .sf-agency-widget--process .sf-agency-process-bar-fill,
+  .sf-agency-widget--process .sf-agency-process-step-label,
+  .sf-agency-widget--process .sf-agency-process-next,
+  .sf-agency-widget--process .sf-agency-process-prev{transition:none!important}
+}

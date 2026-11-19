@@ -38,7 +38,6 @@ function codela_sf_section_agency_contact_bento( array $data, string $type = '' 
               <h1 id="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $title ); ?></h1>
               <?php if ( $lead ) : ?><p class="cdl-contact__lead"><?php echo esc_html( $lead ); ?></p><?php endif; ?>
             </div>
-            <span class="cdl-contact__brand">CODELA</span>
           </header>
           <div class="cdl-contact__grid">
             <a class="cdl-contact__card cdl-contact__card--primary" href="<?php echo esc_url( $project_href ); ?>"

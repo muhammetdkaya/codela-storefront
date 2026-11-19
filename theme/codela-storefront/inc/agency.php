@@ -117,7 +117,7 @@ add_action( 'wp_enqueue_scripts', static function() {
     if ( $flags['pattern'] ) {
         wp_enqueue_script( 'codela-storefront-agency', get_template_directory_uri() . '/assets/scripts/agency.js', [], wp_get_theme()->get( 'Version' ), true );
     }
-    if ( $flags['widgets'] ) {
+    if ( $flags['widgets'] || $flags['pattern'] ) {
         wp_enqueue_script( 'codela-storefront-agency-widgets', get_template_directory_uri() . '/assets/scripts/agency-widgets.js', [], wp_get_theme()->get( 'Version' ), true );
     }
 }, 30 );

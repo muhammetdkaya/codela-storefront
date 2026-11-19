@@ -43,7 +43,7 @@ body.sf-glass-v2 .sf-agency-widget :is(
   .cdl-service-detail__back,.cdl-service-detail__tag,
   .cdl-contact__pill,.cdl-contact__arrow:not(.cdl-contact__arrow--solid),
   .cdl-project__back,
-  .sf-agency-process-stage-top,.sf-agency-process-stage-foot a
+  .sf-agency-process-prev
 ){
   --sf-ui-glass-ink:#f4f4f5;
   color:#f4f4f5;
@@ -72,7 +72,7 @@ body.sf-glass-v2 .sf-agency-widget :is(
   .cdl-service-detail__cta,
   .cdl-contact__submit,
   .cdl-project__button,
-  .sf-agency-services-cta
+  .sf-agency-services-cta,.sf-agency-process-next
 ){
   color:#fff!important;
   text-shadow:0 1px 2px rgba(0,0,0,.30);
