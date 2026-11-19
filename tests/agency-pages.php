@@ -89,6 +89,29 @@ foreach ( [ 'agency-services', 'agency-about', 'agency-contact', 'agency-process
 function sanitize_html_class( $value ) { return preg_replace( '/[^a-zA-Z0-9_-]/', '', $value ); }
 function codela_sf_ui_button( $label, $attrs ) { return '<a href="' . esc_url( $attrs['href'] ) . '">' . esc_html( $label ) . '</a>'; }
 require __DIR__ . '/../theme/codela-storefront/inc/section-agency.php';
+require __DIR__ . '/../theme/codela-storefront/inc/section-agency-studio.php';
+$studio_data = [ 'id' => 'agency-starter-studio', 'title' => 'Markanız için dijitalin ötesinde.',
+    'description' => 'Web tasarım, e-ticaret ve özel yazılım çözümleri.', 'items' => [] ];
+$studio_html = codela_sf_section_agency_studio( $studio_data, '', true );
+agency_page_check( substr_count( $studio_html, '<h1 ' ) === 1, 'Studio welcome has one primary H1.' );
+agency_page_check( str_contains( $studio_html, 'Markanız için' ) && str_contains( $studio_html, 'dijitalin ötesinde.' ) &&
+    str_contains( $studio_html, 'mona-studio-hero.jpg' ) && ! str_contains( $studio_html, 'data:image' ),
+    'Studio welcome preserves supplied image and copy without inline base64.' );
+agency_page_check( str_contains( $studio_html, 'https://codela.test/hizmetler/' ), 'Studio CTA resolves the installed Services page.' );
+$studio_custom = $studio_data; $studio_custom['title'] = 'Özgün bir başlık';
+agency_page_check( str_contains( codela_sf_section_agency_studio( $studio_custom ), 'Özgün bir başlık' ),
+    'Studio never replaces user-edited copy.' );
+if ( in_array( '--render=studio', $argv, true ) ) {
+    echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
+    echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/storefront-base.css">';
+    echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/agency.css">';
+    // In the CLI fixture only, rewrite codela.test theme URI to the local QA HTTP server.
+    $local_studio = str_replace( 'https://codela.test/wp-content/themes/codela-storefront/', '/theme/codela-storefront/', $studio_html );
+    echo '<style>html,body{margin:0;padding:0;background:#09090c} .sf-content,.codela-page-layout{width:100%;max-width:none;margin:0}</style>';
+    echo '</head><body class="home"><main class="sf-content"><div class="codela-page-layout">' . $local_studio . '</div></main></body></html>';
+    exit;
+}
+
 $widget_data = [
     'id' => 'cards-demo', 'title' => 'Our Agency', 'description' => 'Independent and editable',
     'items' => [
