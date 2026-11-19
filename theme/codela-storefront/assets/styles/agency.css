@@ -1524,7 +1524,8 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
 .sf-agency-widget--detail .cdl-service-detail,
 .sf-agency-widget--detail .cdl-service-detail *{box-sizing:border-box}
 .sf-agency-widget--detail .cdl-service-detail{
-  width:100%;min-height:100svh;
+  width:100vw!important;max-width:100vw!important;min-height:100svh;
+  margin-left:calc(50% - 50vw)!important;margin-right:calc(50% - 50vw)!important;
   background:#09090c;color:#f6f5f7;
   padding:clamp(104px,12svh,142px) clamp(16px,4vw,58px)
     calc(115px + env(safe-area-inset-bottom,0px));
