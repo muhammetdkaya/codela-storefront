@@ -38,6 +38,7 @@ function admin_url( $path ) { return 'https://codela.test/wp-admin/' . $path; }
 function wp_nonce_field( ...$args ) { echo '<input type="hidden" name="agency_contact_nonce" value="testnonce">'; }
 function get_privacy_policy_url() { return 'https://codela.test/gizlilik/'; }
 function wp_unslash( $value ) { return $value; }
+function is_email( $value ) { return (bool) filter_var( $value, FILTER_VALIDATE_EMAIL ); }
 function sanitize_key( $value ) { return preg_replace( '/[^a-z0-9_-]/', '', strtolower( $value ) ); }
 function get_template_directory_uri() { return 'https://codela.test/wp-content/themes/codela-storefront'; }
 function wp_get_theme() { return new class { function get( $field ) { return '0.1.321'; } }; }
@@ -93,6 +94,7 @@ require __DIR__ . '/../theme/codela-storefront/inc/section-agency.php';
 require __DIR__ . '/../theme/codela-storefront/inc/section-agency-studio.php';
 require __DIR__ . '/../theme/codela-storefront/inc/section-agency-bento.php';
 require __DIR__ . '/../theme/codela-storefront/inc/section-agency-detail.php';
+require __DIR__ . '/../theme/codela-storefront/inc/section-agency-contact-bento.php';
 
 $detail_reference = [
     'web' => [ 'title'=>'Web Tasarım',
@@ -142,6 +144,43 @@ if ( in_array( '--render=detail', $argv, true ) ) {
     echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/agency.css">';
     echo '</head><body class="sf-site-mode-agency"><main class="sf-content" id="sf-content">';
     echo '<div class="codela-page-layout">'.$markup.'</div></main></body></html>';
+    exit;
+}
+
+
+$contact_bento = [ 'id'=>'agency-starter-contact-bento','enabled'=>true,'variant'=>'bento',
+  'title'=>'Birlikte başlayalım.','description'=>'İhtiyacını paylaş, birlikte netleştirelim.',
+  'public_email'=>'','whatsapp_phone'=>'','studio_name'=>'Codela · Dijital stüdyo',
+  'studio_hours'=>'' ];
+$contact_bento_html = codela_sf_section_agency_contact_bento( $contact_bento );
+agency_page_check( substr_count( $contact_bento_html, 'class="cdl-contact__card ' ) === 4,
+    'Reference contact has one primary, two direct choices and one studio strip' );
+agency_page_check( str_contains( $contact_bento_html, 'Birlikte başlayalım.' ) &&
+    str_contains( $contact_bento_html, 'data-agency-widget="contact-bento"' ),
+    'Contact Bento renders approved reference title and is isolated' );
+agency_page_check( str_contains( $contact_bento_html, 'admin-post.php' )
+    && str_contains( $contact_bento_html, 'agency_contact_nonce' )
+    && str_contains( $contact_bento_html, 'agency_consent' )
+    && str_contains( $contact_bento_html, 'agency_webpage' ),
+    'Existing nonce, consent, and honeypot still protect live WordPress form' );
+agency_page_check( !str_contains( $contact_bento_html, '000 00 00' )
+    && !str_contains( $contact_bento_html, 'merhaba@codela.co' )
+    && !str_contains( $contact_bento_html, 'wa.me/' ),
+    'Unconfirmed contact placeholders and fake Whatsapp routes cannot leak' );
+$contact_bento_real = $contact_bento;
+$contact_bento_real['public_email'] = 'hello@example.org';
+$contact_bento_real['whatsapp_phone'] = '+90 555 123 45 67';
+$contact_bento_real_html = codela_sf_section_agency_contact_bento( $contact_bento_real );
+agency_page_check( str_contains( $contact_bento_real_html, 'data-agency-copy-email' ) &&
+    str_contains( $contact_bento_real_html, 'https://wa.me/905551234567' ),
+    'Configured public email and verified-format WhatsApp produce functional cards' );
+if ( in_array( '--render=contact-bento', $argv, true ) ) {
+    echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
+    echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/storefront-base.css">';
+    echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/agency.css">';
+    echo '</head><body class="sf-site-mode-agency">';
+    echo '<main class="sf-content" id="sf-content"><div class="codela-page-layout">' . $contact_bento_html . '</div></main>';
+    echo '<script src="/theme/codela-storefront/assets/scripts/agency-widgets.js"></script></body></html>';
     exit;
 }
 

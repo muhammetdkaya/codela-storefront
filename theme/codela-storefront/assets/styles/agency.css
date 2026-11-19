@@ -1670,3 +1670,308 @@ body:has(.codela-page-layout>.sf-agency-widget--detail) .sf-footer{
 }
 body:has(.codela-page-layout>.sf-agency-widget--detail) .sf-footer a{color:#d6d2dc}
 body:has(.codela-page-layout>.sf-agency-widget--detail) .sf-footer-copyright{color:#96929e}
+
+
+/* MONA stage 4 contact: the approved dark/amber 1+2+1 Bento screen.
+   Native theme header/dock remain in charge. Old Agency patterns untouched. */
+.codela-page-layout>.sf-agency-widget--contact-bento,
+.sf-agency-widget--contact-bento{width:100%;max-width:none!important;margin:0!important}
+.sf-agency-widget--contact-bento *,
+.sf-agency-widget--contact-bento *::before,
+.sf-agency-widget--contact-bento *::after{box-sizing:border-box}
+.sf-agency-widget--contact-bento{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:#09090c;color:#f5f4f7
+}
+.sf-agency-widget--contact-bento :where(h1,h2,h3,p){margin:0!important}
+.sf-agency-widget--contact-bento :where(a,button,input,textarea):focus-visible{
+  outline:3px solid #d6a676;outline-offset:3px
+}
+.sf-agency-widget--contact-bento .cdl-contact{
+  position:relative;min-height:100svh;
+  width:100vw;max-width:100vw;
+  margin-left:calc(50% - 50vw)!important;
+  margin-right:calc(50% - 50vw)!important;
+  background:#09090c;
+  display:flex;justify-content:center;
+  padding:clamp(105px,12svh,145px) clamp(16px,4vw,56px)
+      calc(110px + env(safe-area-inset-bottom,0px))
+}
+.sf-agency-widget--contact-bento .cdl-contact__inner{
+  min-width:0;width:min(100%,970px);display:flex;flex-direction:column;gap:20px
+}
+.sf-agency-widget--contact-bento .cdl-contact__header{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+  padding:0 5px 4px
+}
+.sf-agency-widget--contact-bento .cdl-contact__eyebrow{
+  color:#928e9a;font-size:11px;letter-spacing:.22em;font-weight:540;
+  line-height:1.4;margin:0 0 6px!important
+}
+.sf-agency-widget--contact-bento .cdl-contact__header h1{
+  color:#f5f4f7;font-family:inherit;
+  font-size:clamp(28px,3.4vw,46px);line-height:1.06;
+  letter-spacing:-.04em;font-weight:560;margin:0!important
+}
+.sf-agency-widget--contact-bento .cdl-contact__lead{
+  margin:8px 0 0!important;color:#aaa7b0;
+  font-size:clamp(12px,1.2vw,15px);line-height:1.55
+}
+.sf-agency-widget--contact-bento .cdl-contact__brand{
+  flex:0 0 auto;letter-spacing:.2em;font-size:11px;color:#88838f;
+  margin-bottom:6px
+}
+.sf-agency-widget--contact-bento .cdl-contact__grid{
+  display:grid;flex:1 1 auto;min-height:530px;gap:14px;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  grid-template-rows:minmax(215px,1.26fr) minmax(155px,1fr) minmax(92px,.67fr);
+}
+.sf-agency-widget--contact-bento .cdl-contact__card{
+  position:relative;isolation:isolate;overflow:hidden;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:27px;
+  padding:20px;min-width:0;min-height:0;
+  display:flex;flex-direction:column;justify-content:space-between;
+  gap:12px;text-decoration:none!important;text-align:left;
+  color:#f5f4f7!important;
+  background:linear-gradient(165deg,rgba(28,27,36,.93),rgba(14,14,19,.98));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 14px 30px -18px rgba(0,0,0,.95);
+  transition:transform .25s cubic-bezier(.22,1,.36,1),
+    border-color .25s ease,box-shadow .25s ease
+}
+.sf-agency-widget--contact-bento button.cdl-contact__card{
+  width:100%;font-family:inherit;cursor:pointer;appearance:none
+}
+.sf-agency-widget--contact-bento a.cdl-contact__card{cursor:pointer}
+.sf-agency-widget--contact-bento .cdl-contact__card:is(:hover,:focus-visible){
+  border-color:rgba(214,166,118,.44);transform:translateY(-2px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 18px 36px -16px rgba(0,0,0,.95)
+}
+.sf-agency-widget--contact-bento .cdl-contact__card--primary,
+.sf-agency-widget--contact-bento .cdl-contact__card--strip{grid-column:span 2}
+.sf-agency-widget--contact-bento .cdl-contact__light,
+.sf-agency-widget--contact-bento .cdl-contact__fluted{position:absolute;inset:0;pointer-events:none;z-index:-1}
+.sf-agency-widget--contact-bento .cdl-contact__light--right{
+  background:radial-gradient(240px circle at 96% 50%,rgba(214,166,118,.26),transparent 62%)
+}
+.sf-agency-widget--contact-bento .cdl-contact__light--top{
+  background:radial-gradient(195px circle at 92% 12%,rgba(214,166,118,.13),transparent 65%)
+}
+.sf-agency-widget--contact-bento .cdl-contact__fluted{
+  background:repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0 2px,transparent 2px 7px);
+  -webkit-mask-image:radial-gradient(circle at 82% 20%,#000,transparent 68%);
+  mask-image:radial-gradient(circle at 82% 20%,#000,transparent 68%)
+}
+.sf-agency-widget--contact-bento .cdl-contact__top,
+.sf-agency-widget--contact-bento .cdl-contact__bottom{position:relative;z-index:1;min-width:0}
+.sf-agency-widget--contact-bento .cdl-contact__top{
+  display:flex;justify-content:space-between;align-items:flex-start;gap:10px
+}
+.sf-agency-widget--contact-bento .cdl-contact__pill{
+  display:inline-flex;align-items:center;gap:7px;
+  border-radius:999px;padding:8px 12px;min-height:30px;
+  color:#dfdce5;font-size:11px;line-height:1.15;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(16,15,22,.58);backdrop-filter:blur(12px)
+}
+.sf-agency-widget--contact-bento .cdl-contact__pill>i{
+  width:6px;height:6px;border-radius:50%;background:#d6a676;display:inline-block;flex:0 0 auto
+}
+.sf-agency-widget--contact-bento .cdl-contact__arrow{
+  width:34px;height:34px;border-radius:50%;flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(255,255,255,.15);color:#e5e1e9;
+  font-size:16px;font-weight:440;transition:transform .22s ease,background-color .22s ease
+}
+.sf-agency-widget--contact-bento .cdl-contact__arrow--solid{
+  border:0;background:#fff;color:#0c0b10
+}
+.sf-agency-widget--contact-bento .cdl-contact__card:hover .cdl-contact__arrow{
+  transform:translateX(2px);background:rgba(255,255,255,.17)
+}
+.sf-agency-widget--contact-bento .cdl-contact__card:hover .cdl-contact__arrow--solid{background:#fff}
+.sf-agency-widget--contact-bento .cdl-contact__bottom{
+  display:flex;flex-direction:column;gap:6px
+}
+.sf-agency-widget--contact-bento .cdl-contact__bottom>strong{
+  color:#f5f4f7;font-size:clamp(21px,2.5vw,30px);
+  line-height:1.14;font-weight:545;letter-spacing:-.033em
+}
+.sf-agency-widget--contact-bento .cdl-contact__bottom>span{
+  font-size:clamp(11px,1.2vw,13px);color:#a9a5b0;line-height:1.5
+}
+.sf-agency-widget--contact-bento .cdl-contact__card--small{
+  padding:17px
+}
+.sf-agency-widget--contact-bento .cdl-contact__small-label{
+  color:#8e8996;letter-spacing:.16em;font-size:11px;line-height:1.3;font-weight:500
+}
+.sf-agency-widget--contact-bento .cdl-contact__card--small .cdl-contact__bottom>strong{
+  font-size:clamp(14px,1.7vw,20px);letter-spacing:-.015em;
+  overflow-wrap:anywhere
+}
+.sf-agency-widget--contact-bento .cdl-contact__card--small .cdl-contact__bottom>span{
+  font-size:11px;color:#8b8791
+}
+.sf-agency-widget--contact-bento .cdl-contact__card--strip{
+  border-radius:25px;padding:17px 23px;flex-direction:row;align-items:center;gap:14px
+}
+.sf-agency-widget--contact-bento .cdl-contact__card--strip:hover{
+  border-color:rgba(255,255,255,.09);transform:none
+}
+.sf-agency-widget--contact-bento .cdl-contact__studio{display:flex;flex-direction:column;gap:4px;min-width:0}
+.sf-agency-widget--contact-bento .cdl-contact__studio>strong{
+  color:#f5f4f7;font-size:clamp(13px,1.45vw,17px);font-weight:550;letter-spacing:-.02em
+}
+.sf-agency-widget--contact-bento .cdl-contact__studio>span{
+  font-size:clamp(10px,1.1vw,12px);color:#a6a2ac;line-height:1.4
+}
+.sf-agency-widget--contact-bento .cdl-contact__pill--quiet{
+  white-space:nowrap;min-height:29px;font-size:10px
+}
+/* A functional real form follows the reference Bento rather than turning its
+   first screen into an unrelated corporate contact form. */
+.sf-agency-widget--contact-bento .cdl-contact-form-section{
+  width:100vw;max-width:100vw;
+  margin-left:calc(50% - 50vw)!important;
+  margin-right:calc(50% - 50vw)!important;
+  background:#09090c;scroll-margin-top:90px;
+  padding:clamp(45px,7vw,96px) clamp(16px,4vw,56px)
+    calc(105px + env(safe-area-inset-bottom,0px));
+  border-top:1px solid rgba(255,255,255,.065)
+}
+.sf-agency-widget--contact-bento .cdl-contact-form-section__inner{
+  max-width:970px;margin:0 auto;
+  display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);
+  align-items:start;gap:clamp(20px,6vw,78px)
+}
+.sf-agency-widget--contact-bento .cdl-contact-form-section__intro h2{
+  font-family:inherit;color:#f6f5f7;font-size:clamp(27px,3.4vw,43px);
+  line-height:1.12;letter-spacing:-.04em;font-weight:550
+}
+.sf-agency-widget--contact-bento .cdl-contact-form-section__intro>p:last-child{
+  color:#aaa6b1;font-size:14px;line-height:1.65;margin-top:12px!important
+}
+.sf-agency-widget--contact-bento .cdl-contact-form-section__form-wrap{
+  min-width:0
+}
+.sf-agency-widget--contact-bento .cdl-contact__form{
+  display:flex;flex-direction:column;gap:15px;min-width:0
+}
+.sf-agency-widget--contact-bento .cdl-contact__form-row{
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px
+}
+.sf-agency-widget--contact-bento .cdl-contact__form label{
+  display:flex;flex-direction:column;gap:7px;color:#dedbe3;font-size:12px;
+  line-height:1.45;font-weight:500;min-width:0
+}
+.sf-agency-widget--contact-bento .cdl-contact__form label>span{color:#9d98a4;font-weight:380}
+.sf-agency-widget--contact-bento .cdl-contact__form :is(input:not([type="checkbox"]),textarea){
+  display:block;width:100%;min-width:0;min-height:47px;
+  border:1px solid rgba(255,255,255,.12)!important;
+  border-radius:15px!important;background:rgba(255,255,255,.035)!important;
+  color:#fff!important;padding:12px 14px!important;font:inherit;font-size:14px;
+  box-shadow:none!important;outline:0;
+  transition:border-color .2s ease,background-color .2s ease
+}
+.sf-agency-widget--contact-bento .cdl-contact__form :is(input:not([type="checkbox"]),textarea):focus{
+  border-color:rgba(214,166,118,.7)!important;background:rgba(255,255,255,.055)!important
+}
+.sf-agency-widget--contact-bento .cdl-contact__form :is(input,textarea)::placeholder{color:#797581}
+.sf-agency-widget--contact-bento .cdl-contact__form textarea{min-height:110px;resize:vertical}
+.sf-agency-widget--contact-bento .cdl-contact__honey{
+  position:absolute!important;left:-10000px!important;
+  width:1px!important;height:1px!important;overflow:hidden!important
+}
+.sf-agency-widget--contact-bento .cdl-contact__form label.cdl-contact__consent{
+  display:flex;flex-direction:row;align-items:flex-start;gap:10px;
+  color:#a9a5af;font-weight:400;font-size:11px;line-height:1.55
+}
+.sf-agency-widget--contact-bento .cdl-contact__consent input{
+  width:17px;height:17px;accent-color:#d6a676;flex:0 0 auto;margin-top:1px
+}
+.sf-agency-widget--contact-bento .cdl-contact__consent a{color:#f2e8dd;text-decoration:underline}
+.sf-agency-widget--contact-bento .cdl-contact__submit{
+  min-height:52px;border:0;border-radius:999px;background:#f7f6f8;
+  color:#101014!important;font:inherit;font-size:13px;font-weight:620;
+  padding:13px 21px;display:flex;align-items:center;justify-content:center;
+  gap:13px;cursor:pointer;transition:transform .2s ease,background .2s ease
+}
+.sf-agency-widget--contact-bento .cdl-contact__submit:hover{
+  background:#e6d6c4;transform:translateY(-2px)
+}
+.sf-agency-widget--contact-bento .cdl-contact__notice{
+  padding:13px 15px;border-radius:14px;margin:0 0 20px!important;
+  font-size:12px;color:#f6e9d7;
+  border:1px solid rgba(214,166,118,.4);background:rgba(214,166,118,.1)
+}
+.sf-agency-widget--contact-bento .cdl-contact__notice--error{
+  border-color:rgba(239,122,122,.45);background:rgba(239,122,122,.08)
+}
+.sf-agency-widget--contact-bento .cdl-contact__notice--success{
+  border-color:rgba(102,188,139,.45);background:rgba(102,188,139,.08)
+}
+body:has(.codela-page-layout>.sf-agency-widget--contact-bento){background:#09090c}
+body:has(.codela-page-layout>.sf-agency-widget--contact-bento) .sf-content{
+  padding:0!important;background:#09090c
+}
+body:has(.codela-page-layout>.sf-agency-widget--contact-bento) .sf-footer{
+  margin-top:0;background:#09090c;color:#aaa5af;
+  border-top-color:rgba(255,255,255,.1)
+}
+body:has(.codela-page-layout>.sf-agency-widget--contact-bento) .sf-footer a{color:#d8d4df}
+@media(min-width:740px){
+  .sf-agency-widget--contact-bento .cdl-contact__grid{
+    min-height:555px;max-height:680px
+  }
+}
+@media(max-width:739px){
+  .sf-agency-widget--contact-bento .cdl-contact{
+    padding:calc(101px + env(safe-area-inset-top,0px)) 16px
+      calc(103px + env(safe-area-inset-bottom,0px));
+  }
+  .sf-agency-widget--contact-bento .cdl-contact__inner{gap:15px}
+  .sf-agency-widget--contact-bento .cdl-contact__header h1{font-size:26px}
+  .sf-agency-widget--contact-bento .cdl-contact__brand{font-size:10px}
+  .sf-agency-widget--contact-bento .cdl-contact__eyebrow{font-size:10px}
+  .sf-agency-widget--contact-bento .cdl-contact__lead{font-size:12px;margin-top:6px!important}
+  .sf-agency-widget--contact-bento .cdl-contact__grid{
+    min-height:438px;grid-template-rows:minmax(178px,1.25fr)
+      minmax(132px,1fr) minmax(88px,.68fr);gap:11px
+  }
+  .sf-agency-widget--contact-bento .cdl-contact__card--primary{
+    padding:17px;border-radius:27px
+  }
+  .sf-agency-widget--contact-bento .cdl-contact__card--small{
+    padding:14px;border-radius:25px
+  }
+  .sf-agency-widget--contact-bento .cdl-contact__card--strip{
+    padding:14px 16px;border-radius:25px
+  }
+  .sf-agency-widget--contact-bento .cdl-contact__bottom>strong{font-size:22px}
+  .sf-agency-widget--contact-bento .cdl-contact__card--small .cdl-contact__bottom>strong{
+    font-size:14px
+  }
+  .sf-agency-widget--contact-bento .cdl-contact__small-label{font-size:10px}
+  .sf-agency-widget--contact-bento .cdl-contact__card--small .cdl-contact__bottom>span{font-size:10px}
+  .sf-agency-widget--contact-bento .cdl-contact__studio>strong{font-size:13px}
+  .sf-agency-widget--contact-bento .cdl-contact__pill--quiet{padding:7px 9px;font-size:9px}
+  .sf-agency-widget--contact-bento .cdl-contact-form-section__inner{
+    display:flex;flex-direction:column;gap:24px
+  }
+  .sf-agency-widget--contact-bento .cdl-contact-form-section__intro h2{font-size:27px}
+}
+@media(max-width:359px){
+  .sf-agency-widget--contact-bento .cdl-contact{
+    padding-top:calc(91px + env(safe-area-inset-top,0px))
+  }
+  .sf-agency-widget--contact-bento .cdl-contact__brand{display:none}
+  .sf-agency-widget--contact-bento .cdl-contact__card--small .cdl-contact__bottom>strong{font-size:13px}
+  .sf-agency-widget--contact-bento .cdl-contact__pill--quiet{font-size:9px}
+  .sf-agency-widget--contact-bento .cdl-contact__form-row{grid-template-columns:1fr}
+}
+@media(prefers-reduced-motion:reduce){
+  .sf-agency-widget--contact-bento .cdl-contact__card,
+  .sf-agency-widget--contact-bento .cdl-contact__arrow,
+  .sf-agency-widget--contact-bento .cdl-contact__submit{transition:none!important}
+}
