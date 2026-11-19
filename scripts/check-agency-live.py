@@ -38,11 +38,13 @@ def check() -> None:
         f"FTP theme version {version.group(1) if version else 'missing'} is not {expected_version}"
     )
     agency_css = fetch("/wp-content/themes/codela-storefront/assets/styles/agency.css")
-    assert "0.1.350 — Agency Editorial Light" in agency_css, "Published Agency CSS is not the approved Editorial Light design"
+    assert "0.1.357 — MONA approved Services Bento" in agency_css, "Published Agency CSS is missing approved MONA Bento"
+    assert ".sf-agency-widget--studio" in agency_css, "Published Agency Studio styling is missing"
+    assert ".sf-agency-widget--bento" in agency_css, "Published Agency Bento styling is missing"
     assert "background:#f3f0e9" in agency_css, "Editorial Light warm background is absent"
     assert "min-height:100svh" in agency_css, "Mobile first-screen height rule is absent"
     assert "margin-top:-31px!important" in agency_css, "Mobile Services handoff has regressed"
-    print("Editorial Light hero and mobile full-viewport CSS verified.", flush=True)
+    print("MONA Studio/Bento CSS and existing mobile safeguards verified.", flush=True)
     expected = {
         "/": [],  # Dedicated native Agency starter checked separately below
         "/hizmetler/": ["sf-agency-service-page", "data-agency-module-grid", "data-agency-selected-cta"],
@@ -64,17 +66,27 @@ def check() -> None:
                     valid_hero_variants = [
                         ("sf-agency-widget--minimal", "sf-agency-minimal-title", "sf-agency-minimal-cta"),
                         ("sf-agency-widget--cards", "data-agency-swap"),
+                        ("sf-agency-widget--studio", "codela-studio-hero__title", "codela-studio-hero__visual"),
                     ]
                     missing = [] if any(all(token in html for token in variant)
                                         for variant in valid_hero_variants) else [
-                        "a complete Editorial Light or Card Swap welcome widget"
+                        "a complete Studio, Editorial Light or Card Swap welcome widget"
                     ]
                 else:
                     missing = [marker for marker in markers if marker not in html]
                 if missing:
                     errors.append(f"{path}: missing {', '.join(missing)}")
                 else:
-                    print(f"OK {path}: all {len(markers)} markers in live WordPress HTML", flush=True)
+                    if path == "/":
+                        studio = "sf-agency-widget--studio" in html
+                        bento = "sf-agency-widget--bento" in html
+                        legacy_services = "sf-agency-widget--services" in html
+                        print("OK /: Studio welcome" if studio else "OK /: supported legacy welcome", flush=True)
+                        print("Home Services: approved MONA Bento" if bento else
+                              "Home Services: legacy widget preserved during migration" if legacy_services else
+                              "Home Services: no known services widget", flush=True)
+                    else:
+                        print(f"OK {path}: all {len(markers)} markers in live WordPress HTML", flush=True)
             except (urllib.error.URLError, RuntimeError) as err:
                 errors.append(f"{path}: {type(err).__name__}")
         if not errors:
