@@ -45,6 +45,12 @@
     },
     "agency-bento": {
       "bento": "Bento Hizmetler"
+    },
+    "agency-detail": {
+      "web": "Web Tasarım",
+      "commerce": "E-Ticaret",
+      "software": "Özel Yazılım",
+      "support": "Optimizasyon / Destek"
     }
   }
 }
