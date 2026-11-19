@@ -217,7 +217,12 @@ function codela_sf_agency_project_submit(): void {
         . "Kısa not:\n" . ( $note ?: 'Belirtilmedi' ) . "\n";
     if ( ! wp_mail( $to, '[Codela] Yeni proje başlat talebi', $body, $headers ) ) { $redirect( 'failed' ); }
     set_transient( $throttle, 1, MINUTE_IN_SECONDS );
-    $redirect( 'sent' );
+    // Only a genuinely accepted WordPress mail submission can create the receipt.
+    // The receipt makes a manually typed ?codela_status=sent insufficient.
+    $receipt = bin2hex( random_bytes( 16 ) );
+    set_transient( 'codela_sf_project_receipt_' . $receipt, 1, 5 * MINUTE_IN_SECONDS );
+    wp_safe_redirect( add_query_arg( [ 'codela_status' => 'sent', 'codela_receipt' => $receipt ], $base ) );
+    exit;
 }
 add_action( 'admin_post_codela_sf_agency_project', 'codela_sf_agency_project_submit' );
 add_action( 'admin_post_nopriv_codela_sf_agency_project', 'codela_sf_agency_project_submit' );
