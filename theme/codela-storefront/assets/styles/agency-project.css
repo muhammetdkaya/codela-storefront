@@ -84,3 +84,22 @@ body:has(.codela-page-layout>.sf-agency-widget--project) .sf-footer a{color:#d8d
 @media(prefers-reduced-motion:reduce){
  .sf-agency-widget--project .cdl-project__button,.sf-agency-widget--project .cdl-project__choice span,.sf-agency-widget--project .cdl-project__progress-track>span{transition:none}
 }
+
+/* 0.1.366: Project Start shares the Agency viewport and header/dock rules.
+   Minimum height is not a hard crop: long forms still scroll naturally. */
+.sf-agency-widget--project .cdl-project{
+  display:flex;align-items:center;
+  min-height:var(--sf-agency-screen-block,100svh);
+  padding:clamp(88px,11svh,124px) clamp(16px,4vw,56px)
+    var(--sf-agency-stage-bottom,28px);
+}
+.sf-agency-widget--project .cdl-project__shell{flex:0 1 750px;min-width:0}
+@media(max-width:739px){
+  .sf-agency-widget--project .cdl-project{
+    padding:var(--sf-agency-stage-top,90px) 16px
+      var(--sf-agency-stage-bottom,24px);
+  }
+  .sf-agency-widget--project .cdl-project__panel{
+    min-height:460px;
+  }
+}
