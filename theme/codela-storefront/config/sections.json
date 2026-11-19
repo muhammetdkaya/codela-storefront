@@ -51,6 +51,9 @@
       "commerce": "E-Ticaret",
       "software": "Özel Yazılım",
       "support": "Optimizasyon / Destek"
+    },
+    "agency-contact-bento": {
+      "bento": "İletişim Bento"
     }
   }
 }
