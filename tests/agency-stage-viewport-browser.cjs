@@ -88,7 +88,7 @@ const rect=e=>{
           assert(boxes.bodyPadding==='0px','No trailing body dock reserve on Agency');
         }
         assert(boxes.overflow<=2,'No horizontal overflow: '+JSON.stringify(boxes));
-        assert(/proximity/.test(boxes.snap),'Home sections use gentle proximity snap: '+JSON.stringify(boxes));
+        assert(/^y(?: proximity)?$/.test(boxes.snap),'Home sections use gentle proximity snap (browsers serialize proximity as y): '+JSON.stringify(boxes));
         console.log('Agency stage:',width,height,'dock',dock,'photo-tail',Math.round(boxes.hero.bottom-boxes.photo.bottom),
           'snap',boxes.snap,'overflow',boxes.overflow);
         if(width===390){
