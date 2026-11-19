@@ -29,7 +29,7 @@ function codela_sf_section_agency_detail( array $data, string $type = '', bool $
     $services = codela_sf_agency_page_url( 'hizmetler', home_url( '/' ) );
     // The dedicated project-start page ships in phase 5. Until then the CTA
     // opens the EXISTING contact form, carrying the chosen service via query.
-    $contact = add_query_arg( 'services', $title, codela_sf_agency_contact_link() );
+    $contact = add_query_arg( 'hizmetler', $title, codela_sf_agency_contact_link() );
     $id = 'codela-detail-' . sanitize_html_class( (string) ( $data['id'] ?? 'service' ) );
     ob_start();
     ?>
