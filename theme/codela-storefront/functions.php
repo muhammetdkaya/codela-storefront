@@ -563,6 +563,14 @@ add_action( 'wp_enqueue_scripts', static function() {
         [ 'codela-storefront-components' ],
         codela_sf_style_version()
     );
+    // Optional static optics: only its eligible Agency pages initialize Canvas.
+    wp_enqueue_script(
+        'codela-storefront-glass-optical',
+        get_template_directory_uri() . '/assets/scripts/glass-optical.js',
+        [],
+        codela_sf_style_version(),
+        true
+    );
 }, 100 );
 
 // Expose the core menu manager even though this block theme uses a fixed shell.
