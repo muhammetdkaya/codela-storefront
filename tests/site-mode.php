@@ -10,6 +10,7 @@ $fields = array_merge( ...array_column( $config['sections'], 'fields' ) );
 $ids = array_column( $fields, 'id' );
 unified_check( ! in_array( 'site_mode', $ids, true ), 'Agency and commerce are installation presets, not settings.' );
 unified_check( in_array( 'site_font', $ids, true ) && in_array( 'mobile_dock_enabled', $ids, true ), 'Shared appearance controls remain.' );
+unified_check( in_array( 'site_experience', $ids, true ), 'Agency/Commerce navigation profile is independently configurable.' );
 $source = file_get_contents( __DIR__ . '/../theme/codela-storefront/functions.php' );
 $render = file_get_contents( __DIR__ . '/../theme/codela-storefront/inc/render.php' );
 $widgets = file_get_contents( __DIR__ . '/../theme/codela-storefront/inc/section-agency.php' );
