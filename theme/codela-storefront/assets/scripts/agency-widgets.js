@@ -205,7 +205,10 @@
           body.textContent = step.dataset.agencyStageBody || '';
           nextLabel.textContent = step.dataset.agencyStageNextLabel || 'Süreci Başlat';
           previous.disabled = index === 0;
-          steps.forEach((button, i) => button.setAttribute('aria-pressed', String(i === index)));
+          steps.forEach((button, i) => {
+            button.setAttribute('aria-pressed', String(i === index));
+            button.dataset.complete = String(i <= index);
+          });
           if (animate && !reduced.matches && typeof stage.animate === 'function') {
             stage.animate(
               [{ opacity: .75, transform: 'translateY(5px)' }, { opacity: 1, transform: 'translateY(0)' }],

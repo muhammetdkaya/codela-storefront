@@ -56,6 +56,7 @@ const server = http.createServer((req, res) => {
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth+1),'No about overflow at '+width);
       await page.locator('[data-agency-widget-step="1"]').click();
       assert.equal(await page.locator('[data-agency-widget-stage]').getAttribute('data-step'),'1','Process stage changes by click');
+      assert.equal(await page.locator('[data-agency-widget-counter]').textContent(),'2 / 3','Process counter follows active stage');
       await page.locator('[data-agency-widget-step="2"]').press('Enter');
       assert.equal(await page.locator('[data-agency-widget-stage]').getAttribute('data-step'),'2','Process stage keyboard interaction');
       if (width === 390 || width === 1440) await page.screenshot({path:path.join(root,'qa/agency-about-'+width+'.png'),fullPage:true});

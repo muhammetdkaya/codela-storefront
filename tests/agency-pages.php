@@ -379,6 +379,10 @@ $process_data = [
 ];
 $process_widget = codela_sf_section_agency_process( $process_data );
 agency_page_check( substr_count( $process_widget, 'data-agency-widget-step="' ) === 3, 'Reusable process has three steps.' );
+agency_page_check( str_contains( $process_widget, 'data-agency-widget-next' )
+    && str_contains( $process_widget, 'data-agency-widget-prev' )
+    && str_contains( $process_widget, 'sf-agency-process-bar' ),
+    'Source process exposes a complete accessible stage navigator.' );
 agency_page_check( str_contains( $process_widget, 'data-agency-widget="process"' ) && str_contains( $process_widget, 'Ship and support' ), 'Process widget preserves saved copy.' );
 
 $GLOBALS['mode'] = 'agency';
@@ -420,7 +424,7 @@ foreach ( [ 'services', 'about', 'contact' ] as $page_slug ) {
     }
     echo '<style>body{font-family:system-ui}</style></head><body class="sf-site-mode-agency">';
     echo '<main class="sf-content" id="sf-content">' . $body . '</main>';
-    echo '<script src="/theme/codela-storefront/assets/scripts/agency.js"></script></body></html>';
+    echo '<script src="/theme/codela-storefront/assets/scripts/agency.js"></script><script src="/theme/codela-storefront/assets/scripts/agency-widgets.js"></script></body></html>';
     exit;
 }
 echo "Agency native pages, six services, process and contact form wiring passed.\n";

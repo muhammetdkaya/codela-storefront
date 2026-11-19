@@ -261,7 +261,7 @@ function codela_sf_section_agency_process( array $data, string $type = '' ): str
         return $index === $count - 1 ? 'Süreci Başlat' : 'Sonraki: ' . $labels[ $index + 1 ];
     };
     $project_url = codela_sf_agency_project_link();
-    $media = trailingslashit( get_template_directory_uri() ) . 'assets/media/';
+    $media = rtrim( get_template_directory_uri(), '/' ) . '/assets/media/';
     $first = $items[0];
     ob_start();
     ?>
