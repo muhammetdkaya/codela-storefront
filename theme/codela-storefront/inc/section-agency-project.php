@@ -12,6 +12,10 @@ function codela_sf_section_agency_project( array $data, string $type = '' ): str
     $lead = trim( (string) ( $data['description'] ?? '' ) );
     $status = isset( $_GET['codela_status'] ) && is_string( $_GET['codela_status'] )
         ? sanitize_key( wp_unslash( $_GET['codela_status'] ) ) : '';
+    $receipt = isset( $_GET['codela_receipt'] ) && is_string( $_GET['codela_receipt'] )
+        ? sanitize_key( wp_unslash( $_GET['codela_receipt'] ) ) : '';
+    $confirmed = 'sent' === $status && preg_match( '/^[a-f0-9]{32}$/D', $receipt )
+        && (bool) get_transient( 'codela_sf_project_receipt_' . $receipt );
     $chosen = isset( $_GET['hizmetler'] ) && is_string( $_GET['hizmetler'] )
         ? sanitize_text_field( wp_unslash( $_GET['hizmetler'] ) ) : '';
     $services = [ 'Web Tasarım', 'E-Ticaret', 'Özel Yazılım', 'Optimizasyon / Destek' ];
@@ -33,7 +37,7 @@ function codela_sf_section_agency_project( array $data, string $type = '' ): str
             <span class="cdl-project__wordmark">CODELA</span>
           </header>
           <div class="cdl-project__panel">
-            <?php if ( 'sent' === $status ) : ?>
+            <?php if ( $confirmed ) : ?>
               <div class="cdl-project__success" role="status">
                 <span class="cdl-project__success-icon" aria-hidden="true">✓</span>
                 <p class="cdl-project__kicker">TALEP ALINDI</p>
