@@ -71,6 +71,8 @@ def check_service_detail_pages() -> None:
             html, flags=re.S,
         )
         scope_count = len(re.findall(r'<li\b', scope.group(1))) if scope else 0
+        if "cdl-service-detail__header" in html or "cdl-service-detail__back" in html:
+            raise AssertionError("Duplicate service detail header remains; native theme header must own navigation")
         if missing or heading_text != title or scope_count != 4:
             raise AssertionError(
                 f"Live detail {title}: heading={heading_text!r}, "
@@ -97,7 +99,7 @@ def check() -> None:
     expected = {
         "/": [],  # Dedicated native Agency starter checked separately below
         "/hizmetler/": ["sf-agency-service-page", "data-agency-module-grid", "data-agency-selected-cta"],
-        "/hakkimizda/": ["sf-agency-about-page", "data-agency-step", "data-agency-process-stage"],
+        "/hakkimizda/": ["sf-agency-about-page", "data-agency-widget-step", "data-agency-widget-stage", "sf-agency-process-next", "sf-agency-process-stage-visual"],
         "/iletisim/": ["sf-agency-widget--contact-bento", "cdl-contact__grid", "cdl-contact__card--primary", "cdl-contact__form", "admin-post.php", "agency_contact_nonce", "agency_webpage", "agency_consent", "data-agency-contact-services"],
     }
     for attempt in range(3):
