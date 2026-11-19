@@ -1655,3 +1655,18 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
  .sf-agency-widget--detail .cdl-service-detail__cta,
  .sf-agency-widget--detail .cdl-service-detail__back{transition:none}
 }
+
+
+/* Keep the native page shell/footnote in the same obsidian palette.
+ * No global color changes outside a page actually containing Service Detail.
+ */
+body:has(.codela-page-layout>.sf-agency-widget--detail){background:#09090c}
+body:has(.codela-page-layout>.sf-agency-widget--detail) .sf-content{
+  padding:0!important;background:#09090c
+}
+body:has(.codela-page-layout>.sf-agency-widget--detail) .sf-footer{
+  margin-top:0;background:#09090c;border-top-color:rgba(255,255,255,.1);
+  color:#a9a4b1
+}
+body:has(.codela-page-layout>.sf-agency-widget--detail) .sf-footer a{color:#d6d2dc}
+body:has(.codela-page-layout>.sf-agency-widget--detail) .sf-footer-copyright{color:#96929e}
