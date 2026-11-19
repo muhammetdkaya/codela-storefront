@@ -6,6 +6,8 @@ import re
 import time
 import urllib.error
 import urllib.request
+from urllib.parse import urljoin, urlparse
+from html import unescape
 import uuid
 from pathlib import Path
 
@@ -29,6 +31,53 @@ def fetch(path: str) -> str:
         if response.status != 200:
             raise RuntimeError(f"Unexpected HTTP {response.status} for {path}")
         return response.read().decode("utf-8", errors="replace")
+
+
+def check_service_detail_pages() -> None:
+    """No writes. Follow the FOUR URLs rendered by live Bento, not assumed slugs."""
+    home = fetch("/")
+    hrefs = re.findall(
+        r'<a\b[^>]*class="cdl-bento__card[^"]*"[^>]*href="([^"]+)"',
+        home, flags=re.S,
+    )
+    expected = [
+        ("Web Tasarım", "mona-bento-web.jpg"),
+        ("E-Ticaret", "mona-bento-web.jpg"),
+        ("Özel Yazılım", "mona-studio-hero.jpg"),
+        ("Optimizasyon / Destek", "mona-studio-hero.jpg"),
+    ]
+    if len(hrefs) != 4:
+        raise AssertionError(f"Live homepage has {len(hrefs)} Bento service links, expected 4")
+    visited = set()
+    for (title, image), raw_href in zip(expected, hrefs):
+        full = urljoin(BASE, unescape(raw_href))
+        parsed = urlparse(full)
+        if parsed.netloc != urlparse(BASE).netloc or parsed.path in visited:
+            raise AssertionError("Unpublished or duplicate Bento detail URL: " + title)
+        visited.add(parsed.path)
+        html = fetch(parsed.path)
+        required = [
+            "sf-agency-widget--detail", "cdl-service-detail__visual",
+            "cdl-service-detail__scope", "cdl-service-detail__cta",
+            image, "hizmetler=",
+        ]
+        missing = [marker for marker in required if marker not in html]
+        heading = re.search(
+            r'<h1\b[^>]*>(.*?)</h1>', html, flags=re.S,
+        )
+        heading_text = " ".join(unescape(re.sub(r'<[^>]*>', '', heading.group(1))).split()) if heading else ""
+        scope = re.search(
+            r'class="cdl-service-detail__scope"[^>]*>.*?<ul\b[^>]*>(.*?)</ul>',
+            html, flags=re.S,
+        )
+        scope_count = len(re.findall(r'<li\b', scope.group(1))) if scope else 0
+        if missing or heading_text != title or scope_count != 4:
+            raise AssertionError(
+                f"Live detail {title}: heading={heading_text!r}, "
+                f"scope={scope_count}, missing={missing}"
+            )
+        print(f"OK detail {title}: published page, correct image, 4 scope labels and CTA", flush=True)
+
 
 def check() -> None:
     style = fetch("/wp-content/themes/codela-storefront/style.css")
@@ -106,6 +155,7 @@ def check() -> None:
                 else:
                     print("Agency desktop nav verified:", " / ".join(labels), flush=True)
             if not errors:
+                check_service_detail_pages()
                 print(f"Agency {expected_version}: homepage welcome, navigation, Services, About and Contact verified.")
                 return
         print("Agency smoke attempt", attempt + 1, "; ".join(errors), flush=True)
