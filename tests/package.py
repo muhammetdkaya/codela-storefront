@@ -28,12 +28,16 @@ class Tests(unittest.TestCase):
         self.assertIn("codela_sf_glass_v2_enabled",loader)
         self.assertIn("add_filter( 'body_class'",loader)
         self.assertIn("styles/glass-v2.css",loader)
-        self.assertIn("scripts/glass-optical.js",loader)
-        self.assertIn("sf-glass-optical-canvas",material)
-        optical=(build.ROOT/"assets/scripts/glass-optical.js").read_text()
-        self.assertIn("getImageData",optical)
-        self.assertIn("prefers-reduced-transparency",optical)
-        self.assertNotIn("setInterval(",optical)
+        self.assertIn("styles/agency-glass.css",loader)
+        self.assertNotIn("scripts/glass-optical.js",loader)
+        reference=(build.ROOT/"assets/styles/agency-glass.css").read_text()
+        for selector in (".cdl-project__button",".cdl-contact__submit",
+                         ".cdl-bento__card",".cdl-service-detail__cta",
+                         ".codela-studio-hero__visual-foot a"):
+            self.assertIn(selector,reference)
+        self.assertIn("blur(18px) saturate(175%) brightness(1.06)",reference)
+        self.assertIn("prefers-reduced-transparency:reduce",reference)
+        self.assertNotIn("sf-glass-optic-ready",reference)
 
         self.assertIn("'codela-storefront-components'",loader)
         self.assertIn("body.sf-glass-v2:has(.sf-agency-widget)",material)

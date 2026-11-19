@@ -563,14 +563,19 @@ add_action( 'wp_enqueue_scripts', static function() {
         [ 'codela-storefront-components' ],
         codela_sf_style_version()
     );
-    // Optional static optics: only its eligible Agency pages initialize Canvas.
-    wp_enqueue_script(
-        'codela-storefront-glass-optical',
-        get_template_directory_uri() . '/assets/scripts/glass-optical.js',
-        [],
-        codela_sf_style_version(),
-        true
-    );
+    // Agency reference material loads after native Agency/Project CSS so only
+    // opted-in pages receive glass on their real buttons, cards and forms.
+    if ( function_exists( 'codela_sf_agency_asset_flags' ) ) {
+        $agency_flags = codela_sf_agency_asset_flags();
+        if ( ! empty( $agency_flags['pattern'] ) || ! empty( $agency_flags['widgets'] ) ) {
+            wp_enqueue_style(
+                'codela-storefront-agency-glass',
+                get_template_directory_uri() . '/assets/styles/agency-glass.css',
+                [ 'codela-storefront-glass-v2', 'codela-storefront-agency' ],
+                codela_sf_style_version()
+            );
+        }
+    }
 }, 100 );
 
 // Expose the core menu manager even though this block theme uses a fixed shell.

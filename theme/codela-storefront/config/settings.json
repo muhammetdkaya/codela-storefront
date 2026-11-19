@@ -22,7 +22,7 @@
           "type": "checkbox",
           "default": false,
           "label": "Glass V2",
-          "description": "Use adaptive optical glass for the floating header, desktop navigation and menu controls. Existing product, cart and checkout surfaces stay unchanged."
+          "description": "Enable the Agency reference's CSS glass on navigation, actions, bento surfaces, selection chips and forms. Commerce pages retain their existing layout."
         }
       ]
     },

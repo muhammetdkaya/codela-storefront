@@ -1,35 +1,40 @@
-# Glass V2 — opt-in header material (0.1.361)
+# Glass V2 — Reference CSS material, v0.1.363
 
-## Scope
+Based on the user-provided **Codela — Dijital Tasarım & Yazılım Stüdyosu**
+HTML. The reference's actual CSS material, not the previous Canvas 2D
+procedural illustration, is now adapted to the native WordPress site.
 
-Appearance > Glass V2 is **off by default**. Enabling it attaches the `sf-glass-v2` body class and conditionally loads `assets/styles/glass-v2.css` after the normal Storefront stylesheet bundle.
+## Opt-in and ownership
 
-Only the floating header brand, desktop primary navigation, icon controls, desktop submenu, and the menu trigger/toolbar moved into the native menu dialog are adapted. Dock, product gallery/sheet, purchase, cart, checkout, account content, geometry, hit targets and JavaScript interactions are deliberately unchanged.
+- Codela > Theme > Appearance > **Glass V2** still controls the effect.
+- \`agency-glass.css\` is enqueued only on native Agency pages containing
+  Agency patterns/widgets, after the current Agency/Project CSS.
+- WooCommerce/cart/checkout/account and the existing mobile dock are unchanged.
+- Native header menus, forms, page links, post handlers and content remain
+  authoritative. No single-page application or Tailwind runtime is loaded.
 
-Agency content has the existing `.sf-agency-widget` marker; CSS `:has()` selects the dark graphite material without JavaScript. Other pages retain a light optical variant. This is a page-level material decision; it does not attempt continuous per-section scroll luminance detection.
+## Exact material roles
 
-No external library is loaded. The existing Framework7-derived shared UI Kit remains the source of blur and control behavior, with new original V2 color/rim tokens only. Reduce Transparency, forced colors and missing-backdrop-filter receive opaque material.
+- **ios-glass** — gradient from translucent white to dark graphite;
+  \`blur(18px) saturate(175%) brightness(1.06)\`, thin spectral-rim
+  multi-background and paired interior/exterior shadows.
+- **ios-glass-primary** — brighter transmittance for CTA links and buttons.
+- **bento-box** — darker nearly opaque cards with warmer hover accents.
+- **select-chip** — amber selected state and compact choices for Project Start.
+- **codela-input** — low-contrast dark fields with amber focus affordance.
 
-## Acceptance
+Implemented on Agency welcome/Studio, Services Bento, detail CTAs,
+Process, Contact Bento and native Project Start forms.
 
-- Toggle off: no extra CSS request and no body class; V1 unchanged.
-- Toggle on: separate light/dark material, mobile header not 91% white.
-- Menu moved to the native light dialog keeps readable black glyphs.
-- Custom logos are not filtered; native dark-surface action glyphs invert.
-- Theme settings saved as an allowlisted `checkbox`; user can disable without reinstalling.
-- Run `python3 tests/package.py`, `node tests/glass-v2-browser.cjs`, and existing UI Kit and navigation tests.
+## Removed
 
-## Approved Canvas optical preview, 0.1.362
+The previous \`glass-optical.js\` and its offscreen procedural scene are
+retired: it did not refract actual DOM content and needlessly duplicated the
+material. \`glass-optical-browser.cjs\` is replaced by the cross-browser
+Agency material test. Native CSS-only fallbacks cover Reduce Transparency,
+forced colors, lack of backdrop-filter and Reduce Motion.
 
-The preview is translated into a one-time static Canvas 2D lens for the
-floating Agency header. It reuses the real brand, menu, account and search
-controls (no duplicated controls and no layout change). Its local virtual
-scene is displaced through the capsule edges, with subtle dispersion and
-specular light. It **does not capture or refract the real page DOM**:
-Safari does not reliably support SVG displacement through backdrop-filter.
+## Rollback
 
-The JS is enqueued only for Glass V2, initializes only on Agency pages,
-does not run a continuous render loop, and redraws on resize/pageshow.
-If Canvas cannot initialize or the user prefers reduced transparency,
-the original V2 CSS remains active. This change does not alter the
-mobile dock, any commerce surface, or header control positions.
+Turn off **Glass V2**: the stylesheet is not loaded and Agency pages retain
+their existing theme appearance. The original native markup is unchanged.
