@@ -1975,3 +1975,5 @@ body:has(.codela-page-layout>.sf-agency-widget--contact-bento) .sf-footer a{colo
   .sf-agency-widget--contact-bento .cdl-contact__arrow,
   .sf-agency-widget--contact-bento .cdl-contact__submit{transition:none!important}
 }
+
+/* MONA project start style is shipped as an isolated asset to avoid unnecessary CSS parsing on unrelated agency pages. */

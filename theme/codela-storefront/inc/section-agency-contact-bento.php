@@ -18,6 +18,8 @@ function codela_sf_section_agency_contact_bento( array $data, string $type = '' 
     $studio = trim( (string) ( $data['studio_name'] ?? '' ) ) ?: 'Codela · Dijital stüdyo';
     $hours = trim( (string) ( $data['studio_hours'] ?? '' ) );
     $services = codela_sf_agency_page_url( 'hizmetler', home_url( '/' ) );
+    $project = codela_sf_agency_project_url();
+    $project_href = $project ?: '#sf-agency-contact-form';
     $policy = function_exists( 'get_privacy_policy_url' ) ? (string) get_privacy_policy_url() : '';
     $status = isset( $_GET['codela_status'] ) && is_string( $_GET['codela_status'] )
         ? sanitize_key( wp_unslash( $_GET['codela_status'] ) ) : '';
@@ -39,8 +41,8 @@ function codela_sf_section_agency_contact_bento( array $data, string $type = '' 
             <span class="cdl-contact__brand">CODELA</span>
           </header>
           <div class="cdl-contact__grid">
-            <a class="cdl-contact__card cdl-contact__card--primary" href="#sf-agency-contact-form"
-               aria-label="Proje başlat: iletişim formuna geç">
+            <a class="cdl-contact__card cdl-contact__card--primary" href="<?php echo esc_url( $project_href ); ?>"
+               aria-label="<?php echo esc_attr( $project ? 'Proje Başlat sayfasına git' : 'Proje başlat: iletişim formuna geç' ); ?>">
               <span class="cdl-contact__light cdl-contact__light--right" aria-hidden="true"></span>
               <span class="cdl-contact__fluted" aria-hidden="true"></span>
               <span class="cdl-contact__top">
