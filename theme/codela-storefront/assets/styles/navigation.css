@@ -331,3 +331,37 @@ body.admin-bar{--sf-header-offset:32px}
 .sf-shell .sf-header .sf-context-brand :is([data-sf-context-back],[data-sf-account-back]) .sf-icon{
   width:var(--sf-ui-icon);height:var(--sf-ui-icon);
 }
+
+/* Agency navigation profile: share the same native header/overlay machinery,
+   but use an obsidian menu with an independent, always-visible Close button.
+   Do not recolor Account forms or Commerce overlays. */
+.sf-shell.has-agency-profile #sf-panel.is-menu-panel{
+  background:#09090c;
+  color:#f6f5f7;
+  color-scheme:dark;
+}
+.sf-shell.has-agency-profile #sf-panel.is-menu-panel #sf-menu .sf-menu-list a{
+  color:#f6f5f7;
+}
+.sf-shell.has-agency-profile #sf-panel.is-menu-panel .sf-menu-secondary,
+.sf-shell.has-agency-profile #sf-panel.is-menu-panel .sf-menu-secondary a{
+  color:#b1aeb7;
+}
+.sf-shell.has-agency-profile #sf-panel.is-menu-panel .sf-panel-top .sf-close{
+  display:inline-flex!important;
+  align-items:center;justify-content:center;
+  color:#f6f5f7;
+  --sf-ui-glass-ink:#f6f5f7;
+  --sf-ui-glass-surface:rgba(50,51,61,.66);
+  --sf-ui-glass-opaque:#2c2d35;
+}
+.sf-shell.has-agency-profile #sf-panel.is-menu-panel .sf-panel-top .sf-close .sf-icon{
+  filter:brightness(0) invert(1);
+}
+@media(max-width:700px){
+  .sf-shell.has-agency-profile #sf-panel.is-account-panel .sf-panel-top .sf-close{
+    display:inline-flex!important;
+    align-items:center;justify-content:center;
+    margin-left:auto;
+  }
+}

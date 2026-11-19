@@ -8,7 +8,7 @@ class Walker_Nav_Menu {
     }
 }
 function codela_sf_ready() { return true; }
-function codela_theme_settings() { return ['menu_id'=>0, 'brand'=>'CODELA'] + (getenv('FIXTURE_DOCK') === false ? [] : ['mobile_dock_enabled'=>getenv('FIXTURE_DOCK')]); }
+function codela_theme_settings() { return ['menu_id'=>0, 'brand'=>'CODELA'] + (getenv('FIXTURE_DOCK') === false ? [] : ['mobile_dock_enabled'=>getenv('FIXTURE_DOCK')]) + (getenv('FIXTURE_EXPERIENCE') === false ? [] : ['site_experience'=>getenv('FIXTURE_EXPERIENCE')]); }
 function __( $s, ...$args ) { return $s; }
 function esc_html__( $s, ...$args ) { return htmlspecialchars($s, ENT_QUOTES); }
 function esc_html_e( $s, ...$args ) { echo esc_html__($s); }

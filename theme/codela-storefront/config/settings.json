@@ -2,6 +2,24 @@
   "schema_version": 1,
   "sections": [
     {
+      "id": "site_experience",
+      "label": "Site türü",
+      "description": "Şablon sayfalarını değiştirmeden header, menü ve mobil alt navigasyon araçlarını seçin.",
+      "fields": [
+        {
+          "id": "site_experience",
+          "type": "select",
+          "default": "commerce",
+          "label": "Site deneyimi",
+          "description": "E-Ticaret mevcut arama ve sepeti kullanır. Ajans bu mağaza araçlarını gizler; hizmetler, iletişim ve müşteri hesabına odaklanır.",
+          "options": {
+            "commerce": "E-Ticaret",
+            "agency": "Ajans"
+          }
+        }
+      ]
+    },
+    {
       "id": "appearance",
       "label": "Appearance",
       "description": "Site-wide font and optional floating Glass V2 appearance.",

@@ -96,6 +96,9 @@ function codela_sf_header(): string {
     // canonical fallback and POST destination. Never duplicate on My Account.
     $guest_overlay = ! is_user_logged_in() && ! ( function_exists( 'is_account_page' ) && is_account_page() );
     $checkout_page = is_checkout();
+    // Navigation experience is independent of installed demo templates.
+    // Commerce remains the backward-compatible default for existing shops.
+    $agency_navigation = 'agency' === ( $settings['site_experience'] ?? 'commerce' );
     $show_mobile_dock = ! $checkout_page && ! in_array( $settings['mobile_dock_enabled'] ?? true, [ false, 0, '0', '' ], true );
     // Checkout is a full page without the mobile dock, but uses the same
     // compact mobile header layout as pages with the dock enabled.
@@ -117,7 +120,7 @@ function codela_sf_header(): string {
         'labels' => $labels,
     ] ] );
     ob_start(); ?>
-    <div data-wp-interactive="codela/storefront" class="sf-shell <?php echo esc_attr( $header_mode . ( $catalog_page ? ' has-catalog-header' : '' ) ); ?>">
+    <div data-wp-interactive="codela/storefront" class="sf-shell <?php echo esc_attr( $header_mode . ( $catalog_page ? ' has-catalog-header' : '' ) . ( $agency_navigation ? ' has-agency-profile' : '' ) ); ?>">
         <a class="sf-skip" href="#sf-content"><?php esc_html_e( 'Skip to content', 'codela-storefront' ); ?></a>
         <header class="sf-header<?php echo $desktop_menu ? ' has-desktop-menu' : ''; ?>">
             <nav class="sf-header-menu" aria-label="<?php esc_attr_e( 'Main menu', 'codela-storefront' ); ?>">
@@ -140,9 +143,11 @@ function codela_sf_header(): string {
             <?php if ( $desktop_menu ) : ?><nav class="sf-desktop-navigation sf-ui-surface" aria-label="<?php esc_attr_e( 'Main menu', 'codela-storefront' ); ?>"><?php echo $desktop_menu; ?></nav><?php endif; ?>
             <div class="sf-header-search sf-ui-surface" hidden></div>
             <nav class="sf-actions sf-ui-surface<?php echo $product_page || ( $catalog_page && $show_mobile_dock ) ? ' sf-ui-icon-group--single-mobile' : ''; ?>" aria-label="<?php esc_attr_e( 'Store tools', 'codela-storefront' ); ?>">
-                <?php if ( $catalog_page ) { $filter_count = count( codela_sf_catalog_active_filters() ); echo codela_sf_ui_icon_button( 'sliders-horizontal', __( 'Filters', 'codela-storefront' ) . ( $filter_count ? ' (' . $filter_count . ')' : '' ), [ 'variant' => $show_mobile_dock ? 'soft' : 'bare', 'class' => 'sf-filter-trigger', 'href' => '#sf-filters', 'attributes' => [ 'data-wp-on--click' => 'actions.filters', 'data-panel' => 'filters', 'aria-haspopup' => 'dialog', 'aria-controls' => 'sf-panel', 'aria-expanded' => 'false' ] ], $filter_count ? '<span class="sf-filter-count" aria-hidden="true">' . (int) $filter_count . '</span>' : '' ); } ?>
+                <?php if ( $catalog_page && ! $agency_navigation ) { $filter_count = count( codela_sf_catalog_active_filters() ); echo codela_sf_ui_icon_button( 'sliders-horizontal', __( 'Filters', 'codela-storefront' ) . ( $filter_count ? ' (' . $filter_count . ')' : '' ), [ 'variant' => $show_mobile_dock ? 'soft' : 'bare', 'class' => 'sf-filter-trigger', 'href' => '#sf-filters', 'attributes' => [ 'data-wp-on--click' => 'actions.filters', 'data-panel' => 'filters', 'aria-haspopup' => 'dialog', 'aria-controls' => 'sf-panel', 'aria-expanded' => 'false' ] ], $filter_count ? '<span class="sf-filter-count" aria-hidden="true">' . (int) $filter_count . '</span>' : '' ); } ?>
+                <?php if ( ! $agency_navigation ) : ?>
                 <?php echo codela_sf_ui_icon_button( 'search', __( 'Search', 'codela-storefront' ), [ 'href' => add_query_arg( [ 's' => '', 'post_type' => 'product' ], home_url( '/' ) ), 'attributes' => [ 'data-wp-on--click' => 'actions.search', 'data-panel' => 'search', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] ] ); ?>
                 <?php echo codela_sf_ui_icon_button( 'shopping-bag', __( 'Your cart', 'codela-storefront' ), [ 'variant' => $product_page ? 'soft' : 'bare', 'href' => wc_get_cart_url(), 'class' => 'sf-cart-trigger', 'attributes' => [ 'data-wp-on--click' => 'actions.cart', 'data-panel' => 'cart', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] ], '<span class="sf-badge" aria-hidden="true"></span>' ); ?>
+                <?php endif; ?>
                 <?php echo codela_sf_ui_icon_button( 'user-round', __( 'My account', 'codela-storefront' ), [
     'href' => wc_get_page_permalink( 'myaccount' ), 'class' => 'sf-account-link',
     'attributes' => $guest_overlay ? [ 'data-wp-on--click' => 'actions.account', 'data-panel' => 'account', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] : [],
@@ -155,12 +160,21 @@ function codela_sf_header(): string {
             <a data-dock-view="home" data-sf-route="home" class="sf-dock-item sf-ui-nav-tab <?php echo esc_attr( is_front_page() ? 'is-active' : '' ); ?>" href="<?php echo esc_url( home_url( '/' ) ); ?>" <?php if ( is_front_page() ) : ?>aria-current="page"<?php endif; ?>>
                 <?php echo codela_sf_icon( 'house' ); ?><span><?php esc_html_e( 'Home', 'codela-storefront' ); ?></span>
             </a>
+            <?php if ( $agency_navigation ) : ?>
+            <a data-dock-view="services" class="sf-dock-item sf-ui-nav-tab" href="<?php echo esc_url( function_exists( 'codela_sf_agency_page_url' ) ? codela_sf_agency_page_url( 'hizmetler', home_url( '/hizmetler/' ) ) : home_url( '/hizmetler/' ) ); ?>">
+                <?php echo codela_sf_icon( 'arrow-right' ); ?><span><?php esc_html_e( 'Services', 'codela-storefront' ); ?></span>
+            </a>
+            <a data-dock-view="contact" class="sf-dock-item sf-ui-nav-tab" href="<?php echo esc_url( function_exists( 'codela_sf_agency_contact_link' ) ? codela_sf_agency_contact_link() : home_url( '/iletisim/' ) ); ?>">
+                <?php echo codela_sf_icon( 'map-pin' ); ?><span><?php esc_html_e( 'Contact', 'codela-storefront' ); ?></span>
+            </a>
+            <?php else : ?>
             <a data-dock-view="search" class="sf-dock-item sf-ui-nav-tab" href="<?php echo esc_url( add_query_arg( [ 's' => '', 'post_type' => 'product' ], home_url( '/' ) ) ); ?>" data-wp-on--click="actions.search" data-panel="search" aria-haspopup="dialog" aria-expanded="false" aria-label="<?php esc_attr_e( 'Search', 'codela-storefront' ); ?>">
                 <?php echo codela_sf_icon( 'search' ); ?><span><?php esc_html_e( 'Search', 'codela-storefront' ); ?></span>
             </a>
             <a data-dock-view="cart" class="sf-dock-item sf-ui-nav-tab" href="<?php echo esc_url( wc_get_cart_url() ); ?>" data-wp-on--click="actions.cart" data-panel="cart" aria-haspopup="dialog" aria-expanded="false" aria-label="<?php esc_attr_e( 'Your cart', 'codela-storefront' ); ?>">
                 <span class="sf-ui-icon-badged"><?php echo codela_sf_icon( 'shopping-bag' ); ?><span class="sf-badge" aria-hidden="true"></span></span><span><?php esc_html_e( 'Cart', 'codela-storefront' ); ?></span>
             </a>
+            <?php endif; ?>
             <a data-dock-view="account" class="sf-dock-item sf-ui-nav-tab <?php echo esc_attr( is_account_page() ? 'is-active' : '' ); ?>" href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>" <?php if ( $guest_overlay ) : ?>data-wp-on--click="actions.account" data-panel="account" aria-haspopup="dialog" aria-expanded="false"<?php endif; ?> <?php if ( is_account_page() ) : ?>aria-current="page"<?php endif; ?>>
                 <?php echo codela_sf_icon( 'user-round' ); ?><span><?php esc_html_e( 'My account', 'codela-storefront' ); ?></span>
             </a>
@@ -170,7 +184,7 @@ function codela_sf_header(): string {
         <?php endif; ?>
         <dialog class="sf-panel" id="sf-panel" aria-labelledby="sf-panel-title">
             <div class="sf-panel-top"><h2 id="sf-panel-title" tabindex="-1"></h2><span class="sf-panel-app-title sf-panel-app-title--account sf-ui-surface" aria-hidden="true"><?php echo codela_sf_icon( 'user-round' ); ?><?php esc_html_e( 'My account', 'codela-storefront' ); ?></span><span class="sf-panel-app-title sf-panel-app-title--cart sf-ui-surface" aria-hidden="true"><?php echo codela_sf_icon( 'shopping-bag' ); ?><?php esc_html_e( 'Cart', 'codela-storefront' ); ?></span><?php echo codela_sf_ui_icon_button( 'x', __( 'Close', 'codela-storefront' ), [ 'variant' => 'soft', 'class' => 'sf-close', 'attributes' => [ 'data-wp-on--click' => 'actions.close' ] ] ); ?></div>
-            <section class="sf-panel-body" id="sf-menu" hidden><?php if ( ! $show_mobile_dock || $product_page ) : ?><nav class="sf-menu-tools<?php echo $product_page && $show_mobile_dock ? ' sf-menu-tools--product-mobile' : ''; ?>" aria-label="<?php esc_attr_e( 'Store tools', 'codela-storefront' ); ?>">
+            <section class="sf-panel-body" id="sf-menu" hidden><?php if ( ! $agency_navigation && ( ! $show_mobile_dock || $product_page ) ) : ?><nav class="sf-menu-tools<?php echo $product_page && $show_mobile_dock ? ' sf-menu-tools--product-mobile' : ''; ?>" aria-label="<?php esc_attr_e( 'Store tools', 'codela-storefront' ); ?>">
                 <?php echo codela_sf_ui_icon_button( 'search', __( 'Search', 'codela-storefront' ), [ 'variant' => 'soft', 'href' => add_query_arg( [ 's' => '', 'post_type' => 'product' ], home_url( '/' ) ), 'attributes' => [ 'data-wp-on--click' => 'actions.search', 'data-panel' => 'search', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] ] ); ?>
                 <?php echo codela_sf_ui_icon_button( 'user-round', __( 'My account', 'codela-storefront' ), [ 'variant' => 'soft', 'href' => wc_get_page_permalink( 'myaccount' ), 'attributes' => $guest_overlay ? [ 'data-wp-on--click' => 'actions.account', 'data-panel' => 'account', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] : [] ] ); ?>
             </nav><?php endif; ?><button class="sf-back" aria-label="<?php esc_attr_e( 'Back', 'codela-storefront' ); ?>" hidden><?php echo codela_sf_icon( 'arrow-left' ); ?></button><nav aria-label="<?php esc_attr_e( 'Main menu', 'codela-storefront' ); ?>"><?php echo codela_sf_menu(); ?></nav><div class="sf-menu-secondary"><?php if ( get_privacy_policy_url() ) { ?><a href="<?php echo esc_url( get_privacy_policy_url() ); ?>"><?php esc_html_e( 'Privacy', 'codela-storefront' ); ?></a><?php } ?></div></section>
@@ -243,7 +257,7 @@ function codela_sf_footer(): string {
     $hide_on_mobile = in_array( $settings['mobile_footer_hidden'] ?? false, [ true, 1, '1' ], true );
     $privacy_url = get_privacy_policy_url();
     $terms_id = absint( get_option( 'woocommerce_terms_page_id', 0 ) );
-    $terms_url = $terms_id && 'publish' === get_post_status( $terms_id ) ? get_permalink( $terms_id ) : '';
+    $terms_url = 'agency' !== ( $settings['site_experience'] ?? 'commerce' ) && $terms_id && 'publish' === get_post_status( $terms_id ) ? get_permalink( $terms_id ) : '';
 
     $html = '<footer class="sf-footer' . ( $hide_on_mobile ? ' sf-footer--mobile-hidden' : '' ) . '"><div class="sf-footer-inner"><div class="sf-footer-copy">';
     $html .= '<span class="sf-footer-copyright">© ' . esc_html( wp_date( 'Y' ) ) . '</span>';
