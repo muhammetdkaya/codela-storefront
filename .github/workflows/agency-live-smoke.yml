@@ -1,4 +1,4 @@
-name: Verify Codela agency homepage on public site
+name: Verify live Codela Agency Studio, Bento and four Service Details
 on:
   push:
     branches: [main]
@@ -7,32 +7,67 @@ on:
 permissions:
   contents: read
 jobs:
-  public-homepage:
+  public-pages:
     runs-on: ubuntu-24.04
     timeout-minutes: 3
     steps:
-      - name: Verify deployed theme version and newly rendered agency content
+      - name: Verify four real service pages and native Studio/Bento homepage
         run: |
           python3 - <<'PY'
-          import re, time, urllib.request, uuid
-          base='https://codela.dev'
+          import re, time, uuid
+          from html import unescape
+          from urllib.parse import urljoin, urlparse
+          from urllib.request import Request, urlopen
+          BASE='https://codela.dev'
           def get(path):
-              url=base+path+('?' if '?' not in path else '&')+'agency_verify='+uuid.uuid4().hex
-              req=urllib.request.Request(url,headers={'Cache-Control':'no-cache','Pragma':'no-cache','User-Agent':'CodelaAgencyDeployCheck/1.0'})
-              with urllib.request.urlopen(req,timeout=25) as r:
-                  print('HTTP',r.status,'path',path,'cache',r.headers.get('x-cache'),r.headers.get('cf-cache-status'),flush=True)
+              q='&' if '?' in path else '?'
+              req=Request(BASE+path+q+'agency_verify='+uuid.uuid4().hex,
+                  headers={'Cache-Control':'no-cache','Pragma':'no-cache','User-Agent':'CodelaAgencyDeployCheck/2.0'})
+              with urlopen(req,timeout=25) as r:
+                  assert r.status==200, 'HTTP failure '+path
                   return r.read().decode('utf-8',errors='replace')
           style=get('/wp-content/themes/codela-storefront/style.css')
-          ver=re.search(r'(?m)^Version: (\S+)',style)
-          print('Installed version:',ver.group(1) if ver else 'NOT FOUND',flush=True)
-          assert ver and ver.group(1)=='0.1.316','FTP theme version did not update'
+          ver=re.search(r'(?m)^Version:\s*(\S+)',style)
+          assert ver and ver.group(1)=='0.1.358', 'Unexpected live theme version'
+          expected=[
+              ('Web Tasarım','mona-bento-web.jpg'),
+              ('E-Ticaret','mona-bento-web.jpg'),
+              ('Özel Yazılım','mona-studio-hero.jpg'),
+              ('Optimizasyon / Destek','mona-studio-hero.jpg'),
+          ]
           for attempt in range(3):
               home=get('/')
-              markers={t:t in home for t in ['sf-agency-swap-stage','sf-agency-service-track','sf-agency-hero-variant-switch',"İyi fikirler."]}
-              print('Homepage markers',markers,'length',len(home),flush=True)
-              if all(markers[k] for k in list(markers)[:3]): break
-              time.sleep(5)
-          else:
-              raise AssertionError('Theme deployed but agency homepage still serves old template or cached content')
-          print('Published agency homepage verified successfully')
+              assert 'sf-agency-widget--studio' in home and 'sf-agency-widget--bento' in home, 'Studio/Bento homepage missing'
+              hrefs=re.findall(r'<a\b[^>]*class="cdl-bento__card[^"]*"[^>]*href="([^"]+)"',home,re.S)
+              if len(hrefs)!=4:
+                  print('Expected 4 Bento links, got',len(hrefs),flush=True)
+                  if attempt<2: time.sleep(5);continue
+                  raise AssertionError('Bento links missing')
+              seen=set();failures=[]
+              for (name,image),raw_href in zip(expected,hrefs):
+                  url=urljoin(BASE,unescape(raw_href))
+                  parsed=urlparse(url)
+                  if parsed.netloc!=urlparse(BASE).netloc or parsed.path in seen:
+                      failures.append('Unsafe or duplicate detail URL for '+name);continue
+                  seen.add(parsed.path)
+                  try:
+                      html=get(parsed.path)
+                  except Exception as err:
+                      failures.append(name+': '+type(err).__name__);continue
+                  h1=re.search(r'<h1\b[^>]*>(.*?)</h1>',html,re.S)
+                  heading=' '.join(unescape(re.sub(r'<[^>]+>','',h1.group(1))).split()) if h1 else ''
+                  scope=re.search(r'class="cdl-service-detail__scope"[^>]*>.*?<ul\b[^>]*>(.*?)</ul>',html,re.S)
+                  count=len(re.findall(r'<li\b',scope.group(1))) if scope else 0
+                  checks=['sf-agency-widget--detail','cdl-service-detail__cta',image,'hizmetler=']
+                  missing=[s for s in checks if s not in html]
+                  if heading!=name or count!=4 or missing:
+                      failures.append(f'{name}: heading={heading!r}, scope={count}, missing={missing}')
+                  else:
+                      print('OK',name,parsed.path,'4 scope tags / correct image / real CTA',flush=True)
+              if not failures:
+                  print('Studio 0.1.358, Bento and all 4 WordPress service details are live.',flush=True)
+                  break
+              print('Check attempt',attempt+1,'; '.join(failures),flush=True)
+              if attempt<2: time.sleep(5)
+              else: raise AssertionError('Live service details failed validation')
           PY
