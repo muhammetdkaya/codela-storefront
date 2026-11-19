@@ -51,6 +51,7 @@ jobs:
           php -l theme/codela-storefront/inc/section-agency.php
           php -l theme/codela-storefront/inc/section-agency-studio.php
           php -l theme/codela-storefront/inc/section-agency-bento.php
+          php -l theme/codela-storefront/inc/section-agency-detail.php
           php -l theme/codela-storefront/inc/agency.php
           php -l theme/codela-storefront/inc/sections.php
           php tests/agency.php
@@ -66,6 +67,7 @@ jobs:
           node tests/agency-widgets-browser.cjs
           node tests/agency-studio-browser.cjs
           node tests/agency-bento-browser.cjs
+          node tests/agency-detail-browser.cjs
       - name: Preserve phone/desktop reference screenshots
         if: always()
         uses: actions/upload-artifact@v4

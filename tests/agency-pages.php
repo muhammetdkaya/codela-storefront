@@ -33,6 +33,7 @@ function home_url( $url = '/' ) { return 'https://codela.test' . $url; }
 function esc_attr( $value ) { return htmlspecialchars( (string) $value, ENT_QUOTES ); }
 function esc_html( $value ) { return esc_attr( $value ); }
 function esc_url( $value ) { return esc_attr( $value ); }
+function add_query_arg( $key, $value, $url ) { return $url . ( str_contains( $url, '?' ) ? '&' : '?' ) . rawurlencode( $key ) . '=' . rawurlencode( $value ); }
 function admin_url( $path ) { return 'https://codela.test/wp-admin/' . $path; }
 function wp_nonce_field( ...$args ) { echo '<input type="hidden" name="agency_contact_nonce" value="testnonce">'; }
 function get_privacy_policy_url() { return 'https://codela.test/gizlilik/'; }
@@ -91,6 +92,59 @@ function codela_sf_ui_button( $label, $attrs ) { return '<a href="' . esc_url( $
 require __DIR__ . '/../theme/codela-storefront/inc/section-agency.php';
 require __DIR__ . '/../theme/codela-storefront/inc/section-agency-studio.php';
 require __DIR__ . '/../theme/codela-storefront/inc/section-agency-bento.php';
+require __DIR__ . '/../theme/codela-storefront/inc/section-agency-detail.php';
+
+$detail_reference = [
+    'web' => [ 'title'=>'Web Tasarım',
+      'description'=>'Markanızın duruşunu ilk saniyede hissettiren, mobil öncelikli ve dönüşüm odaklı modern web arayüzleri tasarlıyoruz.',
+      'labels'=>['UI / UX Tasarım','Kurumsal Web','Landing Page','Tasarım Sistemi'],
+      'asset'=>'mona-bento-web.jpg','tag'=>'Kurumsal · Arayüz' ],
+    'commerce' => [ 'title'=>'E-Ticaret',
+      'description'=>'Hızlı ürün keşfi, pürüzsüz sepet akışı ve güvenli ödeme entegrasyonlarıyla satışa odaklanan mağazalar kuruyoruz.',
+      'labels'=>['Özel Mağaza','Sepet & Ödeme','Mobil Alışveriş','Dönüşüm Kurgusu'],
+      'asset'=>'mona-bento-web.jpg','tag'=>'Satış · Deneyim' ],
+    'software' => [ 'title'=>'Özel Yazılım',
+      'description'=>'İş süreçlerinize tam oturan yönetim panelleri, API bağlantıları ve ölçeklenebilir web uygulamaları geliştiriyoruz.',
+      'labels'=>['Web Uygulamaları','Yönetim Panelleri','API & ERP','Özel Altyapı'],
+      'asset'=>'mona-studio-hero.jpg','tag'=>'Ölçek · Entegrasyon' ],
+    'support' => [ 'title'=>'Optimizasyon / Destek',
+      'description'=>'Yayındaki sitenizin hızını, teknik SEO performansını ve güvenliğini sürekli izleyerek sorunsuz çalışmasını sağlıyoruz.',
+      'labels'=>['Core Web Vitals','Teknik SEO','Güvenlik','Sürekli Bakım'],
+      'asset'=>'mona-studio-hero.jpg','tag'=>'Hız · Süreklilik' ],
+];
+foreach ( $detail_reference as $variant => $source ) {
+    $data = [ 'id'=>'detail-'.$variant,'variant'=>$variant,'title'=>$source['title'],
+        'description'=>$source['description'],'items'=>array_map(
+            static fn($i, $label)=>['id'=>'scope-'.$i,'enabled'=>true,'title'=>$label,'body'=>''],
+            array_keys($source['labels']),$source['labels'] ) ];
+    $markup = codela_sf_section_agency_detail( $data );
+    agency_page_check( str_contains($markup,'<h1') && str_contains($markup,$source['title']),
+        'Service detail has accessible original page heading: '.$variant );
+    agency_page_check( str_contains($markup,$source['asset']) &&
+       str_contains($markup,esc_html($source['tag'])) && substr_count($markup,'<li>')===4,
+       'Service detail uses original photo, service tag and exact scope pills: '.$variant );
+    agency_page_check( str_contains($markup,'hizmetler=') &&
+        str_contains($markup,'Proje Başlat') && !str_contains($markup,'data:image'),
+        'Service CTA sends source service to existing contact form: '.$variant );
+}
+if ( in_array( '--render=detail', $argv, true ) ) {
+    $source = $detail_reference['web'];
+    $data = [ 'id'=>'detail-web','variant'=>'web','title'=>$source['title'],
+        'description'=>$source['description'],
+        'items'=>array_map(static fn($i,$label)=>['id'=>'scope-'.$i,'enabled'=>true,
+            'title'=>$label,'body'=>''],array_keys($source['labels']),$source['labels']) ];
+    $markup = codela_sf_section_agency_detail( $data );
+    $markup = str_replace( 'https://codela.test/wp-content/themes/codela-storefront/',
+       '/theme/codela-storefront/', $markup );
+    echo '<!doctype html><html lang="tr"><head><meta charset="utf-8">';
+    echo '<meta name="viewport" content="width=device-width,initial-scale=1">';
+    echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/storefront-base.css">';
+    echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/agency.css">';
+    echo '</head><body class="sf-site-mode-agency"><main class="sf-content" id="sf-content">';
+    echo '<div class="codela-page-layout">'.$markup.'</div></main></body></html>';
+    exit;
+}
+
 $bento_data = [ 'schemaVersion'=>1, 'id'=>'agency-starter-bento', 'enabled'=>true,
     'title'=>'Uzmanlık Alanları', 'description'=>'',
     'items'=>[
