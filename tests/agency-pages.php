@@ -90,6 +90,32 @@ function sanitize_html_class( $value ) { return preg_replace( '/[^a-zA-Z0-9_-]/'
 function codela_sf_ui_button( $label, $attrs ) { return '<a href="' . esc_url( $attrs['href'] ) . '">' . esc_html( $label ) . '</a>'; }
 require __DIR__ . '/../theme/codela-storefront/inc/section-agency.php';
 require __DIR__ . '/../theme/codela-storefront/inc/section-agency-studio.php';
+require __DIR__ . '/../theme/codela-storefront/inc/section-agency-bento.php';
+$bento_data = [ 'schemaVersion'=>1, 'id'=>'agency-starter-bento', 'enabled'=>true,
+    'title'=>'Uzmanlık Alanları', 'description'=>'',
+    'items'=>[
+      ['id'=>'web','enabled'=>true,'title'=>'Web Tasarım','body'=>'Kurumsal · Arayüz · Dönüşüm'],
+      ['id'=>'eticaret','enabled'=>true,'title'=>'E-Ticaret','body'=>'Satış · Akış'],
+      ['id'=>'yazilim','enabled'=>true,'title'=>'Özel Yazılım','body'=>'Ölçek · API'],
+      ['id'=>'destek','enabled'=>true,'title'=>'Optimizasyon / Destek','body'=>'Hız · Güvenlik · Sürekli bakım'],
+    ] ];
+$bento_html = codela_sf_section_agency_bento( $bento_data );
+agency_page_check( substr_count( $bento_html, 'cdl-bento__card--' ) === 4, 'MONA reference has four distinct Bento cards.' );
+agency_page_check( str_contains( $bento_html, 'mona-bento-web.jpg' ) && ! str_contains( $bento_html, 'base64,' ), 'Real source asset is loaded separately.' );
+agency_page_check( str_contains( $bento_html, 'https://codela.test/hizmetler/' ), 'Unpublished detail falls back to published Services page.' );
+$bento_edit = $bento_data; $bento_edit['items'][1]['title'] = 'Özel mağaza başlığı';
+agency_page_check( str_contains( codela_sf_section_agency_bento( $bento_edit ), 'Özel mağaza başlığı' ), 'Editor copy is never silently replaced.' );
+if ( in_array( '--render=bento', $argv, true ) ) {
+    // Fixture uses the same native WordPress home content width and theme CSS.
+    $local_bento = str_replace( 'https://codela.test/wp-content/themes/codela-storefront/', '/theme/codela-storefront/', $bento_html );
+    echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
+    echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/storefront-base.css">';
+    echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/agency.css">';
+    echo '</head><body class="home"><main class="sf-content"><div class="codela-page-layout">' . $local_bento . '</div></main>';
+    echo '<script src="/theme/codela-storefront/assets/scripts/agency-widgets.js"></script></body></html>';
+    exit;
+}
+
 $studio_data = [ 'id' => 'agency-starter-studio', 'title' => 'Markanız için dijitalin ötesinde.',
     'description' => 'Web tasarım, e-ticaret ve özel yazılım çözümleri.', 'items' => [] ];
 $studio_html = codela_sf_section_agency_studio( $studio_data, '', true );
