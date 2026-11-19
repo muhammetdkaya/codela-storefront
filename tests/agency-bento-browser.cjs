@@ -28,6 +28,7 @@ const server=http.createServer((req,res)=>{
       assert.equal(await hero.count(),1,'Bento is isolated in its own component');
       assert.equal(await hero.locator('h2').textContent(),'Uzmanlık Alanları');
       assert.equal(await hero.locator('.cdl-bento__card').count(),4,'Exactly 4 original services');
+      assert.equal(await hero.getByRole('link').count(),4,'Four accessible native navigation links');
       const snapshot=await hero.evaluate(el=>{
         const cards=[...el.querySelectorAll('.cdl-bento__card')].map(e=>({height:e.getBoundingClientRect().height,
           width:e.getBoundingClientRect().width,href:e.getAttribute('href'),text:e.innerText}));

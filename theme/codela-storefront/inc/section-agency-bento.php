@@ -36,7 +36,7 @@ function codela_sf_section_agency_bento( array $data, string $type = '' ): strin
             </div>
             <span class="cdl-bento__brand">Codela</span>
           </header>
-          <div class="cdl-bento__grid" role="list" aria-label="Codela hizmetlerimiz">
+          <div class="cdl-bento__grid" aria-label="Codela hizmetlerimiz">
             <?php foreach ( $items as $index => $item ) : ?>
               <?php
               $variant = $types[ $index ];
@@ -45,7 +45,7 @@ function codela_sf_section_agency_bento( array $data, string $type = '' ): strin
               $body = trim( (string) ( $item['body'] ?? '' ) );
               $tag = $body ?: $tags[ $index ];
               ?>
-              <a role="listitem" class="cdl-bento__card cdl-bento__card--<?php echo esc_attr( $variant ); ?> cdl-bento__reveal"
+              <a class="cdl-bento__card cdl-bento__card--<?php echo esc_attr( $variant ); ?> cdl-bento__reveal"
                  style="--cdl-bento-order:<?php echo esc_attr( (string) ( $index + 1 ) ); ?>"
                  href="<?php echo esc_url( $href ); ?>"
                  aria-label="<?php echo esc_attr( $display . ' hizmetini incele' ); ?>">

@@ -1508,3 +1508,8 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
   .sf-agency-widget--bento .cdl-bento__reveal{opacity:1!important;transform:none!important;transition:none!important}
   .sf-agency-widget--bento .cdl-bento__photo{transition:none}
 }
+
+/* Keep the source's hover lift available after the reveal completes. */
+.sf-agency-widget--bento[data-bento-ready="1"][data-bento-visible="1"] .cdl-bento__card:hover{
+  transform:translate3d(0,-2px,0) scale(1);transition-delay:0ms
+}
