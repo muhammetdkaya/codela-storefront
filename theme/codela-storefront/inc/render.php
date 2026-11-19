@@ -164,7 +164,7 @@ function codela_sf_header(): string {
             <a data-dock-view="services" class="sf-dock-item sf-ui-nav-tab" href="<?php echo esc_url( function_exists( 'codela_sf_agency_page_url' ) ? codela_sf_agency_page_url( 'hizmetler', home_url( '/hizmetler/' ) ) : home_url( '/hizmetler/' ) ); ?>">
                 <?php echo codela_sf_icon( 'arrow-right' ); ?><span><?php esc_html_e( 'Services', 'codela-storefront' ); ?></span>
             </a>
-            <a data-dock-view="contact" class="sf-dock-item sf-ui-nav-tab" href="<?php echo esc_url( function_exists( 'codela_sf_agency_contact_url' ) ? codela_sf_agency_contact_url() : home_url( '/iletisim/' ) ); ?>">
+            <a data-dock-view="contact" class="sf-dock-item sf-ui-nav-tab" href="<?php echo esc_url( function_exists( 'codela_sf_agency_contact_link' ) ? codela_sf_agency_contact_link() : home_url( '/iletisim/' ) ); ?>">
                 <?php echo codela_sf_icon( 'map-pin' ); ?><span><?php esc_html_e( 'Contact', 'codela-storefront' ); ?></span>
             </a>
             <?php else : ?>
