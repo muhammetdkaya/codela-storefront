@@ -2207,14 +2207,12 @@ body:has(.sf-content .sf-agency-widget--project){
   --sf-agency-stage-bottom:clamp(18px,3svh,30px);
   --sf-agency-stage-top:clamp(82px,10svh,112px);
 }
-body:has(.sf-content .sf-agency-widget--studio) .codela-page-layout > .sf-agency-widget,
-body:has(.sf-content .sf-agency-widget--bento) .codela-page-layout > .sf-agency-widget,
-body:has(.sf-content .sf-agency-widget--process) .codela-page-layout > .sf-agency-widget,
-body:has(.sf-content .sf-agency-widget--detail) .codela-page-layout > .sf-agency-widget,
-body:has(.sf-content .sf-agency-widget--contact-bento) .codela-page-layout > .sf-agency-widget,
-body:has(.sf-content .sf-agency-widget--project) .codela-page-layout > .sf-agency-widget{
-  margin-block:0!important;
+/* Keep the legacy light Agency stages' optical overlap untouched. Only
+   the current dark Studio → Bento handoff should have no parent margin. */
+body.home .codela-page-layout > .sf-agency-widget--studio + .sf-agency-widget--bento{
+  margin-block-start:0!important;
 }
+
 /* The native Codela header already reserves 68/76px on inner pages.
    Subtract that once for the first stage; do not pay twice via padding. */
 body:not(.home):has(.sf-shell) .codela-page-layout > :is(
