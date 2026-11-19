@@ -54,7 +54,7 @@ jobs:
                       html=get(parsed.path)
                   except Exception as err:
                       failures.append(name+': '+type(err).__name__);continue
-                  h1=re.search(r'<h1\b[^>]*>(.*?)</h1>',html,re.S)
+                  h1=re.search(r'<h1\b[^>]*id="codela-detail-[^"]+"[^>]*>(.*?)</h1>',html,re.S)
                   heading=' '.join(unescape(re.sub(r'<[^>]+>','',h1.group(1))).split()) if h1 else ''
                   scope=re.search(r'class="cdl-service-detail__scope"[^>]*>.*?<ul\b[^>]*>(.*?)</ul>',html,re.S)
                   count=len(re.findall(r'<li\b',scope.group(1))) if scope else 0
