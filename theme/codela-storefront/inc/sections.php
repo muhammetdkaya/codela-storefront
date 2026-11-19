@@ -20,6 +20,7 @@ require_once __DIR__ . '/section-products.php';
 require_once __DIR__ . '/section-content.php';
 require_once __DIR__ . '/section-agency.php';
 require_once __DIR__ . '/section-agency-studio.php';
+require_once __DIR__ . '/section-agency-bento.php';
 
 function codela_sf_sections_capabilities(): array {
     static $caps = null;
@@ -56,7 +57,7 @@ function codela_sf_sections_capabilities(): array {
 function codela_sf_render_section( $html, string $type, array $data, int $post_id = 0 ): string {
     static $content_rendered = false;
     if ( ! $data['enabled'] ) { return ''; }
-    $renderers = [ 'hero' => 'codela_sf_section_media', 'promo' => 'codela_sf_section_media', 'categories' => 'codela_sf_section_categories', 'products' => 'codela_sf_section_products', 'story' => 'codela_sf_section_content', 'info' => 'codela_sf_section_content', 'contact' => 'codela_sf_section_content', 'agency-cards' => 'codela_sf_section_agency_cards', 'agency-scroll' => 'codela_sf_section_agency_scroll', 'agency-studio' => 'codela_sf_section_agency_studio', 'agency-services' => 'codela_sf_section_agency_services', 'agency-process' => 'codela_sf_section_agency_process' ];
+    $renderers = [ 'hero' => 'codela_sf_section_media', 'promo' => 'codela_sf_section_media', 'categories' => 'codela_sf_section_categories', 'products' => 'codela_sf_section_products', 'story' => 'codela_sf_section_content', 'info' => 'codela_sf_section_content', 'contact' => 'codela_sf_section_content', 'agency-cards' => 'codela_sf_section_agency_cards', 'agency-scroll' => 'codela_sf_section_agency_scroll', 'agency-studio' => 'codela_sf_section_agency_studio', 'agency-services' => 'codela_sf_section_agency_services', 'agency-bento' => 'codela_sf_section_agency_bento', 'agency-process' => 'codela_sf_section_agency_process' ];
     if ( ! isset( $renderers[ $type ] ) ) { return ''; }
     // Reserve priority for the first rendered section, never a later image after
     // text/products. Mixed native content is deliberately left to normal loading.

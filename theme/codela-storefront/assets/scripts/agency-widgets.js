@@ -37,6 +37,20 @@
     }
 
 
+    if (widget.dataset.agencyWidget === 'bento') {
+      if (!reduced.matches && 'IntersectionObserver' in window) {
+        widget.dataset.bentoReady = '1';
+        const observer = new IntersectionObserver(entries => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            widget.dataset.bentoVisible = '1';
+            observer.disconnect();
+          }
+        }, { threshold: 0.12 });
+        observer.observe(widget);
+      }
+    }
+
     if (widget.dataset.agencyWidget === 'services') {
       const track = widget.querySelector('[data-agency-widget-track]');
       const prev = widget.querySelector('[data-agency-widget-prev]');
