@@ -49,7 +49,7 @@ function codela_sf_section_agency_contact_bento( array $data, string $type = '' 
               </span>
               <span class="cdl-contact__bottom">
                 <strong>Proje Başlat</strong>
-                <span>2 adımda kapsamı seç, sana özel yol haritası hazırlayalım.</span>
+                <span>Hedefini kısaca anlat, sana özel yol haritasını birlikte çıkaralım.</span>
               </span>
             </a>
 
@@ -132,7 +132,7 @@ function codela_sf_section_agency_contact_bento( array $data, string $type = '' 
                 <label>E-posta<input name="agency_email" type="email" maxlength="180"
                        autocomplete="email" required placeholder="ornek@firma.com"></label>
               </div>
-              <label>Telefon <span>(İsteğe bağlı)</span>
+              <label>Telefon (İsteğe bağlı)
                 <input name="agency_phone" type="tel" maxlength="30" autocomplete="tel"
                        placeholder="05xx xxx xx xx"></label>
               <label>Hangi hizmetler?
