@@ -15,11 +15,7 @@ function html(enabled){
  <div class="sf-agency-widget sf-agency-widget--project"><div class="cdl-project__panel"><label class="cdl-project__choice"><input type="radio" name="s" checked><span>Web Tasarım</span></label><button class="cdl-project__button">Devam</button><div class="cdl-project__fields"><input aria-label="E-posta"></div></div></div>
  <div class="sf-agency-widget sf-agency-widget--process"><section class="sf-agency-process"><button class="sf-agency-process-step" aria-pressed="true">Keşif</button><div class="sf-agency-process-stage" data-step="0"></div></section></div>`;
  return '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+
- base+'
-'+agency+'
-'+project+'
-'+glass+(enabled?'
-'+material:'')+
+ base+'\n'+agency+'\n'+project+'\n'+glass+(enabled?'\n'+material:'')+
  '</style></head><body class="'+(enabled?'sf-glass-v2 ':'')+'home"><div class="sf-shell"><header class="sf-header">'+
  '<nav class="sf-header-menu"><button class="sf-ui-icon-button sf-ui-icon-button--soft">Menu</button></nav>'+
  '<div class="sf-brand sf-ui-surface"><a href="/">CODELA</a></div><nav class="sf-actions sf-ui-surface">'+
