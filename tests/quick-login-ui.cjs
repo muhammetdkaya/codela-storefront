@@ -174,8 +174,12 @@ console.log('Quick login browser contracts passed');
   php.includes('html.sf-auth-ssr-enabled body.woocommerce-account .woocommerce > :is(#customer_login') &&
   php.includes('html:not(.sf-auth-ssr-enabled) body.woocommerce-account .woocommerce:not(.sf-smart-auth-active) > .sf-smart-auth'),
   'Direct guest first paint has its own tiny blocking CSS for both safe initial and no-JS fallback');
-assert(php.includes('sf-auth-ssr-enabled') && php.includes('8000'),
-    'Direct Account uses PHP first-paint with bounded native fallback');
+assert(php.includes('sf-auth-page-pending') && php.includes('codelaSFQuickLoginReady')
+    && php.includes('codelaSFSmartAuthReady') && !php.includes('7000') && !php.includes('8000'),
+    'Direct Account reveals a single view after smart/quick readiness, not a wall-clock timeout');
+assert(php.includes('<style id="sf-auth-gate-critical">')
+    && php.includes('html.sf-auth-js #sf-account:not([data-sf-auth-ready="true"])'),
+    'Every guest page includes critical first-paint protection for the instant Account popup');
   assert(accountPhp.includes("add_action( 'woocommerce_before_customer_login_form', 'codela_sf_account_identity_markup', 6 )") &&
     accountPhp.includes('data-sf-auth-rendered="server"'),
     'The visible email field is server-rendered before Woo forms');
