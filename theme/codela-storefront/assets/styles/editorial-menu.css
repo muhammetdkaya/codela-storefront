@@ -25,6 +25,10 @@
   position:absolute;width:1px;height:1px;overflow:hidden;
   clip-path:inset(50%);white-space:nowrap;
 }
+/* Toolbar branding belongs only to Menu, never Account/Cart/Search panels. */
+.sf-shell.has-editorial-menu #sf-panel:not(.is-menu-panel) .sf-editorial-menu-brand{
+  display:none!important;
+}
 .sf-shell.has-editorial-menu #sf-panel.is-menu-panel .sf-editorial-menu-brand{
   display:inline-flex;align-items:center;gap:10px;
   min-width:0;max-width:calc(100% - 72px);
