@@ -6,10 +6,9 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Editoryal giriş ve Hesabım panelindeki gereksiz sol üst logo/sayfa adı kapsülü ilk kareden itibaren kaldırıldı, sağ kapatma tuşu korundu.",
-    "Giriş kartı kullanılabilir panel yüksekliğinde güvenli biçimde dikey ortalandı; kısa ekranda, PIN açılınca ve klavye odağında kaydırma korunur.",
-    "Google ile giriş butonu açık arka plan/beyaz yazı hatası giderilerek mevcut koyu cam yüzey ve açık okunaklı metne uyarlandı.",
-    "Mobil Editoryal Cam menüde aktif satır ve Codela Studio kartının ekran kenarına yapışmasını önlemek için en az 20px simetrik yan boşluk eklendi.",
-    "WooCommerce giriş doğrulaması, PIN/Face ID, WordPress menüleri ve diğer şablonların görünümü korunur."
+    "Editoryal Cam menüde sol üstte tekrarlanan Codela logo kapsülü, yalnızca gizlenmek yerine HTML'den tamamen kaldırıldı; sağ kapatma düğmesi korundu.",
+    "Menü başlıkları mobilde 20–24 px, masaüstünde 22–30 px aralığına ve 50–52 px dokunulabilir satırlara indirildi.",
+    "Menü bağlantıları ile Studio iletişim kartı daraltıldı, daha sıkı aralıklara alındı ve uygun ekranda dikey ortalandı; kısa ekranda güvenli kaydırma korunur.",
+    "Dark glass, aktif sayfa etiketi, WordPress menü ağacı, mobil yan boşluklar ve WooCommerce/Hesabım işlevleri değişmeden korundu."
   ]
 }
