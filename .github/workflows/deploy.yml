@@ -180,10 +180,12 @@ jobs:
           node tests/menu-dismiss-browser.cjs
           TEST_WEBKIT=1 node tests/menu-dismiss-browser.cjs
           node tests/agency-browser.cjs
+          node tests/agency-stage-gesture-browser.cjs
           node tests/agency-widgets-browser.cjs
           node tests/interaction-diagnostics-browser.cjs
           TEST_WEBKIT=1 node tests/interaction-diagnostics-browser.cjs
           node tests/account-smart-browser.cjs
+          node tests/auth-ready-browser.cjs
           TEST_WEBKIT=1 node tests/account-smart-browser.cjs
           node tests/product-browser.cjs
           node tests/checkout-steps-browser.cjs
