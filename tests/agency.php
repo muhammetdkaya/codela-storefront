@@ -44,7 +44,10 @@ $GLOBALS['enqueued'] = [];
 $GLOBALS['page']->post_content = '';
 $GLOBALS['layout'] = '<!-- wp:codela/section-agency-cards /-->';
 $enqueue();
-agency_check( count( $GLOBALS['enqueued'] ) === 2 && in_array( 'codela-storefront-agency-widgets', $GLOBALS['enqueued'], true ), 'Page-owned agency widgets load their own script in any shop.' );
+agency_check( count( $GLOBALS['enqueued'] ) === 3
+    && in_array( 'codela-storefront-agency-widgets', $GLOBALS['enqueued'], true )
+    && in_array( 'codela-storefront-agency-stage-scroll', $GLOBALS['enqueued'], true ),
+    'Agency homepage widgets load the scoped scripts including hybrid stage navigation.' );
 $GLOBALS['enqueued'] = [];
 $GLOBALS['layout'] = '';
 $GLOBALS['front'] = false;
