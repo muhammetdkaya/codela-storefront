@@ -83,7 +83,7 @@ class Tests(unittest.TestCase):
         render=(root/"inc/render.php").read_text()
         menu=(root/"assets/styles/editorial-menu.css").read_text()
         account=(root/"assets/styles/editorial-account.css").read_text()
-        self.assertIn("function codela_sf_presentation(",functions)
+        self.assertIn("function codela_sf_presentation(",(root/"inc/presentation.php").read_text())
         self.assertIn("editorial-menu.css",functions)
         self.assertIn("editorial-account.css",functions)
         self.assertIn("codela_sf_presentation( 'menu', $settings )",render)
