@@ -103,6 +103,7 @@ class Tests(unittest.TestCase):
         self.assertIn("linear-gradient(rgba(19,18,24,.78)",menu)
         self.assertIn("linear-gradient(rgba(19,18,24,.78)",account)
         self.assertIn(".sf-quick-native-alt",account)
+        self.assertIn("alternatives.querySelector('.sf-quick-native-alt')?.addEventListener('click',showNative)",(root/"assets/scripts/quick-login.js").read_text())
         self.assertIn(".sf-smart-identity",account)
         self.assertIn("info@codela.dev",render)
         self.assertNotIn("--sf-ui-page:var(--wp--preset--color--base",menu+account+shell)
