@@ -12,6 +12,8 @@
     let state = 'idle';
     let loading = null;
     let replayPending = false;
+    // The initial dialog is always gated by the server-rendered head CSS.
+    // Prefetching scripts alone never makes raw Woo forms visible.
     let prefetched = false;
     let placeholder = null;
 
@@ -44,8 +46,17 @@
         loading = Promise.all([
             ...config.styles.map(assetLink),
             loadScripts(config.scripts),
-        ]).then(() => { state = 'ready'; })
-          .catch(error => { state = 'failed'; throw error; });
+        ]).then(async () => {
+            // Script load events precede asynchronous device attestation.
+            // Only the real smart stage AND quick-login status may reveal UI.
+            const smart=window.codelaSFSmartAuthReady;
+            const quick=window.codelaSFQuickLoginReady;
+            if (!smart || !quick) throw Error('Auth controllers did not register');
+            const results=await Promise.all([smart,quick]);
+            if (results.some(ok=>ok!==true)) throw Error('Auth controllers failed to initialize');
+            state='ready';
+            section.dataset.sfAuthReady='true';
+        }).catch(error => { state = 'failed'; throw error; });
         return loading;
     }
     function preloadOnIntent(event) {
@@ -83,9 +94,13 @@
         }
         placeholder.replaceChildren(document.createTextNode(config.loading || 'Loading…'));
         section.classList.add('sf-auth-deferred-loading');
+        section.removeAttribute('data-sf-auth-ready');
     }
     function hidePlaceholder() {
         section.classList.remove('sf-auth-deferred-loading');
+        // Reveal only the completed single view; an error keeps the fallback
+        // link visible without exposing obsolete Woo forms.
+        section.dataset.sfAuthReady='true';
         placeholder?.remove();
         placeholder = null;
     }
@@ -104,7 +119,10 @@
     }
 
     section.addEventListener('codela:account-open', () => {
-        if (state === 'ready') return; // Normal event already reached the controllers.
+        if (state === 'ready') {
+            section.dataset.sfAuthReady='true';
+            return; // Controllers have finished, including device verification.
+        }
         if (state === 'failed') { showFailure(); return; }
         ensurePlaceholder();
         if (replayPending) return;

@@ -5,8 +5,15 @@
  */
 (() => {
   'use strict';
+  // The public display hint is never sufficient to reveal a remembered account.
+  // Resolve only when asynchronous IndexedDB/server status verification ends.
+  let finishQuick;
+  window.codelaSFQuickLoginReady=new Promise(resolve=>{finishQuick=resolve;});
   const config = window.CodelaQuickLogin;
-  if (!config || !window.isSecureContext || !crypto?.subtle || !window.indexedDB) return;
+  if (!config || !window.isSecureContext || !crypto?.subtle || !window.indexedDB) {
+    finishQuick(true); // Browser without quick-login supports native smart email.
+    return;
+  }
   const savedKey = 'codela_sf_quick_profile_v1'; // Migrated legacy single-account hint.
   const savedListKey = 'codela_sf_quick_profiles_v2';
   const passkeyLegacyKey = 'codela_sf_passkey_hint_v1';
@@ -778,6 +785,10 @@
   window.addEventListener('pageshow', event => {
     if (event.persisted && config.accountPage) freshAccountDocument(window.location.href);
   });
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => void init(), {once:true});
-  else void init();
+  const boot=()=>{void init().then(()=>finishQuick(true),error=>{
+    console.error('Codela quick login initialization:',error);
+    finishQuick(false);
+  });};
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, {once:true});
+  else boot();
 })();

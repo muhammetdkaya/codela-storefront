@@ -5,6 +5,10 @@
  */
 (() => {
   'use strict';
+  // Installed immediately even when the DOM has not finished parsing.
+  // Loader and direct Account wait for the real smart email stage.
+  let finishSmart;
+  window.codelaSFSmartAuthReady=new Promise(resolve=>{finishSmart=resolve;});
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const query = (root,selector) => root.querySelector(selector);
   function initRoot(root) {
@@ -291,14 +295,21 @@
     });
   }
   const start=()=>{
-    for(const root of document.querySelectorAll('.woocommerce')){
-      if(root.querySelector('.sf-account-intro'))initRoot(root);
-    }
-    // PHP first paint is already final. Hydrated stage CSS now owns the UI.
-    // Remembered PIN/passkey verification may still keep the choice concealed.
-    if(!document.documentElement.classList.contains('sf-quick-checking') &&
-       document.querySelector('body.woocommerce-account .woocommerce.sf-smart-auth-active:not(.sf-overlay-auth)')){
-      document.documentElement.classList.remove('sf-auth-ssr-enabled');
+    let ok=true;
+    try {
+      for(const root of document.querySelectorAll('.woocommerce')){
+        if(root.querySelector('.sf-account-intro'))initRoot(root);
+      }
+      // A missing or incomplete smart adapter is a fallback, not a ready view.
+      for(const root of document.querySelectorAll('.woocommerce')){
+        if(root.querySelector(':scope > .sf-smart-auth') &&
+          !root.classList.contains('sf-smart-auth-active'))ok=false;
+      }
+    } catch(error) {
+      ok=false;
+      console.error('Codela smart account initialization:',error);
+    } finally {
+      finishSmart(ok);
     }
   };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});

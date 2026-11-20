@@ -500,8 +500,26 @@ add_action( 'wp_head', static function(): void {
     // Prepaint protection also covers the instant Account panel on other
     // storefront pages. Only the visible view is masked; no navigation waits.
     if ( is_user_logged_in() ) { return; }
-    // JS-enabled direct Account uses the PHP-rendered screen at first paint.
-    // Without hydration, release the native form after a bounded fallback.
+    // Critical gate ships in the HTML head, before deferred account styles.
+    // It is never timed out: one verified view (PIN/passkey or smart email)
+    // replaces the loading state only after both controllers have settled.
+    echo <<<'SF_AUTH_GATE'
+<style id="sf-auth-gate-critical">
+html.sf-auth-js #sf-account:not([data-sf-auth-ready="true"]) > :not(.sf-auth-loader-status){display:none!important}
+html.sf-auth-js #sf-account:not([data-sf-auth-ready="true"]):not(:has(>.sf-auth-loader-status))::before{
+ content:"Hesabınız hazırlanıyor…";display:flex;align-items:center;justify-content:center;
+ min-height:min(56dvh,470px);color:var(--sf-muted,#aaa5b1);font:500 14px/1.5 system-ui,sans-serif
+}
+html.sf-auth-page-pending body.woocommerce-account:not(.logged-in) .woocommerce:has(>.sf-smart-auth) > *{display:none!important}
+html.sf-auth-page-pending body.woocommerce-account:not(.logged-in) .woocommerce:has(>.sf-smart-auth)::before{
+ content:"Hesabınız hazırlanıyor…";display:flex;align-items:center;justify-content:center;
+ min-height:min(56dvh,470px);font:500 14px/1.5 system-ui,sans-serif;color:var(--sf-muted,#797d83)
+}
+html.sf-auth-native-fallback body.woocommerce-account .woocommerce > .sf-smart-auth{display:none!important}
+html.sf-auth-native-fallback body.woocommerce-account .woocommerce > #customer_login{display:block!important}
+</style>
+<script>document.documentElement.classList.add("sf-auth-js")</script>
+SF_AUTH_GATE;
     if ( function_exists( 'is_account_page' ) && is_account_page() ) {
         // This tiny blocking critical rule is not a second design system.
         // The native Woo form must NEVER share first paint with the PHP email
@@ -554,9 +572,14 @@ body.woocommerce-account .woocommerce > .sf-smart-auth .sf-smart-message:empty{d
 html.sf-quick-checking body.woocommerce-account .woocommerce > .sf-smart-auth{display:none!important}
 </style>
 SF_AUTH_CRITICAL;
-        echo '<script>(function(){var h=document.documentElement;h.classList.add("sf-auth-ssr-enabled");window.setTimeout(function(){if(!document.querySelector("body.woocommerce-account .woocommerce.sf-smart-auth-active"))h.classList.remove("sf-auth-ssr-enabled")},8000)})();</script>';
+        echo '<script>(function(){var h=document.documentElement;h.classList.add("sf-auth-ssr-enabled","sf-auth-page-pending");'
+            . 'function finish(native){h.classList.remove("sf-auth-page-pending","sf-auth-ssr-enabled");if(native)h.classList.add("sf-auth-native-fallback")}'
+            . 'function ready(){var s=window.codelaSFSmartAuthReady,q=window.codelaSFQuickLoginReady;'
+            . 'if(!s||!q){if(document.readyState==="complete")finish(true);else window.addEventListener("load",ready,{once:true});return}'
+            . 'Promise.all([s,q]).then(function(v){finish(v.some(function(x){return x!==true}))},function(){finish(true)})}'
+            . 'if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",ready,{once:true});else ready()})();</script>';
     }
-    echo '<script>(function(){try{var a=function(n){try{return JSON.parse(localStorage.getItem(n)||"null")}catch(e){return null}};var p=a("codela_sf_quick_profile_v1"),q=a("codela_sf_passkey_hint_v1"),ps=a("codela_sf_quick_profiles_v2"),ks=a("codela_sf_passkey_hints_v2");var pin=function(x){return x&&Number.isSafeInteger(x.userId)&&/^[0-9a-f]{32}$/.test(x.deviceId||"")};var bio=function(x){return x&&Number.isSafeInteger(x.userId)&&typeof x.credentialId==="string"&&!x.paused};if(pin(p)||bio(q)||(Array.isArray(ps)&&ps.some(pin))||(Array.isArray(ks)&&ks.some(bio))){document.documentElement.classList.add("sf-quick-checking");if(bio(q)||(Array.isArray(ks)&&ks.some(bio))){document.documentElement.classList.add("sf-quick-passkey-hint")}window.setTimeout(function(){document.documentElement.classList.remove("sf-quick-checking")},7000)}}catch(e){}})();</script>';
+    echo '<script>(function(){try{var a=function(n){try{return JSON.parse(localStorage.getItem(n)||"null")}catch(e){return null}};var p=a("codela_sf_quick_profile_v1"),q=a("codela_sf_passkey_hint_v1"),ps=a("codela_sf_quick_profiles_v2"),ks=a("codela_sf_passkey_hints_v2");var pin=function(x){return x&&Number.isSafeInteger(x.userId)&&/^[0-9a-f]{32}$/.test(x.deviceId||"")};var bio=function(x){return x&&Number.isSafeInteger(x.userId)&&typeof x.credentialId==="string"&&!x.paused};if(pin(p)||bio(q)||(Array.isArray(ps)&&ps.some(pin))||(Array.isArray(ks)&&ks.some(bio))){document.documentElement.classList.add("sf-quick-checking");if(bio(q)||(Array.isArray(ks)&&ks.some(bio))){document.documentElement.classList.add("sf-quick-passkey-hint")}/* Device status completion, not elapsed wall time, clears this class. */}}catch(e){}})();</script>';
 }, 1 );
 
 add_action( 'wp_enqueue_scripts', static function(): void {
