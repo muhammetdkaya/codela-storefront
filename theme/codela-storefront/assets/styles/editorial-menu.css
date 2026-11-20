@@ -84,7 +84,11 @@
   gap:clamp(28px,5vw,64px);
   align-content:center;align-items:center;
   width:100%;max-width:1120px;min-height:100%;
-  margin:0 auto;padding:36px 0 max(24px,env(safe-area-inset-bottom,0px));
+  /* Keep the active row and glass Studio card off the physical screen edge.
+   * A 20px minimum matches the 20px header capsule gutter on narrow phones. */
+  box-sizing:border-box;
+  margin:0 auto;
+  padding:36px clamp(20px,5vw,48px) max(24px,env(safe-area-inset-bottom,0px));
   text-align:left;
 }
 .sf-shell.has-editorial-menu #sf-panel.is-menu-panel #sf-menu>nav:not(.sf-menu-tools){

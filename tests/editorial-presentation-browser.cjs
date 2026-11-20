@@ -16,7 +16,7 @@ const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/
 (async()=>{
  const browser=await ({chromium,webkit}[engine]).launch();
  try{
-  for(const [width,height] of [[390,844],[1280,900]]){
+  for(const [width,height] of [[390,844],[390,650],[1280,900]]){
    const page=await browser.newPage({viewport:{width,height}});
    await page.setContent('<!doctype html><html lang="tr"><head><meta charset="utf-8">'+
     '<meta name="viewport" content="width=device-width,initial-scale=1">'+
@@ -56,6 +56,16 @@ const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/
    assert((menu.brandLayers.match(/linear-gradient\(/g)||[]).length>=3,'Brand capsule has three glass paint layers');
    assert(menu.closeWidth>=44&&menu.closeHeight>=44,'Native close retains 44px hit target');
    assert(menu.cardLeft>=-1&&menu.cardRight<=width+1,'Aside fits horizontally');
+   if(width<=700){
+    const insets=await page.evaluate(()=>{
+      const active=document.querySelector('.sf-menu-list>li.current-menu-item').getBoundingClientRect();
+      const aside=document.querySelector('.sf-editorial-menu-aside').getBoundingClientRect();
+      return {activeLeft:active.left,activeRight:innerWidth-active.right,
+        asideLeft:aside.left,asideRight:innerWidth-aside.right};
+    });
+    for(const [side,inset] of Object.entries(insets))
+      assert(inset>=18,side+' needs a real 20px mobile safe gutter, got '+inset);
+   }
    assert(menu.scrollWidth<=width+1,'Menu does not overflow horizontally');
    await page.evaluate(()=>{
     const dialog=document.querySelector('#sf-panel');
@@ -65,6 +75,22 @@ const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/
    });
    const account=page.locator('#sf-account>.woocommerce');
    assert(await account.isVisible(),'Original Woo guest form visible in editorial card');
+   assert.equal(await page.locator('#sf-panel .sf-panel-app-title--account').isVisible(),false,
+    'No redundant My Account logo/title capsule inside guest panel');
+   assert.equal(await page.locator('#sf-panel .sf-editorial-menu-brand').isVisible(),false,
+    'Menu-only Codela brand stays hidden in Account');
+   assert(await page.locator('#sf-panel .sf-panel-top .sf-close').isVisible(),
+    'Real Close remains visible in the top right');
+   const position=await page.evaluate(()=>{
+     const body=document.querySelector('#sf-account').getBoundingClientRect();
+     const card=document.querySelector('#sf-account>.woocommerce').getBoundingClientRect();
+     return {offset:Math.abs((body.top+body.bottom-card.top-card.bottom)/2),
+       bodyHeight:body.height,cardHeight:card.height,topGap:card.top-body.top};
+   });
+   if(position.cardHeight<position.bodyHeight-24)
+     assert(position.offset<=18,'Guest Account card must be vertically centered: '+JSON.stringify(position));
+   else
+     assert(position.topGap>=-1,'Tall Account must remain top-scrollable: '+JSON.stringify(position));
    const style=await account.evaluate(el=>({border:getComputedStyle(el).borderTopWidth,
     radius:getComputedStyle(el).borderRadius,backdrop:getComputedStyle(el).backdropFilter,
     layers:getComputedStyle(el).backgroundImage,canvas:getComputedStyle(document.querySelector('#sf-panel')).backgroundColor,
@@ -91,6 +117,20 @@ const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/
    assert.equal(emailStyle.background,'rgba(10, 10, 15, 0.72)','Input uses reference dark glass');
    assert.equal(emailStyle.color,'rgb(248, 247, 250)','Input remains legible');
    assert.equal(emailStyle.borderRadius,'14px','Email has reference glass-input radius');
+   // This minimal native Woo social button reproduces the real Google class
+   // and disabled state without manufacturing an authentication endpoint.
+   await page.evaluate(()=>{
+    document.querySelector('#sf-account>.woocommerce').insertAdjacentHTML('beforeend',
+     '<div class="sf-auth-social"><button type="button" class="sf-auth-google" disabled><span>Google ile giriş yap</span></button></div>');
+   });
+   const google=await page.locator('#sf-account .sf-auth-social .sf-auth-google').evaluate(el=>{
+     const cs=getComputedStyle(el),label=getComputedStyle(el.querySelector('span'));
+     return {color:cs.color,labelColor:label.color,background:cs.backgroundColor,image:cs.backgroundImage};
+   });
+   assert.equal(google.color,'rgb(248, 247, 250)','Google text has readable dark-mode contrast');
+   assert.equal(google.labelColor,'rgb(248, 247, 250)','Google child label stays readable');
+   assert(google.image.includes('linear-gradient'),'Google button gets dark glass, not bright flat white');
+   assert.notEqual(google.background,'rgb(248, 247, 250)','Google background must not equal its text');
    await page.close();
   }
   console.log('Editorial menu/account PHP shell, layout and native URLs passed ('+engine+').');

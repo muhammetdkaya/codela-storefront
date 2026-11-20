@@ -28,10 +28,16 @@
     #06060a!important;
   color:#f8f7fa!important;color-scheme:dark;
 }
+/* Account has only the native right-side X; no duplicated page-name or logo.
+ * This eager rule prevents a label flash before guest login CSS loads. */
 .sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-panel-top{
   background:transparent!important;border-bottom:0!important;
+  justify-content:flex-end!important;
 }
 .sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-panel-app-title--account,
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-editorial-menu-brand{
+  display:none!important;
+}
 .sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-panel-top .sf-close{
   color:#f8f7fa!important;border:1px solid transparent!important;border-radius:999px;
   background:
@@ -42,17 +48,35 @@
   backdrop-filter:var(--cdl-agency-glass-filter)!important;
   box-shadow:0 6px 18px -6px rgba(0,0,0,.24)!important;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-panel-app-title--account{
-  display:inline-flex;align-items:center;gap:9px;
-  min-height:46px;padding:0 16px;
-}
-.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-panel-app-title--account::after{
-  content:'';display:inline-block;width:6px;height:6px;border-radius:50%;
-  background:#d3a480;box-shadow:0 0 10px rgba(211,164,128,.7);
-}
-.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(.sf-panel-app-title--account .sf-icon,.sf-panel-top .sf-close .sf-icon){
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-panel-top .sf-close .sf-icon{
   filter:brightness(0) invert(1)!important;
 }
+/* The panel body itself is the available-height scrollport. Center the single
+ * real Woo/remembered account card inside it; safe centering avoids clipping
+ * when the content grows taller than the viewport. No fixed heights/transforms. */
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-account-body{
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  justify-content:center;
+  justify-content:safe center;
+  min-height:0;
+}
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-account-body>.woocommerce{
+  flex:0 0 auto;
+  width:100%;
+  margin-inline:auto;
+}
+/* Native password focus or expanded PIN must scroll normally above iOS keyboard. */
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-account-body:has(.woocommerce.sf-auth-focus-mode,.sf-quick-login.is-inline-open){
+  justify-content:flex-start;
+}
+@media(max-height:620px){
+  .sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-account-body{
+    justify-content:flex-start;
+  }
+}
+
 /* Direct My Account guest page gets the same dark presentation, not the store canvas. */
 body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout){
   /* Standalone Account does not inherit token overrides from the hidden dialog. */
