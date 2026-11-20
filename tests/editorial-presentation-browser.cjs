@@ -10,7 +10,8 @@ const shell=execFileSync(process.env.PHP_BIN||'php',['tests/render-header.php'],
  encoding:'utf8',env:{...process.env,FIXTURE_EXPERIENCE:'agency',FIXTURE_MENU:'1',FIXTURE_DOCK:'0'}
 });
 const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/navigation.css',
- 'styles/components.css','styles/editorial-menu.css','styles/editorial-account.css']
+ 'styles/components.css','styles/account-overlay.css','styles/auth-smart.css','styles/quick-login.css',
+ 'styles/editorial-menu.css','styles/editorial-account-shell.css','styles/editorial-account.css']
  .map(file=>fs.readFileSync(theme+file,'utf8')).join('\n');
 (async()=>{
  const browser=await ({chromium,webkit}[engine]).launch();
@@ -43,9 +44,16 @@ const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/
     return {background:getComputedStyle(dialog).backgroundColor,
       scheme:getComputedStyle(dialog).colorScheme,
       viewport:innerWidth,scrollWidth:document.documentElement.scrollWidth,
-      cardLeft:card.left,cardRight:card.right,closeWidth:close.width,closeHeight:close.height};
+      cardLeft:card.left,cardRight:card.right,closeWidth:close.width,closeHeight:close.height,
+      asideLayers:getComputedStyle(aside).backgroundImage,
+      brandLayers:getComputedStyle(document.querySelector('.sf-editorial-menu-brand')).backgroundImage,
+      activeLabel:getComputedStyle(document.querySelector('.sf-menu-list>li.current-menu-item'),'::after').content};
    });
-   assert.equal(menu.scheme,'light','Light porcelain panel wins over legacy Agency dark profile');
+   assert.equal(menu.scheme,'dark','Original dark reference wins over Agency and Commerce defaults');
+   assert.equal(menu.background,'rgb(6, 6, 10)','Menu canvas stays #06060a');
+   assert(menu.activeLabel.includes('Aktif'),'Current WordPress item displays the reference Active label');
+   assert((menu.asideLayers.match(/linear-gradient\(/g)||[]).length>=3,'Studio card has original layered surface rim');
+   assert((menu.brandLayers.match(/linear-gradient\(/g)||[]).length>=3,'Brand capsule has three glass paint layers');
    assert(menu.closeWidth>=44&&menu.closeHeight>=44,'Native close retains 44px hit target');
    assert(menu.cardLeft>=-1&&menu.cardRight<=width+1,'Aside fits horizontally');
    assert(menu.scrollWidth<=width+1,'Menu does not overflow horizontally');
@@ -58,11 +66,31 @@ const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/
    const account=page.locator('#sf-account>.woocommerce');
    assert(await account.isVisible(),'Original Woo guest form visible in editorial card');
    const style=await account.evaluate(el=>({border:getComputedStyle(el).borderTopWidth,
-    radius:getComputedStyle(el).borderRadius,backdrop:getComputedStyle(el).backdropFilter}));
-   assert(style.border!=='0px','New Account card gets a visible subtle rim');
+    radius:getComputedStyle(el).borderRadius,backdrop:getComputedStyle(el).backdropFilter,
+    layers:getComputedStyle(el).backgroundImage,canvas:getComputedStyle(document.querySelector('#sf-panel')).backgroundColor,
+    scheme:getComputedStyle(document.querySelector('#sf-panel')).colorScheme}));
+   assert.equal(style.scheme,'dark','Account is dark before and after guest CSS loads');
+   assert.equal(style.canvas,'rgb(6, 6, 10)','Account canvas is original #06060a');
+   assert(style.border!=='0px','Account card has a rim');
    assert(parseFloat(style.radius)>=20,'Account card is softly rounded');
+   assert((style.layers.match(/linear-gradient\(/g)||[]).length>=3,'Account card retains original layered glass');
+   assert(style.backdrop.includes('blur(22px)'),'Account card has real frosted blur');
    assert.equal(await page.locator('#sf-account form.woocommerce-form-login').count(),1,
     'One WooCommerce login form with native submission');
+   // The real email control is server-rendered by account.php; hydration only
+   // binds behavior. Visualize that existing class, never a fake submit API.
+   await page.evaluate(()=>{
+    const host=document.querySelector('#sf-account>.woocommerce');
+    host.insertAdjacentHTML('beforeend', '<div class="sf-smart-auth"><label class="sf-smart-label"><input class="sf-smart-identity" type="email" placeholder="E-posta adresiniz"></label></div>');
+    host.classList.add('sf-smart-auth-active');
+   });
+   const email=page.locator('#sf-account .sf-smart-identity');
+   assert(await email.isVisible(),'Real smart email field is directly visible in native view');
+   const emailStyle=await email.evaluate(el=>({background:getComputedStyle(el).backgroundColor,
+     color:getComputedStyle(el).color,borderRadius:getComputedStyle(el).borderRadius}));
+   assert.equal(emailStyle.background,'rgba(10, 10, 15, 0.72)','Input uses reference dark glass');
+   assert.equal(emailStyle.color,'rgb(248, 247, 250)','Input remains legible');
+   assert.equal(emailStyle.borderRadius,'14px','Email has reference glass-input radius');
    await page.close();
   }
   console.log('Editorial menu/account PHP shell, layout and native URLs passed ('+engine+').');
