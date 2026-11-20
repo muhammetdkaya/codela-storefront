@@ -101,10 +101,25 @@ const moduleInit=[
       imgLoaded:document.querySelector('.sf-agency-brand-mark').complete};
    });
    assert(headerLayout.brandEnd<=headerLayout.toolsStart,'No overlap between brand and tools: '+JSON.stringify(headerLayout));
-   assert(Math.abs(headerLayout.toolsHeight-50)<=2,'Combined glass capsule has approved 50px height');
+   assert(Math.abs(headerLayout.toolsHeight-44)<=2,'Combined glass capsule has compact 44px height');
+   const brandGeometry=await page.evaluate(()=>{
+    const shell=document.querySelector('.sf-brand'),mark=document.querySelector('.sf-agency-brand-mark');
+    const name=document.querySelector('.sf-agency-brand-name');
+    return {height:shell.getBoundingClientRect().height,width:shell.getBoundingClientRect().width,
+       image:mark.getBoundingClientRect().width,labelOpacity:getComputedStyle(name).opacity};
+   });
+   assert(Math.abs(brandGeometry.height-44)<=2,'Logo and tools have equal 44px height');
+   assert(Math.abs(brandGeometry.width-44)<=2,'Initial logo is emblem only');
+   assert(brandGeometry.image>=27,'Original C emblem remains visible');
    assert(headerLayout.accountSize>=44&&headerLayout.menuSize>=44,'Both actions keep 44px touch targets');
    assert(headerLayout.divider>=1&&headerLayout.divider<=2,'Subtle divider is one physical CSS pixel');
    assert(headerLayout.overflow<=1,'No mobile/desktop horizontal overflow');
+   if(width>=701){
+    await page.locator('.sf-agency-brand-link').hover();
+    const expanded=await page.locator('.sf-brand').evaluate(el=>el.getBoundingClientRect().width);
+    assert(expanded>=125,'Desktop hover reveals Codela wordmark without losing capsule');
+    await page.locator('.sf-agency-header-tools .sf-menu-trigger').hover();
+   }
    await page.locator('.sf-header-menu .sf-menu-trigger').click();
    const menu=await page.evaluate(()=>{
     const dialog=document.querySelector('#sf-panel');
@@ -112,8 +127,15 @@ const moduleInit=[
      moved:!!document.querySelector('#sf-panel > .sf-menu-trigger'),
      closeVisible:getComputedStyle(document.querySelector('#sf-panel .sf-panel-top .sf-close')).display!=='none'};
    });
-   assert.deepEqual(menu,{open:true,bg:'rgb(9, 9, 12)',moved:false,closeVisible:true},
-    'Agency Menu retains dark surface and separate close: '+JSON.stringify(menu));
+   assert(menu.open && !menu.moved && menu.closeVisible,'Agency native dark Menu remains dismissible: '+JSON.stringify(menu));
+   const location=await page.evaluate(()=>{
+    const a=document.querySelector('#sf-panel .sf-panel-top .sf-close').getBoundingClientRect();
+    const b=document.querySelector('.sf-agency-header-tools .sf-menu-trigger').getBoundingClientRect();
+    return {dx:Math.abs((a.left+a.width/2)-(b.left+b.width/2)),
+            dy:Math.abs((a.top+a.height/2)-(b.top+b.height/2)),
+            bg:getComputedStyle(document.querySelector('#sf-panel')).backgroundColor};
+   });
+   assert(location.dx<=2&&location.dy<=2,'Menu X must occupy original right slot: '+JSON.stringify(location));
    await page.locator('#sf-panel.is-menu-panel .sf-panel-top .sf-close').click();
    assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),false);
    assert.equal(await page.evaluate(()=>document.documentElement.classList.contains('sf-overlay-scroll-locked')),false);

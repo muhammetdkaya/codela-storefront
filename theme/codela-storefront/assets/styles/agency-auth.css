@@ -1,0 +1,62 @@
+/* Agency-only guest Account skin. Loaded after native smart login + PIN styles
+   by the existing lazy auth loader; no auth/state/credential behavior changes. */
+.sf-shell.has-agency-profile #sf-panel.is-account-panel{
+ --sf-ui-ink:#f5f4f7;--sf-ui-control-ink:#f5f4f7;
+ --sf-ui-border:rgba(255,255,255,.16);--sf-ui-surface:#232229;
+ --sf-ui-surface-muted:#1e1d24;--sf-muted:#aca8b2;
+ --sf-smart-ink:#f5f4f7;--sf-smart-line:rgba(255,255,255,.17);
+ --sf-quick-ink:#f5f4f7;--sf-quick-muted:#aca8b2;
+ color:#f5f4f7!important;color-scheme:dark;
+}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel .sf-account-body,
+.sf-shell.has-agency-profile #sf-panel.is-account-panel .sf-overlay-auth,
+.sf-shell.has-agency-profile #sf-panel.is-account-panel .woocommerce{
+ color:#f5f4f7!important;
+}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel :is(
+ .sf-account-intro h1,.sf-quick-choice-intro h2,.sf-quick-user,
+ .sf-quick-inline-label,.sf-smart-label,.sf-quick-choice-intro strong
+){color:#f5f4f7!important}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel :is(
+ .sf-account-intro p,.sf-quick-choice-intro p,.sf-quick-or,
+ .sf-quick-choice-alternatives,.sf-auth-divider,.sf-smart-hint,
+ .woocommerce-form-login__rememberme,.woocommerce-privacy-policy-text,
+ .sf-quick-inline-subtitle,.sf-quick-user-meta
+){color:#a9a6b1!important}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel .woocommerce form label[for]:not(.woocommerce-form__label){color:#d8d5dd!important}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel :is(
+ input.input-text,.sf-smart-identity,.woocommerce form input[type=email],
+ .woocommerce form input[type=text],.woocommerce form input[type=password]
+){background:#202027!important;border:1px solid rgba(255,255,255,.17)!important;
+ color:#f5f4f7!important;box-shadow:none!important}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel :is(input.input-text,.sf-smart-identity)::placeholder{
+ color:#928d9b!important;opacity:1
+}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel :is(input.input-text,.sf-smart-identity):focus{
+ background:#26252c!important;border-color:#8c8396!important;
+ outline:2px solid rgba(214,166,118,.25)!important;
+}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel :is(
+ .sf-auth-tabs,.sf-quick-account,.sf-quick-account-frame,
+ .sf-quick-slot,.sf-quick-monogram,.sf-quick-switch.sf-quick-email-login
+){background:#24232b!important;border-color:rgba(255,255,255,.15)!important;color:#f5f4f7!important}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel .sf-quick-account-frame .sf-quick-account{background:transparent!important}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel :is(.sf-auth-tab,.sf-quick-chevron,.sf-quick-monogram){color:#e6e2eb!important}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel .sf-auth-tab[aria-selected=true]{background:#33313c!important;color:#fff!important}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel .sf-quick-slot i{background:#f5f4f7!important}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel :is(.sf-quick-inline-divider,.sf-quick-or::before,.sf-quick-or::after){border-color:rgba(255,255,255,.12)!important}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel :is(
+ .sf-auth-google,.sf-quick-google,.sf-smart-continue,.sf-quick-switch.sf-quick-email-login
+){border:1px solid rgba(255,255,255,.22)!important;background:#2c2b34!important;color:#fff!important}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel :is(
+ .woocommerce form button[type=submit],.sf-smart-submit,.sf-quick-switch.sf-quick-email-login
+){background:#f2f1f4!important;border-color:#f2f1f4!important;color:#1b1b22!important}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel :is(
+ .lost_password a,.woocommerce-LostPassword a,.sf-auth-back-login,.sf-smart-back
+){color:#e8e4ed!important}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel :is(
+ .sf-quick-account,.sf-quick-choice,.sf-auth-tabs,.sf-quick-account-frame
+){box-shadow:none!important}
+@media(prefers-reduced-transparency:reduce){
+ .sf-shell.has-agency-profile #sf-panel.is-account-panel{background:#09090d!important}
+}

@@ -488,6 +488,10 @@ add_action( 'wp_enqueue_scripts', function() {
                     $asset( 'styles/account-overlay.css', $style_version ),
                     $asset( 'styles/auth-smart.css', codela_sf_script_module_version( 'styles/auth-smart.css' ) ),
                     $asset( 'styles/quick-login.css', $style_version ),
+                    // Only the Agency guest Account overlay receives the dark
+                    // visual skin; My Account and Commerce remain untouched.
+                    ...( 'agency' === ( codela_theme_settings()['site_experience'] ?? 'commerce' )
+                        ? [ $asset( 'styles/agency-auth.css', $style_version ) ] : [] ),
                 ],
                 'scripts' => [
                     $asset( 'scripts/auth.js', $style_version ),

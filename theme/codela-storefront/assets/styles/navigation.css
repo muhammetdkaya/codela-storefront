@@ -452,3 +452,121 @@ body.admin-bar{--sf-header-offset:32px}
 @media(prefers-reduced-motion:reduce){
  .sf-shell.has-agency-header .sf-agency-header-tools :is(.sf-account-link,.sf-menu-trigger){transition:none!important}
 }
+
+/* Agency header v0.1.373 — equal 44px capsules. The wordmark reveals on
+   pointer hover or keyboard focus on desktop; mobile is always mark-only,
+   with a meaningful accessible Home label instead of touch-hover traps. */
+.sf-shell.has-agency-header .sf-header .sf-brand{
+  box-sizing:border-box;width:44px;min-width:44px;max-width:44px;
+  height:44px;min-height:44px;padding:0 7px;
+  overflow:hidden;transition:width .28s cubic-bezier(.22,1,.36,1),max-width .28s cubic-bezier(.22,1,.36,1);
+}
+.sf-shell.has-agency-header .sf-header .sf-agency-header-tools{
+  height:44px;min-height:44px;padding:0;
+}
+.sf-shell.has-agency-header .sf-agency-brand-link{
+  justify-content:flex-start;gap:0;width:100%;min-width:0;
+}
+.sf-shell.has-agency-header .sf-agency-brand-mark{width:28px;height:28px}
+.sf-shell.has-agency-header .sf-agency-brand-name{
+  display:block;flex:none;max-width:0;margin-left:0;
+  opacity:0;transform:translateX(-5px);
+  font-size:19px;overflow:hidden;
+  transition:max-width .28s cubic-bezier(.22,1,.36,1),margin-left .28s ease,opacity .16s ease,transform .28s ease;
+}
+@media(min-width:701px) and (hover:hover){
+  .sf-shell.has-agency-header .sf-header .sf-brand:is(:hover,:focus-within){
+    width:145px;max-width:145px;
+  }
+  .sf-shell.has-agency-header .sf-header .sf-brand:is(:hover,:focus-within) .sf-agency-brand-name{
+    max-width:105px;margin-left:10px;opacity:1;transform:translateX(0);
+  }
+}
+@media(min-width:701px) and (hover:none){
+  .sf-shell.has-agency-header .sf-header .sf-brand:focus-within{
+    width:145px;max-width:145px;
+  }
+  .sf-shell.has-agency-header .sf-header .sf-brand:focus-within .sf-agency-brand-name{
+    max-width:105px;margin-left:10px;opacity:1;transform:translateX(0);
+  }
+}
+@media(max-width:700px){
+  .sf-shell.has-agency-header .sf-header .sf-brand,
+  .sf-shell.has-agency-header .sf-header .sf-brand:is(:hover,:focus-within){
+    width:44px;min-width:44px;max-width:44px;
+    height:44px;min-height:44px;padding-inline:7px;
+  }
+  .sf-shell.has-agency-header .sf-header .sf-brand .sf-agency-brand-name{max-width:0;opacity:0;margin:0}
+  .sf-shell.has-agency-header .sf-header .sf-agency-header-tools{height:44px;min-height:44px}
+}
+@media(prefers-reduced-motion:reduce){
+  .sf-shell.has-agency-header .sf-header .sf-brand,
+  .sf-shell.has-agency-header .sf-agency-brand-name{transition:none!important}
+}
+/* A dialog occupies the browser top layer, so an X at its own rightmost 44px
+   slot is aligned to the Menu icon beneath rather than centered in a new row.
+   The toolbar starts at the same fixed-header top/safe-area origin. */
+.sf-shell.has-agency-profile #sf-panel:is(.is-menu-panel,.is-account-panel){
+  --sf-ui-page:#09090d;
+  --sf-ui-ink:#f4f3f7;
+  --sf-ui-control-ink:#f4f3f7;
+  --sf-ui-border:rgba(255,255,255,.14);
+  --sf-ui-surface:#222127;
+  --sf-ui-surface-muted:#1c1b21;
+  --sf-muted:#aaa5b1;
+  --sf-ui-glass-ink:#f4f3f7;
+  background:radial-gradient(ellipse 70% 40% at 90% 12%,rgba(60,38,72,.19),transparent 78%),#09090d!important;
+  color:#f4f3f7!important;
+  color-scheme:dark;
+}
+.sf-shell.has-agency-header #sf-panel:is(.is-menu-panel,.is-account-panel) .sf-panel-top{
+  position:relative;box-sizing:border-box;flex:none;
+  height:76px;min-height:76px;
+  padding:0 clamp(16px,5vw,48px);
+  background:transparent;border-bottom:0;
+}
+.sf-shell.has-agency-header #sf-panel:is(.is-menu-panel,.is-account-panel) .sf-panel-top .sf-close{
+  position:absolute!important;display:inline-flex!important;
+  top:16px!important;right:calc(clamp(16px,5vw,48px) + 1px)!important;
+  left:auto!important;bottom:auto!important;
+  width:44px;height:44px;min-width:44px;min-height:44px;
+  flex:none;margin:0;padding:0;
+  align-items:center;justify-content:center;
+  color:#f4f3f7!important;border:1px solid rgba(255,255,255,.18)!important;
+  border-radius:999px;background:rgba(34,34,36,.72)!important;
+  -webkit-backdrop-filter:blur(20px) saturate(160%) brightness(.92);
+  backdrop-filter:blur(20px) saturate(160%) brightness(.92);
+  box-shadow:0 6px 18px -6px rgba(0,0,0,.24)!important;
+  z-index:4;
+}
+.sf-shell.has-agency-header #sf-panel:is(.is-menu-panel,.is-account-panel) .sf-panel-top .sf-close .sf-icon{
+  filter:brightness(0) invert(1)!important;
+}
+.sf-shell.has-agency-profile #sf-panel.is-menu-panel #sf-menu .sf-menu-list a{
+  color:#f4f3f7;
+}
+.sf-shell.has-agency-profile #sf-panel.is-menu-panel #sf-menu .sf-menu-list a:is(:hover,:focus-visible){
+  color:#d6a676;
+}
+.sf-shell.has-agency-profile #sf-panel.is-menu-panel .sf-menu-secondary,
+.sf-shell.has-agency-profile #sf-panel.is-menu-panel .sf-menu-secondary a{color:#aaa5b1}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel .sf-panel-app-title--account{
+  color:#f4f3f7;background:rgba(34,34,36,.72);border:1px solid rgba(255,255,255,.13);
+}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel .sf-panel-app-title--account .sf-icon{
+  filter:brightness(0) invert(1);
+}
+@media(max-width:700px){
+  .sf-shell.has-agency-header #sf-panel:is(.is-menu-panel,.is-account-panel) .sf-panel-top{
+    height:68px;min-height:68px;padding-inline:clamp(12px,4vw,20px);
+  }
+  .sf-shell.has-agency-header #sf-panel:is(.is-menu-panel,.is-account-panel) .sf-panel-top .sf-close{
+    top:12px!important;right:calc(clamp(12px,4vw,20px) + 1px)!important;
+  }
+}
+@media(forced-colors:active){
+  .sf-shell.has-agency-header #sf-panel:is(.is-menu-panel,.is-account-panel) .sf-panel-top .sf-close{
+    background:Canvas!important;border-color:CanvasText!important;color:CanvasText!important;
+    -webkit-backdrop-filter:none;backdrop-filter:none;
+  }
+}
