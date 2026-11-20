@@ -120,6 +120,9 @@ add_action( 'wp_enqueue_scripts', static function() {
     if ( $flags['widgets'] || $flags['pattern'] ) {
         wp_enqueue_script( 'codela-storefront-agency-widgets', get_template_directory_uri() . '/assets/scripts/agency-widgets.js', [], wp_get_theme()->get( 'Version' ), true );
     }
+    if ( $flags['widgets'] && function_exists( 'is_front_page' ) && is_front_page() ) {
+        wp_enqueue_script( 'codela-storefront-agency-stage-scroll', get_template_directory_uri() . '/assets/scripts/agency-stage-scroll.js', [], wp_get_theme()->get( 'Version' ), true );
+    }
 }, 30 );
 add_action( 'enqueue_block_editor_assets', 'codela_sf_agency_styles' );
 

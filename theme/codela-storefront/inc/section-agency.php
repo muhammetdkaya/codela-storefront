@@ -281,6 +281,7 @@ function codela_sf_section_agency_process( array $data, string $type = '' ): str
               <?php foreach ( $items as $index => $item ) : ?>
                 <button type="button" class="sf-agency-process-step"
                   data-agency-widget-step="<?php echo (int) $index; ?>"
+                  data-complete="<?php echo 0 === $index ? 'true' : 'false'; ?>"
                   data-agency-stage-image="<?php echo esc_url( $media . $images[ $index ] ); ?>"
                   data-agency-stage-outcome="<?php echo esc_attr( $outcomes[ $index ] ); ?>"
                   data-agency-stage-title="<?php echo esc_attr( $item['title'] ); ?>"

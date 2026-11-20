@@ -2327,3 +2327,122 @@ body:not(.home):has(.sf-shell) .codela-page-layout > :is(
     min-height:calc(100svh - var(--sf-agency-header-clearance,68px));
   }
 }
+
+
+/* 0.1.368 — reference-accurate process tabs and optical viewport centering.
+   The earlier step decoration was still receiving generic button surfaces. */
+.sf-agency-widget--process .sf-agency-process{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-sizing:border-box;
+  min-height:var(--sf-agency-screen-block,100svh);
+  padding:clamp(94px,10svh,120px) 16px clamp(20px,4svh,42px);
+}
+.sf-agency-widget--process .sf-agency-process > .sf-agency-wrap{
+  flex:0 1 auto;
+  width:min(100%,940px);
+  min-width:0;
+}
+.sf-agency-widget--process .sf-agency-process-step,
+.sf-agency-widget--process .sf-agency-process-step[aria-pressed="true"],
+.sf-agency-widget--process .sf-agency-process-step:hover{
+  appearance:none;
+  -webkit-appearance:none;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  justify-content:flex-start;
+  gap:8px;
+  min-height:0!important;
+  padding:0!important;
+  margin:0;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  background-image:none!important;
+  box-shadow:none!important;
+  text-align:left;
+}
+.sf-agency-widget--process .sf-agency-process-step-label{
+  display:block;
+  padding:0;
+  background:none!important;
+  box-shadow:none!important;
+}
+.sf-agency-widget--process .sf-agency-process-bar{
+  height:4px;
+  flex:none;
+  background:rgba(255,255,255,.11);
+}
+.sf-agency-widget--process .sf-agency-process-stage{
+  width:100%;
+  margin:0;
+}
+@media(max-width:739px){
+  .sf-agency-widget--process .sf-agency-process{
+    min-height:100svh;
+    padding:clamp(78px,10svh,102px) 16px clamp(18px,3svh,28px);
+  }
+  .sf-agency-widget--process .sf-agency-process-head{margin-bottom:20px}
+  .sf-agency-widget--process .sf-agency-process-steps{margin-bottom:15px}
+  .sf-agency-widget--process .sf-agency-process-stage-content{
+    min-height:165px;
+  }
+}
+@media(max-width:739px) and (max-height:700px){
+  .sf-agency-widget--process .sf-agency-process{
+    padding-top:clamp(74px,11svh,86px);
+  }
+  .sf-agency-widget--process .sf-agency-process-stage-visual{height:clamp(125px,23svh,165px)}
+  .sf-agency-widget--process .sf-agency-process-stage-content{min-height:148px}
+}
+/* Native one-gesture stage controller takes over where stage heights allow.
+   Keep CSS proximity snap as the safe fallback when JS is unavailable. */
+@supports (scroll-snap-type:y proximity){
+  html.sf-agency-stage-nav:has(body.home .sf-agency-widget--studio){
+    scroll-snap-type:none!important;
+  }
+}
+/* Dark Agency navigation uses an actual white wordmark. A wide uploaded
+   logo is cropped to its emblem rather than filtering the entire image. */
+.sf-agency-header-wordmark{display:none}
+body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project))
+.sf-shell .sf-header .sf-brand > .sf-agency-header-wordmark{
+  display:block;
+  color:#f8f7fa;
+  font-size:clamp(15px,4vw,18px);
+  font-weight:600;
+  letter-spacing:-.035em;
+  white-space:nowrap;
+  line-height:1;
+}
+body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project))
+.sf-shell .sf-header .sf-brand:has(.sf-agency-header-wordmark){
+  gap:7px;
+}
+body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project))
+.sf-shell .sf-header .sf-brand .custom-logo-link{
+  display:block;
+  flex:0 0 36px;
+  width:36px;
+  height:36px;
+  overflow:hidden;
+  text-align:left;
+}
+body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project))
+.sf-shell .sf-header .sf-brand .custom-logo-link .custom-logo{
+  display:block;
+  width:auto!important;
+  max-width:none!important;
+  min-width:34px;
+  height:34px!important;
+  max-height:34px;
+  object-fit:contain;
+  object-position:left center;
+  filter:none;
+}
+body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project))
+.sf-shell .sf-header .sf-brand > a:not(.custom-logo-link){
+  color:#f8f7fa!important;
+}

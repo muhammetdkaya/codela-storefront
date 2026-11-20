@@ -1,26 +1,23 @@
 <?php
 /**
- * Title: Codela — Hakkımızda ve süreç
+ * Title: Codela — Hakkımızda / MONA Süreç
  * Slug: codela-storefront/agency-about
  * Categories: featured
+ * Description: Modern three-step Agency process, not the legacy information cards.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 ?>
 <!-- wp:html -->
-<div class="sf-agency sf-agency-inner-page sf-agency-about-page">
-  <section class="sf-agency-about-intro">
-    <div class="sf-agency-wrap">
-      <p class="sf-agency-page-tag">codela.dev / hakkimizda · WordPress &amp; Yazılım Ajansı</p>
-      <h1>Hazır tema kurup bırakan değil, <em>mimari inşa eden</em> WordPress ajansı.</h1>
-      <p class="sf-agency-page-lead">Kurumsal web sitelerinden Elementor tabanlı deneyimlere, WooCommerce mağazalarından özel eklenti ve entegrasyonlara kadar uçtan uca dijital ürünler geliştiriyoruz.</p>
-      <div class="sf-agency-about-principles">
-        <article><h2>Özel Tasarım</h2><p>Her projeye markanın kimliğinden başlayıp hazır şablon hissi vermeyen arayüzler kurguluyoruz.</p></article>
-        <article><h2>Elementor &amp; Blok</h2><p>Yazılımcıya gerek kalmadan kolayca yönetilebilen özel Elementor widget’ları ve Gutenberg blokları üretiyoruz.</p></article>
-        <article><h2>Temiz Kod</h2><p>Gereksiz eklenti yükü yerine ihtiyaca uygun, bakımı kolay çözümler geliştiriyoruz.</p></article>
-        <article><h2>Uzun Vadeli İş Birliği</h2><p>Yayın sonrası bakım ve yeni geliştirmelerde işin sürdürülebilirliğini gözetiyoruz.</p></article>
-      </div>
-    </div>
-  </section>
-</div>
+<?php
+echo codela_sf_section_agency_process( [
+    'id' => 'pattern-agency-about',
+    'title' => 'Birlikte nasıl çalışıyoruz?',
+    'description' => 'Keşiften yayına kadar şeffaf ve ölçülebilir bir iş akışı.',
+    'items' => [
+        [ 'enabled' => true, 'title' => 'Analiz, UX ve Altyapı', 'body' => 'Hedefleri, içerik mimarisini ve doğru teknolojiyi belirleriz.' ],
+        [ 'enabled' => true, 'title' => 'Tasarım ve Geliştirme', 'body' => 'Özel arayüz, Elementor bileşenleri ve entegrasyonları geliştiririz.' ],
+        [ 'enabled' => true, 'title' => 'Test, Yayın ve Destek', 'body' => 'Performans, mobil ve güvenlik kontrolleri sonrasında yayına alırız.' ],
+    ],
+] );
+?>
 <!-- /wp:html -->
-<!-- wp:pattern {"slug":"codela-storefront/agency-process"} /-->

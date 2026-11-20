@@ -135,7 +135,10 @@ function codela_sf_header(): string {
                     <?php elseif ( ! empty( $context['account'] ) || ! empty( $context['cart'] ) ) : ?><span class="sf-account-context-heading"><?php echo codela_sf_icon( ! empty( $context['cart'] ) ? 'shopping-bag' : 'user-round' ); ?><span class="sf-context-label"><?php echo esc_html( $context['title'] ); ?></span></span>
                     <?php else : ?><span class="sf-context-label"><?php echo esc_html( $context['title'] ); ?></span><?php endif; ?>
 
-                <?php elseif ( has_custom_logo() ) : the_custom_logo(); else : ?><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></a><?php endif; ?>
+                <?php elseif ( has_custom_logo() ) : ?>
+                    <?php the_custom_logo(); ?>
+                    <span class="sf-agency-header-wordmark" aria-hidden="true"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></span>
+                    <?php else : ?><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></a><?php endif; ?>
             </div>
             <?php if ( $product_page ) : ?>
                 <?php echo codela_sf_ui_icon_button( 'house', __( 'Home', 'codela-storefront' ), [ 'variant' => 'soft', 'class' => 'sf-product-home', 'href' => home_url( '/' ), 'attributes' => [ 'data-sf-route' => 'home', 'data-sf-skeleton' => 'home' ] ] ); ?>
