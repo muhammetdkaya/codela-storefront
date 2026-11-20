@@ -597,6 +597,10 @@ add_action( 'wp_enqueue_scripts', static function() {
         wp_enqueue_style( 'codela-storefront-editorial-menu', $uri . 'editorial-menu.css',
             [ 'codela-storefront-components' ], codela_sf_style_version() );
     }
+    if ( 'editorial' === codela_sf_presentation( 'account' ) ) {
+        wp_enqueue_style( 'codela-storefront-editorial-account-shell', $uri . 'editorial-account-shell.css',
+            [ 'codela-storefront-components' ], codela_sf_style_version() );
+    }
     if ( 'editorial' === codela_sf_presentation( 'account' )
         && function_exists( 'is_account_page' ) && is_account_page() && ! is_user_logged_in() ) {
         wp_enqueue_style( 'codela-storefront-editorial-account', $uri . 'editorial-account.css',
