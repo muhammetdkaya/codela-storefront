@@ -70,18 +70,24 @@ $enqueue();
 agency_page_check( [] === $GLOBALS['assets'], 'Unrelated page has no agency-specific assets.' );
 $GLOBALS['layout'] = '<!-- wp:codela/section-agency-scroll /-->';
 $enqueue();
-agency_page_check( count( $GLOBALS['assets'] ) === 2 && in_array( 'codela-storefront-agency-widgets', $GLOBALS['assets'], true ),
-    'Any WordPress page with an agency widget loads the correct independent script.' );
+agency_page_check( count( $GLOBALS['assets'] ) === 3
+    && in_array( 'codela-storefront-agency-widgets', $GLOBALS['assets'], true )
+    && in_array( 'codela-storefront-agency-stage-scroll', $GLOBALS['assets'], true ),
+    'Agency homepage widgets also load the hybrid stage scroll controller.' );
 $GLOBALS['layout'] = '';
 
 function sanitize_html_class( $value ) { return preg_replace( '/[^a-zA-Z0-9_-]/', '', $value ); }
 require __DIR__ . '/../theme/codela-storefront/inc/section-agency.php';
+require __DIR__ . '/../theme/codela-storefront/inc/section-agency-bento.php';
 foreach ( [ 'agency-services', 'agency-about', 'agency-contact', 'agency-process' ] as $slug ) {
     ob_start(); require __DIR__ . '/../theme/codela-storefront/patterns/' . $slug . '.php'; $html = ob_get_clean();
     agency_page_check( strlen( $html ) > 500, $slug . ' renders actual content.' );
     if ( $slug === 'agency-services' ) {
-        agency_page_check( substr_count( $html, 'class="sf-agency-module"' ) === 6, 'Exactly six services from the reference.' );
-        agency_page_check( substr_count( $html, 'data-agency-filter="' ) === 4, 'Category filter has four selections.' );
+        agency_page_check( substr_count( $html, 'cdl-bento__card--' ) === 4, 'Services now use four reference Bento cards.' );
+        agency_page_check( ! str_contains( $html, 'sf-agency-module-grid' ), 'Legacy service modules are no longer duplicated.' );
+    } elseif ( $slug === 'agency-about' ) {
+        agency_page_check( substr_count( $html, 'data-agency-widget-step="' ) === 3,
+            'About now uses the source three-step process instead of legacy cards.' );
     } elseif ( $slug === 'agency-process' ) {
         agency_page_check( substr_count( $html, 'data-agency-widget-step="' ) === 3 && str_contains( $html, 'Nasıl Çalışıyoruz?' ), 'Process has three reference steps.' );
     } elseif ( $slug === 'agency-contact' ) {
@@ -94,7 +100,6 @@ foreach ( [ 'agency-services', 'agency-about', 'agency-contact', 'agency-process
 // original pattern or the legacy variant switch.
 function codela_sf_ui_button( $label, $attrs ) { return '<a href="' . esc_url( $attrs['href'] ) . '">' . esc_html( $label ) . '</a>'; }
 require __DIR__ . '/../theme/codela-storefront/inc/section-agency-studio.php';
-require __DIR__ . '/../theme/codela-storefront/inc/section-agency-bento.php';
 require __DIR__ . '/../theme/codela-storefront/inc/section-agency-detail.php';
 require __DIR__ . '/../theme/codela-storefront/inc/section-agency-contact-bento.php';
 require __DIR__ . '/../theme/codela-storefront/inc/section-agency-project.php';
