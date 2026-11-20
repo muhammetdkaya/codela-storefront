@@ -206,6 +206,34 @@ body.sf-account-editorial.woocommerce-account:not(.logged-in) :is(
   backdrop-filter:var(--cdl-agency-glass-filter)!important;
   box-shadow:0 6px 18px -6px rgba(0,0,0,.24)!important;
 }
+/* The native Woo Google button previously inherited the overlay's light
+ * --sf-ui-ink as its background, while its text stayed white. Override the
+ * *actual* Woo social action (also disabled state), not a decorative clone.
+ * Preserve Google's multicolor SVG glyph with no filters. */
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .woocommerce .sf-auth-social .sf-auth-google,
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .woocommerce .sf-auth-social .sf-auth-google:disabled,
+body.sf-account-editorial.woocommerce-account:not(.logged-in) .woocommerce .sf-auth-social .sf-auth-google,
+body.sf-account-editorial.woocommerce-account:not(.logged-in) .woocommerce .sf-auth-social .sf-auth-google:disabled{
+  color:#f8f7fa!important;
+  border:1px solid transparent!important;
+  background:
+    var(--cdl-agency-glass-back) padding-box,
+    linear-gradient(var(--cdl-agency-glass-body),var(--cdl-agency-glass-body)) padding-box,
+    var(--cdl-agency-glass-rim) border-box!important;
+  -webkit-backdrop-filter:var(--cdl-agency-glass-filter)!important;
+  backdrop-filter:var(--cdl-agency-glass-filter)!important;
+  box-shadow:0 6px 18px -6px rgba(0,0,0,.24)!important;
+  text-shadow:none!important;
+}
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .woocommerce .sf-auth-social .sf-auth-google :is(span,strong),
+body.sf-account-editorial.woocommerce-account:not(.logged-in) .woocommerce .sf-auth-social .sf-auth-google :is(span,strong){
+  color:#f8f7fa!important;
+}
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .woocommerce .sf-auth-social .sf-auth-google svg,
+body.sf-account-editorial.woocommerce-account:not(.logged-in) .woocommerce .sf-auth-social .sf-auth-google svg{
+  filter:none!important;
+}
+
 .sf-shell.has-editorial-account #sf-panel.is-account-panel :is(
  .woocommerce form button[type=submit],.sf-quick-switch.sf-quick-email-login
 ),
