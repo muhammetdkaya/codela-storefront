@@ -44,13 +44,13 @@
   min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
 /* Agency X is the existing dialog Close; commerce keeps its reparented Menu X. */
-.sf-shell.has-agency-header.has-editorial-menu #sf-panel.is-menu-panel .sf-panel-top .sf-close{
+.sf-shell.has-agency-profile.has-editorial-menu #sf-panel.is-menu-panel .sf-panel-top .sf-close{
   color:var(--sf-ui-ink)!important;
   background:rgba(255,255,255,.72)!important;
   border:1px solid rgba(40,40,38,.10)!important;
   box-shadow:var(--sf-ui-glass-control-shadow)!important;
 }
-.sf-shell.has-agency-header.has-editorial-menu #sf-panel.is-menu-panel .sf-panel-top .sf-close .sf-icon{
+.sf-shell.has-agency-profile.has-editorial-menu #sf-panel.is-menu-panel .sf-panel-top .sf-close .sf-icon{
   filter:brightness(0)!important;
 }
 .sf-shell.has-editorial-menu #sf-panel.is-menu-panel .sf-menu-trigger.is-in-panel{
