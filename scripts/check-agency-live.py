@@ -147,19 +147,32 @@ def check() -> None:
         if not errors:
             print("Agency pages render correctly on the public site.")
             home = fetch("/")
-            desktop = re.search(r'<ul\b[^>]*\bid="sf-desktop-menu"[^>]*>(.*?)</ul>', home, re.S)
-            if not desktop:
-                errors.append("Agency desktop nav not found")
+            # Agency 0.1.372 uses a single linked C + wordmark and a native
+            # Account/Menu capsule on all screen sizes. The old desktop
+            # centered menu is intentionally absent; the same WP menu remains
+            # available inside the established overlay for keyboard/mobile.
+            for token in ("has-agency-header", "sf-agency-brand-link",
+                          "/assets/icons/codela-brand-mark.svg", "sf-agency-header-tools",
+                          "sf-agency-header-divider", "sf-account-link", "sf-menu-trigger"):
+                if token not in home:
+                    errors.append("New Agency header missing: " + token)
+            if 'id="sf-desktop-menu"' in home:
+                errors.append("Legacy centered desktop navigation still visible")
+            menu = re.search(
+                r'<section\b[^>]*\bid="sf-menu"[^>]*>.*?<nav\b[^>]*>(.*?)</nav>',
+                home, re.S,
+            )
+            if not menu:
+                errors.append("Native Agency Menu overlay navigation not found")
             else:
-                anchors = re.findall(r'<a\b[^>]*>(.*?)</a>', desktop.group(1), re.S)
+                anchors = re.findall(r'<a\b[^>]*>(.*?)</a>', menu.group(1), re.S)
                 labels = [" ".join(re.sub(r"<[^>]+>", "", a).split()) for a in anchors]
                 expected_labels = ["Ana Sayfa", "Hizmetler", "Hakkımızda", "İletişim"]
                 if labels != expected_labels:
                     errors.append("Agency menu mismatch: " + repr(labels))
-                elif "Shop" in labels:
-                    errors.append("Old Shop link still visible in agency nav")
                 else:
-                    print("Agency desktop nav verified:", " / ".join(labels), flush=True)
+                    print("Agency Account/Menu capsule and overlay navigation verified:",
+                          " / ".join(labels), flush=True)
             if not errors:
                 check_service_detail_pages()
                 print(f"Agency {expected_version}: homepage welcome, navigation, Services, About and Contact verified.")
