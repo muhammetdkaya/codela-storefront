@@ -125,7 +125,9 @@ body.sf-account-editorial.woocommerce-account:not(.logged-in) :is(.sf-quick-chev
 .sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-quick-method:hover{
   background:rgba(255,255,255,.09)!important;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(.sf-quick-inline-divider,.sf-quick-or::before,.sf-quick-or::after,.sf-auth-divider::before,.sf-auth-divider::after){
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-quick-inline-divider,
+.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(.sf-quick-or,.sf-auth-divider)::before,
+.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(.sf-quick-or,.sf-auth-divider)::after{
   border-color:rgba(255,255,255,.08)!important;background-color:rgba(255,255,255,.08);
 }
 /* Reference presents ONE "E-posta veya Google" alternative for remembered users.
