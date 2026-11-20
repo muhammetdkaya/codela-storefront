@@ -51,15 +51,7 @@ function codela_sf_glass_v2_enabled(): bool {
     return is_array( $settings )
         && in_array( $settings['glass_v2_enabled'] ?? false, [ true, 1, '1', 'on' ], true );
 }
-/** Resolve the selected skin without changing the shared auth/menu controllers. */
-function codela_sf_presentation( string $part, ?array $settings = null ): string {
-    $settings ??= function_exists( 'codela_theme_settings' ) ? codela_theme_settings() : [];
-    $mode = 'agency' === ( $settings['site_experience'] ?? 'commerce' ) ? 'agency' : 'commerce';
-    $default = 'agency' === $mode ? 'editorial' : 'standard';
-    if ( ! in_array( $part, [ 'menu', 'account' ], true ) ) { return 'standard'; }
-    $value = $settings[ $mode . '_' . $part . '_design' ] ?? $default;
-    return in_array( $value, [ 'standard', 'editorial' ], true ) ? $value : $default;
-}
+require_once get_template_directory() . '/inc/presentation.php';
 add_filter( 'body_class', static function( $classes ) {
     if ( 'editorial' === codela_sf_presentation( 'account' ) ) { $classes[] = 'sf-account-editorial'; }
     if ( codela_sf_glass_v2_enabled() ) { $classes[] = 'sf-glass-v2'; }
