@@ -1,0 +1,36 @@
+/**
+ * Eager first-frame editorial Account canvas.
+ * The enhanced guest auth card/form CSS continues to lazy-load on intent,
+ * but the overlay never flashes the old Agency dark background.
+ */
+.sf-shell.has-editorial-account #sf-panel.is-account-panel{
+  --sf-ui-page:var(--wp--preset--color--base,#fbfaf8);
+  --sf-ui-ink:var(--sf-ink,#22231f);
+  --sf-ui-control-ink:var(--sf-ui-ink);
+  --sf-ui-glass-ink:var(--sf-ui-ink);
+  --sf-ui-border:rgba(35,35,32,.13);
+  --sf-muted:#74756f;
+  background:var(--sf-ui-page)!important;
+  color:var(--sf-ui-ink)!important;
+  color-scheme:light;
+}
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-panel-top{
+  background:transparent!important;
+  border-bottom:0!important;
+}
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-panel-app-title--account{
+  color:var(--sf-ui-ink)!important;
+  background:rgba(255,255,255,.75)!important;
+  border:1px solid rgba(35,35,32,.10)!important;
+}
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-panel-app-title--account .sf-icon{
+  filter:brightness(0)!important;
+}
+.sf-shell.has-agency-header.has-editorial-account #sf-panel.is-account-panel .sf-panel-top .sf-close{
+  color:var(--sf-ui-ink)!important;
+  background:rgba(255,255,255,.75)!important;
+  border:1px solid rgba(35,35,32,.10)!important;
+}
+.sf-shell.has-agency-header.has-editorial-account #sf-panel.is-account-panel .sf-panel-top .sf-close .sf-icon{
+  filter:brightness(0)!important;
+}
