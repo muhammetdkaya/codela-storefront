@@ -35,7 +35,11 @@ class Tests(unittest.TestCase):
                          ".cdl-bento__card",".cdl-service-detail__cta",
                          ".codela-studio-hero__visual-foot a"):
             self.assertIn(selector,reference)
-        self.assertIn("blur(18px) saturate(175%) brightness(1.06)",reference)
+        self.assertIn("blur(18px) saturate(125%)",reference)
+        self.assertIn("--cdl-agency-glass-back:rgba(36,37,44,.60)",reference)
+        self.assertIn("--cdl-agency-glass-shadow:0 3px 12px rgba(0,0,0,.18)",reference)
+        self.assertNotIn("brightness(1.06)",reference)
+        self.assertNotIn("inset 0 1.5px 4px",reference)
         self.assertIn("prefers-reduced-transparency:reduce",reference)
         self.assertNotIn("sf-glass-optic-ready",reference)
 
