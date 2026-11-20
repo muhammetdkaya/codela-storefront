@@ -4,8 +4,8 @@
  * Enqueued ONLY on Agency pages with Glass V2 enabled.
  *
  * Material roles:
- *   ios-glass         = translucent secondary glass / navigation
- *   ios-glass-primary = luminous primary action
+ *   ios-glass         = quiet, translucent graphite navigation
+ *   ios-glass-primary = slightly denser graphite action (not glowing)
  *   bento-box         = elevated obsidian card (not translucent glass)
  *   select-chip       = compact selectable service/time/scale surface
  *   codela-input      = quiet dark form control
@@ -15,21 +15,22 @@
  */
 body.sf-glass-v2{
   --cdl-agency-amber:#d6a676;
-  --cdl-agency-glass-back:linear-gradient(180deg,rgba(255,255,255,.075) 0%,rgba(16,16,22,.28) 55%,rgba(255,255,255,.045) 100%);
-  --cdl-agency-glass-main:linear-gradient(180deg,rgba(255,255,255,.15) 0%,rgba(255,255,255,.055) 55%,rgba(255,255,255,.10) 100%);
-  --cdl-agency-glass-rim:linear-gradient(140deg,rgba(255,255,255,.48),rgba(255,255,255,.12) 30%,rgba(255,255,255,.025) 58%,rgba(255,255,255,.30));
-  --cdl-agency-glass-rim-main:linear-gradient(140deg,rgba(255,255,255,.62),rgba(255,255,255,.16) 30%,rgba(255,255,255,.04) 58%,rgba(255,255,255,.40));
-  --cdl-agency-glass-filter:blur(18px) saturate(175%) brightness(1.06);
-  --cdl-agency-glass-shadow:inset 0 1.5px 4px rgba(255,255,255,.13),inset 0 -2px 6px rgba(0,0,0,.36),0 12px 28px -8px rgba(0,0,0,.75);
-  --cdl-agency-glass-shadow-main:inset 0 1.5px 5px rgba(255,255,255,.22),inset 0 -2px 8px rgba(0,0,0,.30),0 14px 32px -8px rgba(0,0,0,.80);
+  /* No luminous white highlights, inner bevels or artificial brightness.
+     The translucency and real backdrop blur provide the glass material. */
+  --cdl-agency-glass-back:rgba(36,37,44,.60);
+  --cdl-agency-glass-main:rgba(49,50,58,.67);
+  --cdl-agency-glass-border:rgba(255,255,255,.12);
+  --cdl-agency-glass-border-main:rgba(255,255,255,.16);
+  --cdl-agency-glass-filter:blur(18px) saturate(125%);
+  --cdl-agency-glass-shadow:0 3px 12px rgba(0,0,0,.18);
+  --cdl-agency-glass-shadow-main:0 4px 14px rgba(0,0,0,.20);
   --cdl-agency-bento:linear-gradient(165deg,rgba(28,27,36,.93),rgba(14,14,19,.98));
   --cdl-agency-bento-border:rgba(255,255,255,.09);
   --cdl-agency-bento-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 14px 30px -18px rgba(0,0,0,.95);
 }
 
-/* Equivalent to reference ios-glass and ios-glass-primary. Two background
-   layers produce the slim spectral rim without occupying ::before pseudo
-   elements, which are already used by some native Codela controls. */
+/* A single tinted layer + restrained hairline. No spectral rim and no
+   faux embossed lighting; native controls retain their existing geometry. */
 body.sf-glass-v2 .sf-shell .sf-header :is(
   .sf-brand.sf-ui-surface,
   .sf-actions.sf-ui-surface,
@@ -47,8 +48,8 @@ body.sf-glass-v2 .sf-agency-widget :is(
 ){
   --sf-ui-glass-ink:#f4f4f5;
   color:#f4f4f5;
-  border:1.15px solid transparent!important;
-  background:var(--cdl-agency-glass-back) padding-box,var(--cdl-agency-glass-rim) border-box!important;
+  border:1px solid var(--cdl-agency-glass-border)!important;
+  background:var(--cdl-agency-glass-back)!important;
   -webkit-backdrop-filter:var(--cdl-agency-glass-filter)!important;
   backdrop-filter:var(--cdl-agency-glass-filter)!important;
   box-shadow:var(--cdl-agency-glass-shadow)!important;
@@ -64,8 +65,8 @@ body.sf-glass-v2 .sf-shell .sf-desktop-submenu-toggle .sf-icon{
 }
 /* Original custom brand logos are deliberately not color-filtered. */
 
-/* Reference ios-glass-primary. Preserve exact native button dimensions,
-   hrefs, form submit behavior and focus semantics. */
+/* Primary actions are a shade lighter for hierarchy, not a raised white
+   capsule. Preserve dimensions, hrefs, submission and focus semantics. */
 body.sf-glass-v2 .sf-agency-widget :is(
   .codela-studio-hero__visual-foot a,
   .cdl-bento__support-action,
@@ -75,9 +76,9 @@ body.sf-glass-v2 .sf-agency-widget :is(
   .sf-agency-services-cta,.sf-agency-process-next
 ){
   color:#fff!important;
-  text-shadow:0 1px 2px rgba(0,0,0,.30);
-  border:1.15px solid transparent!important;
-  background:var(--cdl-agency-glass-main) padding-box,var(--cdl-agency-glass-rim-main) border-box!important;
+  text-shadow:none!important;
+  border:1px solid var(--cdl-agency-glass-border-main)!important;
+  background:var(--cdl-agency-glass-main)!important;
   -webkit-backdrop-filter:var(--cdl-agency-glass-filter)!important;
   backdrop-filter:var(--cdl-agency-glass-filter)!important;
   box-shadow:var(--cdl-agency-glass-shadow-main)!important;
@@ -91,7 +92,7 @@ body.sf-glass-v2 .sf-agency-widget :is(
   .cdl-project__button,
   .sf-agency-services-cta
 ):is(:hover,:focus-visible){
-  background:linear-gradient(180deg,rgba(255,255,255,.21),rgba(255,255,255,.08) 55%,rgba(255,255,255,.13)) padding-box,var(--cdl-agency-glass-rim-main) border-box!important;
+  background:rgba(60,61,70,.74)!important;
 }
 body.sf-glass-v2 .sf-agency-widget :is(
   .codela-studio-hero__visual-foot a,
@@ -119,12 +120,9 @@ body.sf-glass-v2 .sf-agency-widget .sf-agency-process-stage[data-step]{
   background:var(--cdl-agency-bento);
   color:#f4f4f5;
 }
+/* The process uses its three bars as the selection state. Do not turn a
+   selected progress tab into an additional raised glass button. */
 body.sf-glass-v2 .sf-agency-widget .sf-agency-process-step[aria-pressed="true"]{
-  border:1.15px solid transparent;
-  background:var(--cdl-agency-glass-back) padding-box,var(--cdl-agency-glass-rim) border-box;
-  -webkit-backdrop-filter:var(--cdl-agency-glass-filter);
-  backdrop-filter:var(--cdl-agency-glass-filter);
-  box-shadow:var(--cdl-agency-glass-shadow);
   opacity:1;
 }
 

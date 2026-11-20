@@ -32,9 +32,13 @@ function html(enabled){
      const style=s=>getComputedStyle(document.querySelector(s));
      return {
        header:style('.sf-brand').backgroundImage,
+       headerColor:style('.sf-brand').backgroundColor,
+       headerShadow:style('.sf-brand').boxShadow,
        backdrop:style('.sf-brand').backdropFilter,
        iconBg:style('.sf-header-menu .sf-ui-icon-button').backgroundImage,
        primary:style('.cdl-project__button').backgroundImage,
+       primaryColor:style('.cdl-project__button').backgroundColor,
+       primaryShadow:style('.cdl-project__button').boxShadow,
        card:style('.cdl-bento__card').backgroundImage,
        contact:style('.cdl-contact__submit').backgroundImage,
        input:style('.cdl-project__fields input').backgroundColor,
@@ -43,11 +47,16 @@ function html(enabled){
        canvas:document.querySelector('.sf-glass-optical-canvas')
      };
     });
-    assert(m.header.includes('linear-gradient('),name+': header spectral gradient');
-    assert(m.backdrop.includes('blur(18px)'),name+': reference backdrop');
-    assert(m.iconBg.includes('linear-gradient('),name+': native menu glass');
-    assert(m.primary.includes('linear-gradient('),name+': project action');
-    assert(m.contact.includes('linear-gradient('),name+': contact submit');
+    assert.equal(m.header,'none',name+': header has no bright gradient');
+    assert.equal(m.headerColor,'rgba(36, 37, 44, 0.6)',name+': muted graphite header');
+    assert(!m.headerShadow.includes('inset'),name+': no embossed navigation shadows');
+    assert(m.backdrop.includes('blur(18px)'),name+': natural backdrop blur retained');
+    assert(!m.backdrop.includes('brightness'),name+': no artificial brightness');
+    assert.equal(m.iconBg,'none',name+': native menu glass is flat');
+    assert.equal(m.primary,'none',name+': project CTA is not specular');
+    assert.equal(m.primaryColor,'rgba(49, 50, 58, 0.67)',name+': quiet primary tint');
+    assert(!m.primaryShadow.includes('inset'),name+': no 3D primary bevel');
+    assert.equal(m.contact,'none',name+': contact submit does not bloom');
     assert(m.card.includes('linear-gradient('),name+': raised bento card');
     assert(m.stage.includes('linear-gradient('),name+': process stage');
     assert.equal(m.chosen,'rgba(214, 166, 118, 0.16)',name+': selected amber chip');
@@ -57,7 +66,7 @@ function html(enabled){
     assert.equal(disabled,'rgb(248, 246, 249)',name+': off restores native design');
     await page.close();
    }
-   console.log(name+': reference CSS materials and disabled fallback passed');
+   console.log(name+': quiet Agency glass, accessible contrast and disabled fallback passed');
   }finally{await browser.close()}
  }
 })().catch(e=>{console.error(e);process.exit(1)});
