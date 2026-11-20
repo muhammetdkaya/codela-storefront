@@ -26,11 +26,11 @@
 .sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-panel-app-title--account .sf-icon{
   filter:brightness(0)!important;
 }
-.sf-shell.has-agency-header.has-editorial-account #sf-panel.is-account-panel .sf-panel-top .sf-close{
+.sf-shell.has-agency-profile.has-editorial-account #sf-panel.is-account-panel .sf-panel-top .sf-close{
   color:var(--sf-ui-ink)!important;
   background:rgba(255,255,255,.75)!important;
   border:1px solid rgba(35,35,32,.10)!important;
 }
-.sf-shell.has-agency-header.has-editorial-account #sf-panel.is-account-panel .sf-panel-top .sf-close .sf-icon{
+.sf-shell.has-agency-profile.has-editorial-account #sf-panel.is-account-panel .sf-panel-top .sf-close .sf-icon{
   filter:brightness(0)!important;
 }
