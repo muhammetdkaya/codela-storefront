@@ -55,7 +55,7 @@ function html(enabled){
     assert(!m.headerShadow.includes('inset'),name+': no 3D bevel');
     assert(m.headerShadow.includes('6px 18px -6px'),name+': approved navigation shadow');
     assert(m.backdrop.includes('blur(20px)'),name+': live blur');
-    assert(m.backdrop.includes('saturate(160%)'),name+': approved saturation');
+    assert(/saturate\((?:1\.6|160%)\)/.test(m.backdrop),name+': approved saturation (computed CSS may normalize 160% to 1.6)');
     assert(m.backdrop.includes('brightness(0.92)'),name+': approved darkening');
     assert.equal((m.iconBg.match(/linear-gradient\(/g)||[]).length,3,name+': menu button refractive glass');
     assert.equal((m.primary.match(/linear-gradient\(/g)||[]).length,3,name+': primary button refractive glass');
