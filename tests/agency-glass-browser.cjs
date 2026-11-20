@@ -33,11 +33,13 @@ function html(enabled){
      return {
        header:style('.sf-brand').backgroundImage,
        headerColor:style('.sf-brand').backgroundColor,
+       headerBorder:style('.sf-brand').borderTopWidth,
        headerShadow:style('.sf-brand').boxShadow,
        backdrop:style('.sf-brand').backdropFilter,
        iconBg:style('.sf-header-menu .sf-ui-icon-button').backgroundImage,
        primary:style('.cdl-project__button').backgroundImage,
        primaryColor:style('.cdl-project__button').backgroundColor,
+       primaryBorder:style('.cdl-project__button').borderTopWidth,
        primaryShadow:style('.cdl-project__button').boxShadow,
        card:style('.cdl-bento__card').backgroundImage,
        contact:style('.cdl-contact__submit').backgroundImage,
@@ -47,16 +49,18 @@ function html(enabled){
        canvas:document.querySelector('.sf-glass-optical-canvas')
      };
     });
-    assert.equal(m.header,'none',name+': header has no bright gradient');
-    assert.equal(m.headerColor,'rgba(36, 37, 44, 0.6)',name+': muted graphite header');
-    assert(!m.headerShadow.includes('inset'),name+': no embossed navigation shadows');
-    assert(m.backdrop.includes('blur(18px)'),name+': natural backdrop blur retained');
-    assert(!m.backdrop.includes('brightness'),name+': no artificial brightness');
-    assert.equal(m.iconBg,'none',name+': native menu glass is flat');
-    assert.equal(m.primary,'none',name+': project CTA is not specular');
-    assert.equal(m.primaryColor,'rgba(49, 50, 58, 0.67)',name+': quiet primary tint');
-    assert(!m.primaryShadow.includes('inset'),name+': no 3D primary bevel');
-    assert.equal(m.contact,'none',name+': contact submit does not bloom');
+    assert.equal((m.header.match(/linear-gradient\(/g)||[]).length,3,name+': header has refractive rim, clear base and soft reflection');
+    assert.equal(m.headerColor,'rgba(0, 0, 0, 0)',name+': no opaque graphite paint');
+    assert.equal(m.headerBorder,'1px',name+': thin rim');
+    assert(!m.headerShadow.includes('inset'),name+': no 3D bevel');
+    assert(m.backdrop.includes('blur(20px)'),name+': live blur');
+    assert(!m.backdrop.includes('brightness'),name+': no added white glow');
+    assert.equal((m.iconBg.match(/linear-gradient\(/g)||[]).length,3,name+': menu button refractive glass');
+    assert.equal((m.primary.match(/linear-gradient\(/g)||[]).length,3,name+': primary button refractive glass');
+    assert.equal(m.primaryColor,'rgba(0, 0, 0, 0)',name+': transparent primary paint');
+    assert.equal(m.primaryBorder,'1px',name+': thin primary rim');
+    assert(!m.primaryShadow.includes('inset'),name+': no raised primary');
+    assert.equal((m.contact.match(/linear-gradient\(/g)||[]).length,3,name+': contact button refractive glass');
     assert(m.card.includes('linear-gradient('),name+': raised bento card');
     assert(m.stage.includes('linear-gradient('),name+': process stage');
     assert.equal(m.chosen,'rgba(214, 166, 118, 0.16)',name+': selected amber chip');
@@ -66,7 +70,7 @@ function html(enabled){
     assert.equal(disabled,'rgb(248, 246, 249)',name+': off restores native design');
     await page.close();
    }
-   console.log(name+': quiet Agency glass, accessible contrast and disabled fallback passed');
+   console.log(name+': refractive Agency glass, accessible contrast and disabled fallback passed');
   }finally{await browser.close()}
  }
 })().catch(e=>{console.error(e);process.exit(1)});

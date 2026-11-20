@@ -15,22 +15,23 @@
  */
 body.sf-glass-v2{
   --cdl-agency-amber:#d6a676;
-  /* No luminous white highlights, inner bevels or artificial brightness.
-     The translucency and real backdrop blur provide the glass material. */
-  --cdl-agency-glass-back:rgba(36,37,44,.60);
-  --cdl-agency-glass-main:rgba(49,50,58,.67);
-  --cdl-agency-glass-border:rgba(255,255,255,.12);
-  --cdl-agency-glass-border-main:rgba(255,255,255,.16);
-  --cdl-agency-glass-filter:blur(18px) saturate(125%);
-  --cdl-agency-glass-shadow:0 3px 12px rgba(0,0,0,.18);
-  --cdl-agency-glass-shadow-main:0 4px 14px rgba(0,0,0,.20);
+  /* v0.1.370: translucent graphite, mild reflection and 1px directional
+     rim restore optical depth without white blooms or embossed shadows. */
+  --cdl-agency-glass-back:linear-gradient(152deg,rgba(255,255,255,.12) 0%,rgba(255,255,255,.025) 42%,rgba(255,255,255,.012) 73%,rgba(255,255,255,.055) 100%);
+  --cdl-agency-glass-body:rgba(36,38,48,.34);
+  --cdl-agency-glass-rim:linear-gradient(145deg,rgba(255,255,255,.28),rgba(255,255,255,.13) 31%,rgba(255,255,255,.075) 68%,rgba(255,255,255,.17));
+  --cdl-agency-glass-main:linear-gradient(150deg,rgba(255,255,255,.15) 0%,rgba(255,255,255,.045) 44%,rgba(255,255,255,.025) 74%,rgba(255,255,255,.075) 100%);
+  --cdl-agency-glass-body-main:rgba(46,47,57,.40);
+  --cdl-agency-glass-rim-main:linear-gradient(145deg,rgba(255,255,255,.32),rgba(255,255,255,.15) 32%,rgba(255,255,255,.09) 70%,rgba(255,255,255,.19));
+  --cdl-agency-glass-filter:blur(20px) saturate(135%);
+  --cdl-agency-glass-shadow:0 4px 14px rgba(0,0,0,.18);
+  --cdl-agency-glass-shadow-main:0 4px 16px rgba(0,0,0,.19);
   --cdl-agency-bento:linear-gradient(165deg,rgba(28,27,36,.93),rgba(14,14,19,.98));
   --cdl-agency-bento-border:rgba(255,255,255,.09);
   --cdl-agency-bento-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 14px 30px -18px rgba(0,0,0,.95);
 }
 
-/* A single tinted layer + restrained hairline. No spectral rim and no
-   faux embossed lighting; native controls retain their existing geometry. */
+/* Three CSS paint layers, one native blur; no pseudo elements or 3D inset. */
 body.sf-glass-v2 .sf-shell .sf-header :is(
   .sf-brand.sf-ui-surface,
   .sf-actions.sf-ui-surface,
@@ -48,8 +49,11 @@ body.sf-glass-v2 .sf-agency-widget :is(
 ){
   --sf-ui-glass-ink:#f4f4f5;
   color:#f4f4f5;
-  border:1px solid var(--cdl-agency-glass-border)!important;
-  background:var(--cdl-agency-glass-back)!important;
+  border:1px solid transparent!important;
+  background:
+    var(--cdl-agency-glass-back) padding-box,
+    linear-gradient(var(--cdl-agency-glass-body),var(--cdl-agency-glass-body)) padding-box,
+    var(--cdl-agency-glass-rim) border-box!important;
   -webkit-backdrop-filter:var(--cdl-agency-glass-filter)!important;
   backdrop-filter:var(--cdl-agency-glass-filter)!important;
   box-shadow:var(--cdl-agency-glass-shadow)!important;
@@ -77,8 +81,11 @@ body.sf-glass-v2 .sf-agency-widget :is(
 ){
   color:#fff!important;
   text-shadow:none!important;
-  border:1px solid var(--cdl-agency-glass-border-main)!important;
-  background:var(--cdl-agency-glass-main)!important;
+  border:1px solid transparent!important;
+  background:
+    var(--cdl-agency-glass-main) padding-box,
+    linear-gradient(var(--cdl-agency-glass-body-main),var(--cdl-agency-glass-body-main)) padding-box,
+    var(--cdl-agency-glass-rim-main) border-box!important;
   -webkit-backdrop-filter:var(--cdl-agency-glass-filter)!important;
   backdrop-filter:var(--cdl-agency-glass-filter)!important;
   box-shadow:var(--cdl-agency-glass-shadow-main)!important;
@@ -92,7 +99,7 @@ body.sf-glass-v2 .sf-agency-widget :is(
   .cdl-project__button,
   .sf-agency-services-cta
 ):is(:hover,:focus-visible){
-  background:rgba(60,61,70,.74)!important;
+  --cdl-agency-glass-main:linear-gradient(150deg,rgba(255,255,255,.19),rgba(255,255,255,.06) 43%,rgba(255,255,255,.035) 74%,rgba(255,255,255,.10));
 }
 body.sf-glass-v2 .sf-agency-widget :is(
   .codela-studio-hero__visual-foot a,
