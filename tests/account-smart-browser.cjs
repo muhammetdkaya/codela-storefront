@@ -166,8 +166,8 @@ placeholder="Your email address" aria-label="Your email address" aria-describedb
      'Hydrated direct My Account retains the first-paint field');
    assert.equal(await direct.locator('#customer_login').isVisible(),false,
      'Direct Account stays folded at its initial stage');
-   assert.equal(await direct.evaluate(()=>document.documentElement.classList.contains('sf-auth-ssr-enabled')),false,
-     'After hydration the direct Account stops using the prepaint bridge');
+   assert.equal(await direct.evaluate(async()=>await window.codelaSFSmartAuthReady),true,
+     'Hydrated smart auth signals readiness; the real PHP head coordinator owns the reveal');
    await direct.close();
    const page=await browser.newPage({viewport:{width:390,height:844}});
    await page.goto(url);
