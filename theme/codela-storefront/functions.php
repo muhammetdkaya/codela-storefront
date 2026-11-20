@@ -51,7 +51,9 @@ function codela_sf_glass_v2_enabled(): bool {
     return is_array( $settings )
         && in_array( $settings['glass_v2_enabled'] ?? false, [ true, 1, '1', 'on' ], true );
 }
+require_once get_template_directory() . '/inc/presentation.php';
 add_filter( 'body_class', static function( $classes ) {
+    if ( 'editorial' === codela_sf_presentation( 'account' ) ) { $classes[] = 'sf-account-editorial'; }
     if ( codela_sf_glass_v2_enabled() ) { $classes[] = 'sf-glass-v2'; }
     return $classes;
 } );
@@ -488,10 +490,13 @@ add_action( 'wp_enqueue_scripts', function() {
                     $asset( 'styles/account-overlay.css', $style_version ),
                     $asset( 'styles/auth-smart.css', codela_sf_script_module_version( 'styles/auth-smart.css' ) ),
                     $asset( 'styles/quick-login.css', $style_version ),
-                    // Only the Agency guest Account overlay receives the dark
-                    // visual skin; My Account and Commerce remain untouched.
+                    // Only Standard Agency uses the legacy dark Account overlay.
                     ...( 'agency' === ( codela_theme_settings()['site_experience'] ?? 'commerce' )
+                        && 'standard' === codela_sf_presentation( 'account' )
                         ? [ $asset( 'styles/agency-auth.css', $style_version ) ] : [] ),
+                    // The editorial skin follows existing lazy native auth CSS.
+                    ...( 'editorial' === codela_sf_presentation( 'account' )
+                        ? [ $asset( 'styles/editorial-account.css', $style_version ) ] : [] ),
                 ],
                 'scripts' => [
                     $asset( 'scripts/auth.js', $style_version ),
@@ -581,6 +586,27 @@ add_action( 'wp_enqueue_scripts', static function() {
         }
     }
 }, 100 );
+
+/** Enqueue only the selected optional skins, after the production base bundle.
+ * Standalone /my-account/ uses its existing eager security/ready-state gate.
+ * All other guest pages lazy-load Account CSS on actual account intent. */
+add_action( 'wp_enqueue_scripts', static function() {
+    if ( ! codela_sf_ready() ) { return; }
+    $uri = get_template_directory_uri() . '/assets/styles/';
+    if ( 'editorial' === codela_sf_presentation( 'menu' ) ) {
+        wp_enqueue_style( 'codela-storefront-editorial-menu', $uri . 'editorial-menu.css',
+            [ 'codela-storefront-components' ], codela_sf_style_version() );
+    }
+    if ( 'editorial' === codela_sf_presentation( 'account' ) ) {
+        wp_enqueue_style( 'codela-storefront-editorial-account-shell', $uri . 'editorial-account-shell.css',
+            [ 'codela-storefront-components' ], codela_sf_style_version() );
+    }
+    if ( 'editorial' === codela_sf_presentation( 'account' )
+        && function_exists( 'is_account_page' ) && is_account_page() && ! is_user_logged_in() ) {
+        wp_enqueue_style( 'codela-storefront-editorial-account', $uri . 'editorial-account.css',
+            [ 'codela-storefront-account' ], codela_sf_style_version() );
+    }
+}, 95 );
 
 // Expose the core menu manager even though this block theme uses a fixed shell.
 add_action( 'admin_menu', static function() {

@@ -68,6 +68,37 @@ class Tests(unittest.TestCase):
         self.assertIn("wp:codela/storefront-footer", (build.ROOT/"parts/footer.html").read_text())
         self.assertIn("codela_sf_footer", (build.ROOT/"inc/render.php").read_text())
         self.assertRegex((build.ROOT/'style.css').read_text(), r'(?m)^Version: \d+\.\d+\.\d+$')
+    def test_editorial_presentations_keep_native_menu_and_auth(self):
+        root=build.ROOT
+        schema=json.loads((root/"config/settings.json").read_text())
+        presentation=next(section for section in schema["sections"] if section["id"]=="presentation")
+        fields={field["id"]:field for field in presentation["fields"]}
+        self.assertEqual(set(fields),{"agency_menu_design","agency_account_design",
+                                      "commerce_menu_design","commerce_account_design"})
+        for name,field in fields.items():
+            self.assertEqual(field["type"],"select")
+            self.assertEqual(set(field["options"]),{"standard","editorial"})
+            self.assertEqual(field["default"],"editorial" if name.startswith("agency_") else "standard")
+        functions=(root/"functions.php").read_text()
+        render=(root/"inc/render.php").read_text()
+        menu=(root/"assets/styles/editorial-menu.css").read_text()
+        account=(root/"assets/styles/editorial-account.css").read_text()
+        self.assertIn("function codela_sf_presentation(",(root/"inc/presentation.php").read_text())
+        self.assertIn("editorial-menu.css",functions)
+        self.assertIn("editorial-account.css",functions)
+        self.assertIn("codela_sf_presentation( 'menu', $settings )",render)
+        self.assertIn("codela_sf_presentation( 'account', $settings )",render)
+        self.assertIn("has-editorial-menu",render)
+        self.assertIn("has-editorial-account",render)
+        self.assertIn("codela_sf_menu();",render)
+        self.assertIn("wc_get_page_permalink( 'myaccount' )",render)
+        self.assertIn("sf-editorial-menu-aside",render)
+        self.assertIn("sf-panel.is-menu-panel",menu)
+        self.assertIn("sf-panel.is-account-panel",account)
+        self.assertIn("woocommerce-account:not(.logged-in)",account)
+        self.assertNotIn("addEventListener",menu+account)
+        self.assertNotIn("Google Fonts",menu+account)
+
     def test_checkout_keeps_woocommerce_content_and_shared_theme_shell(self):
         page=(build.ROOT/"templates/page-checkout.html").read_text()
         part=(build.ROOT/"parts/checkout-header.html").read_text()

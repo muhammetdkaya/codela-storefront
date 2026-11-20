@@ -6,11 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Ajans karşılama ekranında temiz porselen beyazı (#FBFAF8) ve dekoratif büyük harf kaldırıldı.",
-    "Karşılama alanının mobil metin, açıklama, buton ve sabit alt menü boşlukları 667px dahil farklı ekran yüksekliklerine uyarlandı.",
-    "Hizmetler vitrini mobilde tek ekranlık sahneye yerleştirildi; bölüm sonu proje iletişim bağlantısı altındaki akışta korundu.",
-    "Hizmet kartlarında açıklama–etiket arasındaki otomatik boşluk kaldırıldı; 9px ve kısa ekranlarda 6px olarak düzenlendi.",
-    "Hizmetlerin açık tonlu posterleri, yerel kaydırma, duyarlı 2/4 sütunlu ızgara ve renk geçişleri korundu.",
-    "Diğer modüller, WooCommerce ve Codela Commerce Toolkit eklentisi değiştirilmedi."
+    "Ajans ve e-ticaret şablonlarında Menü ve Giriş/Hesabım görünümü ayrı ayrı seçilebilir: Codela Standart / Editoryal Cam.",
+    "Ajans için yeni porselen açık zeminli numaralı menü ve cam bilgi kartı; WordPress menü ağacı, aktif sayfa ve yerel alt menüler korunur.",
+    "Yeni giriş kartı mevcut WooCommerce e-posta, kayıtlı hesap, PIN, Face ID ve Google giriş akışının yalnız görünümünü düzenler.",
+    "Mevcut tek dialog, alt menü, CSS tasarım tokenları, ilk yükleme auth kontrolü ve e-ticaret araçları değiştirilmez.",
+    "Eklenti kodu ve bağımsız header/footer şablonları değiştirilmedi."
   ]
 }

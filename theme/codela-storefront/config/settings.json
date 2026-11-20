@@ -20,6 +20,57 @@
       ]
     },
     {
+      "id": "presentation",
+      "label": "Giriş ve menü tasarımı",
+      "description": "Aynı menü ve kimlik doğrulama altyapısında alternatif görünümler. Ajans ve e-ticaret tercihleri ayrı saklanır.",
+      "fields": [
+        {
+          "id": "agency_menu_design",
+          "type": "select",
+          "default": "editorial",
+          "label": "Ajans · Menü",
+          "description": "Editoryal Cam yeni numaralı tam ekran menüdür; Standart bugünkü menüyü korur.",
+          "options": {
+            "standard": "Codela Standart (mevcut)",
+            "editorial": "Editoryal Cam (yeni)"
+          }
+        },
+        {
+          "id": "agency_account_design",
+          "type": "select",
+          "default": "editorial",
+          "label": "Ajans · Giriş / Hesabım",
+          "description": "Sadece görsel sunum değişir; PIN, biyometri, Google ve WooCommerce giriş akışı aynı kalır.",
+          "options": {
+            "standard": "Codela Standart (mevcut)",
+            "editorial": "Editoryal Cam (yeni)"
+          }
+        },
+        {
+          "id": "commerce_menu_design",
+          "type": "select",
+          "default": "standard",
+          "label": "E-ticaret · Menü",
+          "description": "İsterseniz editoryal menüyü mağazada da kullanın; arama ve sepet araçları korunur.",
+          "options": {
+            "standard": "Codela Standart (mevcut)",
+            "editorial": "Editoryal Cam (yeni)"
+          }
+        },
+        {
+          "id": "commerce_account_design",
+          "type": "select",
+          "default": "standard",
+          "label": "E-ticaret · Giriş / Hesabım",
+          "description": "Mevcut hesap görünümünü koruyun veya aynı yeni görünüme geçin.",
+          "options": {
+            "standard": "Codela Standart (mevcut)",
+            "editorial": "Editoryal Cam (yeni)"
+          }
+        }
+      ]
+    },
+    {
       "id": "appearance",
       "label": "Appearance",
       "description": "Site-wide font and optional floating Glass V2 appearance.",
