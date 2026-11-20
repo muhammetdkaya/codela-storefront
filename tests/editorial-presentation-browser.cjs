@@ -46,15 +46,32 @@ const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/
       viewport:innerWidth,scrollWidth:document.documentElement.scrollWidth,
       cardLeft:card.left,cardRight:card.right,closeWidth:close.width,closeHeight:close.height,
       asideLayers:getComputedStyle(aside).backgroundImage,
-      brandLayers:getComputedStyle(document.querySelector('.sf-editorial-menu-brand')).backgroundImage,
-      activeLabel:getComputedStyle(document.querySelector('.sf-menu-list>li.current-menu-item'),'::after').content};
+      activeLabel:getComputedStyle(document.querySelector('.sf-menu-list>li.current-menu-item'),'::after').content,
+      navFont:parseFloat(getComputedStyle(document.querySelector('.sf-menu-list>li>a')).fontSize),
+      navRows:[...document.querySelectorAll('.sf-menu-list>li')].map(el=>el.getBoundingClientRect().height),
+      content:document.querySelector('#sf-menu').getBoundingClientRect().toJSON(),
+      nav:document.querySelector('#sf-menu>nav[aria-label]').getBoundingClientRect().toJSON(),
+      aside:aside.getBoundingClientRect().toJSON(),
+      paddingTop:parseFloat(getComputedStyle(document.querySelector('#sf-menu')).paddingTop),
+      paddingBottom:parseFloat(getComputedStyle(document.querySelector('#sf-menu')).paddingBottom)};
    });
    assert.equal(menu.scheme,'dark','Original dark reference wins over Agency and Commerce defaults');
    assert.equal(menu.background,'rgb(6, 6, 10)','Menu canvas stays #06060a');
    assert(menu.activeLabel.includes('Aktif'),'Current WordPress item displays the reference Active label');
    assert((menu.asideLayers.match(/linear-gradient\(/g)||[]).length>=3,'Studio card has original layered surface rim');
-   assert((menu.brandLayers.match(/linear-gradient\(/g)||[]).length>=3,'Brand capsule has three glass paint layers');
+   assert.equal(await page.locator('.sf-editorial-menu-brand').count(),0,
+    'Editorial Menu has no duplicate Codela logo capsule in rendered DOM');
    assert(menu.closeWidth>=44&&menu.closeHeight>=44,'Native close retains 44px hit target');
+   assert(menu.navFont<= (width<=820?24:30),'Editorial links are compact, not oversized: '+menu.navFont);
+   assert(menu.navRows.every(height=>height>=44),'Every menu row remains a >=44px touch target');
+   const groupTop=Math.min(menu.nav.top,menu.aside.top),groupBottom=Math.max(menu.nav.bottom,menu.aside.bottom);
+   const availableTop=menu.content.top+menu.paddingTop,availableBottom=menu.content.bottom-menu.paddingBottom;
+   if(groupBottom-groupTop<availableBottom-availableTop-20){
+     const centerOffset=Math.abs((groupTop+groupBottom-availableTop-availableBottom)/2);
+     assert(centerOffset<=20,'Compact Menu content should be vertically centered: '+centerOffset);
+   } else {
+     assert(groupTop>=menu.content.top-1,'Long Menu remains safely scrollable on short screens');
+   }
    assert(menu.cardLeft>=-1&&menu.cardRight<=width+1,'Aside fits horizontally');
    if(width<=700){
     const insets=await page.evaluate(()=>{
@@ -77,8 +94,8 @@ const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/
    assert(await account.isVisible(),'Original Woo guest form visible in editorial card');
    assert.equal(await page.locator('#sf-panel .sf-panel-app-title--account').isVisible(),false,
     'No redundant My Account logo/title capsule inside guest panel');
-   assert.equal(await page.locator('#sf-panel .sf-editorial-menu-brand').isVisible(),false,
-    'Menu-only Codela brand stays hidden in Account');
+   assert.equal(await page.locator('.sf-editorial-menu-brand').count(),0,
+    'Removed Menu brand does not reappear in Account');
    assert(await page.locator('#sf-panel .sf-panel-top .sf-close').isVisible(),
     'Real Close remains visible in the top right');
    const position=await page.evaluate(()=>{
