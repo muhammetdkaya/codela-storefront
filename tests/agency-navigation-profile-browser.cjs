@@ -24,6 +24,10 @@ for(const profile of ['commerce','agency']){
    assert(!html.includes('data-dock-view="cart"'));
    assert(!html.includes('class="sf-menu-tools'));
    assert(html.includes('sf-account-link'));
+   assert(html.includes('sf-agency-header-tools'),'Agency uses unified native tools capsule');
+   assert(html.includes('sf-agency-brand-link'),'Agency exposes a linked Codela wordmark');
+   assert(html.includes('/assets/icons/codela-brand-mark.svg'),'Agency uses transparent C amblem');
+   assert(!html.includes('class="sf-agency-header-wordmark"'),'Agency does not overlay old logo text');
    if(dock){
     assert(html.includes('data-dock-view="services"'));
     assert(html.includes('data-dock-view="contact"'));
@@ -66,6 +70,10 @@ const moduleInit=[
    const errors=[];page.on('pageerror',e=>errors.push(e.message));
    await page.route('https://nav.test/**',route=>{
     const url=new URL(route.request().url());
+    if(url.pathname.endsWith('/assets/icons/codela-brand-mark.svg')){
+     return route.fulfill({contentType:'image/svg+xml',
+      body:fs.readFileSync(path.join(assets,'icons','codela-brand-mark.svg'),'utf8')});
+    }
     if(url.pathname.startsWith('/assets/scripts/')){
      return route.fulfill({contentType:'application/javascript',
       body:fs.readFileSync(path.join(assets,'scripts',path.basename(url.pathname)))});
@@ -81,6 +89,22 @@ const moduleInit=[
    });
    await page.goto('https://nav.test/',{waitUntil:'domcontentloaded'});
    await page.waitForFunction(()=>window.testReady);
+   const headerLayout=await page.evaluate(()=>{
+    const rect=sel=>document.querySelector(sel).getBoundingClientRect();
+    const a=rect('.sf-agency-brand-link'),g=rect('.sf-agency-header-tools');
+    const account=rect('.sf-agency-header-tools .sf-account-link');
+    const menu=rect('.sf-agency-header-tools .sf-menu-trigger');
+    return {brandEnd:a.right,toolsStart:g.left,toolsHeight:g.height,
+      accountSize:account.width,menuSize:menu.width,
+      divider:rect('.sf-agency-header-divider').width,
+      overflow:document.documentElement.scrollWidth-window.innerWidth,
+      imgLoaded:document.querySelector('.sf-agency-brand-mark').complete};
+   });
+   assert(headerLayout.brandEnd<=headerLayout.toolsStart,'No overlap between brand and tools: '+JSON.stringify(headerLayout));
+   assert(Math.abs(headerLayout.toolsHeight-50)<=2,'Combined glass capsule has approved 50px height');
+   assert(headerLayout.accountSize>=44&&headerLayout.menuSize>=44,'Both actions keep 44px touch targets');
+   assert(headerLayout.divider>=1&&headerLayout.divider<=2,'Subtle divider is one physical CSS pixel');
+   assert(headerLayout.overflow<=1,'No mobile/desktop horizontal overflow');
    await page.locator('.sf-header-menu .sf-menu-trigger').click();
    const menu=await page.evaluate(()=>{
     const dialog=document.querySelector('#sf-panel');
@@ -94,7 +118,7 @@ const moduleInit=[
    assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),false);
    assert.equal(await page.evaluate(()=>document.documentElement.classList.contains('sf-overlay-scroll-locked')),false);
    if(width<701){
-    const account=page.locator(dock?'.sf-mobile-dock .sf-dock-item[data-dock-view=account]':'.sf-actions .sf-account-link');
+    const account=page.locator('.sf-agency-header-tools .sf-account-link');
     await account.click();
     assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),true);
     const x=page.locator('#sf-panel.is-account-panel .sf-panel-top .sf-close');
