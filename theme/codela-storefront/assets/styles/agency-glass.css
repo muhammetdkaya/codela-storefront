@@ -15,17 +15,17 @@
  */
 body.sf-glass-v2{
   --cdl-agency-amber:#d6a676;
-  /* v0.1.370: translucent graphite, mild reflection and 1px directional
-     rim restore optical depth without white blooms or embossed shadows. */
-  --cdl-agency-glass-back:linear-gradient(152deg,rgba(255,255,255,.12) 0%,rgba(255,255,255,.025) 42%,rgba(255,255,255,.012) 73%,rgba(255,255,255,.055) 100%);
-  --cdl-agency-glass-body:rgba(36,38,48,.34);
-  --cdl-agency-glass-rim:linear-gradient(145deg,rgba(255,255,255,.28),rgba(255,255,255,.13) 31%,rgba(255,255,255,.075) 68%,rgba(255,255,255,.17));
-  --cdl-agency-glass-main:linear-gradient(150deg,rgba(255,255,255,.15) 0%,rgba(255,255,255,.045) 44%,rgba(255,255,255,.025) 74%,rgba(255,255,255,.075) 100%);
-  --cdl-agency-glass-body-main:rgba(46,47,57,.40);
-  --cdl-agency-glass-rim-main:linear-gradient(145deg,rgba(255,255,255,.32),rgba(255,255,255,.15) 32%,rgba(255,255,255,.09) 70%,rgba(255,255,255,.19));
-  --cdl-agency-glass-filter:blur(20px) saturate(135%);
-  --cdl-agency-glass-shadow:0 4px 14px rgba(0,0,0,.18);
-  --cdl-agency-glass-shadow-main:0 4px 16px rgba(0,0,0,.19);
+  /* v0.1.371: approved Final Glass tokens from the Agency preview.
+     Keep the three existing CSS paint layers and native blur. */
+  --cdl-agency-glass-back:linear-gradient(180deg,rgba(255,255,255,0.02) 0%,rgba(255,255,255,0) 100%);
+  --cdl-agency-glass-body:rgba(34,34,36,0.72);
+  --cdl-agency-glass-rim:linear-gradient(180deg,rgba(255,255,255,0.34) 0%,rgba(255,255,255,0.09) 32%,rgba(255,255,255,0.07) 68%,rgba(255,255,255,0.22) 100%);
+  --cdl-agency-glass-main:linear-gradient(180deg,rgba(255,255,255,0.04) 0%,rgba(255,255,255,0) 100%);
+  --cdl-agency-glass-body-main:rgba(44,44,48,0.78);
+  --cdl-agency-glass-rim-main:linear-gradient(180deg,rgba(255,255,255,0.46) 0%,rgba(255,255,255,0.12) 32%,rgba(255,255,255,0.09) 68%,rgba(255,255,255,0.30) 100%);
+  --cdl-agency-glass-filter:blur(20px) saturate(160%) brightness(0.92);
+  --cdl-agency-glass-shadow:0 6px 18px -6px rgba(0,0,0,0.24);
+  --cdl-agency-glass-shadow-main:0 8px 22px -6px rgba(0,0,0,0.30);
   --cdl-agency-bento:linear-gradient(165deg,rgba(28,27,36,.93),rgba(14,14,19,.98));
   --cdl-agency-bento-border:rgba(255,255,255,.09);
   --cdl-agency-bento-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 14px 30px -18px rgba(0,0,0,.95);
@@ -57,6 +57,8 @@ body.sf-glass-v2 .sf-agency-widget :is(
   -webkit-backdrop-filter:var(--cdl-agency-glass-filter)!important;
   backdrop-filter:var(--cdl-agency-glass-filter)!important;
   box-shadow:var(--cdl-agency-glass-shadow)!important;
+  -webkit-tap-highlight-color:transparent;
+  transition:transform .18s cubic-bezier(.22,1,.36,1),filter .2s ease;
 }
 body.sf-glass-v2 .sf-shell .sf-header .sf-brand a,
 body.sf-glass-v2 .sf-shell .sf-desktop-navigation :is(a,button),
@@ -89,24 +91,42 @@ body.sf-glass-v2 .sf-agency-widget :is(
   -webkit-backdrop-filter:var(--cdl-agency-glass-filter)!important;
   backdrop-filter:var(--cdl-agency-glass-filter)!important;
   box-shadow:var(--cdl-agency-glass-shadow-main)!important;
-  transition:transform .18s cubic-bezier(.22,1,.36,1),background .2s ease,box-shadow .2s ease;
+  -webkit-tap-highlight-color:transparent;
+  transition:transform .18s cubic-bezier(.22,1,.36,1),filter .2s ease;
 }
-body.sf-glass-v2 .sf-agency-widget :is(
-  .codela-studio-hero__visual-foot a,
-  .cdl-bento__support-action,
-  .cdl-service-detail__cta,
-  .cdl-contact__submit,
-  .cdl-project__button,
-  .sf-agency-services-cta
-):is(:hover,:focus-visible){
-  --cdl-agency-glass-main:linear-gradient(150deg,rgba(255,255,255,.19),rgba(255,255,255,.06) 43%,rgba(255,255,255,.035) 74%,rgba(255,255,255,.10));
+/* The approved .glass states, scoped to the actual native Agency surfaces.
+   Do not brighten WooCommerce, modal panels or a whole desktop menu row. */
+@media(hover:hover){
+  body.sf-glass-v2 .sf-shell .sf-header :is(
+    .sf-brand.sf-ui-surface,
+    .sf-header-menu .sf-ui-icon-button--soft,
+    .sf-actions.sf-ui-surface,
+    .sf-product-home.sf-ui-icon-button--soft
+  ):hover,
+  body.sf-glass-v2 .sf-agency-widget :is(
+    .codela-studio-hero__visual-foot a,.cdl-bento__pill,
+    .cdl-bento__circle-arrow,.cdl-service-detail__back,
+    .cdl-service-detail__tag,.cdl-contact__pill,
+    .cdl-contact__arrow:not(.cdl-contact__arrow--solid),
+    .cdl-project__back,.sf-agency-process-prev,
+    .cdl-bento__support-action,.cdl-service-detail__cta,
+    .cdl-contact__submit,.cdl-project__button,
+    .sf-agency-services-cta,.sf-agency-process-next
+  ):hover {
+    filter:brightness(1.08);
+  }
 }
+body.sf-glass-v2 .sf-shell .sf-header :is(
+  .sf-brand.sf-ui-surface,.sf-header-menu .sf-ui-icon-button--soft,
+  .sf-actions.sf-ui-surface,.sf-product-home.sf-ui-icon-button--soft
+):active,
 body.sf-glass-v2 .sf-agency-widget :is(
-  .codela-studio-hero__visual-foot a,
-  .cdl-service-detail__cta,
-  .cdl-contact__submit,
-  .cdl-project__button
-):active {transform:scale(.97)}
+  .codela-studio-hero__visual-foot a,.cdl-bento__circle-arrow,
+  .cdl-service-detail__back,.cdl-contact__arrow:not(.cdl-contact__arrow--solid),
+  .cdl-project__back,.sf-agency-process-prev,
+  .cdl-service-detail__cta,.cdl-contact__submit,
+  .cdl-project__button,.sf-agency-services-cta,.sf-agency-process-next
+):active:not(:disabled) {transform:scale(.97)}
 /* CTA inside a linked bento card should not gain its own pointer hit target. */
 body.sf-glass-v2 .sf-agency-widget .cdl-bento__support-action {pointer-events:none}
 

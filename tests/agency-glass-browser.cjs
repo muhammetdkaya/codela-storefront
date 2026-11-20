@@ -53,14 +53,20 @@ function html(enabled){
     assert.equal(m.headerColor,'rgba(0, 0, 0, 0)',name+': no opaque graphite paint');
     assert.equal(m.headerBorder,'1px',name+': thin rim');
     assert(!m.headerShadow.includes('inset'),name+': no 3D bevel');
+    assert(m.headerShadow.includes('6px 18px -6px'),name+': approved navigation shadow');
     assert(m.backdrop.includes('blur(20px)'),name+': live blur');
-    assert(!m.backdrop.includes('brightness'),name+': no added white glow');
+    assert(m.backdrop.includes('saturate(160%)'),name+': approved saturation');
+    assert(m.backdrop.includes('brightness(0.92)'),name+': approved darkening');
     assert.equal((m.iconBg.match(/linear-gradient\(/g)||[]).length,3,name+': menu button refractive glass');
     assert.equal((m.primary.match(/linear-gradient\(/g)||[]).length,3,name+': primary button refractive glass');
     assert.equal(m.primaryColor,'rgba(0, 0, 0, 0)',name+': transparent primary paint');
     assert.equal(m.primaryBorder,'1px',name+': thin primary rim');
     assert(!m.primaryShadow.includes('inset'),name+': no raised primary');
+    assert(m.primaryShadow.includes('8px 22px -6px'),name+': approved primary shadow');
     assert.equal((m.contact.match(/linear-gradient\(/g)||[]).length,3,name+': contact button refractive glass');
+    // Verify two actual colors instead of relying on the number of layers.
+    assert(m.header.includes('rgba(34, 34, 36, 0.72)'),name+': navigation graphite matches approval');
+    assert(m.primary.includes('rgba(44, 44, 48, 0.78)'),name+': CTA graphite matches approval');
     assert(m.card.includes('linear-gradient('),name+': raised bento card');
     assert(m.stage.includes('linear-gradient('),name+': process stage');
     assert.equal(m.chosen,'rgba(214, 166, 118, 0.16)',name+': selected amber chip');

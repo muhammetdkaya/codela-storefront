@@ -35,10 +35,13 @@ class Tests(unittest.TestCase):
                          ".cdl-bento__card",".cdl-service-detail__cta",
                          ".codela-studio-hero__visual-foot a"):
             self.assertIn(selector,reference)
-        self.assertIn("blur(20px) saturate(135%)",reference)
-        self.assertIn("--cdl-agency-glass-body:rgba(36,38,48,.34)",reference)
-        self.assertIn("--cdl-agency-glass-rim:linear-gradient(",reference)
-        self.assertIn("--cdl-agency-glass-shadow:0 4px 14px rgba(0,0,0,.18)",reference)
+        self.assertIn("blur(20px) saturate(160%) brightness(0.92)",reference)
+        self.assertIn("--cdl-agency-glass-body:rgba(34,34,36,0.72)",reference)
+        self.assertIn("--cdl-agency-glass-body-main:rgba(44,44,48,0.78)",reference)
+        self.assertIn("--cdl-agency-glass-rim:linear-gradient(180deg",reference)
+        self.assertIn("--cdl-agency-glass-shadow:0 6px 18px -6px rgba(0,0,0,0.24)",reference)
+        self.assertIn("filter:brightness(1.08)",reference)
+        self.assertIn("transform:scale(.97)",reference)
         self.assertNotIn("brightness(1.06)",reference)
         self.assertNotIn("inset 0 1.5px 4px",reference)
         self.assertIn("prefers-reduced-transparency:reduce",reference)
