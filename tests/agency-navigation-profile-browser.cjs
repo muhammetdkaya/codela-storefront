@@ -43,7 +43,7 @@ for(const profile of ['commerce','agency']){
  }
 }
 const css=['styles/tokens.css','storefront.css','styles/components.css',
- 'styles/navigation.css','styles/overlay.css','styles/glass-v2.css']
+ 'styles/navigation.css','styles/overlay.css','styles/glass-v2.css','styles/agency-auth.css']
  .map(p=>fs.readFileSync(path.join(assets,p),'utf8')).join('\n');
 const moduleInit=[
  'im'+'port {createOverlayController} from "/assets/scripts/overlay-controller.js";',
@@ -116,6 +116,7 @@ const moduleInit=[
    assert(headerLayout.overflow<=1,'No mobile/desktop horizontal overflow');
    if(width>=701){
     await page.locator('.sf-agency-brand-link').hover();
+    await page.waitForFunction(()=>document.querySelector('.sf-brand').getBoundingClientRect().width>=125);
     const expanded=await page.locator('.sf-brand').evaluate(el=>el.getBoundingClientRect().width);
     assert(expanded>=125,'Desktop hover reveals Codela wordmark without losing capsule');
     await page.locator('.sf-agency-header-tools .sf-menu-trigger').hover();
@@ -143,6 +144,16 @@ const moduleInit=[
     const account=page.locator('.sf-agency-header-tools .sf-account-link');
     await account.click();
     assert.equal(await page.locator('#sf-panel').evaluate(el=>el.open),true);
+    const skin=await page.evaluate(()=>{
+     const d=document.querySelector('#sf-panel.is-account-panel');
+     const input=d.querySelector('#sf-account input[type=email]');
+     return {color:getComputedStyle(d).color,
+       image:getComputedStyle(d).backgroundImage,
+       input:input?getComputedStyle(input).backgroundColor:null};
+    });
+    assert.equal(skin.color,'rgb(245, 244, 247)','Agency Account popup has dark-template light text');
+    assert(skin.image.includes('radial-gradient'),'Agency Account popup shares dark studio background');
+    assert.equal(skin.input,'rgb(32, 32, 39)','Account form input uses dark graphite');
     const x=page.locator('#sf-panel.is-account-panel .sf-panel-top .sf-close');
     assert(await x.isVisible(),'Agency Account close control must be visible');
     await x.click();
