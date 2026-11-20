@@ -1,36 +1,89 @@
 /**
- * Eager first-frame editorial Account canvas.
- * The enhanced guest auth card/form CSS continues to lazy-load on intent,
- * but the overlay never flashes the old Agency dark background.
+ * Eager dark canvas for optional editorial Account, before lazy Woo/PIN styles.
+ * Source: Codela — Giriş ve Menü Tasarımı. Do not alter auth visibility gates.
  */
 .sf-shell.has-editorial-account #sf-panel.is-account-panel{
-  --sf-ui-page:var(--wp--preset--color--base,#fbfaf8);
-  --sf-ui-ink:var(--sf-ink,#22231f);
-  --sf-ui-control-ink:var(--sf-ui-ink);
-  --sf-ui-glass-ink:var(--sf-ui-ink);
-  --sf-ui-border:rgba(35,35,32,.13);
-  --sf-muted:#74756f;
-  background:var(--sf-ui-page)!important;
-  color:var(--sf-ui-ink)!important;
-  color-scheme:light;
+  --sf-ui-page:#06060a;
+  --sf-ui-ink:#f8f7fa;
+  --sf-ui-control-ink:#f8f7fa;
+  --sf-ui-glass-ink:#f8f7fa;
+  --sf-ui-surface:#1c1b22;
+  --sf-ui-surface-muted:#222127;
+  --sf-ui-border:rgba(255,255,255,.15);
+  --sf-muted:#b6b0bf;
+  --sf-smart-ink:#f8f7fa;
+  --sf-smart-line:rgba(255,255,255,.15);
+  --sf-quick-ink:#f8f7fa;
+  --sf-quick-muted:#b6b0bf;
+  --cdl-agency-glass-back:linear-gradient(180deg,rgba(255,255,255,.02),transparent);
+  --cdl-agency-glass-body:rgba(34,34,36,.72);
+  --cdl-agency-glass-rim:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,.09) 32%,rgba(255,255,255,.07) 68%,rgba(255,255,255,.22));
+  --cdl-agency-glass-main:linear-gradient(180deg,rgba(255,255,255,.04),transparent);
+  --cdl-agency-glass-body-main:rgba(44,44,48,.78);
+  --cdl-agency-glass-rim-main:linear-gradient(180deg,rgba(255,255,255,.46),rgba(255,255,255,.12) 32%,rgba(255,255,255,.09) 68%,rgba(255,255,255,.30));
+  --cdl-agency-glass-filter:blur(20px) saturate(160%) brightness(.92);
+  background:
+    radial-gradient(ellipse 56% 42% at 78% 8%,rgba(211,164,128,.17),transparent 68%),
+    radial-gradient(ellipse 48% 38% at 12% 5%,rgba(130,96,210,.12),transparent 64%),
+    #06060a!important;
+  color:#f8f7fa!important;color-scheme:dark;
 }
 .sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-panel-top{
-  background:transparent!important;
-  border-bottom:0!important;
+  background:transparent!important;border-bottom:0!important;
+}
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-panel-app-title--account,
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-panel-top .sf-close{
+  color:#f8f7fa!important;border:1px solid transparent!important;border-radius:999px;
+  background:
+    var(--cdl-agency-glass-back) padding-box,
+    linear-gradient(var(--cdl-agency-glass-body),var(--cdl-agency-glass-body)) padding-box,
+    var(--cdl-agency-glass-rim) border-box!important;
+  -webkit-backdrop-filter:var(--cdl-agency-glass-filter)!important;
+  backdrop-filter:var(--cdl-agency-glass-filter)!important;
+  box-shadow:0 6px 18px -6px rgba(0,0,0,.24)!important;
 }
 .sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-panel-app-title--account{
-  color:var(--sf-ui-ink)!important;
-  background:rgba(255,255,255,.75)!important;
-  border:1px solid rgba(35,35,32,.10)!important;
+  display:inline-flex;align-items:center;gap:9px;
+  min-height:46px;padding:0 16px;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-panel-app-title--account .sf-icon{
-  filter:brightness(0)!important;
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-panel-app-title--account::after{
+  content:'';display:inline-block;width:6px;height:6px;border-radius:50%;
+  background:#d3a480;box-shadow:0 0 10px rgba(211,164,128,.7);
 }
-.sf-shell.has-agency-profile.has-editorial-account #sf-panel.is-account-panel .sf-panel-top .sf-close{
-  color:var(--sf-ui-ink)!important;
-  background:rgba(255,255,255,.75)!important;
-  border:1px solid rgba(35,35,32,.10)!important;
+.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(.sf-panel-app-title--account .sf-icon,.sf-panel-top .sf-close .sf-icon){
+  filter:brightness(0) invert(1)!important;
 }
-.sf-shell.has-agency-profile.has-editorial-account #sf-panel.is-account-panel .sf-panel-top .sf-close .sf-icon{
-  filter:brightness(0)!important;
+/* Direct My Account guest page gets the same dark presentation, not the store canvas. */
+body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout){
+  /* Standalone Account does not inherit token overrides from the hidden dialog. */
+  --cdl-agency-glass-back:linear-gradient(180deg,rgba(255,255,255,.02),transparent);
+  --cdl-agency-glass-body:rgba(34,34,36,.72);
+  --cdl-agency-glass-rim:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,.09) 32%,rgba(255,255,255,.07) 68%,rgba(255,255,255,.22));
+  --cdl-agency-glass-main:linear-gradient(180deg,rgba(255,255,255,.04),transparent);
+  --cdl-agency-glass-body-main:rgba(44,44,48,.78);
+  --cdl-agency-glass-rim-main:linear-gradient(180deg,rgba(255,255,255,.46),rgba(255,255,255,.12) 32%,rgba(255,255,255,.09) 68%,rgba(255,255,255,.30));
+  --cdl-agency-glass-filter:blur(20px) saturate(160%) brightness(.92);
+  --sf-ui-page:#06060a;
+  --sf-ui-ink:#f8f7fa;
+  --sf-ui-control-ink:#f8f7fa;
+  --sf-ui-border:rgba(255,255,255,.15);
+  --sf-muted:#b6b0bf;
+  background:#06060a!important;color:#f8f7fa;color-scheme:dark;
+}
+body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-content:has(.sf-account-intro){
+  background:
+    radial-gradient(ellipse 58% 42% at 72% 8%,rgba(211,164,128,.15),transparent 70%),
+    radial-gradient(ellipse 43% 36% at 15% 3%,rgba(130,96,210,.12),transparent 67%),
+    #06060a!important;
+  color:#f8f7fa;
+}
+@media(prefers-reduced-transparency:reduce){
+  .sf-shell.has-editorial-account #sf-panel.is-account-panel :is(.sf-panel-app-title--account,.sf-panel-top .sf-close){
+    -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
+  }
+}
+@media(forced-colors:active){
+  .sf-shell.has-editorial-account #sf-panel.is-account-panel{
+    background:Canvas!important;color:CanvasText!important;
+  }
 }

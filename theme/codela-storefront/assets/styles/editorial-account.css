@@ -1,172 +1,241 @@
 /**
- * Selectable editorial guest Account skin.
- * Pure presentation: Woo forms/nonces, smart email step, PIN/passkey verification,
- * visibility handshakes and dialog controller are not replaced or simulated.
+ * Original dark "Codela — Giriş ve Menü Tasarımı" Account presentation.
+ * All identity lookup, WooCommerce forms, Google, remembered PIN/passkey
+ * and first-paint auth readiness are owned by the existing controllers.
  */
 .sf-shell.has-editorial-account #sf-panel.is-account-panel{
-  --sf-ui-page:var(--wp--preset--color--base,#fbfaf8);
-  --sf-ui-ink:var(--sf-ink,#22231f);
-  --sf-ui-control-ink:var(--sf-ui-ink);
-  --sf-ui-glass-ink:var(--sf-ui-ink);
-  --sf-ui-surface:#fff;
-  --sf-ui-surface-muted:#f4f3f0;
-  --sf-ui-border:rgba(35,35,32,.13);
-  --sf-muted:#74756f;
-  --sf-smart-ink:var(--sf-ui-ink);
-  --sf-smart-line:rgba(35,35,32,.17);
-  --sf-quick-ink:var(--sf-ui-ink);
-  --sf-quick-muted:#74756f;
-  background:var(--sf-ui-page)!important;
-  color:var(--sf-ui-ink)!important;
-  color-scheme:light;
+  --sf-ui-page:#06060a;--sf-ui-ink:#f8f7fa;--sf-ui-control-ink:#f8f7fa;
+  --sf-smart-ink:#f8f7fa;--sf-smart-line:rgba(255,255,255,.15);
+  --sf-quick-ink:#f8f7fa;--sf-quick-muted:#b6b0bf;--sf-muted:#b6b0bf;
+  color:#f8f7fa!important;color-scheme:dark;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-panel-top{
-  border-bottom:0!important;
-  background:transparent!important;
-}
-.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-panel-app-title--account{
-  display:inline-flex;align-items:center;gap:9px;
-  padding:0 17px;min-height:44px;border-radius:999px;
-  color:var(--sf-ui-ink)!important;
-  background:rgba(255,255,255,.75)!important;
-  border:1px solid rgba(35,35,32,.10)!important;
-  box-shadow:var(--sf-ui-glass-control-shadow);
-  -webkit-backdrop-filter:blur(16px) saturate(150%);
-  backdrop-filter:blur(16px) saturate(150%);
-}
-.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-panel-app-title--account .sf-icon{
-  filter:brightness(0)!important;
-}
-.sf-shell.has-agency-profile.has-editorial-account #sf-panel.is-account-panel .sf-panel-top .sf-close{
-  color:var(--sf-ui-ink)!important;
-  background:rgba(255,255,255,.75)!important;
-  border:1px solid rgba(35,35,32,.10)!important;
-  box-shadow:var(--sf-ui-glass-control-shadow)!important;
-}
-.sf-shell.has-agency-profile.has-editorial-account #sf-panel.is-account-panel .sf-panel-top .sf-close .sf-icon{
-  filter:brightness(0)!important;
-}
-/* One centered card replaces no auth nodes. First-paint gates stay authoritative. */
+/* Same centered frosted surface-card on dialog and direct guest Account page. */
 .sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-account-body{
-  display:block;
-  padding:clamp(20px,6dvh,60px) clamp(16px,5vw,32px) calc(32px + env(safe-area-inset-bottom,0px));
-  color:var(--sf-ui-ink)!important;
+  padding:clamp(18px,5dvh,52px) clamp(16px,5vw,32px) calc(34px + env(safe-area-inset-bottom,0px));
+  overflow-y:auto;overscroll-behavior:contain;
+  color:#f8f7fa!important;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-account-body>.woocommerce{
-  width:100%;max-width:490px;
-  margin:0 auto;padding:clamp(24px,4vw,36px);
-  border:1px solid rgba(43,42,38,.11);border-radius:28px;
-  background:rgba(255,255,255,.72);
-  box-shadow:0 22px 54px -30px rgba(54,50,43,.20);
-  -webkit-backdrop-filter:blur(20px) saturate(130%);
-  backdrop-filter:blur(20px) saturate(130%);
-  color:var(--sf-ui-ink)!important;
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-account-body>.woocommerce,
+body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-content .woocommerce:has(.sf-account-intro){
+  width:100%;max-width:440px;margin:0 auto;
+  padding:clamp(24px,4vw,36px);
+  border:1px solid transparent;border-radius:28px;
+  background:
+    radial-gradient(380px circle at 50% 0%,rgba(211,164,128,.085),transparent 65%) padding-box,
+    linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.004)) padding-box,
+    linear-gradient(rgba(19,18,24,.78),rgba(13,13,18,.86)) padding-box,
+    linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.05) 38%,rgba(255,255,255,.03) 76%,rgba(255,255,255,.12)) border-box;
+  -webkit-backdrop-filter:blur(22px) saturate(145%);
+  backdrop-filter:blur(22px) saturate(145%);
+  box-shadow:0 22px 54px -24px rgba(0,0,0,.75);
+  color:#f8f7fa!important;
+  position:relative;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-account-body .sf-account-intro{
-  color:var(--sf-ui-ink)!important;
+/* Reference eyebrow: muted gold dot, no duplicate or fake authentication status. */
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-account-body>.woocommerce::before,
+body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-content .woocommerce:has(.sf-account-intro)::before{
+  content:'●  CODELA HESABI';display:block;margin:0 0 14px;
+  color:#d3a480;font-size:11px;font-weight:650;letter-spacing:.22em;
+  line-height:1.4;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(.sf-account-intro h1,.sf-quick-choice-intro h2,.sf-quick-user,.sf-quick-inline-label,.sf-smart-label,.sf-quick-choice-intro strong){
-  color:var(--sf-ui-ink)!important;
-  letter-spacing:-.035em;
+.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(
+ .sf-account-intro h1,.sf-quick-choice-intro h2,.sf-quick-user,
+ .sf-quick-inline-label,.sf-smart-label,.sf-quick-choice-intro strong
+){
+  color:#f8f7fa!important;letter-spacing:-.045em;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(.sf-account-intro p,.sf-quick-choice-intro p,.sf-quick-or,.sf-quick-choice-alternatives,.sf-auth-divider,.sf-smart-hint,.sf-quick-inline-subtitle,.sf-quick-user-meta){
-  color:#74756f!important;
+body.sf-account-editorial.woocommerce-account:not(.logged-in) :is(
+ .sf-account-intro h1,.sf-quick-choice-intro h2,.sf-quick-user,.sf-quick-inline-label
+){color:#f8f7fa!important;letter-spacing:-.045em}
+.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(
+ .sf-account-intro p,.sf-quick-choice-intro p,.sf-quick-or,
+ .sf-auth-divider,.sf-smart-hint,.sf-quick-inline-subtitle,.sf-quick-user-meta,
+ .woocommerce-form-login__rememberme
+){color:#b6b0bf!important}
+body.sf-account-editorial.woocommerce-account:not(.logged-in) :is(
+ .sf-account-intro p,.sf-quick-choice-intro p,.sf-quick-or,.sf-auth-divider,.sf-smart-hint
+){color:#b6b0bf!important}
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-auth-heading-wave,
+body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-auth-heading-wave,
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-quick-wave,
+body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-quick-wave{display:none!important}
+/* Compact reference typography and card geometry; do not hide any auth states. */
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-account-intro,
+body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-account-intro{
+  margin:0 0 24px;text-align:left;align-items:flex-start;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-auth-heading-wave{
-  display:none!important;
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-account-intro h1,
+body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-account-intro h1{
+  font-size:clamp(30px,5vw,38px);font-weight:600;line-height:1.08;margin:0 0 8px;
 }
-/* The remembered account is the prominent single glass action in the reference. */
-.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(.sf-quick-account,.sf-quick-account-frame,.sf-quick-slot,.sf-quick-monogram,.sf-auth-tabs){
-  background:rgba(255,255,255,.78)!important;
-  border:1px solid rgba(35,35,32,.13)!important;
-  color:var(--sf-ui-ink)!important;
-  box-shadow:0 8px 22px -18px rgba(38,37,33,.20)!important;
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-account-intro p,
+body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-account-intro p{
+  margin:0;text-align:left;font-size:14px;line-height:1.55;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-quick-account-frame .sf-quick-account{
-  background:transparent!important;border:0!important;box-shadow:none!important;
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-quick-accounts,
+body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-quick-accounts{
+  width:100%;max-width:none;margin:0;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(.sf-quick-chevron,.sf-quick-monogram,.sf-auth-tab){
-  color:var(--sf-ui-ink)!important;
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-quick-accounts>.sf-quick-choice-intro,
+body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-quick-accounts>.sf-quick-choice-intro{
+  padding-top:0;margin:0 0 24px;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-auth-tab[aria-selected=true]{
-  background:#ecece8!important;color:#22231f!important;
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-quick-choice-intro h2,
+body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-quick-choice-intro h2{
+  font-size:clamp(30px,5vw,38px)!important;
+  font-weight:600!important;line-height:1.08!important;
+  margin:0 0 8px!important;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-quick-slot i{
-  background:#22231f!important;
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-quick-choice-intro p,
+body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-quick-choice-intro p{
+  font-size:14px!important;line-height:1.55!important;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-quick-choice{
-  min-height:0;
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-quick-accounts>.sf-quick-choice-alternatives,
+body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-quick-accounts>.sf-quick-choice-alternatives{
+  padding:0;margin:0;gap:10px;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-smart-identity,
-.sf-shell.has-editorial-account #sf-panel.is-account-panel .woocommerce form :is(input.input-text,input[type=email],input[type=text],input[type=password]){
-  background:#fff!important;color:#22231f!important;
-  border:1px solid rgba(35,35,32,.17)!important;
+/* Glass main remembered-account row; native verified user ID remains dynamic. */
+.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(.sf-quick-account-frame,.sf-quick-account),
+body.sf-account-editorial.woocommerce-account:not(.logged-in) :is(.sf-quick-account-frame,.sf-quick-account){
+  color:#f8f7fa!important;border:1px solid transparent!important;
+  border-radius:20px!important;
+  background:
+    var(--cdl-agency-glass-main) padding-box,
+    linear-gradient(var(--cdl-agency-glass-body-main),var(--cdl-agency-glass-body-main)) padding-box,
+    var(--cdl-agency-glass-rim-main) border-box!important;
+  -webkit-backdrop-filter:var(--cdl-agency-glass-filter)!important;
+  backdrop-filter:var(--cdl-agency-glass-filter)!important;
+  box-shadow:0 8px 22px -6px rgba(0,0,0,.30)!important;
+}
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-quick-account-frame .sf-quick-account,
+body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-quick-account-frame .sf-quick-account{
+  background:transparent!important;border:0!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important;
+}
+.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(.sf-quick-monogram,.sf-quick-slot),
+body.sf-account-editorial.woocommerce-account:not(.logged-in) :is(.sf-quick-monogram,.sf-quick-slot){
+  background:rgba(255,255,255,.07)!important;
+  border:1px solid rgba(255,255,255,.16)!important;color:#f8f7fa!important;
+}
+.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(.sf-quick-chevron,.sf-quick-method,.sf-quick-monogram,.sf-auth-tab),
+body.sf-account-editorial.woocommerce-account:not(.logged-in) :is(.sf-quick-chevron,.sf-quick-method,.sf-quick-monogram,.sf-auth-tab){
+  color:#f8f7fa!important;
+}
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-quick-slot i{background:#f8f7fa!important}
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-quick-method:hover{
+  background:rgba(255,255,255,.09)!important;
+}
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-quick-inline-divider,
+.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(.sf-quick-or,.sf-auth-divider)::before,
+.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(.sf-quick-or,.sf-auth-divider)::after{
+  border-color:rgba(255,255,255,.08)!important;background-color:rgba(255,255,255,.08);
+}
+/* Reference presents ONE "E-posta veya Google" alternative for remembered users.
+ * That real existing button reveals the native smart email + optional Google screen.
+ * It never simulates a magic-link send or bypasses Woo nonce/session validation. */
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .woocommerce.sf-pin-active .sf-quick-accounts>.sf-quick-choice-alternatives>
+ :is(.sf-quick-google,.sf-quick-switch),
+body.sf-account-editorial.woocommerce-account:not(.logged-in) .woocommerce.sf-pin-active .sf-quick-accounts>.sf-quick-choice-alternatives>
+ :is(.sf-quick-google,.sf-quick-switch){display:none!important}
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .woocommerce.sf-pin-active .sf-quick-accounts>.sf-quick-choice-alternatives .sf-quick-native-alt,
+body.sf-account-editorial.woocommerce-account:not(.logged-in) .woocommerce.sf-pin-active .sf-quick-accounts>.sf-quick-choice-alternatives .sf-quick-native-alt{
+  display:flex!important;position:relative;
+  align-items:center;justify-content:center;
+  width:100%;min-height:52px;padding:10px 52px!important;margin:0!important;
+  color:#f8f7fa!important;font-size:14px;font-weight:500;
+  border:1px solid transparent!important;border-radius:18px!important;
+  background:
+    var(--cdl-agency-glass-back) padding-box,
+    linear-gradient(var(--cdl-agency-glass-body),var(--cdl-agency-glass-body)) padding-box,
+    var(--cdl-agency-glass-rim) border-box!important;
+  -webkit-backdrop-filter:var(--cdl-agency-glass-filter)!important;
+  backdrop-filter:var(--cdl-agency-glass-filter)!important;
+  box-shadow:0 6px 18px -6px rgba(0,0,0,.24)!important;
+  cursor:pointer;text-align:center;
+}
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-quick-or,
+body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-quick-or{
+  margin:20px 0;color:#767181!important;
+}
+/* Direct email input is the existing PHP-rendered smart control, never an inert clone. */
+.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(
+ .sf-smart-label .sf-smart-identity,.woocommerce form input.input-text,
+ .woocommerce form input[type=email],.woocommerce form input[type=text],
+ .woocommerce form input[type=password]
+),
+body.sf-account-editorial.woocommerce-account:not(.logged-in) :is(
+ .sf-smart-label .sf-smart-identity,.woocommerce form input.input-text
+){
+  min-height:48px;height:auto;
+  color:#f8f7fa!important;
+  background:rgba(10,10,15,.72)!important;
+  border:1px solid rgba(255,255,255,.15)!important;
+  border-radius:14px!important;
   box-shadow:none!important;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(input.input-text,.sf-smart-identity)::placeholder{
-  color:#858780!important;opacity:1;
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-smart-label .sf-smart-identity,
+body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-smart-label .sf-smart-identity{
+  height:48px;min-height:48px;padding:0 46px 0 16px;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(input.input-text,.sf-smart-identity):focus{
-  border-color:var(--sf-ui-accent,#656e52)!important;
-  outline:2px solid rgba(70,90,66,.16)!important;
+.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(input.input-text,.sf-smart-identity)::placeholder,
+body.sf-account-editorial.woocommerce-account:not(.logged-in) :is(input.input-text,.sf-smart-identity)::placeholder{
+  color:#767181!important;opacity:1;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel .woocommerce form label[for]{
-  color:#4f504a!important;
+.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(input.input-text,.sf-smart-identity):focus,
+body.sf-account-editorial.woocommerce-account:not(.logged-in) :is(input.input-text,.sf-smart-identity):focus{
+  border-color:#d3a480!important;outline:2px solid rgba(211,164,128,.23)!important;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(.sf-auth-google,.sf-quick-google,.sf-quick-native-alt,.sf-smart-continue){
-  background:rgba(255,255,255,.86)!important;
-  color:#22231f!important;
-  border:1px solid rgba(35,35,32,.16)!important;
+.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(.sf-smart-mail-icon,.sf-smart-message),
+body.sf-account-editorial.woocommerce-account:not(.logged-in) :is(.sf-smart-mail-icon,.sf-smart-message){
+  color:#b6b0bf;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(.woocommerce form button[type=submit],.sf-smart-submit,.sf-quick-switch.sf-quick-email-login){
-  background:#252723!important;color:#fff!important;
-  border-color:#252723!important;
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .woocommerce form label[for]{color:#b6b0bf!important}
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .woocommerce .sf-auth-social{margin-top:18px}
+.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(
+ .sf-auth-google,.sf-quick-google,.sf-smart-continue,.sf-quick-return,.sf-smart-submit
+),
+body.sf-account-editorial.woocommerce-account:not(.logged-in) :is(
+ .sf-auth-google,.sf-quick-google,.sf-smart-continue,.sf-quick-return,.sf-smart-submit
+){
+  border:1px solid transparent!important;color:#f8f7fa!important;
+  background:
+    var(--cdl-agency-glass-back) padding-box,
+    linear-gradient(var(--cdl-agency-glass-body),var(--cdl-agency-glass-body)) padding-box,
+    var(--cdl-agency-glass-rim) border-box!important;
+  -webkit-backdrop-filter:var(--cdl-agency-glass-filter)!important;
+  backdrop-filter:var(--cdl-agency-glass-filter)!important;
+  box-shadow:0 6px 18px -6px rgba(0,0,0,.24)!important;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(.lost_password a,.woocommerce-LostPassword a,.sf-auth-back-login,.sf-smart-back){
-  color:#4c5148!important;
+.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(
+ .woocommerce form button[type=submit],.sf-quick-switch.sf-quick-email-login
+),
+body.sf-account-editorial.woocommerce-account:not(.logged-in) :is(
+ .woocommerce form button[type=submit],.sf-quick-switch.sf-quick-email-login
+){
+  color:#f8f7fa!important;border:1px solid transparent!important;
+  background:
+    var(--cdl-agency-glass-main) padding-box,
+    linear-gradient(var(--cdl-agency-glass-body-main),var(--cdl-agency-glass-body-main)) padding-box,
+    var(--cdl-agency-glass-rim-main) border-box!important;
+  -webkit-backdrop-filter:var(--cdl-agency-glass-filter)!important;
+  backdrop-filter:var(--cdl-agency-glass-filter)!important;
 }
-/* Match the native standalone Woo guest page to the same light surface.
- * Do not style signed-in account dashboards or alter hidden/ready states. */
-body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-content:has(.sf-account-intro){
-  background:var(--sf-ui-page,#fbfaf8);
-}
-body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-content .woocommerce:has(.sf-account-intro){
-  width:min(100%,490px);margin:0 auto;
-  padding:clamp(24px,4vw,36px);
-  border:1px solid rgba(43,42,38,.11);border-radius:28px;
-  background:rgba(255,255,255,.72);
-  box-shadow:0 22px 54px -30px rgba(54,50,43,.20);
-  -webkit-backdrop-filter:blur(20px) saturate(130%);
-  backdrop-filter:blur(20px) saturate(130%);
-}
-body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-account-intro .sf-auth-heading-wave{
-  display:none!important;
-}
-body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-quick-account,
-body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-quick-account-frame{
-  background:rgba(255,255,255,.80)!important;
-  border-color:rgba(35,35,32,.13)!important;
-  box-shadow:0 8px 22px -18px rgba(38,37,33,.20)!important;
-}
-body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-quick-account-frame .sf-quick-account{
-  background:transparent!important;box-shadow:none!important;
-}
-body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-quick-choice{
-  min-height:0;
-}
+.sf-shell.has-editorial-account #sf-panel.is-account-panel :is(
+ .lost_password a,.woocommerce-LostPassword a,.sf-auth-back-login,.sf-smart-back
+){color:#f8f7fa!important}
 @media(max-width:700px){
   .sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-account-body{
-    padding:clamp(22px,5dvh,40px) 16px calc(28px + env(safe-area-inset-bottom,0px));
+    padding:clamp(20px,5dvh,38px) 16px calc(26px + env(safe-area-inset-bottom,0px));
   }
   .sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-account-body>.woocommerce,
   body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-content .woocommerce:has(.sf-account-intro){
-    padding:25px 20px;border-radius:24px;
+    padding:26px 22px;border-radius:28px;
   }
 }
 @media(prefers-reduced-transparency:reduce){
   .sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-account-body>.woocommerce,
   body.sf-account-editorial.woocommerce-account:not(.logged-in) .woocommerce:has(.sf-account-intro){
-    background:#fff;-webkit-backdrop-filter:none;backdrop-filter:none;
+    -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
   }
 }
 @media(forced-colors:active){

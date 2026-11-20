@@ -220,12 +220,24 @@ function codela_sf_header(): string {
                 <?php echo codela_sf_ui_icon_button( 'user-round', __( 'My account', 'codela-storefront' ), [ 'variant' => 'soft', 'href' => wc_get_page_permalink( 'myaccount' ), 'attributes' => $guest_overlay ? [ 'data-wp-on--click' => 'actions.account', 'data-panel' => 'account', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] : [] ] ); ?>
             </nav><?php endif; ?><button class="sf-back" aria-label="<?php esc_attr_e( 'Back', 'codela-storefront' ); ?>" hidden><?php echo codela_sf_icon( 'arrow-left' ); ?></button><nav aria-label="<?php esc_attr_e( 'Main menu', 'codela-storefront' ); ?>"><?php echo codela_sf_menu(); ?></nav><?php if ( $editorial_menu ) : ?>
                 <aside class="sf-editorial-menu-aside" aria-label="<?php esc_attr_e( 'Contact', 'codela-storefront' ); ?>">
-                    <span class="sf-editorial-menu-eyebrow"><span aria-hidden="true"></span><?php echo esc_html( get_bloginfo( 'name' ) ); ?></span>
+                    <span class="sf-editorial-menu-eyebrow"><span aria-hidden="true"></span><?php echo esc_html( $agency_navigation ? strtoupper( (string) get_bloginfo( 'name' ) ) . ' STUDIO' : get_bloginfo( 'name' ) ); ?></span>
                     <p><?php echo esc_html( $agency_navigation
                         ? __( 'Web tasarım, e-ticaret ve özel yazılım projeleri için bize ulaşın veya müşteri hesabınıza geçin.', 'codela-storefront' )
                         : __( 'Hesabınızdan siparişlerinizi ve bilgilerinizi yönetin; yeni seçenekleri keşfedin.', 'codela-storefront' ) ); ?></p>
                     <div class="sf-editorial-menu-actions">
-                        <?php if ( $agency_navigation ) : ?><a class="sf-editorial-menu-contact" href="<?php echo esc_url( function_exists( 'codela_sf_agency_contact_link' ) ? codela_sf_agency_contact_link() : home_url( '/' ) ); ?>"><?php esc_html_e( 'Contact', 'codela-storefront' ); ?><span aria-hidden="true">↗</span></a><?php endif; ?>
+                        <?php
+                        // The original Codela Studio reference has a public email in
+                        // its footer. Never leak the WordPress administrator address
+                        // or use a Codela-specific mailbox on third-party stores.
+                        $editorial_public_email = $agency_navigation
+                            && 'codela.dev' === parse_url( home_url( '/' ), PHP_URL_HOST )
+                            ? 'info@codela.dev' : '';
+                        ?>
+                        <?php if ( $editorial_public_email ) : ?>
+                            <a class="sf-editorial-menu-mail" href="<?php echo esc_url( 'mailto:' . $editorial_public_email ); ?>"><?php echo esc_html( $editorial_public_email ); ?></a>
+                        <?php elseif ( $agency_navigation ) : ?>
+                            <a class="sf-editorial-menu-contact" href="<?php echo esc_url( function_exists( 'codela_sf_agency_contact_link' ) ? codela_sf_agency_contact_link() : home_url( '/' ) ); ?>"><?php esc_html_e( 'Contact', 'codela-storefront' ); ?><span aria-hidden="true">↗</span></a>
+                        <?php endif; ?>
                         <a class="sf-editorial-menu-account" href="<?php echo esc_url( wc_get_page_permalink( 'myaccount' ) ); ?>"><?php esc_html_e( 'My account', 'codela-storefront' ); ?><span aria-hidden="true">→</span></a>
                     </div>
                 </aside>
