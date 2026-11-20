@@ -1,97 +1,128 @@
-/* Agency homepage hybrid scrolling: one gesture = one screen-sized stage.
-   Taller modules, input fields, horizontal galleries and all other pages
-   keep normal native scroll. No overscroll or fixed body locks. */
+/* Agency homepage hybrid scroll: one physical wheel/touch gesture = one stage.
+   Wheel momentum belongs to its originating session until input goes quiet AND
+   the navigation scroll has settled. Taller content keeps native scrolling. */
 (() => {
   'use strict';
   if (!document.body.classList.contains('home')) return;
-  const root = document.querySelector('.sf-content .codela-page-layout');
-  if (!root) return;
-  const selector = '.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process';
-  const stages = Array.from(root.children).filter(el => el.matches(selector));
-  if (stages.length < 2) return;
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const ignore = '[data-agency-widget-track],[data-agency-service-track],input,select,textarea,[contenteditable="true"],[role="dialog"]';
-  const excluded = target => target instanceof Element && !!target.closest(ignore);
-  const viewport = () => window.innerHeight || document.documentElement.clientHeight;
-  const top = element => element.getBoundingClientRect().top + window.scrollY;
-  const activeIndex = () => {
-    const point = window.scrollY + viewport() * .28;
-    let index = 0;
-    stages.forEach((element, i) => { if (top(element) <= point) index = i; });
+  const root=document.querySelector('.sf-content .codela-page-layout');
+  if(!root)return;
+  const stages=Array.from(root.children).filter(el=>
+    el.matches('.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process'));
+  if(stages.length<2)return;
+  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+  const ignore='[data-agency-widget-track],[data-agency-service-track],input,select,textarea,[contenteditable="true"],[role="dialog"]';
+  const excluded=target=>target instanceof Element && !!target.closest(ignore);
+  const viewport=()=>window.innerHeight||document.documentElement.clientHeight;
+  const top=element=>element.getBoundingClientRect().top+window.scrollY;
+  const activeIndex=()=>{
+    const point=window.scrollY+viewport()*.28;
+    let index=0;
+    stages.forEach((element,i)=>{if(top(element)<=point)index=i;});
     return index;
   };
-  let lockUntil = 0;
-  let wheelTotal = 0;
-  let touch = null;
-  const targetFor = direction => {
-    const index = activeIndex();
-    const current = stages[index];
-    const height = current.getBoundingClientRect().height;
-    const screen = viewport();
-    // A stage with more content than a phone screen must remain scrollable.
-    if (height > screen + 28) {
-      const local = window.scrollY - top(current);
-      if (direction > 0 && local + screen < height - 24) return null;
-      if (direction < 0 && local > 24) return null;
+  // Inter-event quiet period is NOT a release timer. A consumed gesture must
+  // also wait for the stage navigation to finish before another can start.
+  const QUIET_MS=240;
+  let wheel={lastAt:-Infinity,used:false,delta:0,direction:0};
+  let navigationPending=false,scrollTarget=0,scrollIdleTimer=0;
+  let touch=null;
+  const targetFor=direction=>{
+    const index=activeIndex();
+    const current=stages[index];
+    const height=current.getBoundingClientRect().height;
+    if(height>viewport()+28){
+      const local=window.scrollY-top(current);
+      if(direction>0&&local+viewport()<height-24)return null;
+      if(direction<0&&local>24)return null;
     }
-    const next = index + direction;
-    return next >= 0 && next < stages.length ? stages[next] : null;
+    const next=index+direction;
+    return next>=0&&next<stages.length?stages[next]:null;
   };
-  const move = direction => {
-    const target = targetFor(direction);
-    if (!target) return false;
-    lockUntil = performance.now() + (reduced.matches ? 160 : 620);
-    window.scrollTo({ top: Math.max(0, Math.round(top(target))),
-      behavior: reduced.matches ? 'instant' : 'smooth' });
+  const onScrollSettled=()=>{
+    window.clearTimeout(scrollIdleTimer);
+    navigationPending=false;
+  };
+  window.addEventListener('scrollend',()=>{
+    if(navigationPending)onScrollSettled();
+  },{passive:true});
+  window.addEventListener('scroll',()=>{
+    if(!navigationPending)return;
+    window.clearTimeout(scrollIdleTimer);
+    // Browsers without scrollend still release once physical scroll changes
+    // have stopped. This is not a fixed post-gesture animation lock.
+    scrollIdleTimer=window.setTimeout(onScrollSettled,180);
+  },{passive:true});
+  const move=direction=>{
+    const target=targetFor(direction);
+    if(!target)return false;
+    scrollTarget=Math.max(0,Math.round(top(target)));
+    navigationPending=true;
+    window.clearTimeout(scrollIdleTimer);
+    window.scrollTo({top:scrollTarget,
+      behavior:reduced.matches?'instant':'smooth'});
+    // Reduced motion and zero-distance jumps can produce no scroll events.
+    if(Math.abs(window.scrollY-scrollTarget)<=2) {
+      requestAnimationFrame(()=>{
+        if(navigationPending&&Math.abs(window.scrollY-scrollTarget)<=2)onScrollSettled();
+      });
+    }
     return true;
   };
   document.documentElement.classList.add('sf-agency-stage-nav');
-  window.addEventListener('wheel', event => {
-    if (!event.cancelable || event.ctrlKey || excluded(event.target) ||
-        Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
-    if (performance.now() < lockUntil) {
+  window.addEventListener('wheel',event=>{
+    const now=performance.now(),gap=now-wheel.lastAt;
+    // Track every wheel event, including the momentum tail we consume.
+    wheel.lastAt=now;
+    if(!event.cancelable||event.ctrlKey||excluded(event.target)||
+       Math.abs(event.deltaX)>Math.abs(event.deltaY))return;
+    const direction=Math.sign(event.deltaY);
+    if(!direction)return;
+    if(gap>QUIET_MS&&!navigationPending){
+      wheel={lastAt:now,used:false,delta:0,direction:0};
+    }
+    if(wheel.used||navigationPending){
+      // Prevent a long momentum tail from natively scrolling past our target.
       event.preventDefault();
       return;
     }
-    const direction = Math.sign(event.deltaY);
-    if (!direction || !targetFor(direction)) { wheelTotal = 0; return; }
+    const target=targetFor(direction);
+    if(!target){
+      // Tall sections are deliberately free-scroll; don't accumulate the
+      // tiny momentum samples as a future stage transition.
+      wheel.delta=0;wheel.direction=0;
+      return;
+    }
     event.preventDefault();
-    const pixels = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? viewport() : 1);
-    if (Math.sign(wheelTotal) !== direction) wheelTotal = 0;
-    wheelTotal += pixels;
-    if (Math.abs(wheelTotal) < 22) return;
-    wheelTotal = 0;
-    move(direction);
-  }, { passive: false });
-  window.addEventListener('touchstart', event => {
-    if (event.touches.length !== 1 || excluded(event.target)) { touch = null; return; }
-    const p = event.touches[0];
-    touch = { x: p.clientX, y: p.clientY, lastY: p.clientY,
-      horizontal: false, captured: false, locked: performance.now() < lockUntil };
-  }, { passive: true });
-  window.addEventListener('touchmove', event => {
-    if (!touch || !event.cancelable || event.touches.length !== 1) return;
-    const p = event.touches[0];
-    const dx = p.clientX - touch.x, dy = p.clientY - touch.y;
-    touch.lastY = p.clientY;
-    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 9) {
-      touch.horizontal = true;
+    if(wheel.direction!==direction){wheel.delta=0;wheel.direction=direction;}
+    const pixels=event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?viewport():1);
+    wheel.delta+=pixels;
+    if(Math.abs(wheel.delta)<22)return;
+    wheel.used=move(direction);
+    wheel.delta=0;
+  },{passive:false});
+  window.addEventListener('touchstart',event=>{
+    if(event.touches.length!==1||excluded(event.target)){touch=null;return;}
+    const p=event.touches[0];
+    touch={x:p.clientX,y:p.clientY,lastY:p.clientY,
+      horizontal:false,captured:false,blocked:navigationPending};
+  },{passive:true});
+  window.addEventListener('touchmove',event=>{
+    if(!touch||!event.cancelable||event.touches.length!==1)return;
+    const p=event.touches[0],dx=p.clientX-touch.x,dy=p.clientY-touch.y;
+    touch.lastY=p.clientY;
+    if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>9)touch.horizontal=true;
+    if(touch.horizontal||Math.abs(dy)<9)return;
+    const direction=dy<0?1:-1;
+    if(touch.blocked||navigationPending||targetFor(direction)){
+      event.preventDefault();touch.captured=true;
     }
-    if (touch.horizontal || Math.abs(dy) < 9) return;
-    const direction = dy < 0 ? 1 : -1;
-    if (touch.locked || targetFor(direction)) {
-      event.preventDefault();
-      touch.captured = true;
-    }
-  }, { passive: false });
-  window.addEventListener('touchend', () => {
-    if (!touch) return;
-    const delta = touch.y - touch.lastY;
-    if (touch.captured && !touch.locked && Math.abs(delta) >= 42 &&
-        performance.now() >= lockUntil) {
-      move(Math.sign(delta));
-    }
-    touch = null;
-  }, { passive: true });
-  window.addEventListener('touchcancel', () => { touch = null; }, { passive: true });
+  },{passive:false});
+  window.addEventListener('touchend',()=>{
+    if(!touch)return;
+    const delta=touch.y-touch.lastY;
+    if(touch.captured&&!touch.blocked&&!navigationPending&&
+       Math.abs(delta)>=42)move(Math.sign(delta));
+    touch=null;
+  },{passive:true});
+  window.addEventListener('touchcancel',()=>{touch=null;},{passive:true});
 })();
