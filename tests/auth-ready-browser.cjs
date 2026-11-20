@@ -7,6 +7,7 @@ const php=fs.readFileSync('theme/codela-storefront/inc/quick-login.php','utf8');
 const match=php.match(/<style id="sf-auth-gate-critical">([\s\S]*?)<\/style>/);
 assert(match,'Critical first-paint guest gate present in wp_head');
 const loader=fs.readFileSync('theme/codela-storefront/assets/scripts/auth-loader.js','utf8');
+const smartCss=fs.readFileSync('theme/codela-storefront/assets/styles/auth-smart.css','utf8');
 const html='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1">'
  +'<script>document.documentElement.classList.add("sf-auth-js")</script><style>'+match[1]+'</style>'
  +'<style>body{font:16px system-ui}#sf-account{min-height:400px}#customer_login{display:block}</style></head>'
@@ -24,11 +25,11 @@ const server=http.createServer((req,res)=>{
  if(req.url==='/'){res.setHeader('Content-Type','text/html');res.end(html);return;}
  if(req.url==='/auth-loader.js'){res.setHeader('Content-Type','text/javascript');res.end(loader);return;}
  if(req.url==='/auth.css'){
-  setTimeout(()=>{res.setHeader('Content-Type','text/css');res.end('.sf-smart-auth{color:#fff}')},420);return;
+  setTimeout(()=>{res.setHeader('Content-Type','text/css');res.end(smartCss)},420);return;
  }
  if(req.url==='/smart.js'){
   res.setHeader('Content-Type','text/javascript');
-  res.end('window.codelaSFSmartAuthReady=Promise.resolve(true);document.querySelector(".sf-overlay-auth").classList.add("sf-smart-auth-active");');
+  res.end('window.codelaSFSmartAuthReady=Promise.resolve(true);document.querySelector(".sf-overlay-auth").classList.add("sf-smart-auth-active","sf-smart-start");');
   return;
  }
  if(req.url==='/quick.js'){
@@ -49,7 +50,7 @@ const server=http.createServer((req,res)=>{
   await page.evaluate(()=>{
    window.flash=false;
    window.checkFrames=()=>{
-    if(getComputedStyle(document.querySelector('#customer_login')).display!=='none')window.flash=true;
+    if(document.querySelector('#customer_login').getClientRects().length>0)window.flash=true;
     if(!document.querySelector('#sf-account').dataset.sfAuthReady)requestAnimationFrame(window.checkFrames);
    };
    requestAnimationFrame(window.checkFrames);
@@ -62,6 +63,8 @@ const server=http.createServer((req,res)=>{
   await page.evaluate(()=>window.finishDeviceVerification());
   await page.waitForFunction(()=>document.querySelector('#sf-account').dataset.sfAuthReady==='true');
   assert.equal(await page.evaluate(()=>window.flash),false,'No Woo flash across frames');
+  assert.equal(await page.locator('#customer_login').isVisible(),false,
+    'Only smart email is visible after both controllers are ready');
   assert.equal(await page.locator('.sf-auth-loader-status').count(),0,'Loader removed only after verification');
   console.log('Account: 11s late, delayed CSS, pending device proof: no flash.');
   await page.close();
