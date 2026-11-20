@@ -6,10 +6,10 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Ajans ve e-ticaret şablonlarında Menü ve Giriş/Hesabım görünümü ayrı ayrı seçilebilir: Codela Standart / Editoryal Cam.",
-    "Ajans için yeni porselen açık zeminli numaralı menü ve cam bilgi kartı; WordPress menü ağacı, aktif sayfa ve yerel alt menüler korunur.",
-    "Yeni giriş kartı mevcut WooCommerce e-posta, kayıtlı hesap, PIN, Face ID ve Google giriş akışının yalnız görünümünü düzenler.",
-    "Mevcut tek dialog, alt menü, CSS tasarım tokenları, ilk yükleme auth kontrolü ve e-ticaret araçları değiştirilmez.",
-    "Eklenti kodu ve bağımsız header/footer şablonları değiştirilmedi."
+    "Editoryal Cam menü ve giriş tasarımı, referanstaki #06060a koyu arka plana geri döndürüldü; açık porselen zorlaması kaldırıldı.",
+    "Menüde numaralı iki sütunlu yapı, aktif sayfada altın noktalı Aktif etiketi ve referansın dört katmanlı Studio cam kartı tamamlandı.",
+    "Menüde Codela Studio başlığı ve codela.dev sitesinde public info@codela.dev posta bağlantısı kullanılıyor; diğer sitelerde kendi iletişim bağlantısı korunuyor.",
+    "Kayıtlı hesapta E-posta veya Google birleşik seçeneği mevcut WooCommerce e-posta ekranına geçiyor; diğer misafirlerde gerçek e-posta alanı doğrudan görünüyor. Sahte giriş bağlantısı gönderme işlemi eklenmedi.",
+    "PIN, Face ID/Passkey, WooCommerce oturum güvenliği, eski Standart görünüm ve e-ticaret araçları değiştirilmedi."
   ]
 }
