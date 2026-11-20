@@ -55,6 +55,14 @@
 }
 /* Direct My Account guest page gets the same dark presentation, not the store canvas. */
 body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout){
+  /* Standalone Account does not inherit token overrides from the hidden dialog. */
+  --cdl-agency-glass-back:linear-gradient(180deg,rgba(255,255,255,.02),transparent);
+  --cdl-agency-glass-body:rgba(34,34,36,.72);
+  --cdl-agency-glass-rim:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,.09) 32%,rgba(255,255,255,.07) 68%,rgba(255,255,255,.22));
+  --cdl-agency-glass-main:linear-gradient(180deg,rgba(255,255,255,.04),transparent);
+  --cdl-agency-glass-body-main:rgba(44,44,48,.78);
+  --cdl-agency-glass-rim-main:linear-gradient(180deg,rgba(255,255,255,.46),rgba(255,255,255,.12) 32%,rgba(255,255,255,.09) 68%,rgba(255,255,255,.30));
+  --cdl-agency-glass-filter:blur(20px) saturate(160%) brightness(.92);
   --sf-ui-page:#06060a;
   --sf-ui-ink:#f8f7fa;
   --sf-ui-control-ink:#f8f7fa;
