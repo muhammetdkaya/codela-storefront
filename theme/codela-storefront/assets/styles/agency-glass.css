@@ -34,6 +34,7 @@ body.sf-glass-v2{
 /* Three CSS paint layers, one native blur; no pseudo elements or 3D inset. */
 body.sf-glass-v2 .sf-shell .sf-header :is(
   .sf-brand.sf-ui-surface,
+  .sf-agency-header-tools.sf-ui-surface,
   .sf-actions.sf-ui-surface,
   .sf-desktop-navigation.sf-ui-surface,
   .sf-header-menu .sf-ui-icon-button--soft,
@@ -235,4 +236,25 @@ body.sf-glass-v2 .sf-agency-widget :is(a,button,input,textarea):focus-visible{
    .cdl-project__button,.cdl-contact__submit,.cdl-service-detail__cta,
    .cdl-bento__card,.cdl-contact__card,.sf-agency-process-step
  ){transition:none!important}
+}
+
+/* One approved Final Glass 0.1.371 surface per Agency header capsule.
+   Account and Menu are independent click targets, not nested glass discs. */
+body.sf-glass-v2 .sf-shell.has-agency-header .sf-header :is(
+ .sf-brand.sf-ui-surface,.sf-agency-header-tools.sf-ui-surface
+){
+  border:1px solid transparent!important;
+  background:
+    var(--cdl-agency-glass-back) padding-box,
+    linear-gradient(var(--cdl-agency-glass-body),var(--cdl-agency-glass-body)) padding-box,
+    var(--cdl-agency-glass-rim) border-box!important;
+  -webkit-backdrop-filter:var(--cdl-agency-glass-filter)!important;
+  backdrop-filter:var(--cdl-agency-glass-filter)!important;
+  box-shadow:var(--cdl-agency-glass-shadow)!important;
+}
+body.sf-glass-v2 .sf-shell.has-agency-header .sf-header
+.sf-agency-header-tools :is(.sf-actions,.sf-header-menu,.sf-ui-icon-button--soft){
+  border:0!important;background:transparent!important;
+  box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
 }
