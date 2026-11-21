@@ -79,6 +79,7 @@ $GLOBALS['layout'] = '';
 function sanitize_html_class( $value ) { return preg_replace( '/[^a-zA-Z0-9_-]/', '', $value ); }
 require __DIR__ . '/../theme/codela-storefront/inc/section-agency.php';
 require __DIR__ . '/../theme/codela-storefront/inc/section-agency-bento.php';
+require __DIR__ . '/../theme/codela-storefront/inc/section-agency-about.php';
 foreach ( [ 'agency-services', 'agency-about', 'agency-contact', 'agency-process' ] as $slug ) {
     ob_start(); require __DIR__ . '/../theme/codela-storefront/patterns/' . $slug . '.php'; $html = ob_get_clean();
     agency_page_check( strlen( $html ) > 500, $slug . ' renders actual content.' );
@@ -86,8 +87,12 @@ foreach ( [ 'agency-services', 'agency-about', 'agency-contact', 'agency-process
         agency_page_check( substr_count( $html, 'cdl-bento__card--' ) === 4, 'Services now use four reference Bento cards.' );
         agency_page_check( ! str_contains( $html, 'sf-agency-module-grid' ), 'Legacy service modules are no longer duplicated.' );
     } elseif ( $slug === 'agency-about' ) {
-        agency_page_check( substr_count( $html, 'data-agency-widget-step="' ) === 3,
-            'About now uses the source three-step process instead of legacy cards.' );
+        agency_page_check( str_contains( $html, 'Dijitalde iyi görünmek yetmez.' )
+            && str_contains( $html, 'sf-agency-widget--about' )
+            && substr_count( $html, 'class="sf-about-principle"' ) === 3
+            && ! str_contains( $html, 'data-agency-widget-step=' )
+            && ! str_contains( $html, 'light-grid' ),
+            'About is one short reusable glass layout with three principles and no old process or grid.' );
     } elseif ( $slug === 'agency-process' ) {
         agency_page_check( substr_count( $html, 'data-agency-widget-step="' ) === 3 && str_contains( $html, 'Nasıl Çalışıyoruz?' ), 'Process has three reference steps.' );
     } elseif ( $slug === 'agency-contact' ) {
@@ -435,7 +440,7 @@ foreach ( [ 'services', 'about', 'contact' ] as $page_slug ) {
         $body = str_replace( '<!-- wp:pattern {"slug":"codela-storefront/agency-process"} /-->', $process, $body );
     }
     echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
-    foreach ( [ 'storefront-base.css', 'agency.css' ] as $name ) {
+    foreach ( [ 'storefront-base.css', 'agency.css', 'agency-about.css' ] as $name ) {
         echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/' . $name . '">';
     }
     echo '<style>body{font-family:system-ui}</style></head><body class="sf-site-mode-agency">';
