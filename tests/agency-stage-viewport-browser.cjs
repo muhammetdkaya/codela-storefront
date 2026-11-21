@@ -23,11 +23,11 @@ const bento=block(render('bento'));
 const detail=block(render('detail'));
 const contact=block(render('contact-bento'));
 const project=block(render('project'));
-const process=block(render('process'));
+const processPage=block(render('process'));
 const cssFiles=['storefront-base.css','agency.css','agency-project.css'];
 function fixture(page,dock){
   const home=page==='home';
-  const contents={home:studio+bento,detail,contact,project,process};
+  const contents={home:studio+bento,detail,contact,project,process:processPage};
   return '<!doctype html><html lang="tr"><head><meta charset="utf-8">'
     +'<meta name="viewport" content="width=device-width,initial-scale=1">'
     +cssFiles.map(x=>'<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/'+x+'">').join('')
