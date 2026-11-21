@@ -2473,3 +2473,54 @@ body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-
 .sf-shell .sf-header .sf-brand > a:not(.custom-logo-link){
   color:#f8f7fa!important;
 }
+
+/* 0.1.385 — editorial content on ACTIVE MONA Studio+Bento, not retired carousel. */
+.sf-agency-widget--studio .codela-studio-hero__title--descriptive{
+  font-size:clamp(37px,4.25vw,68px);line-height:1.07;letter-spacing:-.043em
+}
+.sf-agency-widget--studio .codela-studio-hero__contact{
+  display:inline-flex;align-items:center;justify-content:center;gap:17px;
+  min-height:41px;margin-top:21px;padding:9px 16px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.07);
+  color:#f5f3f7;text-decoration:none;font-size:12px;font-weight:600;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  transition:border-color .2s ease,background-color .2s ease
+}
+.sf-agency-widget--studio .codela-studio-hero__contact:hover{
+  border-color:rgba(214,166,118,.48);background:rgba(255,255,255,.12)
+}
+.sf-agency-widget--studio .codela-studio-hero__contact:focus-visible{
+  outline:3px solid #d6a676;outline-offset:3px
+}
+.sf-agency-widget--bento .cdl-bento__visual{
+  position:absolute;display:block;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center top;pointer-events:none;
+  opacity:.78;filter:saturate(.8)
+}
+.sf-agency-widget--bento .cdl-bento__visual--support{
+  width:49%;left:auto;right:4%;height:100%;object-position:center center;
+  opacity:.45;mask-image:linear-gradient(90deg,transparent,#000 35%)
+}
+.sf-agency-widget--bento .cdl-bento__art-shade{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(0deg,rgba(14,14,19,.98),rgba(14,14,19,.83) 35%,rgba(14,14,19,.08) 92%)
+}
+.sf-agency-widget--bento .cdl-bento__minor-copy small{
+  text-transform:none;letter-spacing:0;font-size:clamp(10px,1.05vw,12px);
+  color:#bdb7c5;line-height:1.38;font-weight:400
+}
+.sf-agency-widget--bento .cdl-bento__card--support .cdl-bento__support-text>span{
+  max-width:510px;font-size:clamp(10px,1.1vw,13px);line-height:1.35
+}
+@media(max-width:739px){
+  .sf-agency-widget--studio .codela-studio-hero__title--descriptive{
+    font-size:clamp(29px,8.1vw,36px);letter-spacing:-.043em;line-height:1.065
+  }
+  .sf-agency-widget--studio .codela-studio-hero__contact{min-height:37px;margin-top:12px;padding:8px 14px}
+  .sf-agency-widget--bento .cdl-bento__minor-copy{gap:5px}
+  .sf-agency-widget--bento .cdl-bento__minor-copy small{font-size:10px;line-height:1.32}
+  .sf-agency-widget--bento .cdl-bento__visual--support{width:47%;right:9%}
+}
+@media(prefers-reduced-motion:reduce){
+  .sf-agency-widget--studio .codela-studio-hero__contact{transition:none}
+}

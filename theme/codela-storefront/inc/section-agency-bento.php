@@ -18,25 +18,26 @@ function codela_sf_section_agency_bento( array $data, string $type = '' ): strin
     } ) );
     if ( ! $items ) { return ''; }
     $title = trim( (string) ( $data['title'] ?? '' ) ) ?: 'Uzmanlık Alanları';
-    // Existing installed Agency websites have editor-owned copy from 1.2.28.
-    // Only the fully untouched starter gets the improved short labels at render
-    // time; custom titles or descriptions keep their exact saved values.
+    // Only replace known stock fields of the actual MONA Bento homepage.
+    // A change to any other item or field must not suppress eligible updates.
+    $starter = 'agency-starter-bento' === (string) ( $data['id'] ?? '' );
     $legacy_titles = [ 'Web Tasarım', 'E-Ticaret', 'Özel Yazılım', 'Optimizasyon / Destek' ];
     $legacy_bodies = [ 'Kurumsal · Arayüz · Dönüşüm', 'Satış · Akış',
         'Ölçek · API', 'Hız · Güvenlik · Sürekli bakım' ];
-    $editorial_tags = [ 'Kurumsal · UI/UX · WordPress',
-        'WooCommerce · POS · Kargo', 'Eklenti · API · Entegrasyon',
-        'Performans · Güvenlik · Bakım' ];
-    $untouched_starter = 'agency-starter-bento' === (string) ( $data['id'] ?? '' )
-        && 'Uzmanlık Alanları' === $title && 4 === count( $items )
-        && array_column( $items, 'title' ) === $legacy_titles
-        && array_column( $items, 'body' ) === $legacy_bodies;
+    $previous_tags = [ 'Kurumsal · UI/UX · WordPress', 'WooCommerce · POS · Kargo',
+        'Eklenti · API · Entegrasyon', 'Performans · Güvenlik · Bakım' ];
+    $approved_copy = [
+        'Markanızı doğru anlatan, mobil uyumlu ve kolay yönetilen web siteleri.',
+        'Ürün, ödeme ve kargo süreçleri bir arada çalışan online mağazalar.',
+        'İşinize özel paneller, eklentiler ve sistem entegrasyonları.',
+        'Web siteniz için hız iyileştirmeleri, güncellemeler ve teknik destek.',
+    ];
     $services = codela_sf_agency_page_url( 'hizmetler', home_url( '/hizmetler/' ) );
     $slugs = [ 'web-tasarimi', 'e-ticaret', 'ozel-yazilim', 'gelistirme-destek' ];
     $types = [ 'web', 'commerce', 'software', 'support' ];
     $tags = [ 'Kurumsal · Arayüz · Dönüşüm', 'Satış · Akış', 'Ölçek · API',
         'Hız · Güvenlik · Sürekli bakım' ];
-    $photo = get_template_directory_uri() . '/assets/media/mona-bento-web.jpg';
+    $media = rtrim( get_template_directory_uri(), '/' ) . '/assets/media/';
     ob_start();
     ?>
     <div class="sf-agency-widget sf-agency-widget--bento" data-agency-widget="bento">
@@ -55,14 +56,21 @@ function codela_sf_section_agency_bento( array $data, string $type = '' ): strin
               $href = codela_sf_agency_page_url( 'hizmetler/' . $slugs[ $index ], $services );
               $display = trim( (string) ( $item['title'] ?? '' ) );
               $body = trim( (string) ( $item['body'] ?? '' ) );
-              $tag = $untouched_starter ? $editorial_tags[ $index ] : ( $body ?: $tags[ $index ] );
+              $tag = $body ?: $tags[ $index ];
+              if ( $starter && $display === $legacy_titles[ $index ]
+                  && in_array( $body, [ $legacy_bodies[ $index ], $previous_tags[ $index ] ], true ) ) {
+                  $tag = $approved_copy[ $index ];
+              }
+              if ( $starter && 3 === $index && 'Optimizasyon / Destek' === $display ) {
+                  $display = 'Bakım ve geliştirme';
+              }
               ?>
               <a class="cdl-bento__card cdl-bento__card--<?php echo esc_attr( $variant ); ?> cdl-bento__reveal"
                  style="--cdl-bento-order:<?php echo esc_attr( (string) ( $index + 1 ) ); ?>"
                  href="<?php echo esc_url( $href ); ?>"
                  aria-label="<?php echo esc_attr( $display . ' hizmetini incele' ); ?>">
                 <?php if ( 0 === $index ) : ?>
-                  <img class="cdl-bento__photo" src="<?php echo esc_url( $photo ); ?>" alt=""
+                  <img class="cdl-bento__photo" src="<?php echo esc_url( $media . 'agency-bento-web.svg' ); ?>" alt=""
                        loading="lazy" decoding="async" width="1376" height="768" />
                   <span class="cdl-bento__image-shade" aria-hidden="true"></span>
                   <span class="cdl-bento__card-top">
@@ -74,6 +82,7 @@ function codela_sf_section_agency_bento( array $data, string $type = '' ): strin
                     <span><?php echo esc_html( $tag ); ?></span>
                   </span>
                 <?php elseif ( 3 === $index ) : ?>
+                  <img class="cdl-bento__visual cdl-bento__visual--support" src="<?php echo esc_url( $media . 'agency-bento-support.svg' ); ?>" alt="" loading="lazy" decoding="async" width="720" height="320" />
                   <span class="cdl-bento__light cdl-bento__light--right" aria-hidden="true"></span>
                   <span class="cdl-bento__support-text">
                     <strong><?php echo esc_html( $display ); ?></strong>
@@ -81,16 +90,12 @@ function codela_sf_section_agency_bento( array $data, string $type = '' ): strin
                   </span>
                   <span class="cdl-bento__support-action" aria-hidden="true">İncele <span>→</span></span>
                 <?php else : ?>
-                  <span class="cdl-bento__light cdl-bento__light--top" aria-hidden="true"></span>
-                  <?php if ( 1 === $index ) : ?>
-                    <span class="cdl-bento__layers" aria-hidden="true"><i></i><i></i></span>
-                  <?php else : ?>
-                    <span class="cdl-bento__fluted" aria-hidden="true"></span>
-                  <?php endif; ?>
+                  <img class="cdl-bento__visual cdl-bento__visual--<?php echo 1 === $index ? 'commerce' : 'software'; ?>" src="<?php echo esc_url( $media . ( 1 === $index ? 'agency-bento-commerce.svg' : 'agency-bento-software.svg' ) ); ?>" alt="" loading="lazy" decoding="async" width="720" height="480" />
+                  <span class="cdl-bento__art-shade" aria-hidden="true"></span>
                   <span class="cdl-bento__minor-arrow" aria-hidden="true">↗</span>
                   <span class="cdl-bento__minor-copy">
-                    <small><?php echo esc_html( $tag ); ?></small>
                     <strong><?php echo esc_html( $display ); ?></strong>
+                    <small><?php echo esc_html( $tag ); ?></small>
                   </span>
                 <?php endif; ?>
               </a>
