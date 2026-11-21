@@ -2379,23 +2379,42 @@ body:not(.home):has(.sf-shell) .codela-page-layout > :is(
   width:100%;
   margin:0;
 }
+/* Mobile process fills the current visible viewport, including Safari toolbar
+   changes. Text keeps its intrinsic height; only the artwork absorbs free space.
+   Minimum artwork size lets long copy / enlarged text grow the document safely. */
 @media(max-width:739px){
   .sf-agency-widget--process .sf-agency-process{
-    min-height:100svh;
-    padding:clamp(78px,10svh,102px) 16px clamp(18px,3svh,28px);
+    --sf-process-height:100dvh;
+    --sf-process-top:calc(84px + env(safe-area-inset-top,0px));
+    --sf-process-bottom:calc(20px + var(--sf-agency-dock-clearance,0px));
+    min-height:var(--sf-process-height);
+    padding:var(--sf-process-top) 16px var(--sf-process-bottom);
+    align-items:stretch;
   }
-  .sf-agency-widget--process .sf-agency-process-head{margin-bottom:20px}
-  .sf-agency-widget--process .sf-agency-process-steps{margin-bottom:15px}
+  body:not(.home):has(.sf-shell) .codela-page-layout > .sf-agency-widget--process:first-child > .sf-agency-process{
+    --sf-process-height:calc(100dvh - var(--sf-agency-header-clearance,68px));
+    --sf-process-top:20px;
+    min-height:var(--sf-process-height);
+  }
+  .sf-agency-widget--process .sf-agency-process > .sf-agency-wrap{
+    display:flex;flex-direction:column;
+    min-height:calc(var(--sf-process-height) - var(--sf-process-top) - var(--sf-process-bottom));
+  }
+  .sf-agency-widget--process .sf-agency-process-head{flex:none;margin-bottom:20px}
+  .sf-agency-widget--process .sf-agency-process-layout{
+    display:flex;flex-direction:column;flex:1 0 auto;
+  }
+  .sf-agency-widget--process .sf-agency-process-steps{flex:none;margin-bottom:15px}
+  .sf-agency-widget--process .sf-agency-process-stage{flex:1 0 auto}
+  .sf-agency-widget--process .sf-agency-process-stage-visual{
+    flex:1 0 120px;min-height:120px;height:auto;
+  }
+  .sf-agency-widget--process .sf-agency-process-stage-visual img{
+    position:absolute;inset:0;
+  }
   .sf-agency-widget--process .sf-agency-process-stage-content{
-    min-height:165px;
+    flex:none;min-height:0;
   }
-}
-@media(max-width:739px) and (max-height:700px){
-  .sf-agency-widget--process .sf-agency-process{
-    padding-top:clamp(74px,11svh,86px);
-  }
-  .sf-agency-widget--process .sf-agency-process-stage-visual{height:clamp(125px,23svh,165px)}
-  .sf-agency-widget--process .sf-agency-process-stage-content{min-height:148px}
 }
 /* Native one-gesture stage controller takes over where stage heights allow.
    Keep CSS proximity snap as the safe fallback when JS is unavailable. */

@@ -1,3 +1,9 @@
+## Son doğrulanmış devam noktası — 21 Kasım 2026 / 0.1.379 → 0.1.380
+
+Mobil Çalışma Süreci sabit görsel ve ortalanan grup yerine dinamik viewport (100dvh) yüksekliğini dolduran esnek karta geçirildi. Başlık/adım/metin doğal yüksekliğini korur; görsel kalan alanı alır. 120px görsel minimumu ve doğal belge büyümesi uzun metnin kesilmesini önler. Header/alt dock boşluğu ayrılır; ilk iç sayfada header iki kez sayılmaz. Eklenti değişmedi.
+
+Doğrulama: 390×844 → 390×650 → 430×932 → 320×568 aynı sayfada yeniden boyutlandırma, kart alt hizası ve görünür aksiyon kontrolleri mevcut ajans testine eklendi. Yerel paket/asset kontrolleri ve CI sonuçları yayın kapanışında kaydedilecek. Yayın henüz doğrulanmadı; sıradaki CI/FTP ve canlı CSS kontrolü. Fiziksel Safari kabulü yapılmadı.
+
 ## 21 Kasım 2026 — 0.1.379 yayın doğrulaması
 
 Kaynak [72ec04a6](https://github.com/muhammetdkaya/codela-storefront/commit/72ec04a65a24f976a4d5fba5d383afa83cb12c43); test düzeltmesi ve yayın kaynağı [d89ab037](https://github.com/muhammetdkaya/codela-storefront/commit/d89ab037c406e21d7e413c49662ae5c66958b9ad). [CI ve FTP](https://github.com/muhammetdkaya/codela-storefront/actions/runs/44872482291) başarılı. İlk CI yalnız yeni 320×568 senaryosunda mevcut max-height:620px üst hizalama davranışına yanlış merkez beklentisinde durdu; test gerçek kısa ekran sözleşmesine düzeltildi, üretim hizası değiştirilmedi. Chromium ve WebKit menü/hesap kontrolleri 320×568, 390×650/844 ve 1280×900 üzerinde başarılı; uzun menü ve dört bağlantılı menü ayrı doğrulandı. WebKit mobil ekran görüntüsü incelendi. Genel native Menu, Agency, Account ve Checkout doğrulaması geçti.

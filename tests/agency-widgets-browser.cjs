@@ -163,6 +163,28 @@ const server=http.createServer((req,res)=>{
       assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal overflow at '+width);
       if(width===390||width===1440)await page.screenshot({path:path.join(root,'qa/agency-widgets-'+width+'.png'),fullPage:true});
     }
+    // Resize the same page, as mobile browser chrome changes the visible height.
+    for(const [width,height] of [[390,844],[390,650],[430,932],[320,568]]){
+      await page.setViewportSize({width,height});
+      const stage=page.locator('.sf-agency-widget--process .sf-agency-process');
+      const geometry=await stage.evaluate(el=>{
+        const box=el.getBoundingClientRect(),cs=getComputedStyle(el);
+        const wrap=el.querySelector('.sf-agency-wrap').getBoundingClientRect();
+        const card=el.querySelector('.sf-agency-process-stage').getBoundingClientRect();
+        const image=el.querySelector('.sf-agency-process-stage-visual').getBoundingClientRect();
+        const foot=el.querySelector('.sf-agency-process-stage-foot').getBoundingClientRect();
+        return {height:box.height,top:wrap.top-box.top,paddingTop:parseFloat(cs.paddingTop),
+          bottom:box.bottom-card.bottom,paddingBottom:parseFloat(cs.paddingBottom),
+          imageHeight:image.height,footBottom:foot.bottom,cardBottom:card.bottom,overflow:el.scrollHeight>el.clientHeight+1};
+      });
+      assert(Math.abs(geometry.top-geometry.paddingTop)<=1,'Process no longer floats vertically in unused space');
+      assert(Math.abs(geometry.bottom-geometry.paddingBottom)<=1,'Process card fills remaining stage height');
+      assert(geometry.imageHeight>=119,'Artwork retains a useful minimum');
+      assert(geometry.footBottom<=geometry.cardBottom,'Next action stays inside the card');
+      assert(!geometry.overflow,'Long process content grows the document instead of clipping');
+      if(width>=390) assert(Math.abs(geometry.height-height)<=2,'Normal mobile process fits current viewport: '+JSON.stringify(geometry));
+      await stage.screenshot({path:path.join(root,`qa/agency-process-height-${width}-${height}.png`)});
+    }
     await page.emulateMedia({reducedMotion:'reduce'});
     await page.reload();
     assert.equal(await page.locator('.sf-agency-minimal-title .sf-agency-reveal').first().evaluate(

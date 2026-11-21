@@ -6,8 +6,7 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Giriş ve menü cam yüzeylerinde parlak kenarlar ve üst üste binen yansımalar azaltıldı; daha sakin yarı saydam kartlar kullanıldı.",
-    "Mobil menü kapatma alanının altında üstten başlar; Studio iletişim kartı altta, kısa ekran ve uzun menülerde aynı kaydırma akışında kalır.",
-    "Giriş kartının merkez konumu ve mevcut e-posta, Google, PIN ve biyometrik giriş akışları korundu."
+    "Mobil Çalışma Süreci bölümü görünen ekran yüksekliğine uyarlanır; başlık ve adımlardan kalan alanı görsel/kart doldurur.",
+    "Safari araç çubuğu açılıp kapanırken yükseklik güncellenir. Uzun metin ve büyük yazıda içerik kesilmeden doğal kaydırma korunur."
   ]
 }
