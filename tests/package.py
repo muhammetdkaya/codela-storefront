@@ -73,12 +73,18 @@ class Tests(unittest.TestCase):
         schema=json.loads((root/"config/settings.json").read_text())
         presentation=next(section for section in schema["sections"] if section["id"]=="presentation")
         fields={field["id"]:field for field in presentation["fields"]}
-        self.assertEqual(set(fields),{"agency_menu_design","agency_account_design",
-                                      "commerce_menu_design","commerce_account_design"})
+        self.assertEqual(set(fields),{"menu_design","account_design"})
         for name,field in fields.items():
             self.assertEqual(field["type"],"select")
             self.assertEqual(set(field["options"]),{"standard","editorial"})
-            self.assertEqual(field["default"],"editorial" if name.startswith("agency_") else "standard")
+            self.assertEqual(field["default"],"standard")
+        account_section=next(section for section in schema["sections"] if section["id"]=="account")
+        portal=next(field for field in account_section["fields"] if field["id"]=="account_projects_enabled")
+        self.assertEqual(portal["type"],"checkbox")
+        self.assertIs(portal["default"],False)
+        # One setting per appearance/feature, regardless of starter template count.
+        self.assertFalse(any(field["id"].startswith(("agency_menu_","commerce_menu_","agency_account_","commerce_account_"))
+                             for section in schema["sections"] for field in section["fields"]))
         functions=(root/"functions.php").read_text()
         render=(root/"inc/render.php").read_text()
         menu=(root/"assets/styles/editorial-menu.css").read_text()
