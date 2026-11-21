@@ -88,6 +88,20 @@ const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/
       assert(inset>=18,side+' needs a real 20px mobile safe gutter, got '+inset);
    }
    assert(menu.scrollWidth<=width+1,'Menu does not overflow horizontally');
+   // The real Agency has four links: verify bottom anchoring separately from the long-menu fixture.
+   if(width<=820){
+     await page.locator('.sf-menu-list>li').evaluateAll(items=>items.slice(4).forEach(item=>item.remove()));
+     const compact=await page.evaluate(()=>{
+       const body=document.querySelector('#sf-menu'),nav=body.querySelector('nav'),card=body.querySelector('.sf-editorial-menu-aside');
+       return {navTop:nav.getBoundingClientRect().top,top:body.getBoundingClientRect().top+parseFloat(getComputedStyle(body).paddingTop),
+         cardBottom:card.getBoundingClientRect().bottom,bottom:body.getBoundingClientRect().bottom-parseFloat(getComputedStyle(body).paddingBottom),
+         overflow:body.scrollHeight>body.clientHeight+1};
+     });
+     assert(Math.abs(compact.navTop-compact.top)<=1,'Four-link menu starts at the top');
+     if(!compact.overflow) assert(Math.abs(compact.cardBottom-compact.bottom)<=1,'Four-link Studio card is at the bottom');
+   }
+   fs.mkdirSync('qa',{recursive:true});
+   await page.screenshot({path:`qa/agency-editorial-menu-${width}-${height}-${engine}.png`});
    await page.evaluate(()=>{
     const dialog=document.querySelector('#sf-panel');
     dialog.classList.remove('is-menu-panel');dialog.classList.add('is-account-panel');
@@ -108,7 +122,9 @@ const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/
      return {offset:Math.abs((body.top+body.bottom-card.top-card.bottom)/2),
        bodyHeight:body.height,cardHeight:card.height,topGap:card.top-body.top};
    });
-   if(position.cardHeight<position.bodyHeight-24)
+   if(height<=620)
+     assert(position.topGap>=0 && position.topGap<=40,'Short Account follows its intentional top-aligned keyboard-safe layout');
+   else if(position.cardHeight<position.bodyHeight-24)
      assert(position.offset<=18,'Guest Account card must be vertically centered: '+JSON.stringify(position));
    else
      assert(position.topGap>=-1,'Tall Account must remain top-scrollable: '+JSON.stringify(position));
