@@ -1,8 +1,12 @@
-## Son doğrulanmış devam noktası — 21 Kasım 2026 / 0.1.379 → 0.1.380
+## 21 Kasım 2026 — 0.1.380 yayını tamamlandı / mobil Çalışma Süreci
 
-Mobil Çalışma Süreci sabit görsel ve ortalanan grup yerine dinamik viewport (100dvh) yüksekliğini dolduran esnek karta geçirildi. Başlık/adım/metin doğal yüksekliğini korur; görsel kalan alanı alır. 120px görsel minimumu ve doğal belge büyümesi uzun metnin kesilmesini önler. Header/alt dock boşluğu ayrılır; ilk iç sayfada header iki kez sayılmaz. Eklenti değişmedi.
+**Kod:** [bfc477b](https://github.com/muhammetdkaya/codela-storefront/commit/bfc477b15ec7657f8dc066867df63bbbaf4bae01) mobil `100dvh` ve esnek görsel/kart yerleşimini, [c8a3750](https://github.com/muhammetdkaya/codela-storefront/commit/c8a37507863093a7360f16d13eb7ab592a03f5e4) son viewport kabul testi uyumunu içerir. İkisi de `main` dalındadır. Mobil 390×844 → 390×650 → 430×932 → 320×568 yeniden boyutlandırma beklentileri testlere kaydedildi. Uzun metin ve büyütülmüş yazı doğal belge yüksekliğinde kalır; görsel için 120px alt sınır vardır. Eklenti değişmedi.
 
-Doğrulama: 390×844 → 390×650 → 430×932 → 320×568 aynı sayfada yeniden boyutlandırma, kart alt hizası ve görünür aksiyon kontrolleri mevcut ajans testine eklendi. Yerel paket/asset kontrolleri ve CI sonuçları yayın kapanışında kaydedilecek. Yayın henüz doğrulanmadı; sıradaki CI/FTP ve canlı CSS kontrolü. Fiziksel Safari kabulü yapılmadı.
+**CI:** [44873118747](https://github.com/muhammetdkaya/codela-storefront/actions/runs/44873118747) kapsamlı build ve Chromium/WebKit tarayıcı/regresyon doğrulamalarını başarıyla bitirdi; eski commitin dağıtımı daha yeni revizyon nedeniyle atlandı. Nihai [44873201843](https://github.com/muhammetdkaya/codela-storefront/actions/runs/44873201843) Agency kapsamı, 29 paket testi ve kod kontrollerini başarıyla tamamladı.
+
+**FTP ve canlı:** 44873201843 dağıtım işi başarıyla tamamlandı; 159 tema dosyasından 3 güncellendi, 156 değişmedi, 0 kaldırıldı. Dosya checksum ve sağlık kontrolü geçti. Canlı Ajans anasayfası, Menü/Hesap, Hizmetler, Hakkımızda, İletişim ve dört hizmet detay sayfası doğrulandı; kontrol günlüğü `Agency 0.1.380` sonucunu verdi. Yedek/rollback artifact'i kaydedildi. Canlı sürüm yayınlanmış ve otomatik doğrulanmıştır.
+
+**Açık sınır:** Fiziksel iPhone Safari'de kullanıcı ekranından görsel kabul yapılmadı; bu, başarılı CI/FTP/canlı otomatik doğrulamasından ayrıdır. Bu sürüm için yeni yayın gerekmez.
 
 ## 21 Kasım 2026 — 0.1.379 yayın doğrulaması
 
