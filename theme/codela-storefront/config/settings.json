@@ -21,51 +21,29 @@
     },
     {
       "id": "presentation",
-      "label": "Giriş ve menü tasarımı",
-      "description": "Aynı menü ve kimlik doğrulama altyapısında alternatif görünümler. Ajans ve e-ticaret tercihleri ayrı saklanır.",
+      "label": "Menü ve giriş tasarımı",
+      "description": "Ortak görünüm tercihleri seçili site deneyiminde uygulanır. Yeni şablonlar için ek seçenek açılmaz.",
       "fields": [
         {
-          "id": "agency_menu_design",
-          "type": "select",
-          "default": "editorial",
-          "label": "Ajans · Menü",
-          "description": "Editoryal Cam yeni numaralı tam ekran menüdür; Standart bugünkü menüyü korur.",
-          "options": {
-            "standard": "Codela Standart (mevcut)",
-            "editorial": "Editoryal Cam (yeni)"
-          }
-        },
-        {
-          "id": "agency_account_design",
-          "type": "select",
-          "default": "editorial",
-          "label": "Ajans · Giriş / Hesabım",
-          "description": "Sadece görsel sunum değişir; PIN, biyometri, Google ve WooCommerce giriş akışı aynı kalır.",
-          "options": {
-            "standard": "Codela Standart (mevcut)",
-            "editorial": "Editoryal Cam (yeni)"
-          }
-        },
-        {
-          "id": "commerce_menu_design",
+          "id": "menu_design",
           "type": "select",
           "default": "standard",
-          "label": "E-ticaret · Menü",
-          "description": "İsterseniz editoryal menüyü mağazada da kullanın; arama ve sepet araçları korunur.",
+          "label": "Menü tasarımı",
+          "description": "Tüm şablonlarda aynı menü görünüm tercihi uygulanır; içerik ve bağlantılar site deneyimine göre kalır.",
           "options": {
-            "standard": "Codela Standart (mevcut)",
-            "editorial": "Editoryal Cam (yeni)"
+            "standard": "Codela Standart",
+            "editorial": "Editoryal Cam"
           }
         },
         {
-          "id": "commerce_account_design",
+          "id": "account_design",
           "type": "select",
           "default": "standard",
-          "label": "E-ticaret · Giriş / Hesabım",
-          "description": "Mevcut hesap görünümünü koruyun veya aynı yeni görünüme geçin.",
+          "label": "Giriş / Hesabım tasarımı",
+          "description": "Seçilen görünüm aktif şablonda kullanılır. Gerçek giriş, PIN, biyometri, Google ve WooCommerce oturumu değişmez.",
           "options": {
-            "standard": "Codela Standart (mevcut)",
-            "editorial": "Editoryal Cam (yeni)"
+            "standard": "Codela Standart",
+            "editorial": "Editoryal Cam"
           }
         }
       ]
@@ -126,8 +104,15 @@
     {
       "id": "account",
       "label": "My Account",
-      "description": "Choose which optional account destinations appear in the menu.",
+      "description": "Hesabım özellikleri bütün şablonlarda tek ayardan yönetilir.",
       "fields": [
+        {
+          "id": "account_projects_enabled",
+          "type": "checkbox",
+          "default": false,
+          "label": "Projelerim",
+          "description": "Müşterilerin kendilerine atanmış projelerini, teslimatları ve revizyon taleplerini Hesabım içinde gösterir. Şablondan bağımsızdır; açıldığında Hesabım ana ekranı Projelerim olur."
+        },
         {
           "id": "account_downloads_enabled",
           "type": "checkbox",
