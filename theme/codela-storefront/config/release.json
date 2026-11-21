@@ -6,7 +6,8 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Mobil Çalışma Süreci bölümü görünen ekran yüksekliğine uyarlanır; başlık ve adımlardan kalan alanı görsel/kart doldurur.",
-    "Safari araç çubuğu açılıp kapanırken yükseklik güncellenir. Uzun metin ve büyük yazıda içerik kesilmeden doğal kaydırma korunur."
+    "Ajans mobil Hizmetler ve Çalışma Süreci üst başlık başlangıçları aynı hizaya alındı; karşılama bölümü değiştirilmedi.",
+    "Çalışma Süreci üç adımlı ilerleme çubukları tam içerik genişliğine yayılıyor; eski masaüstü satır boşluğu mobilde kaldırıldı.",
+    "Görselin esnek viewport yüksekliği, mevcut kart görünümü, metinler, renkler ve eklenti davranışı korundu."
   ]
 }

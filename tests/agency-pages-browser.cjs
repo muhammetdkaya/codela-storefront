@@ -36,22 +36,20 @@ const server = http.createServer((req, res) => {
     for (const [width,height] of [[320,740],[390,844],[768,1024],[1440,900]]) {
       await page.setViewportSize({width,height});
       await page.goto('http://127.0.0.1:'+port+'/?page=services');
-      assert.equal(await page.locator('.sf-agency-service-page h1').count(),1,'Services page has one heading');
-      assert.equal(await page.locator('.sf-agency-module').count(),6,'Six service cards');
-      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth+1),'No services overflow at '+width);
-      await page.locator('[data-agency-filter="commerce"]').click();
-      assert.equal(await page.locator('.sf-agency-module:visible').count(),2,'Commerce filter shows two cards');
-      await page.locator('[data-agency-filter="all"]').click();
-      assert.equal(await page.locator('.sf-agency-module:visible').count(),6,'All filter restores six cards');
-      const checked = page.locator('.sf-agency-module-check input:checked');
-      assert.equal(await checked.count(),2,'Two services selected by default');
-      await page.locator('.sf-agency-module-check input').first().uncheck();
-      assert.equal(await checked.count(),1,'Selection toggles independently of filters');
-      assert((await page.locator('[data-agency-selected-cta]').getAttribute('href')).includes('hizmetler='),'Selected services passed to contact link');
+      assert.equal(await page.locator('.cdl-bento__heading h2').count(),1,
+        'Approved Agency Services Bento has one editorial section heading');
+      const serviceCards=page.locator('.cdl-bento__card');
+      assert.equal(await serviceCards.count(),4,'Approved Bento contains exactly four linked services');
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth+1),
+        'No services overflow at '+width);
+      for(const card of await serviceCards.all()){
+        assert((await card.getAttribute('href')).includes('hizmetler'),
+          'Each service card keeps its native service detail link');
+      }
       if (width === 390 || width === 1440) await page.screenshot({path:path.join(root,'qa/agency-services-'+width+'.png'),fullPage:true});
 
       await page.goto('http://127.0.0.1:'+port+'/?page=about');
-      assert.equal(await page.locator('.sf-agency-about-page h1').count(),1,'About page has one heading');
+      assert.equal(await page.locator('.sf-agency-process-head h2').count(),1,'About now has the one approved Process heading');
       assert.equal(await page.locator('[data-agency-widget-step]').count(),3,'Three process steps');
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth+1),'No about overflow at '+width);
       await page.locator('[data-agency-widget-step="1"]').click();
@@ -76,7 +74,7 @@ const server = http.createServer((req, res) => {
     }
     const noJs = await browser.newPage({ javaScriptEnabled:false, viewport:{width:390,height:844} });
     await noJs.goto('http://127.0.0.1:'+port+'/?page=services');
-    assert.equal(await noJs.locator('.sf-agency-module').count(),6,'All services are visible without JavaScript');
+    assert.equal(await noJs.locator('.cdl-bento__card').count(),4,'All four Bento service links work without JavaScript');
     await noJs.goto('http://127.0.0.1:'+port+'/?page=about');
     assert.equal(await noJs.locator('[data-agency-widget-step]').count(),3,'Process text remains visible without JavaScript');
     assert.deepEqual(errors,[],'No uncaught errors');

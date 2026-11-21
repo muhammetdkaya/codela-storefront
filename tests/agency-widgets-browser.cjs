@@ -173,10 +173,20 @@ const server=http.createServer((req,res)=>{
         const card=el.querySelector('.sf-agency-process-stage').getBoundingClientRect();
         const image=el.querySelector('.sf-agency-process-stage-visual').getBoundingClientRect();
         const foot=el.querySelector('.sf-agency-process-stage-foot').getBoundingClientRect();
+        const layout=el.querySelector('.sf-agency-process-layout');
+        const track=el.querySelector('.sf-agency-process-steps').getBoundingClientRect();
+        const lastBar=el.querySelector('.sf-agency-process-step:last-child .sf-agency-process-bar').getBoundingClientRect();
         return {height:box.height,top:wrap.top-box.top,paddingTop:parseFloat(cs.paddingTop),
+          layoutGap:getComputedStyle(layout).gap,layoutWidth:layout.getBoundingClientRect().width,
+          trackWidth:track.width,trackRight:track.right,lastBarRight:lastBar.right,
           bottom:box.bottom-card.bottom,paddingBottom:parseFloat(cs.paddingBottom),
           imageHeight:image.height,footBottom:foot.bottom,cardBottom:card.bottom,overflow:el.scrollHeight>el.clientHeight+1};
       });
+      assert(Math.abs(geometry.trackWidth-geometry.layoutWidth)<=2,
+        'Three process steps fill the complete available layout width: '+JSON.stringify(geometry));
+      assert(Math.abs(geometry.lastBarRight-geometry.trackRight)<=2,
+        'Final progress bar reaches the right content edge: '+JSON.stringify(geometry));
+      assert.equal(geometry.layoutGap,'0px','Legacy desktop 7% row gap must not survive on mobile');
       assert(Math.abs(geometry.top-geometry.paddingTop)<=1,'Process no longer floats vertically in unused space');
       assert(Math.abs(geometry.bottom-geometry.paddingBottom)<=1,'Process card fills remaining stage height');
       assert(geometry.imageHeight>=119,'Artwork retains a useful minimum');

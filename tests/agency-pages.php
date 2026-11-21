@@ -392,6 +392,17 @@ agency_page_check( str_contains( $process_widget, 'data-agency-widget="process"'
 
 $GLOBALS['mode'] = 'agency';
 
+// Isolated real section for testing a first-child inner Agency page. The
+// composite widgets fixture intentionally has other blocks before Process.
+if ( in_array( '--render=process', $argv, true ) ) {
+    $local = str_replace( 'https://codela.test/wp-content/themes/codela-storefront/',
+        '/theme/codela-storefront/', $process_widget );
+    echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
+    echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/storefront-base.css">';
+    echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/agency.css">';
+    echo '</head><body class="sf-site-mode-agency"><main class="sf-content"><div class="codela-page-layout">' . $local . '</div></main></body></html>';
+    exit;
+}
 
 if ( in_array( '--render=widgets', $argv, true ) ) {
     $widget_data['items'][0]['title'] = 'Design';
