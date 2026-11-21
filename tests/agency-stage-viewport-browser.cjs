@@ -48,7 +48,7 @@ const server=http.createServer((req,res)=>{
   if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){
     res.statusCode=404;return res.end();
   }
-  res.setHeader('Content-Type',file.endsWith('.css')?'text/css':file.endsWith('.jpg')?'image/jpeg':'text/plain');
+  res.setHeader('Content-Type',file.endsWith('.css')?'text/css':file.endsWith('.jpg')?'image/jpeg':file.endsWith('.svg')?'image/svg+xml':'text/plain');
   res.end(fs.readFileSync(file));
 });
 const rect=e=>{

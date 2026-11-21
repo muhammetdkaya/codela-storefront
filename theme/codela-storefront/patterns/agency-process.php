@@ -14,9 +14,9 @@ echo codela_sf_section_agency_process( [
     'title' => 'Nasıl Çalışıyoruz?',
     'description' => '',
     'items' => [
-        [ 'enabled' => true, 'title' => 'Analiz ve Altyapı', 'body' => 'Projenin kapsamı, kullanıcı akışı ve teknik planı netleşir.' ],
-        [ 'enabled' => true, 'title' => 'Tasarım ve Geliştirme', 'body' => 'Markanıza özel hızlı arayüz ve tüm entegrasyonlar tamamlanır.' ],
-        [ 'enabled' => true, 'title' => 'Test, Yayın ve Destek', 'body' => 'Hız ve güvenlik kontrolleri sonrası siteniz güvenle yayına alınır.' ],
+        [ 'enabled' => true, 'title' => 'Analiz ve Altyapı', 'body' => 'Hedefleri, kullanıcı ihtiyaçlarını ve içerik yapısını netleştirir; yol haritasını oluştururuz.' ],
+        [ 'enabled' => true, 'title' => 'Tasarım ve Geliştirme', 'body' => 'Özgün arayüzü geliştirir, gerekli yönetim ve entegrasyon akışlarını kurarız.' ],
+        [ 'enabled' => true, 'title' => 'Test, Yayın ve Destek', 'body' => 'Mobil görünümü, temel performansı ve kritik akışları test ederek yayına hazırlarız.' ],
     ],
 ] );
 ?>

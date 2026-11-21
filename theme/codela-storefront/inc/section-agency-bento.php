@@ -18,6 +18,19 @@ function codela_sf_section_agency_bento( array $data, string $type = '' ): strin
     } ) );
     if ( ! $items ) { return ''; }
     $title = trim( (string) ( $data['title'] ?? '' ) ) ?: 'Uzmanlık Alanları';
+    // Existing installed Agency websites have editor-owned copy from 1.2.28.
+    // Only the fully untouched starter gets the improved short labels at render
+    // time; custom titles or descriptions keep their exact saved values.
+    $legacy_titles = [ 'Web Tasarım', 'E-Ticaret', 'Özel Yazılım', 'Optimizasyon / Destek' ];
+    $legacy_bodies = [ 'Kurumsal · Arayüz · Dönüşüm', 'Satış · Akış',
+        'Ölçek · API', 'Hız · Güvenlik · Sürekli bakım' ];
+    $editorial_tags = [ 'Kurumsal · UI/UX · WordPress',
+        'WooCommerce · POS · Kargo', 'Eklenti · API · Entegrasyon',
+        'Performans · Güvenlik · Bakım' ];
+    $untouched_starter = 'agency-starter-bento' === (string) ( $data['id'] ?? '' )
+        && 'Uzmanlık Alanları' === $title && 4 === count( $items )
+        && array_column( $items, 'title' ) === $legacy_titles
+        && array_column( $items, 'body' ) === $legacy_bodies;
     $services = codela_sf_agency_page_url( 'hizmetler', home_url( '/hizmetler/' ) );
     $slugs = [ 'web-tasarimi', 'e-ticaret', 'ozel-yazilim', 'gelistirme-destek' ];
     $types = [ 'web', 'commerce', 'software', 'support' ];
@@ -42,7 +55,7 @@ function codela_sf_section_agency_bento( array $data, string $type = '' ): strin
               $href = codela_sf_agency_page_url( 'hizmetler/' . $slugs[ $index ], $services );
               $display = trim( (string) ( $item['title'] ?? '' ) );
               $body = trim( (string) ( $item['body'] ?? '' ) );
-              $tag = $body ?: $tags[ $index ];
+              $tag = $untouched_starter ? $editorial_tags[ $index ] : ( $body ?: $tags[ $index ] );
               ?>
               <a class="cdl-bento__card cdl-bento__card--<?php echo esc_attr( $variant ); ?> cdl-bento__reveal"
                  style="--cdl-bento-order:<?php echo esc_attr( (string) ( $index + 1 ) ); ?>"

@@ -136,34 +136,47 @@ function codela_sf_section_agency_services( array $data, string $type = '' ): st
         'Kurumsal Web & Redesign', 'Elementor & Özel Widget',
         'WooCommerce & E-Ticaret', 'Özel Eklenti & API',
     ];
+    $legacy_bodies = [
+        'Markanıza özel, mobil öncelikli WordPress arayüzleri.',
+        'Figma tasarımını hassas ve kolay yönetilebilir bileşenlere dönüştürürüz.',
+        'Ödeme, kargo ve dönüşüm akışlarıyla eksiksiz mağazalar.',
+        'ERP/CRM entegrasyonları ve işinize özel WordPress çözümleri.',
+    ];
+    $approved_titles = [ 'E-Ticaret', 'Web Tasarım', 'Özel Yazılım', 'Bakım ve Geliştirme' ];
+    // Render the new editor values directly; only the exact old starter receives
+    // the fallback offer copy. A visitor-edited legacy body is never replaced.
     $untouched = $starter && count( $items ) === 4
-        && array_column( $items, 'title' ) === $legacy_titles;
-    $labels = [ 'E-TİCARET', 'WEB TASARIMI', 'ÖZEL YAZILIM', 'GELİŞTİRME & DESTEK' ];
+        && array_column( $items, 'title' ) === $legacy_titles
+        && array_column( $items, 'body' ) === $legacy_bodies;
+    $approved = $starter && count( $items ) === 4
+        && array_column( $items, 'title' ) === $approved_titles;
+    $starter_offer = $untouched || $approved;
+    $labels = [ 'E-TİCARET', 'WEB TASARIMI', 'ÖZEL YAZILIM', 'BAKIM & GELİŞTİRME' ];
     $tones = [ 'commerce', 'web', 'code', 'support' ];
     $colors = [ '#647961', '#82766a', '#5968b6', '#9b7364' ];
     $chips = [ [ 'WooCommerce', 'Sanal POS', 'Sipariş' ],
         [ 'WordPress', 'Özel tasarım', 'Elementor' ],
         [ 'Özel eklenti', 'API', 'ERP / CRM' ],
-        [ 'Hız', 'Güvenlik', 'Bakım' ] ];
+        [ 'Hız', 'Bakım', 'Geliştirme' ] ];
     $slugs = [ 'e-ticaret', 'web-tasarimi', 'ozel-yazilim', 'gelistirme-destek' ];
     if ( $untouched ) {
         $items = [
             [ 'title' => 'Satışa hazır e-ticaret siteleri.',
-              'body' => 'Markanıza özel mağaza tasarımı, ürün yönetimi, güvenli ödeme ve kargo entegrasyonları.' ],
+              'body' => 'Ürün keşfi, güvenli ödeme, sipariş yönetimi ve kargoyu birleştiren WooCommerce mağazaları.' ],
             [ 'title' => 'Markanıza özel web siteleri.',
-              'body' => 'Kurumsal web siteleri, özgün arayüzler ve mevcut sitelerin modern tasarımla yenilenmesi.' ],
+              'body' => 'Özgün, mobil uyumlu kurumsal siteler ve kolay yönetilebilir WordPress sayfaları.' ],
             [ 'title' => 'İşinize özel yazılım çözümleri.',
-              'body' => 'İşletmenizin ihtiyaçlarına uygun eklentiler, entegrasyonlar ve otomasyonlar.' ],
-            [ 'title' => 'Mevcut sitenizi ileri taşıyın.',
-              'body' => 'Performans iyileştirmeleri, yeni özellikler, teknik bakım ve altyapı geliştirmeleri.' ],
+              'body' => 'İş akışınıza uygun eklentiler, yönetim panelleri ve API bağlantıları.' ],
+            [ 'title' => 'Bakım ve geliştirme.',
+              'body' => 'Mevcut siteniz için hız, güvenlik, teknik bakım ve yeni özellik geliştirme.' ],
         ];
     }
     $heading_title = trim( (string) ( $data['title'] ?? '' ) );
     $lead = trim( (string) ( $data['description'] ?? '' ) );
-    $known_titles = [ 'WordPress üzerine her türlü çözüm.', 'Fikirden yayına, yanınızdayız.' ];
+    $known_titles = [ 'WordPress üzerine her türlü çözüm.', 'Fikirden yayına, yanınızdayız.', 'Web sitenizden özel yazılıma.' ];
     $known_leads = [ 'İhtiyaca uygun tasarım, e-ticaret ve özel geliştirme hizmetleri.',
         'İhtiyacınıza göre tasarlanan, kullanımı kolay ve hızlı dijital çözümler.' ];
-    $editorial_title = $untouched && in_array( $heading_title, $known_titles, true );
+    $editorial_title = $starter_offer && in_array( $heading_title, $known_titles, true );
     if ( $untouched && in_array( $lead, $known_leads, true ) ) {
         $lead = 'Markanız için web, e-ticaret ve özel yazılım çözümleri geliştiriyoruz.';
     }
@@ -193,8 +206,8 @@ function codela_sf_section_agency_services( array $data, string $type = '' ): st
         <div class="sf-agency-service-track" data-agency-widget-track role="region" tabindex="0" aria-label="Hizmet kartları">
           <?php foreach ( $items as $index => $item ) : ?>
             <?php
-            $label = $untouched ? $labels[ $index ] : (string) $item['title'];
-            $chips_for_item = $untouched ? $chips[ $index ] : [];
+            $label = $starter_offer ? $labels[ $index ] : (string) $item['title'];
+            $chips_for_item = $starter_offer ? $chips[ $index ] : [];
             $slug = $slugs[ $index ];
             // Never invent an unpublished service permalink: fall back to the real Services page.
             $detail_href = codela_sf_agency_page_url( 'hizmetler/' . $slug, $services );
@@ -211,7 +224,7 @@ function codela_sf_section_agency_services( array $data, string $type = '' ): st
                 <div class="sf-agency-mini-ui">
                   <div class="sf-agency-mini-bar"><i></i><i></i><i></i><small><?php echo esc_html( [ 'SHOP', 'STUDIO', 'WORKSPACE', 'PERFORMANCE' ][ $index ] ); ?></small></div>
                   <?php if ( 0 === $index ) : ?>
-                    <div class="sf-agency-mini-products"><span><i></i><b></b></span><span><i></i><b></b></span><span><i></i><b></b></span></div>
+                    <img class="sf-agency-mini-preview" src="<?php echo esc_url( get_template_directory_uri() . '/assets/media/agency-storefront-interface.svg' ); ?>" alt="" loading="lazy" decoding="async" width="1200" height="560" />
                   <?php elseif ( 1 === $index ) : ?>
                     <div class="sf-agency-mini-site"><div><b></b><b></b><i></i><i></i><em></em></div><figure></figure></div>
                   <?php elseif ( 2 === $index ) : ?>
@@ -252,10 +265,29 @@ function codela_sf_section_agency_services( array $data, string $type = '' ): st
 function codela_sf_section_agency_process( array $data, string $type = '' ): string {
     $items = codela_sf_section_agency_items( $data, 3 );
     if ( ! $items ) { return ''; }
+    // Keep the existing editor contract. Only a byte-for-byte pristine Agency
+    // starter displays the refreshed content before its guarded DB migration.
+    $legacy_process = 'agency-starter-process' === (string) ( $data['id'] ?? '' )
+        && 'Birlikte nasıl çalışıyoruz?' === trim( (string) ( $data['title'] ?? '' ) )
+        && 'Keşiften yayına kadar şeffaf ve ölçülebilir bir iş akışı.' === (string) ( $data['description'] ?? '' )
+        && array_column( $items, 'title' ) === [ 'Analiz, UX ve Altyapı', 'Tasarım ve Geliştirme', 'Test, Yayın ve Destek' ]
+        && array_column( $items, 'body' ) === [
+            'Hedefleri, içerik mimarisini ve doğru teknolojiyi belirleriz.',
+            'Özel arayüz, Elementor bileşenleri ve entegrasyonları geliştiririz.',
+            'Performans, mobil ve güvenlik kontrolleri sonrasında yayına alırız.',
+        ];
+    if ( $legacy_process ) {
+        $data['description'] = 'Keşiften yayına, hangi adımda ne yaptığımızı açıkça paylaşıyoruz.';
+        $items = [
+            [ 'title' => 'Keşif ve Planlama', 'body' => 'Hedefleri, kullanıcı ihtiyaçlarını ve içerik yapısını netleştirir; yol haritasını oluştururuz.' ],
+            [ 'title' => 'Tasarım ve Geliştirme', 'body' => 'Özgün arayüzü geliştirir, gerekli yönetim ve entegrasyon akışlarını kurarız.' ],
+            [ 'title' => 'Test, Yayın ve Destek', 'body' => 'Mobil görünümü, temel performansı ve kritik akışları test ederek yayına hazırlarız.' ],
+        ];
+    }
     $id = 'sf-agency-process-' . sanitize_html_class( (string) ( $data['id'] ?? 'process' ) );
     $labels = [ 'Keşif', 'Üretim', 'Yayın' ];
-    $outcomes = [ 'Net Yol Haritası', 'Hazır Dijital Ürün', 'Sorunsuz Canlı Yayın' ];
-    $images = [ 'mona-studio-hero.jpg', 'mona-bento-web.jpg', 'mona-studio-hero.jpg' ];
+    $outcomes = [ 'Net Yol Haritası', 'Geliştirilen Dijital Deneyim', 'Kontrol Edilmiş, Yayına Hazır' ];
+    $images = [ 'agency-process-discovery.svg', 'agency-process-build.svg', 'agency-process-launch.svg' ];
     $count = count( $items );
     $next = static function( int $index ) use ( $labels, $count ): string {
         return $index === $count - 1 ? 'Süreci Başlat' : 'Sonraki: ' . $labels[ $index + 1 ];

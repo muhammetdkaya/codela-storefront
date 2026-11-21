@@ -720,6 +720,7 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
 .sf-agency-widget--services-v3 .sf-agency-mini-bar small{
   margin-left:auto;font-size:6px;letter-spacing:.11em;font-weight:700;color:#92928f
 }
+.sf-agency-widget--services-v3 .sf-agency-mini-preview{display:block;width:100%;height:calc(100% - 23px);object-fit:cover;object-position:top center}
 .sf-agency-widget--services-v3 .sf-agency-mini-products{
   display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:11px
 }

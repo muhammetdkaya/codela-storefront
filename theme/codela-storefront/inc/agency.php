@@ -130,6 +130,27 @@ add_action( 'wp_enqueue_scripts', static function() {
 }, 30 );
 add_action( 'enqueue_block_editor_assets', 'codela_sf_agency_styles' );
 
+/** Fix the generic WooCommerce tab title only on the verified Codela Agency homepage. */
+add_filter( 'document_title_parts', static function( array $parts ): array {
+    if ( ! function_exists( 'is_front_page' ) || ! is_front_page() ) { return $parts; }
+    $stale_tagline = 'Checkout, shipping and notifications for WooCommerce.';
+    $is_stale = 'WooCommerce' === trim( (string) get_option( 'blogname', '' ) )
+        || $stale_tagline === trim( (string) ( $parts['tagline'] ?? '' ) )
+        || $stale_tagline === trim( (string) get_option( 'blogdescription', '' ) );
+    if ( ! $is_stale ) { return $parts; }
+    $state = get_option( 'codela_agency_demo_state_v1', [] );
+    $home = is_array( $state ) && ! empty( $state['done'] ) ? (int) ( $state['pages']['home'] ?? 0 ) : 0;
+    if ( ! $home || 'page' !== get_option( 'show_on_front' )
+        || $home !== (int) get_option( 'page_on_front' )
+        || 'codela-agency-starter:1:home' !== get_post_meta( $home, '_codela_agency_demo_key', true ) ) { return $parts; }
+    $parts['title'] = 'Web Tasarım, E-Ticaret ve Yazılım';
+    $parts['site'] = 'Codela';
+    if ( isset( $parts['tagline'] ) && $stale_tagline === trim( (string) $parts['tagline'] ) ) {
+        unset( $parts['tagline'] );
+    }
+    return $parts;
+}, 20 );
+
 /** Native admin-post action: nonce, honeypot, throttling and sanitized plain text. */
 function codela_sf_agency_contact_submit(): void {
     $base = codela_sf_agency_contact_link();

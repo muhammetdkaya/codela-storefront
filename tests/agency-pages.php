@@ -248,6 +248,13 @@ $bento_data = [ 'schemaVersion'=>1, 'id'=>'agency-starter-bento', 'enabled'=>tru
     ] ];
 $bento_html = codela_sf_section_agency_bento( $bento_data );
 agency_page_check( substr_count( $bento_html, 'cdl-bento__card--' ) === 4, 'MONA reference has four distinct Bento cards.' );
+agency_page_check( str_contains( $bento_html, 'WooCommerce · POS · Kargo' )
+    && str_contains( $bento_html, 'Eklenti · API · Entegrasyon' ),
+    'Unmodified installed Bento starter gets informative service subtitles.' );
+$bento_custom_body = $bento_data;
+$bento_custom_body['items'][1]['body'] = 'Özel marka açıklaması';
+agency_page_check( str_contains( codela_sf_section_agency_bento( $bento_custom_body ), 'Özel marka açıklaması' ),
+    'Any customized Bento card copy remains visible unchanged.' );
 agency_page_check( str_contains( $bento_html, 'mona-bento-web.jpg' ) && ! str_contains( $bento_html, 'base64,' ), 'Real source asset is loaded separately.' );
 agency_page_check( str_contains( $bento_html, 'https://codela.test/hizmetler/' ), 'Unpublished detail falls back to published Services page.' );
 $bento_edit = $bento_data; $bento_edit['items'][1]['title'] = 'Özel mağaza başlığı';
@@ -361,13 +368,29 @@ $editorial_starter = [
     'title' => 'Fikirden yayına, yanınızdayız.',
     'description' => 'İhtiyacınıza göre tasarlanan, kullanımı kolay ve hızlı dijital çözümler.',
     'items' => [
-        [ 'enabled' => true, 'title' => 'Kurumsal Web & Redesign', 'body' => 'Mobil öncelikli arayüzler.' ],
-        [ 'enabled' => true, 'title' => 'Elementor & Özel Widget', 'body' => 'Özel bileşenler.' ],
-        [ 'enabled' => true, 'title' => 'WooCommerce & E-Ticaret', 'body' => 'Satış akışları.' ],
-        [ 'enabled' => true, 'title' => 'Özel Eklenti & API', 'body' => 'ERP köprüleri.' ],
+        [ 'enabled' => true, 'title' => 'Kurumsal Web & Redesign', 'body' => 'Markanıza özel, mobil öncelikli WordPress arayüzleri.' ],
+        [ 'enabled' => true, 'title' => 'Elementor & Özel Widget', 'body' => 'Figma tasarımını hassas ve kolay yönetilebilir bileşenlere dönüştürürüz.' ],
+        [ 'enabled' => true, 'title' => 'WooCommerce & E-Ticaret', 'body' => 'Ödeme, kargo ve dönüşüm akışlarıyla eksiksiz mağazalar.' ],
+        [ 'enabled' => true, 'title' => 'Özel Eklenti & API', 'body' => 'ERP/CRM entegrasyonları ve işinize özel WordPress çözümleri.' ],
     ],
 ];
 $editorial_html = codela_sf_section_agency_services( $editorial_starter );
+$edited_starter = $editorial_starter;
+$edited_starter['items'][0]['body'] = 'Kullanıcının özel hizmet açıklaması.';
+agency_page_check( str_contains( codela_sf_section_agency_services( $edited_starter ), 'Kullanıcının özel hizmet açıklaması.' ),
+    'Modified legacy item descriptions are not replaced by starter defaults.' );
+$approved_starter = $editorial_starter;
+$approved_starter['title'] = 'Web sitenizden özel yazılıma.';
+$approved_starter['items'] = [
+    [ 'enabled' => true, 'title' => 'E-Ticaret', 'body' => 'WooCommerce mağazaları.' ],
+    [ 'enabled' => true, 'title' => 'Web Tasarım', 'body' => 'Markaya özel siteler.' ],
+    [ 'enabled' => true, 'title' => 'Özel Yazılım', 'body' => 'Yönetim ve entegrasyonlar.' ],
+    [ 'enabled' => true, 'title' => 'Bakım ve Geliştirme', 'body' => 'Teknik bakım.' ],
+];
+$approved_html = codela_sf_section_agency_services( $approved_starter );
+agency_page_check( str_contains( $approved_html, 'WooCommerce mağazaları.' )
+    && str_contains( $approved_html, 'BAKIM &amp; GELİŞTİRME' ),
+    'Approved editor copy and branded service labels coexist.' );
 agency_page_check( str_contains( $editorial_html, 'Web sitenizden <span class="sf-agency-service-accent">özel yazılıma.</span>' ),
     'Default service heading adopts the approved editorial text and animated accent.' );
 agency_page_check( strpos( $editorial_html, 'Satışa hazır e-ticaret siteleri.' ) <
@@ -388,7 +411,29 @@ $process_data = [
     ],
 ];
 $process_widget = codela_sf_section_agency_process( $process_data );
+$legacy_process = [
+    'id' => 'agency-starter-process',
+    'title' => 'Birlikte nasıl çalışıyoruz?',
+    'description' => 'Keşiften yayına kadar şeffaf ve ölçülebilir bir iş akışı.',
+    'items' => [
+        [ 'enabled' => true, 'title' => 'Analiz, UX ve Altyapı', 'body' => 'Hedefleri, içerik mimarisini ve doğru teknolojiyi belirleriz.' ],
+        [ 'enabled' => true, 'title' => 'Tasarım ve Geliştirme', 'body' => 'Özel arayüz, Elementor bileşenleri ve entegrasyonları geliştiririz.' ],
+        [ 'enabled' => true, 'title' => 'Test, Yayın ve Destek', 'body' => 'Performans, mobil ve güvenlik kontrolleri sonrasında yayına alırız.' ],
+    ],
+];
+agency_page_check( str_contains( codela_sf_section_agency_process( $legacy_process ), 'Keşif ve Planlama' ),
+    'Untouched process starter renders refined copy before the data migration.' );
+$custom_process = $legacy_process;
+$custom_process['items'][0]['body'] = 'Kullanıcının kendi keşif metni.';
+agency_page_check( str_contains( codela_sf_section_agency_process( $custom_process ), 'Kullanıcının kendi keşif metni.' ),
+    'Edited process copy is not overwritten.' );
 agency_page_check( substr_count( $process_widget, 'data-agency-widget-step="' ) === 3, 'Reusable process has three steps.' );
+preg_match_all( '/data-agency-stage-image="([^"]+)"/', $process_widget, $stage_images );
+agency_page_check( count( $stage_images[1] ) === 3 && count( array_unique( $stage_images[1] ) ) === 3,
+    'Each process step has its own image.' );
+foreach ( [ 'agency-process-discovery.svg', 'agency-process-build.svg', 'agency-process-launch.svg', 'agency-storefront-interface.svg' ] as $asset ) {
+    agency_page_check( is_file( __DIR__ . '/../theme/codela-storefront/assets/media/' . $asset ), 'Visual exists: ' . $asset );
+}
 agency_page_check( str_contains( $process_widget, 'data-agency-widget-next' )
     && str_contains( $process_widget, 'data-agency-widget-prev' )
     && str_contains( $process_widget, 'sf-agency-process-bar' ),
