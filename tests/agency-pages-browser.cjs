@@ -49,14 +49,13 @@ const server = http.createServer((req, res) => {
       if (width === 390 || width === 1440) await page.screenshot({path:path.join(root,'qa/agency-services-'+width+'.png'),fullPage:true});
 
       await page.goto('http://127.0.0.1:'+port+'/?page=about');
-      assert.equal(await page.locator('.sf-agency-process-head h2').count(),1,'About now has the one approved Process heading');
-      assert.equal(await page.locator('[data-agency-widget-step]').count(),3,'Three process steps');
+      assert.equal(await page.locator('.sf-about-hero h1').count(),1,'About has one heading, no second page title');
+      assert.equal(await page.locator('.sf-about-approach h2').count(),1,'Short approach content has a single heading');
+      assert.equal(await page.locator('.sf-about-principle').count(),3,'Three principles reuse one shared surface');
+      assert.equal(await page.locator('.sf-about-surface').count(),2,'Approach and CTA reuse one glass material');
+      assert.equal(await page.locator('[data-agency-widget-step]').count(),0,'Retired process widget is absent');
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth+1),'No about overflow at '+width);
-      await page.locator('[data-agency-widget-step="1"]').click();
-      assert.equal(await page.locator('[data-agency-widget-stage]').getAttribute('data-step'),'1','Process stage changes by click');
-      assert.equal(await page.locator('[data-agency-widget-counter]').textContent(),'2 / 3','Process counter follows active stage');
-      await page.locator('[data-agency-widget-step="2"]').press('Enter');
-      assert.equal(await page.locator('[data-agency-widget-stage]').getAttribute('data-step'),'2','Process stage keyboard interaction');
+      assert((await page.locator('.sf-about-actions a[href]').count()) >= 3,'All project and contact calls to action remain linked');
       if (width === 390 || width === 1440) await page.screenshot({path:path.join(root,'qa/agency-about-'+width+'.png'),fullPage:true});
 
       await page.goto('http://127.0.0.1:'+port+'/?page=contact&hizmetler='+encodeURIComponent('WooCommerce E-Ticaret Mağazası'));
@@ -76,9 +75,9 @@ const server = http.createServer((req, res) => {
     await noJs.goto('http://127.0.0.1:'+port+'/?page=services');
     assert.equal(await noJs.locator('.cdl-bento__card').count(),4,'All four Bento service links work without JavaScript');
     await noJs.goto('http://127.0.0.1:'+port+'/?page=about');
-    assert.equal(await noJs.locator('[data-agency-widget-step]').count(),3,'Process text remains visible without JavaScript');
+    assert.equal(await noJs.locator('.sf-about-principle').count(),3,'All About principles render without JavaScript');
     assert.deepEqual(errors,[],'No uncaught errors');
-    console.log('Agency Services/About/Contact: four widths, filter, scope handoff, process, form and no-JS passed.');
+    console.log('Agency Services/About/Contact: four widths, filter, compact About, form and no-JS passed.');
   } catch(error) {
     if(page) await page.screenshot({path:path.join(root,'qa/agency-pages-failure.png'),fullPage:true});
     throw error;

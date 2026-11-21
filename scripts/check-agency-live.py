@@ -99,7 +99,7 @@ def check() -> None:
     expected = {
         "/": [],  # Dedicated native Agency starter checked separately below
         "/hizmetler/": ["sf-agency-widget--bento", "cdl-bento__grid", "cdl-bento__card--web", "cdl-bento__card--commerce", "cdl-bento__card--software", "cdl-bento__card--support"],
-        "/hakkimizda/": ["sf-agency-widget--process", "data-agency-widget-step", "data-agency-widget-stage", "sf-agency-process-next", "sf-agency-process-stage-visual"],
+        "/hakkimizda/": ["sf-agency-widget--about", "sf-about-hero", "sf-about-principles", "sf-about-principle", "sf-about-contact"],
         "/iletisim/": ["sf-agency-widget--contact-bento", "cdl-contact__grid", "cdl-contact__card--primary", "cdl-contact__form", "admin-post.php", "agency_contact_nonce", "agency_webpage", "agency_consent", "data-agency-contact-services"],
     }
     for attempt in range(3):
@@ -127,8 +127,8 @@ def check() -> None:
                     missing = [marker for marker in markers if marker not in html]
                 if path == "/hizmetler/" and "sf-agency-module-grid" in html:
                     missing.append("legacy service module grid still present")
-                if path == "/hakkimizda/" and "sf-agency-about-intro" in html:
-                    missing.append("legacy About information section still present")
+                if path == "/hakkimizda/" and ("sf-agency-about-intro" in html or "data-agency-widget-step=" in html):
+                    missing.append("legacy About or process widget still present")
                 if missing:
                     errors.append(f"{path}: missing {', '.join(missing)}")
                 else:
