@@ -267,22 +267,29 @@ function codela_sf_section_agency_process( array $data, string $type = '' ): str
     if ( ! $items ) { return ''; }
     // Keep the existing editor contract. Only a byte-for-byte pristine Agency
     // starter displays the refreshed content before its guarded DB migration.
-    $legacy_process = 'agency-starter-process' === (string) ( $data['id'] ?? '' )
-        && 'Birlikte nasıl çalışıyoruz?' === trim( (string) ( $data['title'] ?? '' ) )
-        && 'Keşiften yayına kadar şeffaf ve ölçülebilir bir iş akışı.' === (string) ( $data['description'] ?? '' )
-        && array_column( $items, 'title' ) === [ 'Analiz, UX ve Altyapı', 'Tasarım ve Geliştirme', 'Test, Yayın ve Destek' ]
-        && array_column( $items, 'body' ) === [
+    // Existing published Studio+Bento installations may have a partially
+    // customized Process block. Upgrade only stock fields individually.
+    if ( 'agency-starter-process' === (string) ( $data['id'] ?? '' ) ) {
+        if ( 'Keşiften yayına kadar şeffaf ve ölçülebilir bir iş akışı.' === (string) ( $data['description'] ?? '' ) ) {
+            $data['description'] = 'Keşiften yayına, hangi adımda ne yaptığımızı açıkça paylaşıyoruz.';
+        }
+        $old_titles = [ 'Analiz, UX ve Altyapı', 'Tasarım ve Geliştirme', 'Test, Yayın ve Destek' ];
+        $old_bodies = [
             'Hedefleri, içerik mimarisini ve doğru teknolojiyi belirleriz.',
             'Özel arayüz, Elementor bileşenleri ve entegrasyonları geliştiririz.',
             'Performans, mobil ve güvenlik kontrolleri sonrasında yayına alırız.',
         ];
-    if ( $legacy_process ) {
-        $data['description'] = 'Keşiften yayına, hangi adımda ne yaptığımızı açıkça paylaşıyoruz.';
-        $items = [
-            [ 'title' => 'Keşif ve Planlama', 'body' => 'Hedefleri, kullanıcı ihtiyaçlarını ve içerik yapısını netleştirir; yol haritasını oluştururuz.' ],
-            [ 'title' => 'Tasarım ve Geliştirme', 'body' => 'Özgün arayüzü geliştirir, gerekli yönetim ve entegrasyon akışlarını kurarız.' ],
-            [ 'title' => 'Test, Yayın ve Destek', 'body' => 'Mobil görünümü, temel performansı ve kritik akışları test ederek yayına hazırlarız.' ],
+        $new_titles = [ 'Keşif ve Planlama', 'Tasarım ve Geliştirme', 'Test, Yayın ve Destek' ];
+        $new_bodies = [
+            'İhtiyaçlarınızı dinler; kapsamı, öncelikleri ve çalışma takvimini birlikte netleştiririz.',
+            'Tasarımı onayınıza sunar, geliştirmeyi tamamlar ve ilerlemeyi sizinle paylaşırız.',
+            'Mobil kullanım, hız ve temel işlevleri kontrol eder; projenizi yayına alırız.',
         ];
+        foreach ( $items as $index => &$item ) {
+            if ( (string) $item['title'] === $old_titles[ $index ] ) { $item['title'] = $new_titles[ $index ]; }
+            if ( (string) ( $item['body'] ?? '' ) === $old_bodies[ $index ] ) { $item['body'] = $new_bodies[ $index ]; }
+        }
+        unset( $item );
     }
     $id = 'sf-agency-process-' . sanitize_html_class( (string) ( $data['id'] ?? 'process' ) );
     $labels = [ 'Keşif', 'Üretim', 'Yayın' ];

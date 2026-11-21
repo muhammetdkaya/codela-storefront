@@ -113,7 +113,7 @@ $detail_reference = [
     'web' => [ 'title'=>'Web Tasarım',
       'description'=>'Markanızın duruşunu ilk saniyede hissettiren, mobil öncelikli ve dönüşüm odaklı modern web arayüzleri tasarlıyoruz.',
       'labels'=>['UI / UX Tasarım','Kurumsal Web','Landing Page','Tasarım Sistemi'],
-      'asset'=>'mona-bento-web.jpg','tag'=>'Kurumsal · Arayüz' ],
+      'asset'=>'agency-bento-web.svg','tag'=>'Kurumsal · Arayüz' ],
     'commerce' => [ 'title'=>'E-Ticaret',
       'description'=>'Hızlı ürün keşfi, pürüzsüz sepet akışı ve güvenli ödeme entegrasyonlarıyla satışa odaklanan mağazalar kuruyoruz.',
       'labels'=>['Özel Mağaza','Sepet & Ödeme','Mobil Alışveriş','Dönüşüm Kurgusu'],
@@ -248,14 +248,17 @@ $bento_data = [ 'schemaVersion'=>1, 'id'=>'agency-starter-bento', 'enabled'=>tru
     ] ];
 $bento_html = codela_sf_section_agency_bento( $bento_data );
 agency_page_check( substr_count( $bento_html, 'cdl-bento__card--' ) === 4, 'MONA reference has four distinct Bento cards.' );
-agency_page_check( str_contains( $bento_html, 'WooCommerce · POS · Kargo' )
-    && str_contains( $bento_html, 'Eklenti · API · Entegrasyon' ),
-    'Unmodified installed Bento starter gets informative service subtitles.' );
+agency_page_check( str_contains( $bento_html, 'Ürün, ödeme ve kargo süreçleri bir arada çalışan online mağazalar.' )
+    && str_contains( $bento_html, 'İşinize özel paneller, eklentiler ve sistem entegrasyonları.' )
+    && str_contains( $bento_html, 'Bakım ve geliştirme' ),
+    'Active installed Bento starter gets complete customer-oriented service copy and support title.' );
 $bento_custom_body = $bento_data;
 $bento_custom_body['items'][1]['body'] = 'Özel marka açıklaması';
 agency_page_check( str_contains( codela_sf_section_agency_bento( $bento_custom_body ), 'Özel marka açıklaması' ),
     'Any customized Bento card copy remains visible unchanged.' );
 agency_page_check( str_contains( $bento_html, 'mona-bento-web.jpg' ) && ! str_contains( $bento_html, 'base64,' ), 'Real source asset is loaded separately.' );
+agency_page_check( str_contains( $bento_html, 'agency-bento-commerce.svg' ) && str_contains( $bento_html, 'agency-bento-software.svg' )
+    && str_contains( $bento_html, 'agency-bento-support.svg' ), 'Each visible Bento card has a service-specific image.' );
 agency_page_check( str_contains( $bento_html, 'https://codela.test/hizmetler/' ), 'Unpublished detail falls back to published Services page.' );
 $bento_edit = $bento_data; $bento_edit['items'][1]['title'] = 'Özel mağaza başlığı';
 agency_page_check( str_contains( codela_sf_section_agency_bento( $bento_edit ), 'Özel mağaza başlığı' ), 'Editor copy is never silently replaced.' );
@@ -274,10 +277,10 @@ $studio_data = [ 'id' => 'agency-starter-studio', 'title' => 'Markanız için di
     'description' => 'Web tasarım, e-ticaret ve özel yazılım çözümleri.', 'items' => [] ];
 $studio_html = codela_sf_section_agency_studio( $studio_data, '', true );
 agency_page_check( substr_count( $studio_html, '<h1 ' ) === 1, 'Studio welcome has one primary H1.' );
-agency_page_check( str_contains( $studio_html, 'Markanız için' ) && str_contains( $studio_html, 'dijitalin ötesinde.' ) &&
+agency_page_check( str_contains( $studio_html, 'Markanıza özel' ) && str_contains( $studio_html, 'web siteleri, e-ticaret ve yazılım.' ) &&
     str_contains( $studio_html, 'mona-studio-hero.jpg' ) && ! str_contains( $studio_html, 'data:image' ),
-    'Studio welcome preserves supplied image and copy without inline base64.' );
-agency_page_check( str_contains( $studio_html, 'https://codela.test/hizmetler/' ), 'Studio CTA resolves the installed Services page.' );
+    'Active Studio welcome shows approved headline and retains hero image.' );
+agency_page_check( str_contains( $studio_html, 'https://codela.test/hizmetler/' ) && str_contains( $studio_html, 'Projenizi konuşalım' ), 'Studio retains Services link and adds project contact CTA.' );
 $studio_custom = $studio_data; $studio_custom['title'] = 'Özgün bir başlık';
 agency_page_check( str_contains( codela_sf_section_agency_studio( $studio_custom ), 'Özgün bir başlık' ),
     'Studio never replaces user-edited copy.' );
@@ -423,6 +426,12 @@ $legacy_process = [
 ];
 agency_page_check( str_contains( codela_sf_section_agency_process( $legacy_process ), 'Keşif ve Planlama' ),
     'Untouched process starter renders refined copy before the data migration.' );
+$partly_edited = $legacy_process;
+$partly_edited['items'][1]['body'] = 'Özel üretim açıklaması.';
+$partly_html = codela_sf_section_agency_process( $partly_edited );
+agency_page_check( str_contains( $partly_html, 'Keşif ve Planlama' )
+    && str_contains( $partly_html, 'Özel üretim açıklaması.' ),
+    'Partial edits do not block upgrades of other untouched Process items.' );
 $custom_process = $legacy_process;
 $custom_process['items'][0]['body'] = 'Kullanıcının kendi keşif metni.';
 agency_page_check( str_contains( codela_sf_section_agency_process( $custom_process ), 'Kullanıcının kendi keşif metni.' ),
@@ -431,7 +440,7 @@ agency_page_check( substr_count( $process_widget, 'data-agency-widget-step="' ) 
 preg_match_all( '/data-agency-stage-image="([^"]+)"/', $process_widget, $stage_images );
 agency_page_check( count( $stage_images[1] ) === 3 && count( array_unique( $stage_images[1] ) ) === 3,
     'Each process step has its own image.' );
-foreach ( [ 'agency-process-discovery.svg', 'agency-process-build.svg', 'agency-process-launch.svg', 'agency-storefront-interface.svg' ] as $asset ) {
+foreach ( [ 'agency-process-discovery.svg', 'agency-process-build.svg', 'agency-process-launch.svg', 'agency-storefront-interface.svg', 'agency-bento-web.svg', 'agency-bento-commerce.svg', 'agency-bento-software.svg', 'agency-bento-support.svg' ] as $asset ) {
     agency_page_check( is_file( __DIR__ . '/../theme/codela-storefront/assets/media/' . $asset ), 'Visual exists: ' . $asset );
 }
 agency_page_check( str_contains( $process_widget, 'data-agency-widget-next' )

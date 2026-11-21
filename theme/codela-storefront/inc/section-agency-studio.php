@@ -11,9 +11,17 @@ function codela_sf_section_agency_studio( array $data, string $type = '', bool $
     $heading = $primary && function_exists( 'is_front_page' ) && is_front_page() ? 'h1' : 'h2';
     $title = trim( (string) ( $data['title'] ?? '' ) );
     $lead = trim( (string) ( $data['description'] ?? '' ) );
-    if ( '' === $title ) { $title = 'Markanız için dijitalin ötesinde.'; }
-    if ( '' === $lead ) { $lead = 'Web tasarım, e-ticaret ve özel yazılım çözümleri.'; }
-    $editorial = 'Markanız için dijitalin ötesinde.' === $title;
+    // Match only the two original MONA Studio defaults. Never rewrite an
+    // author's custom title or description in a different Studio section.
+    $starter = 'agency-starter-studio' === (string) ( $data['id'] ?? '' );
+    $approved = 'Markanıza özel web siteleri, e-ticaret ve yazılım.';
+    $approved_lead = 'İşinizi anlatan, satışınızı destekleyen ve günlük işlerinizi kolaylaştıran dijital çözümler geliştiriyoruz.';
+    if ( $starter && 'Markanız için dijitalin ötesinde.' === $title ) { $title = $approved; }
+    if ( $starter && 'Web tasarım, e-ticaret ve özel yazılım çözümleri.' === $lead ) { $lead = $approved_lead; }
+    if ( '' === $title ) { $title = $approved; }
+    if ( '' === $lead ) { $lead = $approved_lead; }
+    $editorial = $approved === $title;
+    $contact = codela_sf_agency_contact_link();
     $services = codela_sf_agency_page_url( 'hizmetler', home_url( '/#sf-agency-services' ) );
     $image = ( function_exists( 'get_template_directory_uri' ) ? get_template_directory_uri() : '' )
         . '/assets/media/mona-studio-hero.jpg';
@@ -24,14 +32,15 @@ function codela_sf_section_agency_studio( array $data, string $type = '', bool $
         <div class="codela-studio-hero__inner">
           <div class="codela-studio-hero__intro">
             <p class="codela-studio-hero__kicker"><span class="codela-studio-hero__dot" aria-hidden="true"></span> CODELA</p>
-            <<?php echo $heading; ?> class="codela-studio-hero__title" id="<?php echo esc_attr( $id ); ?>">
+            <<?php echo $heading; ?> class="codela-studio-hero__title<?php echo $editorial ? ' codela-studio-hero__title--descriptive' : ''; ?>" id="<?php echo esc_attr( $id ); ?>">
               <?php if ( $editorial ) : ?>
-                <span>Markanız için</span><span class="codela-studio-hero__title-muted">dijitalin ötesinde.</span>
+                <span>Markanıza özel</span><span class="codela-studio-hero__title-muted">web siteleri, e-ticaret ve yazılım.</span>
               <?php else : ?>
                 <?php echo esc_html( $title ); ?>
               <?php endif; ?>
             </<?php echo $heading; ?>>
             <p class="codela-studio-hero__lead"><?php echo esc_html( $lead ); ?></p>
+            <a class="codela-studio-hero__contact" href="<?php echo esc_url( $contact ); ?>">Projenizi konuşalım <span aria-hidden="true">↗</span></a>
           </div>
           <div class="codela-studio-hero__visual">
             <img src="<?php echo esc_url( $image ); ?>" alt="Işığı yansıtan cam ve metal yüzeylerden oluşan Codela stüdyo kompozisyonu"
