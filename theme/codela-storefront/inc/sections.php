@@ -81,6 +81,11 @@ function codela_sf_is_compact_about_page(): bool {
     if ( ! function_exists( 'is_singular' ) || ! is_singular( 'page' ) ) { return false; }
     $id = (int) get_queried_object_id();
     if ( $id <= 0 ) { return false; }
+    // The untouched legacy Agency pattern renders this same module until
+    // its owned WordPress page is migrated into a native editor section.
+    $post = get_post( $id );
+    if ( $post && trim( (string) $post->post_content ) ===
+        '<!-- wp:pattern {"slug":"codela-storefront/agency-about"} /-->' ) { return true; }
     $layout = get_post_meta( $id, '_codela_page_layout', true );
     if ( ! is_string( $layout ) || ! str_contains( $layout, 'codela/section-agency-about' )
         || ! function_exists( 'codela_sections_validate_meta' )
