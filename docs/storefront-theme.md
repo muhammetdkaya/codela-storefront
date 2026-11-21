@@ -1,3 +1,9 @@
+## 21 Kasım 2026 — 0.1.379 yayın doğrulaması
+
+Kaynak [72ec04a6](https://github.com/muhammetdkaya/codela-storefront/commit/72ec04a65a24f976a4d5fba5d383afa83cb12c43); test düzeltmesi ve yayın kaynağı [d89ab037](https://github.com/muhammetdkaya/codela-storefront/commit/d89ab037c406e21d7e413c49662ae5c66958b9ad). [CI ve FTP](https://github.com/muhammetdkaya/codela-storefront/actions/runs/44872482291) başarılı. İlk CI yalnız yeni 320×568 senaryosunda mevcut max-height:620px üst hizalama davranışına yanlış merkez beklentisinde durdu; test gerçek kısa ekran sözleşmesine düzeltildi, üretim hizası değiştirilmedi. Chromium ve WebKit menü/hesap kontrolleri 320×568, 390×650/844 ve 1280×900 üzerinde başarılı; uzun menü ve dört bağlantılı menü ayrı doğrulandı. WebKit mobil ekran görüntüsü incelendi. Genel native Menu, Agency, Account ve Checkout doğrulaması geçti.
+
+Canlı codela.dev menü ve /hesabim/ CSS bağlantıları 0.1.379-e2f743cb18e4 olarak gözlendi; iki kartta da tek hafif gradyan ve sakin yüzey doğrulandı. Fiziksel iPhone, kişisel tanınan hesap/PIN/FaceID ile gerçek kimlik doğrulaması yapılmadı. Eklenti değişmedi. Bu kapsam tamamlandı; sonraki adım kullanıcının cihazındaki görsel kabul, yeni talep yoksa tekrar yayın başlatma.
+
 ## Son doğrulanmış devam noktası — 21 Kasım 2026 / 0.1.378 → 0.1.379
 
 **Biten:** Editoryal giriş/menü kartlarında üst üste beyaz ve sıcak yansıma katmanları tek düşük opaklık vurgusuna indirildi. Kontrol kenarları %34–46 parlak gradyan yerine %7–9 eşit ton; blur korunur. Mobil menü üstten başlar, Studio kartı auto boşlukla altta kalır. Menü gövdesinin %100 minimum yüksekliği kaldırılarak header dahil viewport taşması önlendi; uzun içerik tek gövdede kayar. Masaüstü iki sütun ve giriş kartı merkez hizası korunur. Eklenti değişmedi.
