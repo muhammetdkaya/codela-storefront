@@ -248,6 +248,13 @@ $bento_data = [ 'schemaVersion'=>1, 'id'=>'agency-starter-bento', 'enabled'=>tru
     ] ];
 $bento_html = codela_sf_section_agency_bento( $bento_data );
 agency_page_check( substr_count( $bento_html, 'cdl-bento__card--' ) === 4, 'MONA reference has four distinct Bento cards.' );
+agency_page_check( str_contains( $bento_html, 'WooCommerce · POS · Kargo' )
+    && str_contains( $bento_html, 'Eklenti · API · Entegrasyon' ),
+    'Unmodified installed Bento starter gets informative service subtitles.' );
+$bento_custom_body = $bento_data;
+$bento_custom_body['items'][1]['body'] = 'Özel marka açıklaması';
+agency_page_check( str_contains( codela_sf_section_agency_bento( $bento_custom_body ), 'Özel marka açıklaması' ),
+    'Any customized Bento card copy remains visible unchanged.' );
 agency_page_check( str_contains( $bento_html, 'mona-bento-web.jpg' ) && ! str_contains( $bento_html, 'base64,' ), 'Real source asset is loaded separately.' );
 agency_page_check( str_contains( $bento_html, 'https://codela.test/hizmetler/' ), 'Unpublished detail falls back to published Services page.' );
 $bento_edit = $bento_data; $bento_edit['items'][1]['title'] = 'Özel mağaza başlığı';
