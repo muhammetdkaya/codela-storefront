@@ -21,6 +21,7 @@ require_once __DIR__ . '/section-content.php';
 require_once __DIR__ . '/section-agency.php';
 require_once __DIR__ . '/section-agency-studio.php';
 require_once __DIR__ . '/section-agency-bento.php';
+require_once __DIR__ . '/section-agency-about.php';
 require_once __DIR__ . '/section-agency-detail.php';
 require_once __DIR__ . '/section-agency-contact-bento.php';
 require_once __DIR__ . '/section-agency-project.php';
@@ -60,7 +61,7 @@ function codela_sf_sections_capabilities(): array {
 function codela_sf_render_section( $html, string $type, array $data, int $post_id = 0 ): string {
     static $content_rendered = false;
     if ( ! $data['enabled'] ) { return ''; }
-    $renderers = [ 'hero' => 'codela_sf_section_media', 'promo' => 'codela_sf_section_media', 'categories' => 'codela_sf_section_categories', 'products' => 'codela_sf_section_products', 'story' => 'codela_sf_section_content', 'info' => 'codela_sf_section_content', 'contact' => 'codela_sf_section_content', 'agency-cards' => 'codela_sf_section_agency_cards', 'agency-scroll' => 'codela_sf_section_agency_scroll', 'agency-studio' => 'codela_sf_section_agency_studio', 'agency-services' => 'codela_sf_section_agency_services', 'agency-bento' => 'codela_sf_section_agency_bento', 'agency-detail' => 'codela_sf_section_agency_detail', 'agency-contact-bento' => 'codela_sf_section_agency_contact_bento', 'agency-project' => 'codela_sf_section_agency_project', 'agency-process' => 'codela_sf_section_agency_process' ];
+    $renderers = [ 'hero' => 'codela_sf_section_media', 'promo' => 'codela_sf_section_media', 'categories' => 'codela_sf_section_categories', 'products' => 'codela_sf_section_products', 'story' => 'codela_sf_section_content', 'info' => 'codela_sf_section_content', 'contact' => 'codela_sf_section_content', 'agency-cards' => 'codela_sf_section_agency_cards', 'agency-scroll' => 'codela_sf_section_agency_scroll', 'agency-studio' => 'codela_sf_section_agency_studio', 'agency-services' => 'codela_sf_section_agency_services', 'agency-bento' => 'codela_sf_section_agency_bento', 'agency-about' => 'codela_sf_section_agency_about', 'agency-detail' => 'codela_sf_section_agency_detail', 'agency-contact-bento' => 'codela_sf_section_agency_contact_bento', 'agency-project' => 'codela_sf_section_agency_project', 'agency-process' => 'codela_sf_section_agency_process' ];
     if ( ! isset( $renderers[ $type ] ) ) { return ''; }
     // Reserve priority for the first rendered section, never a later image after
     // text/products. Mixed native content is deliberately left to normal loading.
@@ -71,6 +72,24 @@ function codela_sf_render_section( $html, string $type, array $data, int $post_i
     return $output;
 }
 add_filter( 'codela_render_page_section', 'codela_sf_render_section', 10, 4 );
+
+/**
+ * The compact About module contains its own semantic H1. Hide only the native
+ * post-title for this explicitly configured page; other headings are untouched.
+ */
+function codela_sf_is_compact_about_page(): bool {
+    if ( ! function_exists( 'is_singular' ) || ! is_singular( 'page' ) ) { return false; }
+    $id = (int) get_queried_object_id();
+    if ( $id <= 0 ) { return false; }
+    $layout = get_post_meta( $id, '_codela_page_layout', true );
+    if ( ! is_string( $layout ) || ! str_contains( $layout, 'codela/section-agency-about' )
+        || ! function_exists( 'codela_sections_validate_meta' )
+        || is_wp_error( codela_sections_validate_meta( $layout ) ) ) { return false; }
+    return true;
+}
+add_filter( 'render_block_core/post-title', static function( $html ) {
+    return codela_sf_is_compact_about_page() ? '' : $html;
+}, 20 );
 
 /** Managed front pages supply their own accessible heading, including saved templates. */
 add_filter( 'render_block_core/post-title', static function( $html, $block ) {
