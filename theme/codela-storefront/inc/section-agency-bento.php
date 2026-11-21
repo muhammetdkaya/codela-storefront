@@ -5,7 +5,7 @@
  * Based on the supplied Codela Karşılama/Hizmetler HTML, not a redesign.
  * The presentation removes the prototype phone shell and status/navigation
  * chrome: Codela's own header and bottom dock remain authoritative.
- * Source photograph is a theme asset; legacy agency-services stays intact.
+ * Source photographs are separate theme assets; legacy agency-services stays intact.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
@@ -70,7 +70,7 @@ function codela_sf_section_agency_bento( array $data, string $type = '' ): strin
                  href="<?php echo esc_url( $href ); ?>"
                  aria-label="<?php echo esc_attr( $display . ' hizmetini incele' ); ?>">
                 <?php if ( 0 === $index ) : ?>
-                  <img class="cdl-bento__photo" src="<?php echo esc_url( $media . 'agency-bento-web.svg' ); ?>" alt=""
+                  <img class="cdl-bento__photo" src="<?php echo esc_url( $media . 'agency-reference-web.jpg' ); ?>" alt=""
                        loading="lazy" decoding="async" width="1376" height="768" />
                   <span class="cdl-bento__image-shade" aria-hidden="true"></span>
                   <span class="cdl-bento__card-top">
@@ -82,7 +82,6 @@ function codela_sf_section_agency_bento( array $data, string $type = '' ): strin
                     <span><?php echo esc_html( $tag ); ?></span>
                   </span>
                 <?php elseif ( 3 === $index ) : ?>
-                  <img class="cdl-bento__visual cdl-bento__visual--support" src="<?php echo esc_url( $media . 'agency-bento-support.svg' ); ?>" alt="" loading="lazy" decoding="async" width="720" height="320" />
                   <span class="cdl-bento__light cdl-bento__light--right" aria-hidden="true"></span>
                   <span class="cdl-bento__support-text">
                     <strong><?php echo esc_html( $display ); ?></strong>
@@ -90,7 +89,7 @@ function codela_sf_section_agency_bento( array $data, string $type = '' ): strin
                   </span>
                   <span class="cdl-bento__support-action" aria-hidden="true">İncele <span>→</span></span>
                 <?php else : ?>
-                  <img class="cdl-bento__visual cdl-bento__visual--<?php echo 1 === $index ? 'commerce' : 'software'; ?>" src="<?php echo esc_url( $media . ( 1 === $index ? 'agency-bento-commerce.svg' : 'agency-bento-software.svg' ) ); ?>" alt="" loading="lazy" decoding="async" width="720" height="480" />
+                  <img class="cdl-bento__visual cdl-bento__visual--<?php echo 1 === $index ? 'commerce' : 'software'; ?>" src="<?php echo esc_url( $media . ( 1 === $index ? 'agency-reference-commerce.jpg' : 'agency-reference-software.jpg' ) ); ?>" alt="" loading="lazy" decoding="async" width="1024" height="1024" />
                   <span class="cdl-bento__art-shade" aria-hidden="true"></span>
                   <span class="cdl-bento__minor-arrow" aria-hidden="true">↗</span>
                   <span class="cdl-bento__minor-copy">

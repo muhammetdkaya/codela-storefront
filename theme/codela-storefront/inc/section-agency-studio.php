@@ -22,9 +22,13 @@ function codela_sf_section_agency_studio( array $data, string $type = '', bool $
     if ( '' === $lead ) { $lead = $approved_lead; }
     $editorial = $approved === $title;
     $contact = codela_sf_agency_contact_link();
-    $services = codela_sf_agency_page_url( 'hizmetler', home_url( '/#sf-agency-services' ) );
+    // On the homepage the visual's Services CTA scrolls to the next native Bento section.
+    // A Studio section used on another page retains a real Services page destination.
+    $services = function_exists( 'is_front_page' ) && is_front_page()
+        ? '#sf-agency-services'
+        : codela_sf_agency_page_url( 'hizmetler', home_url( '/hizmetler/' ) );
     $image = ( function_exists( 'get_template_directory_uri' ) ? get_template_directory_uri() : '' )
-        . '/assets/media/mona-studio-hero.jpg';
+        . '/assets/media/agency-reference-hero.jpg';
     ob_start();
     ?>
     <div class="sf-agency-widget sf-agency-widget--studio" data-agency-widget="studio">

@@ -2524,3 +2524,22 @@ body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-
 @media(prefers-reduced-motion:reduce){
   .sf-agency-widget--studio .codela-studio-hero__contact{transition:none}
 }
+
+/* 0.1.386 — images from the approved compact Codela HTML reference. */
+.sf-agency-widget--bento .cdl-bento__photo{object-position:center center}
+.sf-agency-widget--bento .cdl-bento__image-shade{
+  background:linear-gradient(0deg,rgba(9,9,12,.88) 0%,rgba(9,9,12,.37) 29%,rgba(9,9,12,.04) 72%);
+}
+.sf-agency-widget--bento .cdl-bento__visual:not(.cdl-bento__visual--support){
+  opacity:1;filter:none;object-position:center center
+}
+.sf-agency-widget--bento .cdl-bento__art-shade{
+  background:linear-gradient(0deg,rgba(9,9,12,.93) 0%,rgba(9,9,12,.66) 22%,rgba(9,9,12,.02) 64%)
+}
+.sf-agency-widget--bento .cdl-bento__card--support{
+  background:radial-gradient(310px circle at 89% 50%,rgba(211,164,128,.13),transparent 74%),linear-gradient(165deg,rgba(28,27,36,.94),rgba(14,14,19,.98))
+}
+.sf-agency-widget--process .sf-agency-process-stage-visual img{object-position:center center}
+@media(prefers-reduced-motion:no-preference){
+  html:has(body.home .sf-agency-widget--studio){scroll-behavior:smooth}
+}

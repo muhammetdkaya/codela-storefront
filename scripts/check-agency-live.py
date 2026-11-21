@@ -158,15 +158,15 @@ def check() -> None:
                     "Ürün, ödeme ve kargo süreçleri bir arada",
                     "İşinize özel paneller, eklentiler",
                     "Bakım ve geliştirme", "Keşif ve Planlama",
-                    "agency-bento-web.svg", "agency-bento-commerce.svg",
-                    "agency-bento-software.svg", "agency-bento-support.svg",
-                    "agency-process-discovery.svg",
+                    "agency-reference-hero.jpg", "agency-reference-web.jpg",
+                    "agency-reference-commerce.jpg", "agency-reference-software.jpg",
+                    "agency-reference-process-discovery.jpg", "#sf-agency-services",
                 )
                 missing_copy = [marker for marker in approved if marker not in home]
                 if missing_copy:
                     errors.append("Live MONA homepage not updated: " + ", ".join(missing_copy))
                 else:
-                    print("Live Studio/Bento: approved copy and four service illustrations verified.", flush=True)
+                    print("Live Studio/Bento: approved copy and reference photographs verified.", flush=True)
                 match_title = re.search(r"<title[^>]*>(.*?)</title>", home, re.I | re.S)
                 title = " ".join(unescape(match_title.group(1)).split()) if match_title else ""
                 print("Live document title: " + repr(title), flush=True)

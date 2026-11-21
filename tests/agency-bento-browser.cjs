@@ -41,8 +41,8 @@ const server=http.createServer((req,res)=>{
           phoneChrome:el.querySelectorAll('.phone-frame,.status-bar,.bottom-nav').length
         };
       });
-      assert(snapshot.photo,'Web design SVG illustration loads');
-      assert.deepEqual(snapshot.illustrations,[true,true,true],'Three additional service illustrations load');
+      assert(snapshot.photo,'Approved web design photograph loads');
+      assert.deepEqual(snapshot.illustrations,[true,true],'Two photographic service visuals load; support remains image-free');
       assert.equal(snapshot.background,'rgb(9, 9, 12)','Obsidian matches MONA welcome');
       assert(snapshot.overflow<=1,'No horizontal scrollbar at '+width);
       assert(Math.abs(snapshot.viewportLeft)<=1 && Math.abs(snapshot.sectionWidth-width)<=1,'Full-width handoff from hero');
@@ -53,7 +53,7 @@ const server=http.createServer((req,res)=>{
       await page.screenshot({path:path.join(root,'qa','agency-bento-'+width+'.png'),fullPage:true});
       await page.close();
     }
-    console.log('MONA Services Bento: four service illustrations, links and five responsive widths passed.');
+    console.log('MONA Services Bento: three photographic visuals, an image-free support strip, links and five responsive widths passed.');
   }finally{
     await browser.close();
     await new Promise(resolve=>server.close(resolve));
