@@ -389,6 +389,12 @@ $process_data = [
 ];
 $process_widget = codela_sf_section_agency_process( $process_data );
 agency_page_check( substr_count( $process_widget, 'data-agency-widget-step="' ) === 3, 'Reusable process has three steps.' );
+preg_match_all( '/data-agency-stage-image="([^"]+)"/', $process_widget, $stage_images );
+agency_page_check( count( $stage_images[1] ) === 3 && count( array_unique( $stage_images[1] ) ) === 3,
+    'Each process step has its own image.' );
+foreach ( [ 'agency-process-discovery.svg', 'agency-process-build.svg', 'agency-process-launch.svg', 'agency-storefront-interface.svg' ] as $asset ) {
+    agency_page_check( is_file( __DIR__ . '/../theme/codela-storefront/assets/media/' . $asset ), 'Visual exists: ' . $asset );
+}
 agency_page_check( str_contains( $process_widget, 'data-agency-widget-next' )
     && str_contains( $process_widget, 'data-agency-widget-prev' )
     && str_contains( $process_widget, 'sf-agency-process-bar' ),

@@ -138,24 +138,24 @@ function codela_sf_section_agency_services( array $data, string $type = '' ): st
     ];
     $untouched = $starter && count( $items ) === 4
         && array_column( $items, 'title' ) === $legacy_titles;
-    $labels = [ 'E-TİCARET', 'WEB TASARIMI', 'ÖZEL YAZILIM', 'GELİŞTİRME & DESTEK' ];
+    $labels = [ 'E-TİCARET', 'WEB TASARIMI', 'ÖZEL YAZILIM', 'BAKIM & GELİŞTİRME' ];
     $tones = [ 'commerce', 'web', 'code', 'support' ];
     $colors = [ '#647961', '#82766a', '#5968b6', '#9b7364' ];
     $chips = [ [ 'WooCommerce', 'Sanal POS', 'Sipariş' ],
         [ 'WordPress', 'Özel tasarım', 'Elementor' ],
         [ 'Özel eklenti', 'API', 'ERP / CRM' ],
-        [ 'Hız', 'Güvenlik', 'Bakım' ] ];
+        [ 'Hız', 'Bakım', 'Geliştirme' ] ];
     $slugs = [ 'e-ticaret', 'web-tasarimi', 'ozel-yazilim', 'gelistirme-destek' ];
     if ( $untouched ) {
         $items = [
             [ 'title' => 'Satışa hazır e-ticaret siteleri.',
-              'body' => 'Markanıza özel mağaza tasarımı, ürün yönetimi, güvenli ödeme ve kargo entegrasyonları.' ],
+              'body' => 'Ürün keşfi, güvenli ödeme, sipariş yönetimi ve kargoyu birleştiren WooCommerce mağazaları.' ],
             [ 'title' => 'Markanıza özel web siteleri.',
-              'body' => 'Kurumsal web siteleri, özgün arayüzler ve mevcut sitelerin modern tasarımla yenilenmesi.' ],
+              'body' => 'Özgün, mobil uyumlu kurumsal siteler ve kolay yönetilebilir WordPress sayfaları.' ],
             [ 'title' => 'İşinize özel yazılım çözümleri.',
-              'body' => 'İşletmenizin ihtiyaçlarına uygun eklentiler, entegrasyonlar ve otomasyonlar.' ],
+              'body' => 'İş akışınıza uygun eklentiler, yönetim panelleri ve API bağlantıları.' ],
             [ 'title' => 'Mevcut sitenizi ileri taşıyın.',
-              'body' => 'Performans iyileştirmeleri, yeni özellikler, teknik bakım ve altyapı geliştirmeleri.' ],
+              'body' => 'Mevcut siteniz için hız, güvenlik, teknik bakım ve yeni özellik geliştirme.' ],
         ];
     }
     $heading_title = trim( (string) ( $data['title'] ?? '' ) );
@@ -211,7 +211,7 @@ function codela_sf_section_agency_services( array $data, string $type = '' ): st
                 <div class="sf-agency-mini-ui">
                   <div class="sf-agency-mini-bar"><i></i><i></i><i></i><small><?php echo esc_html( [ 'SHOP', 'STUDIO', 'WORKSPACE', 'PERFORMANCE' ][ $index ] ); ?></small></div>
                   <?php if ( 0 === $index ) : ?>
-                    <div class="sf-agency-mini-products"><span><i></i><b></b></span><span><i></i><b></b></span><span><i></i><b></b></span></div>
+                    <img class="sf-agency-mini-preview" src="<?php echo esc_url( get_template_directory_uri() . '/assets/media/agency-storefront-interface.svg' ); ?>" alt="" loading="lazy" decoding="async" width="1200" height="560" />
                   <?php elseif ( 1 === $index ) : ?>
                     <div class="sf-agency-mini-site"><div><b></b><b></b><i></i><i></i><em></em></div><figure></figure></div>
                   <?php elseif ( 2 === $index ) : ?>
@@ -254,8 +254,8 @@ function codela_sf_section_agency_process( array $data, string $type = '' ): str
     if ( ! $items ) { return ''; }
     $id = 'sf-agency-process-' . sanitize_html_class( (string) ( $data['id'] ?? 'process' ) );
     $labels = [ 'Keşif', 'Üretim', 'Yayın' ];
-    $outcomes = [ 'Net Yol Haritası', 'Hazır Dijital Ürün', 'Sorunsuz Canlı Yayın' ];
-    $images = [ 'mona-studio-hero.jpg', 'mona-bento-web.jpg', 'mona-studio-hero.jpg' ];
+    $outcomes = [ 'Net Yol Haritası', 'Geliştirilen Dijital Deneyim', 'Kontrol Edilmiş, Yayına Hazır' ];
+    $images = [ 'agency-process-discovery.svg', 'agency-process-build.svg', 'agency-process-launch.svg' ];
     $count = count( $items );
     $next = static function( int $index ) use ( $labels, $count ): string {
         return $index === $count - 1 ? 'Süreci Başlat' : 'Sonraki: ' . $labels[ $index + 1 ];
