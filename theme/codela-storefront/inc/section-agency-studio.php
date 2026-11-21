@@ -38,7 +38,8 @@ function codela_sf_section_agency_studio( array $data, string $type = '', bool $
             <p class="codela-studio-hero__kicker"><span class="codela-studio-hero__dot" aria-hidden="true"></span> CODELA</p>
             <<?php echo $heading; ?> class="codela-studio-hero__title<?php echo $editorial ? ' codela-studio-hero__title--descriptive' : ''; ?>" id="<?php echo esc_attr( $id ); ?>">
               <?php if ( $editorial ) : ?>
-                <span>Markanıza özel</span><span class="codela-studio-hero__title-muted">web siteleri, e-ticaret ve yazılım.</span>
+                <span class="codela-studio-hero__title-line"><span>Markanıza özel</span> <span class="codela-studio-hero__title-muted">web siteleri,</span></span>
+                <span class="codela-studio-hero__title-muted">e-ticaret ve yazılım.</span>
               <?php else : ?>
                 <?php echo esc_html( $title ); ?>
               <?php endif; ?>
@@ -51,7 +52,7 @@ function codela_sf_section_agency_studio( array $data, string $type = '', bool $
                  <?php echo $primary ? 'fetchpriority="high" loading="eager"' : 'loading="lazy"'; ?> decoding="async" width="1200" height="896" />
             <div class="codela-studio-hero__fade" aria-hidden="true"></div>
             <div class="codela-studio-hero__visual-foot">
-              <span><i aria-hidden="true"></i> İstanbul · <?php echo esc_html( gmdate( 'Y' ) ); ?></span>
+              <span><i aria-hidden="true"></i> WordPress · WooCommerce</span>
               <a href="<?php echo esc_url( $services ); ?>">Hizmetler <span aria-hidden="true">→</span></a>
             </div>
           </div>

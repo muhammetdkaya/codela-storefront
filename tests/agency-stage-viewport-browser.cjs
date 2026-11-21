@@ -76,13 +76,20 @@ const rect=e=>{
             snapMatch:document.documentElement.matches('html:has(body.home .codela-page-layout > .sf-agency-widget--studio + .sf-agency-widget--bento)'),
             direct:!!document.querySelector('body.home .codela-page-layout > .sf-agency-widget--studio + .sf-agency-widget--bento'),
             supported:CSS.supports('scroll-snap-type','y proximity'),
-            overflow:document.documentElement.scrollWidth-innerWidth};
+            overflow:document.documentElement.scrollWidth-innerWidth,
+            title:(()=>{
+              const t=document.querySelector('.codela-studio-hero__title');
+              const st=getComputedStyle(t);
+              return {height:t.getBoundingClientRect().height,lineHeight:parseFloat(st.lineHeight)};
+            })()};
         });
         assert(boxes.hero&&boxes.photo&&boxes.bento,'Real Studio + Bento rendered');
         assert(Math.abs(boxes.bento.top-boxes.hero.bottom)<=2,
           'No blank handoff between adjacent full-width stages: '+JSON.stringify(boxes));
         assert(boxes.hero.height>=height-2,'Studio stage spans safe viewport '+width+'x'+height);
         if(width<740){
+          assert(boxes.title.height <= boxes.title.lineHeight*2.15,
+            'Studio headline must use exactly two lines on mobile: '+JSON.stringify(boxes.title));
           assert(boxes.hero.bottom-boxes.photo.bottom<(dock?115:65),
             'Photo must fill the stage, without previous 110px dead zone: '+JSON.stringify(boxes));
           assert(boxes.bodyPadding==='0px','No trailing body dock reserve on Agency');

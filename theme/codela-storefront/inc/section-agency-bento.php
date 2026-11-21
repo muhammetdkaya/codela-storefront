@@ -26,11 +26,18 @@ function codela_sf_section_agency_bento( array $data, string $type = '' ): strin
         'Ölçek · API', 'Hız · Güvenlik · Sürekli bakım' ];
     $previous_tags = [ 'Kurumsal · UI/UX · WordPress', 'WooCommerce · POS · Kargo',
         'Eklenti · API · Entegrasyon', 'Performans · Güvenlik · Bakım' ];
-    $approved_copy = [
+    // Refresh only previously shipped text. Preserve all authored descriptions.
+    $previous_approved_copy = [
         'Markanızı doğru anlatan, mobil uyumlu ve kolay yönetilen web siteleri.',
         'Ürün, ödeme ve kargo süreçleri bir arada çalışan online mağazalar.',
         'İşinize özel paneller, eklentiler ve sistem entegrasyonları.',
         'Web siteniz için hız iyileştirmeleri, güncellemeler ve teknik destek.',
+    ];
+    $approved_copy = [
+        'Mobil uyumlu, kolay yönetilen web siteleri.',
+        'Ödeme ve kargo akışı hazır online mağazalar.',
+        'Özel paneller, eklentiler ve entegrasyonlar.',
+        'Hız, güncelleme ve teknik destek.',
     ];
     $services = codela_sf_agency_page_url( 'hizmetler', home_url( '/hizmetler/' ) );
     $slugs = [ 'web-tasarimi', 'e-ticaret', 'ozel-yazilim', 'gelistirme-destek' ];
@@ -57,8 +64,10 @@ function codela_sf_section_agency_bento( array $data, string $type = '' ): strin
               $display = trim( (string) ( $item['title'] ?? '' ) );
               $body = trim( (string) ( $item['body'] ?? '' ) );
               $tag = $body ?: $tags[ $index ];
-              if ( $starter && $display === $legacy_titles[ $index ]
-                  && in_array( $body, [ $legacy_bodies[ $index ], $previous_tags[ $index ] ], true ) ) {
+              if ( $starter
+                  && ( $display === $legacy_titles[ $index ]
+                       || ( 3 === $index && 'Bakım ve geliştirme' === $display ) )
+                  && in_array( $body, [ $legacy_bodies[ $index ], $previous_tags[ $index ], $previous_approved_copy[ $index ] ], true ) ) {
                   $tag = $approved_copy[ $index ];
               }
               if ( $starter && 3 === $index && 'Optimizasyon / Destek' === $display ) {

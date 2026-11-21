@@ -151,13 +151,15 @@ def check() -> None:
             # uploads alone do not prove the active MONA section has refreshed.
             if "sf-agency-widget--studio" in home and "sf-agency-widget--bento" in home:
                 approved = (
-                    "Markanıza özel", "web siteleri, e-ticaret ve yazılım.",
+                    "Markanıza özel", "web siteleri,", "e-ticaret ve yazılım.",
                     "İşinizi anlatan, satışınızı destekleyen",
                     "codela-studio-hero__contact", "Projenizi konuşalım",
-                    "Markanızı doğru anlatan, mobil uyumlu",
-                    "Ürün, ödeme ve kargo süreçleri bir arada",
-                    "İşinize özel paneller, eklentiler",
+                    "Mobil uyumlu, kolay yönetilen web siteleri.",
+                    "Ödeme ve kargo akışı hazır online mağazalar.",
+                    "Özel paneller, eklentiler ve entegrasyonlar.",
+                    "Hız, güncelleme ve teknik destek.",
                     "Bakım ve geliştirme", "Keşif ve Planlama",
+                    "WordPress · WooCommerce",
                     "agency-reference-hero.jpg", "agency-reference-web.jpg",
                     "agency-reference-commerce.jpg", "agency-reference-software.jpg",
                     "agency-reference-process-discovery.jpg", "#sf-agency-services",

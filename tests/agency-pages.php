@@ -248,10 +248,21 @@ $bento_data = [ 'schemaVersion'=>1, 'id'=>'agency-starter-bento', 'enabled'=>tru
     ] ];
 $bento_html = codela_sf_section_agency_bento( $bento_data );
 agency_page_check( substr_count( $bento_html, 'cdl-bento__card--' ) === 4, 'MONA reference has four distinct Bento cards.' );
-agency_page_check( str_contains( $bento_html, 'Ürün, ödeme ve kargo süreçleri bir arada çalışan online mağazalar.' )
-    && str_contains( $bento_html, 'İşinize özel paneller, eklentiler ve sistem entegrasyonları.' )
+agency_page_check( str_contains( $bento_html, 'Mobil uyumlu, kolay yönetilen web siteleri.' )
+    && str_contains( $bento_html, 'Ödeme ve kargo akışı hazır online mağazalar.' )
+    && str_contains( $bento_html, 'Özel paneller, eklentiler ve entegrasyonlar.' )
+    && str_contains( $bento_html, 'Hız, güncelleme ve teknik destek.' )
     && str_contains( $bento_html, 'Bakım ve geliştirme' ),
-    'Active installed Bento starter gets complete customer-oriented service copy and support title.' );
+    'Active installed Bento starter gets concise service copy and support title.' );
+$bento_previous_copy = $bento_data;
+$previous_approved = ['Markanızı doğru anlatan, mobil uyumlu ve kolay yönetilen web siteleri.','Ürün, ödeme ve kargo süreçleri bir arada çalışan online mağazalar.','İşinize özel paneller, eklentiler ve sistem entegrasyonları.','Web siteniz için hız iyileştirmeleri, güncellemeler ve teknik destek.'];
+foreach ( $previous_approved as $index => $description ) {
+    $bento_previous_copy['items'][ $index ]['body'] = $description;
+}
+$bento_previous_html = codela_sf_section_agency_bento( $bento_previous_copy );
+agency_page_check( str_contains( $bento_previous_html, 'Mobil uyumlu, kolay yönetilen web siteleri.' )
+    && str_contains( $bento_previous_html, 'Hız, güncelleme ve teknik destek.' ),
+    'Previous published copy is shortened without a database reset.' );
 $bento_custom_body = $bento_data;
 $bento_custom_body['items'][1]['body'] = 'Özel marka açıklaması';
 agency_page_check( str_contains( codela_sf_section_agency_bento( $bento_custom_body ), 'Özel marka açıklaması' ),
@@ -277,8 +288,11 @@ $studio_data = [ 'id' => 'agency-starter-studio', 'title' => 'Markanız için di
     'description' => 'Web tasarım, e-ticaret ve özel yazılım çözümleri.', 'items' => [] ];
 $studio_html = codela_sf_section_agency_studio( $studio_data, '', true );
 agency_page_check( substr_count( $studio_html, '<h1 ' ) === 1, 'Studio welcome has one primary H1.' );
-agency_page_check( str_contains( $studio_html, 'Markanıza özel' ) && str_contains( $studio_html, 'web siteleri, e-ticaret ve yazılım.' ) &&
-    str_contains( $studio_html, 'agency-reference-hero.jpg' ) && ! str_contains( $studio_html, 'data:image' ),
+agency_page_check( str_contains( $studio_html, 'Markanıza özel' ) && str_contains( $studio_html, 'web siteleri,' )
+    && str_contains( $studio_html, 'e-ticaret ve yazılım.' )
+    && str_contains( $studio_html, 'codela-studio-hero__title-line' )
+    && str_contains( $studio_html, 'WordPress · WooCommerce' )
+    && str_contains( $studio_html, 'agency-reference-hero.jpg' ) && ! str_contains( $studio_html, 'data:image' ),
     'Active Studio welcome shows approved headline and retains hero image.' );
 agency_page_check( str_contains( $studio_html, 'href="#sf-agency-services"' ) && str_contains( $studio_html, 'Projenizi konuşalım' ), 'Studio Services CTA scrolls to the next native homepage section.' );
 $studio_custom = $studio_data; $studio_custom['title'] = 'Özgün bir başlık';

@@ -2543,3 +2543,31 @@ body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-
 @media(prefers-reduced-motion:no-preference){
   html:has(body.home .sf-agency-widget--studio){scroll-behavior:smooth}
 }
+
+/* 0.1.387 — two-line mobile Studio heading and compact service descriptions. */
+.sf-agency-widget--studio .codela-studio-hero__title-line>span{display:inline}
+.sf-agency-widget--studio .codela-studio-hero__title-line{white-space:nowrap}
+.sf-agency-widget--bento .cdl-bento__minor-copy small{
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+  overflow:hidden;max-width:100%;line-height:1.34
+}
+.sf-agency-widget--bento .cdl-bento__card-copy>span{
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+  overflow:hidden;line-height:1.38
+}
+@media(max-width:739px){
+  .sf-agency-widget--studio .codela-studio-hero__title--descriptive{
+    font-size:clamp(21px,6.5vw,27px);line-height:1.12;letter-spacing:-.045em
+  }
+  .sf-agency-widget--studio .codela-studio-hero__visual-foot>span{
+    font-size:clamp(8.5px,2.45vw,11px);white-space:nowrap;gap:6px
+  }
+  .sf-agency-widget--bento .cdl-bento__minor-copy small{
+    font-size:clamp(9.5px,2.5vw,10.5px)
+  }
+}
+@media(max-width:340px){
+  .sf-agency-widget--bento .cdl-bento__card--commerce,
+  .sf-agency-widget--bento .cdl-bento__card--software{padding:12px}
+  .sf-agency-widget--bento .cdl-bento__minor-copy{gap:4px}
+}
