@@ -147,6 +147,31 @@ def check() -> None:
         if not errors:
             print("Agency pages render correctly on the public site.")
             home = fetch("/")
+            # Verify real dynamic homepage content after FTP. Successful file
+            # uploads alone do not prove the active MONA section has refreshed.
+            if "sf-agency-widget--studio" in home and "sf-agency-widget--bento" in home:
+                approved = (
+                    "Markanıza özel", "web siteleri, e-ticaret ve yazılım.",
+                    "İşinizi anlatan, satışınızı destekleyen",
+                    "codela-studio-hero__contact", "Projenizi konuşalım",
+                    "Markanızı doğru anlatan, mobil uyumlu",
+                    "Ürün, ödeme ve kargo süreçleri bir arada",
+                    "İşinize özel paneller, eklentiler",
+                    "Bakım ve geliştirme", "Keşif ve Planlama",
+                    "agency-bento-web.svg", "agency-bento-commerce.svg",
+                    "agency-bento-software.svg", "agency-bento-support.svg",
+                    "agency-process-discovery.svg",
+                )
+                missing_copy = [marker for marker in approved if marker not in home]
+                if missing_copy:
+                    errors.append("Live MONA homepage not updated: " + ", ".join(missing_copy))
+                else:
+                    print("Live Studio/Bento: approved copy and four service illustrations verified.", flush=True)
+                match_title = re.search(r"<title[^>]*>(.*?)</title>", home, re.I | re.S)
+                title = " ".join(unescape(match_title.group(1)).split()) if match_title else ""
+                print("Live document title: " + repr(title), flush=True)
+                if "WooCommerce" in title or "shipping and notifications" in title:
+                    errors.append("Live agency browser tab still has old WooCommerce tagline")
             # Agency 0.1.372 uses a single linked C + wordmark and a native
             # Account/Menu capsule on all screen sizes. The old desktop
             # centered menu is intentionally absent; the same WP menu remains
