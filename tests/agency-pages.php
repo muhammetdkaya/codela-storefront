@@ -113,7 +113,7 @@ $detail_reference = [
     'web' => [ 'title'=>'Web Tasarım',
       'description'=>'Markanızın duruşunu ilk saniyede hissettiren, mobil öncelikli ve dönüşüm odaklı modern web arayüzleri tasarlıyoruz.',
       'labels'=>['UI / UX Tasarım','Kurumsal Web','Landing Page','Tasarım Sistemi'],
-      'asset'=>'agency-bento-web.svg','tag'=>'Kurumsal · Arayüz' ],
+      'asset'=>'mona-bento-web.jpg','tag'=>'Kurumsal · Arayüz' ],
     'commerce' => [ 'title'=>'E-Ticaret',
       'description'=>'Hızlı ürün keşfi, pürüzsüz sepet akışı ve güvenli ödeme entegrasyonlarıyla satışa odaklanan mağazalar kuruyoruz.',
       'labels'=>['Özel Mağaza','Sepet & Ödeme','Mobil Alışveriş','Dönüşüm Kurgusu'],
@@ -256,7 +256,7 @@ $bento_custom_body = $bento_data;
 $bento_custom_body['items'][1]['body'] = 'Özel marka açıklaması';
 agency_page_check( str_contains( codela_sf_section_agency_bento( $bento_custom_body ), 'Özel marka açıklaması' ),
     'Any customized Bento card copy remains visible unchanged.' );
-agency_page_check( str_contains( $bento_html, 'mona-bento-web.jpg' ) && ! str_contains( $bento_html, 'base64,' ), 'Real source asset is loaded separately.' );
+agency_page_check( str_contains( $bento_html, 'agency-bento-web.svg' ) && ! str_contains( $bento_html, 'base64,' ), 'Real source asset is loaded separately.' );
 agency_page_check( str_contains( $bento_html, 'agency-bento-commerce.svg' ) && str_contains( $bento_html, 'agency-bento-software.svg' )
     && str_contains( $bento_html, 'agency-bento-support.svg' ), 'Each visible Bento card has a service-specific image.' );
 agency_page_check( str_contains( $bento_html, 'https://codela.test/hizmetler/' ), 'Unpublished detail falls back to published Services page.' );
