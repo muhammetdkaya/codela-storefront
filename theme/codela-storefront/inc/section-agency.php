@@ -136,8 +136,21 @@ function codela_sf_section_agency_services( array $data, string $type = '' ): st
         'Kurumsal Web & Redesign', 'Elementor & Özel Widget',
         'WooCommerce & E-Ticaret', 'Özel Eklenti & API',
     ];
+    $legacy_bodies = [
+        'Markanıza özel, mobil öncelikli WordPress arayüzleri.',
+        'Figma tasarımını hassas ve kolay yönetilebilir bileşenlere dönüştürürüz.',
+        'Ödeme, kargo ve dönüşüm akışlarıyla eksiksiz mağazalar.',
+        'ERP/CRM entegrasyonları ve işinize özel WordPress çözümleri.',
+    ];
+    $approved_titles = [ 'E-Ticaret', 'Web Tasarım', 'Özel Yazılım', 'Bakım ve Geliştirme' ];
+    // Render the new editor values directly; only the exact old starter receives
+    // the fallback offer copy. A visitor-edited legacy body is never replaced.
     $untouched = $starter && count( $items ) === 4
-        && array_column( $items, 'title' ) === $legacy_titles;
+        && array_column( $items, 'title' ) === $legacy_titles
+        && array_column( $items, 'body' ) === $legacy_bodies;
+    $approved = $starter && count( $items ) === 4
+        && array_column( $items, 'title' ) === $approved_titles;
+    $starter_offer = $untouched || $approved;
     $labels = [ 'E-TİCARET', 'WEB TASARIMI', 'ÖZEL YAZILIM', 'BAKIM & GELİŞTİRME' ];
     $tones = [ 'commerce', 'web', 'code', 'support' ];
     $colors = [ '#647961', '#82766a', '#5968b6', '#9b7364' ];
@@ -154,16 +167,16 @@ function codela_sf_section_agency_services( array $data, string $type = '' ): st
               'body' => 'Özgün, mobil uyumlu kurumsal siteler ve kolay yönetilebilir WordPress sayfaları.' ],
             [ 'title' => 'İşinize özel yazılım çözümleri.',
               'body' => 'İş akışınıza uygun eklentiler, yönetim panelleri ve API bağlantıları.' ],
-            [ 'title' => 'Mevcut sitenizi ileri taşıyın.',
+            [ 'title' => 'Bakım ve geliştirme.',
               'body' => 'Mevcut siteniz için hız, güvenlik, teknik bakım ve yeni özellik geliştirme.' ],
         ];
     }
     $heading_title = trim( (string) ( $data['title'] ?? '' ) );
     $lead = trim( (string) ( $data['description'] ?? '' ) );
-    $known_titles = [ 'WordPress üzerine her türlü çözüm.', 'Fikirden yayına, yanınızdayız.' ];
+    $known_titles = [ 'WordPress üzerine her türlü çözüm.', 'Fikirden yayına, yanınızdayız.', 'Web sitenizden özel yazılıma.' ];
     $known_leads = [ 'İhtiyaca uygun tasarım, e-ticaret ve özel geliştirme hizmetleri.',
         'İhtiyacınıza göre tasarlanan, kullanımı kolay ve hızlı dijital çözümler.' ];
-    $editorial_title = $untouched && in_array( $heading_title, $known_titles, true );
+    $editorial_title = $starter_offer && in_array( $heading_title, $known_titles, true );
     if ( $untouched && in_array( $lead, $known_leads, true ) ) {
         $lead = 'Markanız için web, e-ticaret ve özel yazılım çözümleri geliştiriyoruz.';
     }
@@ -193,8 +206,8 @@ function codela_sf_section_agency_services( array $data, string $type = '' ): st
         <div class="sf-agency-service-track" data-agency-widget-track role="region" tabindex="0" aria-label="Hizmet kartları">
           <?php foreach ( $items as $index => $item ) : ?>
             <?php
-            $label = $untouched ? $labels[ $index ] : (string) $item['title'];
-            $chips_for_item = $untouched ? $chips[ $index ] : [];
+            $label = $starter_offer ? $labels[ $index ] : (string) $item['title'];
+            $chips_for_item = $starter_offer ? $chips[ $index ] : [];
             $slug = $slugs[ $index ];
             // Never invent an unpublished service permalink: fall back to the real Services page.
             $detail_href = codela_sf_agency_page_url( 'hizmetler/' . $slug, $services );

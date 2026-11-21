@@ -361,13 +361,29 @@ $editorial_starter = [
     'title' => 'Fikirden yayına, yanınızdayız.',
     'description' => 'İhtiyacınıza göre tasarlanan, kullanımı kolay ve hızlı dijital çözümler.',
     'items' => [
-        [ 'enabled' => true, 'title' => 'Kurumsal Web & Redesign', 'body' => 'Mobil öncelikli arayüzler.' ],
-        [ 'enabled' => true, 'title' => 'Elementor & Özel Widget', 'body' => 'Özel bileşenler.' ],
-        [ 'enabled' => true, 'title' => 'WooCommerce & E-Ticaret', 'body' => 'Satış akışları.' ],
-        [ 'enabled' => true, 'title' => 'Özel Eklenti & API', 'body' => 'ERP köprüleri.' ],
+        [ 'enabled' => true, 'title' => 'Kurumsal Web & Redesign', 'body' => 'Markanıza özel, mobil öncelikli WordPress arayüzleri.' ],
+        [ 'enabled' => true, 'title' => 'Elementor & Özel Widget', 'body' => 'Figma tasarımını hassas ve kolay yönetilebilir bileşenlere dönüştürürüz.' ],
+        [ 'enabled' => true, 'title' => 'WooCommerce & E-Ticaret', 'body' => 'Ödeme, kargo ve dönüşüm akışlarıyla eksiksiz mağazalar.' ],
+        [ 'enabled' => true, 'title' => 'Özel Eklenti & API', 'body' => 'ERP/CRM entegrasyonları ve işinize özel WordPress çözümleri.' ],
     ],
 ];
 $editorial_html = codela_sf_section_agency_services( $editorial_starter );
+$edited_starter = $editorial_starter;
+$edited_starter['items'][0]['body'] = 'Kullanıcının özel hizmet açıklaması.';
+agency_page_check( str_contains( codela_sf_section_agency_services( $edited_starter ), 'Kullanıcının özel hizmet açıklaması.' ),
+    'Modified legacy item descriptions are not replaced by starter defaults.' );
+$approved_starter = $editorial_starter;
+$approved_starter['title'] = 'Web sitenizden özel yazılıma.';
+$approved_starter['items'] = [
+    [ 'enabled' => true, 'title' => 'E-Ticaret', 'body' => 'WooCommerce mağazaları.' ],
+    [ 'enabled' => true, 'title' => 'Web Tasarım', 'body' => 'Markaya özel siteler.' ],
+    [ 'enabled' => true, 'title' => 'Özel Yazılım', 'body' => 'Yönetim ve entegrasyonlar.' ],
+    [ 'enabled' => true, 'title' => 'Bakım ve Geliştirme', 'body' => 'Teknik bakım.' ],
+];
+$approved_html = codela_sf_section_agency_services( $approved_starter );
+agency_page_check( str_contains( $approved_html, 'WooCommerce mağazaları.' )
+    && str_contains( $approved_html, 'BAKIM &amp; GELİŞTİRME' ),
+    'Approved editor copy and branded service labels coexist.' );
 agency_page_check( str_contains( $editorial_html, 'Web sitenizden <span class="sf-agency-service-accent">özel yazılıma.</span>' ),
     'Default service heading adopts the approved editorial text and animated accent.' );
 agency_page_check( strpos( $editorial_html, 'Satışa hazır e-ticaret siteleri.' ) <
