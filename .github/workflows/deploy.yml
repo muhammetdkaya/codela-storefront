@@ -72,6 +72,7 @@ jobs:
           node --input-type=module --check < theme/codela-storefront/assets/scripts/agency-widgets.js
           node --check theme/codela-storefront/assets/scripts/agency.js
           php tests/agency.php
+          php tests/shared-presentation.php
           php tests/agency-pages.php
           php tests/navigation.php
           php tests/account-nonces.php
@@ -105,6 +106,7 @@ jobs:
           php tests/site-mode.php
           php tests/site-mode.php --without-plugin
           php tests/agency.php
+          php tests/shared-presentation.php
           php tests/product-composition.php
           node --check theme/codela-storefront/assets/scripts/product-information.js
           node --check theme/codela-storefront/assets/scripts/gallery-horizontal.js
