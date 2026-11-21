@@ -121,7 +121,8 @@ const rect=e=>{
           assert(Math.abs(snap.area.top-68)<=1,
             'Native header occupies exactly one 68px reserve: '+kind+' '+JSON.stringify(snap));
         } else if(height===844) {
-          assert(snap.visual.height<=225,'Process artwork adapts to phone height');
+          assert(snap.visual.height>=120 && snap.visual.height<snap.area.height,'Process artwork fills available space with a safe minimum');
+          assert(Math.abs(snap.area.height-(height-68))<=2,'Inner process fills the viewport below the native header');
         }
         console.log('Agency inner:',kind,width,height,'stage',Math.round(snap.area.height),'top',Math.round(snap.area.top));
         if(height===844)await page.screenshot({path:path.join(root,'qa','agency-viewport-'+kind+'.png')});
