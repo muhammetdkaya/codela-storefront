@@ -12,7 +12,7 @@ const server=http.createServer((req,res)=>{
   if(uri==='/'){res.setHeader('Content-Type','text/html; charset=utf-8');return res.end(doc);}
   const file=path.resolve(root,'.'+uri);
   if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){res.statusCode=404;return res.end();}
-  res.setHeader('Content-Type',file.endsWith('.css')?'text/css':file.endsWith('.js')?'text/javascript':file.endsWith('.jpg')?'image/jpeg':'text/plain');
+  res.setHeader('Content-Type',file.endsWith('.css')?'text/css':file.endsWith('.js')?'text/javascript':file.endsWith('.jpg')?'image/jpeg':file.endsWith('.svg')?'image/svg+xml':'text/plain');
   res.end(fs.readFileSync(file));
 });
 (async()=>{
@@ -33,14 +33,16 @@ const server=http.createServer((req,res)=>{
         const cards=[...el.querySelectorAll('.cdl-bento__card')].map(e=>({height:e.getBoundingClientRect().height,
           width:e.getBoundingClientRect().width,href:e.getAttribute('href'),text:e.innerText}));
         const photo=el.querySelector('.cdl-bento__photo');
+        const illustrations=[...el.querySelectorAll('.cdl-bento__visual')];
         const section=el.querySelector('.cdl-bento').getBoundingClientRect();
-        return {cards,photo:photo.complete&&photo.naturalWidth===1376,background:getComputedStyle(el.querySelector('.cdl-bento')).backgroundColor,
+        return {cards,photo:photo.complete&&photo.naturalWidth>0,illustrations:illustrations.map(img=>img.complete&&img.naturalWidth>0),background:getComputedStyle(el.querySelector('.cdl-bento')).backgroundColor,
           overflow:document.documentElement.scrollWidth-innerWidth,sectionWidth:section.width,
           viewportLeft:section.left,tagCount:el.querySelectorAll('.cdl-bento__card--support .cdl-bento__support-action').length,
           phoneChrome:el.querySelectorAll('.phone-frame,.status-bar,.bottom-nav').length
         };
       });
-      assert(snapshot.photo,'Supplied source JPEG loads');
+      assert(snapshot.photo,'Web design SVG illustration loads');
+      assert.deepEqual(snapshot.illustrations,[true,true,true],'Three additional service illustrations load');
       assert.equal(snapshot.background,'rgb(9, 9, 12)','Obsidian matches MONA welcome');
       assert(snapshot.overflow<=1,'No horizontal scrollbar at '+width);
       assert(Math.abs(snapshot.viewportLeft)<=1 && Math.abs(snapshot.sectionWidth-width)<=1,'Full-width handoff from hero');
@@ -51,7 +53,7 @@ const server=http.createServer((req,res)=>{
       await page.screenshot({path:path.join(root,'qa','agency-bento-'+width+'.png'),fullPage:true});
       await page.close();
     }
-    console.log('MONA Services Bento: image/links and five responsive widths passed.');
+    console.log('MONA Services Bento: four service illustrations, links and five responsive widths passed.');
   }finally{
     await browser.close();
     await new Promise(resolve=>server.close(resolve));
