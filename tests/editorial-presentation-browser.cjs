@@ -16,7 +16,7 @@ const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/
 (async()=>{
  const browser=await ({chromium,webkit}[engine]).launch();
  try{
-  for(const [width,height] of [[390,844],[390,650],[1280,900]]){
+  for(const [width,height] of [[320,568],[390,844],[390,650],[1280,900]]){
    const page=await browser.newPage({viewport:{width,height}});
    await page.setContent('<!doctype html><html lang="tr"><head><meta charset="utf-8">'+
     '<meta name="viewport" content="width=device-width,initial-scale=1">'+
@@ -58,7 +58,7 @@ const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/
    assert.equal(menu.scheme,'dark','Original dark reference wins over Agency and Commerce defaults');
    assert.equal(menu.background,'rgb(6, 6, 10)','Menu canvas stays #06060a');
    assert(menu.activeLabel.includes('Aktif'),'Current WordPress item displays the reference Active label');
-   assert((menu.asideLayers.match(/linear-gradient\(/g)||[]).length>=3,'Studio card has original layered surface rim');
+   assert.equal((menu.asideLayers.match(/linear-gradient\(/g)||[]).length,1,'Studio card has one restrained highlight');
    assert.equal(await page.locator('.sf-editorial-menu-brand').count(),0,
     'Editorial Menu has no duplicate Codela logo capsule in rendered DOM');
    assert(menu.closeWidth>=44&&menu.closeHeight>=44,'Native close retains 44px hit target');
@@ -66,7 +66,11 @@ const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/
    assert(menu.navRows.every(height=>height>=44),'Every menu row remains a >=44px touch target');
    const groupTop=Math.min(menu.nav.top,menu.aside.top),groupBottom=Math.max(menu.nav.bottom,menu.aside.bottom);
    const availableTop=menu.content.top+menu.paddingTop,availableBottom=menu.content.bottom-menu.paddingBottom;
-   if(groupBottom-groupTop<availableBottom-availableTop-20){
+   if(width<=820){
+     assert(Math.abs(menu.nav.top-availableTop)<=1,'Mobile links start below the close bar');
+     assert(menu.aside.top>=menu.nav.bottom+23,'Contact card never overlaps long navigation');
+     if(menu.aside.bottom<=availableBottom+1) assert(Math.abs(menu.aside.bottom-availableBottom)<=1,'Contact card anchors to the bottom when it fits');
+   } else if(groupBottom-groupTop<availableBottom-availableTop-20){
      const centerOffset=Math.abs((groupTop+groupBottom-availableTop-availableBottom)/2);
      assert(centerOffset<=20,'Compact Menu content should be vertically centered: '+centerOffset);
    } else {
@@ -116,7 +120,7 @@ const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/
    assert.equal(style.canvas,'rgb(6, 6, 10)','Account canvas is original #06060a');
    assert(style.border!=='0px','Account card has a rim');
    assert(parseFloat(style.radius)>=20,'Account card is softly rounded');
-   assert((style.layers.match(/linear-gradient\(/g)||[]).length>=3,'Account card retains original layered glass');
+   assert.equal((style.layers.match(/linear-gradient\(/g)||[]).length,1,'Account card has one restrained highlight');
    assert(style.backdrop.includes('blur(22px)'),'Account card has real frosted blur');
    assert.equal(await page.locator('#sf-account form.woocommerce-form-login').count(),1,
     'One WooCommerce login form with native submission');

@@ -6,9 +6,8 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Editoryal Cam menüde sol üstte tekrarlanan Codela logo kapsülü, yalnızca gizlenmek yerine HTML'den tamamen kaldırıldı; sağ kapatma düğmesi korundu.",
-    "Menü başlıkları mobilde 20–24 px, masaüstünde 22–30 px aralığına ve 50–52 px dokunulabilir satırlara indirildi.",
-    "Menü bağlantıları ile Studio iletişim kartı daraltıldı, daha sıkı aralıklara alındı ve uygun ekranda dikey ortalandı; kısa ekranda güvenli kaydırma korunur.",
-    "Dark glass, aktif sayfa etiketi, WordPress menü ağacı, mobil yan boşluklar ve WooCommerce/Hesabım işlevleri değişmeden korundu."
+    "Giriş ve menü cam yüzeylerinde parlak kenarlar ve üst üste binen yansımalar azaltıldı; daha sakin yarı saydam kartlar kullanıldı.",
+    "Mobil menü kapatma alanının altında üstten başlar; Studio iletişim kartı altta, kısa ekran ve uzun menülerde aynı kaydırma akışında kalır.",
+    "Giriş kartının merkez konumu ve mevcut e-posta, Google, PIN ve biyometrik giriş akışları korundu."
   ]
 }

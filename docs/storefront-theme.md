@@ -1,3 +1,11 @@
+## Son doğrulanmış devam noktası — 21 Kasım 2026 / 0.1.378 → 0.1.379
+
+**Biten:** Editoryal giriş/menü kartlarında üst üste beyaz ve sıcak yansıma katmanları tek düşük opaklık vurgusuna indirildi. Kontrol kenarları %34–46 parlak gradyan yerine %7–9 eşit ton; blur korunur. Mobil menü üstten başlar, Studio kartı auto boşlukla altta kalır. Menü gövdesinin %100 minimum yüksekliği kaldırılarak header dahil viewport taşması önlendi; uzun içerik tek gövdede kayar. Masaüstü iki sütun ve giriş kartı merkez hizası korunur. Eklenti değişmedi.
+
+**Doğrulama:** Yerel 29 paket testi, build-assets --check ve diff kontrolü başarılı. 320×568, 390×650/844 ve masaüstü yerleşim beklentileri mevcut tarayıcı testinde güncellendi. Yerel tarayıcı işletim sistemi socket kısıtlaması nedeniyle başlatılamadı; CI sonucu bekleniyor. Fiziksel iPhone kabulü yapılmadı.
+
+**Yayın:** Kod 0.1.379 olarak hazır; GitHub ve otomatik canlı dağıtım sonucu takip kaydında tamamlanacak. **Sıradaki:** CI/deploy sonucunu doğrula, canlı sürüm ve CSS kontrolünü kaydet.
+
 ## 15 Kasım 2026 — 0.1.314 → 0.1.315 ilk ürün paneli hizası
 
 **Biten işler:** Ajans anasayfası gerçek üretim header/dock'u ile CI [43675949300](https://github.com/muhammetdkaya/codela-storefront/actions/runs/43675949300) üzerinde dört genişlik, tek ekran 390×844, başlık/dock açıklığı, yan yana CTA, klavye, reduced-motion ve JS kapalı kontrollerini geçti. f1e6419 UTF-8 fixture düzeltmesi ürün adapter'ının parser sürerken ve DOMContentLoaded sonrasında hatasız yüklenmesini sağladı.

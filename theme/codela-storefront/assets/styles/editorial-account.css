@@ -20,14 +20,13 @@ body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-acc
   width:100%;max-width:440px;margin:0 auto;
   padding:clamp(24px,4vw,36px);
   border:1px solid transparent;border-radius:28px;
-  background:
-    radial-gradient(380px circle at 50% 0%,rgba(211,164,128,.085),transparent 65%) padding-box,
-    linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.004)) padding-box,
-    linear-gradient(rgba(19,18,24,.78),rgba(13,13,18,.86)) padding-box,
-    linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.05) 38%,rgba(255,255,255,.03) 76%,rgba(255,255,255,.12)) border-box;
-  -webkit-backdrop-filter:blur(22px) saturate(145%);
-  backdrop-filter:blur(22px) saturate(145%);
-  box-shadow:0 22px 54px -24px rgba(0,0,0,.75);
+  /* One translucent fill; the rim cannot shine through the card interior. */
+  border-color:rgba(255,255,255,.09);
+  background:linear-gradient(180deg,rgba(255,255,255,.018),transparent) padding-box,
+    rgba(19,18,24,.78);
+  -webkit-backdrop-filter:blur(22px) saturate(115%);
+  backdrop-filter:blur(22px) saturate(115%);
+  box-shadow:0 16px 40px -24px rgba(0,0,0,.45);
   color:#f8f7fa!important;
   position:relative;
 }
