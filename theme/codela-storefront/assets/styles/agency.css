@@ -2385,7 +2385,8 @@ body:not(.home):has(.sf-shell) .codela-page-layout > :is(
 @media(max-width:739px){
   .sf-agency-widget--process .sf-agency-process{
     --sf-process-height:100dvh;
-    --sf-process-top:calc(84px + env(safe-area-inset-top,0px));
+    /* Match the Services heading baseline; the hero keeps its own rhythm. */
+    --sf-process-top:var(--sf-agency-stage-top,clamp(82px,10svh,112px));
     --sf-process-bottom:calc(20px + var(--sf-agency-dock-clearance,0px));
     min-height:var(--sf-process-height);
     padding:var(--sf-process-top) 16px var(--sf-process-bottom);
@@ -2403,8 +2404,14 @@ body:not(.home):has(.sf-shell) .codela-page-layout > :is(
   .sf-agency-widget--process .sf-agency-process-head{flex:none;margin-bottom:20px}
   .sf-agency-widget--process .sf-agency-process-layout{
     display:flex;flex-direction:column;flex:1 0 auto;
+    width:100%;min-width:0;gap:0; /* clear inherited desktop 7% row gap */
   }
-  .sf-agency-widget--process .sf-agency-process-steps{flex:none;margin-bottom:15px}
+  .sf-agency-widget--process .sf-agency-process-steps{
+    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+    width:100%;max-width:none;min-width:0;align-self:stretch;
+    flex:0 0 auto;gap:9px;margin-bottom:21px;
+  }
+  .sf-agency-widget--process .sf-agency-process-step{width:100%;min-width:0}
   .sf-agency-widget--process .sf-agency-process-stage{flex:1 0 auto}
   .sf-agency-widget--process .sf-agency-process-stage-visual{
     flex:1 0 120px;min-height:120px;height:auto;
