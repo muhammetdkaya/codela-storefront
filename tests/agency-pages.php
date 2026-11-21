@@ -411,6 +411,22 @@ $process_data = [
     ],
 ];
 $process_widget = codela_sf_section_agency_process( $process_data );
+$legacy_process = [
+    'id' => 'agency-starter-process',
+    'title' => 'Birlikte nasıl çalışıyoruz?',
+    'description' => 'Keşiften yayına kadar şeffaf ve ölçülebilir bir iş akışı.',
+    'items' => [
+        [ 'enabled' => true, 'title' => 'Analiz, UX ve Altyapı', 'body' => 'Hedefleri, içerik mimarisini ve doğru teknolojiyi belirleriz.' ],
+        [ 'enabled' => true, 'title' => 'Tasarım ve Geliştirme', 'body' => 'Özel arayüz, Elementor bileşenleri ve entegrasyonları geliştiririz.' ],
+        [ 'enabled' => true, 'title' => 'Test, Yayın ve Destek', 'body' => 'Performans, mobil ve güvenlik kontrolleri sonrasında yayına alırız.' ],
+    ],
+];
+agency_page_check( str_contains( codela_sf_section_agency_process( $legacy_process ), 'Keşif ve Planlama' ),
+    'Untouched process starter renders refined copy before the data migration.' );
+$custom_process = $legacy_process;
+$custom_process['items'][0]['body'] = 'Kullanıcının kendi keşif metni.';
+agency_page_check( str_contains( codela_sf_section_agency_process( $custom_process ), 'Kullanıcının kendi keşif metni.' ),
+    'Edited process copy is not overwritten.' );
 agency_page_check( substr_count( $process_widget, 'data-agency-widget-step="' ) === 3, 'Reusable process has three steps.' );
 preg_match_all( '/data-agency-stage-image="([^"]+)"/', $process_widget, $stage_images );
 agency_page_check( count( $stage_images[1] ) === 3 && count( array_unique( $stage_images[1] ) ) === 3,

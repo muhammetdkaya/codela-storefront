@@ -265,6 +265,25 @@ function codela_sf_section_agency_services( array $data, string $type = '' ): st
 function codela_sf_section_agency_process( array $data, string $type = '' ): string {
     $items = codela_sf_section_agency_items( $data, 3 );
     if ( ! $items ) { return ''; }
+    // Keep the existing editor contract. Only a byte-for-byte pristine Agency
+    // starter displays the refreshed content before its guarded DB migration.
+    $legacy_process = 'agency-starter-process' === (string) ( $data['id'] ?? '' )
+        && 'Birlikte nasıl çalışıyoruz?' === trim( (string) ( $data['title'] ?? '' ) )
+        && 'Keşiften yayına kadar şeffaf ve ölçülebilir bir iş akışı.' === (string) ( $data['description'] ?? '' )
+        && array_column( $items, 'title' ) === [ 'Analiz, UX ve Altyapı', 'Tasarım ve Geliştirme', 'Test, Yayın ve Destek' ]
+        && array_column( $items, 'body' ) === [
+            'Hedefleri, içerik mimarisini ve doğru teknolojiyi belirleriz.',
+            'Özel arayüz, Elementor bileşenleri ve entegrasyonları geliştiririz.',
+            'Performans, mobil ve güvenlik kontrolleri sonrasında yayına alırız.',
+        ];
+    if ( $legacy_process ) {
+        $data['description'] = 'Keşiften yayına, hangi adımda ne yaptığımızı açıkça paylaşıyoruz.';
+        $items = [
+            [ 'title' => 'Keşif ve Planlama', 'body' => 'Hedefleri, kullanıcı ihtiyaçlarını ve içerik yapısını netleştirir; yol haritasını oluştururuz.' ],
+            [ 'title' => 'Tasarım ve Geliştirme', 'body' => 'Özgün arayüzü geliştirir, gerekli yönetim ve entegrasyon akışlarını kurarız.' ],
+            [ 'title' => 'Test, Yayın ve Destek', 'body' => 'Mobil görünümü, temel performansı ve kritik akışları test ederek yayına hazırlarız.' ],
+        ];
+    }
     $id = 'sf-agency-process-' . sanitize_html_class( (string) ( $data['id'] ?? 'process' ) );
     $labels = [ 'Keşif', 'Üretim', 'Yayın' ];
     $outcomes = [ 'Net Yol Haritası', 'Geliştirilen Dijital Deneyim', 'Kontrol Edilmiş, Yayına Hazır' ];
