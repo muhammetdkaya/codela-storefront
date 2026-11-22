@@ -6,8 +6,8 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Ajans mobil Hizmetler ve Çalışma Süreci üst başlık başlangıçları aynı hizaya alındı; karşılama bölümü değiştirilmedi.",
-    "Çalışma Süreci üç adımlı ilerleme çubukları tam içerik genişliğine yayılıyor; eski masaüstü satır boşluğu mobilde kaldırıldı.",
-    "Görselin esnek viewport yüksekliği, mevcut kart görünümü, metinler, renkler ve eklenti davranışı korundu."
+    "Ajans ana sayfası karşılama fotoğrafı, sıcak tepe ışığında açılan mat laptop ve üç oluklu cam karttan oluşan animasyonlu sahneyle değiştirildi.",
+    "Mevcut başlık, açıklama, proje bağlantısı, Hizmetler butonu ve mobil tam ekran yerleşimi korundu.",
+    "CSS/SVG ile harici video veya kütüphane olmadan çalışan sahne; azaltılmış hareket ve görünürlükte animasyonu duraklatma desteği."
   ]
 }
