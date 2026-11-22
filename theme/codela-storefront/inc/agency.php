@@ -128,7 +128,7 @@ function codela_sf_agency_navigation_routes(): array {
 
 /** Load visual assets only for a page that actually contains agency modules. */
 function codela_sf_agency_asset_flags(): array {
-    $flags = [ 'pattern' => false, 'widgets' => false, 'project' => false, 'about' => false ];
+    $flags = [ 'pattern' => false, 'widgets' => false, 'project' => false, 'about' => false, 'studio' => false ];
     if ( ! function_exists( 'get_queried_object_id' ) || ! function_exists( 'get_post' ) ) { return $flags; }
     $id = (int) get_queried_object_id();
     $post = $id ? get_post( $id ) : null;
@@ -141,6 +141,7 @@ function codela_sf_agency_asset_flags(): array {
     $flags['pattern'] = str_contains( $content, 'codela-storefront/agency-' );
     $flags['widgets'] = str_contains( $content, 'codela/section-agency-' ); // Includes agency-studio without a theme-mode flag.
     $flags['project'] = str_contains( $content, 'codela/section-agency-project' );
+    $flags['studio'] = str_contains( $content, 'codela/section-agency-studio' );
     $flags['about'] = str_contains( $content, 'codela/section-agency-about' ) || str_contains( $content, 'codela-storefront/agency-about' );
     return $flags;
 }
@@ -154,6 +155,15 @@ add_action( 'wp_enqueue_scripts', static function() {
     codela_sf_agency_styles();
     if ( $flags['about'] ) {
         wp_enqueue_style( 'codela-storefront-agency-about', get_template_directory_uri() . '/assets/styles/agency-about.css', [ 'codela-storefront-agency' ], wp_get_theme()->get( 'Version' ) );
+    }
+    // Spotlight assets are required only for an Agency homepage containing Studio.
+    if ( $flags['studio'] && function_exists( 'is_front_page' ) && is_front_page() ) {
+        wp_enqueue_style( 'codela-storefront-agency-light-scene',
+            get_template_directory_uri() . '/assets/styles/agency-light-scene.css',
+            [ 'codela-storefront-agency' ], wp_get_theme()->get( 'Version' ) );
+        wp_enqueue_script( 'codela-storefront-agency-light-scene',
+            get_template_directory_uri() . '/assets/scripts/agency-light-scene.js',
+            [], wp_get_theme()->get( 'Version' ), true );
     }
     if ( $flags['project'] ) {
         wp_enqueue_style( 'codela-storefront-agency-project', get_template_directory_uri() . '/assets/styles/agency-project.css', [ 'codela-storefront-agency' ], wp_get_theme()->get( 'Version' ) );
