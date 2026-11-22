@@ -86,6 +86,46 @@ function codela_sf_agency_project_link(): string {
     return codela_sf_agency_project_url() ?: codela_sf_agency_contact_link();
 }
 
+/** Destination-only Agency skeleton hints for verified installed pages.
+ * Use actual permalinks; renamed pages and service children need no hard-coded slugs.
+ * This does not select an Agency theme mode or change WooCommerce navigation.
+ */
+function codela_sf_agency_navigation_routes(): array {
+    $state = get_option( 'codela_agency_demo_state_v1', [] );
+    if ( ! is_array( $state ) || empty( $state['done'] ) ) { return []; }
+    $routes = [];
+    $home_id = (int) ( $state['pages']['home'] ?? 0 );
+    if ( $home_id && 'page' === get_option( 'show_on_front' )
+        && (int) get_option( 'page_on_front' ) === $home_id
+        && 'codela-agency-starter:1:home' === get_post_meta( $home_id, '_codela_agency_demo_key', true ) ) {
+        $routes[] = [ 'url' => home_url( '/' ), 'kind' => 'home' ];
+    }
+    foreach ( [ 'hizmetler' => 'services', 'hakkimizda' => 'about', 'iletisim' => 'contact' ] as $key => $kind ) {
+        $url = codela_sf_agency_installed_page_url( $key );
+        if ( $url ) { $routes[] = [ 'url' => $url, 'kind' => $kind ]; }
+    }
+    $project = codela_sf_agency_project_url();
+    if ( $project ) { $routes[] = [ 'url' => $project, 'kind' => 'project' ]; }
+    $parent_id = (int) ( $state['pages']['hizmetler'] ?? 0 );
+    if ( $parent_id && 'codela-agency-starter:1:hizmetler' === get_post_meta( $parent_id, '_codela_agency_demo_key', true ) ) {
+        $detail_keys = [ 'web-tasarimi', 'e-ticaret', 'ozel-yazilim', 'gelistirme-destek' ];
+        $children = get_posts( [
+            'post_type' => 'page', 'post_status' => 'publish', 'post_parent' => $parent_id,
+            'meta_key' => '_codela_agency_service_detail_key', 'fields' => 'ids',
+            'numberposts' => 8, 'suppress_filters' => true,
+        ] );
+        foreach ( $children as $child_id ) {
+            $key = (string) get_post_meta( (int) $child_id, '_codela_agency_service_detail_key', true );
+            if ( ! in_array( str_replace( 'codela-agency-detail:1:', '', $key ), $detail_keys, true )
+                || ! str_starts_with( $key, 'codela-agency-detail:1:' )
+                || post_password_required( (int) $child_id ) ) { continue; }
+            $url = get_permalink( (int) $child_id );
+            if ( $url ) { $routes[] = [ 'url' => (string) $url, 'kind' => 'detail' ]; }
+        }
+    }
+    return $routes;
+}
+
 /** Load visual assets only for a page that actually contains agency modules. */
 function codela_sf_agency_asset_flags(): array {
     $flags = [ 'pattern' => false, 'widgets' => false, 'project' => false, 'about' => false ];

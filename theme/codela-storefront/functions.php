@@ -358,6 +358,7 @@ add_action( 'wp_enqueue_scripts', function() {
         wp_enqueue_script( 'codela-storefront-document-continuity' );
         wp_add_inline_script( 'codela-storefront-navigation-feedback', 'window.codelaSFDocument=' . wp_json_encode( [
             'home' => home_url( '/' ),
+            'agencyRoutes' => function_exists( 'codela_sf_agency_navigation_routes' ) ? codela_sf_agency_navigation_routes() : [],
             'shop' => wc_get_page_permalink( 'shop' ),
             // Use the store's configured permalink bases, including translated slugs.
             'productBase' => home_url( '/' . trim( explode( '%', wc_get_permalink_structure()['product_rewrite_slug'] )[0], '/' ) . '/' ),

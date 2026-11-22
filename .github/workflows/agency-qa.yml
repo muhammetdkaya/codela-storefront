@@ -72,6 +72,7 @@ jobs:
           node tests/agency-studio-browser.cjs
           node tests/agency-bento-browser.cjs
           node tests/agency-detail-browser.cjs
+          node tests/agency-skeleton-browser.cjs
           node tests/agency-contact-browser.cjs
           node tests/agency-project-browser.cjs
       - name: Preserve phone/desktop reference screenshots

@@ -34,6 +34,45 @@
         if (matches(config.home) && !['page_id','p','s'].some(key => url.searchParams.has(key)) || link?.dataset.sfRoute === 'home') return 'home';
         return 'page';
     }
+
+    // Verified Agency destinations, independent from the shared Woo route types.
+    function agencyDestination(url, type) {
+        if (['product','catalog','cart','checkout'].includes(type)) return '';
+        const path = url.pathname.replace(/\/+$/, '') || '/';
+        for (const route of config.agencyRoutes || []) {
+            if (!route || !route.url) continue;
+            const base = new URL(route.url, location.href);
+            if (url.origin === base.origin &&
+                path === (base.pathname.replace(/\/+$/, '') || '/') &&
+                [...base.searchParams].every(([key, value]) => url.searchParams.get(key) === value)) {
+                // Search/query documents on the front page are not Agency Home.
+                if (route.kind === 'home' && [...url.searchParams.keys()].some(key => ['s','p','page_id','post_type'].includes(key))) return '';
+                return route.kind;
+            }
+        }
+        // Shared Woo account keeps its original layout unless the outgoing
+        // document actually uses the editorial Agency account presentation.
+        if (type === 'account' && document.querySelector('.sf-shell.has-agency-profile')) return 'account';
+        return '';
+    }
+    function agencyLayout(kind) {
+        const tile = (name, extra = '') => '<span class="sf-agency-loading__shape sf-agency-loading__' + name + ' ' + extra + '"></span>';
+        const title = tile('eyebrow') + tile('title') + tile('title', 'is-short') + tile('description') + tile('description', 'is-short');
+        const button = tile('button');
+        const media = '<div class="sf-agency-loading__media">' + tile('image') + '</div>';
+        const copy = '<div class="sf-agency-loading__copy">' + title + '</div>';
+        const cards = '<div class="sf-agency-loading__cards">' + (tile('card')).repeat(4) + '</div>';
+        let body;
+        if (kind === 'home') body = '<div class="sf-agency-loading__columns">' + copy + media + '</div>' + button + cards;
+        else if (kind === 'detail') body = '<div class="sf-agency-loading__columns sf-agency-loading__columns--detail">' + media +
+            '<div class="sf-agency-loading__copy">' + title + '<div class="sf-agency-loading__tags">' + tile('tag').repeat(3) + '</div>' + button + '</div></div>';
+        else if (kind === 'services') body = copy + cards;
+        else if (kind === 'contact') body = copy + cards + '<div class="sf-agency-loading__fields">' + tile('field').repeat(2) + '</div>';
+        else if (kind === 'project') body = copy + '<div class="sf-agency-loading__panel">' + tile('field').repeat(3) + button + '</div>';
+        else if (kind === 'account') body = '<div class="sf-agency-loading__panel sf-agency-loading__panel--account">' + copy + tile('field').repeat(2) + button + '</div>';
+        else body = copy + '<div class="sf-agency-loading__about">' + media + tile('description') + '</div>';
+        return '<div class="sf-agency-loading sf-agency-loading--' + kind + '">' + body + '</div>';
+    }
     function layout(type, url) {
         const shape = name => '<div class="sf-skeleton-shape sf-skeleton-' + name + '"></div>';
         const lines = '<div class="sf-skeleton-lines"><i></i><i></i></div>';
@@ -231,10 +270,12 @@
         window.dispatchEvent(new Event('codela:before-route'));
         const target = new URL(url, location.href);
         const type = destination(target, link);
+        const agencyKind = agencyDestination(target, type);
         // Destination controls are an inert presentation, without outgoing product
         // data, a Woo form or a purchase handler. The next document owns commerce.
         const surface = document.createElement('div');
         surface.className = 'sf-skeleton';
+        if (agencyKind) surface.dataset.sfAgency = agencyKind;
         surface.dataset.owner = owner;
         surface.setAttribute('role', 'status');
         surface.setAttribute('aria-live', 'polite');
@@ -244,7 +285,7 @@
         const shapes = document.createElement('div');
         shapes.className = 'sf-skeleton-layout';
         shapes.setAttribute('aria-hidden', 'true');
-        shapes.innerHTML = layout(type, target);
+        shapes.innerHTML = agencyKind ? agencyLayout(agencyKind) : layout(type, target);
         surface.append(label, shapes);
         let statePreview = null;
         if (type === 'product' && config.purchasePreview) {

@@ -183,6 +183,7 @@ jobs:
           TEST_WEBKIT=1 node tests/menu-dismiss-browser.cjs
           node tests/editorial-presentation-browser.cjs
           TEST_WEBKIT=1 node tests/editorial-presentation-browser.cjs
+          node tests/agency-skeleton-browser.cjs
           node tests/agency-browser.cjs
           node tests/agency-stage-gesture-browser.cjs
           node tests/agency-widgets-browser.cjs

@@ -2571,3 +2571,31 @@ body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-
   .sf-agency-widget--bento .cdl-bento__card--software{padding:12px}
   .sf-agency-widget--bento .cdl-bento__minor-copy{gap:4px}
 }
+
+/* Service details: occupy the usable inner-page viewport, including the image
+   and action region. Preserve natural scrolling for short screens/large text. */
+body:not(.home):has(.sf-shell) .codela-page-layout > .sf-agency-widget--detail:first-child > .cdl-service-detail{
+  min-height:calc(100dvh - var(--sf-agency-header-clearance,76px));
+  padding-top:clamp(20px,3svh,34px);
+  padding-bottom:clamp(18px,3svh,30px);
+}
+.sf-agency-widget--detail .cdl-service-detail__shell{
+  flex:1 1 auto;min-height:0;
+}
+.sf-agency-widget--detail .cdl-service-detail__content{
+  flex:1 1 auto;min-height:0;
+}
+@media(max-width:739px){
+  .sf-agency-widget--detail .cdl-service-detail__content{
+    flex:1 1 auto;
+  }
+  .sf-agency-widget--detail .cdl-service-detail__visual{
+    height:auto;flex:1 1 auto;min-height:clamp(180px,25svh,250px);
+  }
+  .sf-agency-widget--detail .cdl-service-detail__information{
+    flex:0 0 auto;
+  }
+}
+@media(max-width:359px){
+  .sf-agency-widget--detail .cdl-service-detail__visual{min-height:176px}
+}

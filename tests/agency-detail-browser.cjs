@@ -38,6 +38,8 @@ const server=http.createServer((req,res)=>{
          overflow:document.documentElement.scrollWidth-innerWidth,
          viewX:bounds.x,viewW:bounds.width,
          buttonHeight:action.height,
+         stageHeight:bounds.height,viewportHeight:innerHeight,
+         contentHeight:el.querySelector('.cdl-service-detail__content').getBoundingClientRect().height,
          ctaHref:cta.getAttribute('href'),
          duplicateHeader:el.querySelectorAll('.cdl-service-detail__header,.cdl-service-detail__back,.cdl-service-detail__brand').length,
          fakeChrome:el.querySelectorAll('.phone-frame,.status-bar,.bottom-nav').length
@@ -48,6 +50,8 @@ const server=http.createServer((req,res)=>{
      assert(s.overflow<=1,'No horizontal overflow '+width);
      assert(Math.abs(s.viewX)<=1&&Math.abs(s.viewW-width)<=1,'Full-bleed stage '+width);
      assert(s.buttonHeight>=44,'Touch-safe CTA '+width);
+     assert(s.stageHeight>=s.viewportHeight-1,'Detail stage fills the viewport '+width);
+     assert(s.contentHeight>=Math.min(300,s.viewportHeight*.35),'Detail content expands '+width);
      assert(s.ctaHref.includes('hizmetler=Web%20Tasar%C4%B1m'),'Project CTA transports service to existing form');
      assert.equal(s.duplicateHeader,0,'Native theme header is the only navigation on service detail');
      assert.equal(s.fakeChrome,0,'No duplicate fake phone UI');
