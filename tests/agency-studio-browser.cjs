@@ -27,11 +27,11 @@ const server=http.createServer((req,res)=>{
       assert.equal(await hero.count(),1,'Exactly one isolated Studio hero');
       assert.equal(await hero.locator('h1').count(),1,'Primary headline is accessible');
       const ui=await hero.evaluate(el=>{
-        const photo=el.querySelector('.codela-studio-hero__visual img');
+        const scene=el.querySelector('.codela-studio-hero__visual .codela-scene');
         const cta=el.querySelector('.codela-studio-hero__visual-foot a');
         const photoBox=el.querySelector('.codela-studio-hero__visual').getBoundingClientRect();
         const ctaBox=cta.getBoundingClientRect();
-        return {photoLoaded:photo.complete&&photo.naturalWidth===1200,
+        return {sceneReady:!!scene && !!scene.querySelector('.codela-laptop__lid-pivot') && !!scene.querySelector('.codela-card--glass') && Math.abs(scene.getBoundingClientRect().height-photoBox.height)<2,
           background:getComputedStyle(el).backgroundColor,
           title:getComputedStyle(el.querySelector('h1')).color,
           fontFamily:getComputedStyle(el.querySelector('h1')).fontFamily,
@@ -42,20 +42,20 @@ const server=http.createServer((req,res)=>{
           ctaVisible:ctaBox.bottom<=photoBox.bottom&&ctaBox.left>=photoBox.left,
           overflow:document.documentElement.scrollWidth-window.innerWidth};
       });
-      assert(ui.photoLoaded,'Exact referenced hero photograph loads');
+      assert(ui.sceneReady,'Approved spotlight scene fills the original media frame');
       assert.equal(ui.background,'rgb(9, 9, 12)','Obsidian surface stays isolated');
       assert.equal(ui.title,'rgb(245, 243, 247)','Title remains white');
       assert(!/Times New Roman/i.test(ui.fontFamily),'Studio typography uses system sans-serif');
       assert(Math.abs(ui.viewportLeft)<=1&&Math.abs(ui.viewportRight-width)<=1,
         'Hero fills the entire viewport without fixture browser margins');
       assert(ui.heroHeight>=height-1,'Hero at least fills mobile viewport');
-      assert(ui.photoHeight>=200,'Cinematic photo stays legible on short phones');
-      assert(ui.ctaVisible,'Services CTA is inside photograph safe area');
+      assert(ui.photoHeight>=200,'Cinematic spotlight scene stays visible on short phones');
+      assert(ui.ctaVisible,'Services CTA remains inside the scene safe area');
       assert(ui.overflow<=1,'No horizontal overflow at '+width);
       assert.deepEqual(errors,[],'No browser JavaScript errors');
       await page.screenshot({path:path.join(root,'qa','agency-studio-'+width+'.png')});
       await page.close();
     }
-    console.log('Studio hero: reference photograph, full viewport, 320/390/402/1440 widths passed.');
+    console.log('Studio hero: spotlight scene, full viewport, 320/390/402/1440 widths passed.');
   }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
 })().catch(err=>{console.error(err);server.close();process.exitCode=1});
