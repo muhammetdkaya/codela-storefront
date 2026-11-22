@@ -292,9 +292,10 @@ agency_page_check( str_contains( $studio_html, 'Markanıza özel' ) && str_conta
     && str_contains( $studio_html, 'e-ticaret ve yazılım.' )
     && str_contains( $studio_html, 'codela-studio-hero__title-line' )
     && str_contains( $studio_html, 'WordPress · WooCommerce' )
-    && str_contains( $studio_html, 'class="codela-scene"' )
-    && str_contains( $studio_html, 'codela-laptop__lid-pivot' )
-    && str_contains( $studio_html, 'codela-card--glass' )
+    && str_contains( $studio_html, 'class="codela-monolith"' )
+    && str_contains( $studio_html, 'codela-monolith__canvas' )
+    && str_contains( $studio_html, 'codela-monolith__control' )
+    && ! str_contains( $studio_html, 'codela-laptop__lid-pivot' )
     && ! str_contains( $studio_html, 'agency-reference-hero.jpg' )
     && ! str_contains( $studio_html, 'data:image' ),
     'Active Studio welcome preserves approved text and renders the light scene.' );
@@ -310,7 +311,8 @@ if ( in_array( '--render=studio', $argv, true ) ) {
     // In the CLI fixture only, rewrite codela.test theme URI to the local QA HTTP server.
     $local_studio = str_replace( 'https://codela.test/wp-content/themes/codela-storefront/', '/theme/codela-storefront/', $studio_html );
     echo '<style>html,body{margin:0;padding:0;background:#09090c} .sf-content,.codela-page-layout{width:100%;max-width:none;margin:0}</style>';
-    echo '</head><body class="home"><main class="sf-content"><div class="codela-page-layout">' . $local_studio . '</div></main></body></html>';
+    echo '</head><body class="home"><main class="sf-content"><div class="codela-page-layout">' . $local_studio . '</div></main>';
+    echo '<script src="/theme/codela-storefront/assets/scripts/agency-light-scene.js"></script></body></html>';
     exit;
 }
 
