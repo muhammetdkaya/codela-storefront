@@ -96,9 +96,9 @@ def check() -> None:
     assert "min-height:100svh" in agency_css, "Mobile first-screen height rule is absent"
     assert "margin-top:-31px!important" in agency_css, "Mobile Services handoff has regressed"
     scene_css = fetch("/wp-content/themes/codela-storefront/assets/styles/agency-light-scene.css")
-    assert "cs-lid-open" in scene_css and "prefers-reduced-motion" in scene_css, "Studio spotlight CSS is not published"
+    assert ".codela-monolith__canvas" in scene_css and "prefers-reduced-motion" in scene_css, "Studio monolith canvas CSS is not published"
     scene_js = fetch("/wp-content/themes/codela-storefront/assets/scripts/agency-light-scene.js")
-    assert "IntersectionObserver" in scene_js, "Studio spotlight visibility logic is not published"
+    assert "drawScene(timeSec)" in scene_js and "IntersectionObserver" in scene_js, "Studio monolith animation or visibility logic is not published"
     print("MONA Studio/Bento CSS and existing mobile safeguards verified.", flush=True)
     expected = {
         "/": [],  # Dedicated native Agency starter checked separately below
@@ -164,8 +164,8 @@ def check() -> None:
                     "Hız, güncelleme ve teknik destek.",
                     "Bakım ve geliştirme", "Keşif ve Planlama",
                     "WordPress · WooCommerce",
-                    "class=\"codela-scene\"", "codela-laptop__lid-pivot",
-                    "codela-card--glass", "agency-reference-web.jpg",
+                    "class=\"codela-monolith\"", "codela-monolith__canvas",
+                    "codela-monolith__control", "agency-reference-web.jpg",
                     "agency-reference-commerce.jpg", "agency-reference-software.jpg",
                     "agency-reference-process-discovery.jpg", "#sf-agency-services",
                 )
@@ -173,7 +173,7 @@ def check() -> None:
                 if missing_copy:
                     errors.append("Live MONA homepage not updated: " + ", ".join(missing_copy))
                 else:
-                    print("Live Studio/Bento: approved copy, animated spotlight and Bento photographs verified.", flush=True)
+                    print("Live Studio/Bento: approved copy, architectural monolith and Bento photographs verified.", flush=True)
                 match_title = re.search(r"<title[^>]*>(.*?)</title>", home, re.I | re.S)
                 title = " ".join(unescape(match_title.group(1)).split()) if match_title else ""
                 print("Live document title: " + repr(title), flush=True)
