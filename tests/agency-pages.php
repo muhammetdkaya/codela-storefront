@@ -292,8 +292,12 @@ agency_page_check( str_contains( $studio_html, 'Markanıza özel' ) && str_conta
     && str_contains( $studio_html, 'e-ticaret ve yazılım.' )
     && str_contains( $studio_html, 'codela-studio-hero__title-line' )
     && str_contains( $studio_html, 'WordPress · WooCommerce' )
-    && str_contains( $studio_html, 'agency-reference-hero.jpg' ) && ! str_contains( $studio_html, 'data:image' ),
-    'Active Studio welcome shows approved headline and retains hero image.' );
+    && str_contains( $studio_html, 'class="codela-scene"' )
+    && str_contains( $studio_html, 'codela-laptop__lid-pivot' )
+    && str_contains( $studio_html, 'codela-card--glass' )
+    && ! str_contains( $studio_html, 'agency-reference-hero.jpg' )
+    && ! str_contains( $studio_html, 'data:image' ),
+    'Active Studio welcome preserves approved text and renders the light scene.' );
 agency_page_check( str_contains( $studio_html, 'href="#sf-agency-services"' ) && str_contains( $studio_html, 'Projenizi konuşalım' ), 'Studio Services CTA scrolls to the next native homepage section.' );
 $studio_custom = $studio_data; $studio_custom['title'] = 'Özgün bir başlık';
 agency_page_check( str_contains( codela_sf_section_agency_studio( $studio_custom ), 'Özgün bir başlık' ),
@@ -302,6 +306,7 @@ if ( in_array( '--render=studio', $argv, true ) ) {
     echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
     echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/storefront-base.css">';
     echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/agency.css">';
+    echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/agency-light-scene.css">';
     // In the CLI fixture only, rewrite codela.test theme URI to the local QA HTTP server.
     $local_studio = str_replace( 'https://codela.test/wp-content/themes/codela-storefront/', '/theme/codela-storefront/', $studio_html );
     echo '<style>html,body{margin:0;padding:0;background:#09090c} .sf-content,.codela-page-layout{width:100%;max-width:none;margin:0}</style>';
