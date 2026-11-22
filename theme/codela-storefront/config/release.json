@@ -6,8 +6,8 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Ajans ana sayfası karşılama fotoğrafı, sıcak tepe ışığında açılan mat laptop ve üç oluklu cam karttan oluşan animasyonlu sahneyle değiştirildi.",
-    "Mevcut başlık, açıklama, proje bağlantısı, Hizmetler butonu ve mobil tam ekran yerleşimi korundu.",
-    "CSS/SVG ile harici video veya kütüphane olmadan çalışan sahne; azaltılmış hareket ve görünürlükte animasyonu duraklatma desteği."
+    "Ajans Studio karşılama alanındaki laptop sahnesi, kullanıcının onayladığı mat mimari monolit, oluklu cam ve çapraz şampanya ışığı Canvas sahnesi ile değiştirildi.",
+    "Mevcut karşılama metinleri, iletişim çağrısı, Hizmetler bağlantısı ve mobil ekran düzeni korunuyor.",
+    "Harici kütüphane, video veya yeni görsel dosyası gerektirmeyen animasyon; görünürlükte duraklatma, kullanıcı duraklatma kontrolü ve azaltılmış hareket desteği."
   ]
 }
