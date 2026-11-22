@@ -48,8 +48,12 @@ function codela_sf_section_agency_studio( array $data, string $type = '', bool $
             <a class="codela-studio-hero__contact" href="<?php echo esc_url( $contact ); ?>">Projenizi konuşalım <span aria-hidden="true">↗</span></a>
           </div>
           <div class="codela-studio-hero__visual">
+            <?php if ( function_exists( 'is_front_page' ) && is_front_page() ) : ?>
+              <?php require __DIR__ . '/../parts/agency-light-scene.php'; ?>
+            <?php else : ?>
             <img src="<?php echo esc_url( $image ); ?>" alt="Işığı yansıtan cam ve metal yüzeylerden oluşan Codela stüdyo kompozisyonu"
                  <?php echo $primary ? 'fetchpriority="high" loading="eager"' : 'loading="lazy"'; ?> decoding="async" width="1200" height="896" />
+            <?php endif; ?>
             <div class="codela-studio-hero__fade" aria-hidden="true"></div>
             <div class="codela-studio-hero__visual-foot">
               <span><i aria-hidden="true"></i> WordPress · WooCommerce</span>
