@@ -197,6 +197,7 @@
       if (inView) illuminate(overlays[i],'proc'+i);
     };
     new MutationObserver(sync).observe(stage,{attributes:true,attributeFilter:['data-step']});
+    sync(); // The native widget activated step 0 before this enhancement loaded.
     if ('IntersectionObserver' in window) {
       const io=new IntersectionObserver(entries=>{
         inView=entries.some(e=>e.isIntersecting);
