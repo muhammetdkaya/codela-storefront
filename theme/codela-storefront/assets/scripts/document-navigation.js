@@ -38,42 +38,82 @@
         return 'page';
     }
 
-    // Verified Agency destinations, independent from the shared Woo route types.
+    // Known Agency routes retain destination-specific layouts, including renamed pages.
+    // Custom Agency documents use the matching dark canvas without guessing content.
     function agencyDestination(url, type) {
         if (['product','catalog','cart','checkout'].includes(type)) return '';
         const path = url.pathname.replace(/\/+$/, '') || '/';
         for (const route of config.agencyRoutes || []) {
             if (!route || !route.url) continue;
             const base = new URL(route.url, location.href);
-            if (url.origin === base.origin &&
-                path === (base.pathname.replace(/\/+$/, '') || '/') &&
-                [...base.searchParams].every(([key, value]) => url.searchParams.get(key) === value)) {
-                // Search/query documents on the front page are not Agency Home.
-                if (route.kind === 'home' && [...url.searchParams.keys()].some(key => ['s','p','page_id','post_type'].includes(key))) return '';
-                return route.kind;
-            }
+            if (url.origin !== base.origin ||
+                path !== (base.pathname.replace(/\/+$/, '') || '/') ||
+                ![...base.searchParams].every(([key, value]) => url.searchParams.get(key) === value)) continue;
+            if (route.kind === 'home' &&
+                [...url.searchParams.keys()].some(key => ['s','p','page_id','post_type'].includes(key))) return '';
+            return route.kind;
         }
-        // Shared Woo account keeps its original layout unless the outgoing
-        // document actually uses the editorial Agency account presentation.
-        if (type === 'account' && document.querySelector('.sf-shell.has-agency-profile')) return 'account';
-        return '';
+        const agency = document.querySelector('.sf-shell.has-agency-profile');
+        if (!agency) return '';
+        if (type === 'account') return 'account';
+        if (type === 'home' && !url.search) return 'home';
+        return type === 'page' ? 'page' : '';
     }
     function agencyLayout(kind) {
-        const tile = (name, extra = '') => '<span class="sf-agency-loading__shape sf-agency-loading__' + name + ' ' + extra + '"></span>';
-        const title = tile('eyebrow') + tile('title') + tile('title', 'is-short') + tile('description') + tile('description', 'is-short');
-        const button = tile('button');
-        const media = '<div class="sf-agency-loading__media">' + tile('image') + '</div>';
-        const copy = '<div class="sf-agency-loading__copy">' + title + '</div>';
-        const cards = '<div class="sf-agency-loading__cards">' + (tile('card')).repeat(4) + '</div>';
-        let body;
-        if (kind === 'home') body = '<div class="sf-agency-loading__columns">' + copy + media + '</div>' + button + cards;
-        else if (kind === 'detail') body = '<div class="sf-agency-loading__columns sf-agency-loading__columns--detail">' + media +
-            '<div class="sf-agency-loading__copy">' + title + '<div class="sf-agency-loading__tags">' + tile('tag').repeat(3) + '</div>' + button + '</div></div>';
-        else if (kind === 'services') body = copy + cards;
-        else if (kind === 'contact') body = copy + cards + '<div class="sf-agency-loading__fields">' + tile('field').repeat(2) + '</div>';
-        else if (kind === 'project') body = copy + '<div class="sf-agency-loading__panel">' + tile('field').repeat(3) + button + '</div>';
-        else if (kind === 'account') body = '<div class="sf-agency-loading__panel sf-agency-loading__panel--account">' + copy + tile('field').repeat(2) + button + '</div>';
-        else body = copy + '<div class="sf-agency-loading__about">' + media + tile('description') + '</div>';
+        const tile = (name, suffix = '') =>
+            '<span class="sf-agency-loading__shape sf-agency-loading__' + name +
+            (suffix ? ' sf-agency-loading__' + name + '--' + suffix : '') + '"></span>';
+        const intro = (twoLines = true) =>
+            tile('eyebrow') + tile('title') + (twoLines ? tile('title','short') : '') +
+            '<div class="sf-agency-loading__lead">' + tile('line') + tile('line','short') + '</div>';
+        const pill = () => tile('pill');
+        const picture = '<div class="sf-agency-loading__media">' + tile('image') + '</div>';
+        const bento = kind === 'contact' ? 'contact' : 'services';
+        const bentoGrid = () => '<div class="sf-agency-loading__bento sf-agency-loading__bento--' + bento + '">' +
+            '<div class="sf-agency-loading__bento-card sf-agency-loading__bento-card--feature">' +
+                pill() + tile('card-title') + tile('line') + '</div>' +
+            '<div class="sf-agency-loading__bento-card sf-agency-loading__bento-card--small">' +
+                tile('card-title') + tile('line') + '</div>' +
+            '<div class="sf-agency-loading__bento-card sf-agency-loading__bento-card--small">' +
+                tile('card-title') + tile('line') + '</div>' +
+            '<div class="sf-agency-loading__bento-card sf-agency-loading__bento-card--strip">' +
+                tile('card-title') + tile('line') + '</div></div>';
+        let body = '';
+        if (kind === 'home') {
+            body = '<div class="sf-agency-loading__hero">' +
+                '<div class="sf-agency-loading__intro">' + intro() + tile('button') + '</div>' +
+                '<div class="sf-agency-loading__hero-media">' + picture +
+                    '<div class="sf-agency-loading__hero-caption">' + tile('line') + tile('button','small') + '</div>' +
+                '</div></div>';
+        } else if (kind === 'detail') {
+            body = '<div class="sf-agency-loading__detail">' +
+                picture + '<div class="sf-agency-loading__detail-copy">' + intro(false) +
+                tile('scope-label') + '<div class="sf-agency-loading__tags">' + pill().repeat(4) + '</div>' +
+                tile('button','wide') + '</div></div>';
+        } else if (kind === 'services' || kind === 'contact') {
+            body = '<div class="sf-agency-loading__section-title">' + intro(false) + '</div>' + bentoGrid();
+        } else if (kind === 'about') {
+            body = '<div class="sf-agency-loading__about-head">' + intro() +
+                '<div class="sf-agency-loading__about-actions">' + tile('button') + tile('button','secondary') + '</div></div>' +
+                '<div class="sf-agency-loading__principles">' +
+                tile('eyebrow') + '<div class="sf-agency-loading__principle-list">' +
+                ('<div class="sf-agency-loading__principle">' + tile('card-title') + tile('line') + '</div>').repeat(3) +
+                '</div></div>';
+        } else if (kind === 'project') {
+            body = '<div class="sf-agency-loading__project-panel">' +
+                tile('eyebrow') + tile('progress') + '<div class="sf-agency-loading__project-heading">' + intro(false) + '</div>' +
+                '<div class="sf-agency-loading__choice-grid">' + tile('choice').repeat(4) + '</div>' +
+                '<div class="sf-agency-loading__choice-grid sf-agency-loading__choice-grid--three">' + tile('choice').repeat(3) +
+                '</div>' + tile('button') + '</div>';
+        } else if (kind === 'account') {
+            const guest = !document.body.classList.contains('logged-in');
+            body = '<div class="sf-agency-loading__account">' +
+                '<div class="sf-agency-loading__intro">' + intro(false) + '</div>' +
+                (guest ? tile('input') + tile('button','wide') :
+                    '<div class="sf-agency-loading__account-rows">' + tile('row').repeat(4) + '</div>') + '</div>';
+        } else {
+            body = '<div class="sf-agency-loading__generic">' + intro() + tile('button') + '</div>';
+        }
         return '<div class="sf-agency-loading sf-agency-loading--' + kind + '">' + body + '</div>';
     }
     function layout(type, url) {
@@ -261,6 +301,7 @@
         if (state.brand?.brand.isConnected) state.brand.brand.replaceChildren(...state.brand.nodes);
         document.documentElement.removeAttribute('data-sf-navigation-pending');
         document.documentElement.removeAttribute('data-sf-navigation-target');
+        document.documentElement.removeAttribute('data-sf-navigation-agency');
         document.documentElement.removeAttribute('data-sf-navigation-bottom');
         if (focus && state.focus?.isConnected && !state.focus.closest('[inert]')) state.focus.focus({ preventScroll: true });
         return true;
@@ -314,8 +355,13 @@
         };
         document.addEventListener('submit', blockOldSubmit, true);
         state.releaseSubmit = () => document.removeEventListener('submit', blockOldSubmit, true);
-        if (type === 'account' && document.body.matches('.logged-in')) previewAccountHeader(target);
-        previewDestinationHeader(type, target, link);
+        // Agency pages already render the exact native Codela wordmark and
+        // combined account/menu glass controls. Do not replace them with the
+        // merchant's synthetic logo/search/cart header during navigation.
+        if (!agencyKind) {
+            if (type === 'account' && document.body.matches('.logged-in')) previewAccountHeader(target);
+            previewDestinationHeader(type, target, link);
+        }
         if (type === 'product') {
             // The destination uses the same single soft cart control as the
             // real product header. Keep the original nodes and restore their
@@ -335,13 +381,22 @@
         const dock = document.querySelector('.sf-shell > .sf-mobile-dock');
         if (dock) {
             save(dock, ['hidden', 'inert', 'aria-busy', 'class', 'style']);
-            const selected = type === 'home' || type === 'account' || type === 'cart';
+            const dockView = agencyKind === 'services' ? 'services' :
+                agencyKind === 'contact' ? 'contact' :
+                agencyKind === 'account' ? 'account' :
+                agencyKind === 'home' ? 'home' : type;
+            const selected = agencyKind ?
+                ['home','services','contact','account'].includes(dockView) :
+                ['home','account','cart'].includes(type);
             dock.classList.toggle('has-selection', selected);
-            dock.style.setProperty('--sf-dock-index', type === 'account' ? '3' : type === 'cart' ? '2' : '0');
+            const dockIndex = agencyKind ?
+                dockView === 'services' ? 1 : dockView === 'contact' ? 2 : dockView === 'account' ? 3 : 0 :
+                type === 'account' ? 3 : type === 'cart' ? 2 : 0;
+            dock.style.setProperty('--sf-dock-index', String(dockIndex));
             dock.style.removeProperty('--sf-dock-position');
             dock.querySelectorAll('[data-dock-view]').forEach(node => {
                 save(node, ['class', 'aria-current']);
-                node.classList.toggle('is-active', selected && node.dataset.dockView === type);
+                node.classList.toggle('is-active', selected && node.dataset.dockView === dockView);
                 node.removeAttribute('aria-current');
             });
             // Checkout is a native no-dock document; do not preview a dock
@@ -353,6 +408,7 @@
         }
         document.documentElement.dataset.sfNavigationPending = owner;
         document.documentElement.dataset.sfNavigationTarget = type;
+        if (agencyKind) document.documentElement.dataset.sfNavigationAgency = agencyKind;
         document.documentElement.dataset.sfNavigationBottom = type === 'product' ? 'product' :
             type === 'checkout' ? 'none' : dock ? 'dock' : 'none';
         // Outside transformed/contained outgoing main, including router regions.
