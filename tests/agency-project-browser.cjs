@@ -48,7 +48,7 @@ const server=http.createServer((req,res)=>{
      return {shellWidth:shell.getBoundingClientRect().width,
        panelRadius:c(panel).borderRadius,chipRadius:c(chip).borderRadius,
        selectedFill:c(selected).backgroundColor,selectedBorder:c(selected).borderTopColor,
-       selectedTick:c(selected,'::after').content,
+       selectedTick:getComputedStyle(selected,'::after').content,
        buttonHeight:button.getBoundingClientRect().height,
        buttonLayers:c(button).backgroundImage,
        buttonShadow:c(button).boxShadow,
