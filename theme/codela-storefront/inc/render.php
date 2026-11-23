@@ -184,6 +184,13 @@ function codela_sf_header(): string {
                 </nav>
             </div>
             <?php endif; ?>
+            <?php if ( $editorial_account && function_exists( 'is_account_page' ) && is_account_page()
+                && ! is_user_logged_in() && ( ! function_exists( 'is_wc_endpoint_url' ) || ! is_wc_endpoint_url() ) ) : ?>
+                <a class="sf-editorial-account-exit" href="<?php echo esc_url( home_url( '/' ) ); ?>"
+                    aria-label="<?php esc_attr_e( 'Close', 'codela-storefront' ); ?>">
+                    <?php echo codela_sf_icon( 'x' ); ?>
+                </a>
+            <?php endif; ?>
         </header>
         <?php if ( $show_mobile_dock ) : ?>
         <nav class="sf-mobile-dock<?php echo is_front_page() || is_account_page() ? ' has-selection' : ''; ?>" style="--sf-dock-index:<?php echo is_account_page() ? 3 : 0; ?>" aria-label="<?php esc_attr_e( 'Mobile navigation', 'codela-storefront' ); ?>">
