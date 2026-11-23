@@ -177,3 +177,19 @@ body:has(.codela-page-layout>.sf-agency-widget--project) .sf-footer a{color:#d8d
   border:1px solid CanvasText!important;box-shadow:none!important
  }
 }
+
+/* The Project heading is information, not an interactive control.
+   WordPress/front-end focus restoration must not paint a blue selection box
+   around "Neye odaklanıyoruz?". Keep focus indicators on actual controls. */
+body:not(.wp-admin) .sf-agency-widget--project .cdl-project__heading,
+body:not(.wp-admin) .sf-agency-widget--project .cdl-project__heading > :is(h1,h2){
+  outline:0!important;
+  border:0!important;
+  box-shadow:none!important;
+  -webkit-tap-highlight-color:transparent;
+}
+body:not(.wp-admin) .sf-agency-widget--project .cdl-project__heading > :is(h1,h2)::before,
+body:not(.wp-admin) .sf-agency-widget--project .cdl-project__heading > :is(h1,h2)::after{
+  content:none!important;
+  display:none!important;
+}

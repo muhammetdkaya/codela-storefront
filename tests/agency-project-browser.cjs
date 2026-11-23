@@ -33,6 +33,27 @@ const server=http.createServer((req,res)=>{
    const first=page.locator('[data-project-step="1"]');
    const second=page.locator('[data-project-step="2"]');
    assert(await first.isVisible(),'Step 1 visible on entry');
+   const heading=first.locator('.cdl-project__heading h1');
+   const titleFocus=await heading.evaluate(el=>{
+     // Browsers and router integrations may programmatically focus headings.
+     // Noninteractive copy should never inherit the blue element focus frame.
+     el.setAttribute('tabindex','-1');
+     el.focus({preventScroll:true});
+     const style=getComputedStyle(el),parent=getComputedStyle(el.parentElement);
+     const before=getComputedStyle(el,'::before'),after=getComputedStyle(el,'::after');
+     return {outline:style.outlineStyle,outlineWidth:style.outlineWidth,
+       border:style.borderTopWidth,shadow:style.boxShadow,
+       parentOutline:parent.outlineStyle,parentShadow:parent.boxShadow,
+       before:before.content,after:after.content};
+   });
+   assert.equal(titleFocus.outline,'none','Project title has no blue focus ring');
+   assert.equal(titleFocus.border,'0px','Project title has no border');
+   assert.equal(titleFocus.shadow,'none','Project title has no fake selection shadow');
+   assert.equal(titleFocus.parentOutline,'none','Heading wrapper has no selected block outline');
+   assert.equal(titleFocus.parentShadow,'none','Heading wrapper has no selection shadow');
+   assert.equal(titleFocus.before,'none','No title pseudo selection indicator');
+   assert.equal(titleFocus.after,'none','No title pseudo selection indicator');
+   await heading.evaluate(el=>{el.blur();el.removeAttribute('tabindex')});
    assert(!(await second.isVisible()),'Step 2 hidden until requested');
    assert.equal(await first.locator('.cdl-project__kicker').count(),0,
      'Project start is named once in the progress eyebrow, never repeated above the title');
