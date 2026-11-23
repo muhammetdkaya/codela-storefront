@@ -7,14 +7,14 @@
   --sf-ui-ink:#f8f7fa;
   --sf-ui-control-ink:#f8f7fa;
   --sf-ui-glass-ink:#f8f7fa;
-  --sf-ui-surface:#1c1b22;
-  --sf-ui-surface-muted:#222127;
+  --sf-ui-surface:#1d1c1e;
+  --sf-ui-surface-muted:#252426;
   --sf-ui-border:rgba(255,255,255,.15);
-  --sf-muted:#b6b0bf;
+  --sf-muted:#b8b2aa;
   --sf-smart-ink:#f8f7fa;
   --sf-smart-line:rgba(255,255,255,.15);
   --sf-quick-ink:#f8f7fa;
-  --sf-quick-muted:#b6b0bf;
+  --sf-quick-muted:#b8b2aa;
   --cdl-agency-glass-back:linear-gradient(180deg,rgba(255,255,255,.02),transparent);
   --cdl-agency-glass-body:rgba(24,24,29,.64);
   --cdl-agency-glass-rim:linear-gradient(rgba(255,255,255,.07),rgba(255,255,255,.07));
@@ -24,7 +24,7 @@
   --cdl-agency-glass-filter:blur(20px) saturate(115%);
   background:
     radial-gradient(ellipse 56% 42% at 78% 8%,rgba(211,164,128,.17),transparent 68%),
-    radial-gradient(ellipse 48% 38% at 12% 5%,rgba(130,96,210,.12),transparent 64%),
+    radial-gradient(ellipse 48% 38% at 12% 5%,rgba(183,125,70,.075),transparent 64%),
     #06060a!important;
   color:#f8f7fa!important;color-scheme:dark;
 }
@@ -91,13 +91,13 @@ body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-acc
   --sf-ui-ink:#f8f7fa;
   --sf-ui-control-ink:#f8f7fa;
   --sf-ui-border:rgba(255,255,255,.15);
-  --sf-muted:#b6b0bf;
+  --sf-muted:#b8b2aa;
   background:#06060a!important;color:#f8f7fa;color-scheme:dark;
 }
 body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-content:has(.sf-account-intro){
   background:
     radial-gradient(ellipse 58% 42% at 72% 8%,rgba(211,164,128,.15),transparent 70%),
-    radial-gradient(ellipse 43% 36% at 15% 3%,rgba(130,96,210,.12),transparent 67%),
+    radial-gradient(ellipse 43% 36% at 15% 3%,rgba(183,125,70,.075),transparent 67%),
     #06060a!important;
   color:#f8f7fa;
 }

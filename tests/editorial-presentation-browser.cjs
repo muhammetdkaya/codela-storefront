@@ -46,6 +46,7 @@ const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/
       viewport:innerWidth,scrollWidth:document.documentElement.scrollWidth,
       cardLeft:card.left,cardRight:card.right,closeWidth:close.width,closeHeight:close.height,
       asideLayers:getComputedStyle(aside).backgroundImage,
+      menuLights:getComputedStyle(dialog).backgroundImage,
       activeLabel:getComputedStyle(document.querySelector('.sf-menu-list>li.current-menu-item'),'::after').content,
       navFont:parseFloat(getComputedStyle(document.querySelector('.sf-menu-list>li>a')).fontSize),
       navRows:[...document.querySelectorAll('.sf-menu-list>li')].map(el=>el.getBoundingClientRect().height),
@@ -57,6 +58,10 @@ const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/
    });
    assert.equal(menu.scheme,'dark','Original dark reference wins over Agency and Commerce defaults');
    assert.equal(menu.background,'rgb(6, 6, 10)','Menu canvas stays #06060a');
+   assert(menu.menuLights.includes('rgba(183, 125, 70'),
+      'Menu replaces the violet light with a warm amber accent');
+   assert(!menu.menuLights.includes('rgba(130, 96, 210'),
+      'No violet ambient glow survives in editorial Menu');
    assert(menu.activeLabel.includes('Aktif'),'Current WordPress item displays the reference Active label');
    assert.equal((menu.asideLayers.match(/linear-gradient\(/g)||[]).length,1,'Studio card has one restrained highlight');
    assert.equal(await page.locator('.sf-editorial-menu-brand').count(),0,
@@ -130,10 +135,14 @@ const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/
      assert(position.topGap>=-1,'Tall Account must remain top-scrollable: '+JSON.stringify(position));
    const style=await account.evaluate(el=>({border:getComputedStyle(el).borderTopWidth,
     radius:getComputedStyle(el).borderRadius,backdrop:getComputedStyle(el).backdropFilter,
-    layers:getComputedStyle(el).backgroundImage,canvas:getComputedStyle(document.querySelector('#sf-panel')).backgroundColor,
+    layers:getComputedStyle(el).backgroundImage,
+    ambient:getComputedStyle(document.querySelector('#sf-panel')).backgroundImage,
+    canvas:getComputedStyle(document.querySelector('#sf-panel')).backgroundColor,
     scheme:getComputedStyle(document.querySelector('#sf-panel')).colorScheme}));
    assert.equal(style.scheme,'dark','Account is dark before and after guest CSS loads');
    assert.equal(style.canvas,'rgb(6, 6, 10)','Account canvas is original #06060a');
+   assert(style.ambient.includes('rgba(183, 125, 70'),'Account has warm amber ambient light');
+   assert(!style.ambient.includes('rgba(130, 96, 210'),'No purple Account glow');
    assert(style.border!=='0px','Account card has a rim');
    assert(parseFloat(style.radius)>=20,'Account card is softly rounded');
    assert.equal((style.layers.match(/linear-gradient\(/g)||[]).length,1,'Account card has one restrained highlight');

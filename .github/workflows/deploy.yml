@@ -200,6 +200,8 @@ jobs:
           node tests/ui-kit-browser.cjs
           node tests/glass-v2-browser.cjs
           node tests/agency-glass-browser.cjs
+          node tests/agency-project-browser.cjs
+          node tests/agency-navigation-profile-browser.cjs
       - name: Complete browser QA (manual only; never deploy)
         if: inputs.full_qa_only == true
         run: |

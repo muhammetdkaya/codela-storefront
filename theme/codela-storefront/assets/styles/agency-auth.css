@@ -3,9 +3,9 @@
 .sf-shell.has-agency-profile #sf-panel.is-account-panel{
  --sf-ui-ink:#f5f4f7;--sf-ui-control-ink:#f5f4f7;
  --sf-ui-border:rgba(255,255,255,.16);--sf-ui-surface:#232229;
- --sf-ui-surface-muted:#1e1d24;--sf-muted:#aca8b2;
+ --sf-ui-surface-muted:#1e1d24;--sf-muted:#b8b2aa;
  --sf-smart-ink:#f5f4f7;--sf-smart-line:rgba(255,255,255,.17);
- --sf-quick-ink:#f5f4f7;--sf-quick-muted:#aca8b2;
+ --sf-quick-ink:#f5f4f7;--sf-quick-muted:#b8b2aa;
  color:#f5f4f7!important;color-scheme:dark;
 }
 .sf-shell.has-agency-profile #sf-panel.is-account-panel .sf-account-body,
@@ -22,7 +22,7 @@
  .sf-quick-choice-alternatives,.sf-auth-divider,.sf-smart-hint,
  .woocommerce-form-login__rememberme,.woocommerce-privacy-policy-text,
  .sf-quick-inline-subtitle,.sf-quick-user-meta
-){color:#a9a6b1!important}
+){color:#b8b2aa!important}
 .sf-shell.has-agency-profile #sf-panel.is-account-panel .woocommerce form label[for]:not(.woocommerce-form__label){color:#d8d5dd!important}
 .sf-shell.has-agency-profile #sf-panel.is-account-panel :is(
  input.input-text,.sf-smart-identity,.woocommerce form input[type=email],
@@ -33,24 +33,24 @@
  color:#928d9b!important;opacity:1
 }
 .sf-shell.has-agency-profile #sf-panel.is-account-panel :is(input.input-text,.sf-smart-identity):focus{
- background:#26252c!important;border-color:#8c8396!important;
+ background:#282726!important;border-color:#d6a676!important;
  outline:2px solid rgba(214,166,118,.25)!important;
 }
 .sf-shell.has-agency-profile #sf-panel.is-account-panel :is(
  .sf-auth-tabs,.sf-quick-account,.sf-quick-account-frame,
  .sf-quick-slot,.sf-quick-monogram,.sf-quick-switch.sf-quick-email-login
-){background:#24232b!important;border-color:rgba(255,255,255,.15)!important;color:#f5f4f7!important}
+){background:#252425!important;border-color:rgba(255,255,255,.15)!important;color:#f5f4f7!important}
 .sf-shell.has-agency-profile #sf-panel.is-account-panel .sf-quick-account-frame .sf-quick-account{background:transparent!important}
-.sf-shell.has-agency-profile #sf-panel.is-account-panel :is(.sf-auth-tab,.sf-quick-chevron,.sf-quick-monogram){color:#e6e2eb!important}
-.sf-shell.has-agency-profile #sf-panel.is-account-panel .sf-auth-tab[aria-selected=true]{background:#33313c!important;color:#fff!important}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel :is(.sf-auth-tab,.sf-quick-chevron,.sf-quick-monogram){color:#eae5df!important}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel .sf-auth-tab[aria-selected=true]{background:#302c29!important;color:#fff!important}
 .sf-shell.has-agency-profile #sf-panel.is-account-panel .sf-quick-slot i{background:#f5f4f7!important}
 .sf-shell.has-agency-profile #sf-panel.is-account-panel :is(.sf-quick-inline-divider,.sf-quick-or::before,.sf-quick-or::after){border-color:rgba(255,255,255,.12)!important}
 .sf-shell.has-agency-profile #sf-panel.is-account-panel :is(
  .sf-auth-google,.sf-quick-google,.sf-smart-continue,.sf-quick-switch.sf-quick-email-login
-){border:1px solid rgba(255,255,255,.22)!important;background:#2c2b34!important;color:#fff!important}
+){border:1px solid rgba(255,255,255,.22)!important;background:#292827!important;color:#fff!important}
 .sf-shell.has-agency-profile #sf-panel.is-account-panel :is(
  .woocommerce form button[type=submit],.sf-smart-submit,.sf-quick-switch.sf-quick-email-login
-){background:#f2f1f4!important;border-color:#f2f1f4!important;color:#1b1b22!important}
+){background:#f2f0ed!important;border-color:#f2f0ed!important;color:#1b1b1c!important}
 .sf-shell.has-agency-profile #sf-panel.is-account-panel :is(
  .lost_password a,.woocommerce-LostPassword a,.sf-auth-back-login,.sf-smart-back
 ){color:#e8e4ed!important}

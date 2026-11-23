@@ -515,7 +515,7 @@ body.admin-bar{--sf-header-offset:32px}
   --sf-ui-surface-muted:#1c1b21;
   --sf-muted:#aaa5b1;
   --sf-ui-glass-ink:#f4f3f7;
-  background:radial-gradient(ellipse 70% 40% at 90% 12%,rgba(60,38,72,.19),transparent 78%),#09090d!important;
+  background:radial-gradient(ellipse 70% 40% at 90% 12%,rgba(183,125,70,.085),transparent 78%),#09090d!important;
   color:#f4f3f7!important;
   color-scheme:dark;
 }

@@ -55,9 +55,21 @@ const server=http.createServer((req,res)=>{
       honey:!!el.querySelector('input[name="agency_project_webpage"]'),
       consent:!!el.querySelector('input[name="agency_project_consent"]'),
       action:el.querySelector('form').getAttribute('action'),
-      nativeStatus:el.querySelector('form').getAttribute('method')
+      nativeStatus:el.querySelector('form').getAttribute('method'),
+      panelFill:getComputedStyle(el.querySelector('.cdl-project__panel')).backgroundColor,
+      panelLayers:getComputedStyle(el.querySelector('.cdl-project__panel')).backgroundImage,
+      panelBlur:getComputedStyle(el.querySelector('.cdl-project__panel')).backdropFilter,
+      activeGlass:getComputedStyle(el.querySelector('.cdl-project__choice input:checked+span')).backgroundImage,
+      actionGlass:getComputedStyle(el.querySelector('.cdl-project__button')).backgroundImage,
+      kicker:getComputedStyle(el.querySelector('.cdl-project__kicker')).color
     }));
    assert.equal(s.bg,'rgb(9, 9, 12)');
+   assert.equal(s.panelFill,'rgba(20, 20, 22, 0.78)','Account-style neutral project glass');
+   assert.equal((s.panelLayers.match(/linear-gradient\(/g)||[]).length,1,'Single restrained card highlight');
+   assert(s.panelBlur.includes('blur(22px)'),'Project card has frosted glass');
+   assert(s.activeGlass.includes('rgba(214, 166, 118'),'Selected project choice uses amber');
+   assert.equal((s.actionGlass.match(/linear-gradient\(/g)||[]).length,3,'Glass primary action');
+   assert.equal(s.kicker,'rgb(214, 166, 118)','Project eyebrow is amber');
    assert(s.overflow<=1,'No horizontal overflow at '+width);
    assert(Math.abs(s.left)<=1&&Math.abs(s.width-width)<=1,'Full-bleed native page at '+width);
    assert(s.nonce&&s.honey&&s.consent,'Real form security fields are present');

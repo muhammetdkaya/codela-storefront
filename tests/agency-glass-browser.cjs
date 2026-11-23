@@ -44,7 +44,11 @@ function html(enabled){
        card:style('.cdl-bento__card').backgroundImage,
        contact:style('.cdl-contact__submit').backgroundImage,
        input:style('.cdl-project__fields input').backgroundColor,
-       chosen:style('.cdl-project__choice input:checked + span').backgroundColor,
+       chosen:style('.cdl-project__choice input:checked + span').backgroundImage,
+       projectPanel:style('.cdl-project__panel').backgroundImage,
+       projectPanelColor:style('.cdl-project__panel').backgroundColor,
+       projectPanelRim:style('.cdl-project__panel').borderTopWidth,
+       projectPanelBlur:style('.cdl-project__panel').backdropFilter,
        stage:style('.sf-agency-process-stage').backgroundImage,
        canvas:document.querySelector('.sf-glass-optical-canvas')
      };
@@ -69,11 +73,24 @@ function html(enabled){
     assert(m.primary.includes('rgba(44, 44, 48, 0.78)'),name+': CTA graphite matches approval');
     assert(m.card.includes('linear-gradient('),name+': raised bento card');
     assert(m.stage.includes('linear-gradient('),name+': process stage');
-    assert.equal(m.chosen,'rgba(214, 166, 118, 0.16)',name+': selected amber chip');
+    assert(m.chosen.includes('rgba(214, 166, 118'),name+': selected choice uses an amber glass gradient');
+    assert.equal((m.projectPanel.match(/linear-gradient\(/g)||[]).length,1,
+      name+': project panel uses the same one-highlight layering as Account');
+    assert.equal(m.projectPanelColor,'rgba(20, 20, 22, 0.78)',
+      name+': restrained neutral charcoal replaces purple glass');
+    assert.equal(m.projectPanelRim,'1px',name+': project panel retains a thin glass rim');
+    assert(m.projectPanelBlur.includes('blur(22px)'),name+': project panel frosted like Account');
     assert.equal(m.canvas,null,name+': no Canvas overlay');
     await page.setContent(html(false));
-    const disabled=await page.evaluate(()=>getComputedStyle(document.querySelector('.cdl-project__button')).backgroundColor);
-    assert.equal(disabled,'rgb(248, 246, 249)',name+': off restores native design');
+    const disabled=await page.evaluate(()=>{
+      const button=getComputedStyle(document.querySelector('.cdl-project__button'));
+      const panel=getComputedStyle(document.querySelector('.cdl-project__panel'));
+      return {buttonLayers:button.backgroundImage,panelFill:panel.backgroundColor};
+    });
+    assert.equal((disabled.buttonLayers.match(/linear-gradient\(/g)||[]).length,3,
+      name+': without Glass V2 the Project CTA still uses its native glass presentation');
+    assert.equal(disabled.panelFill,'rgba(20, 20, 22, 0.78)',
+      name+': native Project glass palette remains neutral');
     await page.close();
    }
    console.log(name+': refractive Agency glass, accessible contrast and disabled fallback passed');

@@ -6,7 +6,7 @@
 .sf-shell.has-editorial-account #sf-panel.is-account-panel{
   --sf-ui-page:#06060a;--sf-ui-ink:#f8f7fa;--sf-ui-control-ink:#f8f7fa;
   --sf-smart-ink:#f8f7fa;--sf-smart-line:rgba(255,255,255,.15);
-  --sf-quick-ink:#f8f7fa;--sf-quick-muted:#b6b0bf;--sf-muted:#b6b0bf;
+  --sf-quick-ink:#f8f7fa;--sf-quick-muted:#b8b2aa;--sf-muted:#b8b2aa;
   color:#f8f7fa!important;color-scheme:dark;
 }
 /* Same centered frosted surface-card on dialog and direct guest Account page. */
@@ -23,7 +23,7 @@ body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-acc
   /* One translucent fill; the rim cannot shine through the card interior. */
   border-color:rgba(255,255,255,.09);
   background:linear-gradient(180deg,rgba(255,255,255,.018),transparent) padding-box,
-    rgba(19,18,24,.78);
+    rgba(20,20,22,.78);
   -webkit-backdrop-filter:blur(22px) saturate(115%);
   backdrop-filter:blur(22px) saturate(115%);
   box-shadow:0 16px 40px -24px rgba(0,0,0,.45);
@@ -50,10 +50,10 @@ body.sf-account-editorial.woocommerce-account:not(.logged-in) :is(
  .sf-account-intro p,.sf-quick-choice-intro p,.sf-quick-or,
  .sf-auth-divider,.sf-smart-hint,.sf-quick-inline-subtitle,.sf-quick-user-meta,
  .woocommerce-form-login__rememberme
-){color:#b6b0bf!important}
+){color:#b8b2aa!important}
 body.sf-account-editorial.woocommerce-account:not(.logged-in) :is(
  .sf-account-intro p,.sf-quick-choice-intro p,.sf-quick-or,.sf-auth-divider,.sf-smart-hint
-){color:#b6b0bf!important}
+){color:#b8b2aa!important}
 .sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-auth-heading-wave,
 body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-auth-heading-wave,
 .sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-quick-wave,
@@ -154,7 +154,7 @@ body.sf-account-editorial.woocommerce-account:not(.logged-in) .woocommerce.sf-pi
 }
 .sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-quick-or,
 body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-quick-or{
-  margin:20px 0;color:#767181!important;
+  margin:20px 0;color:#888178!important;
 }
 /* Direct email input is the existing PHP-rendered smart control, never an inert clone. */
 .sf-shell.has-editorial-account #sf-panel.is-account-panel :is(
@@ -178,7 +178,7 @@ body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-smart-label .s
 }
 .sf-shell.has-editorial-account #sf-panel.is-account-panel :is(input.input-text,.sf-smart-identity)::placeholder,
 body.sf-account-editorial.woocommerce-account:not(.logged-in) :is(input.input-text,.sf-smart-identity)::placeholder{
-  color:#767181!important;opacity:1;
+  color:#888178!important;opacity:1;
 }
 .sf-shell.has-editorial-account #sf-panel.is-account-panel :is(input.input-text,.sf-smart-identity):focus,
 body.sf-account-editorial.woocommerce-account:not(.logged-in) :is(input.input-text,.sf-smart-identity):focus{
@@ -186,9 +186,9 @@ body.sf-account-editorial.woocommerce-account:not(.logged-in) :is(input.input-te
 }
 .sf-shell.has-editorial-account #sf-panel.is-account-panel :is(.sf-smart-mail-icon,.sf-smart-message),
 body.sf-account-editorial.woocommerce-account:not(.logged-in) :is(.sf-smart-mail-icon,.sf-smart-message){
-  color:#b6b0bf;
+  color:#b8b2aa;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel .woocommerce form label[for]{color:#b6b0bf!important}
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .woocommerce form label[for]{color:#b8b2aa!important}
 .sf-shell.has-editorial-account #sf-panel.is-account-panel .woocommerce .sf-auth-social{margin-top:18px}
 .sf-shell.has-editorial-account #sf-panel.is-account-panel :is(
  .sf-auth-google,.sf-quick-google,.sf-smart-continue,.sf-quick-return,.sf-smart-submit
