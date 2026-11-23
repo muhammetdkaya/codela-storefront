@@ -10,7 +10,7 @@ const shell=execFileSync(process.env.PHP_BIN||'php',['tests/render-header.php'],
  encoding:'utf8',env:{...process.env,FIXTURE_EXPERIENCE:'agency',FIXTURE_MENU:'1',FIXTURE_DOCK:'0'}
 });
 const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/navigation.css',
- 'styles/components.css','styles/account-overlay.css','styles/auth-smart.css','styles/quick-login.css',
+ 'styles/components.css','styles/account.css','styles/account-overlay.css','styles/auth-smart.css','styles/quick-login.css',
  'styles/editorial-menu.css','styles/editorial-account-shell.css','styles/editorial-account.css']
  .map(file=>fs.readFileSync(theme+file,'utf8')).join('\n');
 (async()=>{
@@ -177,6 +177,71 @@ const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/
    assert.equal(google.labelColor,'rgb(248, 247, 250)','Google child label stays readable');
    assert(google.image.includes('linear-gradient'),'Google button gets dark glass, not bright flat white');
    assert.notEqual(google.background,'rgb(248, 247, 250)','Google background must not equal its text');
+   await page.close();
+  }
+  // Regression: /hesabim/ must use the same centered, single-card guest
+  // presentation as its popup without hiding the real Woo fallback permanently.
+  const directShell=execFileSync(process.env.PHP_BIN||'php',['tests/render-header.php'],{
+   encoding:'utf8',env:{...process.env,FIXTURE_EXPERIENCE:'agency',
+    FIXTURE_GUEST_ACCOUNT:'1',FIXTURE_MENU:'1',FIXTURE_DOCK:'1'}
+  });
+  for(const [width,height] of [[320,568],[390,844],[1280,900]]){
+   const page=await browser.newPage({viewport:{width,height}});
+   await page.setContent(`<!doctype html><html lang="tr" class="sf-auth-ssr-enabled">
+    <head><meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>${styles}</style></head>
+    <body class="sf-account-editorial woocommerce-account">
+    <div class="wp-site-blocks">${directShell}
+    <main class="sf-content" id="sf-content"><div class="wp-block-post-content">
+      <div class="woocommerce sf-pin-active">
+       <div class="sf-account-intro"><h1>Hoş geldin</h1><p>Hesabınla güvenli ve hızlı giriş yap.</p></div>
+       <div class="sf-quick-accounts has-passkey">
+        <div class="sf-quick-choice-intro"><h2>Hoş geldin</h2><p>Hesabınla güvenli ve hızlı giriş yap.</p></div>
+        <section class="sf-quick-login"><div class="sf-quick-choice">
+         <div class="sf-quick-account-frame"><button class="sf-quick-account">info@codela.dev</button></div>
+        </div></section>
+        <div class="sf-quick-choice-alternatives">
+          <div class="sf-quick-or">veya</div>
+          <button class="sf-quick-native-alt">E-posta veya Google ile giriş yap</button>
+        </div>
+       </div>
+       <div class="sf-smart-auth"><label class="sf-smart-label">
+         <input class="sf-smart-identity" type="email" placeholder="E-posta adresiniz">
+       </label></div>
+      </div>
+    </div></main><footer class="sf-footer">© Codela</footer>
+    </div></body></html>`);
+   assert.equal(await page.locator('.sf-editorial-account-exit').count(),1,
+    'Standalone editorial guest page has one native home/close anchor');
+   assert.equal(await page.locator('.sf-editorial-account-exit').getAttribute('href'),
+    'https://store.test/','Close returns to the real home route');
+   assert(await page.locator('.sf-editorial-account-exit').isVisible(),
+    'Fullscreen guest close control remains visible');
+   assert.equal(await page.locator('.sf-header .sf-brand').isVisible(),false,
+    'Standalone guest uses the popup header, not a second site header');
+   assert.equal(await page.locator('.sf-footer').isVisible(),false,
+    'Guest fullscreen login has no extraneous store footer');
+   assert.equal(await page.locator('.sf-smart-identity').isVisible(),false,
+    'Remembered account suppresses SSR email even before smart-auth JS hydration');
+   const dimensions=await page.evaluate(()=>{
+    const main=document.querySelector('main.sf-content').getBoundingClientRect();
+    const card=document.querySelector('main.sf-content .woocommerce').getBoundingClientRect();
+    const exit=document.querySelector('.sf-editorial-account-exit').getBoundingClientRect();
+    return {main:main.toJSON(),card:card.toJSON(),exit:exit.toJSON(),
+      viewport:innerHeight,overflow:document.documentElement.scrollWidth>innerWidth+1};
+   });
+   assert(!dimensions.overflow,'Direct account does not overflow the viewport horizontally');
+   assert(dimensions.main.top<=1,'Header reserves no phantom vertical gap');
+   assert(dimensions.exit.width>=44&&dimensions.exit.height>=44,'Close hit target is accessible');
+   if(dimensions.card.height < height-100 && height>620){
+    const offset=Math.abs((dimensions.card.top+dimensions.card.bottom-height)/2);
+    assert(offset<=40,'Standalone welcome card is vertically centered, offset='+offset);
+   }else{
+    assert(dimensions.card.top>=0,'Short guest viewport remains scrollable and top-safe');
+   }
+   await page.locator('main .woocommerce').evaluate(el=>el.classList.remove('sf-pin-active'));
+   assert(await page.locator('.sf-smart-identity').isVisible(),
+    'Switching to existing native Email/Google reveals the original field');
    await page.close();
   }
   console.log('Editorial menu/account PHP shell, layout and native URLs passed ('+engine+').');
