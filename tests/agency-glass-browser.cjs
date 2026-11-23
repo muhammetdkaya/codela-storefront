@@ -44,7 +44,9 @@ function html(enabled){
        card:style('.cdl-bento__card').backgroundImage,
        contact:style('.cdl-contact__submit').backgroundImage,
        input:style('.cdl-project__fields input').backgroundColor,
-       chosen:style('.cdl-project__choice input:checked + span').backgroundImage,
+       chosen:style('.cdl-project__choice input:checked + span').backgroundColor,
+       chosenRadius:style('.cdl-project__choice input:checked + span').borderRadius,
+       chosenTick:getComputedStyle(document.querySelector('.cdl-project__choice input:checked + span'),'::after').content,
        projectPanel:style('.cdl-project__panel').backgroundImage,
        projectPanelColor:style('.cdl-project__panel').backgroundColor,
        projectPanelRim:style('.cdl-project__panel').borderTopWidth,
@@ -66,14 +68,16 @@ function html(enabled){
     assert.equal(m.primaryColor,'rgba(0, 0, 0, 0)',name+': transparent primary paint');
     assert.equal(m.primaryBorder,'1px',name+': thin primary rim');
     assert(!m.primaryShadow.includes('inset'),name+': no raised primary');
-    assert(m.primaryShadow.includes('8px 22px -6px'),name+': approved primary shadow');
+    assert(m.primaryShadow.includes('5px 14px -8px'),name+': Project primary uses light glass shadow');
     assert.equal((m.contact.match(/linear-gradient\(/g)||[]).length,3,name+': contact button refractive glass');
     // Verify two actual colors instead of relying on the number of layers.
     assert(m.header.includes('rgba(34, 34, 36, 0.72)'),name+': navigation graphite matches approval');
-    assert(m.primary.includes('rgba(44, 44, 48, 0.78)'),name+': CTA graphite matches approval');
+    assert(m.primary.includes('rgba(34, 34, 36, 0.72)'),name+': Project CTA uses subdued charcoal');
     assert(m.card.includes('linear-gradient('),name+': raised bento card');
     assert(m.stage.includes('linear-gradient('),name+': process stage');
-    assert(m.chosen.includes('rgba(214, 166, 118'),name+': selected choice uses an amber glass gradient');
+    assert.equal(m.chosen,'rgba(214, 166, 118, 0.075)',name+': selected card has restrained amber fill');
+    assert.equal(m.chosenRadius,'14px',name+': selected cards are rectangular');
+    assert(m.chosenTick.includes('✓'),name+': selected card has a subtle tick');
     assert.equal((m.projectPanel.match(/linear-gradient\(/g)||[]).length,1,
       name+': project panel uses the same one-highlight layering as Account');
     assert.equal(m.projectPanelColor,'rgba(20, 20, 22, 0.78)',

@@ -34,6 +34,36 @@ const server=http.createServer((req,res)=>{
    const second=page.locator('[data-project-step="2"]');
    assert(await first.isVisible(),'Step 1 visible on entry');
    assert(!(await second.isVisible()),'Step 2 hidden until requested');
+   assert.equal(await first.locator('.cdl-project__kicker').count(),0,
+     'Project start is named once in the progress eyebrow, never repeated above the title');
+   assert.equal((await page.locator('.cdl-project__progress-label').textContent()).includes('PROJE BAŞLAT'),true);
+   const initialStyle=await first.evaluate(node=>{
+     const panel=node.closest('.cdl-project__panel');
+     const chip=node.querySelector('.cdl-project__choices--three .cdl-project__choice span');
+     const selected=node.querySelector('.cdl-project__choice input:checked + span');
+     const button=node.querySelector('[data-project-next]');
+     const h=node.querySelector('h1');
+     const shell=node.closest('.cdl-project__shell');
+     const c=el=>getComputedStyle(el);
+     return {shellWidth:shell.getBoundingClientRect().width,
+       panelRadius:c(panel).borderRadius,chipRadius:c(chip).borderRadius,
+       selectedFill:c(selected).backgroundColor,selectedBorder:c(selected).borderTopColor,
+       selectedTick:c(selected,'::after').content,
+       buttonHeight:button.getBoundingClientRect().height,
+       buttonLayers:c(button).backgroundImage,
+       buttonShadow:c(button).boxShadow,
+       titleSize:parseFloat(c(h).fontSize)};
+   });
+   assert(initialStyle.shellWidth<=641,'Account-like compact glass panel, not a 750px form');
+   assert(parseFloat(initialStyle.panelRadius)<=26,'Project panel has softer 24–26px corners');
+   assert.equal(initialStyle.chipRadius,'14px','All choice cards use small rectangular corners');
+   assert.equal(initialStyle.selectedFill,'rgba(214, 166, 118, 0.075)','Selected state is a restrained amber tint');
+   assert(initialStyle.selectedBorder==='rgba(214, 166, 118, 0.68)','Thin amber border');
+   assert(initialStyle.selectedTick.includes('✓'),'Selected card has a small confirmation tick');
+   assert(initialStyle.buttonHeight<=50,'Primary glass CTA does not dominate the form');
+   assert.equal((initialStyle.buttonLayers.match(/linear-gradient\(/g)||[]).length,3,'Quiet three-layer glass CTA');
+   assert(initialStyle.buttonShadow.includes('5px 14px -8px'),'Primary glass shadow is restrained');
+   assert(initialStyle.titleSize<=36,'Headline stays editorial and compact');
    await page.locator('input[name="agency_project_service"][value="E-Ticaret"]').check();
    await page.locator('input[name="agency_project_time"][value="Esnek"]').check();
    await page.locator('input[name="agency_project_scale"][value="Kurumsal"]').check();
@@ -59,7 +89,7 @@ const server=http.createServer((req,res)=>{
       panelFill:getComputedStyle(el.querySelector('.cdl-project__panel')).backgroundColor,
       panelLayers:getComputedStyle(el.querySelector('.cdl-project__panel')).backgroundImage,
       panelBlur:getComputedStyle(el.querySelector('.cdl-project__panel')).backdropFilter,
-      activeGlass:getComputedStyle(el.querySelector('.cdl-project__choice input:checked+span')).backgroundImage,
+      activeGlass:getComputedStyle(el.querySelector('.cdl-project__choice input:checked+span')).backgroundColor,
       actionGlass:getComputedStyle(el.querySelector('.cdl-project__button')).backgroundImage,
       kicker:getComputedStyle(el.querySelector('.cdl-project__kicker')).color
     }));
@@ -67,7 +97,7 @@ const server=http.createServer((req,res)=>{
    assert.equal(s.panelFill,'rgba(20, 20, 22, 0.78)','Account-style neutral project glass');
    assert.equal((s.panelLayers.match(/linear-gradient\(/g)||[]).length,1,'Single restrained card highlight');
    assert(s.panelBlur.includes('blur(22px)'),'Project card has frosted glass');
-   assert(s.activeGlass.includes('rgba(214, 166, 118'),'Selected project choice uses amber');
+   assert.equal(s.activeGlass,'rgba(214, 166, 118, 0.075)','Selected project choice uses quiet amber');
    assert.equal((s.actionGlass.match(/linear-gradient\(/g)||[]).length,3,'Glass primary action');
    assert.equal(s.kicker,'rgb(214, 166, 118)','Project eyebrow is amber');
    assert(s.overflow<=1,'No horizontal overflow at '+width);

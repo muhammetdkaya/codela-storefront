@@ -57,7 +57,6 @@ function codela_sf_section_agency_project( array $data, string $type = '' ): str
                 <?php wp_nonce_field( 'codela_sf_agency_project', 'agency_project_nonce' ); ?>
                 <div class="cdl-project__step" data-project-step="1">
                   <div class="cdl-project__heading">
-                    <p class="cdl-project__kicker">PROJE BAŞLAT</p>
                     <h1 id="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $title ); ?></h1>
                     <?php if ( $lead ) : ?><p><?php echo esc_html( $lead ); ?></p><?php endif; ?>
                   </div>
