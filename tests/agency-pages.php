@@ -113,15 +113,15 @@ $detail_reference = [
     'web' => [ 'title'=>'Web Tasarım',
       'description'=>'Markanızın duruşunu ilk saniyede hissettiren, mobil öncelikli ve dönüşüm odaklı modern web arayüzleri tasarlıyoruz.',
       'labels'=>['UI / UX Tasarım','Kurumsal Web','Landing Page','Tasarım Sistemi'],
-      'asset'=>'mona-bento-web.jpg','tag'=>'Kurumsal · Arayüz' ],
+      'asset'=>'agency-light-web.jpg','tag'=>'Kurumsal · Arayüz' ],
     'commerce' => [ 'title'=>'E-Ticaret',
       'description'=>'Hızlı ürün keşfi, pürüzsüz sepet akışı ve güvenli ödeme entegrasyonlarıyla satışa odaklanan mağazalar kuruyoruz.',
       'labels'=>['Özel Mağaza','Sepet & Ödeme','Mobil Alışveriş','Dönüşüm Kurgusu'],
-      'asset'=>'mona-bento-web.jpg','tag'=>'Satış · Deneyim' ],
+      'asset'=>'agency-light-commerce.jpg','tag'=>'Satış · Deneyim' ],
     'software' => [ 'title'=>'Özel Yazılım',
       'description'=>'İş süreçlerinize tam oturan yönetim panelleri, API bağlantıları ve ölçeklenebilir web uygulamaları geliştiriyoruz.',
       'labels'=>['Web Uygulamaları','Yönetim Panelleri','API & ERP','Özel Altyapı'],
-      'asset'=>'mona-studio-hero.jpg','tag'=>'Ölçek · Entegrasyon' ],
+      'asset'=>'agency-light-software.jpg','tag'=>'Ölçek · Entegrasyon' ],
     'support' => [ 'title'=>'Optimizasyon / Destek',
       'description'=>'Yayındaki sitenizin hızını, teknik SEO performansını ve güvenliğini sürekli izleyerek sorunsuz çalışmasını sağlıyoruz.',
       'labels'=>['Core Web Vitals','Teknik SEO','Güvenlik','Sürekli Bakım'],
@@ -267,10 +267,11 @@ $bento_custom_body = $bento_data;
 $bento_custom_body['items'][1]['body'] = 'Özel marka açıklaması';
 agency_page_check( str_contains( codela_sf_section_agency_bento( $bento_custom_body ), 'Özel marka açıklaması' ),
     'Any customized Bento card copy remains visible unchanged.' );
-agency_page_check( str_contains( $bento_html, 'agency-reference-web.jpg' ) && ! str_contains( $bento_html, 'base64,' ), 'Real source asset is loaded separately.' );
-agency_page_check( str_contains( $bento_html, 'agency-reference-commerce.jpg' ) && str_contains( $bento_html, 'agency-reference-software.jpg' )
+agency_page_check( str_contains( $bento_html, 'agency-light-web.jpg' ) && ! str_contains( $bento_html, 'base64,' ), 'Real source asset is loaded separately.' );
+agency_page_check( str_contains( $bento_html, 'agency-light-commerce.jpg' ) && str_contains( $bento_html, 'agency-light-software.jpg' )
     && ! str_contains( $bento_html, 'agency-bento-support.svg' ), 'Three approved photographs and a deliberately image-free support strip.' );
 agency_page_check( str_contains( $bento_html, 'https://codela.test/hizmetler/' ), 'Unpublished detail falls back to published Services page.' );
+agency_page_check( ! str_contains( $bento_html, 'agency-reference-hero.jpg' ), 'Services images do not replace the welcome scene.' );
 $bento_edit = $bento_data; $bento_edit['items'][1]['title'] = 'Özel mağaza başlığı';
 agency_page_check( str_contains( codela_sf_section_agency_bento( $bento_edit ), 'Özel mağaza başlığı' ), 'Editor copy is never silently replaced.' );
 if ( in_array( '--render=bento', $argv, true ) ) {
@@ -459,9 +460,9 @@ agency_page_check( str_contains( codela_sf_section_agency_process( $custom_proce
     'Edited process copy is not overwritten.' );
 agency_page_check( substr_count( $process_widget, 'data-agency-widget-step="' ) === 3, 'Reusable process has three steps.' );
 preg_match_all( '/data-agency-stage-image="([^"]+)"/', $process_widget, $stage_images );
-agency_page_check( count( $stage_images[1] ) === 3 && count( array_unique( $stage_images[1] ) ) === 3,
+agency_page_check( count( $stage_images[1] ) === 3 && count( array_unique( $stage_images[1] ) ) === 3 && str_contains( $stage_images[1][0], 'agency-light-process-discovery.jpg' ),
     'Each process step has its own image.' );
-foreach ( [ 'agency-reference-hero.jpg', 'agency-reference-web.jpg', 'agency-reference-commerce.jpg', 'agency-reference-software.jpg', 'agency-reference-process-discovery.jpg', 'agency-reference-process-build.jpg', 'agency-reference-process-launch.jpg', 'agency-storefront-interface.svg' ] as $asset ) {
+foreach ( [ 'agency-reference-hero.jpg', 'agency-reference-web.jpg', 'agency-reference-commerce.jpg', 'agency-reference-software.jpg', 'agency-reference-process-discovery.jpg', 'agency-reference-process-build.jpg', 'agency-reference-process-launch.jpg', 'agency-light-web.jpg', 'agency-light-commerce.jpg', 'agency-light-software.jpg', 'agency-light-process-discovery.jpg', 'agency-light-process-build.jpg', 'agency-light-process-launch.jpg', 'agency-storefront-interface.svg' ] as $asset ) {
     agency_page_check( is_file( __DIR__ . '/../theme/codela-storefront/assets/media/' . $asset ), 'Visual exists: ' . $asset );
 }
 agency_page_check( str_contains( $process_widget, 'data-agency-widget-next' )

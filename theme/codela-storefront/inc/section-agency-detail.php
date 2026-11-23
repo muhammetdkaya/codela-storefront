@@ -9,9 +9,9 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 function codela_sf_section_agency_detail( array $data, string $type = '', bool $primary = false ): string {
     $settings = [
-        'web' => [ 'tag' => 'Kurumsal · Arayüz', 'image' => 'mona-bento-web.jpg' ],
-        'commerce' => [ 'tag' => 'Satış · Deneyim', 'image' => 'mona-bento-web.jpg' ],
-        'software' => [ 'tag' => 'Ölçek · Entegrasyon', 'image' => 'mona-studio-hero.jpg' ],
+        'web' => [ 'tag' => 'Kurumsal · Arayüz', 'image' => 'agency-light-web.jpg' ],
+        'commerce' => [ 'tag' => 'Satış · Deneyim', 'image' => 'agency-light-commerce.jpg' ],
+        'software' => [ 'tag' => 'Ölçek · Entegrasyon', 'image' => 'agency-light-software.jpg' ],
         'support' => [ 'tag' => 'Hız · Süreklilik', 'image' => 'mona-studio-hero.jpg' ],
     ];
     $variant = (string) ( $data['variant'] ?? 'web' );
@@ -36,8 +36,8 @@ function codela_sf_section_agency_detail( array $data, string $type = '', bool $
       <section class="cdl-service-detail" aria-labelledby="<?php echo esc_attr( $id ); ?>">
         <div class="cdl-service-detail__shell">
           <div class="cdl-service-detail__content">
-            <div class="cdl-service-detail__visual">
-              <img src="<?php echo esc_url( $image ); ?>" alt="" width="1376" height="768"
+            <div class="cdl-service-detail__visual"<?php if ( 'support' !== $variant ) : ?> data-reference-fx="<?php echo esc_attr( $variant ); ?>"<?php endif; ?>>
+              <img src="<?php echo esc_url( $image ); ?>" alt="" width="<?php echo in_array( $variant, [ 'commerce', 'software' ], true ) ? '1024' : '1376'; ?>" height="<?php echo in_array( $variant, [ 'commerce', 'software' ], true ) ? '1024' : '768'; ?>"
                    loading="eager" fetchpriority="high" decoding="async" />
               <span class="cdl-service-detail__shade" aria-hidden="true"></span>
               <span class="cdl-service-detail__tag"><?php echo esc_html( $settings[ $variant ]['tag'] ); ?></span>

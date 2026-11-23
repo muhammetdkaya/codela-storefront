@@ -1,0 +1,58 @@
+/* Codela reference: image-mapped lighting only for Agency Services / Process / Detail.
+   This file intentionally has no Hero/Studio selectors. */
+.sf-agency-widget--bento .cdl-bento__card,
+.sf-agency-widget--detail .cdl-service-detail__visual,
+.sf-agency-widget--process .sf-agency-process-stage-visual{
+  isolation:isolate;
+}
+.sf-agency-widget--bento .cdl-bento__card .cdl-reference-light,
+.sf-agency-widget--detail .cdl-service-detail__visual .cdl-reference-light,
+.sf-agency-widget--process .sf-agency-process-stage-visual .cdl-reference-light{
+  position:absolute;inset:0;width:100%;height:100%;pointer-events:none;
+  z-index:2;overflow:visible;transform-origin:center;
+  transition:transform .45s cubic-bezier(.22,1,.36,1);
+}
+.sf-agency-widget--bento .cdl-bento__card:is(:hover,:focus-visible) .cdl-reference-light{
+  transform:scale(1.035);
+}
+.sf-agency-widget--bento .cdl-bento__card .cdl-bento__image-shade,
+.sf-agency-widget--bento .cdl-bento__card .cdl-bento__art-shade{
+  z-index:1;
+}
+.sf-agency-widget--bento .cdl-bento__card .cdl-bento__card-top,
+.sf-agency-widget--bento .cdl-bento__card .cdl-bento__card-copy,
+.sf-agency-widget--bento .cdl-bento__card .cdl-bento__minor-arrow,
+.sf-agency-widget--bento .cdl-bento__card .cdl-bento__minor-copy{
+  z-index:3;
+}
+.sf-agency-widget--detail .cdl-service-detail__visual .cdl-service-detail__shade{z-index:1}
+.sf-agency-widget--detail .cdl-service-detail__visual .cdl-service-detail__tag{z-index:3}
+.sf-agency-widget--process .sf-agency-process-stage-visual>.cdl-reference-light{
+  opacity:0;visibility:hidden;transition:opacity .4s ease,visibility .4s;
+}
+.sf-agency-widget--process .sf-agency-process-stage-visual[data-cdl-light-step="0"]>.cdl-reference-light[data-cdl-light="proc0"],
+.sf-agency-widget--process .sf-agency-process-stage-visual[data-cdl-light-step="1"]>.cdl-reference-light[data-cdl-light="proc1"],
+.sf-agency-widget--process .sf-agency-process-stage-visual[data-cdl-light-step="2"]>.cdl-reference-light[data-cdl-light="proc2"]{
+  opacity:1;visibility:visible;
+}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){
+  .sf-agency-widget--bento .cdl-bento__card--web::before,
+  .sf-agency-widget--bento .cdl-bento__card--commerce::before,
+  .sf-agency-widget--bento .cdl-bento__card--software::before{
+    content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+    opacity:0;transition:opacity .38s ease;
+    background:radial-gradient(280px circle at var(--cdl-light-x,76%) var(--cdl-light-y,24%),rgba(211,164,128,.10),transparent 70%);
+  }
+  .sf-agency-widget--bento .cdl-bento__card:is(:hover,:focus-visible)::before{opacity:1}
+  .sf-agency-widget--bento .cdl-bento__grid.cdl-light-has-focus .cdl-bento__card:not(.cdl-light-focused){
+    opacity:.60;filter:brightness(.86) saturate(.86);transform:scale(.992);
+  }
+  .sf-agency-widget--bento .cdl-bento__grid.cdl-light-has-focus .cdl-bento__card.cdl-light-focused{
+    opacity:1;filter:brightness(1.03);
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .sf-agency-widget--bento .cdl-bento__card .cdl-reference-light,
+  .sf-agency-widget--detail .cdl-service-detail__visual .cdl-reference-light,
+  .sf-agency-widget--process .sf-agency-process-stage-visual .cdl-reference-light{transition:none!important;transform:none!important}
+}

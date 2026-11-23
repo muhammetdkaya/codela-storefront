@@ -294,7 +294,7 @@ function codela_sf_section_agency_process( array $data, string $type = '' ): str
     $id = 'sf-agency-process-' . sanitize_html_class( (string) ( $data['id'] ?? 'process' ) );
     $labels = [ 'Keşif', 'Üretim', 'Yayın' ];
     $outcomes = [ 'Net Yol Haritası', 'Geliştirilen Dijital Deneyim', 'Kontrol Edilmiş, Yayına Hazır' ];
-    $images = [ 'agency-reference-process-discovery.jpg', 'agency-reference-process-build.jpg', 'agency-reference-process-launch.jpg' ];
+    $images = [ 'agency-light-process-discovery.jpg', 'agency-light-process-build.jpg', 'agency-light-process-launch.jpg' ];
     $count = count( $items );
     $next = static function( int $index ) use ( $labels, $count ): string {
         return $index === $count - 1 ? 'Süreci Başlat' : 'Sonraki: ' . $labels[ $index + 1 ];

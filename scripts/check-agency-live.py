@@ -41,9 +41,9 @@ def check_service_detail_pages() -> None:
         home, flags=re.S,
     )
     expected = [
-        ("Web Tasarım", "mona-bento-web.jpg"),
-        ("E-Ticaret", "mona-bento-web.jpg"),
-        ("Özel Yazılım", "mona-studio-hero.jpg"),
+        ("Web Tasarım", "agency-light-web.jpg"),
+        ("E-Ticaret", "agency-light-commerce.jpg"),
+        ("Özel Yazılım", "agency-light-software.jpg"),
         ("Optimizasyon / Destek", "mona-studio-hero.jpg"),
     ]
     if len(hrefs) != 4:
@@ -165,9 +165,9 @@ def check() -> None:
                     "Bakım ve geliştirme", "Keşif ve Planlama",
                     "WordPress · WooCommerce",
                     "class=\"codela-monolith\"", "codela-monolith__canvas",
-                    "codela-monolith__control", "agency-reference-web.jpg",
-                    "agency-reference-commerce.jpg", "agency-reference-software.jpg",
-                    "agency-reference-process-discovery.jpg", "#sf-agency-services",
+                    "codela-monolith__control", "agency-light-web.jpg",
+                    "agency-light-commerce.jpg", "agency-light-software.jpg",
+                    "agency-light-process-discovery.jpg", "#sf-agency-services",
                 )
                 missing_copy = [marker for marker in approved if marker not in home]
                 if missing_copy:

@@ -79,7 +79,7 @@ function codela_sf_section_agency_bento( array $data, string $type = '' ): strin
                  href="<?php echo esc_url( $href ); ?>"
                  aria-label="<?php echo esc_attr( $display . ' hizmetini incele' ); ?>">
                 <?php if ( 0 === $index ) : ?>
-                  <img class="cdl-bento__photo" src="<?php echo esc_url( $media . 'agency-reference-web.jpg' ); ?>" alt=""
+                  <img class="cdl-bento__photo" src="<?php echo esc_url( $media . 'agency-light-web.jpg' ); ?>" alt=""
                        loading="lazy" decoding="async" width="1376" height="768" />
                   <span class="cdl-bento__image-shade" aria-hidden="true"></span>
                   <span class="cdl-bento__card-top">
@@ -98,7 +98,7 @@ function codela_sf_section_agency_bento( array $data, string $type = '' ): strin
                   </span>
                   <span class="cdl-bento__support-action" aria-hidden="true">İncele <span>→</span></span>
                 <?php else : ?>
-                  <img class="cdl-bento__visual cdl-bento__visual--<?php echo 1 === $index ? 'commerce' : 'software'; ?>" src="<?php echo esc_url( $media . ( 1 === $index ? 'agency-reference-commerce.jpg' : 'agency-reference-software.jpg' ) ); ?>" alt="" loading="lazy" decoding="async" width="1024" height="1024" />
+                  <img class="cdl-bento__visual cdl-bento__visual--<?php echo 1 === $index ? 'commerce' : 'software'; ?>" src="<?php echo esc_url( $media . ( 1 === $index ? 'agency-light-commerce.jpg' : 'agency-light-software.jpg' ) ); ?>" alt="" loading="lazy" decoding="async" width="1024" height="1024" />
                   <span class="cdl-bento__art-shade" aria-hidden="true"></span>
                   <span class="cdl-bento__minor-arrow" aria-hidden="true">↗</span>
                   <span class="cdl-bento__minor-copy">
