@@ -2575,7 +2575,9 @@ body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-
 /* Service details: occupy the usable inner-page viewport, including the image
    and action region. Preserve natural scrolling for short screens/large text. */
 body:not(.home):has(.sf-shell) .codela-page-layout > .sf-agency-widget--detail:first-child > .cdl-service-detail{
-  min-height:calc(100dvh - var(--sf-agency-header-clearance,76px));
+  /* svh is stable when iOS Safari collapses/expands its toolbar.
+     dvh remeasures this flex stage mid-scroll and recrops the cover image. */
+  min-height:calc(100svh - var(--sf-agency-header-clearance,76px));
   padding-top:clamp(20px,3svh,34px);
   padding-bottom:clamp(18px,3svh,30px);
 }

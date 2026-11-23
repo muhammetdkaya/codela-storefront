@@ -6,6 +6,11 @@ const http=require('node:http');
 const {execFileSync}=require('node:child_process');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const root=path.resolve(__dirname,'..');
+const agencyCss=fs.readFileSync(path.join(root,'theme/codela-storefront/assets/styles/agency.css'),'utf8');
+const serviceViewportRule=agencyCss.slice(agencyCss.lastIndexOf('/* Service details: occupy'));
+assert.match(serviceViewportRule,/min-height:calc\(100svh - var\(--sf-agency-header-clearance,76px\)\)/,
+  'Service detail height must use the stable viewport, not the collapsing Safari toolbar');
+assert.doesNotMatch(serviceViewportRule,/100dvh/,'Service detail must not recrop its cover image as browser chrome moves');
 const fixture=execFileSync(process.env.PHP_BIN||'php',['tests/agency-pages.php','--render=detail'],{cwd:root,encoding:'utf8'});
 const server=http.createServer((req,res)=>{
   const u=new URL(req.url,'http://localhost').pathname;
@@ -55,6 +60,11 @@ const server=http.createServer((req,res)=>{
      assert(s.ctaHref.includes('hizmetler=Web%20Tasar%C4%B1m'),'Project CTA transports service to existing form');
      assert.equal(s.duplicateHeader,0,'Native theme header is the only navigation on service detail');
      assert.equal(s.fakeChrome,0,'No duplicate fake phone UI');
+     const visual=detail.locator('.cdl-service-detail__visual');
+     const frameBefore=await visual.evaluate(el=>({width:el.clientWidth,height:el.clientHeight}));
+     await page.evaluate(()=>window.scrollTo(0,120));
+     const frameAfter=await visual.evaluate(el=>({width:el.clientWidth,height:el.clientHeight}));
+     assert.deepEqual(frameAfter,frameBefore,'Service cover must retain its crop and dimensions during scroll at '+width);
      assert.deepEqual(errors,[]);
      await page.screenshot({path:path.join(root,'qa','agency-detail-'+width+'.png'),fullPage:true});
      await page.close();
