@@ -104,6 +104,9 @@ body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-acc
 /* Standalone guest Account matches the open dialog, not the store document.
  * Only the guest welcome root is converted; password recovery, signed-in
  * dashboards, Woo endpoints and other presentation modes retain their shells. */
+body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout):has(.sf-content .sf-account-intro) .sf-shell{
+  padding-top:0!important; /* Override the fixed store header's 68/76px reserved space. */
+}
 body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout):has(.sf-content .sf-account-intro) .sf-shell .sf-header{
   position:absolute!important;top:0!important;left:0!important;
   width:0!important;height:0!important;min-height:0!important;
