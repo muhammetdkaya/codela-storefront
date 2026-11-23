@@ -250,6 +250,22 @@ body.sf-account-editorial.woocommerce-account:not(.logged-in) :is(
 .sf-shell.has-editorial-account #sf-panel.is-account-panel :is(
  .lost_password a,.woocommerce-LostPassword a,.sf-auth-back-login,.sf-smart-back
 ){color:#f8f7fa!important}
+/* A verified remembered card owns the welcome stage. The direct page's
+ * SSR email pill may be present before smart-auth hydration; suppress it by
+ * the verified PIN/passkey host state, not by a JS-ready class that may lag.
+ * The existing native Email/Google action removes these states on selection. */
+body.sf-account-editorial.woocommerce-account:not(.logged-in) .woocommerce:is(.sf-pin-active,.sf-passkey-active) .sf-smart-auth,
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .woocommerce:is(.sf-pin-active,.sf-passkey-active) .sf-smart-auth{
+  display:none!important;
+}
+/* Match the dialog's single-line alternative on ordinary mobile widths,
+ * while permitting natural wrapping on narrower screens and larger text. */
+@media(min-width:370px) and (max-width:700px){
+  body.sf-account-editorial.woocommerce-account:not(.logged-in) .woocommerce.sf-pin-active .sf-quick-accounts>.sf-quick-choice-alternatives .sf-quick-native-alt{
+    padding-inline:42px!important;font-size:13.5px!important;
+  }
+}
+
 @media(max-width:700px){
   .sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-account-body{
     padding:clamp(20px,5dvh,38px) 16px calc(26px + env(safe-area-inset-bottom,0px));
