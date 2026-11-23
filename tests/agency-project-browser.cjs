@@ -85,9 +85,17 @@ const server=http.createServer((req,res)=>{
    assert.equal((initialStyle.buttonLayers.match(/linear-gradient\(/g)||[]).length,3,'Quiet three-layer glass CTA');
    assert(initialStyle.buttonShadow.includes('5px 14px -8px'),'Primary glass shadow is restrained');
    assert(initialStyle.titleSize<=36,'Headline stays editorial and compact');
-   await page.locator('input[name="agency_project_service"][value="E-Ticaret"]').check();
-   await page.locator('input[name="agency_project_time"][value="Esnek"]').check();
-   await page.locator('input[name="agency_project_scale"][value="Kurumsal"]').check();
+   // These radios are intentionally styled as whole label cards; click the
+   // visible hit area rather than Playwright's obscured input center.
+   for (const [name, value] of [
+     ['agency_project_service','E-Ticaret'],
+     ['agency_project_time','Esnek'],
+     ['agency_project_scale','Kurumsal']
+   ]) {
+     const radio=page.locator(`input[name="${name}"][value="${value}"]`);
+     await radio.locator('..').click();
+     assert(await radio.isChecked(), `${name} uses its visible label click target`);
+   }
    await page.locator('[data-project-next]').click();
    assert(await second.isVisible(),'Step 2 visible after Continue');
    assert(!(await first.isVisible()),'Step 1 hidden during contact entry');
