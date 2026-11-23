@@ -166,7 +166,7 @@ body.sf-glass-v2 .sf-agency-widget--project .cdl-project__panel{
 }
 /* A Project form CTA is intentionally quieter than Studio's bold actions.
    Keep the same three-layer glass material, without the thick raised rim. */
-body.sf-glass-v2 .sf-agency-widget--project .cdl-project__button{
+body.sf-glass-v2 .sf-agency-widget.sf-agency-widget--project .cdl-project__button{
  background:linear-gradient(180deg,rgba(255,255,255,.023),transparent) padding-box,
    linear-gradient(rgba(34,34,36,.72),rgba(34,34,36,.72)) padding-box,
    linear-gradient(180deg,rgba(255,255,255,.20),rgba(255,255,255,.075)) border-box!important;
