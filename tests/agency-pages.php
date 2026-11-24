@@ -146,6 +146,8 @@ foreach ( $detail_reference as $variant => $source ) {
         str_contains($markup,'Proje Başlat') && !str_contains($markup,'data:image'),
         'Service CTA sends source service to existing contact form: '.$variant );
 }
+$custom_detail = codela_sf_section_agency_detail(['variant'=>'web','title'=>'Özel başlık','description'=>'Özel açıklama','items'=>[['title'=>'Özel kapsam','body'=>'Özel kapsam açıklaması']]]);
+agency_page_check(str_contains($custom_detail,'Özel açıklama') && str_contains($custom_detail,'Özel kapsam açıklaması'),'Editor custom description and scope remain intact');
 if ( in_array( '--render=detail', $argv, true ) ) {
     $source = $detail_reference['web'];
     $data = [ 'id'=>'detail-web','variant'=>'web','title'=>$source['title'],

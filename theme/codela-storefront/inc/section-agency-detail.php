@@ -65,7 +65,15 @@ function codela_sf_section_agency_detail( array $data, string $type = '', bool $
     $title=trim((string)($data['title']??''));
     if(!$title)return '';
     if($title===$info['service'])$title=$info['title'];
-    $description=$info['sub'];
+    // Replace the known starter copy, never overwrite a custom description.
+    $legacy = [
+      'web'=>'Markanızın duruşunu ilk saniyede hissettiren, mobil öncelikli ve dönüşüm odaklı modern web arayüzleri tasarlıyoruz.',
+      'commerce'=>'Hızlı ürün keşfi, pürüzsüz sepet akışı ve güvenli ödeme entegrasyonlarıyla satışa odaklanan mağazalar kuruyoruz.',
+      'software'=>'İş süreçlerinize tam oturan yönetim panelleri, API bağlantıları ve ölçeklenebilir web uygulamaları geliştiriyoruz.',
+      'support'=>'Yayındaki sitenizin hızını, teknik SEO performansını ve güvenliğini sürekli izleyerek sorunsuz çalışmasını sağlıyoruz.',
+    ];
+    $description=trim((string)($data['description']??''));
+    if(!$description || $description===$legacy[$variant])$description=$info['sub'];
     $rows=array_values(array_filter(array_slice((array)($data['items']??[]),0,4),static fn($item)=>is_array($item)&&($item['enabled']??true)&&!empty($item['title'])));
     $custom=array_filter($rows,static fn($item)=>!empty($item['body']));
     $deliverables=$custom?array_map(static fn($item)=>[(string)$item['title'],(string)($item['body']??'')],$rows):$info['items'];
