@@ -6,7 +6,8 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Ajans hizmet detaylarında mobil Safari'nin araç çubuğu kaydırma sırasında değişirken kapak görselini yeniden ölçeklendirmesi ve kırpması engellendi.",
-    "Hizmet sayfalarının mevcut görsel, metin, düğme ve doğal kaydırma düzeni korundu."
+    "E-ticaret üst başlığında özel logo tanımlandığında site adı ikinci kez gösterilmiyor; logosuz sitelerde site adı korunuyor.",
+    "Ana sayfa ürün kartlarında indirim rozeti ürün görseli üzerinde konumlandırılarak yerleşim kayması önlendi.",
+    "Ürün detay galerisinin mobil büyütme ve dikey gezinme düğmeleri masaüstü ve tablet yerleşimlerinden ayrıldı; masaüstü galeri kontrolleri korundu."
   ]
 }
