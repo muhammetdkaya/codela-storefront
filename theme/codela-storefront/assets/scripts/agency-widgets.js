@@ -104,20 +104,72 @@
           }
         });
       }
-      const formDisclosure = widget.querySelector('details#sf-agency-contact-form');
-      const openFromAnchor = () => {
-        if (formDisclosure && window.location.hash === '#sf-agency-contact-form') formDisclosure.open = true;
-      };
-      openFromAnchor();
-      window.addEventListener('hashchange', openFromAnchor);
-      widget.querySelectorAll('a[href="#sf-agency-contact-form"]').forEach(link => {
-        link.addEventListener('click', () => { if (formDisclosure) formDisclosure.open = true; });
-      });
-      // WordPress redirects after form POST with a status query. The message
-      // must be visible without requiring visitors to scroll back down.
-      const notice = widget.querySelector('.cdl-contact__notice');
-      if (notice && window.location.search.includes('codela_status=')) {
-        widget.querySelector('#sf-agency-contact-form')?.scrollIntoView({block:'start'});
+      const disclosure = widget.querySelector('details#sf-agency-contact-form');
+      const summary = disclosure?.querySelector('summary');
+      const panel = disclosure?.querySelector('.cdl-contact-form-section');
+      if (disclosure && summary && panel && typeof HTMLDialogElement !== 'undefined' && typeof HTMLDialogElement.prototype.showModal === 'function') {
+        const dialog = document.createElement('dialog');
+        dialog.className = 'cdl-contact__sheet';
+        dialog.setAttribute('aria-labelledby','cdl-contact-form-title');
+        const initiallyOpen = disclosure.open;
+        disclosure.open = false;
+        dialog.appendChild(panel);
+        widget.appendChild(dialog);
+        summary.setAttribute('aria-haspopup','dialog');
+        summary.setAttribute('aria-expanded','false');
+        const open = () => {
+          if (dialog.open) return;
+          dialog.showModal();
+          summary.setAttribute('aria-expanded','true');
+          dialog.querySelector('[data-contact-close]')?.focus({preventScroll:true});
+        };
+        summary.addEventListener('click', event => {event.preventDefault();open();});
+        dialog.querySelector('[data-contact-close]')?.addEventListener('click',()=>dialog.close());
+        dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close();});
+        dialog.addEventListener('close',()=>{summary.setAttribute('aria-expanded','false');summary.focus({preventScroll:true});});
+        widget.querySelectorAll('a[href="#sf-agency-contact-form"]').forEach(link=>link.addEventListener('click',event=>{event.preventDefault();open();}));
+        const anchor = () => {if(window.location.hash==='#sf-agency-contact-form')open();};
+        window.addEventListener('hashchange',anchor);
+        if(initiallyOpen)open();else anchor();
+      } else if (disclosure) {
+        const anchor=()=>{if(window.location.hash==='#sf-agency-contact-form')disclosure.open=true;};
+        window.addEventListener('hashchange',anchor);anchor();
+        panel?.querySelector('[data-contact-close]')?.addEventListener('click',()=>{disclosure.open=false;});
+      }
+      // Map enhancement is loaded only on this contact widget. The native
+      // OpenStreetMap iframe and external link remain usable if it fails.
+      const frame=widget.querySelector('[data-contact-map]');
+      const host=frame?.querySelector('[data-contact-map-live]');
+      if(frame && host && !navigator.connection?.saveData){
+        const loadLeaflet=()=>{
+          if(window.L?.map)return Promise.resolve(window.L);
+          if(window.codelaContactLeaflet)return window.codelaContactLeaflet;
+          window.codelaContactLeaflet=new Promise((resolve,reject)=>{
+            const css=document.createElement('link');css.rel='stylesheet';css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+            css.crossOrigin='anonymous';document.head.appendChild(css);
+            const js=document.createElement('script');js.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+            js.crossOrigin='anonymous';js.onload=()=>window.L?.map?resolve(window.L):reject(new Error('Map unavailable'));js.onerror=reject;document.head.appendChild(js);
+          });
+          return window.codelaContactLeaflet;
+        };
+        const startMap=()=>loadLeaflet().then(L=>{
+          const center=[Number(frame.dataset.mapLat),Number(frame.dataset.mapLon)];
+          const office=frame.dataset.mapOffice==='true';
+          const zoom=office?14:11;
+          const map=L.map(host,{center,zoom,zoomControl:false,scrollWheelZoom:false,doubleClickZoom:false,attributionControl:true,dragging:window.matchMedia('(pointer:fine)').matches});
+          const tiles=L.tileLayer('https://server.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{minZoom:5,maxZoom:15,attribution:'Tiles © Esri — Esri, HERE, Garmin, OpenStreetMap contributors'});
+          tiles.once('load',()=>{frame.dataset.mapReady='true';});
+          tiles.addTo(map);
+          const icon=L.divIcon({className:'cdl-contact__beacon',html:'<i></i><b></b>',iconSize:[24,24],iconAnchor:[12,12]});
+          L.marker(office?center:[41.0082,28.9784],{icon,interactive:false}).addTo(map);
+          frame.querySelector('[data-contact-map-center]')?.addEventListener('click',event=>{
+            if(frame.dataset.mapReady!=='true')return;
+            event.preventDefault();map.setView(center,zoom,{animate:!reduced.matches});
+          });
+          if('ResizeObserver' in window)new ResizeObserver(()=>map.invalidateSize({pan:false})).observe(host);
+        }).catch(()=>{});
+        if('IntersectionObserver' in window){const observer=new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting)){observer.disconnect();startMap();}},{rootMargin:'200px'});observer.observe(frame);}
+        else startMap();
       }
     }
 

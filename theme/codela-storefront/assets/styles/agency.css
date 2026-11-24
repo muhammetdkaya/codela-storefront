@@ -2713,3 +2713,61 @@ body:not(.home):has(.sf-shell) .codela-page-layout > .sf-agency-widget--detail:f
   .sf-agency-widget--bento .cdl-bento__card-copy{max-width:48%;}
   .sf-agency-widget--bento .cdl-bento__minor-copy{max-width:59%;}
 }
+
+/* 0.1.405 — contact reference: single editorial map and two unboxed rows. */
+.sf-agency-widget--contact-bento .cdl-contact{padding:clamp(22px,4svh,42px) 20px calc(30px + var(--sf-agency-dock-clearance,0px));align-items:flex-start;}
+.sf-agency-widget--contact-bento .cdl-contact__inner{width:min(100%,696px);gap:24px;}
+.sf-agency-widget--contact-bento .cdl-contact__header{padding:0;}
+.sf-agency-widget--contact-bento .cdl-contact__header h1{font-size:clamp(32px,5vw,46px);font-weight:600;}
+.sf-agency-widget--contact-bento .cdl-contact__eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:10px!important;}
+.sf-agency-widget--contact-bento .cdl-contact__eyebrow::before,.sf-agency-widget--contact-bento .cdl-contact__map-bottom strong i{content:"";width:6px;height:6px;background:#d3a480;border-radius:50%;display:inline-block;flex:none;}
+.sf-agency-widget--contact-bento .cdl-contact__lead{font-size:14px;}
+.sf-agency-widget--contact-bento .cdl-contact__editorial{display:flex;flex-direction:column;gap:26px;min-height:0;max-height:none;}
+.sf-agency-widget--contact-bento .cdl-contact__map-frame{position:relative;isolation:isolate;height:236px;min-height:0;border-radius:28px;overflow:hidden;border:1px solid rgba(255,255,255,.11);background:#08080d;}
+.sf-agency-widget--contact-bento .cdl-contact__map-live{position:absolute;inset:0;z-index:0;opacity:0;background:#08080d;}
+.sf-agency-widget--contact-bento [data-map-ready="true"] .cdl-contact__map-live{opacity:1;}
+.sf-agency-widget--contact-bento [data-map-ready="true"] .cdl-contact__map-fallback,.sf-agency-widget--contact-bento [data-map-ready="true"]>.cdl-contact__map-credit{visibility:hidden;}
+.sf-agency-widget--contact-bento .cdl-contact__map-live .leaflet-tile-pane{filter:brightness(1.24) contrast(1.18) saturate(.26) sepia(.18);}
+.sf-agency-widget--contact-bento .cdl-contact__map-live .leaflet-control-attribution{background:#09090cbb;color:#aaa;font-size:9px;}
+.sf-agency-widget--contact-bento .cdl-contact__map-live .leaflet-control-attribution a{color:#ccc;}
+.sf-agency-widget--contact-bento .cdl-contact__map-scrim{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at 50% 42%,transparent 30%,#07070bb8 100%),linear-gradient(0deg,#07070be8,rgba(7,7,11,.4) 38%,transparent 70%,#07070b55);}
+.sf-agency-widget--contact-bento .cdl-contact__map-overlay{position:absolute;inset:0;z-index:2;padding:16px 18px 25px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;pointer-events:none;}
+.sf-agency-widget--contact-bento .cdl-contact__map-bottom{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;width:100%;}
+.sf-agency-widget--contact-bento .cdl-contact__map-bottom>span{display:grid;gap:3px;}
+.sf-agency-widget--contact-bento .cdl-contact__map-bottom strong{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:600;}
+.sf-agency-widget--contact-bento .cdl-contact__map-bottom small{font-size:12px;color:#b6b0bf;}
+.sf-agency-widget--contact-bento :is(.cdl-contact__map-chip,.cdl-contact__map-center,.cdl-contact__row-arrow){display:inline-flex;align-items:center;justify-content:center;border-radius:999px;border:1px solid rgba(255,255,255,.15);background:var(--cdl-agency-glass-body,rgba(34,34,36,.72));color:#f8f7fa;box-shadow:inset 0 1px 0 #ffffff17;text-decoration:none!important;flex:none;}
+.sf-agency-widget--contact-bento .cdl-contact__map-chip{height:30px;padding:0 12px;font-size:11px;color:#b6b0bf;}
+.sf-agency-widget--contact-bento .cdl-contact__map-center{height:34px;padding:0 13px;font-size:12px;pointer-events:auto;}
+.sf-agency-widget--contact-bento .cdl-contact__map-credit{z-index:3;}
+.sf-agency-widget--contact-bento .cdl-contact__beacon{position:relative;border-radius:50%;background:#d3a48025;border:1px solid #f9e6d599;}
+.sf-agency-widget--contact-bento .cdl-contact__beacon i{position:absolute;inset:-14px;background:radial-gradient(circle,#d3a48070,transparent 72%);border-radius:50%;animation:cdl-contact-beacon 4.8s ease-in-out infinite;}
+.sf-agency-widget--contact-bento .cdl-contact__beacon b{position:absolute;left:50%;top:50%;width:7px;height:7px;transform:translate(-50%,-50%);background:#f9e6d5;border-radius:50%;box-shadow:0 0 10px #d3a480;}
+@keyframes cdl-contact-beacon{0%,100%{transform:scale(.9);opacity:.55}50%{transform:scale(1.22);opacity:.95}}
+.sf-agency-widget--contact-bento .cdl-contact__actions{border-top:1px solid #ffffff17;}
+.sf-agency-widget--contact-bento .cdl-contact__action,.sf-agency-widget--contact-bento .cdl-contact__form-toggle>summary.cdl-contact__action{position:relative;width:100%;min-height:0;height:auto;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 4px;border:0;border-bottom:1px solid #ffffff17;border-radius:0;background:none;box-shadow:none;color:#f8f7fa;text-decoration:none!important;cursor:pointer;list-style:none;}
+.sf-agency-widget--contact-bento .cdl-contact__action::before{content:"";position:absolute;left:0;right:0;top:-1px;height:1px;background:linear-gradient(90deg,#d3a480b8,#d3a4802e 55%,transparent);opacity:0;transform:scaleX(.35);transform-origin:left;transition:opacity .3s,transform .4s;}
+.sf-agency-widget--contact-bento .cdl-contact__action:is(:hover,:focus-visible)::before{opacity:1;transform:scaleX(1);}
+.sf-agency-widget--contact-bento .cdl-contact__action-left{display:flex;align-items:flex-start;gap:16px;min-width:0;}
+.sf-agency-widget--contact-bento .cdl-contact__num{color:#d3a480;font-size:12px;font-weight:600;padding-top:5px;}
+.sf-agency-widget--contact-bento .cdl-contact__action-copy{display:grid;gap:5px;}
+.sf-agency-widget--contact-bento .cdl-contact__action-copy strong{font-size:clamp(21px,3vw,25px);font-weight:600;letter-spacing:-.035em;line-height:1.14;}
+.sf-agency-widget--contact-bento .cdl-contact__action-copy small{font-size:13.5px;line-height:1.45;color:#b6b0bf;}
+.sf-agency-widget--contact-bento .cdl-contact__row-arrow{width:42px;height:42px;font-size:16px;transition:transform .25s,filter .2s;}
+.sf-agency-widget--contact-bento .cdl-contact__action:hover .cdl-contact__row-arrow{transform:translateX(3px);filter:brightness(1.12);}
+.sf-agency-widget--contact-bento dialog.cdl-contact__sheet{position:fixed;inset:auto 0 max(16px,env(safe-area-inset-bottom)) 0;margin:0 auto;width:min(440px,calc(100% - 32px));max-height:calc(100dvh - 32px);padding:0;border:0;border-radius:28px;background:#101016;color:#f8f7fa;overflow:auto;box-shadow:0 28px 80px #000a;overscroll-behavior:contain;}
+.sf-agency-widget--contact-bento .cdl-contact__sheet::backdrop{background:#040408b8;backdrop-filter:blur(8px);}
+.sf-agency-widget--contact-bento .cdl-contact__sheet[open]{animation:cdl-contact-sheet-in .28s cubic-bezier(.22,1,.36,1);}
+@keyframes cdl-contact-sheet-in{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+.sf-agency-widget--contact-bento .cdl-contact__sheet .cdl-contact-form-section,.sf-agency-widget--contact-bento .cdl-contact__form-toggle .cdl-contact-form-section{width:100%;max-width:none;margin:0!important;padding:22px;border:1px solid #ffffff24;border-radius:28px;background:#101016;}
+.sf-agency-widget--contact-bento .cdl-contact__sheet .cdl-contact-form-section__inner,.sf-agency-widget--contact-bento .cdl-contact__form-toggle .cdl-contact-form-section__inner{display:block;}
+.sf-agency-widget--contact-bento .cdl-contact__sheet-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;}
+.sf-agency-widget--contact-bento .cdl-contact__sheet-head h2{font-size:20px;font-weight:600;}
+.sf-agency-widget--contact-bento .cdl-contact__sheet-head button{width:34px;height:34px;}
+.sf-agency-widget--contact-bento .cdl-contact__form-row{grid-template-columns:1fr;}
+.sf-agency-widget--contact-bento .cdl-contact__form{gap:13px;}
+.sf-agency-widget--contact-bento .cdl-contact__form textarea{min-height:86px;}
+.sf-agency-widget--contact-bento .cdl-contact__sheet-alt{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid #ffffff17;font-size:12px;color:#b6b0bf;}
+.sf-agency-widget--contact-bento .cdl-contact__sheet-alt button{border:0;background:none;color:#d6a676;overflow-wrap:anywhere;}
+@media(max-width:739px){.sf-agency-widget--contact-bento .cdl-contact{padding-inline:18px;}.sf-agency-widget--contact-bento .cdl-contact__inner{gap:22px;}.sf-agency-widget--contact-bento .cdl-contact__editorial{gap:22px;}.sf-agency-widget--contact-bento .cdl-contact__map-frame{height:214px;}.sf-agency-widget--contact-bento .cdl-contact__action,.sf-agency-widget--contact-bento .cdl-contact__form-toggle>summary.cdl-contact__action{padding:20px 2px;}.sf-agency-widget--contact-bento .cdl-contact__action-left{gap:12px;}.sf-agency-widget--contact-bento .cdl-contact__action-copy strong{font-size:20px;}.sf-agency-widget--contact-bento .cdl-contact__action-copy small{font-size:12.5px;}.sf-agency-widget--contact-bento .cdl-contact__row-arrow{width:38px;height:38px;}}
+@media(prefers-reduced-motion:reduce){.sf-agency-widget--contact-bento .cdl-contact__beacon i,.sf-agency-widget--contact-bento .cdl-contact__sheet[open]{animation:none;}.sf-agency-widget--contact-bento .cdl-contact__action::before,.sf-agency-widget--contact-bento .cdl-contact__row-arrow{transition:none;}}
