@@ -26,7 +26,8 @@ const server=http.createServer((req,res)=>{
    await page.goto('http://127.0.0.1:'+server.address().port+'/');
    const app=page.locator('.sf-agency-widget--contact-bento');
    assert.equal(await app.count(),1,'One isolated Contact Bento');
-   assert.equal(await app.locator('.cdl-contact__grid>.cdl-contact__card').count(),4,'1+2+1 reference grid');
+   assert.equal(await app.locator('.cdl-contact__card').count(),0,'No redundant contact cards');
+   assert.equal(await app.locator('.cdl-contact__body form').count(),1,'Form in first section');
    assert.equal(await app.locator('h1').textContent(),'Birlikte başlayalım.');
    const s=await app.evaluate(el=>{
       const bounds=el.querySelector('.cdl-contact').getBoundingClientRect();
@@ -47,9 +48,9 @@ const server=http.createServer((req,res)=>{
    assert.equal(s.fakeChrome,0,'No mock phone controls');
    assert.deepEqual(errors,[],'No browser exceptions');
    // Clicking the primary project card must take visitors to the real form.
-   await app.locator('.cdl-contact__card--primary').click();
+   await app.locator('[name="agency_name"]').focus();
    await page.waitForTimeout(70);
-   assert.equal(new URL(page.url()).hash,'#sf-agency-contact-form');
+    assert(await app.locator('[name="agency_name"]').isVisible(),'First-screen form is available');
    await page.screenshot({path:path.join(root,'qa','agency-contact-'+width+'.png'),fullPage:true});
    await page.close();
   }

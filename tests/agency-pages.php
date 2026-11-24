@@ -207,8 +207,8 @@ $contact_bento = [ 'id'=>'agency-starter-contact-bento','enabled'=>true,'variant
   'public_email'=>'','whatsapp_phone'=>'','studio_name'=>'Codela · Dijital stüdyo',
   'studio_hours'=>'' ];
 $contact_bento_html = codela_sf_section_agency_contact_bento( $contact_bento );
-agency_page_check( substr_count( $contact_bento_html, 'class="cdl-contact__card ' ) === 4,
-    'Reference contact has one primary, two direct choices and one studio strip' );
+agency_page_check( !str_contains( $contact_bento_html, 'cdl-contact__card' ) && str_contains( $contact_bento_html, 'cdl-contact__body' ) && !str_contains( $contact_bento_html, 'Hangi hizmetler?' ),
+    'Contact displays the short form immediately, without a redundant services or project card' );
 agency_page_check( str_contains( $contact_bento_html, 'Birlikte başlayalım.' ) &&
     str_contains( $contact_bento_html, 'data-agency-widget="contact-bento"' ),
     'Contact Bento renders approved reference title and is isolated' );

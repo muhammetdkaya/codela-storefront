@@ -346,6 +346,15 @@ add_action( 'wp_enqueue_scripts', function() {
         wp_enqueue_script( 'codela-storefront-gallery-horizontal', $root_uri . 'scripts/gallery-horizontal.js', [], codela_sf_script_module_version( 'scripts/gallery-horizontal.js' ), true );
     }
     if ( $sections['products'] || is_search() ) { wp_enqueue_script( 'wc-add-to-cart' ); }
+    // Only known, managed Agency content without commerce blocks: preserve Woo
+    // account, checkout, mixed/unknown content and all actual store documents.
+    if ( 'agency' === ( codela_theme_settings()['site_experience'] ?? 'commerce' )
+        && $sections['managed'] && ! $sections['products'] && ! is_search()
+        && ! is_cart() && ! is_checkout() && ! is_account_page()
+        && ! ( function_exists( 'is_woocommerce' ) && is_woocommerce() ) ) {
+        wp_dequeue_script( 'wc-cart-fragments' );
+        wp_dequeue_script( 'wc-add-to-cart' );
+    }
     if ( codela_sf_document_continuity_allowed() ) {
         wp_enqueue_style( 'codela-storefront-document-continuity', $root_uri . ( $debug_assets ? 'styles/document-continuity.css' : 'styles/document-navigation.css' ), [ 'codela-storefront-components' ], $style_version );
         wp_register_style( 'codela-storefront-navigation-feedback', $debug_assets ? $root_uri . 'styles/navigation-feedback.css' : false, [ 'codela-storefront-document-continuity' ], $style_version );

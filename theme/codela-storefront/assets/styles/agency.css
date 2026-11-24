@@ -2601,3 +2601,14 @@ body:not(.home):has(.sf-shell) .codela-page-layout > .sf-agency-widget--detail:f
 @media(max-width:359px){
   .sf-agency-widget--detail .cdl-service-detail__visual{min-height:176px}
 }
+
+/* 0.1.397: form-first Agency contact; retain native shell and glass tokens. */
+.sf-agency-widget--contact-bento .cdl-contact{align-items:flex-start;height:auto;min-height:100svh;}
+.sf-agency-widget--contact-bento .cdl-contact__inner{width:min(100%,760px);gap:24px;}
+.sf-agency-widget--contact-bento .cdl-contact__body{display:grid;gap:20px;min-width:0;scroll-margin-top:90px;}
+.sf-agency-widget--contact-bento .cdl-contact__form{gap:13px;}
+.sf-agency-widget--contact-bento .cdl-contact__form label.cdl-contact__consent{align-items:flex-start;}
+.sf-agency-widget--contact-bento .cdl-contact__channels{display:flex;flex-wrap:wrap;gap:12px;align-items:center;}
+.sf-agency-widget--contact-bento .cdl-contact__channels :is(a,button){display:flex;flex-wrap:wrap;gap:8px;align-items:center;border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:11px 16px;background:rgba(255,255,255,.055);color:#f5f4f7;font:inherit;font-size:13px;text-decoration:none;overflow-wrap:anywhere;cursor:pointer;}
+.sf-agency-widget--contact-bento .cdl-contact__channels small{color:#aaa7b0;font-size:11px;}
+@media(max-width:739px){.sf-agency-widget--contact-bento .cdl-contact__inner{gap:17px}.sf-agency-widget--contact-bento .cdl-contact__form-row{grid-template-columns:1fr}.sf-agency-widget--contact-bento .cdl-contact__form{gap:11px}.sf-agency-widget--contact-bento .cdl-contact__form textarea{min-height:88px}}
