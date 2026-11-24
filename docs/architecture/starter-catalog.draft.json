@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "status": "development",
+  "starters": [
+    {
+      "id": "agency",
+      "title": "Ajans",
+      "version": "1.0.0",
+      "delivery": "legacy-layout-with-optional-media",
+      "publishable": false
+    },
+    {
+      "id": "commerce",
+      "title": "E-Ticaret",
+      "version": "1.0.0",
+      "delivery": "legacy-versioned-demo",
+      "publishable": false
+    }
+  ]
+}
