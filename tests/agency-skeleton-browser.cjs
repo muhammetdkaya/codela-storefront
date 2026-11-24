@@ -60,16 +60,29 @@ function header(dock){
         tools:rect(document.querySelector('.sf-agency-header-tools')),height:surface?.getBoundingClientRect().height,
         width:surface?.getBoundingClientRect().width,scrollWidth:document.documentElement.scrollWidth,
         skeleton:!!document.querySelector('.sf-skeleton'),oldContent:getComputedStyle(main).visibility,
-        busy:main.getAttribute('aria-busy')};
+        busy:main.getAttribute('aria-busy'),background:getComputedStyle(surface).backgroundColor,
+        beam:(()=>{const c=getComputedStyle(surface,'::before');return {top:parseFloat(c.top),left:parseFloat(c.left),height:c.height,width:parseFloat(c.width)};})(),
+        opacity:getComputedStyle(surface).opacity,viewport:innerHeight,
+        headerAbove:Number(getComputedStyle(document.querySelector('.sf-header')).zIndex)>Number(getComputedStyle(surface).zIndex)};
     },route.url);
     assert(snapshot.token&&snapshot.kind===route.kind,'Agency route '+route.kind);
     assert.equal(snapshot.skeleton,false,'No fictional page layout');
     assert.equal(snapshot.oldContent,'visible','Outgoing content remains visible');
     assert.equal(snapshot.busy,'true');
-    assert.equal(snapshot.height,2);
+    assert.equal(snapshot.height,snapshot.viewport,'Full dark transition surface');
+    assert.equal(snapshot.background,'rgb(9, 9, 12)');
+    assert.equal(snapshot.beam.height,'1px');
+    assert(Math.abs(snapshot.beam.top-snapshot.viewport/2)<=1,'Beam centered vertically');
+    assert(Math.abs(snapshot.beam.left-width/2)<=1,'Beam centered horizontally');
+    assert(Math.abs(snapshot.beam.width-Math.min(260,width*.64))<=1,'First-entry beam width');
+    assert.equal(snapshot.opacity,'0','Fast navigation starts without a visible veil');
+    assert(snapshot.headerAbove,'Native header above transition surface');
     assert(snapshot.width>=width-1&&snapshot.scrollWidth<=width+1);
     for(const key of ['logo','tools'])for(const prop of ['x','y','w','h']){
       assert(Math.abs(snapshot[key][prop]-before[key][prop])<=1.2,'Native header does not jump');
+    }
+    if(route.kind==='home'){
+      await page.waitForFunction(()=>getComputedStyle(document.querySelector('.sf-agency-route-line')).opacity==='1');
     }
     await page.evaluate(()=>window.codelaSFFeedback.end());
     assert.equal(await page.locator('.sf-agency-route-line').count(),0);

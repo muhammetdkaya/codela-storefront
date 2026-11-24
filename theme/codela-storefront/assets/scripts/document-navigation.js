@@ -319,9 +319,9 @@
         const target = new URL(url, location.href);
         const type = destination(target, link);
         const agencyKind = agencyDestination(target, type);
-        // Public editorial routes use an unobtrusive line, never a fabricated
-        // page or a timed transition veil. Account and commerce keep their
-        // specialized skeletons; destination owns actual loading and history.
+        // Public editorial routes share the first-entry centered light.
+        // The veil is delayed, never imposes a minimum duration, and leaves
+        // the native header in place. Account and commerce keep skeletons.
         if (agencyKind && agencyKind !== 'account') {
             const surface=document.createElement('div');
             surface.className='sf-agency-route-line';
