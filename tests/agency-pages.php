@@ -210,7 +210,7 @@ $contact_bento_html = codela_sf_section_agency_contact_bento( $contact_bento );
 agency_page_check( str_contains( $contact_bento_html, 'cdl-contact__card--map' ) && str_contains( $contact_bento_html, 'cdl-contact__card--primary' )
     && str_contains( $contact_bento_html, '<details id="sf-agency-contact-form"' ) && !str_contains( $contact_bento_html, 'HİZMETLER' )
     && !str_contains( $contact_bento_html, 'Hangi hizmetler?' ) && !str_contains( $contact_bento_html, '&amp;marker=' ),
-    'Contact restores map and project cards, with a collapsed form and no invented office marker or services card' );
+    'Contact renders editorial map and project row, with a collapsed form and no invented office marker or services card' );
 agency_page_check( codela_sf_contact_map_point( '41.12, 29.34' ) === [ 41.12, 29.34 ]
     && codela_sf_contact_map_point( '91,29' ) === [] && codela_sf_contact_map_point( 'bad' ) === [],
     'Explicit public office coordinates are validated' );
@@ -231,8 +231,8 @@ $contact_bento_real['public_email'] = 'hello@example.org';
 $contact_bento_real['whatsapp_phone'] = '+90 555 123 45 67';
 $contact_bento_real_html = codela_sf_section_agency_contact_bento( $contact_bento_real );
 agency_page_check( str_contains( $contact_bento_real_html, 'data-agency-copy-email' ) &&
-    str_contains( $contact_bento_real_html, 'https://wa.me/905551234567' ),
-    'Configured public email and verified-format WhatsApp produce functional cards' );
+    ! str_contains( $contact_bento_real_html, 'wa.me/' ),
+    'Configured email is retained in the message sheet; no extra WhatsApp row' );
 if ( in_array( '--render=contact-bento', $argv, true ) ) {
     echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
     echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/storefront-base.css">';

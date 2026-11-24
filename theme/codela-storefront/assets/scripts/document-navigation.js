@@ -91,7 +91,12 @@
                 picture + '<div class="sf-agency-loading__detail-copy">' + intro(false) +
                 tile('scope-label') + '<div class="sf-agency-loading__tags">' + pill().repeat(4) + '</div>' +
                 tile('button','wide') + '</div></div>';
-        } else if (kind === 'services' || kind === 'contact') {
+        } else if (kind === 'contact') {
+            body = '<div class="sf-agency-loading__contact-editorial"><div class="sf-agency-loading__section-title">' + intro(false) + '</div>' +
+                '<div class="sf-agency-loading__bento-card sf-agency-loading__bento-card--map">' + pill() + tile('card-title') + tile('line') + '</div>' +
+                '<div class="sf-agency-loading__contact-rows">' +
+                ('<div class="sf-agency-loading__contact-row"><div>' + tile('card-title') + tile('line') + '</div>' + tile('button','small') + '</div>').repeat(2) + '</div></div>';
+        } else if (kind === 'services') {
             body = '<div class="sf-agency-loading__section-title">' + intro(false) + '</div>' + bentoGrid();
         } else if (kind === 'about') {
             body = '<div class="sf-agency-loading__about-head">' + intro() +

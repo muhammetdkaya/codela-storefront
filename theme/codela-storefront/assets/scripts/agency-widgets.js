@@ -125,7 +125,7 @@
         };
         summary.addEventListener('click', event => {event.preventDefault();open();});
         dialog.querySelector('[data-contact-close]')?.addEventListener('click',()=>dialog.close());
-        dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close();});
+        dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});
         dialog.addEventListener('close',()=>{summary.setAttribute('aria-expanded','false');summary.focus({preventScroll:true});});
         widget.querySelectorAll('a[href="#sf-agency-contact-form"]').forEach(link=>link.addEventListener('click',event=>{event.preventDefault();open();}));
         const anchor = () => {if(window.location.hash==='#sf-agency-contact-form')open();};
@@ -146,9 +146,9 @@
           if(window.codelaContactLeaflet)return window.codelaContactLeaflet;
           window.codelaContactLeaflet=new Promise((resolve,reject)=>{
             const css=document.createElement('link');css.rel='stylesheet';css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-            css.crossOrigin='anonymous';document.head.appendChild(css);
+            css.crossOrigin='anonymous';css.integrity='sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=';document.head.appendChild(css);
             const js=document.createElement('script');js.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-            js.crossOrigin='anonymous';js.onload=()=>window.L?.map?resolve(window.L):reject(new Error('Map unavailable'));js.onerror=reject;document.head.appendChild(js);
+            js.crossOrigin='anonymous';js.integrity='sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=';js.onload=()=>window.L?.map?resolve(window.L):reject(new Error('Map unavailable'));js.onerror=reject;document.head.appendChild(js);
           });
           return window.codelaContactLeaflet;
         };
@@ -156,9 +156,9 @@
           const center=[Number(frame.dataset.mapLat),Number(frame.dataset.mapLon)];
           const office=frame.dataset.mapOffice==='true';
           const zoom=office?14:11;
-          const map=L.map(host,{center,zoom,zoomControl:false,scrollWheelZoom:false,doubleClickZoom:false,attributionControl:true,dragging:window.matchMedia('(pointer:fine)').matches});
+          const map=L.map(host,{center,zoom,zoomControl:false,scrollWheelZoom:false,doubleClickZoom:false,attributionControl:true,dragging:window.matchMedia('(pointer:fine)').matches,touchZoom:false});
           const tiles=L.tileLayer('https://server.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{minZoom:5,maxZoom:15,attribution:'Tiles © Esri — Esri, HERE, Garmin, OpenStreetMap contributors'});
-          tiles.once('load',()=>{frame.dataset.mapReady='true';});
+          tiles.once('tileload',()=>{frame.dataset.mapReady='true';});
           tiles.addTo(map);
           const icon=L.divIcon({className:'cdl-contact__beacon',html:'<i></i><b></b>',iconSize:[24,24],iconAnchor:[12,12]});
           L.marker(office?center:[41.0082,28.9784],{icon,interactive:false}).addTo(map);
