@@ -325,7 +325,9 @@ function codela_sf_agency_project_submit(): void {
     // Only a genuinely accepted WordPress mail submission can create the receipt.
     // The receipt makes a manually typed ?codela_status=sent insufficient.
     $receipt = bin2hex( random_bytes( 16 ) );
-    set_transient( 'codela_sf_project_receipt_' . $receipt, 1, 5 * MINUTE_IN_SECONDS );
+    $summary = array_map( static fn($service) => 'Optimizasyon / Destek' === $service ? 'Bakım & Geliştirme' : $service, $services );
+    $summary[] = $time;
+    set_transient( 'codela_sf_project_receipt_' . $receipt, [ 'summary' => $summary ], 5 * MINUTE_IN_SECONDS );
     wp_safe_redirect( add_query_arg( [ 'codela_status' => 'sent', 'codela_receipt' => $receipt ], $base ) );
     exit;
 }

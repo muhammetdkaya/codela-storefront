@@ -195,7 +195,7 @@ agency_page_check( str_contains($spoofed,'data-project-form') && !str_contains($
     'Manually crafted sent query never fakes a successful project request' );
 $_GET['codela_receipt']=str_repeat('a',32);
 $confirmed = codela_sf_section_agency_project( $project_data );
-agency_page_check( str_contains($confirmed,'Talebin bize ulaştı.') &&
+agency_page_check( str_contains($confirmed,'Talebin <span class="cdl-project__title-muted">bize ulaştı.</span>') && str_contains($confirmed,'TAMAMLANDI') &&
     !str_contains($confirmed,'data-project-form'),
     'Server-confirmed-only success screen does not expose active form' );
 $_GET=$original_query;

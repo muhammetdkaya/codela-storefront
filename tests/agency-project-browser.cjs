@@ -33,6 +33,8 @@ const server=http.createServer((req,res)=>{
    const one=widget.locator('[data-project-step="1"]'),two=widget.locator('[data-project-step="2"]'),three=widget.locator('[data-project-step="3"]');
    assert(await one.isVisible() && !(await two.isVisible()) && !(await three.isVisible()));
    assert.equal(await one.locator('input[type="checkbox"]').count(),4);
+   assert.equal(await one.locator('h1').textContent(),'Hangi alanda çalışmak istersin?');
+   assert.equal(await widget.locator('.cdl-project__progress h1,.cdl-project__progress h2').count(),0,'No duplicate heading');
    const rows=await one.locator('.cdl-project__choice').evaluateAll(labels=>labels.map(label=>{
      const row=label.querySelector('input+span'),css=getComputedStyle(row),check=getComputedStyle(row,'::after');
      return {fill:css.backgroundColor,left:css.borderLeftWidth,right:css.borderRightWidth,top:css.borderTopWidth,
@@ -52,10 +54,19 @@ const server=http.createServer((req,res)=>{
    assert(await two.isVisible());
    assert.equal(await two.locator('input[name="agency_project_month"]').count(),4);
    assert.equal(await two.locator('input[name="agency_project_month"]:disabled').count(),2);
-   assert.equal(await widget.locator('.cdl-project__availability').count(),1);
+   assert.equal(await widget.locator('.cdl-project__availability').count(),0,'No repeated capacity banner');
+   assert.equal(await two.locator('h2').textContent(),'Ne zaman başlayalım?');
+   assert.equal(await two.locator('.cdl-project__slots .cdl-project__choice>span>i').count(),4);
    await two.locator('input[value="flexible"]').locator('..').click();
    await two.locator('[data-project-next]').click();
    assert(await three.isVisible());
+   const contact=three.locator('[name="agency_project_contact"]');
+   await contact.fill('05321234567');
+   assert(await contact.evaluate(el=>el.checkValidity()),'Phone accepted');
+   await contact.fill('invalid');
+   assert(!(await contact.evaluate(el=>el.checkValidity())),'Invalid contact rejected');
+   await contact.fill('test@example.com');
+   assert(await contact.evaluate(el=>el.checkValidity()),'Email accepted');
    const field=await three.locator('[name="agency_project_name"]').evaluate(el=>{const c=getComputedStyle(el);return [c.backgroundColor,c.borderTopWidth,c.borderLeftWidth,c.borderBottomWidth,c.borderRadius];});
    assert.deepEqual(field,['rgba(0, 0, 0, 0)','0px','0px','1px','0px'],'Underline-only field with Glass V2');
    assert.equal(await widget.locator('[data-project-progress-label]').textContent(),'03 / 03');
