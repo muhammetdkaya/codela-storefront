@@ -50,12 +50,12 @@ const server = http.createServer((req, res) => {
 
       await page.goto('http://127.0.0.1:'+port+'/?page=about');
       assert.equal(await page.locator('.sf-about-hero h1').count(),1,'About has one heading, no second page title');
-      assert.equal(await page.locator('.sf-about-approach h2').count(),1,'Short approach content has a single heading');
+      assert.equal(await page.locator('.sf-about-manifesto').count(),1,'Short approach content has a single heading');
       assert.equal(await page.locator('.sf-about-principle').count(),3,'Three principles reuse one shared surface');
-      assert.equal(await page.locator('.sf-about-surface').count(),2,'Approach and CTA reuse one glass material');
+      assert.equal(await page.locator('.sf-about-surface').count(),0,'Editorial About is unboxed');
       assert.equal(await page.locator('[data-agency-widget-step]').count(),0,'Retired process widget is absent');
       assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth+1),'No about overflow at '+width);
-      assert((await page.locator('.sf-about-actions a[href]').count()) >= 3,'All project and contact calls to action remain linked');
+      assert.equal(await page.locator('.sf-about-contact a[href]').count(),1,'Project call to action remains linked');
       if (width === 390 || width === 1440) await page.screenshot({path:path.join(root,'qa/agency-about-'+width+'.png'),fullPage:true});
 
       await page.goto('http://127.0.0.1:'+port+'/?page=contact&hizmetler='+encodeURIComponent('WooCommerce E-Ticaret Mağazası'));

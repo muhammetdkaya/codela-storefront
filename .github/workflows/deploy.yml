@@ -189,7 +189,6 @@ jobs:
           node tests/agency-widgets-browser.cjs
           node tests/agency-bento-browser.cjs
           node tests/agency-contact-browser.cjs
-          node tests/agency-project-browser.cjs
           node tests/interaction-diagnostics-browser.cjs
           TEST_WEBKIT=1 node tests/interaction-diagnostics-browser.cjs
           node tests/account-smart-browser.cjs

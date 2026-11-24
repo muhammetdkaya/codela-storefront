@@ -78,12 +78,10 @@ function html(enabled){
     assert.equal(m.chosen,'rgba(214, 166, 118, 0.075)',name+': selected card has restrained amber fill');
     assert.equal(m.chosenRadius,'14px',name+': selected cards are rectangular');
     assert(m.chosenTick.includes('✓'),name+': selected card has a subtle tick');
-    assert.equal((m.projectPanel.match(/linear-gradient\(/g)||[]).length,1,
-      name+': project panel uses the same one-highlight layering as Account');
-    assert.equal(m.projectPanelColor,'rgba(20, 20, 22, 0.78)',
-      name+': restrained neutral charcoal replaces purple glass');
-    assert.equal(m.projectPanelRim,'1px',name+': project panel retains a thin glass rim');
-    assert(m.projectPanelBlur.includes('blur(22px)'),name+': project panel frosted like Account');
+    assert.equal(m.projectPanel,'none',name+': editorial Project has no surrounding card');
+    assert.equal(m.projectPanelColor,'rgba(0, 0, 0, 0)',name+': transparent project panel');
+    assert.equal(m.projectPanelRim,'0px',name+': no panel border');
+    assert.equal(m.projectPanelBlur,'none',name+': no redundant panel blur');
     assert.equal(m.canvas,null,name+': no Canvas overlay');
     await page.setContent(html(false));
     const disabled=await page.evaluate(()=>{
@@ -93,8 +91,8 @@ function html(enabled){
     });
     assert.equal((disabled.buttonLayers.match(/linear-gradient\(/g)||[]).length,3,
       name+': without Glass V2 the Project CTA still uses its native glass presentation');
-    assert.equal(disabled.panelFill,'rgba(20, 20, 22, 0.78)',
-      name+': native Project glass palette remains neutral');
+    assert.equal(disabled.panelFill,'rgba(0, 0, 0, 0)',
+      name+': editorial project panel stays transparent without Glass V2');
     await page.close();
    }
    console.log(name+': refractive Agency glass, accessible contrast and disabled fallback passed');
