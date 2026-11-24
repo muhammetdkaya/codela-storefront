@@ -50,19 +50,21 @@ const server=http.createServer((req,res)=>{
    assert.equal(await one.locator('input:checked').count(),2,'Multiple services retained');
    await one.locator('[data-project-next]').click();
    assert(await two.isVisible());
-   await two.locator('input[value="Esnek takvim"]').locator('..').click();
-   await two.locator('input[value="Mevcut site yenilenecek"]').locator('..').click();
+   assert.equal(await two.locator('input[name="agency_project_month"]').count(),4);
+   assert.equal(await two.locator('input[name="agency_project_month"]:disabled').count(),2);
+   assert.equal(await widget.locator('.cdl-project__availability').count(),1);
+   await two.locator('input[value="flexible"]').locator('..').click();
    await two.locator('[data-project-next]').click();
    assert(await three.isVisible());
    const field=await three.locator('[name="agency_project_name"]').evaluate(el=>{const c=getComputedStyle(el);return [c.backgroundColor,c.borderTopWidth,c.borderLeftWidth,c.borderBottomWidth,c.borderRadius];});
    assert.deepEqual(field,['rgba(0, 0, 0, 0)','0px','0px','1px','0px'],'Underline-only field with Glass V2');
    assert.equal(await widget.locator('[data-project-progress-label]').textContent(),'03 / 03');
-   assert.equal(await widget.locator('[data-project-summary]>span').count(),4);
+   assert.equal(await widget.locator('[data-project-summary]>span').count(),3);
    await three.locator('[data-project-back]').click();
    await two.locator('[data-project-back]').click();
    assert.equal(await one.locator('input:checked').count(),2);
    await one.locator('[data-project-next]').click();
-   assert(await two.locator('input[value="Esnek takvim"]').isChecked());
+   assert(await two.locator('input[value="flexible"]').isChecked());
    await two.locator('[data-project-next]').click();
    const geometry=await widget.evaluate(el=>({overflow:document.documentElement.scrollWidth-innerWidth,
       width:el.querySelector('.cdl-project__shell').getBoundingClientRect().width,

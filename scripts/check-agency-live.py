@@ -57,9 +57,9 @@ def check_service_detail_pages() -> None:
         visited.add(parsed.path)
         html = fetch(parsed.path)
         required = [
-            "sf-agency-widget--detail", "cdl-service-detail__visual",
+            "sf-agency-widget--detail", "cdl-service-detail__tabs",
             "cdl-service-detail__scope", "cdl-service-detail__cta",
-            image, "hizmetler=",
+            "cdl-service-detail__meta", "cdl-service-detail__faq", "hizmetler=",
         ]
         missing = [marker for marker in required if marker not in html]
         heading = re.search(
@@ -67,18 +67,18 @@ def check_service_detail_pages() -> None:
         )
         heading_text = " ".join(unescape(re.sub(r'<[^>]*>', '', heading.group(1))).split()) if heading else ""
         scope = re.search(
-            r'class="cdl-service-detail__scope"[^>]*>.*?<ul\b[^>]*>(.*?)</ul>',
+            r'class="cdl-service-detail__scope"[^>]*>.*?<ol\b[^>]*>(.*?)</ol>',
             html, flags=re.S,
         )
         scope_count = len(re.findall(r'<li\b', scope.group(1))) if scope else 0
         if "cdl-service-detail__header" in html or "cdl-service-detail__back" in html:
             raise AssertionError("Duplicate service detail header remains; native theme header must own navigation")
-        if missing or heading_text != title or scope_count != 4:
+        if missing or heading_text != title or scope_count not in (3, 4):
             raise AssertionError(
                 f"Live detail {title}: heading={heading_text!r}, "
                 f"scope={scope_count}, missing={missing}"
             )
-        print(f"OK detail {title}: published page, correct image, 4 scope labels and CTA", flush=True)
+        print(f"OK detail {title}: published page, editorial scope, FAQs and CTA", flush=True)
 
 
 def check() -> None:

@@ -23,6 +23,10 @@ function get_post( $id ) {
     return $GLOBALS['query']->ID === $id ? $GLOBALS['query'] : null;
 }
 function get_option( $name, $default = false ) {
+    if ('codela_sf_project_capacity' === $name) {
+        $start = new DateTimeImmutable('first day of next month midnight', new DateTimeZone('Europe/Istanbul'));
+        return [$start->format('Y-m')=>2,$start->modify('+1 month')->format('Y-m')=>0];
+    }
     return 'codela_agency_demo_state_v1' === $name ? ( $GLOBALS['agency_state'] ?? [] ) : $default;
 }
 function get_post_meta( $id, $key, $single = true ) { return $GLOBALS['layout']; }
@@ -135,9 +139,9 @@ foreach ( $detail_reference as $variant => $source ) {
     $markup = codela_sf_section_agency_detail( $data );
     agency_page_check( str_contains($markup,'<h1') && str_contains($markup,$source['title']),
         'Service detail has accessible original page heading: '.$variant );
-    agency_page_check( str_contains($markup,$source['asset']) &&
-       str_contains($markup,esc_html($source['tag'])) && substr_count($markup,'<li>')===4,
-       'Service detail uses original photo, service tag and exact scope pills: '.$variant );
+    agency_page_check( str_contains($markup,'cdl-service-detail__meta') && str_contains($markup,'cdl-service-detail__faq') &&
+       substr_count($markup,'<li>')===3 && !str_contains($markup,'cdl-service-detail__visual'),
+       'Service detail uses editorial scope rows, delivery metadata and FAQ: '.$variant );
     agency_page_check( str_contains($markup,'hizmetler=') &&
         str_contains($markup,'Proje Başlat') && !str_contains($markup,'data:image'),
         'Service CTA sends source service to existing contact form: '.$variant );
@@ -170,10 +174,11 @@ $project_data = [
 $project_html = codela_sf_section_agency_project( $project_data );
 agency_page_check( str_contains($project_html,'data-agency-widget="project"') &&
     substr_count($project_html,'name="agency_project_service[]"')===4 &&
-    substr_count($project_html,'name="agency_project_time"')===3 &&
-    substr_count($project_html,'name="agency_project_scale"')===3 &&
+    substr_count($project_html,'name="agency_project_month"')===4 &&
+    str_contains($project_html,'2 yeni proje için müsait') &&
+    str_contains($project_html,'Kapasite henüz belirtilmedi') &&
     substr_count($project_html,'data-project-step=')===3,
-    'Project Start preserves 4 services, 3 target times and 3 scales in 2 steps' );
+    'Project Start preserves four services and configurable months in three steps' );
 agency_page_check( str_contains($project_html,'agency_project_nonce') &&
     str_contains($project_html,'agency_project_consent') &&
     str_contains($project_html,'agency_project_webpage') &&

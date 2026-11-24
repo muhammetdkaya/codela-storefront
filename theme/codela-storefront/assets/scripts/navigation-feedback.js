@@ -316,6 +316,22 @@
         const target = new URL(url, location.href);
         const type = destination(target, link);
         const agencyKind = agencyDestination(target, type);
+        // Public editorial routes use an unobtrusive line, never a fabricated
+        // page or a timed transition veil. Account and commerce keep their
+        // specialized skeletons; destination owns actual loading and history.
+        if (agencyKind && agencyKind !== 'account') {
+            const surface=document.createElement('div');
+            surface.className='sf-agency-route-line';
+            surface.dataset.sfAgency=agencyKind;
+            surface.setAttribute('role','status');
+            surface.setAttribute('aria-live','polite');
+            const label=document.createElement('span');label.textContent=config.loading||'Yükleniyor…';surface.append(label);
+            const state=pending={token:++sequence,surface,snapshots:[remember(main,['aria-busy','inert'])],focus:link||document.activeElement};
+            main.setAttribute('aria-busy','true');main.inert=true;
+            document.body.append(surface);
+            state.timer=setTimeout(()=>end(state.token,{focus:true}),10000);
+            return state.token;
+        }
         // Destination controls are an inert presentation, without outgoing product
         // data, a Woo form or a purchase handler. The next document owns commerce.
         const surface = document.createElement('div');

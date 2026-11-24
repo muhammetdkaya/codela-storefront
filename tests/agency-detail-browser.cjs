@@ -32,25 +32,28 @@ const server=http.createServer((req,res)=>{
      const detail=page.locator('.sf-agency-widget--detail');
      assert.equal(await detail.count(),1,'Only one detail section');
      assert.equal(await detail.locator('h1').count(),1,'One page headline');
-     assert.equal(await detail.locator('.cdl-service-detail__scope li').count(),4,'Four source scope labels');
+     assert.equal(await detail.locator('.cdl-service-detail__scope li').count(),3,'Three editorial scope rows');
+     assert.equal(await detail.locator('.cdl-service-detail__faq details').count(),2);
+     await detail.locator('.cdl-service-detail__faq details').nth(1).locator('summary').click();
+     assert(await detail.locator('.cdl-service-detail__faq details').nth(1).evaluate(el=>el.open));
      const s=await detail.evaluate(el=>{
        const photo=el.querySelector('.cdl-service-detail__visual img');
        const bounds=el.querySelector('.cdl-service-detail').getBoundingClientRect();
        const cta=el.querySelector('.cdl-service-detail__cta');
        const action=cta.getBoundingClientRect();
        return {background:getComputedStyle(el.querySelector('.cdl-service-detail')).backgroundColor,
-         image:photo.complete&&photo.naturalWidth===1376,
+         image:!!photo,
          overflow:document.documentElement.scrollWidth-innerWidth,
          viewX:bounds.x,viewW:bounds.width,
          buttonHeight:action.height,
          stageHeight:bounds.height,viewportHeight:innerHeight,
-         contentHeight:el.querySelector('.cdl-service-detail__content').getBoundingClientRect().height,
+         contentHeight:el.querySelector('.cdl-service-detail__editorial').getBoundingClientRect().height,
          ctaHref:cta.getAttribute('href'),
          duplicateHeader:el.querySelectorAll('.cdl-service-detail__header,.cdl-service-detail__back,.cdl-service-detail__brand').length,
          fakeChrome:el.querySelectorAll('.phone-frame,.status-bar,.bottom-nav').length
        };
      });
-     assert(s.image,'Approved source photograph loaded at '+width);
+     assert(!s.image,'No old cover image at '+width);
      assert.equal(s.background,'rgb(9, 9, 12)');
      assert(s.overflow<=1,'No horizontal overflow '+width);
      assert(Math.abs(s.viewX)<=1&&Math.abs(s.viewW-width)<=1,'Full-bleed stage '+width);
@@ -60,15 +63,10 @@ const server=http.createServer((req,res)=>{
      assert(s.ctaHref.includes('hizmetler=Web%20Tasar%C4%B1m'),'Project CTA transports service to existing form');
      assert.equal(s.duplicateHeader,0,'Native theme header is the only navigation on service detail');
      assert.equal(s.fakeChrome,0,'No duplicate fake phone UI');
-     const visual=detail.locator('.cdl-service-detail__visual');
-     const frameBefore=await visual.evaluate(el=>({width:el.clientWidth,height:el.clientHeight}));
-     await page.evaluate(()=>window.scrollTo(0,120));
-     const frameAfter=await visual.evaluate(el=>({width:el.clientWidth,height:el.clientHeight}));
-     assert.deepEqual(frameAfter,frameBefore,'Service cover must retain its crop and dimensions during scroll at '+width);
      assert.deepEqual(errors,[]);
      await page.screenshot({path:path.join(root,'qa','agency-detail-'+width+'.png'),fullPage:true});
      await page.close();
    }
-   console.log('Service details: original art and copy, native links, five viewports passed.');
+   console.log('Service details: editorial scope, native links and FAQ, five viewports passed.');
  }finally{await browser.close();await new Promise(done=>server.close(done))}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1});

@@ -50,70 +50,38 @@ function header(dock){
      return {logo:rect(document.querySelector('.sf-brand')),
        tools:rect(document.querySelector('.sf-agency-header-tools'))};
    });
-   const expectedShapes={
-      home:['hero','hero-media','intro'],
-      services:['bento--services','bento-card--feature','bento-card--strip'],
-      contact:['contact-editorial','bento-card--map','contact-rows','contact-row'],
-      detail:['detail','media','tags'],
-      about:['about-head','manifesto','principle-list'],
-      project:['project-editorial','progress','contact-rows']
-   };
    for(const route of routes){
     const snapshot=await page.evaluate(url=>{
       const token=window.codelaSFFeedback.begin({url,owner:'agency-qa'});
-      const surface=document.querySelector('.sf-skeleton'),h=document.querySelector('.sf-header');
-      const current=document.querySelector('.sf-agency-header-tools');
-      const logo=document.querySelector('.sf-brand');
+      const surface=document.querySelector('.sf-agency-route-line');
       const rect=el=>{const r=el.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height}};
-      const dock=document.querySelector('.sf-mobile-dock');
-      const layout=surface?.querySelector('.sf-agency-loading');
-      return {token,kind:surface?.dataset.sfAgency,
-       bg:surface&&getComputedStyle(surface).backgroundColor,
-       layout:layout?.outerHTML,logo:rect(logo),tools:rect(current),
-       logoVisibility:getComputedStyle(logo).visibility,
-       toolsVisibility:getComputedStyle(current).visibility,
-       accountVisibility:getComputedStyle(current.querySelector('.sf-actions')).display,
-       duplicateHeader:h.querySelectorAll('.sf-header-destination').length,
-       merchantIcons:h.querySelectorAll('.sf-cart-trigger,.sf-search-trigger').length,
-       width:surface?.getBoundingClientRect().width,scrollWidth:document.documentElement.scrollWidth,
-       dock:dock?{index:dock.style.getPropertyValue('--sf-dock-index'),
-        selection:dock.classList.contains('has-selection'),
-        active:[...dock.querySelectorAll('.is-active')].map(x=>x.dataset.dockView)}:null
-      };
+      const main=document.querySelector('#sf-content');
+      return {token,kind:surface?.dataset.sfAgency,logo:rect(document.querySelector('.sf-brand')),
+        tools:rect(document.querySelector('.sf-agency-header-tools')),height:surface?.getBoundingClientRect().height,
+        width:surface?.getBoundingClientRect().width,scrollWidth:document.documentElement.scrollWidth,
+        skeleton:!!document.querySelector('.sf-skeleton'),oldContent:getComputedStyle(main).visibility,
+        busy:main.getAttribute('aria-busy')};
     },route.url);
     assert(snapshot.token&&snapshot.kind===route.kind,'Agency route '+route.kind);
-    assert.equal(snapshot.bg,route.kind==='about'?'rgb(6, 6, 10)':'rgb(9, 9, 12)');
-    for(const marker of expectedShapes[route.kind]){
-      assert(snapshot.layout.includes('sf-agency-loading__'+marker),'Real geometry '+route.kind+':'+marker);
-    }
-    assert.equal(snapshot.duplicateHeader,0,'Never fabricate a second header');
-    assert.equal(snapshot.merchantIcons,0,'Agency header has no merchant search/cart');
-    assert.equal(snapshot.logoVisibility,'visible','Native Codela mark remains visible');
-    assert.equal(snapshot.toolsVisibility,'visible','Combined native account/menu capsule stays visible');
-    assert.notEqual(snapshot.accountVisibility,'none','Agency account icon is not hidden by dock styling');
+    assert.equal(snapshot.skeleton,false,'No fictional page layout');
+    assert.equal(snapshot.oldContent,'visible','Outgoing content remains visible');
+    assert.equal(snapshot.busy,'true');
+    assert.equal(snapshot.height,2);
+    assert(snapshot.width>=width-1&&snapshot.scrollWidth<=width+1);
     for(const key of ['logo','tools'])for(const prop of ['x','y','w','h']){
-       assert(Math.abs(snapshot[key][prop]-before[key][prop])<=1.2,
-         'Native header does not jump: '+route.kind+' '+key+'.'+prop);
+      assert(Math.abs(snapshot[key][prop]-before[key][prop])<=1.2,'Native header does not jump');
     }
-    assert(snapshot.width>=width-1&&snapshot.scrollWidth<=width+1,'No skeleton overflow at '+width);
-    if(dock){
-      const selection={home:['0','home'],services:['1','services'],contact:['2','contact']};
-      if(selection[route.kind]){
-        assert.equal(snapshot.dock.index,selection[route.kind][0],'Correct dock thumb');
-        assert(snapshot.dock.selection,'Dock selection shown');
-        assert.deepEqual(snapshot.dock.active,[selection[route.kind][1]],'Correct dock active tab');
-      }else assert.equal(snapshot.dock.selection,false,'No false dock selection');
-    }else assert.equal(snapshot.dock,null,'Disabled dock remains absent');
     await page.evaluate(()=>window.codelaSFFeedback.end());
-    assert.equal(await page.locator('.sf-skeleton').count(),0,'Owner cleanup');
-    assert.equal(await page.locator('html[data-sf-navigation-agency]').count(),0,'Agency dataset cleaned');
+    assert.equal(await page.locator('.sf-agency-route-line').count(),0);
+    assert.equal(await page.locator('#sf-content').getAttribute('aria-busy'),null);
+    assert.equal(await page.locator('#sf-content').getAttribute('inert'),null);
    }
    await page.evaluate(()=>window.codelaSFFeedback.begin({url:'https://agency.test/myaccount/'}));
    assert.equal(await page.locator('.sf-skeleton').getAttribute('data-sf-agency'),'account');
    await page.evaluate(()=>window.codelaSFFeedback.end());
    // Unlisted custom Agency page has neutral dark layout, no white jump.
    await page.evaluate(()=>window.codelaSFFeedback.begin({url:'https://agency.test/another-page/'}));
-   assert.equal(await page.locator('.sf-skeleton').getAttribute('data-sf-agency'),'page');
+   assert.equal(await page.locator('.sf-agency-route-line').getAttribute('data-sf-agency'),'page');
    await page.evaluate(()=>window.codelaSFFeedback.end());
    // Woo documents stay on the shared commerce skeleton, even on Agency sites.
    for(const url of ['https://agency.test/cart/','https://agency.test/checkout/',
@@ -129,6 +97,6 @@ function header(dock){
    assert.deepEqual(errors,[],'No page errors');
    await page.close();
   }
-  console.log('Agency skeletons: native header geometry, 6 destination layouts and dock/no-dock behavior at 2 widths.');
+  console.log('Agency route line: native header geometry, cancellation, commerce isolation and 6 routes.');
  }finally{await browser.close()}
 })().catch(e=>{console.error(e);process.exitCode=1});

@@ -24,8 +24,6 @@ function codela_sf_section_agency_project( array $data, string $type = '' ): str
         ? sanitize_text_field( wp_unslash( $_GET['hizmetler'] ) ) : '';
     $services = [ 'Web Tasarım', 'E-Ticaret', 'Özel Yazılım', 'Optimizasyon / Destek' ];
     if ( ! in_array( $chosen, $services, true ) ) { $chosen = 'Web Tasarım'; }
-    $times = [ '2–4 hafta', '1–2 ay', 'Esnek takvim' ];
-    $scales = [ 'Sıfırdan başlıyoruz', 'Mevcut site yenilenecek', 'Tasarım hazır, kodlama gerekli' ];
     $descriptions = [ 'Kurumsal veya marka odaklı, hızlı ve mobil uyumlu site.', 'Ödeme ve kargo akışı hazır, dönüşüm odaklı mağaza.', 'Yönetim panelleri, eklentiler ve API entegrasyonları.', 'Mevcut sitenin hız, güvenlik ve sürekli iyileştirmesi.' ];
     $contact = codela_sf_agency_contact_link();
     $services_url = codela_sf_agency_page_url( 'hizmetler', home_url( '/' ) );
