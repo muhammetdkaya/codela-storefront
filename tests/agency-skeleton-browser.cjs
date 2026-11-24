@@ -53,7 +53,7 @@ function header(dock){
    const expectedShapes={
       home:['hero','hero-media','intro'],
       services:['bento--services','bento-card--feature','bento-card--strip'],
-      contact:['bento--contact','bento-card--feature','bento-card--strip'],
+      contact:['account','input','choice-grid'],
       detail:['detail','media','tags'],
       about:['about-head','principles','principle-list'],
       project:['project-panel','progress','choice-grid']
