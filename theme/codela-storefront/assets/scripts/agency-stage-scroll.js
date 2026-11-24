@@ -87,7 +87,7 @@
     // new intent even when the OS does not provide a quiet interval.
     const settled=!navigationPending;
     const lowTail=wheel.used&&(wheel.lowTail||wheel.lastMagnitude<=6);
-    const renewed=lowTail&&magnitude>=12&&magnitude>=wheel.lastMagnitude*2.5;
+    const renewed=lowTail&&magnitude>=12&&magnitude>=wheel.lastMagnitude*1.7;
     if(settled&&(gap>=QUIET_MS||(wheel.used&&wheel.direction!==direction)||renewed)){
       wheel=freshWheel(now);
     }
