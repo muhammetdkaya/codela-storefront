@@ -297,21 +297,14 @@
           image.loading = 'eager';
           steps.forEach((_, index) => { if (index) prepare(index); });
         };
-        // Once the initial page has loaded, warm the two remaining visuals
-        // at low priority even when the visitor jumps directly to Process.
-        // Intersection/intent can start the same work earlier.
-        const warmWhenIdle = () => {
-          if ('requestIdleCallback' in window) window.requestIdleCallback(warm, { timeout: 1500 });
-          else window.setTimeout(warm, 250);
-        };
-        if (document.readyState === 'complete') warmWhenIdle();
-        else window.addEventListener('load', warmWhenIdle, { once: true });
+        // No page-wide warmup: approach or explicit intent owns these downloads.
+        // Old browsers without IntersectionObserver retain the load fallback.
         if ('IntersectionObserver' in window) {
           const observer = new IntersectionObserver(entries => {
             if (!entries.some(entry => entry.isIntersecting)) return;
             warm();
             observer.disconnect();
-          }, { rootMargin: '800px 0px' });
+          }, { rootMargin: '450px 0px' });
           observer.observe(widget);
         } else {
           window.addEventListener('load', warm, { once: true });

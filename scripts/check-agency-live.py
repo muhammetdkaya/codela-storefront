@@ -3,6 +3,8 @@ No credentials, email submission, write requests, or plugin settings changes.
 """
 from __future__ import annotations
 import re
+import hashlib
+import json
 import time
 import urllib.error
 import urllib.request
@@ -32,6 +34,23 @@ def fetch(path: str) -> str:
             raise RuntimeError(f"Unexpected HTTP {response.status} for {path}")
         return response.read().decode("utf-8", errors="replace")
 
+
+def check_optional_images(html: str, names: list[str]) -> None:
+    """Verify actual referenced bytes, accepting old names and new digest paths."""
+    manifest = json.loads((Path(__file__).resolve().parents[1] / 'theme/codela-storefront/config/agency-media.json').read_text())
+    urls = re.findall(r'(?:src|data-agency-stage-image)="([^"]+)"', html)
+    for name in names:
+        record = manifest['files'][name]
+        match = next((unescape(url) for url in urls if urlparse(unescape(url)).path.endswith('/' + name) or urlparse(unescape(url)).path.endswith('/' + record['git_blob'] + '.jpg')), None)
+        assert match, 'Missing optional image reference: ' + name
+        url = urljoin(BASE, match)
+        assert urlparse(url).scheme == 'https' and urlparse(url).netloc in ('codela.dev', 'raw.githubusercontent.com'), 'Unexpected image origin'
+        with urllib.request.urlopen(urllib.request.Request(url, headers={'User-Agent':'CodelaAgencySiteCheck/1.0'}), timeout=30) as response:
+            data = response.read(record['size'] + 1)
+        assert len(data) == record['size'], 'Unexpected image size: ' + name
+        digest = hashlib.sha1(('blob %d' % len(data)).encode() + bytes([0]) + data).hexdigest()
+        assert digest == record['git_blob'], 'Unexpected image bytes: ' + name
+    print('Verified optional media bytes: ' + ', '.join(names), flush=True)
 
 def check_service_detail_pages() -> None:
     """No writes. Follow the FOUR URLs rendered by live Bento, not assumed slugs."""
@@ -178,14 +197,13 @@ def check() -> None:
                     "Bakım ve geliştirme", "Keşif ve Planlama",
                     "WordPress · WooCommerce",
                     "class=\"codela-monolith\"", "codela-monolith__canvas",
-                    "codela-monolith__control", "agency-light-web.jpg",
-                    "agency-light-commerce.jpg", "agency-light-software.jpg",
-                    "agency-light-process-discovery.jpg", "#sf-agency-services",
+                    "codela-monolith__control", "#sf-agency-services",
                 )
                 missing_copy = [marker for marker in approved if marker not in home]
                 if missing_copy:
                     errors.append("Live MONA homepage not updated: " + ", ".join(missing_copy))
                 else:
+                    check_optional_images(home, ["agency-light-web.jpg", "agency-light-commerce.jpg", "agency-light-software.jpg", "agency-light-process-discovery.jpg"])
                     print("Live Studio/Bento: approved copy, architectural monolith and Bento photographs verified.", flush=True)
                 match_title = re.search(r"<title[^>]*>(.*?)</title>", home, re.I | re.S)
                 title = " ".join(unescape(match_title.group(1)).split()) if match_title else ""

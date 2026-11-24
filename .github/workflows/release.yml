@@ -48,6 +48,7 @@ jobs:
           php tests/agency-pages.php
           php tests/agency-media-slim.php
           node tests/agency-entry.cjs
+          php tests/agency-lean-assets.php
           python3 tests/starter-media.py
           node --check theme/codela-storefront/assets/scripts/product-information.js
           node --check tests/product-flow-browser.cjs

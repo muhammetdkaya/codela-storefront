@@ -598,6 +598,23 @@ add_action( 'wp_enqueue_scripts', static function() {
     }
 }, 100 );
 
+/** Remove only the general Woo frontend script on verified, non-commerce Agency pages.
+ * WordPress may still load it as a dependency of another active plugin.
+ * Never deregister Woo or remove jQuery, account, checkout or store styles.
+ */
+add_action( 'wp_enqueue_scripts', static function() {
+    if ( ! codela_sf_ready() || ! codela_sf_agency_experience() || ! is_singular( 'page' )
+        || is_search() || is_cart() || is_checkout() || is_account_page()
+        || ( function_exists( 'is_woocommerce' ) && is_woocommerce() )
+        || is_preview() ) { return; }
+    $caps = codela_sf_sections_capabilities();
+    $flags = codela_sf_agency_asset_flags();
+    if ( ! $caps['managed'] || $caps['products'] || ! $flags['widgets'] ) { return; }
+    wp_dequeue_script( 'woocommerce' );
+    wp_dequeue_script( 'wc-cart-fragments' );
+    wp_dequeue_script( 'wc-add-to-cart' );
+}, 110 );
+
 /** Enqueue only the selected optional skins, after the production base bundle.
  * Standalone /my-account/ uses its existing eager security/ready-state gate.
  * All other guest pages lazy-load Account CSS on actual account intent. */

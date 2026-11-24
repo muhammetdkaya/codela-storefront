@@ -4,10 +4,15 @@ on:
     branches: [main]
     paths: ['tools/agency-first-load.cjs','.github/workflows/agency-first-load.yml']
   workflow_dispatch:
+  workflow_run:
+    workflows: ['Deploy Codela Storefront']
+    types: [completed]
+    branches: [main]
 permissions:
   contents: read
 jobs:
   audit:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-24.04
     timeout-minutes: 7
     steps:

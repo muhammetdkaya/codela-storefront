@@ -6,8 +6,9 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Ajans ilk giriş çizgisi gerçek içerik oluştuğunda kapanır; sekme kaydı ve tüm sayfa kaynaklarının yüklenmesi beklenmez.",
-    "Ajans geçiş çizgisi 100 ms gecikmeyle gösterilir; hızlı geçişlerde gereksiz bekleme yoktur.",
-    "Ana sayfada kullanılmayan karşılama JPEG çözümlemesi kaldırıldı."
+    "Ajansın doğrulanmış içerik sayfalarında gereksiz genel WooCommerce JavaScript yükü azaltıldı; hesap ve mağaza akışları korunuyor.",
+    "Karşılama animasyonu çizim maliyetine göre kare hızını ayarlıyor ve tekrar boyutlandırmayı azaltıyor.",
+    "Çalışma süreci görselleri yalnız bölüm yaklaşınca veya ziyaretçi etkileşimiyle hazırlanıyor.",
+    "Canlı görsel doğrulaması kalıcı depolama adreslerini ve dosya bütünlüğünü destekliyor."
   ]
 }

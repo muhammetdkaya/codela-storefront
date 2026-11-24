@@ -22,6 +22,15 @@
       let elapsed = 0;
       let lastTime = 0;
       let lastDraw = 0;
+      let drawCost = 0;
+      let initialized = false;
+      const frameBudget = () => Math.min(100, Math.max(finePointer.matches ? 33 : 50, drawCost * 2.4));
+      function paint(time) {
+        const start = performance.now();
+        drawScene(time);
+        const cost = performance.now() - start;
+        drawCost = drawCost ? drawCost * .75 + cost * .25 : cost;
+      }
       let pointerX = 0;
       let pointerY = 0;
       let smoothPointerX = 0;
@@ -538,19 +547,21 @@
 
       function resize() {
         const rect = container.getBoundingClientRect();
-        width = Math.max(1, Math.round(rect.width));
-        height = Math.max(1, Math.round(rect.height));
-        dpr = Math.min(window.devicePixelRatio || 1, finePointer.matches ? 2 : 1.5);
+        const nextWidth = Math.max(1, Math.round(rect.width));
+        const nextHeight = Math.max(1, Math.round(rect.height));
+        const nextDpr = Math.min(window.devicePixelRatio || 1, finePointer.matches ? 1.5 : 1);
+        if (width === nextWidth && height === nextHeight && dpr === nextDpr && initialized) return;
+        width = nextWidth; height = nextHeight; dpr = nextDpr;
         canvas.width = Math.round(width * dpr);
         canvas.height = Math.round(height * dpr);
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         grainPattern = ctx.createPattern(grainCanvas, 'repeat');
-        drawScene(elapsed);
+        paint(isReduced ? 2.4 : elapsed);
       }
 
       function tick(now) {
         if (!lastTime) lastTime = now;
-        const dt = Math.min((now - lastTime) / 1000, 0.05);
+        const dt = Math.min((now - lastTime) / 1000, 0.1);
         lastTime = now;
 
         if (!isPaused && isVisible && !isReduced) {
@@ -562,7 +573,7 @@
           elapsed += dt;
           smoothPointerX += (pointerX - smoothPointerX) * 0.055;
           smoothPointerY += (pointerY - smoothPointerY) * 0.055;
-          if (now-lastDraw >= (finePointer.matches ? 16 : 32)) { drawScene(elapsed); lastDraw=now; }
+          if (now-lastDraw >= frameBudget()) { paint(elapsed); lastDraw=now; }
           rafId = window.requestAnimationFrame(tick);
         } else {
           rafId = 0;
@@ -570,7 +581,7 @@
       }
 
       function syncLoop() {
-        const shouldRun = !isPaused && isVisible && !isReduced && !document.hidden;
+        const shouldRun = initialized && !isPaused && isVisible && !isReduced && !document.hidden;
         if (shouldRun && !rafId) {
           lastTime = 0;
           rafId = window.requestAnimationFrame(tick);
@@ -578,8 +589,8 @@
           window.cancelAnimationFrame(rafId);
           rafId = 0;
         }
-        if (isReduced) {
-          drawScene(2.4);
+        if (isReduced && initialized && isVisible && !document.hidden) {
+          paint(2.4);
         }
       }
 
@@ -606,9 +617,9 @@
         });
       }
 
-      window.addEventListener('resize', resize);
+      window.addEventListener('resize', () => { if (initialized) resize(); }, { passive: true });
       if ('ResizeObserver' in window) {
-        const sizeObserver = new ResizeObserver(resize);
+        const sizeObserver = new ResizeObserver(() => { if (initialized) resize(); });
         sizeObserver.observe(container);
       }
       document.addEventListener('visibilitychange', syncLoop);
@@ -632,7 +643,7 @@
       requestAnimationFrame(() => requestAnimationFrame(() => {
         elapsed = 1.5;
         resize();
-        if (isReduced) drawScene(2.4);
+        initialized = true;
         container.dataset.sceneReady = 'true';
         syncLoop();
       }));

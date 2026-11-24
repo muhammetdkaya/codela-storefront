@@ -23,6 +23,7 @@ const server=http.createServer((req,res)=>{
       const page=await browser.newPage({viewport:{width,height}});
       const errors=[];page.on('pageerror',e=>errors.push(e.message));
       await page.goto('http://127.0.0.1:'+server.address().port+'/');
+      await page.locator('.codela-monolith[data-scene-ready="true"]').waitFor();
       const hero=page.locator('.codela-studio-hero');
       assert.equal(await hero.count(),1,'Exactly one isolated Studio hero');
       assert.equal(await hero.locator('h1').count(),1,'Primary headline is accessible');
