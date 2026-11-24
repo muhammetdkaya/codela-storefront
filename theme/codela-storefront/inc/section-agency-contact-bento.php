@@ -55,6 +55,7 @@ function codela_sf_section_agency_contact_bento( array $data, string $type = '' 
                 <span><strong>Konum</strong><small><?php echo $map_point ? 'Ofis konumu' : 'Genel görünüm · ofis konumu henüz belirtilmedi'; ?></small></span>
                 <a href="<?php echo esc_url( $map_link ); ?>" target="_blank" rel="noopener noreferrer" aria-label="Haritayı yeni sekmede aç" class="cdl-contact__arrow">↗</a>
               </div>
+              <a class="cdl-contact__map-credit" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a>
             </div>
             <a class="cdl-contact__card cdl-contact__card--primary" href="<?php echo esc_url( $project_href ); ?>"
                aria-label="<?php echo esc_attr( $project ? 'Proje Başlat sayfasına git' : 'Proje başlat: iletişim formuna geç' ); ?>">
@@ -97,7 +98,7 @@ function codela_sf_section_agency_contact_bento( array $data, string $type = '' 
               </a>
             <?php endif; ?>
 
-            <details id="sf-agency-contact-form" class="cdl-contact__form-toggle<?php echo ! is_email( $email ) && ! $has_whatsapp ? ' cdl-contact__form-toggle--wide' : ''; ?>"<?php echo ( $status || $selected ) ? ' open' : ''; ?>>
+            <details id="sf-agency-contact-form" class="cdl-contact__form-toggle<?php echo (bool) is_email( $email ) === $has_whatsapp ? ' cdl-contact__form-toggle--wide' : ''; ?>"<?php echo ( $status || $selected ) ? ' open' : ''; ?>>
               <summary class="cdl-contact__card cdl-contact__card--small">
                 <span class="cdl-contact__light cdl-contact__light--top" aria-hidden="true"></span>
                 <span class="cdl-contact__top"><span class="cdl-contact__small-label">İLETİŞİM FORMU</span>

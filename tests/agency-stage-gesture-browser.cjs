@@ -42,7 +42,7 @@ const first=await page.evaluate(()=>window.scrollY);
 assert(first>=695&&first<=705,'Long momentum must stop at stage 2, got '+first);
 assert.deepEqual(await page.evaluate(()=>window.__stageCalls),[{top:700,behavior:'smooth'}],'Exactly one native smooth scroll per wheel gesture');
 await wheel(55,30,3);
-await page.waitForTimeout(650);
+await page.waitForFunction(()=>Math.abs(window.scrollY-1400)<=2 && !document.documentElement.classList.contains('sf-agency-stage-moving'),{},{timeout:2200});
 const second=await page.evaluate(()=>window.scrollY);
 assert(second>=1395&&second<=1405,'A new discrete gesture must reach stage 3: '+second);
 await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));

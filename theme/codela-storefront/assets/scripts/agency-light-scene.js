@@ -554,6 +554,11 @@
         lastTime = now;
 
         if (!isPaused && isVisible && !isReduced) {
+          // Keep the last painted image while native stage scrolling owns the frame.
+          if (document.documentElement.classList.contains('sf-agency-stage-moving')) {
+            rafId = window.requestAnimationFrame(tick);
+            return;
+          }
           elapsed += dt;
           smoothPointerX += (pointerX - smoothPointerX) * 0.055;
           smoothPointerY += (pointerY - smoothPointerY) * 0.055;
