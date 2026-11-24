@@ -132,13 +132,34 @@
     io.observe(target);
   };
 
-  const grid = document.querySelector('.sf-agency-widget--bento .cdl-bento__grid');
+  const wideArt = window.matchMedia('(min-width: 740px)');
   document.querySelectorAll('.sf-agency-widget--bento .cdl-bento__card').forEach(card=>{
+    const grid=card.closest('.cdl-bento__grid');
     const kind = card.classList.contains('cdl-bento__card--web')?'web':
       card.classList.contains('cdl-bento__card--commerce')?'ecom':
       card.classList.contains('cdl-bento__card--software')?'ozel':null;
     if (!kind) return; // The reference has no photo or SVG effect on the support strip.
     const svg=attach(card,kind);
+    const art=card.querySelector('.cdl-bento__photo,.cdl-bento__visual');
+    if (!svg || !art) return;
+    // Match the image element's layout box, rather than the card's box.
+    // contain/right-center uses xMaxYMid meet; mobile cover uses center slice.
+    const align=()=>{
+      svg.setAttribute('preserveAspectRatio',wideArt.matches?'xMaxYMid meet':'xMidYMid slice');
+      const values=[['x',art.offsetLeft],['y',art.offsetTop],['w',art.offsetWidth],['h',art.offsetHeight]];
+      for (const [key,value] of values) {
+        const name='--cdl-art-'+key,css=value+'px';
+        if (card.style.getPropertyValue(name)!==css) card.style.setProperty(name,css);
+      }
+      card.dataset.cdlArtAligned='true';
+    };
+    align();
+    art.addEventListener('load',align);
+    if ('ResizeObserver' in window) {
+      const resize=new ResizeObserver(align);
+      resize.observe(art);resize.observe(card);
+    } else window.addEventListener('resize',align,{passive:true});
+    wideArt.addEventListener?.('change',align);
     observe(card,svg,kind);
     card.addEventListener('pointerenter', e=>{
       if (e.pointerType==='mouse' || e.pointerType==='pen') {
@@ -158,10 +179,11 @@
       const x=event.clientX,y=event.clientY;
       pointerFrame=requestAnimationFrame(()=>{
         pointerFrame=0;
-        const r=card.getBoundingClientRect();
+        const r=(wideArt.matches?art:card).getBoundingClientRect();
         if (!r.width || !r.height) return;
-        card.style.setProperty('--cdl-light-x',((x-r.left)/r.width*100).toFixed(1)+'%');
-        card.style.setProperty('--cdl-light-y',((y-r.top)/r.height*100).toFixed(1)+'%');
+        const clamp=value=>Math.max(0,Math.min(100,value));
+        card.style.setProperty('--cdl-light-x',clamp((x-r.left)/r.width*100).toFixed(1)+'%');
+        card.style.setProperty('--cdl-light-y',clamp((y-r.top)/r.height*100).toFixed(1)+'%');
       });
     },{passive:true});
   });

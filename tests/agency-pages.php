@@ -285,8 +285,10 @@ if ( in_array( '--render=bento', $argv, true ) ) {
     echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
     echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/storefront-base.css">';
     echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/agency.css">';
+    echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/agency-reference-light.css">';
     echo '</head><body class="home"><main class="sf-content"><div class="codela-page-layout">' . $local_bento . '</div></main>';
-    echo '<script src="/theme/codela-storefront/assets/scripts/agency-widgets.js"></script></body></html>';
+    echo '<script src="/theme/codela-storefront/assets/scripts/agency-widgets.js"></script>';
+    echo '<script src="/theme/codela-storefront/assets/scripts/agency-reference-light.js"></script></body></html>';
     exit;
 }
 

@@ -56,3 +56,39 @@
   .sf-agency-widget--detail .cdl-service-detail__visual .cdl-reference-light,
   .sf-agency-widget--process .sf-agency-process-stage-visual .cdl-reference-light{transition:none!important;transform:none!important}
 }
+
+/* Image-specific SVGs must use exactly the same frame, fit and edge fade
+   as the newly right-aligned desktop photographs. Keep mobile cover. */
+.sf-agency-widget--bento .cdl-bento__card .cdl-reference-light{
+  overflow:hidden;transform-origin:center;
+}
+.sf-agency-widget--bento .cdl-bento__card:is(:hover,:focus-visible) .cdl-reference-light{
+  transform:none;
+}
+@media(max-width:739px){
+  .sf-agency-widget--bento .cdl-bento__card--web:hover .cdl-reference-light{
+    transform:scale(1.03);transition:transform .5s cubic-bezier(.2,.7,.2,1);
+  }
+}
+@media(min-width:740px){
+  .sf-agency-widget--bento .cdl-bento__card .cdl-reference-light,
+  .sf-agency-widget--bento .cdl-bento__card[data-cdl-art-aligned]::before{
+    inset:auto;left:var(--cdl-art-x,0px);top:var(--cdl-art-y,0px);
+    width:var(--cdl-art-w,0px);height:var(--cdl-art-h,0px);
+    -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 var(--cdl-art-fade,26%),#000 100%);
+    mask-image:linear-gradient(90deg,transparent 0%,#000 var(--cdl-art-fade,26%),#000 100%);
+  }
+  .sf-agency-widget--bento .cdl-bento__card--web{--cdl-art-fade:24%}
+  .sf-agency-widget--bento .cdl-bento__card:is(:hover,:focus-visible) .cdl-reference-light{
+    transform:none;transition:none;
+  }
+  .sf-agency-widget--bento .cdl-bento__grid.cdl-light-has-focus .cdl-bento__card:not(.cdl-light-focused){
+    opacity:.90;filter:none;transform:none;
+  }
+  .sf-agency-widget--bento .cdl-bento__grid.cdl-light-has-focus .cdl-bento__card.cdl-light-focused{
+    opacity:1;filter:none;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .sf-agency-widget--bento .cdl-bento__card .cdl-reference-light{transform:none!important;transition:none!important}
+}

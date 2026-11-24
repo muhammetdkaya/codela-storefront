@@ -29,6 +29,8 @@ const server=http.createServer((req,res)=>{
       assert.equal(await hero.locator('h2').textContent(),'Uzmanlık Alanları');
       assert.equal(await hero.locator('.cdl-bento__card').count(),4,'Exactly 4 original services');
       assert.equal(await hero.getByRole('link').count(),4,'Four accessible native navigation links');
+      await hero.locator('.cdl-reference-light').first().waitFor({state:'attached'});
+      await page.waitForFunction(()=>[...document.querySelectorAll('.cdl-bento__photo,.cdl-bento__visual')].every(img=>img.complete&&img.naturalWidth>0));
       const snapshot=await hero.evaluate(el=>{
         const cards=[...el.querySelectorAll('.cdl-bento__card')].map(e=>({height:e.getBoundingClientRect().height,
           width:e.getBoundingClientRect().width,href:e.getAttribute('href'),text:e.innerText}));
@@ -37,7 +39,12 @@ const server=http.createServer((req,res)=>{
         const section=el.querySelector('.cdl-bento').getBoundingClientRect();
         const art=[photo,...illustrations].map(img=>{
           const box=img.getBoundingClientRect(),card=img.parentElement.getBoundingClientRect(),style=getComputedStyle(img);
-          return {fit:style.objectFit,position:style.objectPosition,width:box.width,cardWidth:card.width,
+          const overlay=img.parentElement.querySelector('.cdl-reference-light');
+          const fx=overlay.getBoundingClientRect();
+          return {overlayFit:overlay.getAttribute('preserveAspectRatio'),
+            overlayError:Math.max(Math.abs(fx.left-box.left),Math.abs(fx.top-box.top),Math.abs(fx.width-box.width),Math.abs(fx.height-box.height)),
+            overlayMask:getComputedStyle(overlay).maskImage,
+            fit:style.objectFit,position:style.objectPosition,width:box.width,cardWidth:card.width,
             right:card.right-box.right,mask:style.maskImage,aspect:img.naturalWidth/img.naturalHeight};
         });
         return {cards,art,photo:photo.complete&&photo.naturalWidth>0,illustrations:illustrations.map(img=>img.complete&&img.naturalWidth>0),background:getComputedStyle(el.querySelector('.cdl-bento')).backgroundColor,
@@ -54,7 +61,14 @@ const server=http.createServer((req,res)=>{
           assert(Math.abs(art.right)<=2,'Artwork is anchored to the right side');
           assert(art.width<art.cardWidth*.74,'Text and image have distinct space');
           assert(art.mask.includes('linear-gradient'),'Artwork edge blends into glass');
-        }else assert.equal(art.fit,'cover','Existing mobile image treatment is preserved');
+          assert.equal(art.overlayFit,'xMaxYMid meet','SVG uses same image fit and anchor');
+          assert(art.overlayError<=2,'Light overlay must exactly align to photograph: '+JSON.stringify(art));
+          assert.equal(art.overlayMask,art.mask,'Matching image and light edge fade');
+        }else{
+          assert.equal(art.fit,'cover','Existing mobile image treatment is preserved');
+          assert.equal(art.overlayFit,'xMidYMid slice','Mobile SVG matches full-bleed cover');
+          assert(art.overlayError<=2,'Mobile overlay also matches photo');
+        }
       }
       assert.equal(snapshot.background,'rgb(9, 9, 12)','Obsidian matches MONA welcome');
       assert(snapshot.overflow<=1,'No horizontal scrollbar at '+width);
@@ -66,6 +80,23 @@ const server=http.createServer((req,res)=>{
       await page.screenshot({path:path.join(root,'qa','agency-bento-'+width+'.png'),fullPage:true});
       await page.close();
     }
+    const hover=await browser.newPage({viewport:{width:1194,height:750}});
+    await hover.goto('http://127.0.0.1:'+server.address().port+'/');
+    await hover.waitForFunction(()=>document.querySelectorAll('.cdl-reference-light').length===3);
+    for(const variant of ['web','commerce','software']){
+      const card=hover.locator('.cdl-bento__card--'+variant);
+      await card.hover();
+      await hover.waitForTimeout(520);
+      const result=await card.evaluate(el=>{
+        const photo=el.querySelector('.cdl-bento__photo,.cdl-bento__visual'),fx=el.querySelector('.cdl-reference-light');
+        const a=photo.getBoundingClientRect(),b=fx.getBoundingClientRect();
+        return {delta:Math.max(Math.abs(a.x-b.x),Math.abs(a.y-b.y),Math.abs(a.width-b.width),Math.abs(a.height-b.height)),
+          transform:getComputedStyle(fx).transform};
+      });
+      assert(result.delta<=2,'Hover cannot move the light off its artwork: '+variant);
+      assert.equal(result.transform,'none','No independent overlay zoom');
+    }
+    await hover.close();
     console.log('MONA Services Bento: three photographic visuals, an image-free support strip, links and seven responsive widths passed.');
   }finally{
     await browser.close();
