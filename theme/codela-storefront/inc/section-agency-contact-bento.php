@@ -28,7 +28,7 @@ function codela_sf_section_agency_contact_bento( array $data, string $type = '' 
     $id = 'cdl-contact-' . sanitize_html_class( (string) ( $data['id'] ?? 'agency' ) );
     // Public map configuration is explicit page metadata, never visitor location
     // or a private WooCommerce billing/store address.
-    $map_point = codela_sf_contact_map_point( function_exists( 'get_queried_object_id' ) ? get_post_meta( get_queried_object_id(), 'codela_contact_map_coordinates', true ) : '' );
+    $map_point = codela_sf_contact_map_point( function_exists( 'get_queried_object_id' ) && function_exists( 'get_post_meta' ) ? get_post_meta( get_queried_object_id(), 'codela_contact_map_coordinates', true ) : '' );
     $map_bbox = $map_point ? implode( ',', [ max( -180, $map_point[1] - .018 ), max( -85, $map_point[0] - .011 ), min( 180, $map_point[1] + .018 ), min( 85, $map_point[0] + .011 ) ] ) : '25.5,35.5,45,42.5';
     $map_url = 'https://www.openstreetmap.org/export/embed.html?bbox=' . rawurlencode( $map_bbox ) . '&layer=mapnik';
     $map_link = 'https://www.openstreetmap.org/#map=6/39/35';
@@ -175,21 +175,3 @@ function codela_sf_contact_map_point( $value ): array {
     $lat = (float) $match[1]; $lon = (float) $match[2];
     return abs( $lat ) <= 85 && abs( $lon ) <= 180 ? [ $lat, $lon ] : [];
 }
-
-add_action( 'add_meta_boxes_page', static function( $post ) {
-    $layout = get_post_meta( $post->ID, '_codela_page_layout', true );
-    if ( ! str_contains( (string) $post->post_content . ( is_string( $layout ) ? $layout : '' ), 'section-agency-contact-bento' ) ) { return; }
-    add_meta_box( 'codela_contact_map', 'Codela · Harita konumu', static function( $page ) {
-        wp_nonce_field( 'codela_contact_map', 'codela_contact_map_nonce' );
-        echo '<p>Yalnızca kamuya açık ofis konumunun enlem ve boylamını virgülle ayırarak girin. Boş bırakırsanız işaretsiz genel harita gösterilir.</p>';
-        echo '<label for="codela_contact_map_coordinates">Enlem, boylam</label><input class="widefat" id="codela_contact_map_coordinates" name="codela_contact_map_coordinates" value="' . esc_attr( get_post_meta( $page->ID, 'codela_contact_map_coordinates', true ) ) . '">';
-    }, 'page', 'side' );
-} );
-add_action( 'save_post_page', static function( $post_id ) {
-    if ( ! isset( $_POST['codela_contact_map_nonce'], $_POST['codela_contact_map_coordinates'] ) || ! is_string( $_POST['codela_contact_map_nonce'] ) || ! is_string( $_POST['codela_contact_map_coordinates'] )
-        || ! wp_verify_nonce( wp_unslash( $_POST['codela_contact_map_nonce'] ), 'codela_contact_map' ) || ! current_user_can( 'edit_post', $post_id ) || wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) { return; }
-    $raw = trim( wp_unslash( $_POST['codela_contact_map_coordinates'] ) );
-    if ( '' === $raw ) { delete_post_meta( $post_id, 'codela_contact_map_coordinates' ); return; }
-    $point = codela_sf_contact_map_point( $raw );
-    if ( $point ) { update_post_meta( $post_id, 'codela_contact_map_coordinates', implode( ',', $point ) ); }
-} );

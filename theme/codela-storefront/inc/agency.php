@@ -318,3 +318,22 @@ function codela_sf_agency_project_submit(): void {
 }
 add_action( 'admin_post_codela_sf_agency_project', 'codela_sf_agency_project_submit' );
 add_action( 'admin_post_nopriv_codela_sf_agency_project', 'codela_sf_agency_project_submit' );
+
+/** Public map editor hooks belong to WordPress bootstrap, not section rendering. */
+add_action( 'add_meta_boxes_page', static function( $post ) {
+    $layout = get_post_meta( $post->ID, '_codela_page_layout', true );
+    if ( ! str_contains( (string) $post->post_content . ( is_string( $layout ) ? $layout : '' ), 'section-agency-contact-bento' ) ) { return; }
+    add_meta_box( 'codela_contact_map', 'Codela · Harita konumu', static function( $page ) {
+        wp_nonce_field( 'codela_contact_map', 'codela_contact_map_nonce' );
+        echo '<p>Yalnızca kamuya açık ofis konumunun enlem ve boylamını virgülle ayırarak girin. Boş bırakırsanız işaretsiz genel harita gösterilir.</p>';
+        echo '<label for="codela_contact_map_coordinates">Enlem, boylam</label><input class="widefat" id="codela_contact_map_coordinates" name="codela_contact_map_coordinates" value="' . esc_attr( get_post_meta( $page->ID, 'codela_contact_map_coordinates', true ) ) . '">';
+    }, 'page', 'side' );
+} );
+add_action( 'save_post_page', static function( $post_id ) {
+    if ( ! isset( $_POST['codela_contact_map_nonce'], $_POST['codela_contact_map_coordinates'] ) || ! is_string( $_POST['codela_contact_map_nonce'] ) || ! is_string( $_POST['codela_contact_map_coordinates'] )
+        || ! wp_verify_nonce( wp_unslash( $_POST['codela_contact_map_nonce'] ), 'codela_contact_map' ) || ! current_user_can( 'edit_post', $post_id ) || wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) { return; }
+    $raw = trim( wp_unslash( $_POST['codela_contact_map_coordinates'] ) );
+    if ( '' === $raw ) { delete_post_meta( $post_id, 'codela_contact_map_coordinates' ); return; }
+    $point = codela_sf_contact_map_point( $raw );
+    if ( $point ) { update_post_meta( $post_id, 'codela_contact_map_coordinates', implode( ',', $point ) ); }
+} );
