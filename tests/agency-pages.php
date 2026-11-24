@@ -43,7 +43,7 @@ function wp_nonce_field( $action, $field = '_wpnonce' ) { echo '<input type="hid
 function checked( $value, $expected ) { if ( $value === $expected ) echo ' checked="checked"'; }
 function get_privacy_policy_url() { return 'https://codela.test/gizlilik/'; }
 function wp_unslash( $value ) { return $value; }
-function get_transient( $key ) { return $key === 'codela_sf_project_receipt_' . str_repeat( 'a', 32 ); }
+function get_transient( $key ) { return $key === 'codela_sf_project_receipt_' . str_repeat( 'a', 32 ) ? ['summary'=>['Web Tasarım','Esnek takvim']] : false; }
 function is_email( $value ) { return (bool) filter_var( $value, FILTER_VALIDATE_EMAIL ); }
 function sanitize_key( $value ) { return preg_replace( '/[^a-z0-9_-]/', '', strtolower( $value ) ); }
 function get_template_directory_uri() { return 'https://codela.test/wp-content/themes/codela-storefront'; }
