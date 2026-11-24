@@ -1,6 +1,6 @@
 <?php
 /**
- * MONA phase 5 — source-matched two-step Project Start.
+ * MONA phase 5 — source-matched three-step Project Start.
  * Prototype confirmation replaced with actual WP admin-post result.
  * No fake phone frame, background submission, or invented delivery claim.
  */
@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 function codela_sf_section_agency_project( array $data, string $type = '' ): string {
     $id = 'cdl-project-' . sanitize_html_class( (string) ( $data['id'] ?? 'start' ) );
     $title = trim( (string) ( $data['title'] ?? '' ) );
-    if ( in_array( $title, [ '', 'Neye odaklanıyoruz?', 'Neye odaklanıyoruz?' ], true ) ) { $title = 'Projeni netleştirelim.'; }
+    if ( in_array( $title, [ '', 'Neye odaklanıyoruz?' ], true ) ) { $title = 'Projeni netleştirelim.'; }
     $lead = 'Üç kısa adımda kapsamı belirle, birlikte bir yol haritası çıkaralım.';
     $status = isset( $_GET['codela_status'] ) && is_string( $_GET['codela_status'] )
         ? sanitize_key( wp_unslash( $_GET['codela_status'] ) ) : '';
@@ -61,7 +61,7 @@ function codela_sf_section_agency_project( array $data, string $type = '' ): str
                 <div class="cdl-project__step" data-project-step="1">
                   <div class="cdl-project__heading"><h2>Hangi alanda desteğe ihtiyacın var?</h2><p>Birden fazla seçebilirsin.</p></div>
                   <fieldset class="cdl-project__fieldset">
-                    <legend>Hizmet seçimi</legend>
+                    <legend class="screen-reader-text">Hizmet seçimi</legend>
                     <div class="cdl-project__choices cdl-project__choices--services">
                       <?php foreach ( $services as $index => $service ) : ?>
                         <label class="cdl-project__choice">

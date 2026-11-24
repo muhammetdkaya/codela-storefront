@@ -96,18 +96,16 @@
         } else if (kind === 'services') {
             body = '<div class="sf-agency-loading__section-title">' + intro(false) + '</div>' + bentoGrid();
         } else if (kind === 'about') {
-            body = '<div class="sf-agency-loading__about-head">' + intro() +
-                '<div class="sf-agency-loading__about-actions">' + tile('button') + tile('button','secondary') + '</div></div>' +
-                '<div class="sf-agency-loading__principles">' +
-                tile('eyebrow') + '<div class="sf-agency-loading__principle-list">' +
-                ('<div class="sf-agency-loading__principle">' + tile('card-title') + tile('line') + '</div>').repeat(3) +
-                '</div></div>';
-        } else if (kind === 'project') {
-            body = '<div class="sf-agency-loading__project-panel">' +
-                tile('eyebrow') + tile('progress') + '<div class="sf-agency-loading__project-heading">' + intro(false) + '</div>' +
-                '<div class="sf-agency-loading__choice-grid">' + tile('choice').repeat(4) + '</div>' +
-                '<div class="sf-agency-loading__choice-grid sf-agency-loading__choice-grid--three">' + tile('choice').repeat(3) +
+            body = '<div class="sf-agency-loading__editorial"><div class="sf-agency-loading__about-head">' + intro() + '</div>' +
+                '<div class="sf-agency-loading__manifesto">' + tile('line').repeat(3) + '</div>' +
+                '<div class="sf-agency-loading__principle-list">' +
+                ('<div class="sf-agency-loading__contact-row"><div>' + tile('card-title') + tile('line') + '</div></div>').repeat(3) +
                 '</div>' + tile('button') + '</div>';
+        } else if (kind === 'project') {
+            body = '<div class="sf-agency-loading__editorial sf-agency-loading__project-editorial">' + intro(false) + tile('progress') +
+                tile('card-title') + tile('line') + '<div class="sf-agency-loading__contact-rows">' +
+                ('<div class="sf-agency-loading__contact-row"><div>' + tile('card-title') + tile('line') + '</div>' + tile('button','small') + '</div>').repeat(4) +
+                '</div>' + tile('button','wide') + '</div>';
         } else if (kind === 'account') {
             const guest = !document.body.classList.contains('logged-in');
             body = '<div class="sf-agency-loading__account">' +

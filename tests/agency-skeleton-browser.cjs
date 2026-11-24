@@ -55,8 +55,8 @@ function header(dock){
       services:['bento--services','bento-card--feature','bento-card--strip'],
       contact:['contact-editorial','bento-card--map','contact-rows','contact-row'],
       detail:['detail','media','tags'],
-      about:['about-head','principles','principle-list'],
-      project:['project-panel','progress','choice-grid']
+      about:['about-head','manifesto','principle-list'],
+      project:['project-editorial','progress','contact-rows']
    };
    for(const route of routes){
     const snapshot=await page.evaluate(url=>{
