@@ -21,10 +21,11 @@
     stages.forEach((element,i)=>{if(top(element)<=point)index=i;});
     return index;
   };
-  // Inter-event quiet period is NOT a release timer. A consumed gesture must
-  // also wait for the stage navigation to finish before another can start.
-  const QUIET_MS=240;
-  let wheel={lastAt:-Infinity,used:false,delta:0,direction:0};
+  // A consumed gesture is held only while navigation or the same momentum
+  // burst continues. Small first samples of a new swipe count after a pause.
+  const QUIET_MS=95;
+  const freshWheel=(lastAt=-Infinity)=>({lastAt,used:false,delta:0,direction:0,lastMagnitude:0,lowTail:false});
+  let wheel=freshWheel();
   let navigationPending=false;
   let touch=null;
   const targetFor=direction=>{
@@ -78,11 +79,21 @@
     // events and unrelated controls cannot extend the wheel session.
     const now=performance.now(),gap=now-wheel.lastAt;
     const pixels=event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?viewport():1);
-    const newImpulse=gap>=100&&Math.abs(pixels)>=18;
-    if(!navigationPending&&(gap>QUIET_MS||newImpulse||(wheel.used&&wheel.direction!==direction))){
-      wheel={lastAt:now,used:false,delta:0,direction:0};
+    const magnitude=Math.abs(pixels);
+    // A precision touchpad starts a new swipe with very small samples. Do not
+    // require its FIRST sample to meet the stage threshold, or every following
+    // sample extends the old lock and the page remains stuck.
+    // A decayed momentum tail followed by a renewed acceleration also marks
+    // new intent even when the OS does not provide a quiet interval.
+    const settled=!navigationPending;
+    const lowTail=wheel.used&&(wheel.lowTail||wheel.lastMagnitude<=6);
+    const renewed=lowTail&&magnitude>=12&&magnitude>=wheel.lastMagnitude*2.5;
+    if(settled&&(gap>=QUIET_MS||(wheel.used&&wheel.direction!==direction)||renewed)){
+      wheel=freshWheel(now);
     }
     wheel.lastAt=now;
+    if(wheel.used&&magnitude<=6)wheel.lowTail=true;
+    wheel.lastMagnitude=magnitude;
     if(!event.cancelable)return;
     if(wheel.used||navigationPending){
       // Prevent a long momentum tail from natively scrolling past our target.

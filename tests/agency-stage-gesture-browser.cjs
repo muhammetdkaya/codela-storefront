@@ -72,7 +72,35 @@ await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
  await page.waitForTimeout(150);
  await page.mouse.wheel(0,120);
  await page.waitForFunction(()=>Math.abs(window.scrollY-1400)<=2&&!document.documentElement.classList.contains('sf-agency-stage-moving'),{},{timeout:2200});
- console.log('Agency wheel: momentum, new gesture, fixed pointer over track, idle reset passed.');
+ // Trackpad-specific repro: the second swipe starts below the 18px
+ // threshold after a short pause, then accelerates. The old lock swallowed it.
+ await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+ await page.waitForTimeout(300);
+ await page.evaluate(async()=>{
+   const dispatch=delta=>document.elementFromPoint(500,300).dispatchEvent(new WheelEvent('wheel',{bubbles:true,cancelable:true,deltaY:delta,deltaMode:0}));
+   dispatch(35);
+   for(let i=0;i<35;i++){await new Promise(r=>setTimeout(r,25));dispatch(24);}
+ });
+ await page.waitForFunction(()=>Math.abs(window.scrollY-700)<=2&&!document.documentElement.classList.contains('sf-agency-stage-moving'),{},{timeout:2200});
+ await page.waitForTimeout(130);
+ await page.evaluate(async()=>{
+   for(const d of [2,4,7,11,17,24]) {
+     document.elementFromPoint(500,300).dispatchEvent(new WheelEvent('wheel',{bubbles:true,cancelable:true,deltaY:d,deltaMode:0}));
+     await new Promise(r=>setTimeout(r,16));
+   }
+ });
+ await page.waitForFunction(()=>Math.abs(window.scrollY-1400)<=2&&!document.documentElement.classList.contains('sf-agency-stage-moving'),{},{timeout:2200});
+ // A continuous momentum tail can overlap a deliberate new gesture.
+ await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+ await page.waitForTimeout(300);
+ await page.evaluate(async()=>{
+   const dispatch=delta=>document.elementFromPoint(500,300).dispatchEvent(new WheelEvent('wheel',{bubbles:true,cancelable:true,deltaY:delta,deltaMode:0}));
+   dispatch(40);
+   for(let i=0;i<35;i++){await new Promise(r=>setTimeout(r,25));dispatch(20);}
+   for(const d of [9,6,4,3,2,2,4,7,17,25]){await new Promise(r=>setTimeout(r,16));dispatch(d);}
+ });
+ await page.waitForFunction(()=>Math.abs(window.scrollY-1400)<=2&&!document.documentElement.classList.contains('sf-agency-stage-moving'),{},{timeout:2200});
+ console.log('Agency wheel: momentum, gentle new touchpad swipe, renewed acceleration, stationary pointer passed.');
 await page.close();
 }finally{await browser.close();await new Promise(done=>server.close(done));}
 })().catch(e=>{console.error(e);process.exitCode=1});
