@@ -137,9 +137,9 @@ foreach ( $detail_reference as $variant => $source ) {
             static fn($i, $label)=>['id'=>'scope-'.$i,'enabled'=>true,'title'=>$label,'body'=>''],
             array_keys($source['labels']),$source['labels'] ) ];
     $markup = codela_sf_section_agency_detail( $data );
-    agency_page_check( str_contains($markup,'<h1') && str_contains($markup,$source['title']),
+    agency_page_check( str_contains($markup,'<h1') && str_contains($markup,esc_html($variant==='support'?'Bakım & Geliştirme':$source['title'])),
         'Service detail has accessible original page heading: '.$variant );
-    agency_page_check( str_contains($markup,'cdl-service-detail__meta') && str_contains($markup,'cdl-service-detail__faq') &&
+    agency_page_check( str_contains($markup,'cdl-service-detail__meta') && str_contains($markup,'cdl-service-detail__faq') && str_contains($markup,'cdl-service-detail__manifesto') && str_contains($markup,'cdl-service-detail__title-muted') &&
        substr_count($markup,'<li>')===3 && !str_contains($markup,'cdl-service-detail__visual'),
        'Service detail uses editorial scope rows, delivery metadata and FAQ: '.$variant );
     agency_page_check( str_contains($markup,'hizmetler=') &&

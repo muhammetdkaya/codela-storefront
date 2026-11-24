@@ -44,7 +44,7 @@ def check_service_detail_pages() -> None:
         ("Web Tasarım", "agency-light-web.jpg"),
         ("E-Ticaret", "agency-light-commerce.jpg"),
         ("Özel Yazılım", "agency-light-software.jpg"),
-        ("Optimizasyon / Destek", "mona-studio-hero.jpg"),
+        ("Bakım & Geliştirme", "mona-studio-hero.jpg"),
     ]
     if len(hrefs) != 4:
         raise AssertionError(f"Live homepage has {len(hrefs)} Bento service links, expected 4")
@@ -59,11 +59,11 @@ def check_service_detail_pages() -> None:
         required = [
             "sf-agency-widget--detail", "cdl-service-detail__tabs",
             "cdl-service-detail__scope", "cdl-service-detail__cta",
-            "cdl-service-detail__meta", "cdl-service-detail__faq", "hizmetler=",
+            "cdl-service-detail__meta", "cdl-service-detail__faq", "cdl-service-detail__manifesto", "hizmetler=",
         ]
         missing = [marker for marker in required if marker not in html]
         heading = re.search(
-            r'<h1\b[^>]*id="codela-detail-[^"]+"[^>]*>(.*?)</h1>', html, flags=re.S,
+            r'<h1\b[^>]*id="codela-detail-[^"]+"[^>]*>\s*<span class="cdl-service-detail__title-main">(.*?)</span>', html, flags=re.S,
         )
         heading_text = " ".join(unescape(re.sub(r'<[^>]*>', '', heading.group(1))).split()) if heading else ""
         scope = re.search(

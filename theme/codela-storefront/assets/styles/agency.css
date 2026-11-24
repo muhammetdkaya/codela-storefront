@@ -2779,36 +2779,58 @@ body:not(.home):has(.sf-shell) .codela-page-layout > .sf-agency-widget--detail:f
 .sf-agency-widget--contact-bento .cdl-contact__map-live{pointer-events:none;}
 .sf-agency-widget--contact-bento [data-map-ready="true"] .cdl-contact__map-live{pointer-events:auto;}
 
-/* Editorial detail / native 404 — 0.1.408 */
-.sf-agency-widget--detail .cdl-service-detail{align-items:flex-start;padding:clamp(22px,4svh,42px) 20px 40px}
+/* Editorial detail — approved reference, shared rhythm with About. */
+.sf-agency-widget--detail .cdl-service-detail{align-items:flex-start;padding:clamp(22px,4svh,42px) 20px 52px}
 .sf-agency-widget--detail .cdl-service-detail__shell{flex:0 1 696px;width:min(100%,696px);max-width:696px;margin:0 auto}
 .sf-agency-widget--detail .cdl-service-detail__editorial{width:100%;display:block}
-.sf-agency-widget--detail .cdl-service-detail__tabs{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px}
-.sf-agency-widget--detail .cdl-service-detail__tabs a{display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border:1px solid #ffffff1c;border-radius:999px;color:#b6b0bf;font-size:12px;text-decoration:none}
-.sf-agency-widget--detail .cdl-service-detail__tabs a[aria-current]{border-color:#d3a4808f;background:#d3a48026;color:#f9e6d5}
-.sf-agency-widget--detail .cdl-service-detail__eyebrow,.sf-agency-widget--detail .cdl-service-detail__meta small{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#aaa4ad;font-weight:600}
-.sf-agency-widget--detail .cdl-service-detail__eyebrow{margin-bottom:8px}
-.sf-agency-widget--detail .cdl-service-detail__eyebrow::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#d3a480;margin-right:8px;vertical-align:2px}
-.sf-agency-widget--detail .cdl-service-detail__copy>h1{font-size:clamp(30px,4.8vw,44px);line-height:1.08;margin:0}
-.sf-agency-widget--detail .cdl-service-detail__copy>p{font-size:14px;line-height:1.5;max-width:520px;margin:10px 0 20px!important}
-.sf-agency-widget--detail .cdl-service-detail__meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:13px 0;border-block:1px solid #ffffff17;margin:20px 0 24px}
-.sf-agency-widget--detail .cdl-service-detail__meta>div{display:grid;gap:4px}
-.sf-agency-widget--detail .cdl-service-detail__meta strong{font-size:15px;font-weight:600;color:#f9e6d5}
-.sf-agency-widget--detail :is(.cdl-service-detail__scope,.cdl-service-detail__faq){margin:0 0 24px}
-.sf-agency-widget--detail :is(.cdl-service-detail__scope,.cdl-service-detail__faq)>h2{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:600;color:#aaa4ad;margin:0 0 10px}
-.sf-agency-widget--detail .cdl-service-detail__scope ol{list-style:none;margin:0;padding:0;border-top:1px solid #ffffff17}
-.sf-agency-widget--detail .cdl-service-detail__scope ol>li{display:flex;align-items:flex-start;gap:11px;padding:13px 2px;border:0;border-bottom:1px solid #ffffff17;border-radius:0;background:none;box-shadow:none;font-size:14px}
-.sf-agency-widget--detail .cdl-service-detail__scope li>span{color:#d3a480;font-size:11.5px;padding-top:3px}
-.sf-agency-widget--detail .cdl-service-detail__scope li strong{font-size:15.5px;font-weight:600;color:#f8f7fa}
-.sf-agency-widget--detail .cdl-service-detail__scope li p,.sf-agency-widget--detail .cdl-service-detail__faq details p{color:#b6b0bf;font-size:12.5px;line-height:1.5;margin:4px 0 0}
-.sf-agency-widget--detail .cdl-service-detail__faq details{border-bottom:1px solid #ffffff17}
+.sf-agency-widget--detail .cdl-service-detail__tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-bottom:28px}
+.sf-agency-widget--detail .cdl-service-detail__tabs:empty{display:none}
+.sf-agency-widget--detail .cdl-service-detail__tabs a{display:block;min-width:0;min-height:36px;padding:9px 2px 0;border:0;border-top:2px solid #ffffff1f;border-radius:0;background:none;box-shadow:none;text-align:left;color:#928c9c;font-size:11.5px;line-height:1.4;text-decoration:none!important;transition:border-color .24s,color .24s}
+.sf-agency-widget--detail .cdl-service-detail__tabs a[aria-current]{border-top-color:#d3a480;color:#f8f7fa;font-weight:600}
+.sf-agency-widget--detail .cdl-service-detail__eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#928c9c;font-weight:600;margin-bottom:12px}
+.sf-agency-widget--detail .cdl-service-detail__eyebrow::before,.sf-agency-widget--detail .cdl-service-detail__meta i{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#d3a480;flex:none}
+.sf-agency-widget--detail .cdl-service-detail__eyebrow::before{margin-right:8px;vertical-align:2px}
+.sf-agency-widget--detail .cdl-service-detail__copy>h1{font-size:clamp(32px,5vw,44px);font-weight:600;line-height:1.07;letter-spacing:-.045em;margin:0 0 12px!important;text-wrap:initial}
+.sf-agency-widget--detail .cdl-service-detail__title-main{display:block;color:#f8f7fa}
+.sf-agency-widget--detail .cdl-service-detail__title-muted{display:block;color:#928c9c;font-weight:500}
+.sf-agency-widget--detail .cdl-service-detail__copy>p{font-size:14px;line-height:1.55;max-width:480px;margin:0 0 28px!important;color:#b6b0bf}
+.sf-agency-widget--detail .cdl-service-detail__manifesto{border:0;border-left:1px solid #d3a48094;padding:4px 0 4px 18px;margin:0 0 34px;background:none;font-size:clamp(18px,2.6vw,22px);font-weight:500;letter-spacing:-.025em;line-height:1.44;color:#f8f7fa}
+.sf-agency-widget--detail .cdl-service-detail__manifesto span{color:#b6b0bf;font-weight:400}
+.sf-agency-widget--detail :is(.cdl-service-detail__scope,.cdl-service-detail__faq){margin:0 0 34px}
+.sf-agency-widget--detail :is(.cdl-service-detail__scope,.cdl-service-detail__faq)>h2{font-size:10.5px;letter-spacing:.20em;text-transform:uppercase;font-weight:600;color:#928c9c;margin:0 0 12px!important}
+.sf-agency-widget--detail .cdl-service-detail__scope ol{list-style:none!important;margin:0!important;padding:0!important;border-top:1px solid #ffffff17}
+.sf-agency-widget--detail .cdl-service-detail__scope ol>li{display:flex;align-items:flex-start;gap:14px;padding:20px 2px;border:0;border-bottom:1px solid #ffffff17;border-radius:0;background:none;box-shadow:none;font-size:14px}
+.sf-agency-widget--detail .cdl-service-detail__scope li>span{color:#d3a480;font-size:12px;font-weight:600;padding-top:3px;font-variant-numeric:tabular-nums;flex:none}
+.sf-agency-widget--detail .cdl-service-detail__scope li>div{min-width:0}
+.sf-agency-widget--detail .cdl-service-detail__scope li h3{font-size:18px;line-height:1.35;font-weight:600;letter-spacing:-.025em;color:#f8f7fa;margin:0 0 5px}
+.sf-agency-widget--detail .cdl-service-detail__scope li p,.sf-agency-widget--detail .cdl-service-detail__faq details p{color:#b6b0bf;font-size:13.5px;line-height:1.5;margin:0}
+.sf-agency-widget--detail .cdl-service-detail__faq details{position:relative;border-bottom:1px solid #ffffff17}
 .sf-agency-widget--detail .cdl-service-detail__faq details:first-of-type{border-top:1px solid #ffffff17}
-.sf-agency-widget--detail .cdl-service-detail__faq summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;padding:14px 2px;font-size:14.5px}
+.sf-agency-widget--detail .cdl-service-detail__faq details::before{content:"";position:absolute;top:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,#d3a480b8,#d3a48024 55%,transparent);opacity:0;transform:scaleX(.3);transform-origin:left;transition:opacity .3s ease,transform .4s cubic-bezier(.22,1,.36,1);pointer-events:none}
+.sf-agency-widget--detail .cdl-service-detail__faq details[open]::before{opacity:1;transform:scaleX(1)}
+.sf-agency-widget--detail .cdl-service-detail__faq summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:14px;cursor:pointer;padding:16px 2px;font-size:15px;font-weight:500;letter-spacing:-.02em}
 .sf-agency-widget--detail .cdl-service-detail__faq summary::-webkit-details-marker{display:none}
-.sf-agency-widget--detail .cdl-service-detail__faq summary span{color:#d3a480;font-size:18px;transition:transform .2s}
+.sf-agency-widget--detail .cdl-service-detail__faq summary span{color:#d3a480;font-size:18px;line-height:1;transition:transform .25s cubic-bezier(.22,1,.36,1);flex:none}
 .sf-agency-widget--detail .cdl-service-detail__faq details[open] summary span{transform:rotate(45deg)}
-.sf-agency-widget--detail .cdl-service-detail__faq details p{padding:0 2px 14px;margin:0}
-.sf-agency-widget--detail .cdl-service-detail__cta{width:100%;min-height:44px}
+.sf-agency-widget--detail .cdl-service-detail__faq details p{padding:0 2px 16px;margin:0;font-size:13px;line-height:1.55}
+@supports(interpolate-size:allow-keywords){
+ .sf-agency-widget--detail .cdl-service-detail__faq details{interpolate-size:allow-keywords}
+ .sf-agency-widget--detail .cdl-service-detail__faq details::details-content{block-size:0;overflow:hidden;transition:block-size .3s cubic-bezier(.22,1,.36,1),content-visibility .3s allow-discrete}
+ .sf-agency-widget--detail .cdl-service-detail__faq details[open]::details-content{block-size:auto}
+}
+.sf-agency-widget--detail .cdl-service-detail__bottom{display:flex;align-items:center;justify-content:space-between;gap:14px;padding-top:4px}
+.sf-agency-widget--detail .cdl-service-detail__meta{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:#928c9c}
+.sf-agency-widget--detail .cdl-service-detail__meta strong{color:#b6b0bf;font-weight:500}
+.sf-agency-widget--detail .cdl-service-detail__cta{display:inline-flex;width:auto;min-height:44px;padding:0 18px;font-size:13.5px;font-weight:500;gap:8px;white-space:nowrap;flex:none;background:#2c2c30;color:#f8f7fa!important;border:1px solid #ffffff30;transition:filter .2s,transform .2s}
+.sf-agency-widget--detail .cdl-service-detail__cta:hover{background:#2c2c30;filter:brightness(1.12);transform:none}
+.sf-agency-widget--detail .cdl-service-detail__cta:active{transform:scale(.97)}
+@media(max-width:739px){
+ .sf-agency-widget--detail .cdl-service-detail{padding-inline:18px}
+ .sf-agency-widget--detail .cdl-service-detail__copy>h1{font-size:31px}
+ .sf-agency-widget--detail .cdl-service-detail__manifesto{font-size:17px;padding-left:15px;margin-bottom:30px}
+}
+@media(max-width:359px){.sf-agency-widget--detail .cdl-service-detail__bottom{gap:8px;flex-wrap:wrap}}
+@media(prefers-reduced-motion:reduce){.sf-agency-widget--detail .cdl-service-detail__faq details::before,.sf-agency-widget--detail .cdl-service-detail__faq details::details-content,.sf-agency-widget--detail .cdl-service-detail__faq summary span,.sf-agency-widget--detail .cdl-service-detail__tabs a{transition:none}}
 body:has(.sf-agency-widget--detail) .sf-footer,body:has(.sf-404-agency) .sf-footer{display:none!important}
 body:has(.sf-404-agency){background:#09090c}
 .sf-404-agency{background:#09090c!important;color:#f8f7fa!important;padding:24px 20px!important}

@@ -32,6 +32,9 @@ const server=http.createServer((req,res)=>{
      const detail=page.locator('.sf-agency-widget--detail');
      assert.equal(await detail.count(),1,'Only one detail section');
      assert.equal(await detail.locator('h1').count(),1,'One page headline');
+     assert.equal(await detail.locator('.cdl-service-detail__title-muted').textContent(),'hızlı, sade ve yönetilebilir.');
+     assert.equal(await detail.locator('.cdl-service-detail__manifesto').count(),1);
+     assert.equal(await detail.locator('.cdl-service-detail__scope h3').count(),3);
      assert.equal(await detail.locator('.cdl-service-detail__scope li').count(),3,'Three editorial scope rows');
      assert.equal(await detail.locator('.cdl-service-detail__faq details').count(),2);
      await detail.locator('.cdl-service-detail__faq details').nth(1).locator('summary').click();
@@ -46,7 +49,10 @@ const server=http.createServer((req,res)=>{
          image:!!photo,
          overflow:document.documentElement.scrollWidth-innerWidth,
          viewX:bounds.x,viewW:bounds.width,
-         buttonHeight:action.height,
+         buttonHeight:action.height, buttonWidth:action.width, shellWidth:el.querySelector('.cdl-service-detail__shell').getBoundingClientRect().width,
+         bottom:el.querySelector('.cdl-service-detail__bottom').getBoundingClientRect().width,
+         manifesto:getComputedStyle(el.querySelector('.cdl-service-detail__manifesto')).borderLeftWidth,
+         faqLine:getComputedStyle(el.querySelector('.cdl-service-detail__faq details[open]'),'::before').opacity,
          stageHeight:bounds.height,viewportHeight:innerHeight,
          contentHeight:el.querySelector('.cdl-service-detail__editorial').getBoundingClientRect().height,
          ctaHref:cta.getAttribute('href'),
@@ -59,6 +65,10 @@ const server=http.createServer((req,res)=>{
      assert(s.overflow<=1,'No horizontal overflow '+width);
      assert(Math.abs(s.viewX)<=1&&Math.abs(s.viewW-width)<=1,'Full-bleed stage '+width);
      assert(s.buttonHeight>=44,'Touch-safe CTA '+width);
+     assert(s.buttonWidth<s.bottom,'Compact CTA, not full-width');
+     assert(s.shellWidth<=697,'Shared editorial width');
+     assert.equal(s.manifesto,'1px');
+     assert.equal(s.faqLine,'1');
      assert(s.stageHeight>=s.viewportHeight-1,'Detail stage fills the viewport '+width);
      assert(s.contentHeight>=Math.min(300,s.viewportHeight*.35),'Detail content expands '+width);
      assert(s.ctaHref.includes('hizmetler=Web%20Tasar%C4%B1m'),'Project CTA transports service to existing form');
