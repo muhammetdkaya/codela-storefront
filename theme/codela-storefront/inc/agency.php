@@ -273,7 +273,15 @@ function codela_sf_agency_project_submit(): void {
     };
     if ( ! wp_verify_nonce( $field( 'agency_project_nonce' ), 'codela_sf_agency_project' ) ) { $redirect( 'invalid' ); }
     if ( '' !== $field( 'agency_project_webpage' ) ) { $redirect( 'invalid' ); }
-    $service = $field( 'agency_project_service' );
+    $raw_services = $_POST['agency_project_service'] ?? [];
+    $raw_services = is_array( $raw_services ) ? $raw_services : [ $raw_services ];
+    $services = [];
+    foreach ( $raw_services as $raw_service ) {
+        if ( ! is_string( $raw_service ) ) { $redirect( 'invalid' ); }
+        $services[] = sanitize_text_field( wp_unslash( $raw_service ) );
+    }
+    $services = array_unique( $services );
+    $service = implode( ', ', $services );
     $time = $field( 'agency_project_time' );
     $scale = $field( 'agency_project_scale' );
     $name = $field( 'agency_project_name' );
@@ -282,9 +290,9 @@ function codela_sf_agency_project_submit(): void {
     $note = is_string( $raw_note ) ? trim( sanitize_textarea_field( wp_unslash( $raw_note ) ) ) : '';
     $length = static function( string $value ): int { return function_exists( 'mb_strlen' ) ? mb_strlen( $value ) : strlen( $value ); };
     $allowed_services = [ 'Web Tasarım', 'E-Ticaret', 'Özel Yazılım', 'Optimizasyon / Destek' ];
-    $allowed_times = [ 'Hemen', '1–2 Ay', 'Esnek' ];
-    $allowed_scales = [ 'Başlangıç', 'Büyüme', 'Kurumsal' ];
-    if ( ! in_array( $service, $allowed_services, true )
+    $allowed_times = [ '2–4 hafta', '1–2 ay', 'Esnek takvim', 'Hemen', '1–2 Ay', 'Esnek' ];
+    $allowed_scales = [ 'Sıfırdan başlıyoruz', 'Mevcut site yenilenecek', 'Tasarım hazır, kodlama gerekli', 'Başlangıç', 'Büyüme', 'Kurumsal' ];
+    if ( ! $services || count( $services ) > 4 || array_diff( $services, $allowed_services )
         || ! in_array( $time, $allowed_times, true )
         || ! in_array( $scale, $allowed_scales, true )
         || $length( $name ) < 2 || $length( $name ) > 120
@@ -304,7 +312,7 @@ function codela_sf_agency_project_submit(): void {
     $headers = [ 'Content-Type: text/plain; charset=UTF-8' ];
     if ( $is_email ) { $headers[] = 'Reply-To: ' . sanitize_email( $contact ); }
     $body = "Yeni Codela Proje Başlat Talebi\n\n"
-        . "Hizmet: $service\nHedef zaman: $time\nProje ölçeği: $scale\n"
+        . "Hizmet: $service\nHedef zaman: $time\nMevcut durum / ölçek: $scale\n"
         . "Ad Soyad / Marka: $name\nİletişim: $contact\n"
         . "Kısa not:\n" . ( $note ?: 'Belirtilmedi' ) . "\n";
     if ( ! wp_mail( $to, '[Codela] Yeni proje başlat talebi', $body, $headers ) ) { $redirect( 'failed' ); }

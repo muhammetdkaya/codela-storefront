@@ -87,7 +87,7 @@ foreach ( [ 'agency-services', 'agency-about', 'agency-contact', 'agency-process
         agency_page_check( substr_count( $html, 'cdl-bento__card--' ) === 4, 'Services now use four reference Bento cards.' );
         agency_page_check( ! str_contains( $html, 'sf-agency-module-grid' ), 'Legacy service modules are no longer duplicated.' );
     } elseif ( $slug === 'agency-about' ) {
-        agency_page_check( str_contains( $html, 'Dijitalde iyi görünmek yetmez.' )
+        agency_page_check( str_contains( $html, 'Az ama net' )
             && str_contains( $html, 'sf-agency-widget--about' )
             && substr_count( $html, 'class="sf-about-principle"' ) === 3
             && ! str_contains( $html, 'data-agency-widget-step=' )
@@ -169,10 +169,10 @@ $project_data = [
 ];
 $project_html = codela_sf_section_agency_project( $project_data );
 agency_page_check( str_contains($project_html,'data-agency-widget="project"') &&
-    substr_count($project_html,'name="agency_project_service"')===4 &&
+    substr_count($project_html,'name="agency_project_service[]"')===4 &&
     substr_count($project_html,'name="agency_project_time"')===3 &&
     substr_count($project_html,'name="agency_project_scale"')===3 &&
-    substr_count($project_html,'data-project-step=')===2,
+    substr_count($project_html,'data-project-step=')===3,
     'Project Start preserves 4 services, 3 target times and 3 scales in 2 steps' );
 agency_page_check( str_contains($project_html,'agency_project_nonce') &&
     str_contains($project_html,'agency_project_consent') &&
@@ -187,7 +187,7 @@ agency_page_check( str_contains($spoofed,'data-project-form') && !str_contains($
     'Manually crafted sent query never fakes a successful project request' );
 $_GET['codela_receipt']=str_repeat('a',32);
 $confirmed = codela_sf_section_agency_project( $project_data );
-agency_page_check( str_contains($confirmed,'Talebiniz alındı.') &&
+agency_page_check( str_contains($confirmed,'Talebin bize ulaştı.') &&
     !str_contains($confirmed,'data-project-form'),
     'Server-confirmed-only success screen does not expose active form' );
 $_GET=$original_query;

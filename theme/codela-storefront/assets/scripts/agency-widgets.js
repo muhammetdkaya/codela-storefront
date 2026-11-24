@@ -10,50 +10,36 @@
 
     if (widget.dataset.agencyWidget === 'project') {
       const form = widget.querySelector('[data-project-form]');
-      const first = widget.querySelector('[data-project-step="1"]');
-      const second = widget.querySelector('[data-project-step="2"]');
-      const next = widget.querySelector('[data-project-next]');
-      const back = widget.querySelector('[data-project-back]');
-      const progress = widget.querySelector('[data-project-progress-bar]');
-      const indicator = widget.querySelector('[data-project-progress-label]');
-      const summary = widget.querySelector('[data-project-summary]');
-      if (form && first && second && next && back && progress && indicator && summary) {
-        const detailFields = [...second.querySelectorAll('input,textarea')];
-        const selected = name => form.querySelector('input[name="' + name + '"]:checked')?.value || '';
-        const show = step => {
-          first.hidden = step !== 1;
-          second.hidden = step !== 2;
-          detailFields.forEach(input => { input.disabled = step !== 2; });
-          progress.style.width = step === 1 ? '50%' : '100%';
-          indicator.textContent = step === 1 ? '1 / 2' : '2 / 2';
-          if (step === 2) {
-            summary.textContent = [selected('agency_project_service'),
-              selected('agency_project_time'),
-              selected('agency_project_scale')].filter(Boolean).join(' · ');
+      const steps=[...widget.querySelectorAll('[data-project-step]')];
+      const progress=widget.querySelector('[data-project-progress-bar]');
+      const indicator=widget.querySelector('[data-project-progress-label]');
+      const summary=widget.querySelector('[data-project-summary]');
+      if(form && steps.length===3 && progress && indicator && summary){
+        let active=0;
+        const services=[...form.querySelectorAll('input[name="agency_project_service[]"]')];
+        const selected=name=>form.querySelector('input[name="'+name+'"]:checked')?.value||'';
+        const show=(index,focus=true)=>{
+          active=index;
+          steps.forEach((step,n)=>{step.hidden=n!==index;});
+          progress.style.width=((index+1)/3*100)+'%';
+          indicator.textContent='0'+(index+1)+' / 03';
+          if(index===2){
+            summary.replaceChildren(...[...services.filter(x=>x.checked).map(x=>x.value),selected('agency_project_time'),selected('agency_project_scale')].filter(Boolean).map(value=>{
+              const tag=document.createElement('span');tag.textContent=value;return tag;
+            }));
           }
-          const heading = (step === 1 ? first : second).querySelector('h1,h2');
-          if (heading) {
-            heading.tabIndex = -1;
-            heading.focus({preventScroll:true});
-          }
+          if(focus){const h=steps[index].querySelector('h2');if(h){h.tabIndex=-1;h.focus({preventScroll:true});}}
         };
-        next.addEventListener('click', () => show(2));
-        back.addEventListener('click', () => show(1));
-        form.addEventListener('submit', event => {
-          if (!form.checkValidity()) {
-            event.preventDefault();
-            form.reportValidity();
-            return;
-          }
-          const submit = form.querySelector('[data-project-submit]');
-          if (submit) {
-            submit.disabled = true;
-            submit.setAttribute('aria-busy', 'true');
-            submit.firstChild.textContent = 'Gönderiliyor ';
-          }
+        services.forEach(input=>input.addEventListener('change',()=>{if(!services.some(x=>x.checked))input.checked=true;}));
+        widget.querySelectorAll('[data-project-next]').forEach(next=>next.addEventListener('click',()=>{if(active<2)show(active+1);}));
+        widget.querySelectorAll('[data-project-back]').forEach(back=>back.addEventListener('click',()=>{if(active>0)show(active-1);}));
+        form.addEventListener('submit',event=>{
+          if(!services.some(x=>x.checked)){event.preventDefault();show(0);return;}
+          if(!form.checkValidity()){event.preventDefault();form.reportValidity();return;}
+          const submit=form.querySelector('[data-project-submit]');
+          if(submit){submit.disabled=true;submit.setAttribute('aria-busy','true');submit.firstChild.textContent='Gönderiliyor ';}
         });
-        const requestedError = /(?:[?&])codela_status=(?:invalid|failed|wait)(?:&|$)/.test(window.location.search);
-        show(requestedError ? 2 : 1);
+        show(/(?:[?&])codela_status=(?:invalid|failed|wait)(?:&|$)/.test(location.search)?2:0,false);
       }
     }
 
