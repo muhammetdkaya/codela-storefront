@@ -2778,3 +2778,48 @@ body:not(.home):has(.sf-shell) .codela-page-layout > .sf-agency-widget--detail:f
 .sf-agency-widget--contact-bento .cdl-contact__sheet .cdl-contact__form label{font-size:12px;}
 .sf-agency-widget--contact-bento .cdl-contact__map-live{pointer-events:none;}
 .sf-agency-widget--contact-bento [data-map-ready="true"] .cdl-contact__map-live{pointer-events:auto;}
+
+/* Editorial detail / native 404 — 0.1.408 */
+.sf-agency-widget--detail .cdl-service-detail{align-items:flex-start;padding:clamp(22px,4svh,42px) 20px 40px}
+.sf-agency-widget--detail .cdl-service-detail__shell{width:min(100%,696px);margin:0 auto}
+.sf-agency-widget--detail .cdl-service-detail__editorial{width:100%;display:block}
+.sf-agency-widget--detail .cdl-service-detail__tabs{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px}
+.sf-agency-widget--detail .cdl-service-detail__tabs a{display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border:1px solid #ffffff1c;border-radius:999px;color:#b6b0bf;font-size:12px;text-decoration:none}
+.sf-agency-widget--detail .cdl-service-detail__tabs a[aria-current]{border-color:#d3a4808f;background:#d3a48026;color:#f9e6d5}
+.sf-agency-widget--detail .cdl-service-detail__eyebrow,.sf-agency-widget--detail .cdl-service-detail__meta small{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#aaa4ad;font-weight:600}
+.sf-agency-widget--detail .cdl-service-detail__eyebrow{margin-bottom:8px}
+.sf-agency-widget--detail .cdl-service-detail__eyebrow::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#d3a480;margin-right:8px;vertical-align:2px}
+.sf-agency-widget--detail .cdl-service-detail__copy>h1{font-size:clamp(30px,4.8vw,44px);line-height:1.08;margin:0}
+.sf-agency-widget--detail .cdl-service-detail__copy>p{font-size:14px;line-height:1.5;max-width:520px;margin:10px 0 20px!important}
+.sf-agency-widget--detail .cdl-service-detail__meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:13px 0;border-block:1px solid #ffffff17;margin:20px 0 24px}
+.sf-agency-widget--detail .cdl-service-detail__meta>div{display:grid;gap:4px}
+.sf-agency-widget--detail .cdl-service-detail__meta strong{font-size:15px;font-weight:600;color:#f9e6d5}
+.sf-agency-widget--detail :is(.cdl-service-detail__scope,.cdl-service-detail__faq){margin:0 0 24px}
+.sf-agency-widget--detail :is(.cdl-service-detail__scope,.cdl-service-detail__faq)>h2{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:600;color:#aaa4ad;margin:0 0 10px}
+.sf-agency-widget--detail .cdl-service-detail__scope ol{list-style:none;margin:0;padding:0;border-top:1px solid #ffffff17}
+.sf-agency-widget--detail .cdl-service-detail__scope ol>li{display:flex;align-items:flex-start;gap:11px;padding:13px 2px;border:0;border-bottom:1px solid #ffffff17;border-radius:0;background:none;box-shadow:none;font-size:14px}
+.sf-agency-widget--detail .cdl-service-detail__scope li>span{color:#d3a480;font-size:11.5px;padding-top:3px}
+.sf-agency-widget--detail .cdl-service-detail__scope li strong{font-size:15.5px;font-weight:600;color:#f8f7fa}
+.sf-agency-widget--detail .cdl-service-detail__scope li p,.sf-agency-widget--detail .cdl-service-detail__faq details p{color:#b6b0bf;font-size:12.5px;line-height:1.5;margin:4px 0 0}
+.sf-agency-widget--detail .cdl-service-detail__faq details{border-bottom:1px solid #ffffff17}
+.sf-agency-widget--detail .cdl-service-detail__faq details:first-of-type{border-top:1px solid #ffffff17}
+.sf-agency-widget--detail .cdl-service-detail__faq summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;padding:14px 2px;font-size:14.5px}
+.sf-agency-widget--detail .cdl-service-detail__faq summary::-webkit-details-marker{display:none}
+.sf-agency-widget--detail .cdl-service-detail__faq summary span{color:#d3a480;font-size:18px;transition:transform .2s}
+.sf-agency-widget--detail .cdl-service-detail__faq details[open] summary span{transform:rotate(45deg)}
+.sf-agency-widget--detail .cdl-service-detail__faq details p{padding:0 2px 14px;margin:0}
+.sf-agency-widget--detail .cdl-service-detail__cta{width:100%;min-height:44px}
+body:has(.sf-agency-widget--detail) .sf-footer,body:has(.sf-404-agency) .sf-footer{display:none!important}
+body:has(.sf-404-agency){background:#09090c}
+.sf-404-agency{background:#09090c!important;color:#f8f7fa!important;padding:24px 20px!important}
+.sf-agency-404{width:min(100%,696px);margin:auto}
+.cdl-404-stage{--lx:50%;--ly:46%;position:relative;isolation:isolate;min-height:clamp(340px,65svh,470px);border:1px solid #ffffff17;border-radius:28px;overflow:hidden;background:#040407;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
+.cdl-404-grid,.cdl-404-beam{position:absolute;inset:0;pointer-events:none}
+.cdl-404-grid{background-image:linear-gradient(#d3a4802e 1px,transparent 1px),linear-gradient(90deg,#d3a4802e 1px,transparent 1px);background-size:32px 32px;mask-image:radial-gradient(170px circle at var(--lx) var(--ly),#000 0%,#0004 54%,transparent 100%);-webkit-mask-image:radial-gradient(170px circle at var(--lx) var(--ly),#000 0%,#0004 54%,transparent 100%)}
+.cdl-404-beam{background:radial-gradient(235px circle at var(--lx) var(--ly),#d3a4803d,#d3a4800f 44%,transparent 74%);mix-blend-mode:screen}
+.cdl-404-coord{position:absolute;top:16px;left:16px;right:16px;display:flex;justify-content:space-between;gap:10px;font:10px ui-monospace,monospace;color:#d3a48099}
+.cdl-404-num{position:relative;font-size:clamp(82px,16vw,118px);font-weight:700;letter-spacing:-.06em;line-height:1;color:#d3a480;text-shadow:0 0 32px #d3a48038}
+.cdl-404-stage h1{position:relative;font-size:19px;color:#f8f7fa;margin:12px 0 7px}
+.cdl-404-stage p{position:relative;font-size:13px;color:#b6b0bf;max-width:250px;margin:0 0 22px;line-height:1.5}
+.cdl-404-home{position:relative;display:inline-flex;align-items:center;gap:12px;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid #ffffff30;background:#242426;color:#fff;text-decoration:none!important;font-size:13px}
+.cdl-404-home:focus-visible,.cdl-service-detail__tabs a:focus-visible,.cdl-service-detail__faq summary:focus-visible{outline:2px solid #d3a480;outline-offset:3px}

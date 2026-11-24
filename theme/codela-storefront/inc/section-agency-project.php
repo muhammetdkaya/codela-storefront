@@ -10,7 +10,10 @@ function codela_sf_section_agency_project( array $data, string $type = '' ): str
     $id = 'cdl-project-' . sanitize_html_class( (string) ( $data['id'] ?? 'start' ) );
     $title = trim( (string) ( $data['title'] ?? '' ) );
     if ( in_array( $title, [ '', 'Neye odaklanıyoruz?' ], true ) ) { $title = 'Projeni netleştirelim.'; }
-    $lead = 'Üç kısa adımda kapsamı belirle, birlikte bir yol haritası çıkaralım.';
+    $lead = 'Kapsam ve başlangıç ayını seç, birlikte bir yol haritası çıkaralım.';
+    $slots = codela_sf_project_availability();
+    $first = '';
+    foreach ( $slots as $key => $slot ) { if ( (int) $slot['free'] > 0 ) { $first = $key; break; } }
     $status = isset( $_GET['codela_status'] ) && is_string( $_GET['codela_status'] )
         ? sanitize_key( wp_unslash( $_GET['codela_status'] ) ) : '';
     $receipt = isset( $_GET['codela_receipt'] ) && is_string( $_GET['codela_receipt'] )
@@ -45,6 +48,7 @@ function codela_sf_section_agency_project( array $data, string $type = '' ): str
               <div class="cdl-project__progress" aria-label="Proje talebi ilerlemesi">
                 <div class="cdl-project__progress-label"><span>PROJE BAŞLAT</span><span data-project-progress-label>01 / 03</span></div>
                 <div class="cdl-project__heading"><h1 id="<?php echo esc_attr( $id ); ?>"><?php echo esc_html( $title ); ?></h1><p><?php echo esc_html( $lead ); ?></p></div>
+                <div class="cdl-project__availability"><span class="cdl-project__availability-left"><i aria-hidden="true"></i><span><?php echo $first ? esc_html($slots[$first]['label'] . ' · ' . $slots[$first]['free'] . ' yeni proje için müsait') : 'Başlangıç tarihini birlikte netleştirelim'; ?></span></span><time data-project-clock>GMT+3</time></div>
                 <div class="cdl-project__progress-track" aria-hidden="true"><span data-project-progress-bar></span></div>
               </div>
               <?php if ( in_array( $status, [ 'failed', 'invalid', 'wait' ], true ) ) : ?>
@@ -72,34 +76,19 @@ function codela_sf_section_agency_project( array $data, string $type = '' ): str
                       <?php endforeach; ?>
                     </div>
                   </fieldset>
-                  <button type="button" class="cdl-project__button" data-project-next>Devam Et: Takvim <span aria-hidden="true">→</span></button>
+                  <button type="button" class="cdl-project__button" data-project-next>Devam Et: Başlangıç Ayı <span aria-hidden="true">→</span></button>
                 </div>
                 <div class="cdl-project__step" data-project-step="2">
-                  <div class="cdl-project__heading"><h2>Takvim ve ölçek nasıl?</h2><p>Yaklaşık bir çerçeve yeterli.</p></div>
-                  <fieldset class="cdl-project__fieldset">
-                    <legend>Hedef süre</legend>
-                    <div class="cdl-project__choices cdl-project__choices--three">
-                      <?php foreach ( $times as $time ) : ?>
-                        <label class="cdl-project__choice">
-                          <input type="radio" name="agency_project_time" value="<?php echo esc_attr( $time ); ?>"
-                                 <?php checked( $time, '1–2 ay' ); ?> required />
-                          <span><?php echo esc_html( $time ); ?></span>
-                        </label>
-                      <?php endforeach; ?>
-                    </div>
-                  </fieldset>
-                  <fieldset class="cdl-project__fieldset">
-                    <legend>Mevcut durum</legend>
-                    <div class="cdl-project__choices cdl-project__choices--three">
-                      <?php foreach ( $scales as $scale ) : ?>
-                        <label class="cdl-project__choice">
-                          <input type="radio" name="agency_project_scale" value="<?php echo esc_attr( $scale ); ?>"
-                                 <?php checked( $scale, 'Sıfırdan başlıyoruz' ); ?> required />
-                          <span><?php echo esc_html( 'Tasarım hazır, kodlama gerekli' === $scale ? 'Tasarım hazır' : $scale ); ?></span>
-                        </label>
-                      <?php endforeach; ?>
-                    </div>
-                  </fieldset>
+                  <div class="cdl-project__heading"><h2>Hangi ay başlamak istersin?</h2><p>Başlangıç tercihi, kesin rezervasyon değildir.</p></div>
+                  <fieldset class="cdl-project__fieldset"><legend>Açık stüdyo kapasitesi</legend><div class="cdl-project__choices cdl-project__choices--services cdl-project__slots">
+                    <?php foreach ( $slots as $month => $slot ) : ?>
+                      <label class="cdl-project__choice">
+                        <input type="radio" name="agency_project_month" value="<?php echo esc_attr($month); ?>" data-month-label="<?php echo esc_attr($slot['label']); ?>" <?php checked($first,$month); ?> <?php echo (int)$slot['free'] < 1 ? 'disabled' : ''; ?> required>
+                        <span><span class="cdl-project__choice-copy"><strong><?php echo esc_html($slot['label']); ?> <span class="cdl-project__capacity-dots" aria-hidden="true"><?php if ( null !== $slot['free'] ) { for($dot=0;$dot<max(3,min(12,$slot['free']));$dot++){echo '<i class="' . ($dot<$slot['free']?'is-free':'') . '"></i>';} } ?></span></strong><small><?php echo null === $slot['free'] ? 'Kapasite henüz belirtilmedi' : ( $slot['free'] ? esc_html($slot['free'] . ' yeni proje için müsait') : 'Bu ay dolu' ); ?></small></span></span>
+                      </label>
+                    <?php endforeach; ?>
+                    <label class="cdl-project__choice"><input type="radio" name="agency_project_month" value="flexible" data-month-label="Esnek takvim" <?php checked($first,''); ?> required><span><span class="cdl-project__choice-copy"><strong>Esnek takvim</strong><small>Önce kapsamı birlikte konuşalım.</small></span></span></label>
+                  </div></fieldset>
                   <div class="cdl-project__controls"><button type="button" class="cdl-project__button cdl-project__back-button" data-project-back aria-label="Önceki adım">←</button><button type="button" class="cdl-project__button" data-project-next>Devam Et: İletişim <span aria-hidden="true">→</span></button></div>
                 </div>
                 <div class="cdl-project__step" data-project-step="3">

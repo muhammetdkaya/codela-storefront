@@ -233,3 +233,14 @@ body:not(.wp-admin) .sf-agency-widget--project .cdl-project__heading > :is(h1,h2
 
 @media(prefers-reduced-motion:reduce){.sf-agency-widget--project .cdl-project__choices--services .cdl-project__choice>span::before{transition:none;}}
 @media(forced-colors:active){.sf-agency-widget--project .cdl-project__choices--services .cdl-project__choice input:checked+span::after{color:HighlightText;background:Highlight;border-color:Highlight;}}
+
+.sf-agency-widget--project .cdl-project__availability{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border-radius:16px;border:1px solid #d3a48042;background:linear-gradient(90deg,#d3a48019,#d3a48005);margin-top:20px;font-size:12.5px}
+.sf-agency-widget--project .cdl-project__availability-left{display:flex;align-items:center;gap:9px}
+.sf-agency-widget--project .cdl-project__availability-left>i{position:relative;width:7px;height:7px;border-radius:50%;background:#d3a480;flex:none}
+.sf-agency-widget--project .cdl-project__availability time{font-size:11px;color:#aaa49e;white-space:nowrap;font-variant-numeric:tabular-nums}
+.sf-agency-widget--project .cdl-project__slots .cdl-project__choice input:disabled+span{opacity:.45;cursor:not-allowed}
+.sf-agency-widget--project .cdl-project__slots .cdl-project__choice input:disabled{cursor:not-allowed}
+.sf-agency-widget--project .cdl-project__capacity-dots{display:inline-flex;gap:4px;vertical-align:middle;margin-left:5px}
+.sf-agency-widget--project .cdl-project__capacity-dots i{width:5px;height:5px;border-radius:50%;background:#ffffff26}
+.sf-agency-widget--project .cdl-project__capacity-dots i.is-free{background:#d3a480}
+.sf-agency-widget--project .cdl-project__slots .cdl-project__choice>span{padding-block:13px}

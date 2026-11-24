@@ -24,12 +24,14 @@
           progress.style.width=((index+1)/3*100)+'%';
           indicator.textContent='0'+(index+1)+' / 03';
           if(index===2){
-            summary.replaceChildren(...[...services.filter(x=>x.checked).map(x=>x.value),selected('agency_project_time'),selected('agency_project_scale')].filter(Boolean).map(value=>{
+            summary.replaceChildren(...[...services.filter(x=>x.checked).map(x=>x.value),form.querySelector('input[name="agency_project_month"]:checked')?.dataset.monthLabel].filter(Boolean).map(value=>{
               const tag=document.createElement('span');tag.textContent=value;return tag;
             }));
           }
           if(focus){const h=steps[index].querySelector('h2');if(h){h.tabIndex=-1;h.focus({preventScroll:true});}}
         };
+        const clock=widget.querySelector('[data-project-clock]');
+        if(clock){const update=()=>{clock.textContent=new Intl.DateTimeFormat('tr-TR',{timeZone:'Europe/Istanbul',hour:'2-digit',minute:'2-digit'}).format(new Date())+' · IST';};update();setInterval(update,30000);}
         services.forEach(input=>input.addEventListener('change',()=>{if(!services.some(x=>x.checked))input.checked=true;}));
         widget.querySelectorAll('[data-project-next]').forEach(next=>next.addEventListener('click',()=>{if(active<2)show(active+1);}));
         widget.querySelectorAll('[data-project-back]').forEach(back=>back.addEventListener('click',()=>{if(active>0)show(active-1);}));
@@ -43,6 +45,18 @@
       }
     }
 
+    if(widget.dataset.agencyWidget==='404'&&!reduced.matches){
+      const stage=widget.querySelector('[data-404-stage]');
+      let frame=0,x=0,y=0;
+      stage?.addEventListener('pointermove',event=>{
+        const rect=stage.getBoundingClientRect();x=event.clientX-rect.left;y=event.clientY-rect.top;
+        if(!frame)frame=requestAnimationFrame(()=>{frame=0;stage.style.setProperty('--lx',x+'px');stage.style.setProperty('--ly',y+'px');});
+      },{passive:true});
+    }
+    if(widget.dataset.agencyWidget==='detail'){
+      const rows=[...widget.querySelectorAll('.cdl-service-detail__faq details')];
+      rows.forEach(row=>row.addEventListener('toggle',()=>{if(row.open)rows.forEach(other=>{if(other!==row)other.open=false;});}));
+    }
     if (widget.dataset.agencyWidget === 'cards') {
       const cards = Array.from(widget.querySelectorAll('[data-agency-card]'));
       const tabs = Array.from(widget.querySelectorAll('[data-agency-swap-to]'));

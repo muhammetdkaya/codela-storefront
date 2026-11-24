@@ -167,7 +167,6 @@ body.sf-glass-v2 .sf-agency-widget.sf-agency-widget--project .cdl-project__butto
 }
 /* Quiet surface accents: match reference small glass chips and selected tags. */
 body.sf-glass-v2 .sf-agency-widget :is(
-  .cdl-service-detail__scope li,
   .sf-agency-process-stage-row
 ){
   border:1px solid rgba(255,255,255,.12);

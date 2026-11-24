@@ -284,6 +284,12 @@ function codela_sf_agency_project_submit(): void {
     $service = implode( ', ', $services );
     $time = $field( 'agency_project_time' );
     $scale = $field( 'agency_project_scale' );
+    $month = $field( 'agency_project_month' );
+    if ( $month ) {
+        $available = codela_sf_project_availability();
+        if ( 'flexible' !== $month && ( ! isset( $available[$month] ) || (int) $available[$month]['free'] < 1 ) ) { $redirect( 'invalid' ); }
+        $time = 'flexible' === $month ? 'Esnek takvim' : $available[$month]['label'];
+    }
     $name = $field( 'agency_project_name' );
     $contact = $field( 'agency_project_contact' );
     $raw_note = $_POST['agency_project_note'] ?? '';
@@ -293,8 +299,7 @@ function codela_sf_agency_project_submit(): void {
     $allowed_times = [ '2–4 hafta', '1–2 ay', 'Esnek takvim', 'Hemen', '1–2 Ay', 'Esnek' ];
     $allowed_scales = [ 'Sıfırdan başlıyoruz', 'Mevcut site yenilenecek', 'Tasarım hazır, kodlama gerekli', 'Başlangıç', 'Büyüme', 'Kurumsal' ];
     if ( ! $services || count( $services ) > 4 || array_diff( $services, $allowed_services )
-        || ! in_array( $time, $allowed_times, true )
-        || ! in_array( $scale, $allowed_scales, true )
+        || ( ! $month && ( ! in_array( $time, $allowed_times, true ) || ! in_array( $scale, $allowed_scales, true ) ) )
         || $length( $name ) < 2 || $length( $name ) > 120
         || ! $contact || $length( $contact ) > 180
         || $length( $note ) > 2000
@@ -312,7 +317,7 @@ function codela_sf_agency_project_submit(): void {
     $headers = [ 'Content-Type: text/plain; charset=UTF-8' ];
     if ( $is_email ) { $headers[] = 'Reply-To: ' . sanitize_email( $contact ); }
     $body = "Yeni Codela Proje Başlat Talebi\n\n"
-        . "Hizmet: $service\nHedef zaman: $time\nMevcut durum / ölçek: $scale\n"
+        . "Hizmet: $service\nBaşlangıç tercihi: $time\nMevcut durum / ölçek: $scale\n"
         . "Ad Soyad / Marka: $name\nİletişim: $contact\n"
         . "Kısa not:\n" . ( $note ?: 'Belirtilmedi' ) . "\n";
     if ( ! wp_mail( $to, '[Codela] Yeni proje başlat talebi', $body, $headers ) ) { $redirect( 'failed' ); }
@@ -345,3 +350,62 @@ add_action( 'save_post_page', static function( $post_id ) {
     $point = codela_sf_contact_map_point( $raw );
     if ( $point ) { update_post_meta( $post_id, 'codela_contact_map_coordinates', implode( ',', $point ) ); }
 } );
+
+/** Public availability is maintained by the studio, not generated from fake reservations. */
+function codela_sf_project_availability(): array {
+    $stored = get_option( 'codela_sf_project_capacity', [] );
+    $stored = is_array( $stored ) ? $stored : [];
+    $months = [ 'Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık' ];
+    $start = new DateTimeImmutable( 'first day of next month midnight', new DateTimeZone( 'Europe/Istanbul' ) );
+    $out = [];
+    for ( $i = 0; $i < 3; $i++ ) {
+        $date = $start->modify( '+' . $i . ' months' );
+        $key = $date->format( 'Y-m' );
+        $free = isset( $stored[$key] ) && is_numeric( $stored[$key] ) ? max( 0, min( 12, (int) $stored[$key] ) ) : null;
+        $out[$key] = [ 'label' => $months[(int) $date->format('n')-1] . ' ' . $date->format('Y'), 'free' => $free ];
+    }
+    return $out;
+}
+add_action( 'admin_menu', static function() {
+    add_options_page( 'Codela Proje Müsaitliği', 'Codela Müsaitlik', 'manage_options', 'codela-project-capacity', static function() {
+        if ( ! current_user_can( 'manage_options' ) ) { return; }
+        echo '<div class="wrap"><h1>Codela Proje Müsaitliği</h1><p>Önümüzdeki üç ay için kalan proje kapasitesi. Boş alan = henüz belirlenmedi; 0 = dolu. Talepler rezervasyon değildir; kabul edilen işler sonrası kapasiteyi güncelleyin.</p><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="codela_sf_save_capacity">';
+        wp_nonce_field( 'codela_sf_save_capacity' );
+        foreach ( codela_sf_project_availability() as $month => $slot ) {
+            echo '<p><label for="cdl-cap-' . esc_attr($month) . '">' . esc_html($slot['label']) . '</label> <input id="cdl-cap-' . esc_attr($month) . '" type="number" min="0" max="12" name="capacity[' . esc_attr($month) . ']" value="' . esc_attr($slot['free'] ?? '') . '"></p>';
+        }
+        submit_button( 'Kapasiteyi kaydet' ); echo '</form></div>';
+    } );
+} );
+add_action( 'admin_post_codela_sf_save_capacity', static function() {
+    if ( ! current_user_can( 'manage_options' ) ) { wp_die( 'Yetkisiz işlem.', '', [ 'response' => 403 ] ); }
+    check_admin_referer( 'codela_sf_save_capacity' );
+    $raw = isset($_POST['capacity']) && is_array($_POST['capacity']) ? wp_unslash($_POST['capacity']) : [];
+    $saved = [];
+    foreach ( codela_sf_project_availability() as $key => $slot ) {
+        $value = $raw[$key] ?? '';
+        if ( is_string($value) && preg_match('/^(?:[0-9]|1[0-2])$/D',$value) ) { $saved[$key] = (int) $value; }
+    }
+    update_option( 'codela_sf_project_capacity', $saved, false );
+    wp_safe_redirect( admin_url( 'options-general.php?page=codela-project-capacity' ) ); exit;
+} );
+
+function codela_sf_agency_experience(): bool {
+    return function_exists('codela_theme_settings') && 'agency' === (codela_theme_settings()['site_experience'] ?? '');
+}
+add_filter( 'render_block_core/group', static function($content,$block) {
+    if ( ! codela_sf_agency_experience() || ! function_exists('is_404') || ! is_404() || ! str_contains((string)($block['attrs']['className'] ?? ''),'sf-404-template') ) { return $content; }
+    return '<main id="sf-content" class="sf-content sf-404-agency"><section class="sf-agency-404" data-agency-widget="404"><div class="cdl-404-stage" data-404-stage><div class="cdl-404-grid" aria-hidden="true"></div><div class="cdl-404-beam" aria-hidden="true"></div><div class="cdl-404-coord" aria-hidden="true"><span>41.0082° N · 28.9784° E</span><span>ROTA DIŞI</span></div><div class="cdl-404-num" aria-hidden="true">404</div><h1>Işığın dışına çıktın.</h1><p>Aradığın sayfa taşınmış ya da hiç var olmamış olabilir.</p><a class="cdl-404-home" href="' . esc_url(home_url('/')) . '">Ana Sayfaya Dön <span aria-hidden="true">→</span></a></div></section></main>';
+}, 10, 2 );
+add_action('wp_enqueue_scripts', static function() {
+    if ( codela_sf_agency_experience() && function_exists('is_404') && is_404() ) {
+        codela_sf_agency_styles();
+        wp_enqueue_script('codela-storefront-agency-widgets',get_template_directory_uri().'/assets/scripts/agency-widgets.js',[],wp_get_theme()->get('Version'),true);
+    }
+}, 31);
+add_action('wp_head', static function() {
+    if ( ! codela_sf_agency_experience() ) { return; }
+    // Show only on the first visit in this tab, only if document readiness is slow.
+    // No minimum animation duration, no blocking of a fast first paint.
+    echo '<style>html.cdl-first-entry::after{content:"";position:fixed;inset:0;z-index:9999;pointer-events:none;background:#09090c}html.cdl-first-entry::before{content:"";position:fixed;z-index:10000;left:50%;top:50%;height:1px;width:min(260px,64vw);translate:-50% -50%;background:linear-gradient(90deg,transparent,#d3a480,#fff1dc,#d3a480,transparent);box-shadow:0 0 18px #d3a48080;pointer-events:none;animation:cdl-entry-beam 1s ease-in-out infinite alternate}@keyframes cdl-entry-beam{from{transform:scaleX(.3);opacity:.45}to{transform:scaleX(1);opacity:1}}@media(prefers-reduced-motion:reduce){html.cdl-first-entry::before{animation:none}}</style><script>(function(){try{if(sessionStorage.getItem("cdl-first-entry-v1"))return;sessionStorage.setItem("cdl-first-entry-v1","1")}catch(e){return}var root=document.documentElement;var timer=setTimeout(function(){if(document.readyState==="loading")root.classList.add("cdl-first-entry")},160);function done(){clearTimeout(timer);root.classList.remove("cdl-first-entry")}document.addEventListener("DOMContentLoaded",done,{once:true});window.addEventListener("pageshow",done,{once:true});setTimeout(done,2500)})();</script>';
+}, 1);
