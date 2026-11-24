@@ -21,6 +21,11 @@ await new Promise(done=>server.listen(0,'127.0.0.1',done));
 const browser=await chromium.launch({headless:true});
 try{
 const page=await browser.newPage({viewport:{width:1100,height:700}});
+await page.addInitScript(()=>{
+ const native=window.scrollTo.bind(window);
+ window.__stageCalls=[];
+ window.scrollTo=(...args)=>{window.__stageCalls.push(args[0]);return native(...args)};
+});
 await page.goto('http://127.0.0.1:'+server.address().port+'/');
 assert(await page.evaluate(()=>document.documentElement.classList.contains('sf-agency-stage-nav')));
 const wheel=async(delta,interval,count)=>{
@@ -35,6 +40,7 @@ await wheel(55,25,60);
 await page.waitForTimeout(350);
 const first=await page.evaluate(()=>window.scrollY);
 assert(first>=695&&first<=705,'Long momentum must stop at stage 2, got '+first);
+assert.deepEqual(await page.evaluate(()=>window.__stageCalls),[{top:700,behavior:'smooth'}],'Exactly one native smooth scroll per wheel gesture');
 await wheel(55,30,3);
 await page.waitForTimeout(650);
 const second=await page.evaluate(()=>window.scrollY);
@@ -52,8 +58,8 @@ await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
    const fire=(type,y)=>{const e=new Event(type,{bubbles:true,cancelable:true});Object.defineProperty(e,'touches',{value:[{clientX:100,clientY:y}]});document.body.dispatchEvent(e)};
    fire('touchstart',500);fire('touchmove',455);
  });
- await page.waitForTimeout(450);
- assert.equal(await page.evaluate(()=>window.scrollY),700,'Touch transition completes before release');
+ await page.waitForFunction(()=>Math.abs(window.scrollY-700)<=2,{},{timeout:1800});
+ assert.equal(await page.evaluate(()=>window.__stageCalls.filter(x=>x.behavior==='smooth').length),3,'Touch triggers one native smooth scroll before release');
  await page.evaluate(()=>{const e=new Event('touchmove',{bubbles:true,cancelable:true});Object.defineProperty(e,'touches',{value:[{clientX:100,clientY:100}]});document.body.dispatchEvent(e);document.body.dispatchEvent(new Event('touchend',{bubbles:true}));});
  await page.waitForTimeout(400);
  assert.equal(await page.evaluate(()=>window.scrollY),700,'One touch can move only one stage');

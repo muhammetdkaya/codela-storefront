@@ -207,8 +207,13 @@ $contact_bento = [ 'id'=>'agency-starter-contact-bento','enabled'=>true,'variant
   'public_email'=>'','whatsapp_phone'=>'','studio_name'=>'Codela · Dijital stüdyo',
   'studio_hours'=>'' ];
 $contact_bento_html = codela_sf_section_agency_contact_bento( $contact_bento );
-agency_page_check( !str_contains( $contact_bento_html, 'cdl-contact__card' ) && str_contains( $contact_bento_html, 'cdl-contact__body' ) && !str_contains( $contact_bento_html, 'Hangi hizmetler?' ),
-    'Contact displays the short form immediately, without a redundant services or project card' );
+agency_page_check( str_contains( $contact_bento_html, 'cdl-contact__card--map' ) && str_contains( $contact_bento_html, 'cdl-contact__card--primary' )
+    && str_contains( $contact_bento_html, '<details id="sf-agency-contact-form"' ) && !str_contains( $contact_bento_html, 'HİZMETLER' )
+    && !str_contains( $contact_bento_html, 'Hangi hizmetler?' ) && !str_contains( $contact_bento_html, '&amp;marker=' ),
+    'Contact restores map and project cards, with a collapsed form and no invented office marker or services card' );
+agency_page_check( codela_sf_contact_map_point( '41.12, 29.34' ) === [ 41.12, 29.34 ]
+    && codela_sf_contact_map_point( '91,29' ) === [] && codela_sf_contact_map_point( 'bad' ) === [],
+    'Explicit public office coordinates are validated' );
 agency_page_check( str_contains( $contact_bento_html, 'Birlikte başlayalım.' ) &&
     str_contains( $contact_bento_html, 'data-agency-widget="contact-bento"' ),
     'Contact Bento renders approved reference title and is isolated' );

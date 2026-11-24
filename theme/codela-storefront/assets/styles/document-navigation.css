@@ -427,7 +427,11 @@ html[data-sf-navigation-pending] .sf-skeleton[data-sf-agency] .sf-skeleton-layou
   width:95px;height:31px;border-radius:999px
 }
 .sf-skeleton[data-sf-agency] .sf-agency-loading__bento--contact{
-  grid-template-rows:minmax(215px,1.26fr) minmax(155px,1fr) minmax(92px,.67fr)
+  grid-template-rows:clamp(165px,25svh,235px) clamp(145px,21svh,195px) 125px 80px;
+  min-height:0;max-height:none
+}
+.sf-skeleton[data-sf-agency] .sf-agency-loading__bento-card--map{
+  grid-column:1/-1;justify-content:flex-end
 }
 /* Detail: image occupies the leading full-height column and the copy has
    four scope pills plus a real-width bottom CTA. */
@@ -514,6 +518,7 @@ html[data-sf-navigation-pending] .sf-skeleton[data-sf-agency] .sf-skeleton-layou
     grid-template-rows:minmax(183px,1.42fr) minmax(132px,1.08fr) minmax(88px,.66fr);
     min-height:435px;gap:11px
   }
+  .sf-skeleton[data-sf-agency] .sf-agency-loading__bento--contact{grid-template-rows:clamp(165px,25svh,235px) clamp(145px,21svh,195px) 115px 75px;min-height:0}
   .sf-skeleton[data-sf-agency] .sf-agency-loading__bento-card{padding:15px;border-radius:25px}
   .sf-skeleton[data-sf-agency] .sf-agency-loading__bento-card .sf-agency-loading__card-title{height:21px}
   .sf-skeleton[data-sf-agency] .sf-agency-loading__detail{

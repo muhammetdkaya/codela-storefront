@@ -67,6 +67,7 @@
         const picture = '<div class="sf-agency-loading__media">' + tile('image') + '</div>';
         const bento = kind === 'contact' ? 'contact' : 'services';
         const bentoGrid = () => '<div class="sf-agency-loading__bento sf-agency-loading__bento--' + bento + '">' +
+            (kind === 'contact' ? '<div class="sf-agency-loading__bento-card sf-agency-loading__bento-card--map">' + tile('card-title') + tile('line') + '</div>' : '') +
             '<div class="sf-agency-loading__bento-card sf-agency-loading__bento-card--feature">' +
                 pill() + tile('card-title') + tile('line') + '</div>' +
             '<div class="sf-agency-loading__bento-card sf-agency-loading__bento-card--small">' +
@@ -87,11 +88,7 @@
                 picture + '<div class="sf-agency-loading__detail-copy">' + intro(false) +
                 tile('scope-label') + '<div class="sf-agency-loading__tags">' + pill().repeat(4) + '</div>' +
                 tile('button','wide') + '</div></div>';
-        } else if (kind === 'contact') {
-            body = '<div class="sf-agency-loading__account"><div class="sf-agency-loading__section-title">' + intro(false) + '</div>' +
-                '<div class="sf-agency-loading__choice-grid">' + tile('input').repeat(2) + '</div>' + tile('input') +
-                '<div class="sf-agency-loading__choice-grid">' + tile('choice').repeat(2) + '</div>' + tile('line') + tile('button','wide') + '</div>';
-        } else if (kind === 'services') {
+        } else if (kind === 'services' || kind === 'contact') {
             body = '<div class="sf-agency-loading__section-title">' + intro(false) + '</div>' + bentoGrid();
         } else if (kind === 'about') {
             body = '<div class="sf-agency-loading__about-head">' + intro() +

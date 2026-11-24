@@ -23,11 +23,17 @@ const server=http.createServer((req,res)=>{
   for(const [width,height] of [[320,667],[390,844],[402,874],[768,1024],[1440,900]]){
    const page=await browser.newPage({viewport:{width,height},reducedMotion:'reduce'});
    const errors=[];page.on('pageerror',e=>errors.push(e.message));
+   await page.route('https://www.openstreetmap.org/**',route=>route.fulfill({contentType:'text/html',body:'<html><body>Map fixture</body></html>'}));
    await page.goto('http://127.0.0.1:'+server.address().port+'/');
    const app=page.locator('.sf-agency-widget--contact-bento');
    assert.equal(await app.count(),1,'One isolated Contact Bento');
-   assert.equal(await app.locator('.cdl-contact__card').count(),0,'No redundant contact cards');
-   assert.equal(await app.locator('.cdl-contact__body form').count(),1,'Form in first section');
+   assert.equal(await app.locator('.cdl-contact__grid>.cdl-contact__card--map').count(),1,'Map is the first card');
+   assert.equal(await app.locator('.cdl-contact__grid>:first-child').getAttribute('class'),'cdl-contact__card cdl-contact__card--map');
+   assert.equal(await app.locator('.cdl-contact__card--primary').count(),1,'Original project card retained');
+   assert.equal(await app.locator('.cdl-contact__card--strip').count(),1,'Studio card retained');
+   assert.equal(await app.locator('details#sf-agency-contact-form form').count(),1,'One real form');
+   assert.equal(await app.locator('[name="agency_name"]').isVisible(),false,'Initially collapsed');
+   assert.equal(await app.getByText('Neler yapıyoruz?').count(),0,'No services card');
    assert.equal(await app.locator('h1').textContent(),'Birlikte başlayalım.');
    const s=await app.evaluate(el=>{
       const bounds=el.querySelector('.cdl-contact').getBoundingClientRect();
@@ -47,10 +53,13 @@ const server=http.createServer((req,res)=>{
    assert(s.form&&s.submit&&s.honey&&s.consent,'Existing form security preserved');
    assert.equal(s.fakeChrome,0,'No mock phone controls');
    assert.deepEqual(errors,[],'No browser exceptions');
-   // Clicking the primary project card must take visitors to the real form.
-   await app.locator('[name="agency_name"]').focus();
-   await page.waitForTimeout(70);
-    assert(await app.locator('[name="agency_name"]').isVisible(),'First-screen form is available');
+   // The contact card is a native disclosure, not a JS-dependent overlay.
+   await app.locator('details#sf-agency-contact-form>summary').click();
+   assert(await app.locator('[name="agency_name"]').isVisible(),'Card opens the real form');
+   await app.locator('details#sf-agency-contact-form>summary').click();
+   assert.equal(await app.locator('[name="agency_name"]').isVisible(),false,'Card closes the form again');
+   await app.locator('.cdl-contact__card--primary').click();
+   assert(await app.locator('[name="agency_name"]').isVisible(),'Fallback project anchor opens the form');
    await page.screenshot({path:path.join(root,'qa','agency-contact-'+width+'.png'),fullPage:true});
    await page.close();
   }
