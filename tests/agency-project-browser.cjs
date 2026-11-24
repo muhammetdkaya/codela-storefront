@@ -24,11 +24,28 @@ const server=http.createServer((req,res)=>{
    const page=await browser.newPage({viewport:{width,height},reducedMotion:'reduce'});
    const errors=[];page.on('pageerror',e=>errors.push(e.message));
    await page.goto('http://127.0.0.1:'+server.address().port+'/');
+   // Exercise the real production cascade, including the optional Glass V2 material.
+   await page.addStyleTag({path:path.join(root,'theme/codela-storefront/assets/styles/glass-v2.css')});
+   await page.addStyleTag({path:path.join(root,'theme/codela-storefront/assets/styles/agency-glass.css')});
+   await page.evaluate(()=>document.body.classList.add('sf-glass-v2'));
    const widget=page.locator('.sf-agency-widget--project');
    assert.equal(await widget.count(),1);
    const one=widget.locator('[data-project-step="1"]'),two=widget.locator('[data-project-step="2"]'),three=widget.locator('[data-project-step="3"]');
    assert(await one.isVisible() && !(await two.isVisible()) && !(await three.isVisible()));
    assert.equal(await one.locator('input[type="checkbox"]').count(),4);
+   const rows=await one.locator('.cdl-project__choice').evaluateAll(labels=>labels.map(label=>{
+     const row=label.querySelector('input+span'),css=getComputedStyle(row),check=getComputedStyle(row,'::after');
+     return {fill:css.backgroundColor,left:css.borderLeftWidth,right:css.borderRightWidth,top:css.borderTopWidth,
+       height:row.getBoundingClientRect().height,checkTop:parseFloat(check.top),checkWidth:check.width,
+       checkHeight:check.height,checkRight:check.right,line:getComputedStyle(row,'::before').opacity};
+   }));
+   for(const row of rows){
+     assert.equal(row.fill,'rgba(0, 0, 0, 0)','No legacy card fill');
+     assert.equal(row.left,'0px');assert.equal(row.right,'0px');assert.equal(row.top,'0px');
+     assert.equal(row.checkWidth,'22px');assert.equal(row.checkHeight,'22px');assert.equal(row.checkRight,'2px');
+     assert(Math.abs(row.checkTop-row.height/2)<=2,'Check is vertically centered');
+   }
+   assert.equal(rows[0].line,'1','Selected line visible');
    await one.locator('input[value="E-Ticaret"]').locator('..').click();
    assert.equal(await one.locator('input:checked').count(),2,'Multiple services retained');
    await one.locator('[data-project-next]').click();
@@ -37,6 +54,8 @@ const server=http.createServer((req,res)=>{
    await two.locator('input[value="Mevcut site yenilenecek"]').locator('..').click();
    await two.locator('[data-project-next]').click();
    assert(await three.isVisible());
+   const field=await three.locator('[name="agency_project_name"]').evaluate(el=>{const c=getComputedStyle(el);return [c.backgroundColor,c.borderTopWidth,c.borderLeftWidth,c.borderBottomWidth,c.borderRadius];});
+   assert.deepEqual(field,['rgba(0, 0, 0, 0)','0px','0px','1px','0px'],'Underline-only field with Glass V2');
    assert.equal(await widget.locator('[data-project-progress-label]').textContent(),'03 / 03');
    assert.equal(await widget.locator('[data-project-summary]>span').count(),4);
    await three.locator('[data-project-back]').click();

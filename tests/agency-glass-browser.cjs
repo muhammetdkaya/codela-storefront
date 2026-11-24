@@ -12,7 +12,7 @@ function html(enabled){
  <div class="sf-agency-widget sf-agency-widget--bento"><a class="cdl-bento__card" href="#"><span class="cdl-bento__pill">Öne Çıkan</span><span class="cdl-bento__support-action">İncele</span></a></div>
  <div class="sf-agency-widget sf-agency-widget--detail"><a class="cdl-service-detail__back" href="#">Geri</a><a class="cdl-service-detail__cta" href="#">Proje Başlat</a></div>
  <div class="sf-agency-widget sf-agency-widget--contact-bento"><div class="cdl-contact__card"></div><form class="cdl-contact__form"><input name="name" aria-label="Ad"><button type="button" class="cdl-contact__submit">Gönder</button></form></div>
- <div class="sf-agency-widget sf-agency-widget--project"><div class="cdl-project__panel"><label class="cdl-project__choice"><input type="radio" name="s" checked><span>Web Tasarım</span></label><button class="cdl-project__button">Devam</button><div class="cdl-project__fields"><input aria-label="E-posta"></div></div></div>
+ <div class="sf-agency-widget sf-agency-widget--project"><div class="cdl-project__panel"><div class="cdl-project__choices--services"><label class="cdl-project__choice"><input type="checkbox" name="s" checked><span><i>01</i><span class="cdl-project__choice-copy">Web Tasarım</span></span></label></div><button class="cdl-project__button">Devam</button><div class="cdl-project__fields"><input aria-label="E-posta"></div></div></div>
  <div class="sf-agency-widget sf-agency-widget--process"><section class="sf-agency-process"><button class="sf-agency-process-step" aria-pressed="true">Keşif</button><div class="sf-agency-process-stage" data-step="0"></div></section></div>`;
  return '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+
  base+'\n'+agency+'\n'+project+'\n'+glass+(enabled?'\n'+material:'')+
@@ -75,9 +75,10 @@ function html(enabled){
     assert(m.primary.includes('rgba(34, 34, 36, 0.72)'),name+': Project CTA uses subdued charcoal');
     assert(m.card.includes('linear-gradient('),name+': raised bento card');
     assert(m.stage.includes('linear-gradient('),name+': process stage');
-    assert.equal(m.chosen,'rgba(214, 166, 118, 0.075)',name+': selected card has restrained amber fill');
-    assert.equal(m.chosenRadius,'14px',name+': selected cards are rectangular');
-    assert(m.chosenTick.includes('✓'),name+': selected card has a subtle tick');
+    assert.equal(m.chosen,'rgba(0, 0, 0, 0)',name+': editorial selected row remains unboxed');
+    assert.equal(m.chosenRadius,'0px',name+': editorial rows have no card corners');
+    assert(m.chosenTick.includes('✓'),name+': selected row has a subtle tick');
+    assert.equal(m.input,'rgba(0, 0, 0, 0)',name+': project input stays unboxed with glass enabled');
     assert.equal(m.projectPanel,'none',name+': editorial Project has no surrounding card');
     assert.equal(m.projectPanelColor,'rgba(0, 0, 0, 0)',name+': transparent project panel');
     assert.equal(m.projectPanelRim,'0px',name+': no panel border');

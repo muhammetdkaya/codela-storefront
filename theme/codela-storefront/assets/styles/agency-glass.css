@@ -154,16 +154,7 @@ body.sf-glass-v2 .sf-agency-widget .sf-agency-process-step[aria-pressed="true"]{
   opacity:1;
 }
 
-/* Project Start is a glass-form card like Account, not an opaque Bento tile.
-   The original project card provides its own muted rim, blur and shadow. */
-body.sf-glass-v2 .sf-agency-widget--project .cdl-project__panel{
- background:linear-gradient(180deg,rgba(255,255,255,.014),transparent 38%) padding-box,
-   rgba(20,20,22,.78);
- border:1px solid rgba(255,255,255,.085);
- -webkit-backdrop-filter:blur(22px) saturate(115%);
- backdrop-filter:blur(22px) saturate(115%);
- box-shadow:0 16px 40px -26px rgba(0,0,0,.4);
-}
+/* Project editorial rows and fields are owned by agency-project.css. */
 /* A Project form CTA is intentionally quieter than Studio's bold actions.
    Keep the same three-layer glass material, without the thick raised rim. */
 body.sf-glass-v2 .sf-agency-widget.sf-agency-widget--project .cdl-project__button{
@@ -177,35 +168,16 @@ body.sf-glass-v2 .sf-agency-widget.sf-agency-widget--project .cdl-project__butto
 /* Quiet surface accents: match reference small glass chips and selected tags. */
 body.sf-glass-v2 .sf-agency-widget :is(
   .cdl-service-detail__scope li,
-  .cdl-project__summary,
   .sf-agency-process-stage-row
 ){
   border:1px solid rgba(255,255,255,.12);
   background:rgba(255,255,255,.045);
   color:#e1dce5;
 }
-body.sf-glass-v2 .sf-agency-widget .cdl-project__choice span{
-  border:1px solid rgba(255,255,255,.11);
-  background:rgba(255,255,255,.035);
-  color:#ddd9d7;
-  transition:background .2s ease,border-color .2s ease,color .2s ease;
-}
-body.sf-glass-v2 .sf-agency-widget .cdl-project__choice:hover span{
-  border-color:rgba(214,166,118,.42);
-  color:#fff;
-}
-body.sf-glass-v2 .sf-agency-widget .cdl-project__choice input:checked+span{
-  border-color:rgba(214,166,118,.68);
-  background:rgba(214,166,118,.075);
-  color:#f8f5f1;
-  box-shadow:inset 0 0 0 1px rgba(214,166,118,.035);
-}
 /* Reference codela-input, preserve live WordPress form IDs, nonce and labels. */
 body.sf-glass-v2 .sf-agency-widget :is(
   .cdl-contact__form input:not([type="checkbox"]):not([type="hidden"]),
-  .cdl-contact__form textarea,
-  .cdl-project__fields input:not([type="checkbox"]):not([type="hidden"]),
-  .cdl-project__fields textarea
+  .cdl-contact__form textarea
 ){
   border:1px solid rgba(255,255,255,.10)!important;
   background:rgba(255,255,255,.035)!important;
@@ -214,9 +186,7 @@ body.sf-glass-v2 .sf-agency-widget :is(
 }
 body.sf-glass-v2 .sf-agency-widget :is(
   .cdl-contact__form input:not([type="checkbox"]):not([type="hidden"]),
-  .cdl-contact__form textarea,
-  .cdl-project__fields input:not([type="checkbox"]):not([type="hidden"]),
-  .cdl-project__fields textarea
+  .cdl-contact__form textarea
 ):focus{
   border-color:rgba(214,166,118,.60)!important;
   background:rgba(255,255,255,.055)!important;

@@ -45,7 +45,7 @@
 .sf-agency-widget--project .cdl-project__choices--three{grid-template-columns:repeat(3,minmax(0,1fr))}
 .sf-agency-widget--project .cdl-project__choice{min-width:0;position:relative;display:block;cursor:pointer}
 .sf-agency-widget--project .cdl-project__choice input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
-.sf-agency-widget--project .cdl-project__choice span{
+.sf-agency-widget--project .cdl-project__choice>span{
  position:relative;display:flex;justify-content:center;align-items:center;text-align:center;min-width:0;
  min-height:48px;padding:11px 9px;border-radius:14px;
  border:1px solid rgba(255,255,255,.11);
@@ -53,21 +53,14 @@
  color:#ddd9d7;font-size:12px;line-height:1.3;
  transition:background .2s ease,border-color .2s ease,color .2s ease
 }
-.sf-agency-widget--project .cdl-project__choices--three .cdl-project__choice span{border-radius:14px;min-height:44px}
+.sf-agency-widget--project .cdl-project__choices--three .cdl-project__choice>span{border-radius:14px;min-height:44px}
 .sf-agency-widget--project .cdl-project__choice input:checked+span{
  color:#f8f5f1;border-color:rgba(214,166,118,.68);
  background:rgba(214,166,118,.075);
  box-shadow:inset 0 0 0 1px rgba(214,166,118,.035)
 }
-/* A discreet check at the corner, never a heavy gold-filled chip. */
-.sf-agency-widget--project .cdl-project__choice input:checked+span::after{
- content:'✓';position:absolute;top:5px;right:7px;
- display:grid;place-items:center;width:12px;height:12px;
- color:#d6a676;font-size:11px;font-weight:700;line-height:1;
- pointer-events:none
-}
 @media(hover:hover){
- .sf-agency-widget--project .cdl-project__choice:hover span{
+ .sf-agency-widget--project .cdl-project__choice:hover>span{
   border-color:rgba(214,166,118,.38);color:#fff
  }
 }
@@ -121,8 +114,8 @@ body:has(.codela-page-layout>.sf-agency-widget--project) .sf-footer a{color:#d8d
  .sf-agency-widget--project .cdl-project__panel{padding:23px 20px;border-radius:24px;min-height:0}
  .sf-agency-widget--project .cdl-project__step{gap:19px}
  .sf-agency-widget--project .cdl-project__fieldset legend{margin-bottom:9px}
- .sf-agency-widget--project .cdl-project__choice span{min-height:45px;font-size:11.5px;padding:10px 7px}
- .sf-agency-widget--project .cdl-project__choices--three .cdl-project__choice span{min-height:43px}
+ .sf-agency-widget--project .cdl-project__choice>span{min-height:45px;font-size:11.5px;padding:10px 7px}
+ .sf-agency-widget--project .cdl-project__choices--three .cdl-project__choice>span{min-height:43px}
  .sf-agency-widget--project .cdl-project__progress-track{margin:10px 0 21px}
  .sf-agency-widget--project .cdl-project__success{min-height:420px}
 }
@@ -131,7 +124,7 @@ body:has(.codela-page-layout>.sf-agency-widget--project) .sf-footer a{color:#d8d
  .sf-agency-widget--project .cdl-project__panel{padding:19px 15px}
  .sf-agency-widget--project .cdl-project__step{gap:17px}
  .sf-agency-widget--project .cdl-project__choices{gap:7px}
- .sf-agency-widget--project .cdl-project__choice span{font-size:10.5px}
+ .sf-agency-widget--project .cdl-project__choice>span{font-size:10.5px}
 }
 @media(prefers-reduced-motion:reduce){
  .sf-agency-widget--project .cdl-project__button,.sf-agency-widget--project .cdl-project__choice span,.sf-agency-widget--project .cdl-project__progress-track>span{transition:none}
@@ -213,12 +206,16 @@ body:not(.wp-admin) .sf-agency-widget--project .cdl-project__heading > :is(h1,h2
 .sf-agency-widget--project .cdl-project__choices--services .cdl-project__choice .cdl-project__choice-copy{display:grid;gap:3px;text-align:left;min-height:0;padding:0;border:0;background:none;box-shadow:none;justify-content:start;}
 .sf-agency-widget--project .cdl-project__choice-copy strong{font-size:17px;font-weight:600;color:#f8f7fa;}
 .sf-agency-widget--project .cdl-project__choice-copy small{font-size:12.5px;line-height:1.4;color:#b6b0bf;}
-.sf-agency-widget--project .cdl-project__choices--services .cdl-project__choice input:checked+span{background:none;border-top:1px solid #d3a48080;margin-top:-1px;}
+.sf-agency-widget--project .cdl-project__choices--services .cdl-project__choice input:checked+span{background:none;border:0;border-bottom:1px solid #ffffff17;box-shadow:none;margin:0;}
+.sf-agency-widget--project .cdl-project__choices--services .cdl-project__choice>span::before{content:"";position:absolute;left:0;right:0;top:-1px;height:1px;background:linear-gradient(90deg,#d3a480c7,#d3a48024 60%,transparent);opacity:0;transform:scaleX(.3);transform-origin:left;pointer-events:none;transition:opacity .3s ease,transform .4s cubic-bezier(.22,1,.36,1);}
+.sf-agency-widget--project .cdl-project__choices--services .cdl-project__choice input:checked+span::before{opacity:1;transform:scaleX(1);}
+@media(hover:hover){.sf-agency-widget--project .cdl-project__choices--services .cdl-project__choice:hover>span::before{opacity:1;transform:scaleX(1);}}
 .sf-agency-widget--project .cdl-project__choices--services .cdl-project__choice input:checked+span>i{color:#d3a480;}
 .sf-agency-widget--project .cdl-project__choices--services .cdl-project__choice>span::after{content:"✓";position:absolute;right:2px;top:50%;transform:translateY(-50%);width:22px;height:22px;border:1px solid #ffffff2e;border-radius:50%;display:grid;place-items:center;color:transparent;font-size:11px;}
-.sf-agency-widget--project .cdl-project__choices--services .cdl-project__choice input:checked+span::after{color:#f9e6d5;background:#d3a48033;border-color:#d3a480;}
+.sf-agency-widget--project .cdl-project__choices--services .cdl-project__choice input:checked+span::after{top:50%;right:2px;width:22px;height:22px;color:#f9e6d5;background:#d3a48033;border-color:#d3a480;}
 .sf-agency-widget--project .cdl-project__choices--three{display:flex;flex-wrap:wrap;gap:8px;}
 .sf-agency-widget--project .cdl-project__choices--three .cdl-project__choice>span{border-radius:999px;min-height:38px;padding:8px 15px;font-size:13px;}
+.sf-agency-widget--project .cdl-project__choices--three .cdl-project__choice input:checked+span{border-color:#d3a4809e;background:#d3a48029;color:#f9e6d5;box-shadow:none;}
 .sf-agency-widget--project .cdl-project__choices--three .cdl-project__choice input:checked+span::after{display:none;}
 .sf-agency-widget--project .cdl-project__fields input,.sf-agency-widget--project .cdl-project__fields textarea{border:0!important;border-bottom:1px solid #ffffff24!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;padding:10px 0;min-height:42px;}
 .sf-agency-widget--project .cdl-project__fields input:focus,.sf-agency-widget--project .cdl-project__fields textarea:focus{border-bottom-color:#d3a480!important;}
@@ -233,3 +230,6 @@ body:not(.wp-admin) .sf-agency-widget--project .cdl-project__heading > :is(h1,h2
 .sf-agency-widget--project .cdl-project__choices--services .cdl-project__choice input{z-index:2;}
 .sf-agency-widget--project .cdl-project__heading>p:last-child{color:#b6b0bf;}
 .sf-agency-widget--project .cdl-project__heading h2:focus{outline:none;}
+
+@media(prefers-reduced-motion:reduce){.sf-agency-widget--project .cdl-project__choices--services .cdl-project__choice>span::before{transition:none;}}
+@media(forced-colors:active){.sf-agency-widget--project .cdl-project__choices--services .cdl-project__choice input:checked+span::after{color:HighlightText;background:Highlight;border-color:Highlight;}}
