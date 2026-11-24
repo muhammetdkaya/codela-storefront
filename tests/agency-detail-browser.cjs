@@ -7,10 +7,10 @@ const {execFileSync}=require('node:child_process');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const root=path.resolve(__dirname,'..');
 const agencyCss=fs.readFileSync(path.join(root,'theme/codela-storefront/assets/styles/agency.css'),'utf8');
-const serviceViewportRule=agencyCss.slice(agencyCss.lastIndexOf('/* Service details: occupy'));
+const serviceViewportRule=agencyCss.match(/body:not\(\.home\):has\(\.sf-shell\) \.codela-page-layout > \.sf-agency-widget--detail:first-child > \.cdl-service-detail\{([^}]*)\}/)?.[1].replace(/\/\*[\s\S]*?\*\//g,'')||'';
 assert.match(serviceViewportRule,/min-height:calc\(100svh - var\(--sf-agency-header-clearance,76px\)\)/,
   'Service detail height must use the stable viewport, not the collapsing Safari toolbar');
-assert.doesNotMatch(serviceViewportRule,/100dvh/,'Service detail must not recrop its cover image as browser chrome moves');
+assert.doesNotMatch(serviceViewportRule,/100dvh/,'Service detail minimum height remains stable as browser chrome moves');
 const fixture=execFileSync(process.env.PHP_BIN||'php',['tests/agency-pages.php','--render=detail'],{cwd:root,encoding:'utf8'});
 const server=http.createServer((req,res)=>{
   const u=new URL(req.url,'http://localhost').pathname;
