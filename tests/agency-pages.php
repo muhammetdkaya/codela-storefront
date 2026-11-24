@@ -160,12 +160,13 @@ if ( in_array( '--render=detail', $argv, true ) ) {
     echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/storefront-base.css">';
     echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/agency.css">';
     echo '</head><body class="sf-site-mode-agency"><main class="sf-content" id="sf-content">';
-    echo '<div class="codela-page-layout">'.$markup.'</div></main></body></html>';
+    echo '<div class="codela-page-layout">'.$markup.'</div></main><script src="/theme/codela-storefront/assets/scripts/agency-widgets.js"></script></body></html>';
     exit;
 }
 
 
 
+agency_page_check( str_contains(codela_sf_agency_404_markup(),'data-404-stage') && str_contains(codela_sf_agency_404_markup(),'Işığın dışına çıktın.') && str_contains(codela_sf_agency_404_markup(),esc_url(home_url('/'))), 'Agency 404 has a real home link and accessible heading' );
 $project_data = [
     'id' => 'agency-project-start', 'enabled'=>true,'variant'=>'flow',
     'title'=>'Neye odaklanıyoruz?','description'=>'',

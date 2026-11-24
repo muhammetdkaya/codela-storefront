@@ -17,7 +17,7 @@ const server=http.createServer((req,res)=>{
   if(u==='/'){res.setHeader('Content-Type','text/html; charset=utf-8');return res.end(fixture)}
   const f=path.resolve(root,'.'+u);
   if(!f.startsWith(root+path.sep)||!fs.existsSync(f)||!fs.statSync(f).isFile()){res.statusCode=404;return res.end()}
-  res.setHeader('Content-Type',f.endsWith('.css')?'text/css':f.endsWith('.jpg')?'image/jpeg':'text/plain');
+  res.setHeader('Content-Type',f.endsWith('.css')?'text/css':f.endsWith('.js')?'text/javascript':f.endsWith('.jpg')?'image/jpeg':'text/plain');
   res.end(fs.readFileSync(f));
 });
 (async()=>{
@@ -36,6 +36,7 @@ const server=http.createServer((req,res)=>{
      assert.equal(await detail.locator('.cdl-service-detail__faq details').count(),2);
      await detail.locator('.cdl-service-detail__faq details').nth(1).locator('summary').click();
      assert(await detail.locator('.cdl-service-detail__faq details').nth(1).evaluate(el=>el.open));
+     await page.waitForFunction(()=>document.querySelectorAll('.cdl-service-detail__faq details[open]').length===1);
      const s=await detail.evaluate(el=>{
        const photo=el.querySelector('.cdl-service-detail__visual img');
        const bounds=el.querySelector('.cdl-service-detail').getBoundingClientRect();

@@ -2781,7 +2781,7 @@ body:not(.home):has(.sf-shell) .codela-page-layout > .sf-agency-widget--detail:f
 
 /* Editorial detail / native 404 — 0.1.408 */
 .sf-agency-widget--detail .cdl-service-detail{align-items:flex-start;padding:clamp(22px,4svh,42px) 20px 40px}
-.sf-agency-widget--detail .cdl-service-detail__shell{width:min(100%,696px);margin:0 auto}
+.sf-agency-widget--detail .cdl-service-detail__shell{flex:0 1 696px;width:min(100%,696px);max-width:696px;margin:0 auto}
 .sf-agency-widget--detail .cdl-service-detail__editorial{width:100%;display:block}
 .sf-agency-widget--detail .cdl-service-detail__tabs{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px}
 .sf-agency-widget--detail .cdl-service-detail__tabs a{display:inline-flex;align-items:center;min-height:32px;padding:0 12px;border:1px solid #ffffff1c;border-radius:999px;color:#b6b0bf;font-size:12px;text-decoration:none}

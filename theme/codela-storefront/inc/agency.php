@@ -317,7 +317,7 @@ function codela_sf_agency_project_submit(): void {
     $headers = [ 'Content-Type: text/plain; charset=UTF-8' ];
     if ( $is_email ) { $headers[] = 'Reply-To: ' . sanitize_email( $contact ); }
     $body = "Yeni Codela Proje Başlat Talebi\n\n"
-        . "Hizmet: $service\nBaşlangıç tercihi: $time\nMevcut durum / ölçek: $scale\n"
+        . "Hizmet: $service\nBaşlangıç tercihi: $time\n" . ( $scale ? "Mevcut durum / ölçek: $scale\n" : '' )
         . "Ad Soyad / Marka: $name\nİletişim: $contact\n"
         . "Kısa not:\n" . ( $note ?: 'Belirtilmedi' ) . "\n";
     if ( ! wp_mail( $to, '[Codela] Yeni proje başlat talebi', $body, $headers ) ) { $redirect( 'failed' ); }
@@ -367,6 +367,7 @@ function codela_sf_project_availability(): array {
     return $out;
 }
 add_action( 'admin_menu', static function() {
+    if ( ! codela_sf_agency_experience() ) { return; }
     add_options_page( 'Codela Proje Müsaitliği', 'Codela Müsaitlik', 'manage_options', 'codela-project-capacity', static function() {
         if ( ! current_user_can( 'manage_options' ) ) { return; }
         echo '<div class="wrap"><h1>Codela Proje Müsaitliği</h1><p>Önümüzdeki üç ay için kalan proje kapasitesi. Boş alan = henüz belirlenmedi; 0 = dolu. Talepler rezervasyon değildir; kabul edilen işler sonrası kapasiteyi güncelleyin.</p><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="codela_sf_save_capacity">';
@@ -395,8 +396,11 @@ function codela_sf_agency_experience(): bool {
 }
 add_filter( 'render_block_core/group', static function($content,$block) {
     if ( ! codela_sf_agency_experience() || ! function_exists('is_404') || ! is_404() || ! str_contains((string)($block['attrs']['className'] ?? ''),'sf-404-template') ) { return $content; }
-    return '<main id="sf-content" class="sf-content sf-404-agency"><section class="sf-agency-404" data-agency-widget="404"><div class="cdl-404-stage" data-404-stage><div class="cdl-404-grid" aria-hidden="true"></div><div class="cdl-404-beam" aria-hidden="true"></div><div class="cdl-404-coord" aria-hidden="true"><span>41.0082° N · 28.9784° E</span><span>ROTA DIŞI</span></div><div class="cdl-404-num" aria-hidden="true">404</div><h1>Işığın dışına çıktın.</h1><p>Aradığın sayfa taşınmış ya da hiç var olmamış olabilir.</p><a class="cdl-404-home" href="' . esc_url(home_url('/')) . '">Ana Sayfaya Dön <span aria-hidden="true">→</span></a></div></section></main>';
+    return codela_sf_agency_404_markup();
 }, 10, 2 );
+function codela_sf_agency_404_markup(): string {
+    return '<main id="sf-content" class="sf-content sf-404-agency"><section class="sf-agency-404" data-agency-widget="404"><div class="cdl-404-stage" data-404-stage><div class="cdl-404-grid" aria-hidden="true"></div><div class="cdl-404-beam" aria-hidden="true"></div><div class="cdl-404-coord" aria-hidden="true"><span>41.0082° N · 28.9784° E</span><span>ROTA DIŞI</span></div><div class="cdl-404-num" aria-hidden="true">404</div><h1>Işığın dışına çıktın.</h1><p>Aradığın sayfa taşınmış ya da hiç var olmamış olabilir.</p><a class="cdl-404-home" href="' . esc_url(home_url('/')) . '">Ana Sayfaya Dön <span aria-hidden="true">→</span></a></div></section></main>';
+}
 add_action('wp_enqueue_scripts', static function() {
     if ( codela_sf_agency_experience() && function_exists('is_404') && is_404() ) {
         codela_sf_agency_styles();

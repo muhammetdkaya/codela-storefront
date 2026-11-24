@@ -81,6 +81,19 @@ def check_service_detail_pages() -> None:
         print(f"OK detail {title}: published page, editorial scope, FAQs and CTA", flush=True)
 
 
+def check_agency_404() -> None:
+    path = "/codela-404-smoke-" + uuid.uuid4().hex + "/"
+    try:
+        fetch(path)
+    except urllib.error.HTTPError as error:
+        assert error.code == 404, f"Expected HTTP 404, got {error.code}"
+        html = error.read().decode("utf-8", errors="replace")
+        assert "cdl-404-stage" in html and "sf-404-agency" in html, "Agency 404 design missing"
+        print("OK 404: native HTTP status and Agency light scene", flush=True)
+        return
+    raise AssertionError("Unknown route did not return HTTP 404")
+
+
 def check() -> None:
     style = fetch("/wp-content/themes/codela-storefront/style.css")
     version = re.search(r"(?m)^Version:\s*(\S+)", style)
@@ -207,6 +220,7 @@ def check() -> None:
                           " / ".join(labels), flush=True)
             if not errors:
                 check_service_detail_pages()
+                check_agency_404()
                 print(f"Agency {expected_version}: homepage welcome, navigation, Services, About and Contact verified.")
                 return
         print("Agency smoke attempt", attempt + 1, "; ".join(errors), flush=True)

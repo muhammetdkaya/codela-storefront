@@ -244,3 +244,5 @@ body:not(.wp-admin) .sf-agency-widget--project .cdl-project__heading > :is(h1,h2
 .sf-agency-widget--project .cdl-project__capacity-dots i{width:5px;height:5px;border-radius:50%;background:#ffffff26}
 .sf-agency-widget--project .cdl-project__capacity-dots i.is-free{background:#d3a480}
 .sf-agency-widget--project .cdl-project__slots .cdl-project__choice>span{padding-block:13px}
+
+@media(prefers-reduced-motion:no-preference){.sf-agency-widget--project .cdl-project__availability-left>i::after{content:"";position:absolute;inset:-5px;border:1px solid #d3a48088;border-radius:50%;animation:cdl-capacity-pulse 2.8s ease-out infinite}@keyframes cdl-capacity-pulse{from{transform:scale(.7);opacity:.9}to{transform:scale(1.9);opacity:0}}}
