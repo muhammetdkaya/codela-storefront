@@ -1,7 +1,7 @@
 <?php
 /**
  * Optional Agency stock media: explicit preparation, immutable content cache.
- * Bundled legacy assets remain available throughout the compatibility rollout.
+ * Optional images are installed outside the theme; legacy files remain a fallback.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
@@ -81,7 +81,7 @@ function codela_sf_agency_media_prepare( bool $allow_download = false, int $max_
                 return new WP_Error( 'codela_agency_integrity', 'Kaydedilen ajans görseli doğrulanamadı: ' . $name );
             }
             // tempnam may create files with restrictive permissions; use WP's file mode.
-            if ( defined( 'FS_CHMOD_FILE' ) ) { chmod( $target, FS_CHMOD_FILE ); }
+            chmod( $target, defined( 'FS_CHMOD_FILE' ) ? FS_CHMOD_FILE : 0644 );
             ++$prepared;
         } finally {
             if ( is_file( $temp ) ) { wp_delete_file( $temp ); }
@@ -90,7 +90,33 @@ function codela_sf_agency_media_prepare( bool $allow_download = false, int $max_
     return true;
 }
 
-/** Local-only resolution; never contact GitHub during a storefront request. */
+/** A fixed, public, immutable fallback for direct upgrades and offline migration retries. */
+function codela_sf_agency_media_source_url( string $name ): string {
+    $manifest = codela_sf_agency_media_manifest();
+    if ( ! preg_match( '/^[a-z0-9-]+\.jpg$/D', $name ) || ! isset( $manifest['files'][ $name ] ) ) { return ''; }
+    return 'https://raw.githubusercontent.com/muhammetdkaya/codela-storefront/'
+        . $manifest['source_commit'] . '/theme/codela-storefront/assets/media/' . $name;
+}
+
+/** Queue only when a page actually uses optional media; never download during rendering. */
+function codela_sf_agency_media_queue(): void {
+    if ( ! function_exists( 'wp_next_scheduled' ) || ! function_exists( 'wp_schedule_single_event' ) ) { return; }
+    if ( ! wp_next_scheduled( 'codela_sf_agency_media_recover' ) ) {
+        wp_schedule_single_event( time() + 15, 'codela_sf_agency_media_recover' );
+    }
+}
+if ( function_exists( 'add_action' ) ) {
+    add_action( 'codela_sf_agency_media_recover', static function(): void {
+        $result = codela_sf_agency_media_prepare( true, 1 );
+        if ( false === $result || is_wp_error( $result ) ) {
+            if ( ! wp_next_scheduled( 'codela_sf_agency_media_recover' ) ) {
+                wp_schedule_single_event( time() + ( is_wp_error( $result ) ? 900 : 15 ), 'codela_sf_agency_media_recover' );
+            }
+        }
+    } );
+}
+
+/** No server-side network request during page rendering. */
 function codela_sf_agency_media_url( string $name ): string {
     $entry = codela_sf_agency_media_manifest()['files'][ $name ] ?? null;
     if ( ! is_array( $entry ) ) { return ''; }
@@ -98,5 +124,26 @@ function codela_sf_agency_media_url( string $name ): string {
     if ( $location && is_file( $location['path'] ) && ! is_link( $location['path'] )
         && filesize( $location['path'] ) === $entry['size'] ) { return $location['url']; }
     $legacy = get_template_directory() . '/assets/media/' . $name;
-    return is_file( $legacy ) ? get_template_directory_uri() . '/assets/media/' . $name : '';
+    if ( is_file( $legacy ) ) {
+        codela_sf_agency_media_queue();
+        return get_template_directory_uri() . '/assets/media/' . $name;
+    }
+    codela_sf_agency_media_queue();
+    return codela_sf_agency_media_source_url( $name );
+}
+
+/** Preserve exact old theme-media links in saved content without modifying the database. */
+function codela_sf_agency_media_legacy_content( string $html ): string {
+    if ( false === strpos( $html, '/assets/media/' ) ) { return $html; }
+    $base = get_template_directory_uri() . '/assets/media/';
+    foreach ( codela_sf_agency_media_manifest()['files'] ?? [] as $name => $entry ) {
+        if ( false !== strpos( $html, $base . $name ) ) {
+            $html = str_replace( $base . $name, codela_sf_agency_media_url( $name ), $html );
+        }
+    }
+    return $html;
+}
+if ( function_exists( 'add_filter' ) ) {
+    add_filter( 'render_block', 'codela_sf_agency_media_legacy_content', 20 );
+    add_filter( 'the_content', 'codela_sf_agency_media_legacy_content', 20 );
 }

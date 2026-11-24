@@ -46,6 +46,7 @@ jobs:
           php tests/site-mode.php --without-plugin
           php tests/agency.php
           php tests/agency-pages.php
+          php tests/agency-media-slim.php
           python3 tests/starter-media.py
           node --check theme/codela-storefront/assets/scripts/product-information.js
           node --check tests/product-flow-browser.cjs
@@ -94,6 +95,13 @@ jobs:
           python3 tests/release-workflow.py
           python3 tests/package.py
           python3 scripts/build-package.py
+          python3 - <<'PY'
+          import pathlib, zipfile
+          p=next(pathlib.Path('dist').glob('codela-storefront-*.zip'))
+          with zipfile.ZipFile(p) as z:
+              assert not any(n.startswith('codela-storefront/assets/media/') and n.endswith('.jpg') for n in z.namelist())
+          print('Slim theme ZIP:', p.stat().st_size, 'bytes')
+          PY
           python3 -c 'import json,os;assert json.load(open("dist/manifest.json"))["version"]==os.environ["RELEASE_VERSION"]'
       - name: Publish immutable GitHub release
         env:

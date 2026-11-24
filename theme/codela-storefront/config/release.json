@@ -6,7 +6,8 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Ajans görselleri için kalıcı yerel depolama ve doğrulama altyapısı eklendi; mevcut görseller geçiş sürümünde korunuyor.",
-    "Şablon medya paketleri için ortak kayıt sistemi ve bağımsız test akışı eklendi."
+    "Ana tema ZIP'inden 15 büyük ajans JPEG dosyası ayrıldı; içerik kaynakları GitHub'da korunuyor.",
+    "Mevcut görseller yerel depolamaya alınır; eksik görseller sabit kaynak üzerinden geçici olarak gösterilir ve arka planda hazırlanır.",
+    "FTP kod dağıtımında ajans JPEG dosyaları gönderilmez veya silinmez."
   ]
 }

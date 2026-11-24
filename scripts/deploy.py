@@ -1,5 +1,5 @@
 """Fixed theme-only FTPS deployment with verified staging and rollback."""
-import ftplib,hashlib,io,json,os,re,ssl,urllib.parse,urllib.request,uuid
+import ftplib,hashlib,io,json,os,re,runpy,ssl,urllib.parse,urllib.request,uuid
 from pathlib import Path
 TARGET="codela-storefront"
 PUBLIC="https://codela.dev/wp-content/themes/codela-storefront/"
@@ -50,13 +50,18 @@ def read_url(url):
         return response.read()
 def valid_theme(data):
     return bool(re.search(rb"(?m)^Theme Name:\s*Codela Storefront\s*$",data) and re.search(rb"(?m)^Text Domain:\s*codela-storefront\s*$",data))
+def optional_media_paths():
+    builder=runpy.run_path(str(Path(__file__).with_name('build-starter-media.py')))
+    return builder['optional_theme_paths']()
 def package_files():
     root=Path("theme/codela-storefront");files={}
+    excluded=optional_media_paths()
     for file in sorted(root.rglob("*")):
         if file.is_symlink():raise RuntimeError("Symlink rejected")
         if file.is_file():
             relative=file.relative_to(root).as_posix()
             if ".." in relative.split("/") or "\n" in relative or "\r" in relative:raise RuntimeError("Invalid path")
+            if relative in excluded:continue
             files[relative]=file.read_bytes()
     if MANIFEST in files or not valid_theme(files.get("style.css",b"")) or "templates/index.html" not in files:raise RuntimeError("Invalid theme")
     return files
@@ -149,6 +154,8 @@ def main():
             print("No deployment manifest: verified %d existing remote theme files by checksum." % len(bootstrap_originals),flush=True)
         else:
             changed_files,retired=delta_plan(files,previous)
+            # Existing live Agency media is intentionally left in place until migrated.
+            retired=[path for path in retired if path not in optional_media_paths()]
         print("Theme delta: %d changed/new, %d unchanged, %d retired (of %d files)." % (
             len(changed_files),len(files)-len(changed_files),len(retired),len(files)),flush=True)
         stage="stage theme files";directories={"."}

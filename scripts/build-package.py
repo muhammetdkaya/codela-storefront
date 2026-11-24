@@ -33,7 +33,9 @@ def build():
         raise ValueError("Invalid version or source commit")
     out=Path("dist");out.mkdir(exist_ok=True)
     target=out/("codela-storefront-"+version+".zip")
-    write_archive(target)
+    write_archive(target,exclude_optional=True)
+    if target.stat().st_size >= 2 * 1024 * 1024:
+        raise ValueError("Core theme exceeds 2 MiB release budget")
     metadata={"theme":"codela-storefront","version":version,"source_sha":commit,"sha256":hashlib.sha256(target.read_bytes()).hexdigest(),"package":PUBLIC+"v"+version+"/"+target.name}
     metadata.update(json.loads((ROOT/"config/release.json").read_text()))
     (out/"manifest.json").write_text(json.dumps(metadata,sort_keys=True))
