@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "starters": [
+    {
+      "id": "agency",
+      "version": "1.0.0",
+      "source_dir": "theme/codela-storefront/assets/media",
+      "legacy_manifest": "config/agency-media.json"
+    },
+    {
+      "id": "commerce",
+      "version": "1.0.0",
+      "source_dir": "demos/ev-dekorasyon/1.0.0",
+      "files": [
+        "codela-ev-aria-yan-sehpa.webp",
+        "codela-ev-atlas-saksi.webp",
+        "codela-ev-blok-kitap-destegi.webp",
+        "codela-ev-duru-surahi.webp",
+        "codela-ev-forma-mumluk.webp",
+        "codela-ev-kavis-dekoratif-obje.webp",
+        "codela-ev-linea-tepsi.webp",
+        "codela-ev-luna-abajur.webp",
+        "codela-ev-nora-kase.webp",
+        "codela-ev-terra-vazo.webp"
+      ]
+    }
+  ]
+}

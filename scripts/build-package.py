@@ -4,11 +4,8 @@ from pathlib import Path
 ROOT=Path("theme/codela-storefront")
 PUBLIC="https://github.com/muhammetdkaya/codela-storefront/releases/download/"
 def optional_media_paths():
-    manifest=json.loads((ROOT/"config/agency-media.json").read_text())
-    names=manifest["files"]
-    if any(not re.fullmatch(r"[a-z0-9-]+\.jpg",name) for name in names):
-        raise ValueError("Invalid optional media name")
-    return {"assets/media/"+name for name in names}
+    builder=runpy.run_path(str(Path(__file__).with_name("build-starter-media.py")))
+    return builder["optional_theme_paths"](theme=ROOT)
 
 def write_archive(target, *, exclude_optional=False):
     excluded=optional_media_paths() if exclude_optional else set()

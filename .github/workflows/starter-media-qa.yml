@@ -1,0 +1,19 @@
+name: Starter media candidate QA
+on:
+  push:
+    paths:
+      - 'demos/**'
+      - 'scripts/build-starter-media.py'
+      - 'tests/starter-media.py'
+      - 'theme/codela-storefront/config/agency-media.json'
+      - 'theme/codela-storefront/assets/media/**'
+      - '.github/workflows/starter-media-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tests/starter-media.py
