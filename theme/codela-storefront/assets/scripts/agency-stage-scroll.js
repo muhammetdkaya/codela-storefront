@@ -12,7 +12,7 @@
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
   const ignore='input,select,textarea,[contenteditable="true"],[role="dialog"]';
   const excluded=target=>target instanceof Element && !!target.closest(ignore);
-   // Vertical gestures over horizontal tracks should still scroll the document.
+  // Vertical gestures over horizontal tracks should still scroll the document.
   const viewport=()=>window.innerHeight||document.documentElement.clientHeight;
   const top=element=>element.getBoundingClientRect().top+window.scrollY;
   const activeIndex=()=>{
@@ -32,7 +32,10 @@
     const current=stages[index];
     const height=current.getBoundingClientRect().height;
     const local=window.scrollY-top(current);
-    if(height>viewport()+28&&direction>0&&local+viewport()<height-24)return null;
+    if(height>viewport()+28){
+      if(direction>0&&local+viewport()<height-24)return null;
+      if(direction<0&&local>24)return null;
+    }
     if(direction<0&&local>24)return current;
     const next=index+direction;
     return next>=0&&next<stages.length?stages[next]:null;

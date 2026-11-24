@@ -154,6 +154,13 @@ const server=http.createServer((req,res)=>{
         assert.equal(await serviceTrack.evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length),
           width>=1100?4:2,'Four columns on desktop; two on tablet');
       }
+      await process.scrollIntoViewIfNeeded();
+      await process.locator('[data-process-image-layer="1"][data-process-image-ready="true"]').waitFor({state:'attached'});
+      await process.locator('[data-process-image-layer="2"][data-process-image-ready="true"]').waitFor({state:'attached'});
+      await process.locator('[data-agency-widget-step="1"]').click();
+      assert.equal(await process.locator('[data-process-image-active="true"]').getAttribute('data-process-image-layer'),'1','Decoded image is ready at the moment the stage changes');
+      await process.locator('[data-agency-widget-step="2"]').click();
+      assert.equal(await process.locator('[data-process-image-active="true"]').getAttribute('data-process-image-layer'),'2','Third image is already decoded');
       await process.locator('[data-agency-widget-step="1"]').click();
       assert.equal(await process.locator('[data-agency-widget-stage]').getAttribute('data-step'),'1','Process steps remain interactive');
       assert.equal(await process.locator('[data-agency-widget-counter]').textContent(),'2 / 3','Independent process counter follows stage');
@@ -162,6 +169,20 @@ const server=http.createServer((req,res)=>{
       assert.equal(await second.locator('[data-agency-card="0"]').getAttribute('data-pos'),'0','Optional second Card Swap remains independent');
       assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal overflow at '+width);
       if(width===390||width===1440)await page.screenshot({path:path.join(root,'qa/agency-widgets-'+width+'.png'),fullPage:true});
+    }
+    // Desktop card uses its intended two columns and fits ordinary short viewports.
+    for(const [width,height] of [[1280,720],[1440,900],[1024,600]]){
+      await page.setViewportSize({width,height});
+      const stage=page.locator('.sf-agency-widget--process .sf-agency-process');
+      const geometry=await stage.evaluate(el=>{
+        const rect=e=>e.getBoundingClientRect();
+        const area=rect(el),card=el.querySelector('.sf-agency-process-stage'),foot=el.querySelector('.sf-agency-process-stage-foot');
+        return {height:area.height,display:getComputedStyle(card).display,columns:getComputedStyle(card).gridTemplateColumns.split(' ').length,
+          foot:rect(foot).bottom-area.top,card:rect(card).bottom-area.top};
+      });
+      assert.equal(geometry.display,'grid','Desktop stage uses the real two-column layout');
+      assert.equal(geometry.columns,2,'Desktop process visual and text sit side by side');
+      assert(geometry.height<=height+2&&geometry.foot<=geometry.card&&geometry.card<=height+2,'Desktop process fits viewport: '+JSON.stringify(geometry));
     }
     // Resize the same page, as mobile browser chrome changes the visible height.
     for(const [width,height] of [[390,844],[390,650],[430,932],[320,568]]){

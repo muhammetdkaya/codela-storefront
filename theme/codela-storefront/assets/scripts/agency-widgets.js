@@ -213,8 +213,8 @@
           if (!src) return null;
           const node = document.createElement('img');
           node.alt = '';
-          node.width = image.width || 1376;
-          node.height = image.height || 768;
+          node.width = Number(image.getAttribute('width')) || 1376;
+          node.height = Number(image.getAttribute('height')) || 768;
           node.decoding = 'async';
           node.fetchPriority = priority;
           node.dataset.processImageLayer = String(index);
@@ -234,6 +234,7 @@
           return layer;
         };
         const warm = () => {
+          image.loading = 'eager';
           steps.forEach((_, index) => { if (index) prepare(index); });
         };
         if ('IntersectionObserver' in window) {

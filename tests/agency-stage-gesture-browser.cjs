@@ -8,7 +8,7 @@ const html='<!doctype html><html><head><meta name="viewport" content="width=devi
  +'<style>html,body{padding:0;margin:0}.sf-agency-widget{height:100vh;box-sizing:border-box}</style></head><body class="home">'
  +'<main class="sf-content"><div class="codela-page-layout">'
  +'<div class="sf-agency-widget sf-agency-widget--studio">1</div>'
- +'<div class="sf-agency-widget sf-agency-widget--bento">2</div>'
+ +'<div class="sf-agency-widget sf-agency-widget--bento"><div data-agency-widget-track style="height:100%;width:100%">2</div></div>'
  +'<div class="sf-agency-widget sf-agency-widget--process">3</div>'
  +'</div></main><script src="/agency-stage-scroll.js"></script></body></html>';
 (async()=>{
@@ -63,7 +63,16 @@ await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
  await page.evaluate(()=>{const e=new Event('touchmove',{bubbles:true,cancelable:true});Object.defineProperty(e,'touches',{value:[{clientX:100,clientY:100}]});document.body.dispatchEvent(e);document.body.dispatchEvent(new Event('touchend',{bubbles:true}));});
  await page.waitForTimeout(400);
  assert.equal(await page.evaluate(()=>window.scrollY),700,'One touch can move only one stage');
- console.log('Agency wheel: 1500ms momentum, new gesture, idle reset passed.');
+ // Actual mouse wheel at an unchanged coordinate must work over a carousel/grid.
+ await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+ await page.waitForTimeout(300);
+ await page.mouse.move(500,300);
+ await page.mouse.wheel(0,120);
+ await page.waitForFunction(()=>Math.abs(window.scrollY-700)<=2&&!document.documentElement.classList.contains('sf-agency-stage-moving'),{},{timeout:2200});
+ await page.waitForTimeout(150);
+ await page.mouse.wheel(0,120);
+ await page.waitForFunction(()=>Math.abs(window.scrollY-1400)<=2&&!document.documentElement.classList.contains('sf-agency-stage-moving'),{},{timeout:2200});
+ console.log('Agency wheel: momentum, new gesture, fixed pointer over track, idle reset passed.');
 await page.close();
 }finally{await browser.close();await new Promise(done=>server.close(done));}
 })().catch(e=>{console.error(e);process.exitCode=1});
