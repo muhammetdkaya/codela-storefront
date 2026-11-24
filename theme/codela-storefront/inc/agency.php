@@ -411,7 +411,14 @@ add_action('wp_enqueue_scripts', static function() {
 }, 31);
 add_action('wp_head', static function() {
     if ( ! codela_sf_agency_experience() ) { return; }
-    // Show only on the first visit in this tab, only if document readiness is slow.
-    // No minimum animation duration, no blocking of a fast first paint.
-    echo '<style>html.cdl-first-entry::after{content:"";position:fixed;inset:0;z-index:9999;pointer-events:none;background:#09090c}html.cdl-first-entry::before{content:"";position:fixed;z-index:10000;left:50%;top:50%;height:1px;width:min(260px,64vw);translate:-50% -50%;background:linear-gradient(90deg,transparent,#d3a480,#fff1dc,#d3a480,transparent);box-shadow:0 0 18px #d3a48080;pointer-events:none;animation:cdl-entry-beam 1s ease-in-out infinite alternate}@keyframes cdl-entry-beam{from{transform:scaleX(.3);opacity:.45}to{transform:scaleX(1);opacity:1}}@media(prefers-reduced-motion:reduce){html.cdl-first-entry::before{animation:none}}</style><script>(function(){try{if(sessionStorage.getItem("cdl-first-entry-v1"))return;sessionStorage.setItem("cdl-first-entry-v1","1")}catch(e){return}var root=document.documentElement;var timer=setTimeout(function(){if(document.readyState==="loading")root.classList.add("cdl-first-entry")},160);function done(){clearTimeout(timer);root.classList.remove("cdl-first-entry")}document.addEventListener("DOMContentLoaded",done,{once:true});window.addEventListener("pageshow",done,{once:true});setTimeout(done,2500)})();</script>';
+    // Real content is authoritative, not session storage or the load event.
+    // A slow external entry can show feedback, but never hide already parsed content.
+    echo '<style>html.cdl-first-entry::after{content:"";position:fixed;inset:0;z-index:9999;pointer-events:none;background:#09090c}html.cdl-first-entry::before{content:"";position:fixed;z-index:10000;left:50%;top:50%;height:1px;width:min(260px,64vw);translate:-50% -50%;background:linear-gradient(90deg,transparent,#d3a480,#fff1dc,#d3a480,transparent);box-shadow:0 0 18px #d3a48080;pointer-events:none;animation:cdl-entry-beam 1s ease-in-out infinite alternate}@keyframes cdl-entry-beam{from{transform:scaleX(.3);opacity:.45}to{transform:scaleX(1);opacity:1}}@media(prefers-reduced-motion:reduce){html.cdl-first-entry::before{animation:none}}</style>';
+    echo '<script>(function(){var root=document.documentElement,finished=false,timer,limit,observer;function done(){if(finished)return;finished=true;clearTimeout(timer);clearTimeout(limit);if(observer)observer.disconnect();root.classList.remove("cdl-first-entry")}function ready(){var main=document.getElementById("sf-content");if(main&&main.querySelector("h1,h2")){done();return true}return false}window.codelaAgencyEntryReady=done;if(document.readyState!=="loading"){done();return}if(typeof MutationObserver==="function"){observer=new MutationObserver(ready);observer.observe(root,{childList:true,subtree:true})}timer=setTimeout(function(){if(!finished&&!ready())root.classList.add("cdl-first-entry")},100);limit=setTimeout(done,1800);document.addEventListener("DOMContentLoaded",done,{once:true});window.addEventListener("pageshow",done,{once:true});window.addEventListener("pagehide",done,{once:true})})();</script>';
 }, 1);
+add_action( 'wp_footer', static function() {
+    if ( codela_sf_agency_experience() ) {
+        // Main markup is already parsed; do not wait for Canvas, images or footer scripts.
+        echo '<script>if(window.codelaAgencyEntryReady)window.codelaAgencyEntryReady();</script>';
+    }
+}, 0 );

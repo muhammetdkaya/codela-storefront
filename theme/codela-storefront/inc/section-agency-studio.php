@@ -27,7 +27,8 @@ function codela_sf_section_agency_studio( array $data, string $type = '', bool $
     $services = function_exists( 'is_front_page' ) && is_front_page()
         ? '#sf-agency-services'
         : codela_sf_agency_page_url( 'hizmetler', home_url( '/hizmetler/' ) );
-    $image = codela_sf_agency_media_url( 'agency-reference-hero.jpg' );
+    $front_scene = function_exists( 'is_front_page' ) && is_front_page();
+    $image = $front_scene ? '' : codela_sf_agency_media_url( 'agency-reference-hero.jpg' );
     ob_start();
     ?>
     <div class="sf-agency-widget sf-agency-widget--studio" data-agency-widget="studio">
@@ -47,7 +48,7 @@ function codela_sf_section_agency_studio( array $data, string $type = '', bool $
             <a class="codela-studio-hero__contact" href="<?php echo esc_url( $contact ); ?>">Projenizi konuşalım <span aria-hidden="true">↗</span></a>
           </div>
           <div class="codela-studio-hero__visual">
-            <?php if ( function_exists( 'is_front_page' ) && is_front_page() ) : ?>
+            <?php if ( $front_scene ) : ?>
               <?php require __DIR__ . '/../parts/agency-light-scene.php'; ?>
             <?php else : ?>
             <img src="<?php echo esc_url( $image ); ?>" alt="Işığı yansıtan cam ve metal yüzeylerden oluşan Codela stüdyo kompozisyonu"

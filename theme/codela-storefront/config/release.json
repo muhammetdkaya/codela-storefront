@@ -6,8 +6,8 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Ana tema ZIP'inden 15 büyük ajans JPEG dosyası ayrıldı; içerik kaynakları GitHub'da korunuyor.",
-    "Mevcut görseller yerel depolamaya alınır; eksik görseller sabit kaynak üzerinden geçici olarak gösterilir ve arka planda hazırlanır.",
-    "FTP kod dağıtımında ajans JPEG dosyaları gönderilmez veya silinmez."
+    "Ajans ilk giriş çizgisi gerçek içerik oluştuğunda kapanır; sekme kaydı ve tüm sayfa kaynaklarının yüklenmesi beklenmez.",
+    "Ajans geçiş çizgisi 100 ms gecikmeyle gösterilir; hızlı geçişlerde gereksiz bekleme yoktur.",
+    "Ana sayfada kullanılmayan karşılama JPEG çözümlemesi kaldırıldı."
   ]
 }

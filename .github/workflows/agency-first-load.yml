@@ -1,0 +1,22 @@
+name: Agency first-load audit
+on:
+  push:
+    branches: [main]
+    paths: ['tools/agency-first-load.cjs','.github/workflows/agency-first-load.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci --ignore-scripts
+      - run: |
+          if command -v google-chrome >/dev/null; then
+            echo "CHROMIUM_BIN=$(command -v google-chrome)" >> "$GITHUB_ENV"
+          else
+            npx playwright install chromium
+          fi
+      - run: node tools/agency-first-load.cjs
