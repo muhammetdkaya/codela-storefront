@@ -15,6 +15,9 @@
   // Vertical gestures over horizontal tracks should still scroll the document.
   const viewport=()=>window.innerHeight||document.documentElement.clientHeight;
   const top=element=>element.getBoundingClientRect().top+window.scrollY;
+  // Safari can report a negative scrollY during elastic overscroll. The
+  // document's real top is zero; don't treat bounce as a new stage position.
+  const atTop=()=>window.scrollY<=2;
   const activeIndex=()=>{
     const point=window.scrollY+Math.min(24,viewport()*.04);
     let index=0;
@@ -55,13 +58,17 @@
   window.addEventListener('scroll',()=>{
     if(!navigationPending)return;
     clearTimeout(settleTimer);
-    settleTimer=setTimeout(release,120);
+    settleTimer=setTimeout(()=>{
+      if(Math.abs(window.scrollY-scrollTarget)<=3)release();
+    },120);
   },{passive:true});
   const move=direction=>{
     const target=targetFor(direction);
     if(!target)return false;
-    scrollTarget=Math.max(0,Math.min(Math.round(top(target)),document.documentElement.scrollHeight-viewport()));
-    if(reduced.matches||Math.abs(window.scrollY-scrollTarget)<=2){
+    scrollTarget=target===stages[0]?0:Math.max(0,Math.min(Math.round(top(target)),document.documentElement.scrollHeight-viewport()));
+    // A gesture already at its target must never issue a second scrollTo.
+    if(Math.abs(window.scrollY-scrollTarget)<=2)return true;
+    if(reduced.matches){
       window.scrollTo({top:scrollTarget,behavior:'instant'});return true;
     }
     navigationPending=true;
@@ -80,6 +87,22 @@
     const now=performance.now(),gap=now-wheel.lastAt;
     const pixels=event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?viewport():1);
     const magnitude=Math.abs(pixels);
+    // Consume upward momentum at the document boundary, even after the stage
+    // animation has settled and the wheel session has expired. Returning it
+    // to Safari here produces the elastic top-edge jump.
+    if(atTop()&&direction<0){
+      if(event.cancelable)event.preventDefault();
+      wheel.lastAt=now;wheel.used=true;wheel.delta=0;wheel.direction=-1;
+      wheel.lastMagnitude=magnitude;wheel.lowTail=magnitude<=6;
+      return;
+    }
+    // A small opposite-sign tail immediately after reaching the top is not
+    // a new downward swipe. A deliberate impulse or a quiet gap still works.
+    if(atTop()&&wheel.used&&wheel.direction<0&&gap<QUIET_MS&&direction>0&&magnitude<12){
+      if(event.cancelable)event.preventDefault();
+      wheel.lastAt=now;wheel.lastMagnitude=magnitude;
+      return;
+    }
     // A precision touchpad starts a new swipe with very small samples. Do not
     // require its FIRST sample to meet the stage threshold, or every following
     // sample extends the old lock and the page remains stuck.
@@ -128,6 +151,7 @@
     if(touch.used){event.preventDefault();return;}
     if(touch.horizontal||Math.abs(dy)<9)return;
     const direction=dy<0?1:-1;
+    if(atTop()&&direction<0){event.preventDefault();return;}
     if(touch.blocked||navigationPending||targetFor(direction)){
       event.preventDefault();touch.captured=true;
       if(!touch.blocked&&!navigationPending&&Math.abs(dy)>=28)touch.used=move(direction);

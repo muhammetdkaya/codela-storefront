@@ -2823,3 +2823,14 @@ body:has(.sf-404-agency){background:#09090c}
 .cdl-404-stage p{position:relative;font-size:13px;color:#b6b0bf;max-width:250px;margin:0 0 22px;line-height:1.5}
 .cdl-404-home{position:relative;display:inline-flex;align-items:center;gap:12px;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid #ffffff30;background:#242426;color:#fff;text-decoration:none!important;font-size:13px}
 .cdl-404-home:focus-visible,.cdl-service-detail__tabs a:focus-visible,.cdl-service-detail__faq summary:focus-visible{outline:2px solid #d3a480;outline-offset:3px}
+
+/* 0.1.410: one scroll owner and a stable top boundary on the staged home.
+   Explicit smooth scrollTo remains animated; the default is not animated.
+   Suppress Safari rubber-band without affecting inner pages or horizontal tracks. */
+html.sf-agency-stage-nav:has(body.home .sf-agency-widget--studio){
+  overscroll-behavior-y:none;
+  scroll-behavior:auto;
+}
+html.sf-agency-stage-nav body.home:has(.sf-agency-widget--studio){
+  overscroll-behavior-y:none;
+}

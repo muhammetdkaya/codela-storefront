@@ -100,7 +100,38 @@ await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
    for(const d of [9,6,4,3,2,2,4,7,17,25]){await new Promise(r=>setTimeout(r,16));dispatch(d);}
  });
  await page.waitForFunction(()=>Math.abs(window.scrollY-1400)<=2&&!document.documentElement.classList.contains('sf-agency-stage-moving'),{},{timeout:2200});
- console.log('Agency wheel: momentum, gentle new touchpad swipe, renewed acceleration, stationary pointer passed.');
+ // Reverse direction from the bottom, keep the same pointer location,
+ // and keep sending upward momentum after the top has already settled.
+ await page.waitForTimeout(300);
+ await page.evaluate(()=>{window.__stageCalls=[];});
+ await wheel(-55,25,45);
+ await page.waitForFunction(()=>Math.abs(window.scrollY-700)<=2&&!document.documentElement.classList.contains('sf-agency-stage-moving'),{},{timeout:2200});
+ await page.waitForTimeout(130);
+ await wheel(-55,25,45);
+ await page.waitForFunction(()=>Math.abs(window.scrollY)<=2&&!document.documentElement.classList.contains('sf-agency-stage-moving'),{},{timeout:2200});
+ const edge=await page.evaluate(async()=>{
+   const dispatch=delta=>document.elementFromPoint(500,300).dispatchEvent(new WheelEvent('wheel',{bubbles:true,cancelable:true,deltaY:delta,deltaMode:0}));
+   await new Promise(r=>setTimeout(r,160));
+   const consumed=[];
+   for(const d of [-22,-9,-4,-2,2,3,-2]){consumed.push(!dispatch(d));await new Promise(r=>setTimeout(r,16));}
+   return {consumed,top:window.scrollY,calls:window.__stageCalls};
+ });
+ assert(edge.consumed.every(Boolean),'Top edge must consume remaining momentum, even after a quiet gap');
+ assert.equal(edge.top,0,'Top remains at zero');
+ assert.deepEqual(edge.calls,[{top:700,behavior:'smooth'},{top:0,behavior:'smooth'}],'No redundant scroll at top');
+ await page.waitForTimeout(150);
+ await page.mouse.wheel(0,-120);
+ await page.waitForTimeout(200);
+ assert.equal(await page.evaluate(()=>window.scrollY),0,'Real upward wheel at top remains at zero');
+ await page.waitForTimeout(150);
+ await page.evaluate(async()=>{
+   for(const d of [2,4,7,11,17]) {
+     document.elementFromPoint(500,300).dispatchEvent(new WheelEvent('wheel',{bubbles:true,cancelable:true,deltaY:d,deltaMode:0}));
+     await new Promise(r=>setTimeout(r,16));
+   }
+ });
+ await page.waitForFunction(()=>Math.abs(window.scrollY-700)<=2&&!document.documentElement.classList.contains('sf-agency-stage-moving'),{},{timeout:2200});
+ console.log('Agency wheel: momentum, gentle swipes, stationary pointer and reverse top boundary passed.');
 await page.close();
 }finally{await browser.close();await new Promise(done=>server.close(done));}
 })().catch(e=>{console.error(e);process.exitCode=1});
