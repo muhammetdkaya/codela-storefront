@@ -10,3 +10,7 @@ Do not release a slim theme until all subsequent gates are implemented and verif
 - Phase 2: audit all PHP/CSS/JS/pattern/editor references, integrate local URL resolution, add explicit import preparation with retry, and guard native WP and FTP deployment routes before replacing existing theme files. Include custom Agency sections and previews, not merely active preset flags.
 - Phase 3: slim build only after successful migration and verified fallback/rollback; use SHA-256 content manifests for release transport. Exercise offline upgrade, interrupted transfer, corrupt files, repeated import, mixed commerce/agency pages, multisite, custom images, and cache invalidation.
 - The current full package remains the production fallback until these gates pass. No new public version is implied by this branch.
+
+## Core QA separation
+
+General reproducibility checks now use a core-only ZIP, with no release feed metadata. The dedicated Agency QA validates actual media bytes separately. Stable release and FTP packaging deliberately retain legacy assets until migration gates pass; this avoids silently changing the live deployment contract.

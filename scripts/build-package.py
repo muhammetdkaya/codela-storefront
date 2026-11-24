@@ -3,6 +3,30 @@ import hashlib,json,os,re,runpy,zipfile
 from pathlib import Path
 ROOT=Path("theme/codela-storefront")
 PUBLIC="https://github.com/muhammetdkaya/codela-storefront/releases/download/"
+def optional_media_paths():
+    manifest=json.loads((ROOT/"config/agency-media.json").read_text())
+    names=manifest["files"]
+    if any(not re.fullmatch(r"[a-z0-9-]+\.jpg",name) for name in names):
+        raise ValueError("Invalid optional media name")
+    return {"assets/media/"+name for name in names}
+
+def write_archive(target, *, exclude_optional=False):
+    excluded=optional_media_paths() if exclude_optional else set()
+    with zipfile.ZipFile(target,"w",compression=zipfile.ZIP_DEFLATED) as archive:
+        for file in sorted(ROOT.rglob("*")):
+            if file.is_symlink():raise ValueError("Symlink rejected")
+            if file.is_file():
+                relative=file.relative_to(ROOT).as_posix()
+                if relative in excluded:continue
+                info=zipfile.ZipInfo("codela-storefront/"+relative,(2026,1,1,0,0,0))
+                info.compress_type=zipfile.ZIP_DEFLATED;info.external_attr=0o100644<<16
+                archive.writestr(info,file.read_bytes())
+
+def build_test_archive(target):
+    """Core-only QA archive; never emits a stable release manifest."""
+    runpy.run_path(str(Path(__file__).with_name('build-assets.py')))['build'](check=True)
+    write_archive(target,exclude_optional=True)
+
 def build():
     # A stale generated bundle must fail before a release ZIP is created.
     runpy.run_path(str(Path(__file__).with_name('build-assets.py')))['build'](check=True)
@@ -12,13 +36,7 @@ def build():
         raise ValueError("Invalid version or source commit")
     out=Path("dist");out.mkdir(exist_ok=True)
     target=out/("codela-storefront-"+version+".zip")
-    with zipfile.ZipFile(target,"w",compression=zipfile.ZIP_DEFLATED) as archive:
-        for file in sorted(ROOT.rglob("*")):
-            if file.is_symlink():raise ValueError("Symlink rejected")
-            if file.is_file():
-                info=zipfile.ZipInfo("codela-storefront/"+file.relative_to(ROOT).as_posix(),(2026,1,1,0,0,0))
-                info.compress_type=zipfile.ZIP_DEFLATED;info.external_attr=0o100644<<16
-                archive.writestr(info,file.read_bytes())
+    write_archive(target)
     metadata={"theme":"codela-storefront","version":version,"source_sha":commit,"sha256":hashlib.sha256(target.read_bytes()).hexdigest(),"package":PUBLIC+"v"+version+"/"+target.name}
     metadata.update(json.loads((ROOT/"config/release.json").read_text()))
     (out/"manifest.json").write_text(json.dumps(metadata,sort_keys=True))

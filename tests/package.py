@@ -545,13 +545,15 @@ class Tests(unittest.TestCase):
         root=build.ROOT.resolve();previous=Path.cwd()
         with tempfile.TemporaryDirectory() as temp,patch.object(build,"ROOT",root),patch.dict(os.environ,{"GITHUB_SHA":"a"*40}):
             try:
-                os.chdir(temp);build.build()
-                meta=json.loads(Path("dist/manifest.json").read_text());archive=Path("dist")/Path(meta["package"]).name
-                data=archive.read_bytes();build.build()
-                self.assertEqual(data,archive.read_bytes());self.assertEqual(hashlib.sha256(data).hexdigest(),meta["sha256"])
+                os.chdir(temp);archive=Path("core-qa.zip");build.build_test_archive(archive)
+                data=archive.read_bytes();build.build_test_archive(archive)
+                self.assertEqual(data,archive.read_bytes())
+                self.assertFalse(Path("dist/manifest.json").exists())
                 with zipfile.ZipFile(archive) as zip:
                     self.assertIn("codela-storefront/templates/index.html",zip.namelist())
                     self.assertIn("codela-storefront/config/settings.json",zip.namelist())
+                    self.assertTrue(all("codela-storefront/"+p not in zip.namelist() for p in build.optional_media_paths()))
+                    self.assertIn("codela-storefront/config/agency-media.json",zip.namelist())
                     self.assertTrue(all(n.startswith("codela-storefront/") and ".." not in n.split("/") for n in zip.namelist()))
             finally:os.chdir(previous)
 
