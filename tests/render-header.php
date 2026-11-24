@@ -34,7 +34,8 @@ function get_permalink($id){return home_url('/blog/');}
 function is_singular($type){return $type==='post' && getenv('FIXTURE_POST')==='1';}
 function is_home(){return getenv('FIXTURE_BLOG')==='1';}
 function get_bloginfo( ...$args ) { return 'CODELA'; }
-function has_custom_logo() { return false; }
+function has_custom_logo() { return getenv('FIXTURE_CUSTOM_LOGO') === '1'; }
+function the_custom_logo() { echo '<a class="custom-logo-link" href="https://store.test/"><img class="custom-logo" src="/logo.svg" alt="CODELA"></a>'; }
 function is_product() { return getenv('FIXTURE_PRODUCT') === '1'; }
 function is_checkout() { return getenv('FIXTURE_CHECKOUT') === '1'; }
 function is_front_page() { return getenv('FIXTURE_CATALOG_FRONT') === '1' || getenv('FIXTURE_PAGE') !== '1' && getenv('FIXTURE_ACCOUNT') !== '1' && getenv('FIXTURE_GUEST_ACCOUNT') !== '1' && getenv('FIXTURE_PRODUCT') !== '1' && getenv('FIXTURE_POST') !== '1' && getenv('FIXTURE_BLOG') !== '1' && !getenv('FIXTURE_CATALOG'); }
@@ -67,7 +68,13 @@ function wc_get_template( $name ) {
 require __DIR__.'/../theme/codela-storefront/inc/account.php';
 if (getenv('FIXTURE_CATALOG')) { require __DIR__.'/catalog-filter-fixture.php'; }
 require __DIR__.'/../theme/codela-storefront/inc/render.php';
-echo codela_sf_header();
+$header = codela_sf_header();
+if ( getenv('FIXTURE_CUSTOM_LOGO') === '1' && getenv('FIXTURE_EXPERIENCE') !== 'agency' && is_front_page() && !is_product() && !is_checkout() ) {
+    if ( !str_contains($header, 'class="custom-logo"') || str_contains($header, 'class="sf-agency-header-wordmark"') ) {
+        throw new RuntimeException('Commerce header must show the custom logo without a duplicate site name');
+    }
+}
+echo $header;
 
 function has_nav_menu($location){return getenv('FIXTURE_MENU') === '1';}
 function wp_nav_menu($args){

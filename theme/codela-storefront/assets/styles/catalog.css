@@ -52,8 +52,11 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product .price 
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product .price ins{background:none;text-decoration:none;color:inherit}
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product .star-rating{margin:0 0 8px;font-size:12px}
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-stock,
-body:not(.codela-my-account-layout) .sf-content ul.products > li.product .onsale{
-  position:absolute;inset:10px auto auto 10px;z-index:1;min-width:0;min-height:0;
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product .onsale,
+body:not(.codela-my-account-layout) .sf-section--products ul.products > li.product .onsale{
+  /* The native Woo flash is an overlay, even if an extension supplies a
+     competing in-flow badge rule after the catalog stylesheet. */
+  position:absolute!important;inset:10px auto auto 10px;z-index:1;min-width:0;min-height:0;
   margin:0;padding:5px 10px;border-radius:var(--sf-ui-pill);
   background:var(--sf-ui-surface);border:1px solid color-mix(in srgb,var(--sf-ui-border) 40%,white);color:var(--sf-ui-ink);
   font-size:11px;font-weight:600;line-height:1.5;
@@ -115,8 +118,15 @@ body:not(.codela-my-account-layout) .sf-content ul.products > li.product:has(> a
   outline:2px solid var(--sf-ui-accent);outline-offset:3px;
 }
 
-body:not(.codela-my-account-layout) .sf-content ul.products > li.product .sf-product-stock{pointer-events:none}
+body:not(.codela-my-account-layout) .sf-content ul.products > li.product :is(.sf-product-stock,.onsale){pointer-events:none}
 body:not(.codela-my-account-layout) .sf-content ul.products > li.product:has(.sf-product-stock) .onsale{left:auto;right:10px}
+/* Native Woo Product Collection and legacy grid blocks may be embedded on the
+   home page alongside managed sections. Keep their sale badges out of flow too;
+   an image block that already establishes a containing block keeps it. */
+body.home .sf-content :is(.wp-block-woocommerce-product-template > li,.wc-block-grid__product){position:relative}
+body.home .sf-content :is(.wp-block-woocommerce-product-template > li,.wc-block-grid__product) :is(.wc-block-components-product-sale-badge,.wc-block-grid__product-onsale){
+  position:absolute!important;top:10px;right:10px;bottom:auto;left:auto;z-index:1;margin:0;pointer-events:none;
+}
 .sf-catalog{max-width:1200px!important;margin-inline:auto}
 /* Reuse the single modal/form on desktop while leaving the catalog visible.
    Mobile keeps the existing full-screen filter composition. */

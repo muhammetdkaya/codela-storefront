@@ -155,7 +155,9 @@ function codela_sf_header(): string {
 
                 <?php elseif ( has_custom_logo() ) : ?>
                     <?php the_custom_logo(); ?>
+                    <?php if ( $agency_navigation ) : ?>
                     <span class="sf-agency-header-wordmark" aria-hidden="true"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></span>
+                    <?php endif; ?>
                     <?php else : ?><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></a><?php endif; ?>
             </div>
             <?php if ( $product_page ) : ?>
