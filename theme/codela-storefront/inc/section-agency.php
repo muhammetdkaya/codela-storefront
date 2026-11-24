@@ -300,7 +300,6 @@ function codela_sf_section_agency_process( array $data, string $type = '' ): str
         return $index === $count - 1 ? 'Süreci Başlat' : 'Sonraki: ' . $labels[ $index + 1 ];
     };
     $project_url = codela_sf_agency_project_link();
-    $media = rtrim( get_template_directory_uri(), '/' ) . '/assets/media/';
     $first = $items[0];
     ob_start();
     ?>
@@ -321,7 +320,7 @@ function codela_sf_section_agency_process( array $data, string $type = '' ): str
                 <button type="button" class="sf-agency-process-step"
                   data-agency-widget-step="<?php echo (int) $index; ?>"
                   data-complete="<?php echo 0 === $index ? 'true' : 'false'; ?>"
-                  data-agency-stage-image="<?php echo esc_url( $media . $images[ $index ] ); ?>"
+                  data-agency-stage-image="<?php echo esc_url( codela_sf_agency_media_url( $images[ $index ] ) ); ?>"
                   data-agency-stage-outcome="<?php echo esc_attr( $outcomes[ $index ] ); ?>"
                   data-agency-stage-title="<?php echo esc_attr( $item['title'] ); ?>"
                   data-agency-stage-body="<?php echo esc_attr( (string) ( $item['body'] ?? '' ) ); ?>"
@@ -335,7 +334,7 @@ function codela_sf_section_agency_process( array $data, string $type = '' ): str
             <div class="sf-agency-process-stage" data-agency-widget-stage data-step="0">
               <div class="sf-agency-process-stage-visual">
                 <img data-agency-widget-stage-image
-                  src="<?php echo esc_url( $media . $images[0] ); ?>"
+                  src="<?php echo esc_url( codela_sf_agency_media_url( $images[0] ) ); ?>"
                   alt="" width="1376" height="768" loading="lazy" decoding="async">
               </div>
               <div class="sf-agency-process-stage-content">

@@ -1,7 +1,7 @@
 <?php
 /**
  * Optional Agency stock media: explicit preparation, immutable content cache.
- * Phase 1: no automatic downloads and no removal of bundled legacy assets.
+ * Bundled legacy assets remain available throughout the compatibility rollout.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
@@ -37,7 +37,8 @@ function codela_sf_agency_media_location( array $entry ): array {
 }
 
 /** Call only from an authorized import or pre-update migration, not a page render. */
-function codela_sf_agency_media_prepare( bool $allow_download = false ) {
+function codela_sf_agency_media_prepare( bool $allow_download = false, int $max_new = 0 ) {
+    $prepared = 0;
     $manifest = codela_sf_agency_media_manifest();
     if ( ! $manifest ) { return new WP_Error( 'codela_agency_manifest', 'Ajans görsel listesi doğrulanamadı.' ); }
     foreach ( $manifest['files'] as $name => $entry ) {
@@ -48,6 +49,7 @@ function codela_sf_agency_media_prepare( bool $allow_download = false ) {
         if ( ! $location ) { return new WP_Error( 'codela_agency_storage', 'Ajans görsel dizini kullanılamıyor.' ); }
         $target = $location['path'];
         if ( codela_sf_agency_media_valid( $target, $entry ) ) { continue; }
+        if ( $max_new > 0 && $prepared >= $max_new ) { return false; }
         $dir = dirname( $target );
         if ( ! wp_mkdir_p( $dir ) ) { return new WP_Error( 'codela_agency_storage', 'Ajans görsel dizini oluşturulamadı.' ); }
         $temp = tempnam( $dir, '.codela-' );
@@ -80,6 +82,7 @@ function codela_sf_agency_media_prepare( bool $allow_download = false ) {
             }
             // tempnam may create files with restrictive permissions; use WP's file mode.
             if ( defined( 'FS_CHMOD_FILE' ) ) { chmod( $target, FS_CHMOD_FILE ); }
+            ++$prepared;
         } finally {
             if ( is_file( $temp ) ) { wp_delete_file( $temp ); }
         }

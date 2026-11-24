@@ -27,8 +27,7 @@ function codela_sf_section_agency_studio( array $data, string $type = '', bool $
     $services = function_exists( 'is_front_page' ) && is_front_page()
         ? '#sf-agency-services'
         : codela_sf_agency_page_url( 'hizmetler', home_url( '/hizmetler/' ) );
-    $image = ( function_exists( 'get_template_directory_uri' ) ? get_template_directory_uri() : '' )
-        . '/assets/media/agency-reference-hero.jpg';
+    $image = codela_sf_agency_media_url( 'agency-reference-hero.jpg' );
     ob_start();
     ?>
     <div class="sf-agency-widget sf-agency-widget--studio" data-agency-widget="studio">
