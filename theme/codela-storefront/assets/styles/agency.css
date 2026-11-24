@@ -2672,3 +2672,44 @@ body:not(.home):has(.sf-shell) .codela-page-layout > .sf-agency-widget--detail:f
 }
 .sf-agency-widget--process .sf-agency-process-stage-visual img:first-child:not([data-process-image-layer]),
 .sf-agency-widget--process .sf-agency-process-stage-visual img[data-process-image-active="true"]{opacity:1;}
+
+/* 0.1.403 — desktop/landscape tablet Bento art direction.
+   The original square service photos cannot be stretched into wide card
+   covers without losing their subject. Keep the complete image at the right
+   and blend its left edge into the existing dark glass card. Phones keep
+   the approved full-bleed composition. */
+@media(min-width:740px){
+  .sf-agency-widget--bento .cdl-bento__card--web{
+    background:linear-gradient(110deg,#0c0c10 0%,#101014 56%,#0b0b0e 100%);
+  }
+  .sf-agency-widget--bento .cdl-bento__photo{
+    inset:0 0 0 auto;width:auto;max-width:72%;height:100%;
+    object-fit:contain;object-position:right center;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 24%,#000 100%);
+    mask-image:linear-gradient(90deg,transparent 0%,#000 24%,#000 100%);
+    transform-origin:right center;
+  }
+  .sf-agency-widget--bento .cdl-bento__card--web:hover .cdl-bento__photo{
+    transform:none;
+  }
+  .sf-agency-widget--bento .cdl-bento__image-shade{
+    background:linear-gradient(90deg,rgba(9,9,12,.52),transparent 61%),
+      linear-gradient(0deg,rgba(9,9,12,.24),transparent 28%);
+  }
+  .sf-agency-widget--bento .cdl-bento__card--commerce,
+  .sf-agency-widget--bento .cdl-bento__card--software{
+    background:linear-gradient(115deg,#101015 0%,#151419 62%,#101014 100%);
+  }
+  .sf-agency-widget--bento .cdl-bento__visual:not(.cdl-bento__visual--support){
+    inset:0 0 0 auto;width:auto;max-width:62%;height:100%;
+    object-fit:contain;object-position:right center;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 26%,#000 100%);
+    mask-image:linear-gradient(90deg,transparent 0%,#000 26%,#000 100%);
+  }
+  .sf-agency-widget--bento .cdl-bento__art-shade{
+    background:linear-gradient(90deg,rgba(12,12,16,.55) 0%,rgba(12,12,16,.22) 46%,transparent 72%),
+      linear-gradient(0deg,rgba(9,9,12,.22),transparent 24%);
+  }
+  .sf-agency-widget--bento .cdl-bento__card-copy{max-width:48%;}
+  .sf-agency-widget--bento .cdl-bento__minor-copy{max-width:59%;}
+}

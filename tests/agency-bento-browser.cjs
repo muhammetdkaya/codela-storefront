@@ -20,7 +20,7 @@ const server=http.createServer((req,res)=>{
   const browser=await chromium.launch({executablePath:process.env.CHROMIUM_BIN||undefined});
   try{
     fs.mkdirSync(path.join(root,'qa'),{recursive:true});
-    for(const [width,height] of [[320,667],[390,844],[402,874],[768,1024],[1440,900]]){
+    for(const [width,height] of [[320,667],[390,844],[402,874],[768,1024],[1024,650],[1194,750],[1440,900]]){
       const page=await browser.newPage({viewport:{width,height},reducedMotion:'reduce'});
       const errors=[];page.on('pageerror',e=>errors.push(e.message));
       await page.goto('http://127.0.0.1:'+server.address().port+'/');
@@ -35,7 +35,12 @@ const server=http.createServer((req,res)=>{
         const photo=el.querySelector('.cdl-bento__photo');
         const illustrations=[...el.querySelectorAll('.cdl-bento__visual')];
         const section=el.querySelector('.cdl-bento').getBoundingClientRect();
-        return {cards,photo:photo.complete&&photo.naturalWidth>0,illustrations:illustrations.map(img=>img.complete&&img.naturalWidth>0),background:getComputedStyle(el.querySelector('.cdl-bento')).backgroundColor,
+        const art=[photo,...illustrations].map(img=>{
+          const box=img.getBoundingClientRect(),card=img.parentElement.getBoundingClientRect(),style=getComputedStyle(img);
+          return {fit:style.objectFit,position:style.objectPosition,width:box.width,cardWidth:card.width,
+            right:card.right-box.right,mask:style.maskImage,aspect:img.naturalWidth/img.naturalHeight};
+        });
+        return {cards,art,photo:photo.complete&&photo.naturalWidth>0,illustrations:illustrations.map(img=>img.complete&&img.naturalWidth>0),background:getComputedStyle(el.querySelector('.cdl-bento')).backgroundColor,
           overflow:document.documentElement.scrollWidth-innerWidth,sectionWidth:section.width,
           viewportLeft:section.left,tagCount:el.querySelectorAll('.cdl-bento__card--support .cdl-bento__support-action').length,
           phoneChrome:el.querySelectorAll('.phone-frame,.status-bar,.bottom-nav').length
@@ -43,6 +48,14 @@ const server=http.createServer((req,res)=>{
       });
       assert(snapshot.photo,'Approved web design photograph loads');
       assert.deepEqual(snapshot.illustrations,[true,true],'Two photographic service visuals load; support remains image-free');
+      for(const art of snapshot.art){
+        if(width>=740){
+          assert.equal(art.fit,'contain','Wide cards preserve the complete photo instead of cropping it');
+          assert(Math.abs(art.right)<=2,'Artwork is anchored to the right side');
+          assert(art.width<art.cardWidth*.74,'Text and image have distinct space');
+          assert(art.mask.includes('linear-gradient'),'Artwork edge blends into glass');
+        }else assert.equal(art.fit,'cover','Existing mobile image treatment is preserved');
+      }
       assert.equal(snapshot.background,'rgb(9, 9, 12)','Obsidian matches MONA welcome');
       assert(snapshot.overflow<=1,'No horizontal scrollbar at '+width);
       assert(Math.abs(snapshot.viewportLeft)<=1 && Math.abs(snapshot.sectionWidth-width)<=1,'Full-width handoff from hero');
@@ -53,7 +66,7 @@ const server=http.createServer((req,res)=>{
       await page.screenshot({path:path.join(root,'qa','agency-bento-'+width+'.png'),fullPage:true});
       await page.close();
     }
-    console.log('MONA Services Bento: three photographic visuals, an image-free support strip, links and five responsive widths passed.');
+    console.log('MONA Services Bento: three photographic visuals, an image-free support strip, links and seven responsive widths passed.');
   }finally{
     await browser.close();
     await new Promise(resolve=>server.close(resolve));
