@@ -1043,3 +1043,58 @@ body.sf-checkout-step-3 .sf-checkout-page .sf-checkout-discount-feedback[hidden]
 @media(prefers-reduced-motion:reduce){
  body.sf-checkout-step-3 .sf-checkout-page .sf-checkout-discount-arrow{transition:none}
 }
+
+/* Checkout Pro keeps ownership of the address and tax-profile consent fields.
+   Normalize their presentation only; do not alter names, values or defaults. */
+body.woocommerce-checkout .sf-checkout-page #codela-cp-billing-form-wrap{
+  --sf-checkout-address-field-height:48px;
+}
+body.woocommerce-checkout .sf-checkout-page #codela-cp-billing-form-wrap :is(input.input-text,input[type="text"],input[type="tel"],input[type="email"],select:not(.select2-hidden-accessible)){
+  box-sizing:border-box;min-height:var(--sf-checkout-address-field-height);height:var(--sf-checkout-address-field-height);
+}
+body.woocommerce-checkout .sf-checkout-page #codela-cp-billing-form-wrap .select2-selection--single{
+  box-sizing:border-box;display:flex;align-items:center;position:relative;
+  height:var(--sf-checkout-address-field-height)!important;min-height:var(--sf-checkout-address-field-height)!important;
+  padding:0!important;border-radius:12px;
+}
+body.woocommerce-checkout .sf-checkout-page #codela-cp-billing-form-wrap .select2-selection--single .select2-selection__rendered{
+  box-sizing:border-box;min-width:0;width:100%;height:auto;min-height:0;
+  padding:0 32px 0 14px!important;line-height:1.4!important;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+body.woocommerce-checkout .sf-checkout-page #codela-cp-billing-form-wrap .select2-selection--single .select2-selection__arrow{
+  position:absolute;top:0;right:8px;height:100%;padding:0;
+}
+body.woocommerce-checkout .sf-checkout-page .codela-cp-save-options{
+  display:grid;gap:0;padding:4px 12px;border:1px solid var(--sf-ui-border);
+  border-radius:12px;background:var(--sf-ui-surface);
+}
+body.woocommerce-checkout .sf-checkout-page .codela-cp-save-options label.codela-cp-save-option{
+  display:flex!important;align-items:center;justify-content:space-between;gap:12px;
+  min-height:44px;margin:0;padding:8px 0;box-sizing:border-box;
+  font-size:13px;font-weight:450;line-height:1.4;letter-spacing:normal;text-transform:none;
+  color:var(--sf-ui-ink);cursor:pointer;
+}
+body.woocommerce-checkout .sf-checkout-page .codela-cp-save-option + .codela-cp-save-option{
+  border-top:1px solid var(--sf-ui-border);
+}
+body.woocommerce-checkout .sf-checkout-page .codela-cp-save-option > span{
+  order:0;flex:1;min-width:0;
+}
+body.woocommerce-checkout .sf-checkout-page .codela-cp-save-option > input[type="checkbox"]{
+  -webkit-appearance:none;appearance:none;box-sizing:border-box;order:1;flex:0 0 42px;
+  width:42px!important;min-width:42px;height:26px!important;min-height:26px;
+  margin:0!important;padding:0!important;border:0;border-radius:999px;cursor:pointer;
+  background:radial-gradient(circle at 13px 50%,white 0 9px,transparent 10px),#ccd3da;
+}
+body.woocommerce-checkout .sf-checkout-page .codela-cp-save-option > input[type="checkbox"]:checked{
+  background:radial-gradient(circle at 29px 50%,white 0 9px,transparent 10px),var(--sf-ui-ink,#252723);
+}
+body.woocommerce-checkout .sf-checkout-page .codela-cp-save-option > input[type="checkbox"]:focus-visible{
+  outline:2px solid var(--sf-ui-accent);outline-offset:3px;
+}
+@media(forced-colors:active){
+  body.woocommerce-checkout .sf-checkout-page .codela-cp-save-option > input[type="checkbox"]{
+    appearance:auto;-webkit-appearance:auto;background:none!important;
+  }
+}

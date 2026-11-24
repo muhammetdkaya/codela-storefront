@@ -58,6 +58,26 @@ function html(markup){
    assert.equal(await page.locator('#place_order').count(),1,'One order submit');
    assert.equal(await page.locator('#place_order').evaluate(el=>el.parentElement.classList.contains('place-order')),true,'Native gateway button stays in place');
    assert.equal(await page.locator('#customer_details .col-1').isVisible(),true);
+   // Checkout Pro markup: reproduce the plugin's ID-scoped label/input rules
+   // and the visible SelectWoo wrapper without changing native field names.
+   await page.locator('.woocommerce-billing-fields').evaluate(el=>{
+     const fixture=document.createElement('div');fixture.id='codela-cp-billing-form-wrap';
+     fixture.innerHTML='<div class="codela-cp-save-options"><label class="codela-cp-save-option"><input type="checkbox" name="codela_save_address" value="1"><span>Adresi kaydet</span></label><label class="codela-cp-save-option"><input type="checkbox" name="codela_save_tax_profile" value="1"><span>Fatura bilgilerini hatırla</span></label></div><div class="woocommerce-billing-fields__field-wrapper"><p class="form-row"><input class="input-text" type="text"></p><p class="form-row"><select><option>İlçe</option></select></p><p class="form-row"><span class="select2-container"><span class="select2-selection--single"><span class="select2-selection__rendered">Türkiye</span><span class="select2-selection__arrow"></span></span></span></p></div>';
+     el.append(fixture);
+   });
+   await page.addStyleTag({content:'#codela-cp-billing-form-wrap label{display:block;text-transform:uppercase;font-size:11px}#codela-cp-billing-form-wrap .codela-cp-save-option input{width:16px;height:16px}#codela-cp-billing-form-wrap .select2-selection__rendered{padding:20px;line-height:54px}'});
+   const pro=page.locator('#codela-cp-billing-form-wrap');
+   const heights=await pro.locator('.input-text,select,.select2-selection--single').evaluateAll(els=>els.map(el=>el.getBoundingClientRect().height));
+   assert(heights.every(h=>Math.abs(h-heights[0])<1),'Address inputs and SelectWoo have equal heights: '+heights);
+   const switches=pro.locator('.codela-cp-save-option input');
+   assert.equal(await switches.count(),2);
+   assert.equal(await switches.first().evaluate(el=>getComputedStyle(el).appearance),'none');
+   assert.equal(await switches.first().isChecked(),false);
+   await switches.first().check();
+   assert.equal(await switches.first().isChecked(),true);
+   assert.equal(await switches.last().isChecked(),false,'Tax-profile consent stays independent');
+   await pro.evaluate(el=>el.remove());
+
    assert.equal(await page.locator('.sf-checkout-privacy-brief a').getAttribute('href'),'/gizlilik-politikasi/','The actual Woo privacy URL appears at first data collection');
    assert.equal(await page.locator('.sf-checkout-privacy-brief').evaluate(el=>el.parentElement.id),'','Privacy notice is not nested inside a hidden billing form');
    assert.equal(await page.locator('.sf-checkout-privacy-brief').evaluate(el=>el.previousElementSibling.id),'customer_details','Privacy appears directly under customer address summaries');
