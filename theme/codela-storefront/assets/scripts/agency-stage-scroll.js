@@ -10,12 +10,13 @@
     el.matches('.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process'));
   if(stages.length<2)return;
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
-  const ignore='[data-agency-widget-track],[data-agency-service-track],input,select,textarea,[contenteditable="true"],[role="dialog"]';
+  const ignore='input,select,textarea,[contenteditable="true"],[role="dialog"]';
   const excluded=target=>target instanceof Element && !!target.closest(ignore);
+   // Vertical gestures over horizontal tracks should still scroll the document.
   const viewport=()=>window.innerHeight||document.documentElement.clientHeight;
   const top=element=>element.getBoundingClientRect().top+window.scrollY;
   const activeIndex=()=>{
-    const point=window.scrollY+viewport()*.28;
+    const point=window.scrollY+Math.min(24,viewport()*.04);
     let index=0;
     stages.forEach((element,i)=>{if(top(element)<=point)index=i;});
     return index;
@@ -30,11 +31,9 @@
     const index=activeIndex();
     const current=stages[index];
     const height=current.getBoundingClientRect().height;
-    if(height>viewport()+28){
-      const local=window.scrollY-top(current);
-      if(direction>0&&local+viewport()<height-24)return null;
-      if(direction<0&&local>24)return null;
-    }
+    const local=window.scrollY-top(current);
+    if(height>viewport()+28&&direction>0&&local+viewport()<height-24)return null;
+    if(direction<0&&local>24)return current;
     const next=index+direction;
     return next>=0&&next<stages.length?stages[next]:null;
   };
@@ -69,16 +68,19 @@
   };
   document.documentElement.classList.add('sf-agency-stage-nav');
   window.addEventListener('wheel',event=>{
-    const now=performance.now(),gap=now-wheel.lastAt;
-    // Track every wheel event, including the momentum tail we consume.
-    wheel.lastAt=now;
-    if(!event.cancelable||event.ctrlKey||excluded(event.target)||
-       Math.abs(event.deltaX)>Math.abs(event.deltaY))return;
+    if(event.ctrlKey||excluded(event.target)||Math.abs(event.deltaX)>Math.abs(event.deltaY))return;
     const direction=Math.sign(event.deltaY);
     if(!direction)return;
-    if(gap>QUIET_MS&&!navigationPending){
+    // Only actual vertical input belongs to the gesture. Horizontal carousel
+    // events and unrelated controls cannot extend the wheel session.
+    const now=performance.now(),gap=now-wheel.lastAt;
+    const pixels=event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?viewport():1);
+    const newImpulse=gap>=100&&Math.abs(pixels)>=18;
+    if(!navigationPending&&(gap>QUIET_MS||newImpulse||(wheel.used&&wheel.direction!==direction))){
       wheel={lastAt:now,used:false,delta:0,direction:0};
     }
+    wheel.lastAt=now;
+    if(!event.cancelable)return;
     if(wheel.used||navigationPending){
       // Prevent a long momentum tail from natively scrolling past our target.
       event.preventDefault();
@@ -93,12 +95,11 @@
     }
     event.preventDefault();
     if(wheel.direction!==direction){wheel.delta=0;wheel.direction=direction;}
-    const pixels=event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?viewport():1);
     wheel.delta+=pixels;
     if(Math.abs(wheel.delta)<18)return;
     wheel.used=move(direction);
     wheel.delta=0;
-  },{passive:false});
+  },{passive:false,capture:true});
   window.addEventListener('touchstart',event=>{
     if(event.touches.length!==1||excluded(event.target)){touch=null;return;}
     const p=event.touches[0];

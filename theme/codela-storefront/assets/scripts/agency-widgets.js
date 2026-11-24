@@ -202,13 +202,73 @@
       const nextLabel = widget.querySelector('[data-agency-widget-next-label]');
       if (steps.length && stage && counter && image && outcome && title && body && previous && next && nextLabel) {
         let active = 0;
+        let shown = 0;
+        const visual = image.parentElement;
+        image.dataset.processImageLayer = '0';
+        image.dataset.processImageActive = 'true';
+        const layers = new Map([[0, { node: image, ready: Promise.resolve(true) }]]);
+        const prepare = (index, priority = 'low') => {
+          if (layers.has(index)) return layers.get(index);
+          const src = steps[index]?.dataset.agencyStageImage;
+          if (!src) return null;
+          const node = document.createElement('img');
+          node.alt = '';
+          node.width = image.width || 1376;
+          node.height = image.height || 768;
+          node.decoding = 'async';
+          node.fetchPriority = priority;
+          node.dataset.processImageLayer = String(index);
+          node.dataset.processImageActive = 'false';
+          const ready = new Promise(resolve => {
+            node.addEventListener('load', async () => {
+              try { await node.decode(); } catch (_) {}
+              resolve(node.naturalWidth > 0);
+            }, { once: true });
+            node.addEventListener('error', () => resolve(false), { once: true });
+          });
+          const layer = { node, ready };
+          layers.set(index, layer);
+          visual.appendChild(node);
+          node.src = src;
+          ready.then(ok => { if (ok) node.dataset.processImageReady = 'true'; });
+          return layer;
+        };
+        const warm = () => {
+          steps.forEach((_, index) => { if (index) prepare(index); });
+        };
+        if ('IntersectionObserver' in window) {
+          const observer = new IntersectionObserver(entries => {
+            if (!entries.some(entry => entry.isIntersecting)) return;
+            warm();
+            observer.disconnect();
+          }, { rootMargin: '800px 0px' });
+          observer.observe(widget);
+        } else {
+          window.addEventListener('load', warm, { once: true });
+          if (document.readyState === 'complete') warm();
+        }
+        widget.addEventListener('pointerenter', warm, { once: true });
+        widget.addEventListener('focusin', warm, { once: true });
+        const showImage = index => {
+          const layer = prepare(index, 'high');
+          if (!layer || shown === index) return;
+          layer.node.fetchPriority = 'high';
+          const commit = () => {
+            if (active !== index) return;
+            layers.get(shown).node.dataset.processImageActive = 'false';
+            layer.node.dataset.processImageActive = 'true';
+            shown = index;
+          };
+          if (layer.node.dataset.processImageReady === 'true' || index === 0) commit();
+          else layer.ready.then(ok => { if (ok) commit(); });
+        };
         const activate = (index, animate = true) => {
           const step = steps[index];
           if (!step) return;
           active = index;
           stage.dataset.step = String(index);
           counter.textContent = (index + 1) + ' / ' + steps.length;
-          image.src = step.dataset.agencyStageImage || image.src;
+          showImage(index);
           outcome.textContent = step.dataset.agencyStageOutcome || '';
           title.textContent = step.dataset.agencyStageTitle || '';
           body.textContent = step.dataset.agencyStageBody || '';
@@ -219,9 +279,10 @@
             button.dataset.complete = String(i <= index);
           });
           if (animate && !reduced.matches && typeof stage.animate === 'function') {
+            stage.getAnimations?.().forEach(animation => animation.cancel());
             stage.animate(
-              [{ opacity: .75, transform: 'translateY(5px)' }, { opacity: 1, transform: 'translateY(0)' }],
-              { duration: 230, easing: 'cubic-bezier(.16,1,.3,1)' }
+              [{ opacity: .9 }, { opacity: 1 }],
+              { duration: 150, easing: 'ease-out' }
             );
           }
         };
