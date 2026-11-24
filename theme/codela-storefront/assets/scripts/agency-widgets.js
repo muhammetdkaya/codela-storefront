@@ -237,6 +237,15 @@
           image.loading = 'eager';
           steps.forEach((_, index) => { if (index) prepare(index); });
         };
+        // Once the initial page has loaded, warm the two remaining visuals
+        // at low priority even when the visitor jumps directly to Process.
+        // Intersection/intent can start the same work earlier.
+        const warmWhenIdle = () => {
+          if ('requestIdleCallback' in window) window.requestIdleCallback(warm, { timeout: 1500 });
+          else window.setTimeout(warm, 250);
+        };
+        if (document.readyState === 'complete') warmWhenIdle();
+        else window.addEventListener('load', warmWhenIdle, { once: true });
         if ('IntersectionObserver' in window) {
           const observer = new IntersectionObserver(entries => {
             if (!entries.some(entry => entry.isIntersecting)) return;

@@ -505,7 +505,11 @@ if ( in_array( '--render=widgets', $argv, true ) ) {
         echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/' . $style . '">';
     }
     echo '</head><body class="sf-site-mode-agency"><main class="sf-content"><h1 class="screen-reader-text">Agency Layout</h1><div class="codela-page-layout">';
-    echo $first_cards . $middle_scroll . $services_widget . $process_widget . $last_cards;
+    // Serve real local image files, not the synthetic WordPress hostname.
+    echo $first_cards . $middle_scroll . $services_widget . str_replace(
+        'https://codela.test/wp-content/themes/codela-storefront/',
+        '/theme/codela-storefront/', $process_widget
+    ) . $last_cards;
     echo '</div></main><script src="/theme/codela-storefront/assets/scripts/agency-widgets.js"></script></body></html>';
     exit;
 }

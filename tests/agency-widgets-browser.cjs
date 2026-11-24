@@ -155,8 +155,16 @@ const server=http.createServer((req,res)=>{
           width>=1100?4:2,'Four columns on desktop; two on tablet');
       }
       await process.scrollIntoViewIfNeeded();
-      await process.locator('[data-process-image-layer="1"][data-process-image-ready="true"]').waitFor({state:'attached'});
-      await process.locator('[data-process-image-layer="2"][data-process-image-ready="true"]').waitFor({state:'attached'});
+      for (const layer of ['1','2']) {
+        const node=process.locator('[data-process-image-layer="'+layer+'"]');
+        await node.waitFor({state:'attached',timeout:5000});
+        await page.waitForFunction(index=>{
+          const img=document.querySelector('[data-process-image-layer="'+index+'"]');
+          return img && img.complete;
+        },layer,{timeout:10000});
+        assert(await node.evaluate(img=>img.naturalWidth>0),'Real local image loaded: '+await node.getAttribute('src'));
+        await process.locator('[data-process-image-layer="'+layer+'"][data-process-image-ready="true"]').waitFor({state:'attached',timeout:5000});
+      }
       await process.locator('[data-agency-widget-step="1"]').click();
       assert.equal(await process.locator('[data-process-image-active="true"]').getAttribute('data-process-image-layer'),'1','Decoded image is ready at the moment the stage changes');
       await process.locator('[data-agency-widget-step="2"]').click();
