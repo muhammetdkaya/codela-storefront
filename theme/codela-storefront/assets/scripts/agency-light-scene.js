@@ -21,6 +21,7 @@
       let isReduced = reducedQuery.matches;
       let elapsed = 0;
       let lastTime = 0;
+      let lastDraw = 0;
       let pointerX = 0;
       let pointerY = 0;
       let smoothPointerX = 0;
@@ -539,7 +540,7 @@
         const rect = container.getBoundingClientRect();
         width = Math.max(1, Math.round(rect.width));
         height = Math.max(1, Math.round(rect.height));
-        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        dpr = Math.min(window.devicePixelRatio || 1, finePointer.matches ? 2 : 1.5);
         canvas.width = Math.round(width * dpr);
         canvas.height = Math.round(height * dpr);
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -556,7 +557,7 @@
           elapsed += dt;
           smoothPointerX += (pointerX - smoothPointerX) * 0.055;
           smoothPointerY += (pointerY - smoothPointerY) * 0.055;
-          drawScene(elapsed);
+          if (now-lastDraw >= (finePointer.matches ? 16 : 32)) { drawScene(elapsed); lastDraw=now; }
           rafId = window.requestAnimationFrame(tick);
         } else {
           rafId = 0;
@@ -623,13 +624,12 @@
         syncLoop();
       });
 
-      resize();
-      if (isReduced) {
-        drawScene(2.4);
-      } else {
-        elapsed = 0.85;
-        drawScene(elapsed);
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        elapsed = 1.5;
+        resize();
+        if (isReduced) drawScene(2.4);
+        container.dataset.sceneReady = 'true';
         syncLoop();
-      }
+      }));
       });
     })();

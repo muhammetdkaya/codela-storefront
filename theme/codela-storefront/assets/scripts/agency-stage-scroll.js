@@ -24,7 +24,7 @@
   // also wait for the stage navigation to finish before another can start.
   const QUIET_MS=240;
   let wheel={lastAt:-Infinity,used:false,delta:0,direction:0};
-  let navigationPending=false,scrollTarget=0,scrollIdleTimer=0;
+  let navigationPending=false;
   let touch=null;
   const targetFor=direction=>{
     const index=activeIndex();
@@ -38,34 +38,23 @@
     const next=index+direction;
     return next>=0&&next<stages.length?stages[next]:null;
   };
-  const onScrollSettled=()=>{
-    window.clearTimeout(scrollIdleTimer);
-    navigationPending=false;
-  };
-  window.addEventListener('scrollend',()=>{
-    if(navigationPending)onScrollSettled();
-  },{passive:true});
-  window.addEventListener('scroll',()=>{
-    if(!navigationPending)return;
-    window.clearTimeout(scrollIdleTimer);
-    // Browsers without scrollend still release once physical scroll changes
-    // have stopped. This is not a fixed post-gesture animation lock.
-    scrollIdleTimer=window.setTimeout(onScrollSettled,180);
-  },{passive:true});
   const move=direction=>{
     const target=targetFor(direction);
     if(!target)return false;
-    scrollTarget=Math.max(0,Math.round(top(target)));
+    const from=window.scrollY;
+    const dest=Math.max(0,Math.min(Math.round(top(target)),document.documentElement.scrollHeight-viewport()));
     navigationPending=true;
-    window.clearTimeout(scrollIdleTimer);
-    window.scrollTo({top:scrollTarget,
-      behavior:reduced.matches?'instant':'smooth'});
-    // Reduced motion and zero-distance jumps can produce no scroll events.
-    if(Math.abs(window.scrollY-scrollTarget)<=2) {
-      requestAnimationFrame(()=>{
-        if(navigationPending&&Math.abs(window.scrollY-scrollTarget)<=2)onScrollSettled();
-      });
+    if(reduced.matches||Math.abs(dest-from)<=2){
+      window.scrollTo({top:dest,behavior:'instant'});navigationPending=false;return true;
     }
+    const started=performance.now(), duration=350;
+    const frame=now=>{
+      const t=Math.min(1,(now-started)/duration);
+      window.scrollTo({top:from+(dest-from)*(1-Math.pow(1-t,3)),behavior:'instant'});
+      if(t<1)requestAnimationFrame(frame);
+      else navigationPending=false;
+    };
+    requestAnimationFrame(frame);
     return true;
   };
   document.documentElement.classList.add('sf-agency-stage-nav');
@@ -96,7 +85,7 @@
     if(wheel.direction!==direction){wheel.delta=0;wheel.direction=direction;}
     const pixels=event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?viewport():1);
     wheel.delta+=pixels;
-    if(Math.abs(wheel.delta)<22)return;
+    if(Math.abs(wheel.delta)<18)return;
     wheel.used=move(direction);
     wheel.delta=0;
   },{passive:false});
@@ -104,24 +93,26 @@
     if(event.touches.length!==1||excluded(event.target)){touch=null;return;}
     const p=event.touches[0];
     touch={x:p.clientX,y:p.clientY,lastY:p.clientY,
-      horizontal:false,captured:false,blocked:navigationPending};
+      horizontal:false,captured:false,used:false,blocked:navigationPending};
   },{passive:true});
   window.addEventListener('touchmove',event=>{
     if(!touch||!event.cancelable||event.touches.length!==1)return;
     const p=event.touches[0],dx=p.clientX-touch.x,dy=p.clientY-touch.y;
     touch.lastY=p.clientY;
     if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>9)touch.horizontal=true;
+    if(touch.used){event.preventDefault();return;}
     if(touch.horizontal||Math.abs(dy)<9)return;
     const direction=dy<0?1:-1;
     if(touch.blocked||navigationPending||targetFor(direction)){
       event.preventDefault();touch.captured=true;
+      if(!touch.blocked&&!navigationPending&&Math.abs(dy)>=28)touch.used=move(direction);
     }
   },{passive:false});
   window.addEventListener('touchend',()=>{
     if(!touch)return;
     const delta=touch.y-touch.lastY;
-    if(touch.captured&&!touch.blocked&&!navigationPending&&
-       Math.abs(delta)>=42)move(Math.sign(delta));
+    if(touch.captured&&!touch.used&&!touch.blocked&&!navigationPending&&
+       Math.abs(delta)>=28)move(Math.sign(delta));
     touch=null;
   },{passive:true});
   window.addEventListener('touchcancel',()=>{touch=null;},{passive:true});

@@ -46,7 +46,18 @@ await page.waitForTimeout(320);
 await wheel(12,0,1);
 await page.waitForTimeout(100);
 assert.equal(await page.evaluate(()=>window.scrollY),0,'Separated small wheel gestures do not aggregate');
-console.log('Agency wheel: 1500ms momentum, new gesture, idle reset passed.');
+await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+ await page.waitForTimeout(300);
+ await page.evaluate(()=>{
+   const fire=(type,y)=>{const e=new Event(type,{bubbles:true,cancelable:true});Object.defineProperty(e,'touches',{value:[{clientX:100,clientY:y}]});document.body.dispatchEvent(e)};
+   fire('touchstart',500);fire('touchmove',455);
+ });
+ await page.waitForTimeout(450);
+ assert.equal(await page.evaluate(()=>window.scrollY),700,'Touch transition completes before release');
+ await page.evaluate(()=>{const e=new Event('touchmove',{bubbles:true,cancelable:true});Object.defineProperty(e,'touches',{value:[{clientX:100,clientY:100}]});document.body.dispatchEvent(e);document.body.dispatchEvent(new Event('touchend',{bubbles:true}));});
+ await page.waitForTimeout(400);
+ assert.equal(await page.evaluate(()=>window.scrollY),700,'One touch can move only one stage');
+ console.log('Agency wheel: 1500ms momentum, new gesture, idle reset passed.');
 await page.close();
 }finally{await browser.close();await new Promise(done=>server.close(done));}
 })().catch(e=>{console.error(e);process.exitCode=1});
