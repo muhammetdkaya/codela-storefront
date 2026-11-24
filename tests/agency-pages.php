@@ -50,6 +50,9 @@ function get_template_directory_uri() { return 'https://codela.test/wp-content/t
 function wp_get_theme() { return new class { function get( $field ) { return '0.1.321'; } }; }
 function wp_enqueue_style( $name ) { $GLOBALS['assets'][] = $name; }
 function wp_enqueue_script( $name ) { $GLOBALS['assets'][] = $name; }
+function get_template_directory() { return __DIR__ . '/../theme/codela-storefront'; }
+function wp_upload_dir( $time = null, $create = true ) { return [ 'error' => 'No uploads in bundled compatibility fixture' ]; }
+require_once __DIR__ . '/../theme/codela-storefront/inc/agency-media.php';
 require __DIR__ . '/../theme/codela-storefront/inc/agency.php';
 function agency_page_check( $check, $message ) { if ( ! $check ) throw new RuntimeException( $message ); }
 agency_page_check( codela_sf_agency_contact_url() === 'https://codela.test/iletisim/', 'Contact URL resolves through normal published page.' );

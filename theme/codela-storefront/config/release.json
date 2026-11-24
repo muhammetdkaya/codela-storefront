@@ -6,8 +6,7 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "E-ticaret üst başlığında özel logo tanımlandığında site adı ikinci kez gösterilmiyor; logosuz sitelerde site adı korunuyor.",
-    "Ana sayfa ürün kartlarında indirim rozeti ürün görseli üzerinde konumlandırılarak yerleşim kayması önlendi.",
-    "Ürün detay galerisinin mobil büyütme ve dikey gezinme düğmeleri masaüstü ve tablet yerleşimlerinden ayrıldı; masaüstü galeri kontrolleri korundu."
+    "Ajans görselleri için kalıcı yerel depolama ve doğrulama altyapısı eklendi; mevcut görseller geçiş sürümünde korunuyor.",
+    "Şablon medya paketleri için ortak kayıt sistemi ve bağımsız test akışı eklendi."
   ]
 }
