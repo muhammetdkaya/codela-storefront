@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "source_commit": "03729dd4cdfb5d51e0d6f60f68747660961015c1",
+  "files": {
+    "agency-light-commerce.jpg": {
+      "size": 452108,
+      "git_blob": "20f1b0af36f080ba7a8c25c856253606d98efebf"
+    },
+    "agency-light-process-build.jpg": {
+      "size": 546548,
+      "git_blob": "3b5464c1f05f2f0048c0df8aab9173c775aa78a1"
+    },
+    "agency-light-process-discovery.jpg": {
+      "size": 565432,
+      "git_blob": "766b76813a5b53bec5bd1b8ba286c749c0dd53cc"
+    },
+    "agency-light-process-launch.jpg": {
+      "size": 493739,
+      "git_blob": "e1aa45cc472a883def0d7ec47d35630821a67995"
+    },
+    "agency-light-software.jpg": {
+      "size": 465768,
+      "git_blob": "a2db672bb7767add584b30d9824d29948e06c831"
+    },
+    "agency-light-web.jpg": {
+      "size": 414625,
+      "git_blob": "84d684a5c3335f687350fc9339e02359d5d0a458"
+    },
+    "agency-reference-commerce.jpg": {
+      "size": 452108,
+      "git_blob": "20f1b0af36f080ba7a8c25c856253606d98efebf"
+    },
+    "agency-reference-hero.jpg": {
+      "size": 464874,
+      "git_blob": "e87c2485218dc485c3d8b1673a313141299ae6e7"
+    },
+    "agency-reference-process-build.jpg": {
+      "size": 396661,
+      "git_blob": "1502b86023bd041a84c430c9125ef57cda0ea801"
+    },
+    "agency-reference-process-discovery.jpg": {
+      "size": 565432,
+      "git_blob": "766b76813a5b53bec5bd1b8ba286c749c0dd53cc"
+    },
+    "agency-reference-process-launch.jpg": {
+      "size": 493739,
+      "git_blob": "e1aa45cc472a883def0d7ec47d35630821a67995"
+    },
+    "agency-reference-software.jpg": {
+      "size": 342897,
+      "git_blob": "dffbf7272c70463db2b7e7fc94c89a3b70ef4cb0"
+    },
+    "agency-reference-web.jpg": {
+      "size": 414625,
+      "git_blob": "84d684a5c3335f687350fc9339e02359d5d0a458"
+    },
+    "mona-bento-web.jpg": {
+      "size": 470391,
+      "git_blob": "04febee709a453f1dd1eb53db71437fa835a32bc"
+    },
+    "mona-studio-hero.jpg": {
+      "size": 472493,
+      "git_blob": "7a1d6ea7c1fc6c39a60d0a25ebc8d9cb81136241"
+    }
+  }
+}
