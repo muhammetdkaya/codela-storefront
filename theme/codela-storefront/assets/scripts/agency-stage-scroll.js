@@ -38,23 +38,33 @@
     const next=index+direction;
     return next>=0&&next<stages.length?stages[next]:null;
   };
+  // Let the browser animate the actual document once. Per-frame instant
+  // scrollTo calls fight Safari's compositor and create visible judder.
+  let scrollTarget=0,settleTimer=0,watchdog=0;
+  const release=()=>{
+    clearTimeout(settleTimer);clearTimeout(watchdog);
+    navigationPending=false;
+    document.documentElement.classList.remove('sf-agency-stage-moving');
+  };
+  window.addEventListener('scrollend',()=>{
+    if(navigationPending&&Math.abs(window.scrollY-scrollTarget)<=3)release();
+  },{passive:true});
+  window.addEventListener('scroll',()=>{
+    if(!navigationPending)return;
+    clearTimeout(settleTimer);
+    settleTimer=setTimeout(release,120);
+  },{passive:true});
   const move=direction=>{
     const target=targetFor(direction);
     if(!target)return false;
-    const from=window.scrollY;
-    const dest=Math.max(0,Math.min(Math.round(top(target)),document.documentElement.scrollHeight-viewport()));
-    navigationPending=true;
-    if(reduced.matches||Math.abs(dest-from)<=2){
-      window.scrollTo({top:dest,behavior:'instant'});navigationPending=false;return true;
+    scrollTarget=Math.max(0,Math.min(Math.round(top(target)),document.documentElement.scrollHeight-viewport()));
+    if(reduced.matches||Math.abs(window.scrollY-scrollTarget)<=2){
+      window.scrollTo({top:scrollTarget,behavior:'instant'});return true;
     }
-    const started=performance.now(), duration=350;
-    const frame=now=>{
-      const t=Math.min(1,(now-started)/duration);
-      window.scrollTo({top:from+(dest-from)*(1-Math.pow(1-t,3)),behavior:'instant'});
-      if(t<1)requestAnimationFrame(frame);
-      else navigationPending=false;
-    };
-    requestAnimationFrame(frame);
+    navigationPending=true;
+    document.documentElement.classList.add('sf-agency-stage-moving');
+    window.scrollTo({top:scrollTarget,behavior:'smooth'});
+    watchdog=setTimeout(release,1600);
     return true;
   };
   document.documentElement.classList.add('sf-agency-stage-nav');

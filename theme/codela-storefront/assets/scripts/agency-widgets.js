@@ -104,6 +104,15 @@
           }
         });
       }
+      const formDisclosure = widget.querySelector('details#sf-agency-contact-form');
+      const openFromAnchor = () => {
+        if (formDisclosure && window.location.hash === '#sf-agency-contact-form') formDisclosure.open = true;
+      };
+      openFromAnchor();
+      window.addEventListener('hashchange', openFromAnchor);
+      widget.querySelectorAll('a[href="#sf-agency-contact-form"]').forEach(link => {
+        link.addEventListener('click', () => { if (formDisclosure) formDisclosure.open = true; });
+      });
       // WordPress redirects after form POST with a status query. The message
       // must be visible without requiring visitors to scroll back down.
       const notice = widget.querySelector('.cdl-contact__notice');
