@@ -4,6 +4,7 @@
   const gallery=document.querySelector('.woocommerce-product-gallery.sf-ui-gallery');
   if(!gallery)return;
   const mobileMedia=matchMedia('(max-width:900px)');
+  const sheetMedia=matchMedia('(max-width:700px)');
   const allSlides=()=>[...gallery.querySelectorAll('.woocommerce-product-gallery__image')];
   const slides=()=>allSlides().filter(item=>item.dataset.sfGalleryDevice!==(mobileMedia.matches?'desktop':'mobile'));
   const imageAt=i=>slides()[i]?.querySelector('a img:not(.zoomImg)');
@@ -165,6 +166,7 @@
       const button=document.createElement('button');
       button.type='button';
       button.className='sf-ui-icon-button sf-product-gallery-rail-arrow';
+      button.tabIndex=sheetMedia.matches?0:-1;
       button.setAttribute('aria-label',label);
       button.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(direction<0?'m6 15 6-6 6 6':'m6 9 6 6 6-6')+'"/></svg>';
       button.addEventListener('click',()=>select(Math.max(0,Math.min(items.length-1,currentIndex()+direction))));
@@ -212,7 +214,7 @@
       rail.classList.remove('is-active');
       // Chevrons remain subtly visible and keyboard reachable between
       // interactions, matching the reference capsule without a dead zone.
-      previous.tabIndex=0;next.tabIndex=0;
+      previous.tabIndex=sheetMedia.matches?0:-1;next.tabIndex=sheetMedia.matches?0:-1;
     };
     // Native recommendations are inside the gallery's scroll document.
     // Stop advertising photo arrows as soon as those cards enter view,
@@ -234,7 +236,7 @@
     const photoZoneObserver = new MutationObserver(syncRailPhotoZone);
     photoZoneObserver.observe(gallery, {attributes:true,attributeFilter:['class']});
     const revealRail=()=>{
-      if (!mobileMedia.matches || rail.hidden || !inPhotoZone() ||
+      if (!sheetMedia.matches || rail.hidden || !inPhotoZone() ||
           document.body.classList.contains('sf-product-sheet-open')) return;
       rail.classList.add('is-active');
       previous.tabIndex=0;next.tabIndex=0;
@@ -368,7 +370,7 @@
       closeZoom();hideExpand();hideRail();lastRailIndex=-1;
       items=slides();syncAlt();buildNav();observe();update(0);track.scrollTo(0,0);
     });
-    matchMedia('(max-width:700px)').addEventListener('change',()=>{hideRail();lastRailIndex=-1;track.scrollTo(0,0);window.scrollTo({top:0,behavior:'instant'});observe();update(0);});
+    sheetMedia.addEventListener('change',()=>{hideExpand();hideRail();lastRailIndex=-1;track.scrollTo(0,0);window.scrollTo({top:0,behavior:'instant'});observe();update(0);});
     update(0);
     return;
   }

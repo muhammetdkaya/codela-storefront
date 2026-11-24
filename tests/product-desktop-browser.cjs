@@ -63,6 +63,7 @@ async function resizeAndCheck(page, width, {description = true, originalOpen = t
     assert.equal(await page.locator('.sf-product-shipping-source .cdl-de').count(), 1, 'Original delivery data remains in the single hidden shipping source');
     assert.equal(await page.locator('.sf-product-gallery-arrows').isVisible(), false, 'Desktop arrows stay absent on mobile');
   } else {
+    assert.equal(await page.locator('.sf-product-gallery-expand:visible,.sf-product-gallery-rail-arrow:visible').count(), 0, 'Mobile gallery controls must stay hidden at '+width);
     assert.equal(await page.locator('.summary > .cdl-tb').count(), 1);
     assert.equal(await page.locator('.summary > .cdl-de').count(), 1);
   }
@@ -104,6 +105,9 @@ async function wheelOverPhoto(page, label) {
       // Server-rendered description and gallery controls are stable before hydration.
       const before = await page.locator('.sf-product-information').boundingBox();
       await page.addScriptTag({content:galleryScript});
+      assert.equal(await page.locator('.sf-product-gallery-expand:visible,.sf-product-gallery-rail-arrow:visible').count(),0,'Mobile-only controls stay hidden on desktop '+width);
+      assert(await page.locator('.sf-product-gallery-thumb').first().isVisible(),'Desktop thumbnails remain usable '+width);
+      assert(await page.locator('.sf-product-gallery-count').isVisible(),'Desktop counter remains visible '+width);
       const after = await page.locator('.sf-product-information').boundingBox();
       assert(Math.abs(before.y - after.y) < 1, 'Gallery controls cannot shift information on mount ' + width + ' ' + JSON.stringify({before,after}));
       const g = await page.evaluate(() => {

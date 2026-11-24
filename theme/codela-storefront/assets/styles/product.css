@@ -982,7 +982,12 @@ html.sf-overlay-scroll-locked:has(body.sf-product-sheet-ready){scroll-snap-type:
 /* Outside the mobile sheet, the wrapper yields to the ORIGINAL Woo
    desktop/tablet thumbnail and counter positioning. No hidden gallery nav. */
 .sf-product-gallery-rail{display:contents}
+/* Mobile-only IconButtons must not inherit the shared inline-flex display
+   on desktop/tablet, where the gallery has its own horizontal controls. */
 .sf-product-gallery-expand,.sf-product-gallery-rail-arrow{display:none}
+@media(min-width:701px){
+  body.single-product .sf-content .sf-ui-gallery :is(.sf-product-gallery-expand,.sf-product-gallery-rail-arrow){display:none!important}
+}
 @media(max-width:700px){
   body.sf-product-sheet-ready .sf-product-gallery-rail:not([hidden]){display:flex}
   body.sf-product-sheet-ready .sf-product-gallery-rail .sf-product-gallery-rail-arrow{display:grid}
