@@ -4,7 +4,12 @@ on:
     paths:
       - 'theme/codela-storefront/patterns/agency-*.php'
       - 'theme/codela-storefront/inc/agency.php'
-      - 'theme/codela-storefront/inc/section-agency.php'
+      - 'theme/codela-storefront/inc/section-agency*.php'
+      - 'theme/codela-storefront/inc/agency-streaming*.php'
+      - 'theme/codela-storefront/config/settings.json'
+      - 'tests/agency-entry.cjs'
+      - 'theme/codela-storefront/assets/styles/agency-*.css'
+      - 'theme/codela-storefront/assets/scripts/agency-*.js'
       - 'theme/codela-storefront/inc/sections.php'
       - 'theme/codela-storefront/config/sections.json'
       - 'theme/codela-storefront/inc/render.php'
@@ -63,6 +68,7 @@ jobs:
           python3 tests/agency-media-manifest.py
           php -l theme/codela-storefront/inc/agency-media.php
           php tests/agency.php
+          node tests/agency-entry.cjs
           php tests/agency-pages.php
           python3 -m py_compile scripts/check-agency-live.py
           find theme/codela-storefront/patterns/agency-*.php -type f -print0 | xargs -0 -n1 php -l
