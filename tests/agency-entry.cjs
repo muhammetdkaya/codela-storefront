@@ -24,12 +24,14 @@ function fixture({internal=false,intent=false,history=false,loaded=false}={}){
 }
 for(const opts of [{loaded:true},{internal:true},{intent:true},{history:true}]){const f=fixture(opts);assert(!f.classes.has('cdl-first-entry'));assert.equal(f.timers.size,0);}
 let f=fixture();assert(f.classes.has('cdl-first-entry'));
-f.events.DOMContentLoaded();f.paint();f.paint();assert(f.marks.includes('codela-entry-hold-start'));
-f.events.pageshow({persisted:false});f.advance(999);assert(f.classes.has('cdl-first-entry'),'Fast page stays on entry for fixed one second');
+f.paint();f.paint();assert(f.marks.includes('codela-entry-hold-start'),'Minimum starts before DOM readiness');
+f.events.DOMContentLoaded();f.paint();f.paint();assert(f.marks.includes('codela-entry-content-ready'));
+f.events.pageshow({persisted:false});f.advance(999);assert(f.classes.has('cdl-first-entry'),'Fast page retains only the overlapping minimum');
 f.advance(1);assert(!f.classes.has('cdl-first-entry'));assert.equal(f.timers.size,0);
-f=fixture();f.advance(2000);assert(f.classes.has('cdl-first-entry'),'Slow page has not started fixed hold before its first render opportunity');
-f.events.DOMContentLoaded();f.paint();f.paint();f.advance(1000);assert(!f.classes.has('cdl-first-entry'));
+f=fixture();f.paint();f.paint();f.advance(2000);assert(f.classes.has('cdl-first-entry'),'Slow page stays covered until content is ready');
+f.events.DOMContentLoaded();f.paint();assert(f.classes.has('cdl-first-entry'));f.paint();assert(!f.classes.has('cdl-first-entry'),'Slow page reveals immediately without a second hold');
+f=fixture();f.paint();f.paint();f.advance(750);f.events.DOMContentLoaded();f.paint();f.paint();f.advance(249);assert(f.classes.has('cdl-first-entry'));f.advance(1);assert(!f.classes.has('cdl-first-entry'),'Only remaining minimum is waited');
 f=fixture();f.advance(8000);assert(!f.classes.has('cdl-first-entry'),'Fail open on stalled document');
 f=fixture();f.events.pagehide();assert(!f.classes.has('cdl-first-entry'));assert.equal(f.timers.size,0);
 f=fixture();f.events.pageshow({persisted:true});assert(!f.classes.has('cdl-first-entry'),'BFCache restore skips entry');
-console.log('Fixed entry: one-second hold, slow document, fail-open, internal intent and history passed.');
+console.log('Overlapping entry: minimum, slow document, fail-open, internal intent and history passed.');
