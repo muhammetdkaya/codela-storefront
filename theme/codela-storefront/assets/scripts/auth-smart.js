@@ -314,11 +314,11 @@
     password.setAttribute('autocomplete','current-password');
     let expanded=false;
     const reveal=()=>{
-      expanded=true;passwordRow.hidden=false;if(remember)remember.hidden=false;
+      expanded=true;root.classList.add('sf-native-auth-expanded');passwordRow.hidden=false;if(remember)remember.hidden=false;
       submit.hidden=false;button.hidden=true;
     };
     const reset=()=>{
-      expanded=false;passwordRow.hidden=true;if(remember)remember.hidden=true;
+      expanded=false;root.classList.remove('sf-native-auth-expanded');passwordRow.hidden=true;if(remember)remember.hidden=true;
       submit.hidden=true;button.hidden=!identity.value.trim();
     };
     identity.addEventListener('input',()=>{
@@ -328,6 +328,8 @@
     button.addEventListener('click',()=>{if(identity.value.trim())reveal();});
     form.addEventListener('submit',event=>{if(!expanded){event.preventDefault();if(identity.value.trim())reveal();}});
     root.addEventListener('codela:smart-reset',()=>{identity.value='';password.value='';reset();});
+    form.addEventListener('focusin',()=>root.classList.add('sf-auth-focus-mode'));
+    form.addEventListener('focusout',()=>{requestAnimationFrame(()=>{if(!form.contains(document.activeElement))root.classList.remove('sf-auth-focus-mode');});});
     root.classList.add('sf-native-auth-ready');
     if(identity.value.trim())reveal();else reset();
   }

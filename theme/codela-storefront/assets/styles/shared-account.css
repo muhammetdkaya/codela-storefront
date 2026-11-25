@@ -35,3 +35,30 @@ body.sf-standalone-account.logged-in .cdl-shared-account{max-width:920px}
 .cdl-account-security[open] summary{margin-bottom:20px}
 .cdl-account-security .sf-pk-settings{margin-bottom:16px}
 body.sf-standalone-account.logged-in .cdl-shared-account .cdl-cp-heading h1{color:inherit}
+
+/* Account presentation follows the selected material, including after iOS
+   autofill and a cancelled device verification. No credential code changes. */
+body.sf-account-editorial.sf-standalone-account:not(.logged-in) .cdl-shared-account :is(.login-username,.login-password) input{
+  appearance:none!important;background:#19181c!important;background-image:none!important;
+  border:1px solid rgba(255,255,255,.15)!important;color:#f8f7fa!important;
+  -webkit-text-fill-color:#f8f7fa!important;box-shadow:none!important;
+  font-size:16px!important;min-height:48px!important;border-radius:14px!important
+}
+body.sf-account-editorial.sf-standalone-account:not(.logged-in) .cdl-shared-account :is(.login-username,.login-password) input::placeholder{color:#aaa5a0!important;-webkit-text-fill-color:#aaa5a0!important;opacity:1}
+body.sf-account-editorial.sf-standalone-account:not(.logged-in) .cdl-shared-account :is(.login-username,.login-password) input:-webkit-autofill{-webkit-box-shadow:0 0 0 1000px #19181c inset!important;-webkit-text-fill-color:#f8f7fa!important;caret-color:#f8f7fa}
+body.sf-account-editorial.sf-standalone-account:not(.logged-in) .cdl-shared-account :is(.login-username,.login-password) input:focus{border-color:#d3a480!important;outline:2px solid #d3a48033!important;outline-offset:0}
+body.sf-account-editorial.sf-standalone-account:not(.logged-in) .cdl-shared-account .sf-quick-method{
+  background:rgba(255,255,255,.055)!important;color:#f8f7fa!important;border:1px solid rgba(255,255,255,.10)!important
+}
+body.sf-account-editorial.sf-standalone-account:not(.logged-in) .cdl-shared-account .sf-quick-method:is(:hover,:active,:focus-visible,.is-verifying,.is-rejected){background:rgba(255,255,255,.12)!important;color:#f8f7fa!important}
+body.sf-account-editorial.sf-standalone-account:not(.logged-in) .cdl-shared-account .sf-quick-or::before,
+body.sf-account-editorial.sf-standalone-account:not(.logged-in) .cdl-shared-account .sf-quick-or::after{background:rgba(255,255,255,.12)!important;border-color:transparent!important}
+body.sf-account-editorial.sf-standalone-account:not(.logged-in) .cdl-shared-account .sf-quick-method:focus-visible{outline:2px solid #d3a480!important;outline-offset:2px}
+body.sf-standalone-account.logged-in .cdl-shared-account .cdl-client-portal .cdl-cp-heading h1{color:var(--sf-ui-control-ink,#252628)!important}
+body.sf-standalone-account.logged-in .cdl-shared-account .cdl-client-portal{padding-bottom:12px}
+body.sf-standalone-account.logged-in .cdl-account-security summary{list-style:none;display:flex;align-items:center;justify-content:space-between}
+body.sf-standalone-account.logged-in .cdl-account-security summary::-webkit-details-marker{display:none}
+body.sf-standalone-account.logged-in .cdl-account-security summary::after{content:"";display:block;width:8px;height:8px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg);margin:0 5px 5px 14px}
+body.sf-standalone-account.logged-in .cdl-account-security[open] summary::after{transform:rotate(225deg);margin-top:5px}
+.cdl-shared-account .cdl-account-password:has(.sf-native-continue) > p:has(a[href*="action=lostpassword"]){display:none}
+.cdl-shared-account.sf-native-auth-expanded .cdl-account-password:has(.sf-native-continue) > p:has(a[href*="action=lostpassword"]){display:block}

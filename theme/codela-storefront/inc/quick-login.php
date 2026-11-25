@@ -498,7 +498,23 @@ function codela_sf_quick_dashboard_entry(): void {
 add_action( 'wp_head', static function(): void {
     // Prepaint protection also covers the instant Account panel on other
     // storefront pages. Only the visible view is masked; no navigation waits.
-    if ( is_user_logged_in() || ! codela_sf_commerce_available() ) { return; }
+    if ( is_user_logged_in() ) { return; }
+    if ( codela_sf_standalone_account() ) {
+        // Protect the first paint until the existing smart and device controllers
+        // settle. Without JS (or on script failure) the native form stays usable.
+        echo <<<'SF_NATIVE_GATE'
+<style id="sf-native-auth-gate-critical">
+html.sf-native-auth-pending body.sf-standalone-account .cdl-shared-account > *{display:none!important}
+html.sf-native-auth-pending body.sf-standalone-account .cdl-shared-account{display:grid!important;place-items:center;min-height:min(48svh,320px);background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important}
+html.sf-native-auth-pending body.sf-standalone-account .cdl-shared-account::before{content:""!important;display:block!important;width:min(180px,52vw)!important;height:1px!important;min-height:0!important;margin:0!important;background:linear-gradient(90deg,transparent,#d3a480,#fff1dc,#d3a480,transparent)!important;box-shadow:0 0 14px #d3a48060;animation:sf-native-auth-beam 1s ease-in-out infinite alternate}
+@keyframes sf-native-auth-beam{from{transform:scaleX(.45);opacity:.55}to{transform:scaleX(1);opacity:1}}
+@media(prefers-reduced-motion:reduce){html.sf-native-auth-pending body.sf-standalone-account .cdl-shared-account::before{animation:none}}
+</style>
+<script>(function(){var h=document.documentElement;h.classList.add("sf-native-auth-pending");function finish(){h.classList.remove("sf-native-auth-pending")}function ready(){var s=window.codelaSFSmartAuthReady,q=window.codelaSFQuickLoginReady;if(!s||!q){if(document.readyState==="complete")finish();else window.addEventListener("load",ready,{once:true});return}Promise.all([s,q]).then(finish,finish)}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",ready,{once:true});else ready();window.setTimeout(finish,10000)})();</script>
+SF_NATIVE_GATE;
+        return;
+    }
+    if ( ! codela_sf_commerce_available() ) { return; }
     // Critical gate ships in the HTML head, before deferred account styles.
     // It is never timed out: one verified view (PIN/passkey or smart email)
     // replaces the loading state only after both controllers have settled.
