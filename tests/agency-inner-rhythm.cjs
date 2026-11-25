@@ -20,4 +20,6 @@ assert(css.includes('.sf-agency-widget--contact-bento,.sf-agency-widget--project
 assert(project.includes('padding-inline:var(--sf-agency-inner-gutter,20px)')&&project.includes('padding-inline:clamp(var(--sf-agency-inner-gutter,18px),'));
 assert(project.includes('padding-block-start:var(--sf-agency-inner-top,26px)'));
 assert(project.includes('width:100%;max-width:100%;margin-inline:0')&&project.includes('flex:0 1 696px;width:min(100%,696px);max-width:696px'));
-console.log('Shared Agency heading rhythm, homepage clearance, project gutters and stable standalone Bento passed.');
+assert(css.includes('body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer{'));
+assert(css.includes('body:has(.sf-content .sf-agency-widget--about) .sf-footer{background:#06060a}'));
+console.log('Shared Agency heading rhythm, homepage clearance, project gutters, About footer and stable standalone Bento passed.');

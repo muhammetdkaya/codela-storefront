@@ -2143,13 +2143,18 @@ body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-
   background:#09090c;
 }
 body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)) .sf-content{padding:0!important}
-body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)) .sf-footer{
+body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer{
   margin-top:0;background:#09090c;border-top-color:rgba(255,255,255,.10);
   color:#aaa5af;
 }
-body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)) .sf-footer a,
-body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)) .sf-footer-brand{color:#d8d4df}
-body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)) .sf-footer-copyright{color:#96929e}
+body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer a,
+body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer-brand{color:#d8d4df}
+body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer-copyright,
+body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer-note{color:#96929e}
+body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer a:hover{color:#f8f7fa}
+/* About uses its own slightly darker editorial canvas. */
+body:has(.sf-content .sf-agency-widget--about) .sf-footer{background:#06060a}
+body:has(.sf-content .sf-agency-widget--about){--sf-agency-dock-clearance:0px}
 
 /* A stage fits the *usable* viewport. Its content may still make it taller;
    never clip the long service, process, contact, or project forms. */
@@ -2167,13 +2172,13 @@ body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-
   }
   /* The PHP shell adds has-mobile-dock only when the setting is enabled.
      Do not reserve navigation space on pages where no dock was rendered. */
-  body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)):has(.sf-shell.has-mobile-dock){
+  body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)):has(.sf-shell.has-mobile-dock){
     --sf-agency-dock-clearance:calc(var(--sf-ui-bottom-bar-height,58px) + var(--sf-ui-bottom-bar-gap,4px) + 8px + env(safe-area-inset-bottom,0px));
   }
   /* The storefront's generic dock padding creates a blank strip after the
      footer. The Agency footer now owns its own conditional clearance. */
-  body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)){padding-bottom:0!important}
-  body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)) .sf-footer{
+  body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)){padding-bottom:0!important}
+  body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer{
     padding-bottom:calc(18px + var(--sf-agency-dock-clearance));
   }
 }
