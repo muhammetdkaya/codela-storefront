@@ -342,5 +342,5 @@ return [ 'project-id-version' => 'Codela Storefront 0.1.0', 'language' => 'tr_TR
 'Confirm your email to link past orders to your account.' => 'Geçmiş siparişlerini hesabına bağlamak için e-posta adresini doğrula.',
 'Send confirmation email' => 'Doğrulama e-postası gönder',
 'Dismiss reminder' => 'Hatırlatmayı kapat',
-] 'For administrator and shop manager accounts, only secure device verification (Face ID, fingerprint or screen lock) is enabled. Six-digit PIN sign-in remains unavailable.' => 'Yönetici hesaplarında yalnızca güvenli cihaz doğrulaması (Face ID, parmak izi veya ekran kilidi) kullanılabilir. Altı haneli PIN kullanılamaz.',
-];
+'For administrator and shop manager accounts, only secure device verification (Face ID, fingerprint or screen lock) is enabled. Six-digit PIN sign-in remains unavailable.' => 'Yönetici hesaplarında yalnızca güvenli cihaz doğrulaması (Face ID, parmak izi veya ekran kilidi) kullanılabilir. Altı haneli PIN kullanılamaz.',
+]];
