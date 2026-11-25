@@ -2856,3 +2856,42 @@ html.sf-agency-stage-nav:has(body.home .sf-agency-widget--studio){
 html.sf-agency-stage-nav body.home:has(.sf-agency-widget--studio){
   overscroll-behavior-y:none;
 }
+
+/* 0.1.422 — shared inner-page header rhythm. The shell already reserves the
+   fixed header height. Do not add the homepage stage offset on top of it. */
+body:not(.home):has(.sf-shell):has(.sf-content :is(.sf-agency-widget--bento,.sf-agency-widget--about,.sf-agency-widget--contact-bento)){
+  --sf-agency-inner-top:28px;
+  --sf-agency-inner-gutter:20px;
+  --sf-agency-inner-eyebrow:#928c9c;
+}
+body:not(.home):has(.sf-shell):has(.sf-content .sf-agency-widget--about) .sf-content{padding:0!important}
+body:not(.home):has(.sf-shell) .sf-agency-widget--bento .cdl-bento,
+body:not(.home):has(.sf-shell) .sf-agency-widget--contact-bento .cdl-contact{
+  padding-block-start:var(--sf-agency-inner-top,28px);
+  padding-inline:var(--sf-agency-inner-gutter,20px);
+  align-items:flex-start;
+}
+body:not(.home):has(.sf-shell) .sf-agency-widget--bento .cdl-bento__heading{padding:0}
+body:not(.home):has(.sf-shell) .sf-agency-widget--bento .cdl-bento__inner{flex:0 1 auto;width:min(100%,920px)}
+.sf-agency-widget--bento .cdl-bento__eyebrow,
+body:not(.home):has(.sf-shell) .sf-agency-widget--contact-bento .cdl-contact__eyebrow{
+  display:flex;align-items:center;gap:8px;
+}
+.sf-agency-widget--bento .cdl-bento__eyebrow::before{
+  content:"";display:block;width:6px;height:6px;border-radius:50%;background:#d3a480;flex:none;
+}
+body:not(.home):has(.sf-shell) :is(.sf-agency-widget--bento .cdl-bento__eyebrow,.sf-agency-widget--contact-bento .cdl-contact__eyebrow){
+  margin:0 0 10px!important;font-size:11px!important;line-height:1.45;letter-spacing:.22em;font-weight:600;color:var(--sf-agency-inner-eyebrow,#928c9c);
+}
+/* A standalone services document is visible at first paint and stays visible.
+   This is also a CSS guard for a cached older widget script. */
+body:not(.home) .sf-agency-widget--bento .cdl-bento__reveal,
+body:not(.home) .sf-agency-widget--bento[data-bento-ready="1"] .cdl-bento__reveal{
+  opacity:1;transform:none;transition-delay:0ms;
+}
+body:not(.home) .sf-agency-widget--bento .cdl-bento__card:hover{transform:translateY(-2px)}
+@media(max-width:739px){
+  body:not(.home):has(.sf-shell):has(.sf-content :is(.sf-agency-widget--bento,.sf-agency-widget--about,.sf-agency-widget--contact-bento)){--sf-agency-inner-top:26px;--sf-agency-inner-gutter:18px}
+  body:not(.home):has(.sf-shell) .sf-agency-widget--bento .cdl-bento__inner{width:100%;flex:1 1 auto}
+  body:not(.home):has(.sf-shell) .sf-agency-widget--bento .cdl-bento__heading h2{font-size:30px;line-height:1.08}
+}

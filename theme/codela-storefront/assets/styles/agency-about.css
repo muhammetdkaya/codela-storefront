@@ -109,3 +109,14 @@ body:has(.sf-agency-widget--about) .wp-site-blocks {
 .sf-agency-widget--about .sf-about-principle p{font-size:13.5px;line-height:1.5;}
 .sf-agency-widget--about .sf-about-contact{margin:26px 0 0;padding:0;display:flex;flex-wrap:nowrap;align-items:center;justify-content:space-between;gap:12px;}
 .sf-agency-widget--about .sf-about-location{font-size:12.5px;color:#928c9c;}
+
+/* Shared page rhythm is owned by agency.css; About uses the same shell inset. */
+body:not(.home):has(.sf-shell) .sf-agency-widget--about .sf-about-layout{
+  width:min(696px,calc(100% - 2 * var(--sf-agency-inner-gutter,20px)));
+  padding-block-start:var(--sf-agency-inner-top,28px);
+}
+body:not(.home):has(.sf-shell) .sf-agency-widget--about .sf-about-eyebrow{
+  display:flex;align-items:center;gap:8px;margin:0 0 10px!important;
+  font-size:11px;line-height:1.45;letter-spacing:.22em;font-weight:600;color:var(--sf-agency-inner-eyebrow,#928c9c);
+}
+body:not(.home):has(.sf-shell) .sf-agency-widget--about .sf-about-eyebrow::before{margin:0;flex:none}

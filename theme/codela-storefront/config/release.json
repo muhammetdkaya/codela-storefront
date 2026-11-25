@@ -6,8 +6,8 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Ajans dış girişinde kehribar çizgi ilk çizim fırsatından sonra sabit 1 saniye gösterilir; içerik ve kaynak sinyalleriyle erken kapanmaz.",
-    "Tema CSS dosyaları normal WordPress yükleme sırasına döndürüldü; kaynak bazlı hazır olma denetimleri kaldırıldı.",
-    "İç sayfa adaptif geçişleri, geçmiş gezinmesi ve ticari ekranlar korunur."
+    "Hizmetler, Hakkımızda ve İletişim sayfalarının header altı boşluğu, yatay kenar boşluğu ve üst etiket ritmi ortaklaştırıldı.",
+    "Hizmetler üst etiketine kehribar nokta eklendi.",
+    "Bağımsız Hizmetler sayfasında sonradan içerik gizleyip yeniden gösteren Bento animasyonu kaldırıldı; kart fotoğrafları ilk yüklemede istenir. Ana sayfa animasyonu korunur."
   ]
 }

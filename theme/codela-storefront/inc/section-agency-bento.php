@@ -18,6 +18,10 @@ function codela_sf_section_agency_bento( array $data, string $type = '' ): strin
     } ) );
     if ( ! $items ) { return ''; }
     $title = trim( (string) ( $data['title'] ?? '' ) ) ?: 'Uzmanlık Alanları';
+    // On the standalone page all three card photos are in/near the first viewport.
+    // The lower homepage stage retains lazy loading.
+    $standalone = function_exists( 'is_front_page' ) && ! is_front_page();
+    $image_loading = $standalone ? 'eager' : 'lazy';
     // Only replace known stock fields of the actual MONA Bento homepage.
     // A change to any other item or field must not suppress eligible updates.
     $starter = 'agency-starter-bento' === (string) ( $data['id'] ?? '' );
@@ -79,7 +83,7 @@ function codela_sf_section_agency_bento( array $data, string $type = '' ): strin
                  aria-label="<?php echo esc_attr( $display . ' hizmetini incele' ); ?>">
                 <?php if ( 0 === $index ) : ?>
                   <img class="cdl-bento__photo" src="<?php echo esc_url( codela_sf_agency_media_url( 'agency-light-web.jpg' ) ); ?>" alt=""
-                       loading="lazy" decoding="async" width="1376" height="768" />
+                       loading="<?php echo esc_attr( $image_loading ); ?>"<?php if ( $standalone ) : ?> fetchpriority="high"<?php endif; ?> decoding="async" width="1376" height="768" />
                   <span class="cdl-bento__image-shade" aria-hidden="true"></span>
                   <span class="cdl-bento__card-top">
                     <span class="cdl-bento__pill">Öne Çıkan</span>
@@ -97,7 +101,7 @@ function codela_sf_section_agency_bento( array $data, string $type = '' ): strin
                   </span>
                   <span class="cdl-bento__support-action" aria-hidden="true">İncele <span>→</span></span>
                 <?php else : ?>
-                  <img class="cdl-bento__visual cdl-bento__visual--<?php echo 1 === $index ? 'commerce' : 'software'; ?>" src="<?php echo esc_url( codela_sf_agency_media_url( 1 === $index ? 'agency-light-commerce.jpg' : 'agency-light-software.jpg' ) ); ?>" alt="" loading="lazy" decoding="async" width="1024" height="1024" />
+                  <img class="cdl-bento__visual cdl-bento__visual--<?php echo 1 === $index ? 'commerce' : 'software'; ?>" src="<?php echo esc_url( codela_sf_agency_media_url( 1 === $index ? 'agency-light-commerce.jpg' : 'agency-light-software.jpg' ) ); ?>" alt="" loading="<?php echo esc_attr( $image_loading ); ?>" decoding="async" width="1024" height="1024" />
                   <span class="cdl-bento__art-shade" aria-hidden="true"></span>
                   <span class="cdl-bento__minor-arrow" aria-hidden="true">↗</span>
                   <span class="cdl-bento__minor-copy">

@@ -127,6 +127,7 @@ jobs:
           node --check theme/codela-storefront/assets/scripts/auth-smart.js
           node --check theme/codela-storefront/assets/scripts/navigation-feedback.js
           node tests/agency-adaptive-feedback.cjs
+          node tests/agency-inner-rhythm.cjs
           node tests/agency-entry.cjs
           php tests/agency-lean-assets.php
           node --check theme/codela-storefront/assets/scripts/document-continuity.js

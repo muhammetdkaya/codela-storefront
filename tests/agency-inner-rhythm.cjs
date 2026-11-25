@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const p='theme/codela-storefront/';
+const css=fs.readFileSync(p+'assets/styles/agency.css','utf8');
+const about=fs.readFileSync(p+'assets/styles/agency-about.css','utf8');
+const js=fs.readFileSync(p+'assets/scripts/agency-widgets.js','utf8');
+const php=fs.readFileSync(p+'inc/section-agency-bento.php','utf8');
+assert(css.includes('--sf-agency-inner-top:28px')&&css.includes('--sf-agency-inner-top:26px'));
+assert(css.includes('.sf-agency-widget--about) .sf-content{padding:0!important}'));
+assert(css.includes('.cdl-bento__eyebrow::before'));
+assert(about.includes('padding-block-start:var(--sf-agency-inner-top,28px)'));
+assert(js.includes("document.body.classList.contains('home') && !reduced.matches"));
+assert(css.includes('body:not(.home) .sf-agency-widget--bento[data-bento-ready="1"] .cdl-bento__reveal'));
+assert(php.includes("$image_loading = $standalone ? 'eager' : 'lazy';"));
+console.log('Shared Agency heading rhythm, stable standalone Bento, and scoped eager images passed.');

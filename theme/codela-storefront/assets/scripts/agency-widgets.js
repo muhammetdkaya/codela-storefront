@@ -182,7 +182,9 @@
     }
 
     if (widget.dataset.agencyWidget === 'bento') {
-      if (!reduced.matches && 'IntersectionObserver' in window) {
+      // The standalone Services page is not an animated homepage stage.
+      // Never hide content that the browser may already have painted.
+      if (document.body.classList.contains('home') && !reduced.matches && 'IntersectionObserver' in window) {
         widget.dataset.bentoReady = '1';
         const observer = new IntersectionObserver(entries => {
           for (const entry of entries) {
