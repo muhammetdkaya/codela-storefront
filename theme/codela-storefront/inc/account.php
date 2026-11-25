@@ -438,7 +438,8 @@ add_action( 'woocommerce_account_content', function (): void {
 // settings screen. Never display this notice to the site's visitors or
 // enable registration behind the merchant's back.
 function codela_sf_registration_settings_notice(): void {
-    if ( ! current_user_can( 'manage_woocommerce' )
+    $commerce = codela_sf_commerce_available();
+    if ( ! current_user_can( $commerce ? 'manage_woocommerce' : 'manage_options' )
         || ! function_exists( 'get_option' )
         || codela_sf_registration_enabled() ) { return; }
 
@@ -448,6 +449,18 @@ function codela_sf_registration_settings_notice(): void {
     $is_codela = str_contains( $page, 'codela' ) || str_contains( $screen_id, 'codela' );
     if ( ! $is_codela ) { return; }
 
+    // Standalone registration is governed by WordPress, never WooCommerce.
+    if ( ! $commerce ) {
+        if ( ! function_exists( 'codela_account_wordpress_page_id' ) || ! codela_account_wordpress_page_id() ) { return; }
+        echo '<div class="notice notice-info codela-sf-registration-warning"><p><strong>'
+            . esc_html__( 'WordPress user registration is disabled or restricted.', 'codela-storefront' )
+            . '</strong> '
+            . esc_html__( 'Existing users can still sign in. To allow public registration, enable membership and select Subscriber as the default role in WordPress General Settings.', 'codela-storefront' )
+            . ' <a href="' . esc_url( admin_url( 'options-general.php' ) ) . '">'
+            . esc_html__( 'Open WordPress General Settings', 'codela-storefront' )
+            . '</a></p></div>';
+        return;
+    }
     $settings_url = admin_url( 'admin.php?page=wc-settings&tab=account' );
     echo '<div class="notice notice-warning codela-sf-registration-warning"><p><strong>'
         . esc_html__( 'Customer registration is disabled in WooCommerce.', 'codela-storefront' )

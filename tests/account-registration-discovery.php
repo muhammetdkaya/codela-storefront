@@ -39,6 +39,7 @@ function admin_url( $path ) { return 'https://store.test/wp-admin/' . $path; }
 function wp_get_current_user() { return $GLOBALS['user']; }
 function user_can( $user, $cap ) { return in_array('administrator', $user->roles, true); }
 function is_ssl() { return true; }
+function wc_get_page_permalink( $page ) { return 'https://store.test/my-account/'; }
 function wc_get_account_endpoint_url( $endpoint ) { return 'https://store.test/my-account/' . $endpoint . '/'; }
 function get_user_meta( $user_id, $key, $single = true ) {
     return $GLOBALS['devices'][$user_id][$key] ?? [];
