@@ -30,6 +30,12 @@ const server=http.createServer((req,res)=>{
    await page.evaluate(()=>document.body.classList.add('sf-glass-v2'));
    const widget=page.locator('.sf-agency-widget--project');
    assert.equal(await widget.count(),1);
+   if(width<=739){
+     const spacing=await widget.locator('.cdl-project').evaluate(e=>{const c=getComputedStyle(e);return {left:parseFloat(c.paddingLeft),right:parseFloat(c.paddingRight),top:parseFloat(c.paddingTop)}});
+     const expected=width>=390?24:18;
+     assert(Math.abs(spacing.left-expected)<.1&&Math.abs(spacing.right-expected)<.1,'Responsive optical form gutters');
+     assert.equal(spacing.top,26,'Shared inner header inset');
+   }
    const one=widget.locator('[data-project-step="1"]'),two=widget.locator('[data-project-step="2"]'),three=widget.locator('[data-project-step="3"]');
    assert(await one.isVisible() && !(await two.isVisible()) && !(await three.isVisible()));
    assert.equal(await one.locator('input[type="checkbox"]').count(),4);

@@ -17,6 +17,7 @@ assert(css.includes('--sf-agency-home-top:calc(var(--sf-agency-home-header) + va
 assert(css.includes('--sf-agency-home-header:68px')&&css.includes('--sf-agency-home-header:76px'));
 assert(css.includes('body.home:has(.sf-shell) .sf-agency-widget--studio .codela-studio-hero__intro{padding-inline:0}'));
 assert(css.includes('.sf-agency-widget--contact-bento,.sf-agency-widget--project)){--sf-agency-inner-top:26px;--sf-agency-inner-gutter:18px}') || css.includes('.sf-agency-widget--contact-bento,.sf-agency-widget--project)),'));
-assert(project.includes('padding-inline:var(--sf-agency-inner-gutter,20px)')&&project.includes('padding-inline:var(--sf-agency-inner-gutter,18px)'));
+assert(project.includes('padding-inline:var(--sf-agency-inner-gutter,20px)')&&project.includes('padding-inline:clamp(var(--sf-agency-inner-gutter,18px),'));
+assert(project.includes('padding-block-start:var(--sf-agency-inner-top,26px)'));
 assert(project.includes('width:100%;max-width:100%;margin-inline:0')&&project.includes('flex:0 1 696px;width:min(100%,696px);max-width:696px'));
 console.log('Shared Agency heading rhythm, homepage clearance, project gutters and stable standalone Bento passed.');
