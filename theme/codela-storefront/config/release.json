@@ -3,11 +3,12 @@
     "wordpress": "6.5",
     "php": "8.0",
     "woocommerce": "9.0",
-    "codela": "1.2.5"
+    "codela": "1.2.32"
   },
   "changes": [
     "Ajans deneyiminde WooCommerce isteğe bağlı ortak çekirdek ve hesap altyapısı.",
-    "WooCommerce aktifken mevcut e-ticaret akışı korunur."
+    "WooCommerce aktifken mevcut e-ticaret akışı korunur.",
+    "Ajans ışık sahnesinin çerçeve ölçüleri ve proje başlatma iç sayfa regresyonu düzeltildi."
   ],
   "woocommerce_optional": true
 }
