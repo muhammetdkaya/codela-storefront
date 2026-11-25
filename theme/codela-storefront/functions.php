@@ -309,6 +309,14 @@ add_action( 'wp_head', static function() {
     <?php
 }, 0 );
 
+/** One shared opt-out for the existing non-commerce Agency script reductions. */
+function codela_sf_woo_lightweight_enabled(): bool {
+    $settings = codela_theme_settings();
+    // Missing value preserves the existing Agency behavior on upgrade.
+    return 'agency' === ( $settings['site_experience'] ?? 'commerce' )
+        && in_array( $settings['woo_lightweight_enabled'] ?? true, [ true, 1, '1' ], true );
+}
+
 add_action( 'wp_enqueue_scripts', function() {
     if ( ! codela_sf_ready() ) { return; }
     $root_uri = get_template_directory_uri() . '/assets/';
@@ -349,7 +357,7 @@ add_action( 'wp_enqueue_scripts', function() {
     if ( $sections['products'] || is_search() ) { wp_enqueue_script( 'wc-add-to-cart' ); }
     // Only known, managed Agency content without commerce blocks: preserve Woo
     // account, checkout, mixed/unknown content and all actual store documents.
-    if ( 'agency' === ( codela_theme_settings()['site_experience'] ?? 'commerce' )
+    if ( codela_sf_woo_lightweight_enabled()
         && $sections['managed'] && ! $sections['products'] && ! is_search()
         && ! is_cart() && ! is_checkout() && ! is_account_page()
         && ! ( function_exists( 'is_woocommerce' ) && is_woocommerce() ) ) {
@@ -603,7 +611,7 @@ add_action( 'wp_enqueue_scripts', static function() {
  * Never deregister Woo or remove jQuery, account, checkout or store styles.
  */
 add_action( 'wp_enqueue_scripts', static function() {
-    if ( ! codela_sf_ready() || ! codela_sf_agency_experience() || ! is_singular( 'page' )
+    if ( ! codela_sf_ready() || ! codela_sf_woo_lightweight_enabled() || ! is_singular( 'page' )
         || is_search() || is_cart() || is_checkout() || is_account_page()
         || ( function_exists( 'is_woocommerce' ) && is_woocommerce() )
         || is_preview() ) { return; }

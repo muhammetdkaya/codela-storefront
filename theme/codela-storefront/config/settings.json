@@ -16,6 +16,13 @@
             "commerce": "E-Ticaret",
             "agency": "Ajans"
           }
+        },
+        {
+          "id": "woo_lightweight_enabled",
+          "type": "checkbox",
+          "default": true,
+          "label": "WooCommerce hafifletme",
+          "description": "Ajans deneyimindeki doğrulanmış, ticari işlem içermeyen sayfalarda gereksiz WooCommerce JavaScript kaynaklarını azaltır. Ödeme veya mağaza entegrasyonu eklediğinizde kapatarak normal kaynak yüklemesini geri getirebilirsiniz."
         }
       ]
     },

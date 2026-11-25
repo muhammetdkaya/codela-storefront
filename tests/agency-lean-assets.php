@@ -8,7 +8,16 @@ $GLOBALS['ctx'] = ['ready'=>true,'agency'=>true,'page'=>true,'managed'=>true,'wi
 $GLOBALS['removed']=[];
 function add_action($name,$callback,$priority) { $GLOBALS['hook']=$callback; }
 function codela_sf_ready(){return !empty($GLOBALS['ctx']['ready']);}
-function codela_sf_agency_experience(){return !empty($GLOBALS['ctx']['agency']);}
+function codela_theme_settings(){ $settings=['site_experience'=>!empty($GLOBALS['ctx']['agency'])?'agency':'commerce']; if (array_key_exists('lightweight',$GLOBALS['ctx'])) $settings['woo_lightweight_enabled']=$GLOBALS['ctx']['lightweight']; return $settings; }
+$helper_start = strpos($source, 'function codela_sf_woo_lightweight_enabled(): bool {');
+$helper_end = strpos($source, "\nadd_action( 'wp_enqueue_scripts'", $helper_start);
+if ($helper_start === false || $helper_end === false) throw new RuntimeException('Missing shared lightweight switch');
+eval(substr($source,$helper_start,$helper_end-$helper_start));
+if (substr_count($source, 'codela_sf_woo_lightweight_enabled()') !== 3) throw new RuntimeException('Both reductions must use the shared switch');
+$schema=json_decode(file_get_contents(__DIR__.'/../theme/codela-storefront/config/settings.json'),true);
+$fields=array_merge(...array_column($schema['sections'],'fields'));
+$setting=array_values(array_filter($fields,static fn($f)=>$f['id']==='woo_lightweight_enabled'));
+if (count($setting)!==1 || $setting[0]['type']!=='checkbox' || $setting[0]['default']!==true) throw new RuntimeException('Missing compatible settings schema');
 function is_singular($type){return !empty($GLOBALS['ctx']['page']);}
 function is_search(){return !empty($GLOBALS['ctx']['search']);}
 function is_cart(){return !empty($GLOBALS['ctx']['cart']);}
@@ -28,4 +37,10 @@ foreach(['ready','agency','page','managed','widgets','products','search','cart',
  ($GLOBALS['hook'])();
  if ($GLOBALS['removed']) throw new RuntimeException('Unsafe removal: '.$key);
 }
-echo "Scoped Agency script removal passed.\n";
+foreach([false,0,'0',true,1,'1'] as $value){
+ $GLOBALS['ctx']=$base; $GLOBALS['ctx']['lightweight']=$value; $GLOBALS['removed']=[];
+ ($GLOBALS['hook'])();
+ $expected=in_array($value,[true,1,'1'],true)?['woocommerce','wc-cart-fragments','wc-add-to-cart']:[];
+ if ($GLOBALS['removed']!==$expected) throw new RuntimeException('Incorrect lightweight toggle behavior');
+}
+echo "Scoped Agency script removal and toggle passed.\n";
