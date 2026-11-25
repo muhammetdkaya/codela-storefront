@@ -1,0 +1,6 @@
+# Agency early HTML streaming
+An optional, default-off experiment. Enable first-entry feedback and Early HTML sending under Site type. The ordinary canvas remains the fallback for all noneligible requests.
+Only a direct, anonymous, cookie-free GET of a published, managed Agency static home without product sections may stream. Cache drop-ins, compression, custom/nested/nonempty buffers, payment, account, previews, and other requests are excluded. No server configuration is modified.
+The first HEAD prefix is sent before block rendering. Native wp_head is still called after block rendering so block styles/scripts remain available. Browsers may defer painting until BODY or later; early bytes are not proof of a visible indicator.
+The X-Codela-Streaming header indicates an attempted early flush, not proven streaming. Run node tools/agency-streaming-probe.cjs https://YOUR-HOST/ repeatedly with cache disabled or bypassed by host configuration, then verify visible first paint and real content on Safari/WebKit and Chromium. Test with the feature off as a control. Do not force-enable server-wide buffering changes. On any incompatible behavior disable the setting.
+PHP/WordPress initialization happens before this path; full-page caching remains the best way to avoid this cost for eligible anonymous pages.

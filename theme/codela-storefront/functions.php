@@ -91,6 +91,7 @@ function codela_sf_transition_icon( string $name ): string {
 }
 require_once get_template_directory() . '/inc/agency-media.php';
 require_once get_template_directory() . '/inc/agency.php';
+require_once get_template_directory() . '/inc/agency-streaming.php';
 require_once get_template_directory() . '/inc/typography.php';
 require_once get_template_directory() . '/inc/render.php';
 require_once get_template_directory() . '/inc/cart-shipping.php';

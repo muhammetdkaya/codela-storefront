@@ -7,6 +7,9 @@ assert(match,'Inline first-entry script exists');
 const schema=JSON.parse(fs.readFileSync('theme/codela-storefront/config/settings.json','utf8'));
 const fields=schema.sections.flatMap(s=>s.fields).filter(f=>f.id==='first_entry_feedback_enabled');
 assert.equal(fields.length,1);assert.equal(fields[0].type,'checkbox');assert.equal(fields[0].default,true);
+const streamingFields=schema.sections.flatMap(s=>s.fields).filter(f=>f.id==='early_html_streaming_enabled');
+assert.equal(streamingFields.length,1);assert.equal(streamingFields[0].type,'checkbox');assert.equal(streamingFields[0].default,false);
+require('node:child_process').execFileSync('php',['tests/agency-streaming.php'],{stdio:'inherit'});
 assert.equal((source.match(/if \( !? ?codela_sf_first_entry_enabled\(\) \)/g)||[]).length,2);
 function fixture({internal=false,ready=false}={}){
  let next=0, main=ready?{querySelector:()=>({})}:null, callback=null;

@@ -30,6 +30,13 @@
           "default": true,
           "label": "İlk açılış göstergesi",
           "description": "Ajans sayfalarında ilk HTML işlendiğinde kehribar çizgiyi gösterir, gerçek içerik hazır olduğunda kaldırır. Site içi geçişleri ve ticari sayfaları değiştirmez."
+        },
+        {
+          "id": "early_html_streaming_enabled",
+          "type": "checkbox",
+          "default": false,
+          "label": "Erken HTML gönderimi (deneysel)",
+          "description": "İlk açılış göstergesi açıkken yalnızca çerezsiz, güvenli ajans ana sayfasında HTML başlığını bloklar hazırlanmadan göndermeyi dener. Önbellek ve özel tamponlarda normal şablona döner. Sunucu ve tarayıcı desteği ayrıca doğrulanmalıdır."
         }
       ]
     },
