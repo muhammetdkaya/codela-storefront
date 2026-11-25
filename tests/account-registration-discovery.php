@@ -39,7 +39,7 @@ function admin_url( $path ) { return 'https://store.test/wp-admin/' . $path; }
 function wp_get_current_user() { return $GLOBALS['user']; }
 function user_can( $user, $cap ) { return in_array('administrator', $user->roles, true); }
 function is_ssl() { return true; }
-function wc_get_page_permalink( $page ) { return 'https://store.test/my-account/'; }
+function codela_account_wordpress_page_id() { return (int) ($GLOBALS['standalone_page'] ?? 0); }
 function wc_get_account_endpoint_url( $endpoint ) { return 'https://store.test/my-account/' . $endpoint . '/'; }
 function get_user_meta( $user_id, $key, $single = true ) {
     return $GLOBALS['devices'][$user_id][$key] ?? [];
@@ -55,6 +55,15 @@ foreach ($GLOBALS['filters']['woocommerce_account_menu_items'] as $filter) $item
 check($items['edit-account']==='Account information', 'Native edit-account route has recognizable label');
 check($items['orders']==='Orders', 'Other native Woo endpoints untouched');
 $_GET=['page'=>'codela-commerce-toolkit'];
+// Test standalone without defining WooCommerce permalink functions yet.
+ob_start();codela_sf_registration_settings_notice();$missing=ob_get_clean();
+check(str_contains($missing,'No WordPress account page is configured') && str_contains($missing,'options-general.php#codela_account_page_id') && !str_contains($missing,'wc-settings'), 'Missing standalone account page has a repair link');
+$GLOBALS['standalone_page'] = 7;
+ob_start();codela_sf_registration_settings_notice();$standalone=ob_get_clean();
+check(str_contains($standalone,'WordPress user registration is disabled') && str_contains($standalone,'options-general.php') && !str_contains($standalone,'wc-settings'), 'Standalone registration policy links WordPress settings, not WooCommerce');
+if (!function_exists('wc_get_page_permalink')) {
+    function wc_get_page_permalink( $page ) { return 'https://store.test/my-account/'; }
+}
 ob_start();codela_sf_registration_settings_notice();$alert=ob_get_clean();
 check(str_contains($alert,'Customer registration is disabled'), 'Disabled registration warns in Codela admin');
 check(str_contains($alert,'admin.php?page=wc-settings&amp;tab=account'), 'Warning links WooCommerce settings');

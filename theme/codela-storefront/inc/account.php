@@ -440,8 +440,7 @@ add_action( 'woocommerce_account_content', function (): void {
 function codela_sf_registration_settings_notice(): void {
     $commerce = codela_sf_commerce_available();
     if ( ! current_user_can( $commerce ? 'manage_woocommerce' : 'manage_options' )
-        || ! function_exists( 'get_option' )
-        || codela_sf_registration_enabled() ) { return; }
+        || ! function_exists( 'get_option' ) ) { return; }
 
     $page = isset( $_GET['page'] ) && is_string( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
     $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
@@ -451,7 +450,18 @@ function codela_sf_registration_settings_notice(): void {
 
     // Standalone registration is governed by WordPress, never WooCommerce.
     if ( ! $commerce ) {
-        if ( ! function_exists( 'codela_account_wordpress_page_id' ) || ! codela_account_wordpress_page_id() ) { return; }
+        if ( ! function_exists( 'codela_account_wordpress_page_id' ) ) { return; }
+        if ( ! codela_account_wordpress_page_id() ) {
+            echo '<div class="notice notice-warning codela-sf-account-page-warning"><p><strong>'
+                . esc_html__( 'No WordPress account page is configured.', 'codela-storefront' )
+                . '</strong> '
+                . esc_html__( 'Select an existing published page in the Codela account page setting. Its address and user accounts are preserved.', 'codela-storefront' )
+                . ' <a href="' . esc_url( admin_url( 'options-general.php#codela_account_page_id' ) ) . '">'
+                . esc_html__( 'Configure the account page', 'codela-storefront' )
+                . '</a></p></div>';
+            return;
+        }
+        if ( codela_sf_registration_enabled() ) { return; }
         echo '<div class="notice notice-info codela-sf-registration-warning"><p><strong>'
             . esc_html__( 'WordPress user registration is disabled or restricted.', 'codela-storefront' )
             . '</strong> '
@@ -461,6 +471,7 @@ function codela_sf_registration_settings_notice(): void {
             . '</a></p></div>';
         return;
     }
+    if ( codela_sf_registration_enabled() ) { return; }
     $settings_url = admin_url( 'admin.php?page=wc-settings&tab=account' );
     echo '<div class="notice notice-warning codela-sf-registration-warning"><p><strong>'
         . esc_html__( 'Customer registration is disabled in WooCommerce.', 'codela-storefront' )
