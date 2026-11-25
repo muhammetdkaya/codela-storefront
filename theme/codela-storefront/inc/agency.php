@@ -368,8 +368,8 @@ function codela_sf_project_availability(): array {
     }
     return $out;
 }
-/** Keep project capacity inside Codela's existing theme integration settings. */
-add_action( 'codela_theme_settings_integrations', static function() {
+/** Use General in the new settings hub, with an older-plugin fallback. */
+add_action( function_exists( 'codela_theme_render_general' ) ? 'codela_theme_settings_general' : 'codela_theme_settings_integrations', static function() {
     if ( ! current_user_can( 'manage_options' ) ) { return; }
     echo '<section id="codela-project-capacity"><h2>Codela Proje Müsaitliği</h2><p>Önümüzdeki üç ay için kalan proje kapasitesi. Boş alan = henüz belirlenmedi; 0 = dolu. Talepler rezervasyon değildir.</p><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="codela_sf_save_capacity">';
     wp_nonce_field( 'codela_sf_save_capacity' );
@@ -379,16 +379,21 @@ add_action( 'codela_theme_settings_integrations', static function() {
     submit_button( 'Kapasiteyi kaydet' ); echo '</form></section>';
 } );
 add_action( 'admin_post_codela_sf_save_capacity', static function() {
-    if ( ! current_user_can( 'manage_options' ) ) { wp_die( 'Yetkisiz işlem.', '', [ 'response' => 403 ] ); }
+    if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) || ! current_user_can( 'manage_options' ) || ! function_exists( 'codela_theme_admin_url' ) ) { wp_die( 'Yetkisiz işlem.', '', [ 'response' => 403 ] ); }
     check_admin_referer( 'codela_sf_save_capacity' );
     $raw = isset($_POST['capacity']) && is_array($_POST['capacity']) ? wp_unslash($_POST['capacity']) : [];
-    $saved = [];
+    $saved = get_option( 'codela_sf_project_capacity', [] );
+    $saved = is_array( $saved ) ? $saved : [];
     foreach ( codela_sf_project_availability() as $key => $slot ) {
-        $value = $raw[$key] ?? '';
-        if ( is_string($value) && preg_match('/^(?:[0-9]|1[0-2])$/D',$value) ) { $saved[$key] = (int) $value; }
+        if ( ! array_key_exists( $key, $raw ) ) { continue; }
+        $value = $raw[$key];
+        if ( '' === $value ) { unset( $saved[$key] ); }
+        elseif ( is_string( $value ) && preg_match( '/^(?:[0-9]|1[0-2])$/D', $value ) ) { $saved[$key] = (int) $value; }
+        else { wp_die( 'Geçersiz proje kapasitesi.', '', [ 'response' => 400 ] ); }
     }
     update_option( 'codela_sf_project_capacity', $saved, false );
-    wp_safe_redirect( codela_theme_admin_url( 'integrations' ) . '#codela-project-capacity' ); exit;
+    $section = function_exists( 'codela_theme_render_general' ) ? 'general' : 'integrations';
+    wp_safe_redirect( codela_theme_admin_url( $section ) . '#codela-project-capacity' ); exit;
 } );
 
 function codela_sf_agency_experience(): bool {
