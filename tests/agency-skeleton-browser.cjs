@@ -82,13 +82,23 @@ function header(dock){
       assert(Math.abs(snapshot[key][prop]-before[key][prop])<=1.2,'Native header does not jump');
     }
     if(route.kind==='home'){
-      await page.waitForFunction(()=>getComputedStyle(document.querySelector('.sf-agency-route-line')).opacity==='1');
+      await page.waitForFunction(()=>document.querySelector('.sf-agency-route-line')?.dataset.phase==='header');
+      assert.equal(await page.locator('.sf-agency-route-line').evaluate(e=>getComputedStyle(e).backgroundColor),'rgba(0, 0, 0, 0)');
+      assert.equal(await page.locator('#sf-content').getAttribute('inert'),null,'Normal navigation does not lock outgoing content');
+      await page.waitForFunction(()=>document.querySelector('.sf-agency-route-line')?.dataset.phase==='center');
+      assert.equal(await page.locator('.sf-agency-route-line').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(9, 9, 12)');
     }
     await page.evaluate(()=>window.codelaSFFeedback.end());
     assert.equal(await page.locator('.sf-agency-route-line').count(),0);
     assert.equal(await page.locator('#sf-content').getAttribute('aria-busy'),null);
     assert.equal(await page.locator('#sf-content').getAttribute('inert'),null);
    }
+   // Fast navigation and native handoff cancel all queued phases.
+   await page.evaluate(()=>{const f=window.codelaSFFeedback;f.begin({url:'https://agency.test/about-renamed/'});f.end();});
+   await page.waitForTimeout(800);
+   assert.equal(await page.locator('.sf-agency-route-line').count(),0,'No late veil after completion');
+   await page.evaluate(()=>{window.codelaSFFeedback.begin({url:'https://agency.test/about-renamed/'});window.dispatchEvent(new Event('pagehide'));});
+   assert.equal(await page.locator('.sf-agency-route-line').count(),0,'No retained veil on document handoff');
    await page.evaluate(()=>window.codelaSFFeedback.begin({url:'https://agency.test/myaccount/'}));
    assert.equal(await page.locator('.sf-skeleton').getAttribute('data-sf-agency'),'account');
    await page.evaluate(()=>window.codelaSFFeedback.end());

@@ -6,9 +6,9 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Ajansın doğrulanmış içerik sayfalarında gereksiz genel WooCommerce JavaScript yükü azaltıldı; hesap ve mağaza akışları korunuyor.",
-    "Karşılama animasyonu çizim maliyetine göre kare hızını ayarlıyor ve tekrar boyutlandırmayı azaltıyor.",
-    "Çalışma süreci görselleri yalnız bölüm yaklaşınca veya ziyaretçi etkileşimiyle hazırlanıyor.",
-    "Canlı görsel doğrulaması kalıcı depolama adreslerini ve dosya bütünlüğünü destekliyor."
+    "Ajans iç sayfa geçişleri adaptif: 150 ms öncesi görünmez, 150–750 ms header çizgisi, 750 ms sonrası ortalanmış kehribar çizgi.",
+    "Yeni içerik sonrası gecikmiş yükleme katmanı ve eski sayfa geçiş görüntüsü engellendi.",
+    "WooCommerce hafifletme ve ilk açılış göstergesi ayrı aç/kapa ayarlarına bağlandı.",
+    "Erken HTML gönderimi güvenli ajans ana sayfası için deneysel ve varsayılan kapalı seçenek olarak eklendi."
   ]
 }

@@ -296,6 +296,7 @@
         if (!pending || token !== undefined && !active(token)) return false;
         const state = pending; pending = null;
         clearTimeout(state.timer);
+        state.releaseAgency?.();
         state.releaseViewport?.();
         state.releaseSubmit?.();
         state.surface.remove();
@@ -319,20 +320,61 @@
         const target = new URL(url, location.href);
         const type = destination(target, link);
         const agencyKind = agencyDestination(target, type);
-        // Public editorial routes share the first-entry centered light.
-        // The veil is delayed, never imposes a minimum duration, and leaves
-        // the native header in place. Account and commerce keep skeletons.
+        // One lifecycle for Agency: invisible <150ms, header beam <750ms,
+        // then a centered veil only while the original navigation is pending.
         if (agencyKind && agencyKind !== 'account') {
-            const surface=document.createElement('div');
-            surface.className='sf-agency-route-line';
-            surface.dataset.sfAgency=agencyKind;
-            surface.setAttribute('role','status');
-            surface.setAttribute('aria-live','polite');
-            const label=document.createElement('span');label.textContent=config.loading||'Yükleniyor…';surface.append(label);
-            const state=pending={token:++sequence,surface,snapshots:[remember(main,['aria-busy','inert'])],focus:link||document.activeElement};
-            main.setAttribute('aria-busy','true');main.inert=true;
+            const surface = document.createElement('div');
+            surface.className = 'sf-agency-route-line';
+            surface.dataset.sfAgency = agencyKind;
+            surface.dataset.phase = 'quiet';
+            const label = document.createElement('span');
+            label.textContent = config.loading || 'Yükleniyor…';
+            surface.append(label);
+            const state = pending = {token:++sequence, surface, agency:true, owner,
+                snapshots:[remember(main,['aria-busy','inert'])], focus:link||document.activeElement};
+            main.setAttribute('aria-busy','true');
             document.body.append(surface);
-            state.timer=setTimeout(()=>end(state.token,{focus:true}),10000);
+            // Native target can suppress its first-entry loader even when the
+            // referrer is missing. A matching URL and short lifetime are required.
+            if (owner === 'document') {
+                try {
+                    const href = new URL(target.href); href.hash = '';
+                    sessionStorage.setItem('sf-agency-entry-intent', JSON.stringify({url:href.href,time:Date.now()}));
+                } catch {}
+            }
+            let committed = false;
+            const stillWaiting = () => active(state.token) && !committed &&
+                main.isConnected && document.querySelector('#sf-content') === main;
+            const headerTimer = setTimeout(() => {
+                if (!stillWaiting()) return;
+                surface.dataset.phase = 'header';
+                surface.setAttribute('role','status');
+                surface.setAttribute('aria-live','polite');
+            },150);
+            const veilTimer = setTimeout(() => {
+                if (!stillWaiting()) return;
+                surface.dataset.phase = 'center';
+                main.inert = true;
+            },750);
+            const cancelVisual = () => {
+                committed = true;
+                clearTimeout(headerTimer);
+                clearTimeout(veilTimer);
+                surface.remove();
+                state.snapshots.forEach(restore);
+            };
+            // Core/router may replace content before its navigate promise resolves.
+            // Remove feedback before paint, but retain ownership for its finalizer.
+            let observer;
+            if (owner === 'router' && typeof MutationObserver === 'function') {
+                observer = new MutationObserver(() => {
+                    if (active(state.token) && !committed &&
+                        (!main.isConnected || document.querySelector('#sf-content') !== main)) cancelVisual();
+                });
+                observer.observe(document.body,{childList:true,subtree:true});
+            }
+            state.releaseAgency = () => { clearTimeout(headerTimer);clearTimeout(veilTimer);observer?.disconnect(); };
+            state.timer = setTimeout(() => end(state.token,{focus:true}),10000);
             return state.token;
         }
         // Destination controls are an inert presentation, without outgoing product
@@ -470,7 +512,20 @@
     }
     document.addEventListener('keydown', event => { if (event.key === 'Escape') end(undefined, { focus: true }); });
     window.addEventListener('pageshow', () => end());
-    window.codelaSFFeedback = Object.freeze({ begin, end, active, accountDepth });
+    // Prevent the outgoing loader from becoming a retained document snapshot.
+    // Commerce feedback keeps its existing, independent transition lifecycle.
+    const agencyPending = () => !!pending?.agency;
+    const isAgencyRoute = value => {
+        try {
+            const url = new URL(value, location.href);
+            const kind = agencyDestination(url, destination(url));
+            return !!kind && kind !== 'account';
+        } catch { return false; }
+    };
+    const endAgency = () => { if (agencyPending()) end(pending.token); };
+    window.addEventListener('pagehide', endAgency);
+    window.addEventListener('codela:route-committed', endAgency);
+    window.codelaSFFeedback = Object.freeze({ begin, end, active, accountDepth, agencyPending, isAgencyRoute, endAgency });
 })();
 ;
 
@@ -592,6 +647,13 @@
     function applyTransition(transition, activation) {
         if (!transition || !activation?.from?.url || !activation.entry?.url) return;
         if (submitting) { transition.skipTransition(); return; }
+        // Never crossfade a loading veil over already-rendered Agency content.
+        const feedback = window.codelaSFFeedback;
+        if (feedback?.agencyPending() ||
+            feedback?.isAgencyRoute(activation.from.url) && feedback?.isAgencyRoute(activation.entry.url)) {
+            transition.skipTransition();
+            return;
+        }
         // Account feedback is already visible in the outgoing document.
         // Replace it in place; never slide or crossfade a late loading snapshot.
         if (window.codelaSFFeedback?.accountDepth(activation.from.url) >= 0 && window.codelaSFFeedback?.accountDepth(activation.entry.url) >= 0) {
@@ -661,7 +723,10 @@
             else delete link.dataset.sfReturnSearch;
         } catch { link.hidden = root; if (label) label.hidden = !root; }
     }
-    window.addEventListener('pageswap', event => applyTransition(event.viewTransition, event.activation));
+    window.addEventListener('pageswap', event => {
+        applyTransition(event.viewTransition, event.activation);
+        window.codelaSFFeedback?.endAgency();
+    });
     window.addEventListener('pagereveal', event => {
         applyTransition(event.viewTransition, window.navigation?.activation);
         updateBackLink();

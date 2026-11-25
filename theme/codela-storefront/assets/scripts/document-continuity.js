@@ -115,6 +115,13 @@
     function applyTransition(transition, activation) {
         if (!transition || !activation?.from?.url || !activation.entry?.url) return;
         if (submitting) { transition.skipTransition(); return; }
+        // Never crossfade a loading veil over already-rendered Agency content.
+        const feedback = window.codelaSFFeedback;
+        if (feedback?.agencyPending() ||
+            feedback?.isAgencyRoute(activation.from.url) && feedback?.isAgencyRoute(activation.entry.url)) {
+            transition.skipTransition();
+            return;
+        }
         // Account feedback is already visible in the outgoing document.
         // Replace it in place; never slide or crossfade a late loading snapshot.
         if (window.codelaSFFeedback?.accountDepth(activation.from.url) >= 0 && window.codelaSFFeedback?.accountDepth(activation.entry.url) >= 0) {
@@ -184,7 +191,10 @@
             else delete link.dataset.sfReturnSearch;
         } catch { link.hidden = root; if (label) label.hidden = !root; }
     }
-    window.addEventListener('pageswap', event => applyTransition(event.viewTransition, event.activation));
+    window.addEventListener('pageswap', event => {
+        applyTransition(event.viewTransition, event.activation);
+        window.codelaSFFeedback?.endAgency();
+    });
     window.addEventListener('pagereveal', event => {
         applyTransition(event.viewTransition, window.navigation?.activation);
         updateBackLink();
