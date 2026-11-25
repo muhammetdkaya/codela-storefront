@@ -6,9 +6,8 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Ajans iç sayfa geçişleri adaptif: 150 ms öncesi görünmez, 150–750 ms header çizgisi, 750 ms sonrası ortalanmış kehribar çizgi.",
-    "Yeni içerik sonrası gecikmiş yükleme katmanı ve eski sayfa geçiş görüntüsü engellendi.",
-    "WooCommerce hafifletme ve ilk açılış göstergesi ayrı aç/kapa ayarlarına bağlandı.",
-    "Erken HTML gönderimi güvenli ajans ana sayfası için deneysel ve varsayılan kapalı seçenek olarak eklendi."
+    "Ajans ana sayfasında ilk görüntüyü engelleyen seçili tema CSS dosyaları kontrollü biçimde yüklenir; ticari ve üçüncü taraf kaynakları korunur.",
+    "Kehribar çizgi artık HTML başlığı oluşunca değil, içerik ve tema stilleri hazır olup çizim sırası geldiğinde kapanır.",
+    "İlk açılış zamanlaması canlı performans denetimine eklendi; adaptif iç geçişler korunuyor."
   ]
 }

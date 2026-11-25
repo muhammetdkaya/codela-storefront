@@ -371,10 +371,17 @@ add_action( 'wp_enqueue_scripts', function() {
         wp_enqueue_style( 'codela-storefront-navigation-feedback' );
         $feedback_file = $debug_assets ? 'scripts/navigation-feedback.js' : 'scripts/document-navigation.js';
         wp_enqueue_script( 'codela-storefront-navigation-feedback', $root_uri . $feedback_file, [], codela_sf_script_module_version( $feedback_file ), false );
-        // The same synchronous head bootstrap still registers pagereveal before
-        // first paint. Bundling removes a blocking fetch, not the early listener.
+        // Managed public Agency home can defer the browsing bundle; its
+        // entry overlay is already inline and Agency snapshots are not needed.
+        // All commerce/account and other documents keep the original strategy.
+        if ( codela_sf_agency_first_paint_assets() ) {
+            wp_script_add_data( 'codela-storefront-navigation-feedback', 'strategy', 'defer' );
+        }
         wp_register_script( 'codela-storefront-document-continuity', $debug_assets ? $root_uri . 'scripts/document-continuity.js' : false, [ 'codela-storefront-navigation-feedback' ], codela_sf_script_module_version( 'scripts/document-continuity.js' ), false );
         wp_enqueue_script( 'codela-storefront-document-continuity' );
+        if ( codela_sf_agency_first_paint_assets() ) {
+            wp_script_add_data( 'codela-storefront-document-continuity', 'strategy', 'defer' );
+        }
         wp_add_inline_script( 'codela-storefront-navigation-feedback', 'window.codelaSFDocument=' . wp_json_encode( [
             'home' => home_url( '/' ),
             'agencyRoutes' => function_exists( 'codela_sf_agency_navigation_routes' ) ? codela_sf_agency_navigation_routes() : [],

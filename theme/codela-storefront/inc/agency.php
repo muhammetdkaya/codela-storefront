@@ -416,14 +416,55 @@ function codela_sf_first_entry_enabled(): bool {
         || is_preview() || is_customize_preview() ) { return false; }
     return in_array( codela_theme_settings()['first_entry_feedback_enabled'] ?? true, [ true, 1, '1' ], true );
 }
+/** Keep third-party, commerce, admin and preview styles in their original path. */
+function codela_sf_agency_first_paint_assets(): bool {
+    if ( ! codela_sf_first_entry_enabled() || ! is_front_page() || ! is_singular( 'page' )
+        || is_user_logged_in() || ! class_exists( 'WP_HTML_Tag_Processor' )
+        || ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG )
+        || 'GET' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) ) { return false; }
+    // Do not introduce inline event dependencies under an explicit restrictive CSP.
+    foreach ( headers_list() as $header ) {
+        if ( stripos( $header, 'Content-Security-Policy:' ) === 0 ) { return false; }
+    }
+    $caps = codela_sf_sections_capabilities();
+    $flags = codela_sf_agency_asset_flags();
+    return ! empty( $caps['managed'] ) && empty( $caps['products'] ) && ! empty( $flags['widgets'] );
+}
+function codela_sf_first_paint_style_handle( string $handle ): bool {
+    return in_array( $handle, [
+        'codela-storefront-tokens', 'codela-storefront-sections',
+        'codela-storefront-document-continuity', 'codela-storefront-agency',
+        'codela-storefront-agency-light-scene', 'codela-storefront-agency-reference-light',
+        'codela-storefront-agency-glass', 'codela-storefront-glass-v2',
+        'codela-storefront-editorial-menu', 'codela-storefront-editorial-account-shell',
+    ], true );
+}
+add_filter( 'style_loader_tag', static function( $tag, $handle, $href, $media ) {
+    if ( ! codela_sf_first_paint_style_handle( $handle ) || ! codela_sf_agency_first_paint_assets()
+        || ! in_array( $media, [ '', 'all', 'screen' ], true )
+        || ! str_starts_with( $href, get_template_directory_uri() . '/assets/' ) ) { return $tag; }
+    $processor = new WP_HTML_Tag_Processor( $tag );
+    if ( ! $processor->next_tag( 'LINK' ) || 'stylesheet' !== $processor->get_attribute( 'rel' )
+        || null !== $processor->get_attribute( 'onload' ) || null !== $processor->get_attribute( 'onerror' ) ) { return $tag; }
+    $processor->set_attribute( 'media', 'print' );
+    $processor->set_attribute( 'data-cdl-entry-media', $media ?: 'all' );
+    $processor->set_attribute( 'data-cdl-entry-css', '1' );
+    // Inline fallback even if capture listeners are not installed. The next
+    // script restores ordinary blocking media for internal/history visits.
+    $processor->set_attribute( 'onload', 'this.media=this.getAttribute("data-cdl-entry-media");this.removeAttribute("data-cdl-entry-css");if(window.codelaAgencyEntryReady)window.codelaAgencyEntryReady(false)' );
+    $processor->set_attribute( 'onerror', 'this.media=this.getAttribute("data-cdl-entry-media");this.removeAttribute("data-cdl-entry-css");if(window.codelaAgencyEntryReady)window.codelaAgencyEntryReady(false)' );
+    return $processor->get_updated_html()
+        . '<script>(function(s){var l=s.previousElementSibling;if(!l||!l.hasAttribute("data-cdl-entry-css"))return;if(!document.documentElement.classList.contains("cdl-first-entry"))l.media=l.getAttribute("data-cdl-entry-media")})(document.currentScript)</script>'
+        . '<noscript>' . $tag . '</noscript>';
+}, 20, 4 );
 function codela_sf_print_first_entry(): void {
     static $printed = false;
     if ( $printed ) { return; }
     $printed = true;
     // Inline before enqueued assets; no unsafe flushing of WordPress or server buffers.
     // The browser can paint only after the server actually sends this HTML.
-    echo '<style>html.cdl-first-entry::after{content:"";position:fixed;inset:0;z-index:9999;pointer-events:none;background:#09090c}html.cdl-first-entry::before{content:"";position:fixed;z-index:10000;left:50%;top:50%;height:1px;width:min(260px,64vw);translate:-50% -50%;background:linear-gradient(90deg,transparent,#d3a480,#fff1dc,#d3a480,transparent);box-shadow:0 0 18px #d3a48080;pointer-events:none;animation:cdl-entry-beam 1s ease-in-out infinite alternate}@keyframes cdl-entry-beam{from{transform:scaleX(.3);opacity:.45}to{transform:scaleX(1);opacity:1}}@media(prefers-reduced-motion:reduce){html.cdl-first-entry::before{animation:none}}</style>';
-    echo '<script>(function(){var root=document.documentElement,finished=false,limit,observer;function done(){if(finished)return;finished=true;clearTimeout(limit);if(observer)observer.disconnect();root.classList.remove("cdl-first-entry")}function ready(){var main=document.getElementById("sf-content");if(main&&main.querySelector("h1,h2")){done();return true}return false}window.codelaAgencyEntryReady=done;if(document.readyState!=="loading"||ready()){done();return}try{var nav=window.performance&&window.performance.getEntriesByType("navigation")[0];if(nav&&nav.type==="back_forward"){done();return}if((!nav||nav.type==="navigate")&&document.referrer&&new URL(document.referrer).origin===window.location.origin){done();return}}catch(e){}try{var intent=JSON.parse(window.sessionStorage.getItem("sf-agency-entry-intent")||"null"),here=new URL(window.location.href);here.hash="";window.sessionStorage.removeItem("sf-agency-entry-intent");if((!nav||nav.type==="navigate")&&intent&&intent.url===here.href&&Date.now()-intent.time>=0&&Date.now()-intent.time<10000){done();return}}catch(e){}root.classList.add("cdl-first-entry");if(typeof MutationObserver==="function"){observer=new MutationObserver(ready);observer.observe(root,{childList:true,subtree:true})}limit=setTimeout(done,4000);document.addEventListener("DOMContentLoaded",done,{once:true});window.addEventListener("pageshow",done,{once:true});window.addEventListener("pagehide",done,{once:true})})();</script>';
+    echo '<style>html.cdl-first-entry{background:#09090c!important}html.cdl-first-entry::after{content:"";position:fixed;inset:0;z-index:9999;pointer-events:none;background:#09090c}html.cdl-first-entry::before{content:"";position:fixed;z-index:10000;left:50%;top:50%;height:1px;width:min(260px,64vw);translate:-50% -50%;background:linear-gradient(90deg,transparent,#d3a480,#fff1dc,#d3a480,transparent);box-shadow:0 0 18px #d3a48080;pointer-events:none;animation:cdl-entry-beam 1s ease-in-out infinite alternate}@keyframes cdl-entry-beam{from{transform:scaleX(.3);opacity:.45}to{transform:scaleX(1);opacity:1}}@media(prefers-reduced-motion:reduce){html.cdl-first-entry::before{animation:none}}</style>';
+    echo '<script>(function(){var root=document.documentElement,finished=false,limit,observer,markup=false,frame=0;function mark(n){try{window.performance.mark(n)}catch(e){}}function restoreCSS(){document.querySelectorAll("link[data-cdl-entry-css]").forEach(function(l){l.media=l.getAttribute("data-cdl-entry-media");l.removeAttribute("data-cdl-entry-css")})}function done(){if(finished)return;finished=true;clearTimeout(limit);if(frame)window.cancelAnimationFrame(frame);if(observer)observer.disconnect();restoreCSS();root.classList.remove("cdl-first-entry");mark("codela-entry-revealed")}function ready(){if(finished||!markup||frame)return;var main=document.getElementById("sf-content");if(!main||!main.querySelector("h1,h2")||document.querySelector("link[data-cdl-entry-css]"))return;frame=window.requestAnimationFrame(function(){frame=0;if(finished)return;if(document.querySelector("link[data-cdl-entry-css]"))return;done()})}function complete(value){if(value!==false)markup=true;ready()}window.codelaAgencyEntryReady=complete;if(document.readyState!=="loading"){done();return}try{var nav=window.performance&&window.performance.getEntriesByType("navigation")[0];if(nav&&nav.type==="back_forward"){done();return}if((!nav||nav.type==="navigate")&&document.referrer&&new URL(document.referrer).origin===window.location.origin){done();return}}catch(e){}try{var intent=JSON.parse(window.sessionStorage.getItem("sf-agency-entry-intent")||"null"),here=new URL(window.location.href);here.hash="";window.sessionStorage.removeItem("sf-agency-entry-intent");if((!nav||nav.type==="navigate")&&intent&&intent.url===here.href&&Date.now()-intent.time>=0&&Date.now()-intent.time<10000){done();return}}catch(e){}root.classList.add("cdl-first-entry");mark("codela-entry-start");function settle(e){var l=e.target;if(!l||!l.hasAttribute||!l.hasAttribute("data-cdl-entry-css"))return;l.media=l.getAttribute("data-cdl-entry-media");l.removeAttribute("data-cdl-entry-css");ready()}document.addEventListener("load",settle,true);document.addEventListener("error",settle,true);if(typeof MutationObserver==="function"){observer=new MutationObserver(ready);observer.observe(root,{childList:true,subtree:true})}limit=setTimeout(done,4000);document.addEventListener("DOMContentLoaded",function(){complete(true)},{once:true});window.addEventListener("pageshow",done,{once:true});window.addEventListener("pagehide",done,{once:true})})();</script>';
 }
 add_action('wp_head', static function() {
     if ( ! codela_sf_first_entry_enabled() ) { return; }
@@ -431,7 +472,7 @@ add_action('wp_head', static function() {
 }, -1000);
 add_action( 'wp_footer', static function() {
     if ( codela_sf_first_entry_enabled() ) {
-        // Main markup is already parsed; do not wait for Canvas, images or footer scripts.
+        // Signal markup completion; the entry controller also waits for pending theme CSS and a render opportunity.
         echo '<script>if(window.codelaAgencyEntryReady)window.codelaAgencyEntryReady();</script>';
     }
 }, 0 );
