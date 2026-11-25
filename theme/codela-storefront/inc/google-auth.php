@@ -7,6 +7,7 @@
  * WooCommerce retains customer accounts, orders and authenticated My Account.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+require_once __DIR__ . '/account-contract.php';
 
 function codela_sf_google_credentials(): array {
     $id = defined( 'CODELA_SF_GOOGLE_CLIENT_ID' ) ? (string) CODELA_SF_GOOGLE_CLIENT_ID : (string) get_option( 'codela_sf_google_client_id', '' );
@@ -37,7 +38,7 @@ function codela_sf_google_cookie( string $state, int $expires ): void {
 
 /** All errors are deliberately generic: no token or account data in URLs. */
 function codela_sf_google_return( bool $error = true ): void {
-    $account = wc_get_page_permalink( 'myaccount' );
+    $account = codela_sf_account_url();
     // A successful provider callback must never land on cached guest HTML.
     $url = $error ? add_query_arg( 'google_login', 'error', $account )
         : ( function_exists( 'codela_sf_quick_fresh_account_redirect' )
@@ -117,9 +118,7 @@ function codela_sf_google_customer( array $identity ) {
     if ( ! $user || ! $user instanceof WP_User ) { return new WP_Error( 'invalid_customer' ); }
 
     // Never turn a social account into a route for admin/staff access.
-    $roles = (array) $user->roles;
-    if ( array_diff( $roles, [ 'customer', 'subscriber' ] )
-        || ! $roles || user_can( $user, 'edit_posts' ) || user_can( $user, 'manage_woocommerce' ) ) {
+    if ( ! codela_sf_public_account_user( $user ) ) {
         return new WP_Error( 'privileged_account' );
     }
     $linked = (string) get_user_meta( $user->ID, '_sf_google_sub', true );

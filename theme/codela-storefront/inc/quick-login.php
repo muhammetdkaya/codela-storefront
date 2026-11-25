@@ -10,12 +10,10 @@
  * by IndexedDB/WebCrypto and the six-digit PIN is verified on the server.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+require_once __DIR__ . '/account-contract.php';
 
 function codela_sf_quick_customer( $user ): bool {
-    if ( ! $user instanceof WP_User || ! is_ssl() ) { return false; }
-    $roles = (array) $user->roles;
-    return $roles && ! array_diff( $roles, [ 'customer', 'subscriber' ] )
-        && ! user_can( $user, 'edit_posts' ) && ! user_can( $user, 'manage_woocommerce' );
+    return is_ssl() && codela_sf_public_account_user( $user );
 }
 
 /**
@@ -169,7 +167,7 @@ function codela_sf_quick_verify( WP_REST_Request $request ) {
     wp_set_auth_cookie( $user_id, true, is_ssl() );
     do_action( 'wp_login', $user->user_login, $user );
     return rest_ensure_response( [
-        'ok' => true, 'account_url' => wc_get_page_permalink( 'myaccount' ),
+        'ok' => true, 'account_url' => codela_sf_account_url(),
     ] );
 }
 
@@ -288,7 +286,7 @@ add_action( 'profile_update', static function( $user_id, $old_user ): void {
  */
 function codela_sf_quick_fresh_account_redirect( $redirect ) {
     if ( ! is_string( $redirect ) || ! function_exists( 'wc_get_page_permalink' ) ) { return $redirect; }
-    $account = (string) wc_get_page_permalink( 'myaccount' );
+    $account = (string) codela_sf_account_url();
     if ( '' === $account || untrailingslashit( $redirect ) !== untrailingslashit( $account ) ) { return $redirect; }
     return add_query_arg( 'sf_quick_auth', bin2hex( random_bytes( 8 ) ), $account );
 }
@@ -641,7 +639,7 @@ add_action( 'wp_enqueue_scripts', static function(): void {
     wp_localize_script( $lazy ? 'codela-storefront-auth-loader' : 'codela-storefront-quick-login', 'CodelaQuickLogin', [
         'rest' => esc_url_raw( rest_url( 'codela-storefront/v1/quick-login/' ) ),
         'nonce' => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
-        'account' => wc_get_page_permalink( 'myaccount' ),
+        'account' => codela_sf_account_url(),
         'statusUrl' => admin_url( 'admin-ajax.php' ),
         'accountPage' => function_exists( 'is_account_page' ) && is_account_page(),
         // Refresh old username-only hints on normal signed-in account visits.

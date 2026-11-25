@@ -5,6 +5,7 @@
  * Separate from legacy IndexedDB/6-digit PIN credentials.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+require_once __DIR__ . '/account-contract.php';
 
 function codela_sf_pk_encode( string $bytes ): string {
     return rtrim( strtr( base64_encode( $bytes ), '+/', '-_' ), '=' );
@@ -205,7 +206,7 @@ function codela_sf_pk_assert( WP_REST_Request $request ) {
     // are still required before WordPress creates its real auth cookie.
     wp_set_auth_cookie( $user_id, ! codela_sf_pk_privileged_user( $user ), is_ssl() );
     do_action( 'wp_login', $user->user_login, $user );
-    return rest_ensure_response( [ 'ok' => true, 'account_url' => wc_get_page_permalink( 'myaccount' ) ] );
+    return rest_ensure_response( [ 'ok' => true, 'account_url' => codela_sf_account_url() ] );
 }
 function codela_sf_pk_manage( WP_REST_Request $request ) {
     $user = wp_get_current_user();
@@ -354,7 +355,7 @@ add_action( 'wp_enqueue_scripts', static function(): void {
     wp_localize_script( $lazy ? 'codela-storefront-auth-loader' : 'codela-storefront-passkeys', 'CodelaSFPasskey', [
         'rest' => esc_url_raw( rest_url( 'codela-storefront/v1/passkey' ) ),
         'nonce' => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
-        'account' => wc_get_page_permalink( 'myaccount' ),
+        'account' => codela_sf_account_url(),
         'identity' => is_user_logged_in() ? [
             'userId' => get_current_user_id(), 'displayName' => codela_sf_quick_display_name( wp_get_current_user() ),
             'email' => wp_get_current_user()->user_email,
