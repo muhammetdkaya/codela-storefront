@@ -6,8 +6,10 @@
     "codela": "1.2.32"
   },
   "changes": [
-    "Ajans ışık sahnesinin çerçeve ölçüleri ve proje başlatma iç sayfa regresyonu düzeltildi.",
-    "Ajans şablonu WooCommerce olmadan içerik sitesi olarak çalışabilir; hesap işlemleri tek WooCommerce sağlayıcısına bağlıdır."
+    "Tek WooCommerce hesap sağlayıcısı; içerik sitesi WooCommerce olmadan çalışabilir.",
+    "İlk açılış göstergesi yüklemeyle eş zamanlı ilerler.",
+    "Ortak ayar grupları ve Genel bölümünde proje müsaitliği; eski Codela sürümlerinde Bağlantılar uyumluluğu korunur.",
+    "Ajans ışık sahnesi bağımsız sayfalarda da kullanılır."
   ],
   "woocommerce_optional": true
 }
