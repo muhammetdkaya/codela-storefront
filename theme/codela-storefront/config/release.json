@@ -6,8 +6,8 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Hizmetler, Hakkımızda ve İletişim sayfalarının header altı boşluğu, yatay kenar boşluğu ve üst etiket ritmi ortaklaştırıldı.",
-    "Hizmetler üst etiketine kehribar nokta eklendi.",
-    "Bağımsız Hizmetler sayfasında sonradan içerik gizleyip yeniden gösteren Bento animasyonu kaldırıldı; kart fotoğrafları ilk yüklemede istenir. Ana sayfa animasyonu korunur."
+    "Hesabım popup başlığı ilk HTML'de görsel olarak gizlenir; kapatma butonu ile çakışmaz.",
+    "Ajans ve editoryal hesap popup yükleme göstergesi kritik CSS ile ortalanır; hesap sayfasında aynı kehribar çizgi kullanılır.",
+    "Hesap görünümü ve yükleme göstergesi tek adımda değiştirilir; PIN, Google ve güvenlik doğrulamaları korunur."
   ]
 }

@@ -515,6 +515,49 @@ html.sf-auth-page-pending body.woocommerce-account:not(.logged-in) .woocommerce:
  content:"Hesabınız hazırlanıyor…";display:flex;align-items:center;justify-content:center;
  min-height:min(56dvh,470px);font:500 14px/1.5 system-ui,sans-serif;color:var(--sf-muted,#797d83)
 }
+/* Dialog title is accessible but never competes with the close control,
+   even before the account-specific stylesheet has arrived. */
+#sf-panel.is-account-panel #sf-panel-title{
+ position:absolute!important;width:1px!important;height:1px!important;min-width:0!important;min-height:0!important;
+ margin:-1px!important;padding:0!important;overflow:hidden!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important
+}
+#sf-account .sf-auth-loader-status{
+ display:flex!important;align-items:center;justify-content:center;flex-direction:column;gap:14px;
+ width:100%;min-height:min(56dvh,470px);font:500 14px/1.5 system-ui,sans-serif;
+ color:var(--sf-muted,#797d83);text-align:center;margin:0 auto
+}
+#sf-account .sf-auth-loader-status:not(:has(a))::before{
+ content:"";width:30px;height:30px;border:2px solid #e7e7e9;border-top-color:var(--sf-ui-ink,#222);
+ border-radius:50%;animation:sf-auth-loading .8s linear infinite
+}
+@keyframes sf-auth-loading{to{transform:rotate(360deg)}}
+/* The dark Agency/editorial shell owns the same compact pending surface
+   on both guest entry paths. These rules do not affect verified auth states. */
+html.sf-auth-js .sf-shell:is(.has-editorial-account,.has-agency-profile) #sf-panel.is-account-panel #sf-account:not([data-sf-auth-ready="true"]):not([hidden]){
+ display:flex!important;flex:1 1 auto;min-height:0;flex-direction:column;
+ align-items:center;justify-content:center;padding:24px 20px!important
+}
+html.sf-auth-js .sf-shell:is(.has-editorial-account,.has-agency-profile) #sf-panel.is-account-panel #sf-account:not([data-sf-auth-ready="true"]):not(:has(>.sf-auth-loader-status))::before,
+.sf-shell:is(.has-editorial-account,.has-agency-profile) #sf-panel.is-account-panel #sf-account .sf-auth-loader-status:not(:has(a))::before,
+html.sf-auth-page-pending body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-content .woocommerce:has(>.sf-smart-auth)::before{
+ content:""!important;display:block!important;width:min(180px,52vw)!important;height:1px!important;
+ min-height:0!important;margin:0 auto!important;padding:0!important;border:0!important;border-radius:0!important;
+ background:linear-gradient(90deg,transparent,#d3a480,#fff1dc,#d3a480,transparent)!important;
+ box-shadow:0 0 14px #d3a48060;animation:sf-auth-amber-beam 1s ease-in-out infinite alternate
+}
+.sf-shell:is(.has-editorial-account,.has-agency-profile) #sf-panel.is-account-panel #sf-account .sf-auth-loader-status:not(:has(a)){
+ font-size:0;min-height:0;gap:0
+}
+html.sf-auth-page-pending body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-content .woocommerce:has(>.sf-smart-auth){
+ display:grid!important;place-items:center;min-height:min(56dvh,470px);border:0!important;
+ background:transparent!important;box-shadow:none!important;backdrop-filter:none!important
+}
+@keyframes sf-auth-amber-beam{from{transform:scaleX(.45);opacity:.55}to{transform:scaleX(1);opacity:1}}
+@media(prefers-reduced-motion:reduce){
+ #sf-account .sf-auth-loader-status::before,
+ html.sf-auth-js #sf-account:not([data-sf-auth-ready="true"])::before,
+ html.sf-auth-page-pending body.woocommerce-account .woocommerce:has(>.sf-smart-auth)::before{animation:none!important}
+}
 html.sf-auth-native-fallback body.woocommerce-account .woocommerce > .sf-smart-auth{display:none!important}
 html.sf-auth-native-fallback body.woocommerce-account .woocommerce > #customer_login{display:block!important}
 </style>

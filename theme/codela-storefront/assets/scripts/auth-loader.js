@@ -54,8 +54,7 @@
             if (!smart || !quick) throw Error('Auth controllers did not register');
             const results=await Promise.all([smart,quick]);
             if (results.some(ok=>ok!==true)) throw Error('Auth controllers failed to initialize');
-            state='ready';
-            section.dataset.sfAuthReady='true';
+            state='ready'; // The open handler commits readiness and removes the placeholder atomically.
         }).catch(error => { state = 'failed'; throw error; });
         return loading;
     }
@@ -73,18 +72,7 @@
         }
     }
     function ensurePlaceholder() {
-        if (!document.getElementById('sf-auth-loader-style')) {
-            const style = document.createElement('style');
-            style.id = 'sf-auth-loader-style';
-            style.textContent = [
-                '#sf-account.sf-auth-deferred-loading>:not(.sf-auth-loader-status){display:none!important}',
-                '#sf-account .sf-auth-loader-status{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;min-height:min(56dvh,470px);font:inherit;font-size:14px;color:var(--sf-muted,#777)}',
-                '#sf-account .sf-auth-loader-status:before{content:"";width:30px;height:30px;border:2px solid #e7e7e9;border-top-color:var(--sf-ui-ink,#222);border-radius:50%;animation:sf-auth-loading .8s linear infinite}',
-                '@keyframes sf-auth-loading{to{transform:rotate(360deg)}}',
-                '@media(prefers-reduced-motion:reduce){#sf-account .sf-auth-loader-status:before{animation:none}}',
-            ].join('');
-            document.head.append(style);
-        }
+        // Critical loader styling is already present in the document head.
         if (!placeholder) {
             placeholder = document.createElement('div');
             placeholder.className = 'sf-auth-loader-status';
@@ -94,10 +82,12 @@
         }
         placeholder.replaceChildren(document.createTextNode(config.loading || 'Loading…'));
         section.classList.add('sf-auth-deferred-loading');
+        section.setAttribute('aria-busy','true');
         section.removeAttribute('data-sf-auth-ready');
     }
     function hidePlaceholder() {
         section.classList.remove('sf-auth-deferred-loading');
+        section.removeAttribute('aria-busy');
         // Reveal only the completed single view; an error keeps the fallback
         // link visible without exposing obsolete Woo forms.
         section.dataset.sfAuthReady='true';
@@ -112,6 +102,7 @@
         link.textContent = config.fallback || 'Open my account';
         link.className = 'sf-ui-button sf-ui-button--primary';
         placeholder.append(link);
+        section.removeAttribute('aria-busy');
     }
     function domReady() {
         if (document.readyState !== 'loading') return Promise.resolve();
@@ -120,7 +111,7 @@
 
     section.addEventListener('codela:account-open', () => {
         if (state === 'ready') {
-            section.dataset.sfAuthReady='true';
+            hidePlaceholder();
             return; // Controllers have finished, including device verification.
         }
         if (state === 'failed') { showFailure(); return; }

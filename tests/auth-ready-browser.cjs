@@ -11,9 +11,9 @@ const smartCss=fs.readFileSync('theme/codela-storefront/assets/styles/auth-smart
 const html='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1">'
  +'<script>document.documentElement.classList.add("sf-auth-js")</script><style>'+match[1]+'</style>'
  +'<style>body{font:16px system-ui}#sf-account{min-height:400px}#customer_login{display:block}</style></head>'
- +'<body><button id="open">Account</button><section id="sf-account" hidden>'
+ +'<body><button id="open">Account</button><div class="sf-shell has-editorial-account"><div id="sf-panel" class="is-account-panel"><h2 id="sf-panel-title">My account</h2><section id="sf-account" hidden>'
  +'<div class="woocommerce sf-overlay-auth"><div class="sf-smart-auth">Email stage</div>'
- +'<div id="customer_login">CLASSIC WOO FORM</div><div class="sf-quick-login" hidden>PIN</div></div></section>'
+ +'<div id="customer_login">CLASSIC WOO FORM</div><div class="sf-quick-login" hidden>PIN</div></div></section></div></div>'
  +'<script>window.CodelaSFAuthLoader={styles:["/auth.css"],scripts:["/smart.js","/quick.js"],'
  +'account:"/myaccount/",loading:"Checking sign-in…"};'
  +'document.querySelector("#open").addEventListener("click",()=>{'
@@ -56,6 +56,10 @@ const server=http.createServer((req,res)=>{
    requestAnimationFrame(window.checkFrames);
   });
   assert.equal(await page.locator('#customer_login').isVisible(),false,'No classic form at dialog opening');
+  assert.equal(await page.locator('#sf-panel-title').evaluate(e=>getComputedStyle(e).clipPath),'inset(50%)','Title is clipped before lazy styles');
+  assert.equal(await page.locator('.sf-auth-loader-status').evaluate(e=>getComputedStyle(e).alignItems),'center','Critical centered loading status');
+  assert.equal(await page.locator('.sf-auth-loader-status').evaluate(e=>getComputedStyle(e,'::before').height),'1px','Agency amber line before account CSS');
+  assert.equal(await page.locator('#sf-account').getAttribute('aria-busy'),'true');
   await page.waitForFunction(()=>!!window.finishDeviceVerification);
   await page.waitForTimeout(1100);
   assert.equal(await page.locator('#customer_login').isVisible(),false,'Pending status must never reveal Woo');
@@ -66,6 +70,7 @@ const server=http.createServer((req,res)=>{
   assert.equal(await page.locator('#customer_login').isVisible(),false,
     'Only smart email is visible after both controllers are ready');
   assert.equal(await page.locator('.sf-auth-loader-status').count(),0,'Loader removed only after verification');
+  assert.equal(await page.locator('#sf-account').getAttribute('aria-busy'),null);
   console.log('Account: 11s late, delayed CSS, pending device proof: no flash.');
   await page.close();
  }finally{await browser.close();await new Promise(ok=>server.close(ok));}

@@ -34,6 +34,10 @@
   background:transparent!important;border-bottom:0!important;
   justify-content:flex-end!important;
 }
+.sf-shell.has-editorial-account #sf-panel.is-account-panel #sf-panel-title{
+  position:absolute!important;width:1px!important;height:1px!important;margin:-1px!important;padding:0!important;
+  overflow:hidden!important;clip-path:inset(50%)!important;white-space:nowrap!important;border:0!important;
+}
 .sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-panel-app-title--account,
 .sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-editorial-menu-brand{
   display:none!important;
