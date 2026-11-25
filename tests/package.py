@@ -302,7 +302,7 @@ class Tests(unittest.TestCase):
         self.assertIn("codela_sf_icon( 'shopping-bag' ); ?><?php esc_html_e( 'Cart'",render)
         self.assertIn('! $checkout_page',render)
         self.assertIn('is_front_page()',dock)
-        self.assertIn('is_account_page()',dock)
+        self.assertIn('codela_sf_is_account_context()',dock)
         self.assertIn('grid-template-columns:minmax(0,1fr) auto var(--sf-ui-hit)',css)
         self.assertIn('grid-column:1;',css)
         self.assertIn('justify-self:start;',css)
