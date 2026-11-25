@@ -37,11 +37,11 @@ assert(php.includes("'allowed_id' => $allowed_id") &&
 assert(php.includes("'userVerification' => 'required'") &&
   php.includes("hash_equals( hash( 'sha256', codela_sf_pk_host(), true )"),
   'Server-origin and user verification WebAuthn requirements stay enforced');
-assert(account.includes('.woocommerce .sf-auth-register-cta') &&
+assert(account.includes(':is(.woocommerce,.cdl-shared-account) .sf-auth-register-cta') &&
   overlay.includes('.woocommerce > .sf-auth-register-cta'),
   'Legacy account layouts still explicitly display native signup');
-assert(quick.includes('.woocommerce.sf-passkey-active > .sf-auth-register-cta') &&
-  quick.includes('#sf-panel.is-account-panel .woocommerce.sf-passkey-active > .sf-auth-register-cta') &&
+assert(quick.includes(':is(.woocommerce,.cdl-shared-account).sf-passkey-active > .sf-auth-register-cta') &&
+  quick.includes('#sf-panel.is-account-panel :is(.woocommerce,.cdl-shared-account).sf-passkey-active > .sf-auth-register-cta') &&
   quick.includes('display:none!important'),
   'Quick passkey screen hides sibling registration CTA at greater CSS specificity');
 console.log('Saved passkey single-tap / native form isolation contract passed');

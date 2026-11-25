@@ -101,7 +101,7 @@ assert(!php.includes("add_action( 'woocommerce_edit_account_form', 'codela_sf_qu
   passkeys.includes('codela_sf_quick_settings();'),
   'PIN enrollment moves from permanent account card into dedicated security endpoint');
 assert(css.includes(".sf-pin-active .sf-account-intro"),'Native form hidden only while remembered-account selection active');
-assert(css.includes('.woocommerce.sf-pin-active .sf-auth-register-cta') && css.includes('html.sf-quick-checking'),'Signup is hidden with sufficient specificity during remembered choice and preflight');
+assert(css.includes(':is(.woocommerce,.cdl-shared-account).sf-pin-active .sf-auth-register-cta') && css.includes('html.sf-quick-checking'),'Signup is hidden with sufficient specificity during remembered choice and preflight');
 assert(css.includes('.sf-quick-inline-pin') && css.includes('.sf-quick-account-frame') && css.includes('.sf-quick-scrim'),'PIN is part of the focused account card with backdrop');
 assert(!php.includes('role="dialog"') && !php.includes('sf-quick-sheet'),'No separate bottom sheet or popup remains');
 assert(css.includes('.sf-quick-slot.is-filled') && css.includes('.sf-quick-slot.is-current'),'PIN fill and current-slot colors defined');
