@@ -43,7 +43,7 @@ function codela_sf_product_grid( array $products, array $props = [], bool $toolb
 
 function codela_sf_search_results(): string {
     $type = get_query_var( 'post_type' );
-    if ( 'product' !== $type && [ 'product' ] !== $type ) {
+    if ( ! function_exists( 'wc_get_product' ) || ( 'product' !== $type && [ 'product' ] !== $type ) ) {
         // Keep ordinary post/page searches on the original core Query block.
         return do_blocks( '<!-- wp:query {"query":{"inherit":true}} --><div class="wp-block-query"><!-- wp:post-template --><!-- wp:post-title {"isLink":true} /--><!-- wp:post-excerpt /--><!-- /wp:post-template --><!-- wp:query-pagination --><!-- wp:query-pagination-previous /--><!-- wp:query-pagination-numbers /--><!-- wp:query-pagination-next /--><!-- /wp:query-pagination --></div><!-- /wp:query -->' );
     }

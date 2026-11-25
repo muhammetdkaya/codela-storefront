@@ -213,7 +213,7 @@
   }
 
   function announceQuickStatus(section, profile, active) {
-    const host = section.closest('.sf-overlay-auth') || section.closest('.woocommerce');
+    const host = section.closest('.sf-overlay-auth') || section.closest('.woocommerce,.cdl-shared-account');
     if (!host) return;
     host.dataset.sfQuickStatus = active ? 'active' : 'inactive';
     host.dataset.sfQuickUserId = String(profile.userId);
@@ -254,7 +254,7 @@
     if (!accountStore.pins().some(x=>x.deviceId===profile.deviceId && x.userId===profile.userId)) {
       report(false); return;
     }
-    const host = section.closest('.sf-overlay-auth') || section.closest('.woocommerce');
+    const host = section.closest('.sf-overlay-auth') || section.closest('.woocommerce,.cdl-shared-account');
     if (!host) return;
     const choose = section.querySelector('.sf-quick-method--pin');
     const frame = section.querySelector('.sf-quick-account-frame');
@@ -625,7 +625,7 @@
     const groups=[];
     for(const template of [...document.querySelectorAll('.sf-quick-login')]){
       if(template.closest('.sf-quick-accounts'))continue;
-      const host=template.closest('.sf-overlay-auth')||template.closest('.woocommerce');
+      const host=template.closest('.sf-overlay-auth')||template.closest('.woocommerce,.cdl-shared-account');
       if(!host)continue;
       const group=document.createElement('div');
       group.className='sf-quick-accounts';
@@ -658,7 +658,7 @@
       }
       if(alternatives){
         group.append(alternatives);
-        const nativeForm=host.querySelector('#customer_login') || host.querySelector('form.woocommerce-form-login');
+        const nativeForm=host.querySelector('#customer_login,.cdl-account-password') || host.querySelector('form.woocommerce-form-login');
         let returnButton=host.querySelector('.sf-quick-return');
         if(nativeForm && !returnButton){
           returnButton=document.createElement('button');
@@ -708,7 +708,7 @@
   }
 
   function showPasskeyOnly(section,hint) {
-    const host=section.closest('.sf-overlay-auth')||section.closest('.woocommerce');
+    const host=section.closest('.sf-overlay-auth')||section.closest('.woocommerce,.cdl-shared-account');
     const name=String(hint.displayName||'').trim();
     const rememberedEmail=String(hint.email||'').trim();
     section.querySelector('.sf-quick-user').textContent=

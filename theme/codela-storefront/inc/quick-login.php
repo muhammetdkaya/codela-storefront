@@ -10,12 +10,10 @@
  * by IndexedDB/WebCrypto and the six-digit PIN is verified on the server.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+require_once __DIR__ . '/account-contract.php';
 
 function codela_sf_quick_customer( $user ): bool {
-    if ( ! $user instanceof WP_User || ! is_ssl() ) { return false; }
-    $roles = (array) $user->roles;
-    return $roles && ! array_diff( $roles, [ 'customer', 'subscriber' ] )
-        && ! user_can( $user, 'edit_posts' ) && ! user_can( $user, 'manage_woocommerce' );
+    return is_ssl() && codela_sf_public_account_user( $user );
 }
 
 /**
@@ -169,7 +167,7 @@ function codela_sf_quick_verify( WP_REST_Request $request ) {
     wp_set_auth_cookie( $user_id, true, is_ssl() );
     do_action( 'wp_login', $user->user_login, $user );
     return rest_ensure_response( [
-        'ok' => true, 'account_url' => wc_get_page_permalink( 'myaccount' ),
+        'ok' => true, 'account_url' => codela_sf_account_url(),
     ] );
 }
 
@@ -287,8 +285,8 @@ add_action( 'profile_update', static function( $user_id, $old_user ): void {
  * Do not override merchant redirect rules for checkout or other destinations.
  */
 function codela_sf_quick_fresh_account_redirect( $redirect ) {
-    if ( ! is_string( $redirect ) || ! function_exists( 'wc_get_page_permalink' ) ) { return $redirect; }
-    $account = (string) wc_get_page_permalink( 'myaccount' );
+    if ( ! is_string( $redirect ) ) { return $redirect; }
+    $account = (string) codela_sf_account_url();
     if ( '' === $account || untrailingslashit( $redirect ) !== untrailingslashit( $account ) ) { return $redirect; }
     return add_query_arg( 'sf_quick_auth', bin2hex( random_bytes( 8 ) ), $account );
 }
@@ -317,7 +315,7 @@ add_action( 'template_redirect', static function(): void {
 /** Guest PIN screen: unhidden only if an actual browser key is found. */
 function codela_sf_quick_guest_markup(): void {
     if ( is_user_logged_in() || ( ! empty( $GLOBALS['codela_sf_auth_overlay'] )
-        ? false : ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) ) ) { return; }
+        ? false : ! codela_sf_is_account_context() ) ) { return; }
     ?>
     <section class="sf-quick-login" hidden aria-label="<?php esc_attr_e( 'Quick sign-in', 'codela-storefront' ); ?>">
         <div class="sf-quick-choice">
@@ -407,6 +405,7 @@ function codela_sf_quick_guest_markup(): void {
     <?php
 }
 add_action( 'woocommerce_before_customer_login_form', 'codela_sf_quick_guest_markup', 4 );
+add_action( 'codela_account_before_login', 'codela_sf_quick_guest_markup', 4 );
 
 /** Public-safe display label is persisted only on the customer's own browser. */
 function codela_sf_quick_display_name( WP_User $user ): string {
@@ -499,7 +498,7 @@ function codela_sf_quick_dashboard_entry(): void {
 add_action( 'wp_head', static function(): void {
     // Prepaint protection also covers the instant Account panel on other
     // storefront pages. Only the visible view is masked; no navigation waits.
-    if ( is_user_logged_in() ) { return; }
+    if ( is_user_logged_in() || ! codela_sf_commerce_available() ) { return; }
     // Critical gate ships in the HTML head, before deferred account styles.
     // It is never timed out: one verified view (PIN/passkey or smart email)
     // replaces the loading state only after both controllers have settled.
@@ -626,9 +625,10 @@ SF_AUTH_CRITICAL;
 }, 1 );
 
 add_action( 'wp_enqueue_scripts', static function(): void {
+    if ( ! codela_sf_commerce_available() && ! codela_sf_standalone_account() ) { return; }
     // The login overlay can be opened on any storefront page by a guest.
-    if ( is_user_logged_in() && ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) ) { return; }
-    $lazy = codela_sf_guest_auth_lazy_allowed();
+    if ( is_user_logged_in() && ! codela_sf_is_account_context() ) { return; }
+    $lazy = ! codela_sf_standalone_account() && codela_sf_guest_auth_lazy_allowed();
     if ( ! $lazy ) {
         $uri = get_template_directory_uri() . '/assets/';
         wp_enqueue_style( 'codela-storefront-quick-login', $uri . 'styles/quick-login.css',
@@ -641,9 +641,9 @@ add_action( 'wp_enqueue_scripts', static function(): void {
     wp_localize_script( $lazy ? 'codela-storefront-auth-loader' : 'codela-storefront-quick-login', 'CodelaQuickLogin', [
         'rest' => esc_url_raw( rest_url( 'codela-storefront/v1/quick-login/' ) ),
         'nonce' => is_user_logged_in() ? wp_create_nonce( 'wp_rest' ) : '',
-        'account' => wc_get_page_permalink( 'myaccount' ),
+        'account' => codela_sf_account_url(),
         'statusUrl' => admin_url( 'admin-ajax.php' ),
-        'accountPage' => function_exists( 'is_account_page' ) && is_account_page(),
+        'accountPage' => codela_sf_is_account_context(),
         // Refresh old username-only hints on normal signed-in account visits.
         // The authenticated account may be different from the saved device,
         // including when a different Google identity or staff login is used.

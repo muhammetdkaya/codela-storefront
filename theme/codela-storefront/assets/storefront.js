@@ -56,8 +56,8 @@ function init() {
     const dialog = $('#sf-panel'); if (!dialog) return;
     overlay.bind(dialog);
     dock.init(dialog);
-    if (!document.querySelector('.sf-shell.has-agency-profile')) searchFeature.bind();
-    cartFeature.bind();
+    if (config().commerce !== false && !document.querySelector('.sf-shell.has-agency-profile')) searchFeature.bind();
+    if (config().commerce !== false) cartFeature.bind();
     // The Back link from a product entered through Search navigates to the
     // original document and carries a one-shot Search return intent.
     // Apply only on that exact same-tab, same-origin source, never on arbitrary

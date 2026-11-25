@@ -61,6 +61,7 @@ function codela_sf_sections_capabilities(): array {
 function codela_sf_render_section( $html, string $type, array $data, int $post_id = 0 ): string {
     static $content_rendered = false;
     if ( ! $data['enabled'] ) { return ''; }
+    if ( in_array( $type, [ 'products', 'categories' ], true ) && ! function_exists( 'wc_get_product' ) ) { return ''; }
     $renderers = [ 'hero' => 'codela_sf_section_media', 'promo' => 'codela_sf_section_media', 'categories' => 'codela_sf_section_categories', 'products' => 'codela_sf_section_products', 'story' => 'codela_sf_section_content', 'info' => 'codela_sf_section_content', 'contact' => 'codela_sf_section_content', 'agency-cards' => 'codela_sf_section_agency_cards', 'agency-scroll' => 'codela_sf_section_agency_scroll', 'agency-studio' => 'codela_sf_section_agency_studio', 'agency-services' => 'codela_sf_section_agency_services', 'agency-bento' => 'codela_sf_section_agency_bento', 'agency-about' => 'codela_sf_section_agency_about', 'agency-detail' => 'codela_sf_section_agency_detail', 'agency-contact-bento' => 'codela_sf_section_agency_contact_bento', 'agency-project' => 'codela_sf_section_agency_project', 'agency-process' => 'codela_sf_section_agency_process' ];
     if ( ! isset( $renderers[ $type ] ) ) { return ''; }
     // Reserve priority for the first rendered section, never a later image after

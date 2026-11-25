@@ -7,6 +7,7 @@
  * WooCommerce retains customer accounts, orders and authenticated My Account.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+require_once __DIR__ . '/account-contract.php';
 
 function codela_sf_google_credentials(): array {
     $id = defined( 'CODELA_SF_GOOGLE_CLIENT_ID' ) ? (string) CODELA_SF_GOOGLE_CLIENT_ID : (string) get_option( 'codela_sf_google_client_id', '' );
@@ -16,7 +17,8 @@ function codela_sf_google_credentials(): array {
 
 function codela_sf_google_enabled(): bool {
     [ $id, $secret ] = codela_sf_google_credentials();
-    return is_ssl() && str_ends_with( $id, '.apps.googleusercontent.com' ) && '' !== $secret;
+    return '' !== codela_sf_account_url() && is_ssl()
+        && str_ends_with( $id, '.apps.googleusercontent.com' ) && '' !== $secret;
 }
 
 /** This must be copied exactly into the Google Cloud OAuth web-client settings. */
@@ -37,7 +39,7 @@ function codela_sf_google_cookie( string $state, int $expires ): void {
 
 /** All errors are deliberately generic: no token or account data in URLs. */
 function codela_sf_google_return( bool $error = true ): void {
-    $account = wc_get_page_permalink( 'myaccount' );
+    $account = codela_sf_account_url() ?: home_url( '/' );
     // A successful provider callback must never land on cached guest HTML.
     $url = $error ? add_query_arg( 'google_login', 'error', $account )
         : ( function_exists( 'codela_sf_quick_fresh_account_redirect' )
@@ -109,7 +111,20 @@ function codela_sf_google_customer( array $identity ) {
                 return new WP_Error( 'manual_account_link_required' );
             }
         } else {
-            $user_id = wc_create_new_customer( $email, '', wp_generate_password( 32, true, true ) );
+            if ( function_exists( 'wc_create_new_customer' ) ) {
+                $user_id = wc_create_new_customer( $email, '', wp_generate_password( 32, true, true ) );
+            } else {
+                // WordPress-only registration follows the shared public registration policy.
+                if ( ! codela_sf_registration_enabled() || ! function_exists( 'codela_account_registration_enabled' ) ) {
+                    return new WP_Error( 'registration_disabled' );
+                }
+                $user_id = wp_insert_user( [
+                    'user_login' => 'cdl_' . bin2hex( random_bytes( 16 ) ),
+                    'user_email' => $email,
+                    'user_pass' => wp_generate_password( 32, true, true ),
+                    'role' => 'subscriber',
+                ] );
+            }
             if ( is_wp_error( $user_id ) ) { return $user_id; }
             $user = get_user_by( 'id', $user_id );
         }
@@ -117,9 +132,7 @@ function codela_sf_google_customer( array $identity ) {
     if ( ! $user || ! $user instanceof WP_User ) { return new WP_Error( 'invalid_customer' ); }
 
     // Never turn a social account into a route for admin/staff access.
-    $roles = (array) $user->roles;
-    if ( array_diff( $roles, [ 'customer', 'subscriber' ] )
-        || ! $roles || user_can( $user, 'edit_posts' ) || user_can( $user, 'manage_woocommerce' ) ) {
+    if ( ! codela_sf_public_account_user( $user ) ) {
         return new WP_Error( 'privileged_account' );
     }
     $linked = (string) get_user_meta( $user->ID, '_sf_google_sub', true );
@@ -186,7 +199,7 @@ add_action( 'admin_post_codela_sf_google_callback', 'codela_sf_google_callback' 
 
 /** WooCommerce invokes this after its native login/registration forms. */
 function codela_sf_google_button(): void {
-    if ( ! function_exists( 'is_account_page' ) || ( ! is_account_page() && empty( $GLOBALS['codela_sf_auth_overlay'] ) )
+    if ( ( ! codela_sf_is_account_context() && empty( $GLOBALS['codela_sf_auth_overlay'] ) )
         || is_user_logged_in() ) { return; }
     $google_available = codela_sf_google_enabled();
     ?>
@@ -211,10 +224,11 @@ function codela_sf_google_button(): void {
     <?php
 }
 add_action( 'woocommerce_after_customer_login_form', 'codela_sf_google_button', 15 );
+add_action( 'codela_account_after_login', 'codela_sf_google_button', 15 );
 
 /** Friendly, non-identifying message after a rejected or expired Google login. */
 function codela_sf_google_notice(): void {
-    if ( ! function_exists( 'is_account_page' ) || ! is_account_page()
+    if ( ! codela_sf_is_account_context()
         || is_user_logged_in() || ! isset( $_GET['google_login'] )
         || ! is_string( $_GET['google_login'] ) || 'error' !== $_GET['google_login'] ) {
         return;
@@ -224,6 +238,7 @@ function codela_sf_google_notice(): void {
         . '</p>';
 }
 add_action( 'woocommerce_before_customer_login_form', 'codela_sf_google_notice', 4 );
+add_action( 'codela_account_before_login', 'codela_sf_google_notice', 3 );
 
 /** Keep credentials in the theme; present their form inside the existing hub. */
 function codela_sf_google_settings_url(): string {

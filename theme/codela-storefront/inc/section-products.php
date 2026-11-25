@@ -2,6 +2,7 @@
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 /** Request-only ID memoization; never cache personalized price or cart HTML. */
 function codela_sf_section_product_query( array $row ): array {
+    if ( ! function_exists( 'wc_get_product' ) || ! function_exists( 'wc_get_product_visibility_term_ids' ) ) { return []; }
     static $queries = [];
     $category = absint( $row['category_id'] ?? 0 );
     if ( $category ) { $term = get_term( $category, 'product_cat' ); if ( ! $term || is_wp_error( $term ) ) { return []; } }

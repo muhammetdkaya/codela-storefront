@@ -6,6 +6,7 @@
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 function codela_sf_document_continuity_allowed(): bool {
+    if ( function_exists( 'codela_account_is_wordpress_page' ) && codela_account_is_wordpress_page() ) { return false; }
     if ( is_admin()
         || ( function_exists( 'is_preview' ) && is_preview() )
         || ( function_exists( 'is_customize_preview' ) && is_customize_preview() )

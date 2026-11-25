@@ -208,7 +208,8 @@ if ( in_array('--render=project',$argv,true) ) {
     echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/storefront-base.css">';
     echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/agency.css">';
     echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/agency-project.css">';
-    echo '</head><body class="home"><main class="sf-content"><div class="codela-page-layout">'.$local.'</div></main>';
+    // Project Start is a standalone page, not a homepage stage.
+    echo '</head><body class="page"><div class="sf-shell"></div><main class="sf-content"><div class="codela-page-layout">'.$local.'</div></main>';
     echo '<script src="/theme/codela-storefront/assets/scripts/agency-widgets.js"></script></body></html>';
     exit;
 }

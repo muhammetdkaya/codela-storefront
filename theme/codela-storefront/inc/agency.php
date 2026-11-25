@@ -412,7 +412,8 @@ add_action('wp_enqueue_scripts', static function() {
 /** Optional early HTML feedback, independent of the internal navigation bridge. */
 function codela_sf_first_entry_enabled(): bool {
     if ( ! codela_sf_agency_experience() || ! codela_sf_ready()
-        || is_cart() || is_checkout() || is_account_page() || is_woocommerce()
+        || codela_sf_is_cart_context() || codela_sf_is_checkout_context() || codela_sf_is_account_context()
+        || ( function_exists( 'is_woocommerce' ) && is_woocommerce() )
         || is_preview() || is_customize_preview() ) { return false; }
     return in_array( codela_theme_settings()['first_entry_feedback_enabled'] ?? true, [ true, 1, '1' ], true );
 }

@@ -16,6 +16,7 @@ function codela_sf_seamless_page_allowed( int $id ): bool {
     $post = get_post( $id );
     if ( ! $post || 'page' !== $post->post_type || 'publish' !== $post->post_status
         || ! empty( $post->post_password ) ) { return false; }
+    if ( function_exists( 'codela_account_wordpress_page_id' ) && $id === codela_account_wordpress_page_id() ) { return false; }
     foreach ( [ 'cart', 'checkout', 'myaccount' ] as $name ) {
         if ( function_exists( 'wc_get_page_id' ) && (int) wc_get_page_id( $name ) === $id ) { return false; }
     }
