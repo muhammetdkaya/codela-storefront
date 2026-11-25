@@ -33,7 +33,27 @@ const server=http.createServer((req,res)=>{
         const cta=el.querySelector('.codela-studio-hero__visual-foot a');
         const photoBox=el.querySelector('.codela-studio-hero__visual').getBoundingClientRect();
         const ctaBox=cta.getBoundingClientRect();
-        return {sceneReady:!!scene && !!canvas && canvas.width>0 && canvas.height>0 && Math.abs(scene.getBoundingClientRect().height-photoBox.height)<2 && !!canvas.getContext('2d') && canvas.getContext('2d').getImageData(Math.floor(canvas.width/2),Math.floor(canvas.height/2),1,1).data[0]>0,
+        const frame=el.querySelector('.codela-studio-hero__visual');
+        const sceneBox=scene?.getBoundingClientRect();
+        const canvasBox=canvas?.getBoundingClientRect();
+        // An absolutely positioned child fills the padding box, not the
+        // parent's outer border box. Compare both axes and the actual canvas.
+        const fits=sceneBox && canvasBox
+          && Math.abs(sceneBox.height-frame.clientHeight)<=1
+          && Math.abs(sceneBox.width-frame.clientWidth)<=1
+          && Math.abs(canvasBox.height-sceneBox.height)<=1
+          && Math.abs(canvasBox.width-sceneBox.width)<=1;
+        const ctx=canvas?.getContext('2d');
+        const colors=[];
+        if(ctx && canvas.width>0 && canvas.height>0){
+          for(const x of [.2,.5,.8]) for(const y of [.2,.5,.8]){
+            colors.push([...ctx.getImageData(Math.floor(canvas.width*x),Math.floor(canvas.height*y),1,1).data]);
+          }
+        }
+        const painted=colors.length===9 && colors.every(p=>p[3]===255)
+          && new Set(colors.map(p=>p.slice(0,3).join(','))).size>1
+          && colors.some(p=>Math.max(...p.slice(0,3))>12);
+        return {sceneReady:!!fits && painted, sceneGeometry:{frame:[frame.clientWidth,frame.clientHeight],scene:[sceneBox?.width,sceneBox?.height],canvas:[canvasBox?.width,canvasBox?.height],pixels:colors},
           background:getComputedStyle(el).backgroundColor,
           title:getComputedStyle(el.querySelector('h1')).color,
           fontFamily:getComputedStyle(el.querySelector('h1')).fontFamily,
@@ -44,7 +64,7 @@ const server=http.createServer((req,res)=>{
           ctaVisible:ctaBox.bottom<=photoBox.bottom&&ctaBox.left>=photoBox.left,
           overflow:document.documentElement.scrollWidth-window.innerWidth};
       });
-      assert(ui.sceneReady,'Architectural monolith canvas is painted and fills the media frame');
+      assert(ui.sceneReady,'Architectural monolith canvas is painted and fills the media frame at '+width+': '+JSON.stringify(ui.sceneGeometry));
       assert.equal(ui.background,'rgb(9, 9, 12)','Obsidian surface stays isolated');
       assert.equal(ui.title,'rgb(245, 243, 247)','Title remains white');
       assert(!/Times New Roman/i.test(ui.fontFamily),'Studio typography uses system sans-serif');
