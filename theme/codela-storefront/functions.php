@@ -8,7 +8,7 @@ function codela_sf_ready(): bool {
     if ( ! $core ) { return false; }
     if ( defined( 'WC_VERSION' ) ) { return version_compare( WC_VERSION, '9.0', '>=' ); }
     // Standalone support requires the new plugin contract and a non-commerce profile.
-    return function_exists( 'codela_account_is_wordpress_page' ) && function_exists( 'codela_theme_settings' )
+    return function_exists( 'codela_account_provider' ) && function_exists( 'codela_theme_settings' )
         && 'agency' === ( codela_theme_settings()['site_experience'] ?? 'commerce' );
 }
 /** Guest storefront panels load account enhancements only when requested. */
@@ -62,7 +62,6 @@ function codela_sf_glass_v2_enabled(): bool {
 require_once get_template_directory() . '/inc/presentation.php';
 add_filter( 'body_class', static function( $classes ) {
     if ( 'editorial' === codela_sf_presentation( 'account' ) ) { $classes[] = 'sf-account-editorial'; }
-    if ( codela_sf_standalone_account() ) { $classes[] = 'sf-standalone-account'; }
     if ( codela_sf_glass_v2_enabled() ) { $classes[] = 'sf-glass-v2'; }
     return $classes;
 } );
@@ -113,10 +112,13 @@ require_once get_template_directory() . '/inc/product.php';
 require_once get_template_directory() . '/inc/catalog.php';
 require_once get_template_directory() . '/inc/search.php';
 require_once get_template_directory() . '/inc/sections.php';
-require_once get_template_directory() . '/inc/account.php';
-require_once get_template_directory() . '/inc/quick-login.php';
-require_once get_template_directory() . '/inc/passkeys.php';
-require_once get_template_directory() . '/inc/google-auth.php';
+// Account credentials, forms and device enrollment have one maintained provider.
+if ( codela_sf_commerce_available() ) {
+    require_once get_template_directory() . '/inc/account.php';
+    require_once get_template_directory() . '/inc/quick-login.php';
+    require_once get_template_directory() . '/inc/passkeys.php';
+    require_once get_template_directory() . '/inc/google-auth.php';
+}
 /**
  * Fixed file paths only; hash once per request. Stable module identifiers in
  * the import map let independently changed child files receive new URLs.
@@ -503,14 +505,6 @@ add_action( 'wp_enqueue_scripts', function() {
             'couponField' => __( 'Discount code', 'codela-storefront' ),
             'privacyUrl' => function_exists( 'get_privacy_policy_url' ) ? esc_url_raw( (string) get_privacy_policy_url() ) : '',
         ] ) . ';', 'before' );
-    }
-    if ( codela_sf_standalone_account() ) {
-        wp_enqueue_style( 'codela-storefront-shared-account', $root_uri . 'styles/shared-account.css',
-            [ 'codela-storefront-components' ], codela_sf_script_module_version( 'styles/shared-account.css' ) );
-        if ( ! is_user_logged_in() ) {
-            wp_enqueue_script( 'codela-storefront-auth-smart', $root_uri . 'scripts/auth-smart.js',
-                [], codela_sf_script_module_version( 'scripts/auth-smart.js' ), true );
-        }
     }
     if ( codela_sf_is_account_context() ) {
         wp_enqueue_style( 'codela-storefront-account', $root_uri . 'styles/account.css', [ 'codela-storefront-components' ], $style_version );

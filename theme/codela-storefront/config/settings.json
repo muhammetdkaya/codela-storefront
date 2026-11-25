@@ -3,8 +3,8 @@
   "sections": [
     {
       "id": "site_experience",
-      "label": "Site türü",
-      "description": "Şablon sayfalarını değiştirmeden header, menü ve mobil alt navigasyon araçlarını seçin.",
+      "label": "Site deneyimi",
+      "description": "Aktif şablondan bağımsız ortak site davranışı.",
       "fields": [
         {
           "id": "site_experience",
@@ -16,7 +16,14 @@
             "commerce": "E-Ticaret",
             "agency": "Ajans"
           }
-        },
+        }
+      ]
+    },
+    {
+      "id": "performance",
+      "label": "Performans ve açılış",
+      "description": "WooCommerce kaynakları ve ilk ziyaret göstergesi. Deneysel gönderim kapalı kalır; hosting uyumu doğrulanmadan etkinleştirilmemelidir.",
+      "fields": [
         {
           "id": "woo_lightweight_enabled",
           "type": "checkbox",
@@ -29,7 +36,7 @@
           "type": "checkbox",
           "default": true,
           "label": "İlk açılış göstergesi",
-          "description": "Ajans sayfalarına dışarıdan girişte kehribar çizgiyi ilk çizim fırsatından sonra sabit 1 saniye gösterir. Site içi geçişler ve ticari sayfalar değişmez."
+          "description": "Ajans sayfalarına dışarıdan girişte kehribar çizgiyi ilk çizim fırsatından itibaren içerik hazırlanırken gösterir. En az 1 saniye ve içerik hazır olunca ek bekleme olmadan kapanır. Site içi geçişler ve ticari sayfalar değişmez."
         },
         {
           "id": "early_html_streaming_enabled",
@@ -41,10 +48,28 @@
       ]
     },
     {
-      "id": "presentation",
-      "label": "Menü ve giriş tasarımı",
-      "description": "Ortak görünüm tercihleri seçili site deneyiminde uygulanır. Yeni şablonlar için ek seçenek açılmaz.",
+      "id": "appearance",
+      "label": "Görünüm ve navigasyon",
+      "description": "Tüm şablonlarda ortak tasarım tercihleri.",
       "fields": [
+        {
+          "id": "site_font",
+          "type": "select",
+          "default": "system",
+          "label": "Site yazı tipi",
+          "description": "Sistem yazı tipi ziyaretçinin cihazından gelir. Arial seçeneği önceki yazı tipini geri getirir; harici font indirilmez.",
+          "options": {
+            "system": "Sistem",
+            "arial": "Arial / Helvetica"
+          }
+        },
+        {
+          "id": "glass_v2_enabled",
+          "type": "checkbox",
+          "default": false,
+          "label": "Glass V2",
+          "description": "Ortak cam görünümünü etkinleştirir. Mağaza sayfalarının yerleşimi değişmez."
+        },
         {
           "id": "menu_design",
           "type": "select",
@@ -66,66 +91,35 @@
             "standard": "Codela Standart",
             "editorial": "Editoryal Cam"
           }
-        }
-      ]
-    },
-    {
-      "id": "appearance",
-      "label": "Appearance",
-      "description": "Site-wide font and optional floating Glass V2 appearance.",
-      "fields": [
-        {
-          "id": "site_font",
-          "type": "select",
-          "default": "system",
-          "label": "Theme font",
-          "description": "System uses each visitor's device font. Arial restores the previous storefront font. No external fonts are downloaded.",
-          "options": {
-            "system": "System",
-            "arial": "Arial / Helvetica"
-          }
         },
-        {
-          "id": "glass_v2_enabled",
-          "type": "checkbox",
-          "default": false,
-          "label": "Glass V2",
-          "description": "Enable the Agency reference's CSS glass on navigation, actions, bento surfaces, selection chips and forms. Commerce pages retain their existing layout."
-        }
-      ]
-    },
-    {
-      "id": "header",
-      "label": "Header",
-      "description": "Mobile navigation behavior. Site identity and menus are managed by WordPress.",
-      "fields": [
         {
           "id": "mobile_dock_enabled",
           "type": "checkbox",
           "default": true,
-          "label": "Mobile bottom navigation",
-          "description": "Show the bottom navigation on mobile. When disabled, search, cart and account appear in the header, as on desktop."
-        }
-      ]
-    },
-    {
-      "id": "product",
-      "label": "Product page",
-      "description": "Product gallery presentation.",
-      "fields": [
+          "label": "Mobil alt menü",
+          "description": "Kapalıyken kullanılabilir navigasyon araçları üst menüye taşınır."
+        },
         {
-          "id": "product_gallery_thumbnails",
+          "id": "mobile_footer_hidden",
           "type": "checkbox",
-          "default": true,
-          "label": "Show gallery thumbnails",
-          "description": "Show the three circular previews beside the product gallery. Swipe remains available."
+          "default": false,
+          "label": "Mobil alt bilgiyi gizle",
+          "description": "700 piksel ve daha dar ekranlarda alt bilgiyi gizler."
+        },
+        {
+          "id": "footer_text",
+          "type": "text",
+          "label": "Alt bilgi notu",
+          "description": "Masaüstünde marka yanında kısa not; dar ekranda gizlenir.",
+          "maxlength": 160,
+          "placeholder": ""
         }
       ]
     },
     {
       "id": "account",
-      "label": "My Account",
-      "description": "Hesabım özellikleri bütün şablonlarda tek ayardan yönetilir.",
+      "label": "Hesabım",
+      "description": "Ortak müşteri hesabı özellikleri.",
       "fields": [
         {
           "id": "account_projects_enabled",
@@ -138,30 +132,22 @@
           "id": "account_downloads_enabled",
           "type": "checkbox",
           "default": true,
-          "label": "Show Downloads in account menu",
-          "description": "Only hide the menu entry; downloads and existing permissions remain available."
+          "label": "Hesabımda indirmeleri göster",
+          "description": "Yalnızca menü bağlantısını gizler; indirme izinleri değişmez."
         }
       ]
     },
     {
-      "id": "footer",
-      "label": "Footer",
-      "description": "Compact, one-line copyright and legal links.",
+      "id": "product",
+      "label": "Ürün sayfası",
+      "description": "Mağaza ürün galerisi.",
       "fields": [
         {
-          "id": "mobile_footer_hidden",
+          "id": "product_gallery_thumbnails",
           "type": "checkbox",
-          "default": false,
-          "label": "Hide footer on mobile",
-          "description": "Hide the footer on screens up to 700px. The desktop footer remains visible."
-        },
-        {
-          "id": "footer_text",
-          "type": "text",
-          "label": "Footer note",
-          "description": "Optional short note inline with the brand on desktop. Hidden on narrow mobile screens to keep one row.",
-          "maxlength": 160,
-          "placeholder": ""
+          "default": true,
+          "label": "Ürün galerisinde küçük görseller",
+          "description": "Ürün galerisindeki üç küçük önizlemeyi gösterir; kaydırma kullanılabilir."
         }
       ]
     }

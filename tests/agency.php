@@ -57,6 +57,18 @@ $GLOBALS['layout'] = '';
 $GLOBALS['front'] = false;
 $enqueue();
 agency_check( [] === $GLOBALS['enqueued'], 'Unrelated pages do not pay for agency assets.' );
+$GLOBALS['layout'] = '<!-- wp:codela/section-agency-studio /-->';
+$enqueue();
+agency_check( in_array( 'codela-storefront-agency-light-scene', $GLOBALS['enqueued'], true )
+    && count( array_filter( $GLOBALS['enqueued'], static fn($name) => 'codela-storefront-agency-light-scene' === $name ) ) === 2
+    && ! in_array( 'codela-storefront-agency-stage-scroll', $GLOBALS['enqueued'], true ),
+    'Inner-page Studio loads both scene assets but no homepage stage navigation.' );
+require __DIR__ . '/../theme/codela-storefront/inc/section-agency-studio.php';
+$studio = codela_sf_section_agency_studio( [ 'id' => 'inner-studio', 'title' => 'Inner Studio' ] );
+agency_check( str_contains( $studio, 'codela-monolith__canvas' ) && str_contains( $studio, '<h2 ' ), 'Inner-page Studio renders the same scene and a subordinate heading.' );
+agency_check( isset( $GLOBALS['actions']['codela_theme_settings_general'] ) || isset( $GLOBALS['actions']['codela_theme_settings_integrations'] ), 'Project capacity is rendered within Codela theme settings.' );
+$GLOBALS['layout'] = '';
+$GLOBALS['enqueued'] = [];
 $GLOBALS['ready'] = false;
 agency_check( codela_sf_home() === '', 'Dependency gate is preserved.' );
 $GLOBALS['ready'] = true;

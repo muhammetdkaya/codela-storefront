@@ -194,7 +194,7 @@
     });
   }
   function initGuest(section) {
-    const host=section.closest('.sf-overlay-auth')||section.closest('.woocommerce,.cdl-shared-account');
+    const host=section.closest('.sf-overlay-auth')||section.closest('.woocommerce');
     if(!host||!available)return;
     const hints=getHints().filter(h=>!h.paused);
     if(!hints.length)return;

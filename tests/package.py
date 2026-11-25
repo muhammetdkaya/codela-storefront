@@ -14,8 +14,8 @@ class Tests(unittest.TestCase):
         schema=json.loads(schema_path.read_text(encoding="utf-8"))
         self.assertEqual(schema["schema_version"],1)
         sections={section["id"]:section for section in schema["sections"]}
-        self.assertTrue({"appearance","header","product","account","footer"}.issubset(sections),
-                        "Required theme settings sections must exist; additional valid sections are allowed")
+        self.assertTrue({"site_experience","performance","appearance","account","product"} == set(sections),
+                        "Five compact groups own the shared settings")
         site_font=next(field for field in sections["appearance"]["fields"] if field["id"]=="site_font")
         self.assertEqual(site_font["type"],"select")
         self.assertEqual(site_font["default"],"system")
@@ -59,9 +59,11 @@ class Tests(unittest.TestCase):
         self.assertIn("site_font",{field["id"] for field in all_fields})
         fields=[field["id"] for section in schema["sections"] for field in section["fields"]]
         self.assertEqual(len(fields),len(set(fields)))
+        self.assertEqual({f["id"] for f in sections["performance"]["fields"]},{"woo_lightweight_enabled","first_entry_feedback_enabled","early_html_streaming_enabled"})
+        self.assertEqual({f["id"] for f in sections["appearance"]["fields"]},{"site_font","glass_v2_enabled","menu_design","account_design","mobile_dock_enabled","mobile_footer_hidden","footer_text"})
         self.assertTrue({"accent_color","corner_style"}.isdisjoint(fields),"Shared appearance has a single plugin owner")
         self.assertTrue({"footer_text","mobile_footer_hidden","mobile_dock_enabled","product_gallery_thumbnails","account_downloads_enabled"}.issubset(set(fields)))
-        mobile_footer=next(field for field in sections["footer"]["fields"] if field["id"]=="mobile_footer_hidden")
+        mobile_footer=next(field for field in sections["appearance"]["fields"] if field["id"]=="mobile_footer_hidden")
         self.assertEqual(mobile_footer["type"],"checkbox")
         self.assertIs(mobile_footer["default"],False)
         self.assertTrue(all(field["type"] in {"text","menu","product","checkbox","color","select","repeater"} for section in schema["sections"] for field in section["fields"]))
@@ -71,8 +73,8 @@ class Tests(unittest.TestCase):
     def test_editorial_presentations_keep_native_menu_and_auth(self):
         root=build.ROOT
         schema=json.loads((root/"config/settings.json").read_text())
-        presentation=next(section for section in schema["sections"] if section["id"]=="presentation")
-        fields={field["id"]:field for field in presentation["fields"]}
+        appearance=next(section for section in schema["sections"] if section["id"]=="appearance")
+        fields={field["id"]:field for field in appearance["fields"] if field["id"] in {"menu_design","account_design"}}
         self.assertEqual(set(fields),{"menu_design","account_design"})
         for name,field in fields.items():
             self.assertEqual(field["type"],"select")
@@ -128,7 +130,7 @@ class Tests(unittest.TestCase):
         self.assertNotIn("sf-editorial-menu-brand",render+menu)
         self.assertIn("info@codela.dev",render)
         self.assertNotIn("--sf-ui-page:var(--wp--preset--color--base",menu+account+shell)
-        self.assertIn(":is(.woocommerce-account,.sf-standalone-account):not(.logged-in)",account)
+        self.assertIn(".woocommerce-account:not(.logged-in)",account)
         self.assertNotIn("addEventListener",menu+account)
         self.assertNotIn("Google Fonts",menu+account)
 
@@ -402,7 +404,7 @@ class Tests(unittest.TestCase):
         self.assertNotIn("add_action( 'woocommerce_before_account_navigation'",account)
         self.assertIn('is_user_logged_in()',account)
         self.assertIn('body.codela-my-account-layout .sf-content > .wp-block-post-title',css)
-        self.assertIn('body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout)',css)
+        self.assertIn('body.woocommerce-account:not(.codela-my-account-layout)',css)
         self.assertNotIn('body.woocommerce-account .woocommerce .woocommerce-MyAccount-content{',css)
         self.assertNotIn('body.woocommerce-account .woocommerce .woocommerce-MyAccount-navigation{',css)
         self.assertIn('is_account_page()',account)
@@ -459,7 +461,7 @@ class Tests(unittest.TestCase):
         loader=(build.ROOT/'functions.php').read_text()
         self.assertIn('.sf-mobile-dock{display:none}',nav)
         self.assertNotIn('.sf-mobile-dock{display:none}',layout)
-        self.assertIn('body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout)',account)
+        self.assertIn('body.woocommerce-account:not(.codela-my-account-layout)',account)
         self.assertNotIn('body.woocommerce-account:not(.codela-my-account-layout)',layout)
         self.assertIn("codela-storefront-navigation",loader)
         self.assertIn("codela-storefront-account",loader)

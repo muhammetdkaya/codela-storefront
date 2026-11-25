@@ -5,7 +5,7 @@
  */
 body.codela-my-account-layout .sf-content > .wp-block-post-title{display:none}
 
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout){
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout){
   --sf-ui-ink:#25272a;
   --sf-ui-control-ink:#222428;
   --sf-ui-accent:#35383c;
@@ -19,12 +19,12 @@ body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela
   color:#222428;
   color-scheme:light;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) .sf-shell.sf-auth-shell{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-shell.sf-auth-shell{
   padding:0;
   max-width:980px;
   margin:0 auto!important;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) .sf-auth-site-header{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-auth-site-header{
   display:flex;align-items:center;justify-content:space-between;
   gap:24px;
   min-height:72px;
@@ -41,28 +41,28 @@ body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela
 }
 .sf-auth-store-link:hover{color:var(--sf-ui-control-ink)}
 
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) .sf-content{
+body.woocommerce-account:not(.codela-my-account-layout) .sf-content{
   max-width:1180px;margin:0 auto;
   padding:clamp(30px,6vw,66px) clamp(18px,5vw,48px) 88px;
   background:transparent;color:var(--sf-ui-control-ink);
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) .sf-content:has(.sf-account-intro){
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-content:has(.sf-account-intro){
   max-width:560px;
   padding-top:clamp(22px,4vw,36px);
   padding-bottom:56px;
 }
 /* WordPress layout block gaps can otherwise add another blank row above login. */
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) .sf-content:has(.sf-account-intro) > :is(.wp-block-post-content,.wp-block-shortcode,:is(.woocommerce,.cdl-shared-account)){
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-content:has(.sf-account-intro) > :is(.wp-block-post-content,.wp-block-shortcode,.woocommerce){
   margin-block-start:0;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) .sf-content:has(.sf-account-intro) > .wp-block-post-title{display:none}
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) .sf-content :is(.woocommerce,.cdl-shared-account){
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-content:has(.sf-account-intro) > .wp-block-post-title{display:none}
+body.woocommerce-account:not(.codela-my-account-layout) .sf-content .woocommerce{
   width:100%;max-width:1080px;margin:0 auto;font-family:inherit;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account):has(.sf-account-intro){max-width:100%}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce:has(.sf-account-intro){max-width:100%}
 /* The native single-login heading duplicates our page title and primary CTA.
    Do not suppress Woo headings when JS is unavailable for two-form registration. */
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account):has(.sf-account-intro):not(:has(#customer_login)) > h2{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce:has(.sf-account-intro):not(:has(#customer_login)) > h2{
   display:none;
 }
 .sf-account-intro{width:100%;margin:0 auto clamp(19px,4vw,27px);text-align:center}
@@ -96,40 +96,40 @@ body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela
 .sf-auth-tabs .sf-auth-tab:focus-visible{
   outline:2px solid var(--sf-ui-accent);outline-offset:2px;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) #customer_login{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce #customer_login{
   display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;
   float:none;margin:0 auto;max-width:100%;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) #customer_login::before,
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) #customer_login::after{display:none}
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) #customer_login :is(.u-column1,.u-column2){
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce #customer_login::before,
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce #customer_login::after{display:none}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce #customer_login :is(.u-column1,.u-column2){
   float:none!important;width:100%!important;min-width:0;margin:0!important;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) #customer_login.sf-auth-ready{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce #customer_login.sf-auth-ready{
   display:block;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) #customer_login.sf-auth-ready > :is(.u-column1,.u-column2)[hidden]{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce #customer_login.sf-auth-ready > :is(.u-column1,.u-column2)[hidden]{
   display:none!important;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) :is(> h2,#customer_login h2){
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce :is(> h2,#customer_login h2){
   font-size:16px;letter-spacing:-.02em;font-weight:500;color:var(--sf-ui-control-ink);margin:0 0 16px;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) #customer_login.sf-auth-ready h2{display:none}
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword){
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce #customer_login.sf-auth-ready h2{display:none}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword){
   display:block;box-sizing:border-box;
   width:100%;max-width:100%;
   margin:0 auto;padding:0;
   background:transparent;border:0;box-shadow:none;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) form:is(.woocommerce-form-login,.woocommerce-form-register) .form-row,
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) form .woocommerce-form-row{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register) .form-row,
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form .woocommerce-form-row{
   width:100%;max-width:100%;float:none;padding:0;margin:0 0 14px;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) form label[for]:not(.woocommerce-form__label){
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form label[for]:not(.woocommerce-form__label){
   display:block;margin-bottom:9px;color:var(--sf-ui-control-ink);font-size:13px;line-height:1.4;font-weight:500;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) form .required{color:#82858a;font-weight:400}
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) form :is(input.input-text,input[type=email],input[type=tel],input[type=password],input[type=text],select,textarea){
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form .required{color:#82858a;font-weight:400}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form :is(input.input-text,input[type=email],input[type=tel],input[type=password],input[type=text],select,textarea){
   box-sizing:border-box;width:100%;min-height:var(--sf-ui-action-height);
   padding:14px 16px;
   color:var(--sf-ui-control-ink);
@@ -139,62 +139,62 @@ body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela
   font:inherit;font-size:16px;line-height:1.4;box-shadow:none;
   transition:border-color var(--sf-ui-motion-press) ease,background-color var(--sf-ui-motion-press) ease;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) form :is(input,textarea)::placeholder{color:#999da4;opacity:1}
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) form :is(input.input-text,input[type=email],input[type=tel],input[type=password],input[type=text],select,textarea):focus{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form :is(input,textarea)::placeholder{color:#999da4;opacity:1}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form :is(input.input-text,input[type=email],input[type=tel],input[type=password],input[type=text],select,textarea):focus{
   border-color:var(--sf-ui-accent);background:#fff;outline:2px solid var(--sf-ui-accent);outline-offset:1px;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) form .password-input{position:relative;display:block;width:100%}
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) form .show-password-input{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form .password-input{position:relative;display:block;width:100%}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form .show-password-input{
   display:inline-flex;align-items:center;justify-content:center;
   min-width:44px;min-height:44px;right:4px;top:50%;transform:translateY(-50%);
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) form .woocommerce-form-login__rememberme{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form .woocommerce-form-login__rememberme{
   display:inline-flex;align-items:center;gap:9px;margin:0;
   color:#74777c;font-size:12px;cursor:pointer;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) form .woocommerce-form-login__rememberme input{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form .woocommerce-form-login__rememberme input{
   width:17px;height:17px;flex:none;accent-color:var(--sf-ui-ink);
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) form :is(.lost_password,.woocommerce-LostPassword) a{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form :is(.lost_password,.woocommerce-LostPassword) a{
   color:var(--sf-ui-control-ink);font-size:13px;
   text-decoration:underline;text-underline-offset:4px;text-decoration-color:#bbbfc5;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit]{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form:is(.woocommerce-form-login,.woocommerce-form-register,.woocommerce-ResetPassword) button[type=submit]{
   width:100%;margin:10px 0 0;float:none;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .woocommerce-privacy-policy-text,
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) form.woocommerce-form-register p{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .woocommerce-privacy-policy-text,
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form.woocommerce-form-register p{
   color:#74777c;font-size:13px;line-height:1.65;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) :is(a,button):focus-visible{
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce :is(a,button):focus-visible{
   outline:2px solid var(--sf-ui-accent);outline-offset:3px;
 }
 
 /* Native account hub: one list, native endpoints, shared theme typography. */
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account):has(> .woocommerce-MyAccount-navigation){display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;align-items:start}
-body:is(.woocommerce-account,.sf-standalone-account) :is(.woocommerce,.cdl-shared-account) > .woocommerce-notices-wrapper{grid-column:1/-1;grid-row:1}
-body:is(.woocommerce-account,.sf-standalone-account) :is(.woocommerce,.cdl-shared-account) > .woocommerce-notices-wrapper:empty{display:none}
-body:is(.woocommerce-account,.sf-standalone-account) :is(.woocommerce,.cdl-shared-account):has(> .woocommerce-notices-wrapper:not(:empty)) > :is(.woocommerce-MyAccount-navigation,.woocommerce-MyAccount-content){grid-row:2}
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .woocommerce-MyAccount-navigation{grid-column:1;grid-row:1;float:none;width:auto;min-width:0}
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .woocommerce-MyAccount-navigation ul{list-style:none;margin:0;padding:0}
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .woocommerce-MyAccount-navigation li{margin:0;padding:0;list-style:none;border-bottom:1px solid var(--sf-ui-border)}
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .woocommerce-MyAccount-navigation li a{display:flex;align-items:center;gap:16px;min-height:56px;padding:12px 4px;color:var(--sf-ui-control-ink);font-size:15px;font-weight:400;text-decoration:none;overflow-wrap:anywhere}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce:has(> .woocommerce-MyAccount-navigation){display:grid;grid-template-columns:220px minmax(0,1fr);gap:32px;align-items:start}
+body.woocommerce-account .woocommerce > .woocommerce-notices-wrapper{grid-column:1/-1;grid-row:1}
+body.woocommerce-account .woocommerce > .woocommerce-notices-wrapper:empty{display:none}
+body.woocommerce-account .woocommerce:has(> .woocommerce-notices-wrapper:not(:empty)) > :is(.woocommerce-MyAccount-navigation,.woocommerce-MyAccount-content){grid-row:2}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-navigation{grid-column:1;grid-row:1;float:none;width:auto;min-width:0}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-navigation ul{list-style:none;margin:0;padding:0}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-navigation li{margin:0;padding:0;list-style:none;border-bottom:1px solid var(--sf-ui-border)}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-navigation li a{display:flex;align-items:center;gap:16px;min-height:56px;padding:12px 4px;color:var(--sf-ui-control-ink);font-size:15px;font-weight:400;text-decoration:none;overflow-wrap:anywhere}
 .sf-account-menu a > span{flex:1;min-width:0}
 .sf-account-menu a > .sf-icon:last-child{width:16px;height:16px;opacity:.58;transition:transform .18s ease,opacity .18s ease}
 @media(hover:hover){.sf-account-menu a:hover > .sf-icon:last-child{transform:translateX(2px);opacity:1}}
 @media(prefers-reduced-motion:reduce){.sf-account-menu a > .sf-icon:last-child{transition:none}}
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .woocommerce-MyAccount-navigation li.is-active a{font-weight:500}
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .woocommerce-MyAccount-navigation li.woocommerce-MyAccount-navigation-link--customer-logout{margin-top:16px;border-bottom:0}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-navigation li.is-active a{font-weight:500}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-navigation li.woocommerce-MyAccount-navigation-link--customer-logout{margin-top:16px;border-bottom:0}
 .sf-account-menu .sf-icon,.sf-account-overview .sf-icon{width:var(--sf-ui-icon);height:var(--sf-ui-icon);flex:none;display:block}
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .woocommerce-MyAccount-content{grid-column:2;grid-row:1;float:none;width:100%;min-width:0;padding:0;border:0;background:transparent;color:var(--sf-ui-ink);font-size:14px;line-height:1.65;overflow-wrap:anywhere}
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .woocommerce-MyAccount-content a:not(.sf-ui-button,.button,.woocommerce-Button,.woocommerce-button,.wp-element-button,.wc-forward){color:var(--sf-ui-control-ink);text-underline-offset:3px}
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .woocommerce-MyAccount-content h2{margin:0 0 16px;font-size:20px;font-weight:500;color:var(--sf-ui-ink)}
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .woocommerce-MyAccount-content table{width:100%;border-color:var(--sf-ui-border)}
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .woocommerce-MyAccount-content form:is(.woocommerce-form,.woocommerce-EditAccountForm,.woocommerce-address-fields){border:0;padding:0;box-shadow:none;max-width:none}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-content{grid-column:2;grid-row:1;float:none;width:100%;min-width:0;padding:0;border:0;background:transparent;color:var(--sf-ui-ink);font-size:14px;line-height:1.65;overflow-wrap:anywhere}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-content a:not(.sf-ui-button,.button,.woocommerce-Button,.woocommerce-button,.wp-element-button,.wc-forward){color:var(--sf-ui-control-ink);text-underline-offset:3px}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-content h2{margin:0 0 16px;font-size:20px;font-weight:500;color:var(--sf-ui-ink)}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-content table{width:100%;border-color:var(--sf-ui-border)}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-content form:is(.woocommerce-form,.woocommerce-EditAccountForm,.woocommerce-address-fields){border:0;padding:0;box-shadow:none;max-width:none}
 .sf-account-overview{display:grid;gap:24px}
 .sf-account-card{padding:clamp(20px,3vw,32px);min-width:0;border-radius:var(--sf-ui-control-radius)}
 .sf-account-card-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--sf-ui-border)}
-body:is(.woocommerce-account,.sf-standalone-account) :is(.woocommerce,.cdl-shared-account) .sf-account-card h2{margin:0;font-size:18px;line-height:1.35;font-weight:500}
+body.woocommerce-account .woocommerce .sf-account-card h2{margin:0;font-size:18px;line-height:1.35;font-weight:500}
 .sf-account-card-heading .sf-icon{width:var(--sf-ui-icon);height:var(--sf-ui-icon)}
 .sf-account-order-meta{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:13px}
 .sf-account-muted{color:var(--sf-muted,#73746d)}
@@ -218,57 +218,57 @@ body:is(.woocommerce-account,.sf-standalone-account) :is(.woocommerce,.cdl-share
 .sf-account-empty-state .sf-ui-button{margin-top:16px}
 
 @media(max-width:800px){
- body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) #customer_login:not(.sf-auth-ready){grid-template-columns:minmax(0,1fr)}
- body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account):has(> .woocommerce-MyAccount-navigation){grid-template-columns:minmax(0,1fr);gap:16px}
- body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .woocommerce-MyAccount-navigation,
- body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .woocommerce-MyAccount-content{grid-column:1;grid-row:auto}
- body:is(.woocommerce-account,.sf-standalone-account).logged-in.sf-account-dashboard .woocommerce-MyAccount-content{grid-row:1}
- body:is(.woocommerce-account,.sf-standalone-account).logged-in.sf-account-dashboard :is(.woocommerce,.cdl-shared-account):has(> .woocommerce-notices-wrapper:not(:empty)) > .woocommerce-MyAccount-content{grid-row:2}
- body:is(.woocommerce-account,.sf-standalone-account).logged-in.sf-account-dashboard :is(.woocommerce,.cdl-shared-account):has(> .woocommerce-notices-wrapper:not(:empty)) > .woocommerce-MyAccount-navigation{grid-row:3}
- body:is(.woocommerce-account,.sf-standalone-account).logged-in.sf-account-dashboard .woocommerce-MyAccount-navigation{grid-row:2}
- body:is(.woocommerce-account,.sf-standalone-account).logged-in.sf-account-dashboard .woocommerce-MyAccount-navigation-link--dashboard{display:none}
+ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce #customer_login:not(.sf-auth-ready){grid-template-columns:minmax(0,1fr)}
+ body.woocommerce-account:not(.codela-my-account-layout) .woocommerce:has(> .woocommerce-MyAccount-navigation){grid-template-columns:minmax(0,1fr);gap:16px}
+ body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-navigation,
+ body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-content{grid-column:1;grid-row:auto}
+ body.woocommerce-account.logged-in.sf-account-dashboard .woocommerce-MyAccount-content{grid-row:1}
+ body.woocommerce-account.logged-in.sf-account-dashboard .woocommerce:has(> .woocommerce-notices-wrapper:not(:empty)) > .woocommerce-MyAccount-content{grid-row:2}
+ body.woocommerce-account.logged-in.sf-account-dashboard .woocommerce:has(> .woocommerce-notices-wrapper:not(:empty)) > .woocommerce-MyAccount-navigation{grid-row:3}
+ body.woocommerce-account.logged-in.sf-account-dashboard .woocommerce-MyAccount-navigation{grid-row:2}
+ body.woocommerce-account.logged-in.sf-account-dashboard .woocommerce-MyAccount-navigation-link--dashboard{display:none}
 
- body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.sf-account-dashboard) .woocommerce-MyAccount-navigation{display:none}
+ body.woocommerce-account.logged-in:not(.sf-account-dashboard) .woocommerce-MyAccount-navigation{display:none}
  .sf-account-card-heading{gap:8px;margin-bottom:12px}
  .sf-account-order-item{gap:14px}
 
 }
 @media(max-width:700px){
- body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) .sf-auth-site-header{min-height:68px;margin:0 20px;gap:14px}
+ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-auth-site-header{min-height:68px;margin:0 20px;gap:14px}
  .sf-auth-brand{font-size:23px}
  .sf-auth-brand .custom-logo{max-width:156px;max-height:32px;height:32px}
  .sf-auth-store-link{font-size:12px}
- body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) .sf-content{padding:30px 20px 66px}
- body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) .sf-content:has(.sf-account-intro){padding-top:28px;padding-bottom:44px}
+ body.woocommerce-account:not(.codela-my-account-layout) .sf-content{padding:30px 20px 66px}
+ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-content:has(.sf-account-intro){padding-top:28px;padding-bottom:44px}
  .sf-account-intro{margin-bottom:23px}
  .sf-account-intro h1{font-size:34px}
  .sf-account-intro p{font-size:13px}
- body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .woocommerce-MyAccount-content{padding:0;font-size:14px}
+ body.woocommerce-account:not(.codela-my-account-layout) .woocommerce .woocommerce-MyAccount-content{padding:0;font-size:14px}
 }
 @media(prefers-reduced-motion:reduce){
- body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) form :is(input.input-text,input[type=email],input[type=password]){transition:none!important}
+ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form :is(input.input-text,input[type=email],input[type=password]){transition:none!important}
 }
 
 
 /* Google OAuth button lives only on the guest account, with the existing
    global sf-ui-button--secondary primitive. This block owns layout, not a new
    button component, palette or press animation. */
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .sf-auth-social{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-auth-social{
   max-width:100%;margin:23px auto 0;padding:0;
   display:flex;flex-direction:column;align-items:stretch;gap:12px;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .sf-auth-divider{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-auth-divider{
   display:flex;align-items:center;gap:18px;
   width:100%;font-size:13px;color:#848890;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .sf-auth-divider::before,
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .sf-auth-divider::after{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-auth-divider::before,
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-auth-divider::after{
   content:"";height:1px;background:var(--sf-ui-border);flex:1;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .sf-auth-social .sf-auth-google{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-auth-social .sf-auth-google{
   width:100%;gap:12px;margin:0;font-size:14px;font-weight:500;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .sf-auth-social .sf-auth-google:disabled{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-auth-social .sf-auth-google:disabled{
   opacity:.62;cursor:not-allowed;transform:none!important;
 }
 .sf-auth-google .sf-google-glyph{
@@ -278,52 +278,52 @@ body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela
 }
 /* Signed-in native forms use the same theme tokens as guest/checkout inputs.
    Module address selectors/modals retain their own stylesheet and behavior. */
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-EditAccountForm fieldset{margin:24px 0;padding:20px;border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius)}
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-EditAccountForm legend{padding-inline:8px;font-weight:500}
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-navigation a{min-height:44px}
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content a.button{text-decoration:none}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-EditAccountForm fieldset{margin:24px 0;padding:20px;border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius)}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-EditAccountForm legend{padding-inline:8px;font-weight:500}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-navigation a{min-height:44px}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content a.button{text-decoration:none}
 @media(max-width:700px){
- body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content{padding:0;overflow-wrap:anywhere}
- body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content table{font-size:12px}
+ body.woocommerce-account.logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content{padding:0;overflow-wrap:anywhere}
+ body.woocommerce-account.logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content table{font-size:12px}
 }
 
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout) .sf-content > .wp-block-post-content{max-width:1080px;width:100%;margin-inline:auto}
+body.woocommerce-account.logged-in:not(.codela-my-account-layout) .sf-content > .wp-block-post-content{max-width:1080px;width:100%;margin-inline:auto}
 
 /* Endpoint tables and native addresses use the same restrained card rhythm. */
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) .woocommerce-MyAccount-content :is(.woocommerce-orders-table,.woocommerce-table--order-details){border:0;border-collapse:collapse;border-spacing:0;font-size:14px;line-height:1.6;margin:0 0 24px}
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) .woocommerce-MyAccount-content :is(.woocommerce-orders-table,.woocommerce-table--order-details) :is(th,td){padding:16px 12px;border:0;border-bottom:1px solid var(--sf-ui-border);vertical-align:middle;background:transparent}
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) .woocommerce-MyAccount-content :is(th,.woocommerce-column__title){font-weight:500}
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-orders-table__cell-order-actions .button{margin:4px;--sf-ui-button-height:44px;--sf-ui-button-padding-y:10px;--sf-ui-button-padding-x:18px;--sf-ui-button-font-size:13px}
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-customer-details address{padding:20px;border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);line-height:1.8}
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-EditAccountForm label{display:block;margin-bottom:8px;font-size:13px;font-weight:500}
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-EditAccountForm .form-row{padding:0;margin-bottom:20px}
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-EditAccountForm fieldset{background:var(--sf-ui-page)}
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-EditAccountForm legend{font-size:15px}
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-EditAccountForm em{display:block;margin-top:8px;color:var(--sf-muted);font-size:12px;font-style:normal}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-content :is(.woocommerce-orders-table,.woocommerce-table--order-details){border:0;border-collapse:collapse;border-spacing:0;font-size:14px;line-height:1.6;margin:0 0 24px}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-content :is(.woocommerce-orders-table,.woocommerce-table--order-details) :is(th,td){padding:16px 12px;border:0;border-bottom:1px solid var(--sf-ui-border);vertical-align:middle;background:transparent}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-content :is(th,.woocommerce-column__title){font-weight:500}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-orders-table__cell-order-actions .button{margin:4px;--sf-ui-button-height:44px;--sf-ui-button-padding-y:10px;--sf-ui-button-padding-x:18px;--sf-ui-button-font-size:13px}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-customer-details address{padding:20px;border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);line-height:1.8}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-EditAccountForm label{display:block;margin-bottom:8px;font-size:13px;font-weight:500}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-EditAccountForm .form-row{padding:0;margin-bottom:20px}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-EditAccountForm fieldset{background:var(--sf-ui-page)}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-EditAccountForm legend{font-size:15px}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-EditAccountForm em{display:block;margin-top:8px;color:var(--sf-muted);font-size:12px;font-style:normal}
 @media(max-width:768px){
- body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-orders-table tr{padding:12px 0;border-bottom:1px solid var(--sf-ui-border)}
- body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-orders-table td{padding:9px 0;border:0}
- body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-EditAccountForm :is(.form-row-first,.form-row-last){float:none;width:100%}
- body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-EditAccountForm button[type=submit]{width:100%}
+ body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-orders-table tr{padding:12px 0;border-bottom:1px solid var(--sf-ui-border)}
+ body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-orders-table td{padding:9px 0;border:0}
+ body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-EditAccountForm :is(.form-row-first,.form-row-last){float:none;width:100%}
+ body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-content .woocommerce-EditAccountForm button[type=submit]{width:100%}
 }
 
 /* Account compositions size the shared Button, including Woo endpoint actions. */
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content{
+body.woocommerce-account.logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content{
  --sf-ui-button-height:44px;--sf-ui-button-padding-y:10px;--sf-ui-button-padding-x:20px;--sf-ui-button-font-size:14px;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) .woocommerce-MyAccount-content :is(.woocommerce-info,.woocommerce-message,.wc-block-components-notice-banner__content){display:flex;flex-wrap:wrap;align-items:center;gap:16px}
-body:is(.woocommerce-account,.sf-standalone-account):not(.codela-my-account-layout) .woocommerce-MyAccount-content :is(.woocommerce-info,.woocommerce-message,.wc-block-components-notice-banner__content) :is(a,button):is(.button,.woocommerce-Button,.woocommerce-button,.wp-element-button,.wc-forward){float:none;margin:0;flex:none;max-width:100%;order:1}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-content :is(.woocommerce-info,.woocommerce-message,.wc-block-components-notice-banner__content){display:flex;flex-wrap:wrap;align-items:center;gap:16px}
+body.woocommerce-account:not(.codela-my-account-layout) .woocommerce-MyAccount-content :is(.woocommerce-info,.woocommerce-message,.wc-block-components-notice-banner__content) :is(a,button):is(.button,.woocommerce-Button,.woocommerce-button,.wp-element-button,.wc-forward){float:none;margin:0;flex:none;max-width:100%;order:1}
 
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content{
+body.woocommerce-account.logged-in:not(.codela-my-account-layout) .woocommerce-MyAccount-content{
  --sf-ui-notice-border-width:0px;--sf-ui-notice-surface:var(--sf-ui-surface-muted);
 }
 .sf-account-empty-orders{flex-direction:column;align-items:center;text-align:center;padding:clamp(48px,10vh,96px) 0;gap:20px}
 .sf-account-empty-orders > .sf-icon{width:32px;height:32px}
 
-body:is(.woocommerce-account,.sf-standalone-account) .codela-prefs{font-family:inherit;--cp-accent:var(--sf-ui-accent);--cp-text:var(--sf-ui-ink);--cp-muted:var(--sf-muted);--cp-border:var(--sf-ui-border);--cp-bg:var(--sf-ui-surface);--cp-soft:var(--sf-ui-surface-muted)}
+body.woocommerce-account .codela-prefs{font-family:inherit;--cp-accent:var(--sf-ui-accent);--cp-text:var(--sf-ui-ink);--cp-muted:var(--sf-muted);--cp-border:var(--sf-ui-border);--cp-bg:var(--sf-ui-surface);--cp-soft:var(--sf-ui-surface-muted)}
 @media(min-width:801px){
- body:is(.woocommerce-account,.sf-standalone-account) .sf-account-menu a > .sf-icon:last-child{display:none}
- body:is(.woocommerce-account,.sf-standalone-account) :is(.woocommerce,.cdl-shared-account) .woocommerce-MyAccount-navigation li.is-active a{background:var(--sf-ui-nav-selection);border-radius:var(--sf-ui-control-radius);padding-inline:12px}
+ body.woocommerce-account .sf-account-menu a > .sf-icon:last-child{display:none}
+ body.woocommerce-account .woocommerce .woocommerce-MyAccount-navigation li.is-active a{background:var(--sf-ui-nav-selection);border-radius:var(--sf-ui-control-radius);padding-inline:12px}
 }
 
 
@@ -333,7 +333,7 @@ body:is(.woocommerce-account,.sf-standalone-account) .codela-prefs{font-family:i
 .sf-account-verify-banner{display:flex;align-items:center;flex-wrap:wrap;gap:10px 16px;min-height:46px;padding:10px 14px;margin:0 0 18px;background:var(--sf-ui-surface-muted);border:1px solid var(--sf-ui-border);border-radius:var(--sf-ui-control-radius);color:var(--sf-ui-control-ink);font-size:12px;line-height:1.5}
 .sf-account-verify-banner[hidden]{display:none!important}
 .sf-account-verify-copy{flex:1 1 230px;min-width:0}
-body:is(.woocommerce-account,.sf-standalone-account) .woocommerce-MyAccount-content .sf-account-verify-action{flex:none;color:var(--sf-ui-control-ink);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+body.woocommerce-account .woocommerce-MyAccount-content .sf-account-verify-action{flex:none;color:var(--sf-ui-control-ink);font-weight:600;text-decoration:underline;text-underline-offset:3px}
 .sf-account-verify-dismiss{display:grid;place-items:center;flex:none;width:30px;height:30px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--sf-ui-control-ink);cursor:pointer}
 .sf-account-verify-dismiss:hover{background:var(--sf-ui-surface)}
 .sf-account-verify-dismiss:focus-visible{outline:2px solid var(--sf-ui-accent);outline-offset:2px}
@@ -348,33 +348,33 @@ body:is(.woocommerce-account,.sf-standalone-account) .woocommerce-MyAccount-cont
 
 /* Guest-only placeholder form: same simple 50px geometry as the mobile app.
    Fields are enhanced only after the original Woo label is still accessible. */
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) .sf-account-intro{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-account-intro{
   text-align:left;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) .sf-account-intro h1{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-account-intro h1{
   font-size:clamp(25px,4vw,32px);font-weight:600;letter-spacing:-.035em;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) .sf-account-intro p{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-account-intro p{
   margin:8px 0 0;text-align:left;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) form .form-row.sf-auth-placeholder-ready > label[for]{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form .form-row.sf-auth-placeholder-ready > label[for]{
   position:absolute;top:0;left:0;width:1px;height:1px;right:auto;
   padding:0;margin:0;border:0;overflow:hidden;white-space:nowrap;
   clip-path:inset(50%);pointer-events:none;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) form .form-row.sf-auth-placeholder-ready input.input-text{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form .form-row.sf-auth-placeholder-ready input.input-text{
   height:50px;min-height:50px;padding:0 16px;
   font-size:16px;line-height:1.35;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) form .form-row.sf-auth-placeholder-ready .password-input input.input-text{padding-right:54px}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form .form-row.sf-auth-placeholder-ready .password-input input.input-text{padding-right:54px}
 /* On the standalone Woo page the quiet native field edge is retained,
    while the outer focus outline matches Search and the mobile Account panel. */
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) form .form-row.sf-auth-placeholder-ready input.input-text:focus{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form .form-row.sf-auth-placeholder-ready input.input-text:focus{
   outline:2px solid var(--sf-ui-glass-ink);
   outline-offset:2px;
   background:#fff;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) form .form-row.sf-auth-placeholder-ready input.input-text::placeholder{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce form .form-row.sf-auth-placeholder-ready input.input-text::placeholder{
   color:#8a8e96;opacity:1;
 }
 
@@ -408,27 +408,27 @@ body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela
 }
 .sf-account-intro .sf-auth-heading-wave{display:inline;vertical-align:baseline;font-size:.82em;letter-spacing:0}
 .sf-account-intro .sf-auth-heading-wave[hidden]{display:none!important}
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) .sf-account-intro{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-account-intro{
   text-align:left;margin-bottom:25px;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) .sf-account-intro h1{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-account-intro h1{
   font-size:clamp(29px,4vw,35px);font-weight:720;line-height:1.12;
   letter-spacing:-.04em;text-align:left;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) .sf-account-intro p{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-account-intro p{
   text-align:left;margin:11px 0 0;color:#808087;font-size:14px;line-height:1.5;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) .sf-account-intro .sf-auth-tabs{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-account-intro .sf-auth-tabs{
   margin:0 0 30px;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .sf-auth-social .sf-auth-google{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-auth-social .sf-auth-google{
   display:flex;position:relative;align-items:center;justify-content:center;
   width:100%;min-height:54px;gap:0;margin:0;padding:12px 70px;
   border:1px solid #252628!important;border-radius:30px;background:#252628!important;
   background-image:none!important;box-shadow:none;color:#fff!important;font-size:14px;font-weight:630;
   text-decoration:none;line-height:1.3;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .sf-auth-social .sf-auth-google:disabled{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-auth-social .sf-auth-google:disabled{
   background:#252628!important;color:#fff!important;border-color:#252628!important;opacity:1!important;
 }
 .sf-auth-social .sf-auth-google .sf-google-glyph{
@@ -446,16 +446,16 @@ body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela
 /* 0.1.236 — The native Woo login form stays untouched. Signup is a
    full-width SIBLING after #customer_login and before Google's native CTA.
    Use only the Storefront UI Kit palette (no special account colors). */
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout){
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout){
   --sf-ui-button-height:var(--sf-ui-action-height);
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
- :is(.woocommerce,.cdl-shared-account) form .form-row.sf-auth-placeholder-ready input.input-text{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce form .form-row.sf-auth-placeholder-ready input.input-text{
   height:var(--sf-ui-action-height);min-height:var(--sf-ui-action-height);
   border-radius:var(--sf-ui-control-radius);
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
- :is(.woocommerce,.cdl-shared-account) .sf-auth-register-cta{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce .sf-auth-register-cta{
   display:flex!important;position:relative;box-sizing:border-box;
   align-items:center;justify-content:center;
   width:100%!important;max-width:none;min-width:0;
@@ -467,22 +467,22 @@ body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela
   font-size:14px;font-weight:600;line-height:1.2;
   white-space:nowrap;text-align:center;letter-spacing:0;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
- :is(.woocommerce,.cdl-shared-account) .sf-auth-register-cta .sf-auth-register-glyph{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce .sf-auth-register-cta .sf-auth-register-glyph{
   display:grid;place-items:center;position:absolute;left:20px;top:50%;
   width:22px;height:22px;transform:translateY(-50%);pointer-events:none;
 }
-:is(.woocommerce,.cdl-shared-account) .sf-auth-register-glyph svg{display:block;width:22px;height:22px}
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
- :is(.woocommerce,.cdl-shared-account).sf-auth-register-view > .sf-auth-register-cta{display:none!important}
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
- :is(.woocommerce,.cdl-shared-account).sf-auth-register-view > .sf-auth-social{display:none!important}
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
- :is(.woocommerce,.cdl-shared-account) .sf-auth-social{margin:12px auto 0;gap:10px}
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
- :is(.woocommerce,.cdl-shared-account) .sf-auth-social .sf-auth-google,
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
- :is(.woocommerce,.cdl-shared-account) .sf-auth-social .sf-auth-google:disabled{
+.woocommerce .sf-auth-register-glyph svg{display:block;width:22px;height:22px}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce.sf-auth-register-view > .sf-auth-register-cta{display:none!important}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce.sf-auth-register-view > .sf-auth-social{display:none!important}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce .sf-auth-social{margin:12px auto 0;gap:10px}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce .sf-auth-social .sf-auth-google,
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce .sf-auth-social .sf-auth-google:disabled{
   width:100%;height:var(--sf-ui-action-height);min-height:var(--sf-ui-action-height);
   border-radius:var(--sf-ui-button-radius)!important;
   border:1px solid var(--sf-ui-border)!important;
@@ -490,39 +490,39 @@ body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela
   color:var(--sf-ui-control-ink)!important;opacity:1!important;
   box-shadow:none!important;font-size:14px;font-weight:600;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
- :is(.woocommerce,.cdl-shared-account) .sf-auth-google .sf-google-glyph::after{display:none!important}
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
- :is(.woocommerce,.cdl-shared-account) .sf-auth-back-login{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce .sf-auth-google .sf-google-glyph::after{display:none!important}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce .sf-auth-back-login{
   display:inline-flex;align-items:center;gap:7px;min-height:44px;
   margin:0 0 15px;color:var(--sf-ui-control-ink)!important;
   text-decoration:none!important;font-size:13px;font-weight:550;
 }
-:is(.woocommerce,.cdl-shared-account) .sf-auth-back-login span{font-size:24px;line-height:1}
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
- :is(.woocommerce,.cdl-shared-account) :is(.sf-auth-register-cta,.sf-auth-back-login):focus-visible{
+.woocommerce .sf-auth-back-login span{font-size:24px;line-height:1}
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce :is(.sf-auth-register-cta,.sf-auth-back-login):focus-visible{
   outline:2px solid var(--sf-ui-glass-ink)!important;outline-offset:3px
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
- :is(.woocommerce,.cdl-shared-account) form .form-row.sf-auth-placeholder-ready input.input-text:focus{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce form .form-row.sf-auth-placeholder-ready input.input-text:focus{
   outline:2px solid var(--sf-ui-glass-ink);outline-offset:2px;
 }
 @media(max-width:360px){
-  body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
-   :is(.woocommerce,.cdl-shared-account) .sf-auth-register-cta{padding-inline:43px;font-size:13px}
-  body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
-   :is(.woocommerce,.cdl-shared-account) .sf-auth-register-glyph{left:16px}
+  body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+   .woocommerce .sf-auth-register-cta{padding-inline:43px;font-size:13px}
+  body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+   .woocommerce .sf-auth-register-glyph{left:16px}
 }
 @media(prefers-reduced-motion:reduce){
-  body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
-   :is(.woocommerce,.cdl-shared-account) .sf-auth-register-cta{transition:none}
+  body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+   .woocommerce .sf-auth-register-cta{transition:none}
 }
 
 /* 0.1.238 — normal Woo sign-in only: white Log in / dark Google.
    Reuse the existing UI Kit palette. Registration remains tonal and
    remembered-account quick action colors are intentionally unaffected. */
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
- :is(.woocommerce,.cdl-shared-account) form.woocommerce-form-login button[type=submit]{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce form.woocommerce-form-login button[type=submit]{
   background:var(--sf-ui-surface)!important;
   background-image:none!important;
   color:var(--sf-ui-control-ink)!important;
@@ -530,10 +530,10 @@ body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela
   box-shadow:var(--sf-ui-glass-control-shadow)!important;
   -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
- :is(.woocommerce,.cdl-shared-account) .sf-auth-social .sf-auth-google,
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
- :is(.woocommerce,.cdl-shared-account) .sf-auth-social .sf-auth-google:disabled{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce .sf-auth-social .sf-auth-google,
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce .sf-auth-social .sf-auth-google:disabled{
   background:var(--sf-ui-ink)!important;
   background-image:none!important;
   border:1px solid var(--sf-ui-ink)!important;
@@ -545,45 +545,45 @@ body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela
 /* 0.1.240 — Focus the existing Woo login form, NOT the register/Google actions.
    EXACT same scrim color and blur as the verified quick-PIN account view.
    The scrim is a Woo child; only the native login area is raised above it. */
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
- :is(.woocommerce,.cdl-shared-account) > .sf-auth-focus-scrim{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce > .sf-auth-focus-scrim{
   position:fixed;inset:0;z-index:9;
   background:rgba(20,21,25,.30);
   -webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
   opacity:0;pointer-events:none;
   transition:opacity .22s ease;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
- :is(.woocommerce,.cdl-shared-account).sf-auth-focus-mode > .sf-auth-focus-scrim{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce.sf-auth-focus-mode > .sf-auth-focus-scrim{
   opacity:1;pointer-events:auto;
 }
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
- :is(.woocommerce,.cdl-shared-account).sf-auth-focus-mode > #customer_login,
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
- :is(.woocommerce,.cdl-shared-account).sf-auth-focus-mode > form.woocommerce-form-login{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce.sf-auth-focus-mode > #customer_login,
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce.sf-auth-focus-mode > form.woocommerce-form-login{
   position:relative;z-index:10;isolation:isolate;
 }
 @media(prefers-reduced-motion:reduce){
-  body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
-   :is(.woocommerce,.cdl-shared-account) > .sf-auth-focus-scrim{transition:none}
+  body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+   .woocommerce > .sf-auth-focus-scrim{transition:none}
 }
 
 /* 0.1.245 — Dim fixed header and dock during standalone Woo login focus. */
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
  .sf-shell > :is(.sf-header,.sf-mobile-dock){transition:opacity .16s ease,visibility .16s ease}
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout):has(:is(.woocommerce,.cdl-shared-account).sf-auth-focus-mode)
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout):has(.woocommerce.sf-auth-focus-mode)
  .sf-shell > :is(.sf-header,.sf-mobile-dock){
   opacity:0;visibility:hidden;pointer-events:none;
 }
 @media(prefers-reduced-motion:reduce){
- body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
+ body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
   .sf-shell > :is(.sf-header,.sf-mobile-dock){transition:none}
 }
 
 
 /* 0.1.306 — Signed-in native account profile: theme surfaces, never a
    duplicate account editor. Woo owns names, email, password, nonce and save. */
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout)
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
  .woocommerce-MyAccount-content form.woocommerce-EditAccountForm{
   box-sizing:border-box;
   display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
@@ -595,24 +595,24 @@ body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-ac
   background:var(--sf-ui-surface);
   box-shadow:0 8px 32px rgba(20,22,24,.035);
 }
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout)
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
  .woocommerce-MyAccount-content form.woocommerce-EditAccountForm>.form-row{
   box-sizing:border-box;grid-column:1/-1;
   float:none!important;width:100%!important;min-width:0;
   padding:0!important;margin:0 0 19px!important;
 }
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout)
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
  .woocommerce-MyAccount-content form.woocommerce-EditAccountForm>.form-row:is(.form-row-first,.form-row-last){
   grid-column:span 1;
 }
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout)
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
  .woocommerce-MyAccount-content form.woocommerce-EditAccountForm>.clear{display:none}
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout)
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
  .woocommerce-MyAccount-content .woocommerce-EditAccountForm label{
   margin:0 0 8px!important;
   font-size:13px;font-weight:500;line-height:1.5;color:var(--sf-ui-control-ink);
 }
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout)
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
  .woocommerce-MyAccount-content .woocommerce-EditAccountForm :is(input.woocommerce-Input,input.input-text,select){
   box-sizing:border-box;display:block;width:100%;min-width:0;
   min-height:var(--sf-ui-action-height);
@@ -625,25 +625,25 @@ body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-ac
   box-shadow:none;
   transition:border-color .18s ease,box-shadow .18s ease;
 }
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout)
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
  .woocommerce-MyAccount-content .woocommerce-EditAccountForm :is(input.woocommerce-Input,input.input-text,select):focus-visible{
   outline:2px solid var(--sf-ui-ink);outline-offset:2px;
 }
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout)
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
  .woocommerce-MyAccount-content .woocommerce-EditAccountForm .password-input{
   display:block;position:relative;width:100%;min-width:0;
 }
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout)
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
  .woocommerce-MyAccount-content .woocommerce-EditAccountForm .show-password-input{
   display:grid;place-items:center;
   min-width:44px;min-height:44px;
 }
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout)
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
  .woocommerce-MyAccount-content .woocommerce-EditAccountForm em{
   display:block;margin-top:7px;color:var(--sf-muted);
   font-size:12px;font-style:normal;line-height:1.5;
 }
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout)
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
  .woocommerce-MyAccount-content form.woocommerce-EditAccountForm>fieldset{
   box-sizing:border-box;grid-column:1/-1;
   min-width:0;margin:12px 0 18px!important;
@@ -652,24 +652,24 @@ body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-ac
   border-radius:var(--sf-ui-control-radius)!important;
   background:var(--sf-ui-surface-muted)!important;
 }
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout)
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
  .woocommerce-MyAccount-content form.woocommerce-EditAccountForm>fieldset legend{
   margin:0;padding:0 8px;
   color:var(--sf-ui-ink);font-size:14px;font-weight:600;letter-spacing:-.015em;
 }
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout)
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
  .woocommerce-MyAccount-content form.woocommerce-EditAccountForm>fieldset>.form-row{
   float:none;width:100%;min-width:0;margin:0 0 14px;padding:0;
 }
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout)
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
  .woocommerce-MyAccount-content form.woocommerce-EditAccountForm>fieldset>.form-row:last-child{margin-bottom:0}
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout)
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
  .woocommerce-MyAccount-content form.woocommerce-EditAccountForm>p:has(button[name="save_account_details"]){
   display:flex;align-items:center;justify-content:flex-end;
   grid-column:1/-1;min-width:0;margin:4px 0 0!important;
   padding:20px 0 0!important;border-top:1px solid var(--sf-ui-border);
 }
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout)
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
  .woocommerce-MyAccount-content form.woocommerce-EditAccountForm button[name="save_account_details"]{
   box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;
   min-width:175px;min-height:var(--sf-ui-action-height);
@@ -680,24 +680,24 @@ body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-ac
   font:inherit;font-size:14px;font-weight:600;line-height:1.35;
   box-shadow:var(--sf-ui-action-shadow);cursor:pointer;
 }
-body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout)
+body.woocommerce-account.logged-in:not(.codela-my-account-layout)
  .woocommerce-MyAccount-content form.woocommerce-EditAccountForm button[name="save_account_details"]:focus-visible{
   outline:2px solid var(--sf-ui-ink);outline-offset:3px;
 }
 @media(max-width:650px){
- body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout)
+ body.woocommerce-account.logged-in:not(.codela-my-account-layout)
   .woocommerce-MyAccount-content form.woocommerce-EditAccountForm{
    grid-template-columns:minmax(0,1fr);gap:0;padding:18px!important;
    border-radius:18px;
   }
- body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout)
+ body.woocommerce-account.logged-in:not(.codela-my-account-layout)
   .woocommerce-MyAccount-content form.woocommerce-EditAccountForm>.form-row:is(.form-row-first,.form-row-last){grid-column:1/-1}
- body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout)
+ body.woocommerce-account.logged-in:not(.codela-my-account-layout)
   .woocommerce-MyAccount-content form.woocommerce-EditAccountForm>p:has(button[name="save_account_details"]){justify-content:stretch}
- body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout)
+ body.woocommerce-account.logged-in:not(.codela-my-account-layout)
   .woocommerce-MyAccount-content form.woocommerce-EditAccountForm button[name="save_account_details"]{width:100%}
 }
 @media(prefers-reduced-motion:reduce){
- body:is(.woocommerce-account,.sf-standalone-account).logged-in:not(.codela-my-account-layout)
+ body.woocommerce-account.logged-in:not(.codela-my-account-layout)
   .woocommerce-MyAccount-content .woocommerce-EditAccountForm :is(input.woocommerce-Input,input.input-text,select){transition:none}
 }

@@ -161,8 +161,8 @@ add_action( 'wp_enqueue_scripts', static function() {
     if ( $flags['about'] ) {
         wp_enqueue_style( 'codela-storefront-agency-about', get_template_directory_uri() . '/assets/styles/agency-about.css', [ 'codela-storefront-agency' ], wp_get_theme()->get( 'Version' ) );
     }
-    // Spotlight assets are required only for an Agency homepage containing Studio.
-    if ( $flags['studio'] && function_exists( 'is_front_page' ) && is_front_page() ) {
+    // Studio owns its visual resources on every page that contains the component.
+    if ( $flags['studio'] ) {
         wp_enqueue_style( 'codela-storefront-agency-light-scene',
             get_template_directory_uri() . '/assets/styles/agency-light-scene.css',
             [ 'codela-storefront-agency' ], wp_get_theme()->get( 'Version' ) );
@@ -368,29 +368,32 @@ function codela_sf_project_availability(): array {
     }
     return $out;
 }
-add_action( 'admin_menu', static function() {
-    if ( ! codela_sf_agency_experience() ) { return; }
-    add_options_page( 'Codela Proje Müsaitliği', 'Codela Müsaitlik', 'manage_options', 'codela-project-capacity', static function() {
-        if ( ! current_user_can( 'manage_options' ) ) { return; }
-        echo '<div class="wrap"><h1>Codela Proje Müsaitliği</h1><p>Önümüzdeki üç ay için kalan proje kapasitesi. Boş alan = henüz belirlenmedi; 0 = dolu. Talepler rezervasyon değildir; kabul edilen işler sonrası kapasiteyi güncelleyin.</p><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="codela_sf_save_capacity">';
-        wp_nonce_field( 'codela_sf_save_capacity' );
-        foreach ( codela_sf_project_availability() as $month => $slot ) {
-            echo '<p><label for="cdl-cap-' . esc_attr($month) . '">' . esc_html($slot['label']) . '</label> <input id="cdl-cap-' . esc_attr($month) . '" type="number" min="0" max="12" name="capacity[' . esc_attr($month) . ']" value="' . esc_attr($slot['free'] ?? '') . '"></p>';
-        }
-        submit_button( 'Kapasiteyi kaydet' ); echo '</form></div>';
-    } );
+/** Use General in the new settings hub, with an older-plugin fallback. */
+add_action( function_exists( 'codela_theme_render_general' ) ? 'codela_theme_settings_general' : 'codela_theme_settings_integrations', static function() {
+    if ( ! current_user_can( 'manage_options' ) ) { return; }
+    echo '<section id="codela-project-capacity"><h2>Codela Proje Müsaitliği</h2><p>Önümüzdeki üç ay için kalan proje kapasitesi. Boş alan = henüz belirlenmedi; 0 = dolu. Talepler rezervasyon değildir.</p><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="codela_sf_save_capacity">';
+    wp_nonce_field( 'codela_sf_save_capacity' );
+    foreach ( codela_sf_project_availability() as $month => $slot ) {
+        echo '<p><label for="cdl-cap-' . esc_attr($month) . '">' . esc_html($slot['label']) . '</label> <input id="cdl-cap-' . esc_attr($month) . '" type="number" min="0" max="12" name="capacity[' . esc_attr($month) . ']" value="' . esc_attr($slot['free'] ?? '') . '"></p>';
+    }
+    submit_button( 'Kapasiteyi kaydet' ); echo '</form></section>';
 } );
 add_action( 'admin_post_codela_sf_save_capacity', static function() {
-    if ( ! current_user_can( 'manage_options' ) ) { wp_die( 'Yetkisiz işlem.', '', [ 'response' => 403 ] ); }
+    if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) || ! current_user_can( 'manage_options' ) || ! function_exists( 'codela_theme_admin_url' ) ) { wp_die( 'Yetkisiz işlem.', '', [ 'response' => 403 ] ); }
     check_admin_referer( 'codela_sf_save_capacity' );
     $raw = isset($_POST['capacity']) && is_array($_POST['capacity']) ? wp_unslash($_POST['capacity']) : [];
-    $saved = [];
+    $saved = get_option( 'codela_sf_project_capacity', [] );
+    $saved = is_array( $saved ) ? $saved : [];
     foreach ( codela_sf_project_availability() as $key => $slot ) {
-        $value = $raw[$key] ?? '';
-        if ( is_string($value) && preg_match('/^(?:[0-9]|1[0-2])$/D',$value) ) { $saved[$key] = (int) $value; }
+        if ( ! array_key_exists( $key, $raw ) ) { continue; }
+        $value = $raw[$key];
+        if ( '' === $value ) { unset( $saved[$key] ); }
+        elseif ( is_string( $value ) && preg_match( '/^(?:[0-9]|1[0-2])$/D', $value ) ) { $saved[$key] = (int) $value; }
+        else { wp_die( 'Geçersiz proje kapasitesi.', '', [ 'response' => 400 ] ); }
     }
     update_option( 'codela_sf_project_capacity', $saved, false );
-    wp_safe_redirect( admin_url( 'options-general.php?page=codela-project-capacity' ) ); exit;
+    $section = function_exists( 'codela_theme_render_general' ) ? 'general' : 'integrations';
+    wp_safe_redirect( codela_theme_admin_url( $section ) . '#codela-project-capacity' ); exit;
 } );
 
 function codela_sf_agency_experience(): bool {
@@ -433,10 +436,10 @@ function codela_sf_print_first_entry(): void {
     // Inline before enqueued assets; no unsafe flushing of WordPress or server buffers.
     // The browser can paint only after the server actually sends this HTML.
     echo '<style>html.cdl-first-entry::after{content:"";position:fixed;inset:0;z-index:9999;pointer-events:auto;background:#09090c;animation:cdl-entry-fail-open 0s linear 8s forwards}html.cdl-first-entry::before{content:"";position:fixed;z-index:10000;left:50%;top:50%;height:1px;width:min(260px,64vw);translate:-50% -50%;background:linear-gradient(90deg,transparent,#d3a480,#fff1dc,#d3a480,transparent);box-shadow:0 0 18px #d3a48080;pointer-events:none;animation:cdl-entry-beam 1s ease-in-out infinite alternate,cdl-entry-fail-open 0s linear 8s forwards}@keyframes cdl-entry-beam{from{transform:scaleX(.3);opacity:.45}to{transform:scaleX(1);opacity:1}}@keyframes cdl-entry-fail-open{to{visibility:hidden;pointer-events:none}}@media(prefers-reduced-motion:reduce){html.cdl-first-entry::before{animation:cdl-entry-fail-open 0s linear 8s forwards}}</style>';
-    echo '<script>(function(){var root=document.documentElement,finished=false,limit,timer,frame=0,started=false;function mark(n){try{window.performance.mark(n)}catch(e){}}function done(){if(finished)return;finished=true;clearTimeout(limit);clearTimeout(timer);if(frame)window.cancelAnimationFrame(frame);root.classList.remove("cdl-first-entry");mark("codela-entry-revealed")}if(document.readyState!=="loading")return;try{var nav=window.performance&&window.performance.getEntriesByType("navigation")[0];if(nav&&nav.type==="back_forward")return;if((!nav||nav.type==="navigate")&&document.referrer&&new URL(document.referrer).origin===window.location.origin)return}catch(e){}try{var intent=JSON.parse(window.sessionStorage.getItem("sf-agency-entry-intent")||"null"),here=new URL(window.location.href);here.hash="";window.sessionStorage.removeItem("sf-agency-entry-intent");if((!nav||nav.type==="navigate")&&intent&&intent.url===here.href&&Date.now()-intent.time>=0&&Date.now()-intent.time<10000)return}catch(e){}root.classList.add("cdl-first-entry");mark("codela-entry-start");function hold(){if(finished||started)return;started=true;mark("codela-entry-hold-start");timer=setTimeout(done,1000)}function start(){if(finished||started)return;if(typeof window.requestAnimationFrame!=="function"){hold();return}frame=window.requestAnimationFrame(function(){frame=window.requestAnimationFrame(function(){frame=0;hold()})})}limit=setTimeout(done,8000);document.addEventListener("DOMContentLoaded",start,{once:true});window.addEventListener("pagehide",done,{once:true});window.addEventListener("pageshow",function(e){if(e.persisted)done()})})();</script>';
+    echo '<script>(function(){var root=document.documentElement,finished=false,limit,timer,frame=0,readyFrame=0,started=false,minimumElapsed=false,contentReady=false;function mark(n){try{window.performance.mark(n)}catch(e){}}function done(){if(finished)return;finished=true;clearTimeout(limit);clearTimeout(timer);if(frame)window.cancelAnimationFrame(frame);if(readyFrame)window.cancelAnimationFrame(readyFrame);root.classList.remove("cdl-first-entry");mark("codela-entry-revealed")}if(document.readyState!=="loading")return;try{var nav=window.performance&&window.performance.getEntriesByType("navigation")[0];if(nav&&nav.type==="back_forward")return;if((!nav||nav.type==="navigate")&&document.referrer&&new URL(document.referrer).origin===window.location.origin)return}catch(e){}try{var intent=JSON.parse(window.sessionStorage.getItem("sf-agency-entry-intent")||"null"),here=new URL(window.location.href);here.hash="";window.sessionStorage.removeItem("sf-agency-entry-intent");if((!nav||nav.type==="navigate")&&intent&&intent.url===here.href&&Date.now()-intent.time>=0&&Date.now()-intent.time<10000)return}catch(e){}root.classList.add("cdl-first-entry");mark("codela-entry-start");function reveal(){if(minimumElapsed&&contentReady)done()}function hold(){if(finished||started)return;started=true;mark("codela-entry-hold-start");timer=setTimeout(function(){minimumElapsed=true;reveal()},1000)}function start(){if(finished||started)return;if(typeof window.requestAnimationFrame!=="function"){hold();return}frame=window.requestAnimationFrame(function(){frame=window.requestAnimationFrame(function(){frame=0;hold()})})}function ready(){if(finished)return;function painted(){readyFrame=0;contentReady=true;mark("codela-entry-content-ready");reveal()}if(typeof window.requestAnimationFrame!=="function"){painted();return}readyFrame=window.requestAnimationFrame(function(){readyFrame=window.requestAnimationFrame(painted)})}limit=setTimeout(done,8000);document.addEventListener("DOMContentLoaded",ready,{once:true});start();window.addEventListener("pagehide",done,{once:true});window.addEventListener("pageshow",function(e){if(e.persisted)done()})})();</script>';
 }
 add_action('wp_head', static function() {
     if ( ! codela_sf_first_entry_enabled() ) { return; }
     codela_sf_print_first_entry();
 }, -1000);
-// No footer, content observer or per-resource readiness handshake: one fixed entry timer.
+// Minimum entry time overlaps document loading; reveal after the minimum and DOM paint opportunity.
