@@ -17,7 +17,8 @@ function codela_sf_google_credentials(): array {
 
 function codela_sf_google_enabled(): bool {
     [ $id, $secret ] = codela_sf_google_credentials();
-    return is_ssl() && str_ends_with( $id, '.apps.googleusercontent.com' ) && '' !== $secret;
+    // Standalone OAuth will be enabled only after the account integration is verified.
+    return function_exists( 'wc_create_new_customer' ) && is_ssl() && str_ends_with( $id, '.apps.googleusercontent.com' ) && '' !== $secret;
 }
 
 /** This must be copied exactly into the Google Cloud OAuth web-client settings. */

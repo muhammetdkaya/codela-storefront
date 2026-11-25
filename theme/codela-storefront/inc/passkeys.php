@@ -346,6 +346,7 @@ function codela_sf_pk_guest_markup(): void {
 add_action( 'woocommerce_before_customer_login_form', 'codela_sf_pk_guest_markup', 4 );
 
 add_action( 'wp_enqueue_scripts', static function(): void {
+    if ( ! codela_sf_commerce_available() ) { return; }
     if ( is_user_logged_in() && ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) ) { return; }
     $lazy = codela_sf_guest_auth_lazy_allowed();
     if ( ! $lazy ) {

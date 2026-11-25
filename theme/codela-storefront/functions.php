@@ -1,11 +1,19 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+require_once __DIR__ . '/inc/account-contract.php';
 function codela_sf_ready(): bool {
-    return defined( 'CODELA_VERSION' ) && version_compare( CODELA_VERSION, '1.2.0', '>=' ) && defined( 'CODELA_THEME_API_VERSION' ) && version_compare( CODELA_THEME_API_VERSION, '1.0.0', '>=' ) && defined( 'WC_VERSION' ) && version_compare( WC_VERSION, '9.0', '>=' ) && function_exists( 'wp_interactivity_state' );
+    $core = defined( 'CODELA_VERSION' ) && version_compare( CODELA_VERSION, '1.2.0', '>=' )
+        && defined( 'CODELA_THEME_API_VERSION' ) && version_compare( CODELA_THEME_API_VERSION, '1.0.0', '>=' )
+        && function_exists( 'wp_interactivity_state' );
+    if ( ! $core ) { return false; }
+    if ( defined( 'WC_VERSION' ) ) { return version_compare( WC_VERSION, '9.0', '>=' ); }
+    // Standalone support requires the new plugin contract and a non-commerce profile.
+    return function_exists( 'codela_account_is_wordpress_page' ) && function_exists( 'codela_theme_settings' )
+        && 'agency' === ( codela_theme_settings()['site_experience'] ?? 'commerce' );
 }
 /** Guest storefront panels load account enhancements only when requested. */
 function codela_sf_guest_auth_lazy_allowed(): bool {
-    return ! is_user_logged_in() && ( ! function_exists( 'is_account_page' ) || ! is_account_page() );
+    return ! is_user_logged_in() && ( ! codela_sf_is_account_context() );
 }
 add_action( 'after_setup_theme', function() {
     load_theme_textdomain( 'codela-storefront', get_template_directory() . '/languages' );
@@ -196,7 +204,7 @@ add_action( 'wp_head', static function() {
  * Only the native checkout form document receives an inert loading preview.
  */
 function codela_sf_checkout_skeleton_allowed(): bool {
-    return function_exists( 'is_checkout' ) && is_checkout()
+    return function_exists( 'is_checkout' ) && codela_sf_is_checkout_context()
         && ! ( function_exists( 'is_wc_endpoint_url' )
             && ( is_wc_endpoint_url( 'order-pay' ) || is_wc_endpoint_url( 'order-received' ) ) );
 }
@@ -208,7 +216,7 @@ function codela_sf_checkout_skeleton_allowed(): bool {
  */
 add_action( 'wp_body_open', static function() {
     if ( ! codela_sf_ready() ) { return; }
-    $kind = function_exists( 'is_cart' ) && is_cart() ? 'cart'
+    $kind = function_exists( 'is_cart' ) && codela_sf_is_cart_context() ? 'cart'
         : ( codela_sf_checkout_skeleton_allowed() ? 'checkout' : '' );
     if ( ! $kind ) { return; }
     echo '<section class="sf-commerce-entry sf-commerce-entry--' . esc_attr( $kind ) . ' sf-skeleton" role="status" aria-live="polite">'
@@ -228,7 +236,7 @@ add_action( 'wp_body_open', static function() {
  * the initial frame has a stable loading silhouette, never a legacy CTA.
  */
 add_action( 'wp_head', static function() {
-    if ( ! codela_sf_ready() || ! function_exists( 'is_cart' ) || ! is_cart() ) { return; }
+    if ( ! codela_sf_ready() || ! function_exists( 'is_cart' ) || ! codela_sf_is_cart_context() ) { return; }
     ?>
     <style id="codela-cart-first-paint">
     html.sf-cart-awaiting body.woocommerce-cart .sf-cart-page .wp-block-post-content,
@@ -345,7 +353,7 @@ add_action( 'wp_enqueue_scripts', function() {
     $sections = codela_sf_sections_capabilities();
     if ( ! $sections['managed'] || $sections['products'] || is_search()
         || ( function_exists( 'is_woocommerce' ) && is_woocommerce() )
-        || is_cart() || is_checkout() || is_account_page() ) {
+        || codela_sf_is_cart_context() || codela_sf_is_checkout_context() || codela_sf_is_account_context() ) {
         wp_enqueue_style( 'codela-storefront-catalog' );
     }
     if ( $sections['layout'] ) {
@@ -355,17 +363,17 @@ add_action( 'wp_enqueue_scripts', function() {
         wp_enqueue_style( 'codela-storefront-gallery' );
         wp_enqueue_script( 'codela-storefront-gallery-horizontal', $root_uri . 'scripts/gallery-horizontal.js', [], codela_sf_script_module_version( 'scripts/gallery-horizontal.js' ), true );
     }
-    if ( $sections['products'] || is_search() ) { wp_enqueue_script( 'wc-add-to-cart' ); }
+    if ( codela_sf_commerce_available() && ( $sections['products'] || is_search() ) ) { wp_enqueue_script( 'wc-add-to-cart' ); }
     // Only known, managed Agency content without commerce blocks: preserve Woo
     // account, checkout, mixed/unknown content and all actual store documents.
     if ( codela_sf_woo_lightweight_enabled()
         && $sections['managed'] && ! $sections['products'] && ! is_search()
-        && ! is_cart() && ! is_checkout() && ! is_account_page()
+        && ! codela_sf_is_cart_context() && ! codela_sf_is_checkout_context() && ! codela_sf_is_account_context()
         && ! ( function_exists( 'is_woocommerce' ) && is_woocommerce() ) ) {
         wp_dequeue_script( 'wc-cart-fragments' );
         wp_dequeue_script( 'wc-add-to-cart' );
     }
-    if ( codela_sf_document_continuity_allowed() ) {
+    if ( codela_sf_commerce_available() && codela_sf_document_continuity_allowed() ) {
         wp_enqueue_style( 'codela-storefront-document-continuity', $root_uri . ( $debug_assets ? 'styles/document-continuity.css' : 'styles/document-navigation.css' ), [ 'codela-storefront-components' ], $style_version );
         wp_register_style( 'codela-storefront-navigation-feedback', $debug_assets ? $root_uri . 'styles/navigation-feedback.css' : false, [ 'codela-storefront-document-continuity' ], $style_version );
         wp_enqueue_style( 'codela-storefront-navigation-feedback' );
@@ -385,13 +393,13 @@ add_action( 'wp_enqueue_scripts', function() {
         wp_add_inline_script( 'codela-storefront-navigation-feedback', 'window.codelaSFDocument=' . wp_json_encode( [
             'home' => home_url( '/' ),
             'agencyRoutes' => function_exists( 'codela_sf_agency_navigation_routes' ) ? codela_sf_agency_navigation_routes() : [],
-            'shop' => wc_get_page_permalink( 'shop' ),
+            'shop' => codela_sf_shop_url(),
             // Use the store's configured permalink bases, including translated slugs.
             'productBase' => home_url( '/' . trim( explode( '%', wc_get_permalink_structure()['product_rewrite_slug'] )[0], '/' ) . '/' ),
             'catalogBases' => [ home_url( '/' . wc_get_permalink_structure()['category_rewrite_slug'] . '/' ), home_url( '/' . wc_get_permalink_structure()['tag_rewrite_slug'] . '/' ) ],
-            'account' => wc_get_page_permalink( 'myaccount' ),
-            'cart' => wc_get_cart_url(),
-            'checkout' => wc_get_checkout_url(),
+            'account' => codela_sf_account_url(),
+            'cart' => codela_sf_cart_url(),
+            'checkout' => codela_sf_checkout_url(),
             'commerceSkeletons' => [
                 'cart' => codela_sf_commerce_skeleton_markup( 'cart' ),
                 'checkout' => codela_sf_commerce_skeleton_markup( 'checkout' ),
@@ -418,14 +426,14 @@ add_action( 'wp_enqueue_scripts', function() {
                 [ 'url' => wc_get_account_endpoint_url( 'view-order' ), 'back' => wc_get_account_endpoint_url( 'orders' ), 'label' => wc_get_account_menu_items()['orders'] ?? __( 'My account', 'codela-storefront' ) ],
                 [ 'url' => wc_get_account_endpoint_url( 'edit-address' ), 'back' => wc_get_account_endpoint_url( 'edit-address' ), 'label' => wc_get_account_menu_items()['edit-address'] ?? __( 'My account', 'codela-storefront' ), 'childOnly' => true ],
             ],
-            'excluded' => [ wc_get_cart_url(), wc_get_checkout_url(), wc_get_account_endpoint_url( 'customer-logout' ) ],
+            'excluded' => [ codela_sf_cart_url(), codela_sf_checkout_url(), wc_get_account_endpoint_url( 'customer-logout' ) ],
         ] ) . ';', 'before' );
     }
     // Cart and Checkout must preserve native Woo navigation and forms, but
     // loading feedback must begin at the TAP, not in the destination document.
     // Their lightweight click bridge shares the existing feedback renderer;
     // it never initializes Core Router or intercepts a payment POST.
-    if ( ( function_exists( 'is_cart' ) && is_cart() || codela_sf_checkout_skeleton_allowed() )
+    if ( ( function_exists( 'is_cart' ) && codela_sf_is_cart_context() || codela_sf_checkout_skeleton_allowed() )
         && ! codela_sf_document_continuity_allowed() ) {
         wp_enqueue_style( 'codela-storefront-commerce-navigation-feedback',
             $root_uri . 'styles/navigation-feedback.css', [ 'codela-storefront-components' ], $style_version );
@@ -433,9 +441,9 @@ add_action( 'wp_enqueue_scripts', function() {
             $root_uri . 'scripts/navigation-feedback.js', [], codela_sf_script_module_version( 'scripts/navigation-feedback.js' ), false );
         wp_add_inline_script( 'codela-storefront-commerce-navigation-feedback', 'window.codelaSFDocument=' . wp_json_encode( [
             'home' => home_url( '/' ),
-            'account' => wc_get_page_permalink( 'myaccount' ),
-            'cart' => wc_get_cart_url(),
-            'checkout' => wc_get_checkout_url(),
+            'account' => codela_sf_account_url(),
+            'cart' => codela_sf_cart_url(),
+            'checkout' => codela_sf_checkout_url(),
             'commerceSkeletons' => [
                 'cart' => codela_sf_commerce_skeleton_markup( 'cart' ),
                 'checkout' => codela_sf_commerce_skeleton_markup( 'checkout' ),
@@ -462,17 +470,17 @@ add_action( 'wp_enqueue_scripts', function() {
         // Reuse Woo's PhotoSwipe; preserve native responsive photo loading.
         wp_enqueue_script( 'codela-storefront-gallery-defer', $root_uri . 'scripts/gallery-defer.js', [ 'wc-single-product', 'photoswipe-ui-default' ], $style_version, true );
     }
-    if ( function_exists( 'is_cart' ) && is_cart() || codela_sf_checkout_skeleton_allowed() ) {
+    if ( function_exists( 'is_cart' ) && codela_sf_is_cart_context() || codela_sf_checkout_skeleton_allowed() ) {
         // Source pages bundle the same CSS with navigation feedback; commerce
         // documents load only this tiny shape stylesheet, not router scripts.
         wp_enqueue_style( 'codela-storefront-commerce-skeleton', $root_uri . 'styles/commerce-skeleton.css', [ 'codela-storefront-components' ], $style_version );
     }
-    if ( function_exists( 'is_cart' ) && is_cart() ) {
+    if ( function_exists( 'is_cart' ) && codela_sf_is_cart_context() ) {
         // Native Woo Cart Block or classic shortcode remains fully authoritative.
         // Only the assigned Cart page receives popup-matched presentation.
         wp_enqueue_style( 'codela-storefront-cart-page', $root_uri . 'styles/cart-page.css', [ 'codela-storefront-components' ], $style_version );
     }
-    if ( function_exists( 'is_checkout' ) && is_checkout() ) {
+    if ( function_exists( 'is_checkout' ) && codela_sf_is_checkout_context() ) {
         // Native Woo keeps the only checkout form, AJAX, coupon and gateway.
         wp_enqueue_style( 'codela-storefront-checkout', $root_uri . 'styles/checkout.css', [ 'codela-storefront-components' ], $style_version );
         wp_enqueue_script( 'codela-storefront-checkout-steps', $root_uri . 'scripts/checkout-steps.js', [ 'jquery' ], codela_sf_script_module_version( 'scripts/checkout-steps.js' ), true );
@@ -495,13 +503,13 @@ add_action( 'wp_enqueue_scripts', function() {
             'privacyUrl' => function_exists( 'get_privacy_policy_url' ) ? esc_url_raw( (string) get_privacy_policy_url() ) : '',
         ] ) . ';', 'before' );
     }
-    if ( function_exists( 'is_account_page' ) && is_account_page() ) {
+    if ( codela_sf_is_account_context() ) {
         wp_enqueue_style( 'codela-storefront-account', $root_uri . 'styles/account.css', [ 'codela-storefront-components' ], $style_version );
         if ( is_user_logged_in() ) {
             wp_enqueue_script( 'codela-storefront-account-notice', $root_uri . 'scripts/account-notice.js', [], codela_sf_script_module_version( 'scripts/account-notice.js' ), true );
         }
     }
-    if ( ! is_user_logged_in() ) {
+    if ( codela_sf_commerce_available() && ! is_user_logged_in() ) {
         if ( codela_sf_guest_auth_lazy_allowed() ) {
             // The Woo login form is present in the inert, hidden panel, but its
             // 3 feature styles and 4 scripts need not delay a guest's first paint.
@@ -531,7 +539,7 @@ add_action( 'wp_enqueue_scripts', function() {
                     $asset( 'scripts/quick-login.js', codela_sf_script_module_version( 'scripts/quick-login.js' ) ),
                     $asset( 'scripts/passkeys.js', codela_sf_script_module_version( 'scripts/passkeys.js' ) ),
                 ],
-                'account' => wc_get_page_permalink( 'myaccount' ),
+                'account' => codela_sf_account_url(),
                 'loading' => __( 'Loading…', 'codela-storefront' ),
                 'fallback' => __( 'Open my account', 'codela-storefront' ),
             ] );
@@ -579,8 +587,8 @@ add_action( 'wp_enqueue_scripts', function() {
  * do not remove WooCommerce base styles or alter any checkout JS.
  */
 add_action( 'wp_print_styles', function() {
-    if ( ( function_exists( 'is_checkout' ) && is_checkout() )
-        || ( function_exists( 'is_account_page' ) && is_account_page() ) ) {
+    if ( ( function_exists( 'is_checkout' ) && codela_sf_is_checkout_context() )
+        || ( codela_sf_is_account_context() ) ) {
         return;
     }
     wp_dequeue_style( 'codela-checkout-pro' );
@@ -620,7 +628,7 @@ add_action( 'wp_enqueue_scripts', static function() {
  */
 add_action( 'wp_enqueue_scripts', static function() {
     if ( ! codela_sf_ready() || ! codela_sf_woo_lightweight_enabled() || ! is_singular( 'page' )
-        || is_search() || is_cart() || is_checkout() || is_account_page()
+        || is_search() || codela_sf_is_cart_context() || codela_sf_is_checkout_context() || codela_sf_is_account_context()
         || ( function_exists( 'is_woocommerce' ) && is_woocommerce() )
         || is_preview() ) { return; }
     $caps = codela_sf_sections_capabilities();
@@ -646,7 +654,7 @@ add_action( 'wp_enqueue_scripts', static function() {
             [ 'codela-storefront-components' ], codela_sf_style_version() );
     }
     if ( 'editorial' === codela_sf_presentation( 'account' )
-        && function_exists( 'is_account_page' ) && is_account_page() && ! is_user_logged_in() ) {
+        && codela_sf_is_account_context() && ! is_user_logged_in() ) {
         wp_enqueue_style( 'codela-storefront-editorial-account', $uri . 'editorial-account.css',
             [ 'codela-storefront-account' ], codela_sf_style_version() );
     }

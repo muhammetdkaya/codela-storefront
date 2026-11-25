@@ -624,6 +624,7 @@ SF_AUTH_CRITICAL;
 }, 1 );
 
 add_action( 'wp_enqueue_scripts', static function(): void {
+    if ( ! codela_sf_commerce_available() ) { return; }
     // The login overlay can be opened on any storefront page by a guest.
     if ( is_user_logged_in() && ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) ) { return; }
     $lazy = codela_sf_guest_auth_lazy_allowed();
