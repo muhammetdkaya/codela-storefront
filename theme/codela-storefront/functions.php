@@ -204,7 +204,7 @@ add_action( 'wp_head', static function() {
  * Only the native checkout form document receives an inert loading preview.
  */
 function codela_sf_checkout_skeleton_allowed(): bool {
-    return function_exists( 'is_checkout' ) && codela_sf_is_checkout_context()
+    return function_exists( 'is_checkout' ) && is_checkout()
         && ! ( function_exists( 'is_wc_endpoint_url' )
             && ( is_wc_endpoint_url( 'order-pay' ) || is_wc_endpoint_url( 'order-received' ) ) );
 }
@@ -216,7 +216,7 @@ function codela_sf_checkout_skeleton_allowed(): bool {
  */
 add_action( 'wp_body_open', static function() {
     if ( ! codela_sf_ready() ) { return; }
-    $kind = function_exists( 'is_cart' ) && codela_sf_is_cart_context() ? 'cart'
+    $kind = function_exists( 'is_cart' ) && is_cart() ? 'cart'
         : ( codela_sf_checkout_skeleton_allowed() ? 'checkout' : '' );
     if ( ! $kind ) { return; }
     echo '<section class="sf-commerce-entry sf-commerce-entry--' . esc_attr( $kind ) . ' sf-skeleton" role="status" aria-live="polite">'
@@ -236,7 +236,7 @@ add_action( 'wp_body_open', static function() {
  * the initial frame has a stable loading silhouette, never a legacy CTA.
  */
 add_action( 'wp_head', static function() {
-    if ( ! codela_sf_ready() || ! function_exists( 'is_cart' ) || ! codela_sf_is_cart_context() ) { return; }
+    if ( ! codela_sf_ready() || ! function_exists( 'is_cart' ) || ! is_cart() ) { return; }
     ?>
     <style id="codela-cart-first-paint">
     html.sf-cart-awaiting body.woocommerce-cart .sf-cart-page .wp-block-post-content,
@@ -433,7 +433,7 @@ add_action( 'wp_enqueue_scripts', function() {
     // loading feedback must begin at the TAP, not in the destination document.
     // Their lightweight click bridge shares the existing feedback renderer;
     // it never initializes Core Router or intercepts a payment POST.
-    if ( ( function_exists( 'is_cart' ) && codela_sf_is_cart_context() || codela_sf_checkout_skeleton_allowed() )
+    if ( ( function_exists( 'is_cart' ) && is_cart() || codela_sf_checkout_skeleton_allowed() )
         && ! codela_sf_document_continuity_allowed() ) {
         wp_enqueue_style( 'codela-storefront-commerce-navigation-feedback',
             $root_uri . 'styles/navigation-feedback.css', [ 'codela-storefront-components' ], $style_version );
@@ -470,17 +470,17 @@ add_action( 'wp_enqueue_scripts', function() {
         // Reuse Woo's PhotoSwipe; preserve native responsive photo loading.
         wp_enqueue_script( 'codela-storefront-gallery-defer', $root_uri . 'scripts/gallery-defer.js', [ 'wc-single-product', 'photoswipe-ui-default' ], $style_version, true );
     }
-    if ( function_exists( 'is_cart' ) && codela_sf_is_cart_context() || codela_sf_checkout_skeleton_allowed() ) {
+    if ( function_exists( 'is_cart' ) && is_cart() || codela_sf_checkout_skeleton_allowed() ) {
         // Source pages bundle the same CSS with navigation feedback; commerce
         // documents load only this tiny shape stylesheet, not router scripts.
         wp_enqueue_style( 'codela-storefront-commerce-skeleton', $root_uri . 'styles/commerce-skeleton.css', [ 'codela-storefront-components' ], $style_version );
     }
-    if ( function_exists( 'is_cart' ) && codela_sf_is_cart_context() ) {
+    if ( function_exists( 'is_cart' ) && is_cart() ) {
         // Native Woo Cart Block or classic shortcode remains fully authoritative.
         // Only the assigned Cart page receives popup-matched presentation.
         wp_enqueue_style( 'codela-storefront-cart-page', $root_uri . 'styles/cart-page.css', [ 'codela-storefront-components' ], $style_version );
     }
-    if ( function_exists( 'is_checkout' ) && codela_sf_is_checkout_context() ) {
+    if ( function_exists( 'is_checkout' ) && is_checkout() ) {
         // Native Woo keeps the only checkout form, AJAX, coupon and gateway.
         wp_enqueue_style( 'codela-storefront-checkout', $root_uri . 'styles/checkout.css', [ 'codela-storefront-components' ], $style_version );
         wp_enqueue_script( 'codela-storefront-checkout-steps', $root_uri . 'scripts/checkout-steps.js', [ 'jquery' ], codela_sf_script_module_version( 'scripts/checkout-steps.js' ), true );
@@ -587,7 +587,7 @@ add_action( 'wp_enqueue_scripts', function() {
  * do not remove WooCommerce base styles or alter any checkout JS.
  */
 add_action( 'wp_print_styles', function() {
-    if ( ( function_exists( 'is_checkout' ) && codela_sf_is_checkout_context() )
+    if ( ( function_exists( 'is_checkout' ) && is_checkout() )
         || ( codela_sf_is_account_context() ) ) {
         return;
     }

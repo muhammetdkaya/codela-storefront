@@ -24,6 +24,7 @@ function is_cart(){return !empty($GLOBALS['ctx']['cart']);}
 function is_checkout(){return !empty($GLOBALS['ctx']['checkout']);}
 function is_account_page(){return !empty($GLOBALS['ctx']['account']);}
 function is_woocommerce(){return !empty($GLOBALS['ctx']['woo']);}
+require_once __DIR__ . '/../theme/codela-storefront/inc/account-contract.php';
 function is_preview(){return !empty($GLOBALS['ctx']['preview']);}
 function codela_sf_sections_capabilities(){return ['managed'=>!empty($GLOBALS['ctx']['managed']),'products'=>!empty($GLOBALS['ctx']['products'])];}
 function codela_sf_agency_asset_flags(){return ['widgets'=>!empty($GLOBALS['ctx']['widgets'])];}
