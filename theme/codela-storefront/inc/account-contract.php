@@ -6,6 +6,7 @@
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 function codela_sf_account_url(): string {
+    if ( ! codela_sf_commerce_available() ) { return ''; }
     if ( function_exists( 'codela_account_url' ) ) {
         return codela_account_url();
     }
@@ -35,8 +36,7 @@ function codela_sf_commerce_available(): bool {
     return function_exists( 'wc_get_page_permalink' );
 }
 function codela_sf_is_account_context(): bool {
-    return ( function_exists( 'is_account_page' ) && is_account_page() )
-        || ( function_exists( 'codela_account_is_wordpress_page' ) && codela_account_is_wordpress_page() );
+    return function_exists( 'is_account_page' ) && is_account_page();
 }
 function codela_sf_is_cart_context(): bool {
     return function_exists( 'is_cart' ) && is_cart();
@@ -54,6 +54,3 @@ function codela_sf_checkout_url(): string {
     return function_exists( 'wc_get_checkout_url' ) ? (string) wc_get_checkout_url() : '';
 }
 
-function codela_sf_standalone_account(): bool {
-    return function_exists( 'codela_account_is_wordpress_page' ) && codela_account_is_wordpress_page();
-}

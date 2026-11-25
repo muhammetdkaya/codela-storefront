@@ -19,16 +19,16 @@
    the server verifies it. This applies to both the standalone Account page
    and the pre-rendered instant Account dialog, NEVER a page-wide skeleton.
    Without a remembered hint, Woo login/register is visible immediately. */
-html.sf-quick-checking body:is(.woocommerce-account,.sf-standalone-account) .sf-account-intro,
-html.sf-quick-checking body:is(.woocommerce-account,.sf-standalone-account) #customer_login,
-html.sf-quick-checking body:is(.woocommerce-account,.sf-standalone-account) .sf-smart-auth,
-html.sf-quick-checking body:is(.woocommerce-account,.sf-standalone-account) .sf-auth-social,
-html.sf-quick-checking body:is(.woocommerce-account,.sf-standalone-account) .sf-google-error,
+html.sf-quick-checking body.woocommerce-account .sf-account-intro,
+html.sf-quick-checking body.woocommerce-account #customer_login,
+html.sf-quick-checking body.woocommerce-account .sf-smart-auth,
+html.sf-quick-checking body.woocommerce-account .sf-auth-social,
+html.sf-quick-checking body.woocommerce-account .sf-google-error,
 html.sf-quick-checking #sf-account .sf-account-intro,
 html.sf-quick-checking #sf-account #customer_login,
 html.sf-quick-checking #sf-account .sf-auth-social,
 html.sf-quick-checking #sf-account .sf-google-error{display:none!important}
-html.sf-quick-checking body:is(.woocommerce-account,.sf-standalone-account) .sf-quick-login[hidden],
+html.sf-quick-checking body.woocommerce-account .sf-quick-login[hidden],
 html.sf-quick-checking #sf-account .sf-quick-login[hidden]{display:block!important}
 /* Skeleton uses the SAME outer frame as the loaded compact card.
    The old button+frame borders made an extra second card. */
@@ -358,13 +358,13 @@ html.sf-quick-checking .sf-quick-login[hidden] .sf-quick-choice-alternatives{vis
    During preflight, suppress the CTA to avoid a one-frame flash. */
 /* More specific than the 0.1.236 `display:flex!important` signup
    declarations in account.css and account-overlay.css. */
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
- :is(.woocommerce,.cdl-shared-account).sf-pin-active .sf-auth-register-cta,
-#sf-panel.is-account-panel :is(.woocommerce,.cdl-shared-account).sf-pin-active .sf-auth-register-cta,
-html.sf-quick-checking body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
- :is(.woocommerce,.cdl-shared-account) .sf-auth-register-cta,
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce.sf-pin-active .sf-auth-register-cta,
+#sf-panel.is-account-panel .woocommerce.sf-pin-active .sf-auth-register-cta,
+html.sf-quick-checking body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce .sf-auth-register-cta,
 html.sf-quick-checking #sf-panel.is-account-panel #sf-account
- :is(.woocommerce,.cdl-shared-account) .sf-auth-register-cta{
+ .woocommerce .sf-auth-register-cta{
   display:none!important;
 }
 
@@ -434,9 +434,9 @@ html.sf-quick-checking #sf-panel.is-account-panel #sf-account
    Signup is a sibling of #customer_login; account.css and account-overlay.css
    explicitly display it with !important, so the stateful override must have
    greater specificity. The ordinary Woo form retains its registration CTA. */
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout)
- :is(.woocommerce,.cdl-shared-account).sf-passkey-active > .sf-auth-register-cta,
-#sf-panel.is-account-panel :is(.woocommerce,.cdl-shared-account).sf-passkey-active > .sf-auth-register-cta{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout)
+ .woocommerce.sf-passkey-active > .sf-auth-register-cta,
+#sf-panel.is-account-panel .woocommerce.sf-passkey-active > .sf-auth-register-cta{
   display:none!important;
 }
 
@@ -446,9 +446,9 @@ body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela
 .sf-pk-hello h2,.sf-pk-hello p{text-align:left!important}
 .sf-pk-hello p{margin:0!important}
 #sf-panel.is-account-panel .sf-pk-guest,
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) .sf-pk-guest{width:100%;max-width:480px}
-#sf-panel.is-account-panel :is(.woocommerce,.cdl-shared-account) .sf-pk-use-email,
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) :is(.woocommerce,.cdl-shared-account) .sf-pk-use-email{
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-pk-guest{width:100%;max-width:480px}
+#sf-panel.is-account-panel .woocommerce .sf-pk-use-email,
+body.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .woocommerce .sf-pk-use-email{
   -webkit-appearance:none;appearance:none;box-sizing:border-box;
   display:flex!important;align-items:center;justify-content:center;
   width:100%!important;min-height:54px!important;margin:0!important;padding:12px 18px!important;
@@ -526,7 +526,7 @@ html.sf-quick-checking.sf-quick-passkey-hint .sf-quick-choice-intro h2{
   font-size:clamp(32px,5vw,42px)!important;font-weight:500!important;letter-spacing:-.045em;
 }
 html.sf-quick-checking.sf-quick-passkey-hint .sf-quick-choice-intro p{font-weight:400!important}
-html.sf-quick-checking.sf-quick-passkey-hint :is(.woocommerce,.cdl-shared-account).sf-passkey-active .sf-quick-login[hidden]{
+html.sf-quick-checking.sf-quick-passkey-hint .woocommerce.sf-passkey-active .sf-quick-login[hidden]{
   display:none!important;
 }
 
@@ -635,8 +635,8 @@ html.sf-quick-checking.sf-quick-passkey-hint :is(.woocommerce,.cdl-shared-accoun
    gutter as other Codela dark pill actions (mobile PIN or passkey-only). */
 .sf-quick-login.has-passkey .sf-quick-choice-alternatives .sf-quick-native-alt,
 .sf-quick-accounts.has-passkey > .sf-quick-choice-alternatives .sf-quick-native-alt,
-#sf-panel.is-account-panel :is(.woocommerce,.cdl-shared-account) .sf-pk-use-email,
-body:is(.woocommerce-account,.sf-standalone-account):not(.logged-in) :is(.woocommerce,.cdl-shared-account) .sf-pk-use-email{
+#sf-panel.is-account-panel .woocommerce .sf-pk-use-email,
+body.woocommerce-account:not(.logged-in) .woocommerce .sf-pk-use-email{
   position:relative;
   padding-left:56px!important;
   padding-right:56px!important

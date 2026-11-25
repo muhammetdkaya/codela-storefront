@@ -4,12 +4,12 @@
  * WooCommerce owns native forms/endpoints; Codela modules retain their hooks.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
-require_once __DIR__ . '/account-contract.php';
 
 /** Display a welcome heading exclusively above the native guest login form. */
 function codela_sf_account_intro(): void {
     if (
-        ( ! codela_sf_is_account_context() && empty( $GLOBALS['codela_sf_auth_overlay'] ) )
+        ! function_exists( 'is_account_page' )
+        || ( ! is_account_page() && empty( $GLOBALS['codela_sf_auth_overlay'] ) )
         || is_user_logged_in()
     ) {
         return;
@@ -54,7 +54,6 @@ function codela_sf_account_intro(): void {
 }
 
 add_action( 'woocommerce_before_customer_login_form', 'codela_sf_account_intro', 5 );
-add_action( 'codela_account_before_login', 'codela_sf_account_intro', 6 );
 
 /**
  * Render the final email UI in PHP BEFORE WooCommerce's original forms.
@@ -96,7 +95,7 @@ add_action( 'woocommerce_before_customer_login_form', 'codela_sf_account_identit
  * WooCommerce still owns both forms, validation, and registration permissions.
  */
 function codela_sf_account_register_action(): void {
-    if ( is_user_logged_in() || ! codela_sf_registration_enabled()
+    if ( is_user_logged_in() || 'yes' !== get_option( 'woocommerce_enable_myaccount_registration', 'no' )
         || ( ! is_account_page() && empty( $GLOBALS['codela_sf_auth_overlay'] ) ) ) { return; }
     ?>
     <a href="#sf-auth-register" class="sf-auth-register-cta sf-ui-pressable" aria-controls="sf-auth-register">
@@ -128,7 +127,7 @@ add_action( 'woocommerce_register_form_start', 'codela_sf_account_login_return',
  */
 function codela_sf_auth_registration_names(): void {
     if ( is_user_logged_in() || ( ! is_account_page() && empty( $GLOBALS['codela_sf_auth_overlay'] ) )
-        || ! codela_sf_registration_enabled() ) { return; }
+        || 'yes' !== get_option( 'woocommerce_enable_myaccount_registration', 'no' ) ) { return; }
     $first = isset( $_POST['first_name'] ) && is_string( $_POST['first_name'] )
         ? sanitize_text_field( wp_unslash( $_POST['first_name'] ) ) : '';
     $last = isset( $_POST['last_name'] ) && is_string( $_POST['last_name'] )
@@ -202,7 +201,7 @@ function codela_sf_auth_lookup(): void {
     }
     set_transient( $budget_key, $hits + 1, 15 * MINUTE_IN_SECONDS );
     $existing = (bool) email_exists( $email );
-    $registration = codela_sf_registration_enabled();
+    $registration = 'yes' === get_option( 'woocommerce_enable_myaccount_registration', 'no' );
     wp_send_json( [ 'status' => $existing ? 'existing' : ( $registration ? 'new' : 'closed' ) ] );
 }
 add_action( 'wp_ajax_nopriv_codela_sf_auth_lookup', 'codela_sf_auth_lookup' );
@@ -228,7 +227,7 @@ function codela_sf_public_login_destination( array $query, string $method = 'GET
     foreach ( [ 'reauth', 'interim-login', 'checkemail', 'key', 'login' ] as $param ) {
         if ( isset( $query[ $param ] ) ) { return ''; }
     }
-    return (string) codela_sf_account_url();
+    return (string) wc_get_page_permalink( 'myaccount' );
 }
 add_action( 'login_init', static function(): void {
     $method = isset( $_SERVER['REQUEST_METHOD'] ) && is_string( $_SERVER['REQUEST_METHOD'] )
@@ -245,14 +244,14 @@ add_action( 'login_init', static function(): void {
  */
 add_filter( 'login_url', static function( $url, $redirect, $force_reauth ) {
     if ( is_admin() || $force_reauth || codela_sf_login_is_admin_destination( $redirect ) ) { return $url; }
-    $account = function_exists( 'wc_get_page_permalink' ) ? codela_sf_account_url() : '';
+    $account = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'myaccount' ) : '';
     return $account ?: $url;
 }, 20, 3 );
 
 /** Keep successful public logins on My Account, with cache-safe session URLs. */
 function codela_sf_signed_in_account_url( $redirect ) {
     if ( ! function_exists( 'wc_get_page_permalink' ) ) { return $redirect; }
-    $account = (string) codela_sf_account_url();
+    $account = (string) wc_get_page_permalink( 'myaccount' );
     if ( '' === $account ) { return $redirect; }
     // A WooCommerce confirmation email opened while signed out needs its
     // one-time key preserved through login, otherwise verification cannot finish.
@@ -310,7 +309,7 @@ function codela_sf_account_form_state(): void {
         'login_nonce' => wp_create_nonce( 'woocommerce-login' ),
         'register_nonce' => wp_create_nonce( 'woocommerce-register' ),
         'lookup_nonce' => wp_create_nonce( 'codela_sf_auth_lookup' ),
-        'registration' => codela_sf_registration_enabled(),
+        'registration' => 'yes' === get_option( 'woocommerce_enable_myaccount_registration', 'no' ),
     ] );
 }
 add_action( 'wp_ajax_nopriv_codela_sf_account_form_state', 'codela_sf_account_form_state' );
@@ -438,9 +437,9 @@ add_action( 'woocommerce_account_content', function (): void {
 // settings screen. Never display this notice to the site's visitors or
 // enable registration behind the merchant's back.
 function codela_sf_registration_settings_notice(): void {
-    $commerce = codela_sf_commerce_available();
-    if ( ! current_user_can( $commerce ? 'manage_woocommerce' : 'manage_options' )
-        || ! function_exists( 'get_option' ) ) { return; }
+    if ( ! current_user_can( 'manage_woocommerce' )
+        || ! function_exists( 'get_option' )
+        || 'yes' === get_option( 'woocommerce_enable_myaccount_registration', 'no' ) ) { return; }
 
     $page = isset( $_GET['page'] ) && is_string( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
     $screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
@@ -448,30 +447,6 @@ function codela_sf_registration_settings_notice(): void {
     $is_codela = str_contains( $page, 'codela' ) || str_contains( $screen_id, 'codela' );
     if ( ! $is_codela ) { return; }
 
-    // Standalone registration is governed by WordPress, never WooCommerce.
-    if ( ! $commerce ) {
-        if ( ! function_exists( 'codela_account_wordpress_page_id' ) ) { return; }
-        if ( ! codela_account_wordpress_page_id() ) {
-            echo '<div class="notice notice-warning codela-sf-account-page-warning"><p><strong>'
-                . esc_html__( 'No WordPress account page is configured.', 'codela-storefront' )
-                . '</strong> '
-                . esc_html__( 'Select an existing published page in the Codela account page setting. Its address and user accounts are preserved.', 'codela-storefront' )
-                . ' <a href="' . esc_url( admin_url( 'options-general.php#codela_account_page_id' ) ) . '">'
-                . esc_html__( 'Configure the account page', 'codela-storefront' )
-                . '</a></p></div>';
-            return;
-        }
-        if ( codela_sf_registration_enabled() ) { return; }
-        echo '<div class="notice notice-info codela-sf-registration-warning"><p><strong>'
-            . esc_html__( 'WordPress user registration is disabled or restricted.', 'codela-storefront' )
-            . '</strong> '
-            . esc_html__( 'Existing users can still sign in. To allow public registration, enable membership and select Subscriber as the default role in WordPress General Settings.', 'codela-storefront' )
-            . ' <a href="' . esc_url( admin_url( 'options-general.php' ) ) . '">'
-            . esc_html__( 'Open WordPress General Settings', 'codela-storefront' )
-            . '</a></p></div>';
-        return;
-    }
-    if ( codela_sf_registration_enabled() ) { return; }
     $settings_url = admin_url( 'admin.php?page=wc-settings&tab=account' );
     echo '<div class="notice notice-warning codela-sf-registration-warning"><p><strong>'
         . esc_html__( 'Customer registration is disabled in WooCommerce.', 'codela-storefront' )
