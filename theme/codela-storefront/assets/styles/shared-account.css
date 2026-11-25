@@ -34,4 +34,4 @@ body.sf-standalone-account.logged-in .cdl-shared-account{max-width:920px}
 .cdl-account-security summary{cursor:pointer;font-weight:600;padding:8px 0}
 .cdl-account-security[open] summary{margin-bottom:20px}
 .cdl-account-security .sf-pk-settings{margin-bottom:16px}
-body.sf-standalone-account.logged-in .cdl-shared-account .cdl-portal-title{color:inherit}
+body.sf-standalone-account.logged-in .cdl-shared-account .cdl-cp-heading h1{color:inherit}
