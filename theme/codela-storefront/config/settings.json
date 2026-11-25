@@ -23,6 +23,13 @@
           "default": true,
           "label": "WooCommerce hafifletme",
           "description": "Ajans deneyimindeki doğrulanmış, ticari işlem içermeyen sayfalarda gereksiz WooCommerce JavaScript kaynaklarını azaltır. Ödeme veya mağaza entegrasyonu eklediğinizde kapatarak normal kaynak yüklemesini geri getirebilirsiniz."
+        },
+        {
+          "id": "first_entry_feedback_enabled",
+          "type": "checkbox",
+          "default": true,
+          "label": "İlk açılış göstergesi",
+          "description": "Ajans sayfalarında ilk HTML işlendiğinde kehribar çizgiyi gösterir, gerçek içerik hazır olduğunda kaldırır. Site içi geçişleri ve ticari sayfaları değiştirmez."
         }
       ]
     },

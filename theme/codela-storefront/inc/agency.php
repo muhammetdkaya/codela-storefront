@@ -409,15 +409,22 @@ add_action('wp_enqueue_scripts', static function() {
         wp_enqueue_script('codela-storefront-agency-widgets',get_template_directory_uri().'/assets/scripts/agency-widgets.js',[],wp_get_theme()->get('Version'),true);
     }
 }, 31);
+/** Optional early HTML feedback, independent of the internal navigation bridge. */
+function codela_sf_first_entry_enabled(): bool {
+    if ( ! codela_sf_agency_experience() || ! codela_sf_ready()
+        || is_cart() || is_checkout() || is_account_page() || is_woocommerce()
+        || is_preview() || is_customize_preview() ) { return false; }
+    return in_array( codela_theme_settings()['first_entry_feedback_enabled'] ?? true, [ true, 1, '1' ], true );
+}
 add_action('wp_head', static function() {
-    if ( ! codela_sf_agency_experience() ) { return; }
-    // Real content is authoritative, not session storage or the load event.
-    // A slow external entry can show feedback, but never hide already parsed content.
+    if ( ! codela_sf_first_entry_enabled() ) { return; }
+    // Inline before enqueued assets; no unsafe flushing of WordPress or server buffers.
+    // The browser can paint only after the server actually sends this HTML.
     echo '<style>html.cdl-first-entry::after{content:"";position:fixed;inset:0;z-index:9999;pointer-events:none;background:#09090c}html.cdl-first-entry::before{content:"";position:fixed;z-index:10000;left:50%;top:50%;height:1px;width:min(260px,64vw);translate:-50% -50%;background:linear-gradient(90deg,transparent,#d3a480,#fff1dc,#d3a480,transparent);box-shadow:0 0 18px #d3a48080;pointer-events:none;animation:cdl-entry-beam 1s ease-in-out infinite alternate}@keyframes cdl-entry-beam{from{transform:scaleX(.3);opacity:.45}to{transform:scaleX(1);opacity:1}}@media(prefers-reduced-motion:reduce){html.cdl-first-entry::before{animation:none}}</style>';
-    echo '<script>(function(){var root=document.documentElement,finished=false,timer,limit,observer;function done(){if(finished)return;finished=true;clearTimeout(timer);clearTimeout(limit);if(observer)observer.disconnect();root.classList.remove("cdl-first-entry")}function ready(){var main=document.getElementById("sf-content");if(main&&main.querySelector("h1,h2")){done();return true}return false}window.codelaAgencyEntryReady=done;if(document.readyState!=="loading"){done();return}if(typeof MutationObserver==="function"){observer=new MutationObserver(ready);observer.observe(root,{childList:true,subtree:true})}timer=setTimeout(function(){if(!finished&&!ready())root.classList.add("cdl-first-entry")},100);limit=setTimeout(done,1800);document.addEventListener("DOMContentLoaded",done,{once:true});window.addEventListener("pageshow",done,{once:true});window.addEventListener("pagehide",done,{once:true})})();</script>';
-}, 1);
+    echo '<script>(function(){var root=document.documentElement,finished=false,limit,observer;function done(){if(finished)return;finished=true;clearTimeout(limit);if(observer)observer.disconnect();root.classList.remove("cdl-first-entry")}function ready(){var main=document.getElementById("sf-content");if(main&&main.querySelector("h1,h2")){done();return true}return false}window.codelaAgencyEntryReady=done;if(document.readyState!=="loading"||ready()){done();return}try{var nav=window.performance&&window.performance.getEntriesByType("navigation")[0];if(nav&&nav.type==="navigate"&&document.referrer&&new URL(document.referrer).origin===window.location.origin){done();return}}catch(e){}root.classList.add("cdl-first-entry");if(typeof MutationObserver==="function"){observer=new MutationObserver(ready);observer.observe(root,{childList:true,subtree:true})}limit=setTimeout(done,4000);document.addEventListener("DOMContentLoaded",done,{once:true});window.addEventListener("pageshow",done,{once:true});window.addEventListener("pagehide",done,{once:true})})();</script>';
+}, -1000);
 add_action( 'wp_footer', static function() {
-    if ( codela_sf_agency_experience() ) {
+    if ( codela_sf_first_entry_enabled() ) {
         // Main markup is already parsed; do not wait for Canvas, images or footer scripts.
         echo '<script>if(window.codelaAgencyEntryReady)window.codelaAgencyEntryReady();</script>';
     }
