@@ -9,8 +9,7 @@ require_once __DIR__ . '/account-contract.php';
 /** Display a welcome heading exclusively above the native guest login form. */
 function codela_sf_account_intro(): void {
     if (
-        ! function_exists( 'is_account_page' )
-        || ( ! is_account_page() && empty( $GLOBALS['codela_sf_auth_overlay'] ) )
+        ( ! codela_sf_is_account_context() && empty( $GLOBALS['codela_sf_auth_overlay'] ) )
         || is_user_logged_in()
     ) {
         return;
@@ -55,6 +54,7 @@ function codela_sf_account_intro(): void {
 }
 
 add_action( 'woocommerce_before_customer_login_form', 'codela_sf_account_intro', 5 );
+add_action( 'codela_account_before_login', 'codela_sf_account_intro', 6 );
 
 /**
  * Render the final email UI in PHP BEFORE WooCommerce's original forms.

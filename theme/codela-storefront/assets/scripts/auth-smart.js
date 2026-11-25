@@ -294,9 +294,47 @@
       if(event.detail?.lookup_nonce)intro.dataset.authLookupNonce=event.detail.lookup_nonce;
     });
   }
+  // WordPress owns credentials, registration and password reset. The native
+  // identity input is also the first step; no extra password field or endpoint.
+  function initWordPress(root){
+    const form=root.querySelector('.cdl-account-password form');
+    const intro=root.querySelector('.sf-account-intro');
+    const identity=form?.querySelector('input[name="log"]');
+    const password=form?.querySelector('input[name="pwd"]');
+    if(!identity || !password || !intro || root.classList.contains('sf-native-auth-ready'))return;
+    const passwordRow=password.closest('p'),remember=form.querySelector('.login-remember'),submit=form.querySelector('.login-submit');
+    if(!passwordRow || !submit)return;
+    const button=document.createElement('button');
+    button.type='button';button.className='sf-native-continue';
+    button.textContent=intro.dataset.authSmartContinue||'Continue';
+    submit.before(button);
+    identity.placeholder=intro.dataset.authLoginPlaceholder||'Email address';
+    password.placeholder=intro.dataset.authPasswordPlaceholder||'Password';
+    identity.setAttribute('autocomplete','username');
+    password.setAttribute('autocomplete','current-password');
+    let expanded=false;
+    const reveal=()=>{
+      expanded=true;passwordRow.hidden=false;if(remember)remember.hidden=false;
+      submit.hidden=false;button.hidden=true;
+    };
+    const reset=()=>{
+      expanded=false;passwordRow.hidden=true;if(remember)remember.hidden=true;
+      submit.hidden=true;button.hidden=!identity.value.trim();
+    };
+    identity.addEventListener('input',()=>{
+      if(emailPattern.test(identity.value.trim()))reveal();
+      else reset();
+    });
+    button.addEventListener('click',()=>{if(identity.value.trim())reveal();});
+    form.addEventListener('submit',event=>{if(!expanded){event.preventDefault();if(identity.value.trim())reveal();}});
+    root.addEventListener('codela:smart-reset',()=>{identity.value='';password.value='';reset();});
+    root.classList.add('sf-native-auth-ready');
+    if(identity.value.trim())reveal();else reset();
+  }
   const start=()=>{
     let ok=true;
     try {
+      for(const root of document.querySelectorAll('.cdl-shared-account'))initWordPress(root);
       for(const root of document.querySelectorAll('.woocommerce')){
         if(root.querySelector('.sf-account-intro'))initRoot(root);
       }

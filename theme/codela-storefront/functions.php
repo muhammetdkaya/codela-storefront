@@ -62,6 +62,7 @@ function codela_sf_glass_v2_enabled(): bool {
 require_once get_template_directory() . '/inc/presentation.php';
 add_filter( 'body_class', static function( $classes ) {
     if ( 'editorial' === codela_sf_presentation( 'account' ) ) { $classes[] = 'sf-account-editorial'; }
+    if ( codela_sf_standalone_account() ) { $classes[] = 'sf-standalone-account'; }
     if ( codela_sf_glass_v2_enabled() ) { $classes[] = 'sf-glass-v2'; }
     return $classes;
 } );
@@ -506,6 +507,10 @@ add_action( 'wp_enqueue_scripts', function() {
     if ( codela_sf_standalone_account() ) {
         wp_enqueue_style( 'codela-storefront-shared-account', $root_uri . 'styles/shared-account.css',
             [ 'codela-storefront-components' ], codela_sf_script_module_version( 'styles/shared-account.css' ) );
+        if ( ! is_user_logged_in() ) {
+            wp_enqueue_script( 'codela-storefront-auth-smart', $root_uri . 'scripts/auth-smart.js',
+                [], codela_sf_script_module_version( 'scripts/auth-smart.js' ), true );
+        }
     }
     if ( codela_sf_is_account_context() ) {
         wp_enqueue_style( 'codela-storefront-account', $root_uri . 'styles/account.css', [ 'codela-storefront-components' ], $style_version );

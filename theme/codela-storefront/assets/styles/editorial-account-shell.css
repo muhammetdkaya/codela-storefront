@@ -66,13 +66,13 @@
   justify-content:safe center;
   min-height:0;
 }
-.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-account-body>.woocommerce{
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-account-body>:is(.woocommerce,.cdl-shared-account){
   flex:0 0 auto;
   width:100%;
   margin-inline:auto;
 }
 /* Native password focus or expanded PIN must scroll normally above iOS keyboard. */
-.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-account-body:has(.woocommerce.sf-auth-focus-mode,.sf-quick-login.is-inline-open){
+.sf-shell.has-editorial-account #sf-panel.is-account-panel .sf-account-body:has(:is(.woocommerce,.cdl-shared-account).sf-auth-focus-mode,.sf-quick-login.is-inline-open){
   justify-content:flex-start;
 }
 @media(max-height:620px){
@@ -82,7 +82,7 @@
 }
 
 /* Direct My Account guest page gets the same dark presentation, not the store canvas. */
-body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout){
+body.sf-account-editorial:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout){
   /* Standalone Account does not inherit token overrides from the hidden dialog. */
   --cdl-agency-glass-back:linear-gradient(180deg,rgba(255,255,255,.02),transparent);
   --cdl-agency-glass-body:rgba(24,24,29,.64);
@@ -98,7 +98,7 @@ body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-acc
   --sf-muted:#b8b2aa;
   background:#06060a!important;color:#f8f7fa;color-scheme:dark;
 }
-body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-content:has(.sf-account-intro){
+body.sf-account-editorial:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) .sf-content:has(.sf-account-intro){
   background:
     radial-gradient(ellipse 58% 42% at 72% 8%,rgba(211,164,128,.15),transparent 70%),
     radial-gradient(ellipse 43% 36% at 15% 3%,rgba(183,125,70,.075),transparent 67%),
@@ -108,23 +108,23 @@ body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-acc
 /* Standalone guest Account matches the open dialog, not the store document.
  * Only the guest welcome root is converted; password recovery, signed-in
  * dashboards, Woo endpoints and other presentation modes retain their shells. */
-body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout):has(.sf-content .sf-account-intro) .sf-shell{
+body.sf-account-editorial:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout):has(.sf-content .sf-account-intro) .sf-shell{
   padding-top:0!important; /* Override the fixed store header's 68/76px reserved space. */
 }
-body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout):has(.sf-content .sf-account-intro) .sf-shell .sf-header{
+body.sf-account-editorial:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout):has(.sf-content .sf-account-intro) .sf-shell .sf-header{
   position:absolute!important;top:0!important;left:0!important;
   width:0!important;height:0!important;min-height:0!important;
   margin:0!important;padding:0!important;border:0!important;
   background:transparent!important;box-shadow:none!important;
   pointer-events:none!important;overflow:visible!important;
 }
-body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout):has(.sf-content .sf-account-intro) .sf-shell .sf-header > :not(.sf-editorial-account-exit){
+body.sf-account-editorial:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout):has(.sf-content .sf-account-intro) .sf-shell .sf-header > :not(.sf-editorial-account-exit){
   display:none!important;
 }
-body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout):has(.sf-content .sf-account-intro) :is(.sf-shell .sf-mobile-dock,.sf-footer){
+body.sf-account-editorial:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout):has(.sf-content .sf-account-intro) :is(.sf-shell .sf-mobile-dock,.sf-footer){
   display:none!important;
 }
-body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) .sf-editorial-account-exit{
+body.sf-account-editorial:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) .sf-editorial-account-exit{
   position:fixed;z-index:1200;top:clamp(12px,3.5svh,30px);right:clamp(16px,5vw,32px);
   display:grid;place-items:center;width:48px;height:48px;
   border:1px solid transparent;border-radius:999px;
@@ -137,13 +137,13 @@ body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-acc
   box-shadow:0 6px 18px -6px rgba(0,0,0,.24);
   pointer-events:auto;
 }
-body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-editorial-account-exit .sf-icon{
+body.sf-account-editorial:is(.woocommerce-account,.sf-standalone-account):not(.logged-in) .sf-editorial-account-exit .sf-icon{
   width:22px;height:22px;filter:brightness(0) invert(1);
 }
-body.sf-account-editorial.woocommerce-account:not(.logged-in) .sf-editorial-account-exit:focus-visible{
+body.sf-account-editorial:is(.woocommerce-account,.sf-standalone-account):not(.logged-in) .sf-editorial-account-exit:focus-visible{
   outline:2px solid #d3a480;outline-offset:4px;
 }
-body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) main.sf-content:has(.sf-account-intro){
+body.sf-account-editorial:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) main.sf-content:has(.sf-account-intro){
   box-sizing:border-box;display:flex;flex-direction:column;
   align-items:stretch;justify-content:center;justify-content:safe center;
   width:100%;max-width:560px;min-height:100svh;min-height:100dvh;
@@ -151,14 +151,14 @@ body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-acc
   padding:clamp(78px,10svh,112px) clamp(16px,5vw,32px)
     clamp(24px,4svh,48px)!important;
 }
-body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) main.sf-content:has(.sf-account-intro) > :is(.wp-block-post-content,.wp-block-shortcode,.woocommerce){
+body.sf-account-editorial:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) main.sf-content:has(.sf-account-intro) > :is(.wp-block-post-content,.wp-block-shortcode,:is(.woocommerce,.cdl-shared-account)){
   width:100%;margin-block:0;
 }
-body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) main.sf-content:has(.woocommerce.sf-auth-focus-mode,.sf-quick-login.is-inline-open){
+body.sf-account-editorial:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) main.sf-content:has(:is(.woocommerce,.cdl-shared-account).sf-auth-focus-mode,.sf-quick-login.is-inline-open){
   justify-content:flex-start;
 }
 @media(max-height:620px){
-  body.sf-account-editorial.woocommerce-account:not(.logged-in):not(.codela-my-account-layout) main.sf-content:has(.sf-account-intro){
+  body.sf-account-editorial:is(.woocommerce-account,.sf-standalone-account):not(.logged-in):not(.codela-my-account-layout) main.sf-content:has(.sf-account-intro){
     justify-content:flex-start;
   }
 }
