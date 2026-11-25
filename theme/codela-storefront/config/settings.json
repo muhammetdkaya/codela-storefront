@@ -29,7 +29,7 @@
           "type": "checkbox",
           "default": true,
           "label": "İlk açılış göstergesi",
-          "description": "Ajans sayfalarında ilk HTML işlendiğinde kehribar çizgiyi gösterir, gerçek içerik hazır olduğunda kaldırır. Site içi geçişleri ve ticari sayfaları değiştirmez."
+          "description": "Ajans sayfalarına dışarıdan girişte kehribar çizgiyi ilk çizim fırsatından sonra sabit 1 saniye gösterir. Site içi geçişler ve ticari sayfalar değişmez."
         },
         {
           "id": "early_html_streaming_enabled",

@@ -6,8 +6,8 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Ajans ana sayfasında ilk görüntüyü engelleyen seçili tema CSS dosyaları kontrollü biçimde yüklenir; ticari ve üçüncü taraf kaynakları korunur.",
-    "Kehribar çizgi artık HTML başlığı oluşunca değil, içerik ve tema stilleri hazır olup çizim sırası geldiğinde kapanır.",
-    "İlk açılış zamanlaması canlı performans denetimine eklendi; adaptif iç geçişler korunuyor."
+    "Ajans dış girişinde kehribar çizgi ilk çizim fırsatından sonra sabit 1 saniye gösterilir; içerik ve kaynak sinyalleriyle erken kapanmaz.",
+    "Tema CSS dosyaları normal WordPress yükleme sırasına döndürüldü; kaynak bazlı hazır olma denetimleri kaldırıldı.",
+    "İç sayfa adaptif geçişleri, geçmiş gezinmesi ve ticari ekranlar korunur."
   ]
 }
