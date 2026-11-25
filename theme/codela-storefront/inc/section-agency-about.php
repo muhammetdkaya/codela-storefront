@@ -7,7 +7,7 @@
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 function codela_sf_section_agency_about( array $data, string $type = '' ): string {
-    $id = 'sf-about-' . sanitize_html_class( (string) ( $data['id'] ?? 'codela-about' ) );
+    $id = codela_sf_agency_dom_id( 'sf-about-' . sanitize_html_class( (string) ( $data['id'] ?? 'codela-about' ) ) );
     $title = trim( (string) ( $data['title'] ?? '' ) );
     if ( '' === $title ) { return ''; }
     $lead = trim( (string) ( $data['description'] ?? '' ) );

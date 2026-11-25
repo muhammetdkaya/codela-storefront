@@ -39,6 +39,7 @@ function esc_html( $value ) { return esc_attr( $value ); }
 function esc_url( $value ) { return esc_attr( $value ); }
 function add_query_arg( $key, $value, $url ) { return $url . ( str_contains( $url, '?' ) ? '&' : '?' ) . rawurlencode( $key ) . '=' . rawurlencode( $value ); }
 function admin_url( $path ) { return 'https://codela.test/wp-admin/' . $path; }
+function wp_create_nonce( $action ) { return 'testnonce'; }
 function wp_nonce_field( $action, $field = '_wpnonce' ) { echo '<input type="hidden" name="' . esc_attr( $field ) . '" value="testnonce">'; }
 function checked( $value, $expected ) { if ( $value === $expected ) echo ' checked="checked"'; }
 function get_privacy_policy_url() { return 'https://codela.test/gizlilik/'; }
@@ -323,6 +324,22 @@ agency_page_check( str_contains( $studio_html, 'href="#sf-agency-services"' ) &&
 $studio_custom = $studio_data; $studio_custom['title'] = 'Özgün bir başlık';
 agency_page_check( str_contains( codela_sf_section_agency_studio( $studio_custom ), 'Özgün bir başlık' ),
     'Studio never replaces user-edited copy.' );
+// Render identical authored IDs repeatedly, as when a reusable block is inserted twice.
+$repeated = $studio_html . codela_sf_section_agency_studio( $studio_data )
+    . $bento_html . codela_sf_section_agency_bento( $bento_data )
+    . $contact_bento_html . $contact_bento_real_html
+    . $project_html . codela_sf_section_agency_project( $project_data );
+preg_match_all( '/\\sid="([^"]+)"/', $repeated, $id_matches );
+agency_page_check( count( $id_matches[1] ) === count( array_unique( $id_matches[1] ) ),
+    'Identical reusable Agency widgets have no duplicate document IDs' );
+preg_match_all( '/aria-labelledby="([^"]+)"/', $repeated, $label_matches );
+foreach ( $label_matches[1] as $label_id ) {
+    agency_page_check( in_array( $label_id, $id_matches[1], true ), 'Every reusable widget heading reference resolves' );
+}
+agency_page_check( substr_count( $repeated, 'name="agency_contact_nonce"' ) === 2
+    && substr_count( $repeated, 'name="agency_project_nonce"' ) === 2,
+    'Duplicate forms retain the native nonce field contracts' );
+
 if ( in_array( '--render=studio', $argv, true ) ) {
     echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
     echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/storefront-base.css">';

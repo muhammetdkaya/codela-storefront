@@ -112,13 +112,13 @@
           }
         });
       }
-      const disclosure = widget.querySelector('details#sf-agency-contact-form');
+      const disclosure = widget.querySelector('details[data-contact-disclosure]');
       const summary = disclosure?.querySelector('summary');
       const panel = disclosure?.querySelector('.cdl-contact-form-section');
       if (disclosure && summary && panel && typeof HTMLDialogElement !== 'undefined' && typeof HTMLDialogElement.prototype.showModal === 'function') {
         const dialog = document.createElement('dialog');
         dialog.className = 'cdl-contact__sheet';
-        dialog.setAttribute('aria-labelledby','cdl-contact-form-title');
+        dialog.setAttribute('aria-labelledby',panel.getAttribute('aria-labelledby'));
         const initiallyOpen = disclosure.open;
         disclosure.open = false;
         dialog.appendChild(panel);
@@ -135,12 +135,12 @@
         dialog.querySelector('[data-contact-close]')?.addEventListener('click',()=>dialog.close());
         dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});
         dialog.addEventListener('close',()=>{summary.setAttribute('aria-expanded','false');summary.focus({preventScroll:true});});
-        widget.querySelectorAll('a[href="#sf-agency-contact-form"]').forEach(link=>link.addEventListener('click',event=>{event.preventDefault();open();}));
-        const anchor = () => {if(window.location.hash==='#sf-agency-contact-form')open();};
+        widget.querySelectorAll('a[href^="#"]').forEach(link=>{if(link.getAttribute('href')==='#'+disclosure.id)link.addEventListener('click',event=>{event.preventDefault();open();});});
+        const anchor = () => {if(window.location.hash==='#'+disclosure.id)open();};
         window.addEventListener('hashchange',anchor);
         if(initiallyOpen)open();else anchor();
       } else if (disclosure) {
-        const anchor=()=>{if(window.location.hash==='#sf-agency-contact-form')disclosure.open=true;};
+        const anchor=()=>{if(window.location.hash==='#'+disclosure.id)disclosure.open=true;};
         window.addEventListener('hashchange',anchor);anchor();
         panel?.querySelector('[data-contact-close]')?.addEventListener('click',()=>{disclosure.open=false;});
       }

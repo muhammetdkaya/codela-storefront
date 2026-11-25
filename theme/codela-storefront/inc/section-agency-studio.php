@@ -7,7 +7,7 @@
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 function codela_sf_section_agency_studio( array $data, string $type = '', bool $primary = false ): string {
-    $id = 'codela-studio-' . sanitize_html_class( (string) ( $data['id'] ?? 'welcome' ) );
+    $id = codela_sf_agency_dom_id( 'codela-studio-' . sanitize_html_class( (string) ( $data['id'] ?? 'welcome' ) ) );
     $heading = $primary && function_exists( 'is_front_page' ) && is_front_page() ? 'h1' : 'h2';
     $title = trim( (string) ( $data['title'] ?? '' ) );
     $lead = trim( (string) ( $data['description'] ?? '' ) );

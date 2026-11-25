@@ -7,7 +7,8 @@
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 function codela_sf_section_agency_project( array $data, string $type = '' ): string {
-    $id = 'cdl-project-' . sanitize_html_class( (string) ( $data['id'] ?? 'start' ) );
+    $id = codela_sf_agency_dom_id( 'cdl-project-' . sanitize_html_class( (string) ( $data['id'] ?? 'start' ) ) );
+    $form_id = codela_sf_agency_dom_id( 'sf-agency-project-form' );
     $slots = codela_sf_project_availability();
     $first = '';
     foreach ( $slots as $key => $slot ) { if ( (int) $slot['free'] > 0 ) { $first = $key; break; } }
@@ -52,10 +53,10 @@ function codela_sf_section_agency_project( array $data, string $type = '' ): str
                     : ( 'invalid' === $status ? 'Bilgileri kontrol edip yeniden deneyin.' : 'Talep iletilemedi. Lütfen tekrar deneyin.' ) ); ?>
                 </p>
               <?php endif; ?>
-              <form id="sf-agency-project-form" class="cdl-project__form"
+              <form id="<?php echo esc_attr( $form_id ); ?>" class="cdl-project__form"
                     action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" data-project-form>
                 <input type="hidden" name="action" value="codela_sf_agency_project"/>
-                <?php wp_nonce_field( 'codela_sf_agency_project', 'agency_project_nonce' ); ?>
+                <?php codela_sf_agency_nonce_input( 'codela_sf_agency_project', 'agency_project_nonce' ); ?>
                 <div class="cdl-project__step" data-project-step="1">
                   <div class="cdl-project__heading"><h1 id="<?php echo esc_attr( $id ); ?>">Hangi alanda <span class="cdl-project__title-muted">çalışmak istersin?</span></h1></div>
                   <fieldset class="cdl-project__fieldset">

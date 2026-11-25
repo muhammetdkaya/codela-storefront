@@ -78,7 +78,7 @@ function codela_sf_section_agency_detail( array $data, string $type = '', bool $
     $custom=array_filter($rows,static fn($item)=>!empty($item['body']));
     $deliverables=$custom?array_map(static fn($item)=>[(string)$item['title'],(string)($item['body']??'')],$rows):$info['items'];
     $cta=add_query_arg('hizmetler',$info['service'],codela_sf_agency_project_link());
-    $id='codela-detail-'.sanitize_html_class((string)($data['id']??'service'));
+    $id=codela_sf_agency_dom_id( 'codela-detail-'.sanitize_html_class((string)($data['id']??'service')) );
     ob_start(); ?>
     <div class="sf-agency-widget sf-agency-widget--detail" data-agency-widget="detail">
       <section class="cdl-service-detail" aria-labelledby="<?php echo esc_attr($id); ?>">

@@ -15,7 +15,7 @@ function codela_sf_section_agency_items( array $data, int $limit = 3 ): array {
 function codela_sf_section_agency_cards( array $data, string $type = '', bool $primary = false ): string {
     $items = codela_sf_section_agency_items( $data );
     if ( ! $items ) { return ''; }
-    $id = 'sf-agency-cards-' . sanitize_html_class( (string) $data['id'] );
+    $id = codela_sf_agency_dom_id( 'sf-agency-cards-' . sanitize_html_class( (string) $data['id'] ) );
     $heading = $primary && function_exists( 'is_front_page' ) && is_front_page() ? 'h1' : 'h2';
     $contact = codela_sf_agency_contact_link();
     $services = codela_sf_agency_page_url( 'hizmetler', home_url( '/#sf-agency-services' ) );
@@ -65,7 +65,7 @@ function codela_sf_section_agency_cards( array $data, string $type = '', bool $p
  * for untouched Codela starter text from earlier package versions.
  */
 function codela_sf_section_agency_scroll( array $data, string $type = '', bool $primary = false ): string {
-    $id = 'sf-agency-scroll-' . sanitize_html_class( (string) ( $data['id'] ?? 'welcome' ) );
+    $id = codela_sf_agency_dom_id( 'sf-agency-scroll-' . sanitize_html_class( (string) ( $data['id'] ?? 'welcome' ) ) );
     $heading = $primary && function_exists( 'is_front_page' ) && is_front_page() ? 'h1' : 'h2';
     $title = trim( (string) ( $data['title'] ?? '' ) );
     $description = trim( (string) ( $data['description'] ?? '' ) );
@@ -126,7 +126,7 @@ function codela_sf_section_agency_scroll( array $data, string $type = '', bool $
 function codela_sf_section_agency_services( array $data, string $type = '' ): string {
     $items = codela_sf_section_agency_items( $data, 4 );
     if ( ! $items ) { return ''; }
-    $id = 'sf-agency-services-' . sanitize_html_class( (string) $data['id'] );
+    $id = codela_sf_agency_dom_id( 'sf-agency-services-' . sanitize_html_class( (string) $data['id'] ) );
     $services = codela_sf_agency_page_url( 'hizmetler', home_url( '/#sf-agency-services' ) );
     $contact = codela_sf_agency_contact_link();
 
@@ -291,7 +291,7 @@ function codela_sf_section_agency_process( array $data, string $type = '' ): str
         }
         unset( $item );
     }
-    $id = 'sf-agency-process-' . sanitize_html_class( (string) ( $data['id'] ?? 'process' ) );
+    $id = codela_sf_agency_dom_id( 'sf-agency-process-' . sanitize_html_class( (string) ( $data['id'] ?? 'process' ) ) );
     $labels = [ 'Keşif', 'Üretim', 'Yayın' ];
     $outcomes = [ 'Net Yol Haritası', 'Geliştirilen Dijital Deneyim', 'Kontrol Edilmiş, Yayına Hazır' ];
     $images = [ 'agency-light-process-discovery.jpg', 'agency-light-process-build.jpg', 'agency-light-process-launch.jpg' ];

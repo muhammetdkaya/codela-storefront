@@ -126,6 +126,20 @@ function codela_sf_agency_navigation_routes(): array {
     return $routes;
 }
 
+/** Allocate document-local IDs while keeping the first public anchor stable. */
+function codela_sf_agency_dom_id( string $base ): string {
+    static $used = [];
+    $id = $base;
+    for ( $suffix = 2; isset( $used[$id] ); ++$suffix ) { $id = $base . '-' . $suffix; }
+    $used[$id] = true;
+    return $id;
+}
+
+/** Each form keeps the existing POST field name without duplicating DOM IDs. */
+function codela_sf_agency_nonce_input( string $action, string $field ): void {
+    echo '<input type="hidden" name="' . esc_attr( $field ) . '" value="' . esc_attr( wp_create_nonce( $action ) ) . '">';
+}
+
 /** Load visual assets only for a page that actually contains agency modules. */
 function codela_sf_agency_asset_flags(): array {
     $flags = [ 'pattern' => false, 'widgets' => false, 'project' => false, 'about' => false, 'studio' => false, 'visuals' => false ];
