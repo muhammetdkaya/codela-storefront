@@ -12,4 +12,7 @@ assert(about.includes('padding-block-start:var(--sf-agency-inner-top,28px)'));
 assert(js.includes("document.body.classList.contains('home') && !reduced.matches"));
 assert(css.includes('body:not(.home) .sf-agency-widget--bento[data-bento-ready="1"] .cdl-bento__reveal'));
 assert(php.includes("$image_loading = $standalone ? 'eager' : 'lazy';"));
-console.log('Shared Agency heading rhythm, stable standalone Bento, and scoped eager images passed.');
+assert(css.includes('--sf-agency-home-top:calc(var(--sf-agency-home-header) + var(--sf-agency-inner-top,28px))'));
+assert(css.includes('--sf-agency-home-header:68px')&&css.includes('--sf-agency-home-header:76px'));
+assert(css.includes('body.home:has(.sf-shell) .sf-agency-widget--studio .codela-studio-hero__intro{padding-inline:0}'));
+console.log('Shared Agency heading rhythm, homepage header clearance, stable standalone Bento, and scoped eager images passed.');

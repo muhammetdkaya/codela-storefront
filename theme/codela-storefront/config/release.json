@@ -6,8 +6,7 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Hesabım popup başlığı ilk HTML'de görsel olarak gizlenir; kapatma butonu ile çakışmaz.",
-    "Ajans ve editoryal hesap popup yükleme göstergesi kritik CSS ile ortalanır; hesap sayfasında aynı kehribar çizgi kullanılır.",
-    "Hesap görünümü ve yükleme göstergesi tek adımda değiştirilir; PIN, Google ve güvenlik doğrulamaları korunur."
+    "Ajans ana sayfasının karşılama, hizmetler ve çalışma süreci alanlarında header sonrası ortak üst boşluk kullanılır.",
+    "Mobil karşılama ve hizmetler yatay hizaları iç sayfalarla eşleştirildi; tam ekran bölüm boyutları ve kaydırma yönetimi korunur."
   ]
 }
