@@ -6,6 +6,8 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Hakkımızda sayfası ajansın ortak koyu footer renklerine ve mobil alt menü boşluğuna bağlandı; e-ticaret footer görünümü korunur."
-  ]
+    "Ajans deneyiminde WooCommerce isteğe bağlı ortak çekirdek ve hesap altyapısı.",
+    "WooCommerce aktifken mevcut e-ticaret akışı korunur."
+  ],
+  "woocommerce_optional": true
 }
