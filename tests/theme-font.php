@@ -24,7 +24,7 @@ font_test( count( $font_fields ) === 1, 'Exactly one site font setting' );
 $field = $font_fields[0];
 font_test( $field['type'] === 'select' && $field['default'] === 'system', 'Safe default is System' );
 font_test( array_keys( $field['options'] ) === array_keys( codela_sf_font_families() ), 'Admin options match runtime allowlist' );
-font_test( $field['options']['system'] === 'System', 'Site font label is brand-neutral' );
+font_test( in_array( $field['options']['system'], [ 'System', 'Sistem' ], true ), 'Site font label is localized and brand-neutral' );
 font_test( $json['styles']['typography']['fontFamily'] === 'var:preset|font-family|sf-site', 'Global typography uses one semantic preset' );
 font_test( $json['settings']['typography']['fontFamilies'][0]['slug'] === 'sf-site', 'Editable preset exists' );
 font_test( isset( $GLOBALS['font_test_filters']['wp_theme_json_data_theme'] ), 'Theme filter registered' );
