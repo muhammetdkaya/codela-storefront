@@ -305,7 +305,8 @@ add_action( 'init', static function(): void {
         update_option( 'codela_sf_security_endpoint_v1', '1', false );
     }
 }, 30 );
-add_action( 'woocommerce_account_guvenlik_endpoint', static function(): void {
+function codela_sf_device_security_settings(): void {
+    if ( ! is_user_logged_in() ) { return; }
     $user = wp_get_current_user();
     if ( ! codela_sf_pk_enabled( $user ) ) {
         echo '<p>' . esc_html__( 'Device sign-in is available for eligible customer, administrator and shop manager accounts over HTTPS.', 'codela-storefront' ) . '</p>';
@@ -336,19 +337,22 @@ add_action( 'woocommerce_account_guvenlik_endpoint', static function(): void {
         echo '</div></div>';
     }
     echo '</section>';
-}, 20 );
+}
+add_action( 'woocommerce_account_guvenlik_endpoint', 'codela_sf_device_security_settings', 20 );
+add_action( 'codela_account_signed_in', 'codela_sf_device_security_settings', 20 );
 
 /** Guest passkey choice is independent of the old PIN card. */
 function codela_sf_pk_guest_markup(): void {
-    if ( is_user_logged_in() || ( empty( $GLOBALS['codela_sf_auth_overlay'] ) && ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) ) ) { return; }
+    if ( is_user_logged_in() || ( empty( $GLOBALS['codela_sf_auth_overlay'] ) && ! codela_sf_is_account_context() ) ) { return; }
     echo '<section class="sf-pk-guest" hidden aria-label="' . esc_attr__( 'Passkey sign-in', 'codela-storefront' ) . '"><header class="sf-pk-hello"><h2>' . esc_html__( 'Welcome', 'codela-storefront' ) . ' 👋</h2><p>' . esc_html__( 'Sign in securely with your account.', 'codela-storefront' ) . '</p></header><button class="sf-pk-choice" type="button"><span class="sf-pk-avatar" aria-hidden="true">' . codela_sf_pk_glyph() . '</span><span class="sf-pk-identity"><strong class="sf-pk-name">' . esc_html__( 'Sign in with passkey', 'codela-storefront' ) . '</strong><small class="sf-pk-detail">' . esc_html__( 'Use your phone or device', 'codela-storefront' ) . '</small></span><span class="sf-pk-symbol" aria-hidden="true">' . codela_sf_pk_animated_glyph() . '</span></button><p class="sf-pk-divider">' . esc_html__( 'or', 'codela-storefront' ) . '</p><button class="sf-pk-use-email" type="button"><span class="sf-alt-login-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M12 3h5a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4h-5"/></svg></span>' . esc_html__( 'Sign in with email or Google', 'codela-storefront' ) . '</button></section>';
 }
 add_action( 'woocommerce_before_customer_login_form', 'codela_sf_pk_guest_markup', 4 );
+add_action( 'codela_account_before_login', 'codela_sf_pk_guest_markup', 5 );
 
 add_action( 'wp_enqueue_scripts', static function(): void {
-    if ( ! codela_sf_commerce_available() ) { return; }
-    if ( is_user_logged_in() && ( ! function_exists( 'is_account_page' ) || ! is_account_page() ) ) { return; }
-    $lazy = codela_sf_guest_auth_lazy_allowed();
+    if ( ! codela_sf_commerce_available() && ! codela_sf_standalone_account() ) { return; }
+    if ( is_user_logged_in() && ! codela_sf_is_account_context() ) { return; }
+    $lazy = ! codela_sf_standalone_account() && codela_sf_guest_auth_lazy_allowed();
     if ( ! $lazy ) {
         $url = get_template_directory_uri() . '/assets/';
         wp_enqueue_script( 'codela-storefront-passkeys', $url . 'scripts/passkeys.js', [ 'codela-storefront-quick-login' ], codela_sf_script_module_version( 'scripts/passkeys.js' ), true );

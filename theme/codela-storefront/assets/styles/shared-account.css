@@ -1,0 +1,11 @@
+/* Standalone account: shared shell and device controls, native WordPress password form. */
+.cdl-shared-account{width:min(100%,720px);margin:clamp(28px,7vh,76px) auto;padding:clamp(20px,4vw,40px);box-sizing:border-box}
+.cdl-shared-account .cdl-account-password{max-width:440px;margin-inline:auto}
+.cdl-shared-account .cdl-account-password h2{font-size:clamp(30px,5vw,42px);line-height:1.1;letter-spacing:-.04em;font-weight:500}
+.cdl-shared-account .login-username label,.cdl-shared-account .login-password label{display:block;margin-bottom:8px;font-size:14px}
+.cdl-shared-account :is(.login-username,.login-password) input{box-sizing:border-box;width:100%;min-height:52px;border:1px solid currentColor;border-radius:16px;padding:0 16px;background:transparent;color:inherit;font:inherit}
+.cdl-shared-account .login-submit input{min-height:52px;width:100%;border:0;border-radius:999px;background:var(--sf-accent,#d3a480);color:#151515;font:inherit;font-weight:600;cursor:pointer}
+.cdl-shared-account .login-remember input{accent-color:var(--sf-accent,#d3a480)}
+.cdl-shared-account .sf-auth-social{max-width:440px;margin:20px auto}
+.cdl-shared-account:is(.sf-pin-active,.sf-passkey-active) .cdl-account-password,.cdl-shared-account.sf-passkey-active .sf-auth-social{display:none!important}
+.cdl-shared-account :is(input,button,a):focus-visible{outline:2px solid var(--sf-accent,#d3a480);outline-offset:3px}

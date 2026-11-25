@@ -503,6 +503,10 @@ add_action( 'wp_enqueue_scripts', function() {
             'privacyUrl' => function_exists( 'get_privacy_policy_url' ) ? esc_url_raw( (string) get_privacy_policy_url() ) : '',
         ] ) . ';', 'before' );
     }
+    if ( codela_sf_standalone_account() ) {
+        wp_enqueue_style( 'codela-storefront-shared-account', $root_uri . 'styles/shared-account.css',
+            [ 'codela-storefront-components' ], codela_sf_script_module_version( 'styles/shared-account.css' ) );
+    }
     if ( codela_sf_is_account_context() ) {
         wp_enqueue_style( 'codela-storefront-account', $root_uri . 'styles/account.css', [ 'codela-storefront-components' ], $style_version );
         if ( is_user_logged_in() ) {

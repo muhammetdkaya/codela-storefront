@@ -53,3 +53,7 @@ function codela_sf_cart_url(): string {
 function codela_sf_checkout_url(): string {
     return function_exists( 'wc_get_checkout_url' ) ? (string) wc_get_checkout_url() : '';
 }
+
+function codela_sf_standalone_account(): bool {
+    return function_exists( 'codela_account_is_wordpress_page' ) && codela_account_is_wordpress_page();
+}
