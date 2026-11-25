@@ -6,7 +6,7 @@
     "codela": "1.2.5"
   },
   "changes": [
-    "Ajans ana sayfasının karşılama, hizmetler ve çalışma süreci alanlarında header sonrası ortak üst boşluk kullanılır.",
-    "Mobil karşılama ve hizmetler yatay hizaları iç sayfalarla eşleştirildi; tam ekran bölüm boyutları ve kaydırma yönetimi korunur."
+    "Proje Başlat sayfası ortak ajans yatay boşluklarını kullanır: mobil 18 px, masaüstü 20 px; içerik genişliği en fazla 696 px.",
+    "Viewport genişliğine bağlı negatif kenar boşlukları kaldırıldı ve tüm form adımları aynı hizaya bağlandı."
   ]
 }

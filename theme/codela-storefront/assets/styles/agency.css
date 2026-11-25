@@ -2859,7 +2859,7 @@ html.sf-agency-stage-nav body.home:has(.sf-agency-widget--studio){
 
 /* 0.1.422 — shared inner-page header rhythm. The shell already reserves the
    fixed header height. Do not add the homepage stage offset on top of it. */
-body:not(.home):has(.sf-shell):has(.sf-content :is(.sf-agency-widget--bento,.sf-agency-widget--about,.sf-agency-widget--contact-bento)),
+body:not(.home):has(.sf-shell):has(.sf-content :is(.sf-agency-widget--bento,.sf-agency-widget--about,.sf-agency-widget--contact-bento,.sf-agency-widget--project)),
 body.home:has(.sf-shell):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process)){
   --sf-agency-inner-top:28px;
   --sf-agency-inner-gutter:20px;
@@ -2892,7 +2892,7 @@ body:not(.home) .sf-agency-widget--bento[data-bento-ready="1"] .cdl-bento__revea
 }
 body:not(.home) .sf-agency-widget--bento .cdl-bento__card:hover{transform:translateY(-2px)}
 @media(max-width:739px){
-  body:not(.home):has(.sf-shell):has(.sf-content :is(.sf-agency-widget--bento,.sf-agency-widget--about,.sf-agency-widget--contact-bento)),
+  body:not(.home):has(.sf-shell):has(.sf-content :is(.sf-agency-widget--bento,.sf-agency-widget--about,.sf-agency-widget--contact-bento,.sf-agency-widget--project)),
   body.home:has(.sf-shell):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process)){--sf-agency-inner-top:26px;--sf-agency-inner-gutter:18px}
   body:not(.home):has(.sf-shell) .sf-agency-widget--bento .cdl-bento__inner{width:100%;flex:1 1 auto}
   body:not(.home):has(.sf-shell) .sf-agency-widget--bento .cdl-bento__heading h2{font-size:30px;line-height:1.08}

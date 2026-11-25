@@ -241,7 +241,6 @@ body:not(.wp-admin) .sf-agency-widget--project .cdl-project__heading > :is(h1,h2
 .sf-agency-widget--project .cdl-project__capacity-dots i.is-free{background:#d3a480}
 .sf-agency-widget--project .cdl-project__slots .cdl-project__choice>span{padding-block:13px}
 
-@media(prefers-reduced-motion:no-preference){
 /* Final Project Start: one heading per step, availability only in step 2. */
 .sf-agency-widget--project .cdl-project__shell{width:min(100%,656px)}
 .sf-agency-widget--project .cdl-project__progress-label{margin-bottom:12px;font-size:11px;letter-spacing:.22em;color:#928c9c}
@@ -268,3 +267,17 @@ body:not(.wp-admin) .sf-agency-widget--project .cdl-project__heading > :is(h1,h2
 .sf-agency-widget--project .cdl-project__success>p{margin:0!important;font-size:14px;line-height:1.5}
 @media(max-width:739px){.sf-agency-widget--project .cdl-project{padding-inline:18px}.sf-agency-widget--project .cdl-project__step{gap:24px}}
 @media(prefers-reduced-motion:reduce){.sf-agency-widget--project .cdl-project__progress-track>span{transition:none}}
+
+/* 0.1.425 — match the shared Agency editorial content width and gutters.
+   Avoid viewport-width negative margins, which misalign on scrollbar layouts.
+   All form steps and reduced-motion preferences use identical geometry. */
+body:not(.home) .sf-agency-widget--project .cdl-project{
+  width:100%;max-width:100%;margin-inline:0;
+  padding-inline:var(--sf-agency-inner-gutter,20px);
+}
+body:not(.home) .sf-agency-widget--project .cdl-project__shell{
+  flex:0 1 696px;width:min(100%,696px);max-width:696px;
+}
+@media(max-width:739px){
+  body:not(.home) .sf-agency-widget--project .cdl-project{padding-inline:var(--sf-agency-inner-gutter,18px)}
+}
