@@ -61,7 +61,7 @@ const rect=e=>{
   const browser=await chromium.launch({executablePath:process.env.CHROMIUM_BIN||undefined});
   const base='http://127.0.0.1:'+server.address().port+'/';
   try{
-    for(const [width,height] of [[390,844],[402,874],[320,667],[1280,900]]){
+    for(const [width,height] of [[390,844],[402,874],[320,667],[768,900],[1280,720],[1280,900],[1440,900],[1920,1080],[2560,1440]]){
       for(const dock of [false,true]){
         const page=await browser.newPage({viewport:{width,height}});
         await page.goto(base+'?page=home&dock='+(dock?'1':'0'));
@@ -80,7 +80,11 @@ const rect=e=>{
             title:(()=>{
               const t=document.querySelector('.codela-studio-hero__title');
               const st=getComputedStyle(t);
-              return {height:t.getBoundingClientRect().height,lineHeight:parseFloat(st.lineHeight)};
+              const intro=t.closest('.codela-studio-hero__intro');
+              const range=document.createRange();range.selectNodeContents(t);
+              const text=range.getBoundingClientRect(),column=intro.getBoundingClientRect();
+              return {height:t.getBoundingClientRect().height,lineHeight:parseFloat(st.lineHeight),
+                right:text.right,columnRight:column.right,scrollWidth:t.scrollWidth,clientWidth:t.clientWidth};
             })()};
         });
         assert(boxes.hero&&boxes.photo&&boxes.bento,'Real Studio + Bento rendered');
@@ -94,10 +98,15 @@ const rect=e=>{
             'Photo must fill the stage, without previous 110px dead zone: '+JSON.stringify(boxes));
           assert(boxes.bodyPadding==='0px','No trailing body dock reserve on Agency');
         }
+        if(width>=740){
+          assert(boxes.title.right<=boxes.title.columnRight+2,'Desktop title fits its own grid column: '+JSON.stringify(boxes.title));
+          assert(boxes.title.scrollWidth<=boxes.title.clientWidth+2,'Desktop headline never clips');
+        }
         assert(boxes.overflow<=2,'No horizontal overflow: '+JSON.stringify(boxes));
         assert(/^y(?: proximity)?$/.test(boxes.snap),'Home sections use gentle proximity snap (browsers serialize proximity as y): '+JSON.stringify(boxes));
         console.log('Agency stage:',width,height,'dock',dock,'photo-tail',Math.round(boxes.hero.bottom-boxes.photo.bottom),
           'snap',boxes.snap,'overflow',boxes.overflow);
+        if(width>=1280){await page.screenshot({path:path.join(root,'qa','agency-viewport-home-'+width+'x'+height+'-'+(dock?'dock':'no-dock')+'.png')});}
         if(width===390){
           await page.screenshot({path:path.join(root,'qa','agency-viewport-home-'+(dock?'dock':'no-dock')+'.png')});
         }

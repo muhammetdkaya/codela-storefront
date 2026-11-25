@@ -2937,3 +2937,42 @@ body.home:has(.sf-shell) .sf-agency-widget--process .sf-agency-process{
   body.home:has(.sf-shell) .sf-agency-widget--bento .cdl-bento{padding-inline:var(--sf-agency-inner-gutter,18px)}
   body.home:has(.sf-shell) .sf-agency-widget--bento .cdl-bento__heading{padding-inline:0}
 }
+
+
+/* Desktop stage sizing follows the available width and height, not the phone
+   art direction. Long authored titles wrap inside their own grid column.
+   The approved mobile geometry is untouched. */
+@media(min-width:740px){
+  .sf-agency-widget--studio .codela-studio-hero{
+    padding-block:clamp(84px,10svh,130px) clamp(24px,5svh,72px);
+  }
+  .sf-agency-widget--studio .codela-studio-hero__inner{
+    width:min(100%,1440px);gap:clamp(24px,4vw,80px);
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    align-items:center;
+  }
+  .sf-agency-widget--studio .codela-studio-hero__title{
+    font-size:clamp(36px,3.7vw,74px);max-width:100%;text-wrap:balance;
+  }
+  .sf-agency-widget--studio .codela-studio-hero__title-line{white-space:normal}
+  .sf-agency-widget--studio .codela-studio-hero__visual{
+    width:100%;height:clamp(260px,calc(100svh - 200px),640px);aspect-ratio:auto;
+  }
+  body.home:has(.sf-shell) .sf-agency-widget--studio .codela-studio-hero__inner{align-items:center}
+  .sf-agency-widget--bento .cdl-bento{
+    padding-block:clamp(84px,10svh,130px) clamp(24px,5svh,56px);
+  }
+  .sf-agency-widget--bento .cdl-bento__inner,
+  body:not(.home):has(.sf-shell) .sf-agency-widget--bento .cdl-bento__inner{
+    width:min(100%,clamp(920px,74vw,1360px));min-width:0;
+  }
+  .sf-agency-widget--bento .cdl-bento__grid{
+    min-height:0;max-height:none;flex:1 1 auto;
+    grid-template-rows:minmax(180px,1.42fr) minmax(142px,1.08fr) minmax(88px,.66fr);
+  }
+}
+@media(min-width:740px) and (max-width:1023px){
+  .sf-agency-widget--studio .codela-studio-hero__title{font-size:clamp(30px,3.7vw,42px)}
+  .sf-agency-widget--studio .codela-studio-hero__visual-foot{left:12px;right:12px;gap:8px}
+  .sf-agency-widget--studio .codela-studio-hero__visual-foot>span{font-size:9px}
+}
