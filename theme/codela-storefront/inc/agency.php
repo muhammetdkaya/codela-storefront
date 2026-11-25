@@ -161,8 +161,8 @@ add_action( 'wp_enqueue_scripts', static function() {
     if ( $flags['about'] ) {
         wp_enqueue_style( 'codela-storefront-agency-about', get_template_directory_uri() . '/assets/styles/agency-about.css', [ 'codela-storefront-agency' ], wp_get_theme()->get( 'Version' ) );
     }
-    // Spotlight assets are required only for an Agency homepage containing Studio.
-    if ( $flags['studio'] && function_exists( 'is_front_page' ) && is_front_page() ) {
+    // Studio owns its visual resources on every page that contains the component.
+    if ( $flags['studio'] ) {
         wp_enqueue_style( 'codela-storefront-agency-light-scene',
             get_template_directory_uri() . '/assets/styles/agency-light-scene.css',
             [ 'codela-storefront-agency' ], wp_get_theme()->get( 'Version' ) );
@@ -368,17 +368,15 @@ function codela_sf_project_availability(): array {
     }
     return $out;
 }
-add_action( 'admin_menu', static function() {
-    if ( ! codela_sf_agency_experience() ) { return; }
-    add_options_page( 'Codela Proje Müsaitliği', 'Codela Müsaitlik', 'manage_options', 'codela-project-capacity', static function() {
-        if ( ! current_user_can( 'manage_options' ) ) { return; }
-        echo '<div class="wrap"><h1>Codela Proje Müsaitliği</h1><p>Önümüzdeki üç ay için kalan proje kapasitesi. Boş alan = henüz belirlenmedi; 0 = dolu. Talepler rezervasyon değildir; kabul edilen işler sonrası kapasiteyi güncelleyin.</p><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="codela_sf_save_capacity">';
-        wp_nonce_field( 'codela_sf_save_capacity' );
-        foreach ( codela_sf_project_availability() as $month => $slot ) {
-            echo '<p><label for="cdl-cap-' . esc_attr($month) . '">' . esc_html($slot['label']) . '</label> <input id="cdl-cap-' . esc_attr($month) . '" type="number" min="0" max="12" name="capacity[' . esc_attr($month) . ']" value="' . esc_attr($slot['free'] ?? '') . '"></p>';
-        }
-        submit_button( 'Kapasiteyi kaydet' ); echo '</form></div>';
-    } );
+/** Keep project capacity inside Codela's existing theme integration settings. */
+add_action( 'codela_theme_settings_integrations', static function() {
+    if ( ! current_user_can( 'manage_options' ) ) { return; }
+    echo '<section id="codela-project-capacity"><h2>Codela Proje Müsaitliği</h2><p>Önümüzdeki üç ay için kalan proje kapasitesi. Boş alan = henüz belirlenmedi; 0 = dolu. Talepler rezervasyon değildir.</p><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="codela_sf_save_capacity">';
+    wp_nonce_field( 'codela_sf_save_capacity' );
+    foreach ( codela_sf_project_availability() as $month => $slot ) {
+        echo '<p><label for="cdl-cap-' . esc_attr($month) . '">' . esc_html($slot['label']) . '</label> <input id="cdl-cap-' . esc_attr($month) . '" type="number" min="0" max="12" name="capacity[' . esc_attr($month) . ']" value="' . esc_attr($slot['free'] ?? '') . '"></p>';
+    }
+    submit_button( 'Kapasiteyi kaydet' ); echo '</form></section>';
 } );
 add_action( 'admin_post_codela_sf_save_capacity', static function() {
     if ( ! current_user_can( 'manage_options' ) ) { wp_die( 'Yetkisiz işlem.', '', [ 'response' => 403 ] ); }
@@ -390,7 +388,7 @@ add_action( 'admin_post_codela_sf_save_capacity', static function() {
         if ( is_string($value) && preg_match('/^(?:[0-9]|1[0-2])$/D',$value) ) { $saved[$key] = (int) $value; }
     }
     update_option( 'codela_sf_project_capacity', $saved, false );
-    wp_safe_redirect( admin_url( 'options-general.php?page=codela-project-capacity' ) ); exit;
+    wp_safe_redirect( codela_theme_admin_url( 'integrations' ) . '#codela-project-capacity' ); exit;
 } );
 
 function codela_sf_agency_experience(): bool {
