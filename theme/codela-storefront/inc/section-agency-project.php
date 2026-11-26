@@ -80,15 +80,20 @@ function codela_sf_section_agency_project( array $data, string $type = '' ): str
                 </div>
                 <div class="cdl-project__step" data-project-step="2">
                   <div class="cdl-project__heading"><h2>Proje kapsamını <span class="cdl-project__title-muted">netleştirelim.</span></h2><p>İhtiyacına uygun kapsamı seçebilirsin.</p></div>
-                  <?php foreach ( $services as $service ) : $key = codela_sf_project_quote_key( $service ); $rules = $quote_rules[$key]; ?>
-                    <fieldset class="cdl-project__fieldset cdl-project__scope" data-project-scope="<?php echo esc_attr( $service ); ?>" data-pricing-mode="<?php echo esc_attr( codela_sf_quote_pricing_mode( $key, $rules ) ); ?>">
+                  <div class="cdl-project__scope-tabs" data-scope-tabs aria-label="Seçili hizmetler" hidden>
+                    <?php foreach ( $services as $service ) : $key = codela_sf_project_quote_key( $service ); ?>
+                      <button type="button" data-scope-tab="<?php echo esc_attr( $service ); ?>" aria-pressed="false"><?php echo esc_html( codela_sf_quote_services()[$key] ); ?></button>
+                    <?php endforeach; ?>
+                  </div>
+                  <?php foreach ( $services as $service ) : $key = codela_sf_project_quote_key( $service ); $rules = $quote_rules[$key]; $mode = codela_sf_quote_pricing_mode( $key, $rules ); ?>
+                    <fieldset class="cdl-project__fieldset cdl-project__scope" data-project-scope="<?php echo esc_attr( $service ); ?>" data-pricing-mode="<?php echo esc_attr( $mode ); ?>">
                       <legend><?php echo esc_html( codela_sf_quote_services()[$key] ); ?></legend>
                       <?php $multiple = 'software' === $key; $row_number = 0; ?>
                       <div class="cdl-project__choices cdl-project__choices--services cdl-project__scope-options">
                         <?php foreach ( $rules['packages'] as $id => $row ) : ?>
                           <label class="cdl-project__choice">
                             <input type="<?php echo $multiple ? 'checkbox' : 'radio'; ?>" data-scope-package name="project_quote[<?php echo esc_attr( $key ); ?>][packages][]" value="<?php echo esc_attr( $id ); ?>" data-min="<?php echo esc_attr( $row['min'] ?? '' ); ?>" data-max="<?php echo esc_attr( $row['max'] ?? '' ); ?>">
-                            <span><i aria-hidden="true"><?php echo esc_html( sprintf( '%02d', ++$row_number ) ); ?></i><span class="cdl-project__choice-copy"><strong><?php echo esc_html( $row['label'] ); ?></strong></span></span>
+                            <span><i aria-hidden="true"><?php echo esc_html( sprintf( '%02d', ++$row_number ) ); ?></i><span class="cdl-project__choice-copy"><strong><?php echo esc_html( $row['label'] ); ?></strong><?php if ( ! empty( $row['description'] ) ) : ?><small><?php echo esc_html( $row['description'] ); ?></small><?php endif; ?></span><span class="cdl-project__package-price"><?php echo esc_html( null === $row['min'] || null === $row['max'] ? 'Teklif alın' : ( 'starting' === $mode ? codela_sf_quote_money( [ $row['min'], $row['min'] ] ) . ' itibarıyla' : codela_sf_quote_row_price( $row ) . ( 'monthly' === $mode ? ' / ay' : '' ) ) ); ?></span></span>
                           </label>
                         <?php endforeach; ?>
                         <label class="cdl-project__choice">
@@ -96,14 +101,13 @@ function codela_sf_section_agency_project( array $data, string $type = '' ): str
                           <span><i aria-hidden="true"><?php echo esc_html( sprintf( '%02d', ++$row_number ) ); ?></i><span class="cdl-project__choice-copy"><strong>İhtiyacıma özel teklif</strong><small>Kapsamı birlikte belirleyelim</small></span></span>
                         </label>
                       </div>
-                      <?php if ( $rules['extras'] ) : ?><details class="cdl-project__scope-extras" data-scope-extras><summary>Ek kapsamlar <span>İsteğe bağlı</span></summary><div class="cdl-project__choices cdl-project__choices--services cdl-project__scope-options"><?php foreach ( $rules['extras'] as $id => $row ) : ?>
-                        <label class="cdl-project__choice"><input type="checkbox" data-scope-extra name="project_quote[<?php echo esc_attr( $key ); ?>][extras][]" value="<?php echo esc_attr( $id ); ?>" data-min="<?php echo esc_attr( $row['min'] ?? '' ); ?>" data-max="<?php echo esc_attr( $row['max'] ?? '' ); ?>"><span><i aria-hidden="true">+</i><span class="cdl-project__choice-copy"><strong><?php echo esc_html( $row['label'] ); ?></strong></span></span></label>
-                      <?php endforeach; ?></div></details><?php endif; ?>
-                      <div class="cdl-project__scope-price"><span>Tahmini bütçe</span><output class="cdl-project__scope-estimate" data-scope-estimate aria-live="polite">Görüşmede belirlenecek</output></div>
+                      <?php if ( $rules['extras'] ) : ?><div class="cdl-project__scope-extras" data-scope-extras><span class="cdl-project__extras-label">Ek kapsamlar · İsteğe bağlı</span><div class="cdl-project__choices cdl-project__choices--three cdl-project__scope-chips"><?php foreach ( $rules['extras'] as $id => $row ) : ?>
+                        <label class="cdl-project__choice"><input type="checkbox" data-scope-extra name="project_quote[<?php echo esc_attr( $key ); ?>][extras][]" value="<?php echo esc_attr( $id ); ?>" data-min="<?php echo esc_attr( $row['min'] ?? '' ); ?>" data-max="<?php echo esc_attr( $row['max'] ?? '' ); ?>"><span><span class="cdl-project__chip-mark" aria-hidden="true"></span><?php echo esc_html( $row['label'] ); ?></span></label>
+                      <?php endforeach; ?></div></div><?php endif; ?>
+                      <output data-scope-estimate hidden>Görüşmede belirlenecek</output>
                     </fieldset>
                   <?php endforeach; ?>
-                  <p class="cdl-project__reservation-note">Tahmini bütçe bağlayıcı değildir. Nihai fiyat ve KDV görüşmede netleşir.</p>
-                  <div class="cdl-project__scope-footer"><div class="cdl-project__controls"><button type="button" class="cdl-project__button cdl-project__back-button" data-project-back aria-label="Önceki adım">←</button><button type="button" class="cdl-project__button" data-project-next>Devam Et: Takvim <span aria-hidden="true">→</span></button></div></div>
+                  <div class="cdl-project__scope-footer"><div class="cdl-project__scope-price"><span>Tahmini bütçe</span><output class="cdl-project__scope-estimate" data-scope-total aria-live="polite">Görüşmede belirlenecek</output></div><p class="cdl-project__reservation-note">Tahmini bütçe bağlayıcı değildir. Nihai fiyat ve KDV görüşmede netleşir.</p><div class="cdl-project__controls"><button type="button" class="cdl-project__button cdl-project__back-button" data-project-back aria-label="Önceki adım">←</button><button type="button" class="cdl-project__button" data-project-next>Devam Et: Takvim <span aria-hidden="true">→</span></button></div></div>
                 </div>
                 <div class="cdl-project__step" data-project-step="3">
                   <div class="cdl-project__heading"><h2>Ne zaman <span class="cdl-project__title-muted">başlayalım?</span></h2></div>

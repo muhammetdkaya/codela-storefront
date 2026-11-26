@@ -23,6 +23,7 @@ function get_post( $id ) {
     return $GLOBALS['query']->ID === $id ? $GLOBALS['query'] : null;
 }
 function get_option( $name, $default = false ) {
+    if ('codela_sf_quote_rules' === $name && isset($GLOBALS['quote_fixture'])) { return $GLOBALS['quote_fixture']; }
     if ('codela_sf_project_capacity' === $name) {
         $start = new DateTimeImmutable('first day of next month midnight', new DateTimeZone('Europe/Istanbul'));
         return [$start->format('Y-m')=>2,$start->modify('+1 month')->format('Y-m')=>0];
@@ -46,6 +47,7 @@ function get_privacy_policy_url() { return 'https://codela.test/gizlilik/'; }
 function wp_unslash( $value ) { return $value; }
 function get_transient( $key ) { return $key === 'codela_sf_project_receipt_' . str_repeat( 'a', 32 ) ? ['summary'=>['Web Tasarım','Esnek takvim']] : false; }
 function is_email( $value ) { return (bool) filter_var( $value, FILTER_VALIDATE_EMAIL ); }
+function sanitize_text_field( $value ) { return trim(strip_tags($value)); }
 function sanitize_key( $value ) { return preg_replace( '/[^a-z0-9_-]/', '', strtolower( $value ) ); }
 function get_template_directory_uri() { return 'https://codela.test/wp-content/themes/codela-storefront'; }
 function wp_get_theme() { return new class { function get( $field ) { return '0.1.321'; } }; }
@@ -204,7 +206,10 @@ agency_page_check( str_contains($confirmed,'Talebin <span class="cdl-project__ti
     'Server-confirmed-only success screen does not expose active form' );
 $_GET=$original_query;
 if ( in_array('--render=project',$argv,true) ) {
-    $local=$project_html;
+    $GLOBALS['quote_fixture']=codela_sf_quote_defaults();
+    $GLOBALS['quote_fixture']['web']['packages'][0]=['label'=>'WordPress web sitesi','description'=>'Örnek açıklama','min'=>12000,'max'=>18000];
+    $GLOBALS['quote_fixture']['web']['extras'][0]=['label'=>'Ek sayfa','min'=>1500,'max'=>2000];
+    $local=codela_sf_section_agency_project($project_data);
     echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
     echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/storefront-base.css">';
     echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/agency.css">';

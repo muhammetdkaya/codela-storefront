@@ -58,7 +58,8 @@ const server=http.createServer((req,res)=>{
    assert.equal(await one.locator('input:checked').count(),2,'Multiple services retained');
    await one.locator('[data-project-next]').click();
    assert(await scope.isVisible());
-   assert.equal(await scope.locator('[data-project-scope]:visible').count(),2,'Only selected services show scope');
+   assert.equal(await scope.locator('[data-project-scope]:visible').count(),1,'Only active service is visible');
+   assert.equal(await scope.locator('[data-scope-tab]:visible').count(),2,'Selected services have tabs');
    assert.equal(await scope.locator('input[data-scope-extra]:checked').count(),0,'No automatically selected paid extras');
    assert.equal(await scope.locator('select').count(),0,'No native dropdown in scope');
    const web=scope.locator('[data-project-scope="Web Tasarım"]');
@@ -68,6 +69,16 @@ const server=http.createServer((req,res)=>{
    assert(!(await web.locator('input[data-scope-custom]').isChecked()));
    const marker=await web.locator('input[data-scope-package]:checked+span').evaluate(el=>getComputedStyle(el,'::after').width);
    assert.equal(marker,'22px','Shared choice indicator');
+   assert((await web.locator('.cdl-project__package-price').first().textContent()).includes('12.000'));
+   assert(await web.getByText('Örnek açıklama').isVisible());
+   await web.locator('input[data-scope-extra]').first().locator('..').click();
+   assert((await scope.locator('[data-scope-total]').textContent()).includes('13.500'));
+   await scope.locator('[data-scope-tab="E-Ticaret"]').click();
+   assert(!(await web.isVisible()));
+   assert((await widget.locator('form').evaluate(el=>new FormData(el).get('project_quote[web][packages][]')))==='0','Inactive selected tab submits package');
+   await scope.locator('[data-scope-tab="Web Tasarım"]').click();
+   assert(await web.locator('input[data-scope-package]').first().isChecked());
+   assert(await web.locator('input[data-scope-extra]').first().isChecked());
    assert.equal(await scope.locator('[data-project-scope-summary]').count(),0,'No duplicate price summary');
    await web.locator('input[data-scope-custom]').locator('..').click();
    assert.equal(await web.locator('input[data-scope-package]:checked').count(),0);
@@ -98,7 +109,8 @@ const server=http.createServer((req,res)=>{
    assert.equal(await one.locator('input:checked').count(),2);
    await one.locator('[data-project-next]').click();
    assert(await scope.isVisible());
-   assert.equal(await scope.locator('[data-project-scope]:visible').count(),2,'Only selected services show scope');
+   assert.equal(await scope.locator('[data-project-scope]:visible').count(),1,'Only active service is visible');
+   assert.equal(await scope.locator('[data-scope-tab]:visible').count(),2,'Selected services have tabs');
    assert.equal(await scope.locator('input[data-scope-extra]:checked').count(),0,'No automatically selected paid extras');
    await scope.locator('[data-project-next]').click();
    assert(await two.locator('input[value="flexible"]').isChecked());
