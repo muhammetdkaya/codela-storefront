@@ -7,8 +7,10 @@ const {execFileSync}=require('node:child_process');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const root=path.resolve(__dirname,'..');
 const html=execFileSync(process.env.PHP_BIN||'php',['tests/agency-pages.php','--render=project'],{cwd:root,encoding:'utf8'});
+const adminHtml=execFileSync(process.env.PHP_BIN||'php',['tests/agency-pages.php','--render=quote-admin'],{cwd:root,encoding:'utf8'});
 const server=http.createServer((req,res)=>{
  const loc=new URL(req.url,'http://localhost').pathname;
+ if(loc==='/admin'){res.setHeader('Content-Type','text/html; charset=utf-8');return res.end(adminHtml);}
  if(loc==='/'){res.setHeader('Content-Type','text/html; charset=utf-8');return res.end(html);}
  const f=path.resolve(root,'.'+loc);
  if(!f.startsWith(root+path.sep)||!fs.existsSync(f)||!fs.statSync(f).isFile()){res.statusCode=404;return res.end();}
@@ -58,8 +60,30 @@ const server=http.createServer((req,res)=>{
    assert.equal(await one.locator('input:checked').count(),2,'Multiple services retained');
    await one.locator('[data-project-next]').click();
    assert(await scope.isVisible());
-   assert.equal(await scope.locator('[data-project-scope]:visible').count(),2,'Only selected services show scope');
+   assert.equal(await scope.locator('[data-project-scope]:visible').count(),1,'Only active service is visible');
+   assert.equal(await scope.locator('[data-scope-tab]:visible').count(),2,'Selected services have tabs');
    assert.equal(await scope.locator('input[data-scope-extra]:checked').count(),0,'No automatically selected paid extras');
+   assert.equal(await scope.locator('select').count(),0,'No native dropdown in scope');
+   const web=scope.locator('[data-project-scope="Web Tasarım"]');
+   assert.equal(await web.locator('input[data-scope-package]:checked').count(),0,'No priced default');
+   assert(await web.locator('input[data-scope-custom]').isChecked());
+   await web.locator('input[data-scope-package]').first().locator('..').click();
+   assert(!(await web.locator('input[data-scope-custom]').isChecked()));
+   const marker=await web.locator('input[data-scope-package]:checked+span').evaluate(el=>getComputedStyle(el,'::after').width);
+   assert.equal(marker,'22px','Shared choice indicator');
+   assert((await web.locator('.cdl-project__package-price').first().textContent()).includes('12.000'));
+   assert(await web.getByText('Örnek açıklama').isVisible());
+   await web.locator('input[data-scope-extra]').first().locator('..').click();
+   assert((await scope.locator('[data-scope-total]').textContent()).includes('13.500'));
+   await scope.locator('[data-scope-tab="E-Ticaret"]').click();
+   assert(!(await web.isVisible()));
+   assert((await widget.locator('form').evaluate(el=>new FormData(el).get('project_quote[web][packages][]')))==='0','Inactive selected tab submits package');
+   await scope.locator('[data-scope-tab="Web Tasarım"]').click();
+   assert(await web.locator('input[data-scope-package]').first().isChecked());
+   assert(await web.locator('input[data-scope-extra]').first().isChecked());
+   assert.equal(await scope.locator('[data-project-scope-summary]').count(),0,'No duplicate price summary');
+   await web.locator('input[data-scope-custom]').locator('..').click();
+   assert.equal(await web.locator('input[data-scope-package]:checked').count(),0);
    await scope.locator('[data-project-next]').click();
    assert(await two.isVisible());
    assert.equal(await two.locator('input[name="agency_project_month"]').count(),4);
@@ -87,7 +111,8 @@ const server=http.createServer((req,res)=>{
    assert.equal(await one.locator('input:checked').count(),2);
    await one.locator('[data-project-next]').click();
    assert(await scope.isVisible());
-   assert.equal(await scope.locator('[data-project-scope]:visible').count(),2,'Only selected services show scope');
+   assert.equal(await scope.locator('[data-project-scope]:visible').count(),1,'Only active service is visible');
+   assert.equal(await scope.locator('[data-scope-tab]:visible').count(),2,'Selected services have tabs');
    assert.equal(await scope.locator('input[data-scope-extra]:checked').count(),0,'No automatically selected paid extras');
    await scope.locator('[data-project-next]').click();
    assert(await two.locator('input[value="flexible"]').isChecked());
@@ -104,6 +129,39 @@ const server=http.createServer((req,res)=>{
    await page.screenshot({path:path.join(root,'qa','agency-project-'+width+'.png'),fullPage:true});
    await page.close();
   }
+  const admin=await browser.newPage({viewport:{width:390,height:844}});
+  const adminErrors=[];admin.on('pageerror',e=>adminErrors.push(e.message));
+  await admin.goto('http://127.0.0.1:'+server.address().port+'/admin');
+  const webAdmin=admin.locator('[data-quote-service="web"]');
+  const ecomAdmin=admin.locator('[data-quote-service="commerce"]');
+  assert(await webAdmin.isVisible()&&!(await ecomAdmin.isVisible()));
+  const group=webAdmin.locator('[data-quote-group][data-kind="packages"]');
+  assert((await group.locator('[data-quote-price]').first().textContent()).includes('12.000'));
+  await group.locator('[data-quote-add]').click();
+  const added=group.locator('[data-quote-row]').last();
+  assert(await added.locator('[data-quote-field="label"]').isVisible());
+  await added.locator('[data-quote-field="label"]').fill('Yeni paket');
+  await added.locator('[data-quote-field="description"]').fill('Kısa açıklama');
+  await added.locator('[data-quote-field="min"]').fill('25000');
+  await added.locator('[data-quote-fixed]').click();
+  assert.equal(await added.locator('[data-quote-field="max"]').inputValue(),'25000');
+  assert((await added.locator('[data-quote-price]').textContent()).includes('25.000 TL'));
+  await admin.locator('[data-quote-tab="commerce"]').click();
+  assert(await ecomAdmin.isVisible()&&!(await webAdmin.isVisible()));
+  assert.equal(await admin.locator('#codela-quote-rules form').evaluate(el=>new FormData(el).get('quote[web][packages][2][label]')),'Yeni paket');
+  await admin.locator('[data-quote-tab="web"]').click();
+  await added.locator('[data-quote-unknown]').click();
+  assert.equal(await added.locator('[data-quote-field="min"]').inputValue(),'');
+  await added.locator('[data-quote-field="min"]').fill('30000');
+  await admin.locator('[data-quote-tab="commerce"]').click();
+  await admin.locator('#codela-quote-rules form button[type="submit"]').click();
+  assert(await webAdmin.isVisible(),'Invalid range returns to correct service');
+  assert(await added.locator('[data-quote-field="max"]').isVisible(),'Invalid editor opens');
+  await added.locator('[data-quote-fixed]').click();
+  await admin.locator('[data-quote-tab="commerce"]').click();
+  assert.equal(await admin.locator('#codela-quote-rules form').evaluate(el=>new FormData(el).get('quote_editor_complete')),'1');
+  assert.deepEqual(adminErrors,[]);
+  await admin.close();
   console.log('MONA Project Start: five viewports, four steps, back/edit, selection, secure native form passed');
  } finally {await browser.close();await new Promise(done=>server.close(done));}
 })().catch(error=>{console.error(error);server.close();process.exitCode=1;});

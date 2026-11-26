@@ -303,16 +303,44 @@ body:not(.home) .sf-agency-widget--project .cdl-project__shell{
   }
 }
 
-/* Quote scope uses the existing project typography, underlines and glass actions. */
+/* Project scope reuses the actual service/timeline choice component. */
 .sf-agency-widget--project .cdl-project__progress-track>span{width:25%}
-.sf-agency-widget--project .cdl-project__scope[hidden]{display:none!important}
-.sf-agency-widget--project .cdl-project__scope{display:grid;gap:12px;border-bottom:1px solid #ffffff17;padding-bottom:16px!important}
-.sf-agency-widget--project .cdl-project__scope legend{color:inherit;font-weight:600;font-size:15px}
-.sf-agency-widget--project .cdl-project__scope-custom,.sf-agency-widget--project .cdl-project__scope-options label{display:flex;align-items:center;gap:10px;font-size:13px;line-height:1.45;padding:8px 0}
-.sf-agency-widget--project .cdl-project__scope input{accent-color:#d3a480;flex:none}
-.sf-agency-widget--project .cdl-project__scope-select{display:grid;gap:6px;font-size:12px;color:#b6b0bf}
-.sf-agency-widget--project .cdl-project__scope select{width:100%;max-width:100%;min-height:44px;font:inherit;font-size:14px;color:#f8f7fa;background:#09090c;border:0;border-bottom:1px solid #ffffff24;border-radius:0}
-.sf-agency-widget--project .cdl-project__scope-extras summary{cursor:pointer;color:#b6b0bf;font-size:13px;padding:8px 0}
-.sf-agency-widget--project .cdl-project__scope-estimate{color:#d3a480;font-size:14px;font-weight:600;margin:0!important}
-.sf-agency-widget--project .cdl-project__scope-footer{position:sticky;bottom:env(safe-area-inset-bottom,0px);z-index:3;background:#09090c;padding-block:8px;display:grid;gap:8px}
-.sf-agency-widget--project .cdl-project__scope-summary{font-size:12px;color:#b6b0bf;line-height:1.5}
+.sf-agency-widget--project .cdl-project__scope[hidden],.sf-agency-widget--project .cdl-project__scope-extras[hidden]{display:none!important}
+.sf-agency-widget--project .cdl-project__scope{display:grid;gap:12px;min-width:0}
+.sf-agency-widget--project .cdl-project__scope legend{color:#928c9c;font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px}
+.sf-agency-widget--project .cdl-project__scope .cdl-project__choices--services .cdl-project__choice>span{padding-block:13px}
+.sf-agency-widget--project .cdl-project__scope .cdl-project__choice-copy strong{font-size:16px;font-weight:500}
+.sf-agency-widget--project .cdl-project__scope .cdl-project__choice-copy small{font-size:12px}
+.sf-agency-widget--project .cdl-project__scope-extras summary{display:flex;align-items:center;gap:8px;cursor:pointer;color:#f8f7fa;font-size:13px;padding:10px 0;list-style:none}
+.sf-agency-widget--project .cdl-project__scope-extras summary::-webkit-details-marker{display:none}
+.sf-agency-widget--project .cdl-project__scope-extras summary span{margin-left:auto;color:#928c9c;font-size:11px}
+.sf-agency-widget--project .cdl-project__scope-extras summary::after{content:"+";color:#d3a480;font-size:18px;line-height:1;width:18px;text-align:center}
+.sf-agency-widget--project .cdl-project__scope-extras[open] summary::after{content:"−"}
+.sf-agency-widget--project .cdl-project__scope-price{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px 16px;padding:8px 0}
+.sf-agency-widget--project .cdl-project__scope-price>span{color:#928c9c;font-size:11px;letter-spacing:.10em;text-transform:uppercase}
+.sf-agency-widget--project .cdl-project__scope-estimate{color:#d3a480;font:inherit;font-size:16px;font-weight:600;letter-spacing:-.015em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.sf-agency-widget--project [data-project-step="2"] .cdl-project__reservation-note{margin:0;font-size:11.5px}
+.sf-agency-widget--project [data-project-step="2"]{gap:20px}
+.sf-agency-widget--project .cdl-project__scope-footer{position:sticky;bottom:env(safe-area-inset-bottom,0px);z-index:3;background:#09090c;padding-block:6px}
+.sf-agency-widget--project .cdl-project__scope .cdl-project__choice input:disabled+span{opacity:.4}
+
+/* Scope: shared pill material for service switching and optional add-ons. */
+.sf-agency-widget--project .cdl-project__scope-tabs[hidden],.sf-agency-widget--project .cdl-project__scope-tabs button[hidden],.sf-agency-widget--project [data-scope-estimate][hidden]{display:none!important}
+.sf-agency-widget--project .cdl-project__scope-tabs{display:flex;flex-wrap:wrap;gap:7px}
+.sf-agency-widget--project .cdl-project__scope-tabs button{font:inherit;font-size:12px;line-height:1.3;padding:8px 13px;min-height:38px;border:1px solid #ffffff26;border-radius:999px;background:#ffffff05;color:#b6b0bf;cursor:pointer}
+.sf-agency-widget--project .cdl-project__scope-tabs button[aria-pressed=true]{color:#f9e6d5;border-color:#d3a4809e;background:#d3a48029}
+.sf-agency-widget--project .cdl-project__scope-tabs button:focus-visible{outline:2px solid #d3a480;outline-offset:2px}
+.sf-agency-widget--project .cdl-project__scope .cdl-project__choices--services .cdl-project__choice>span{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px 12px;align-items:center}
+.sf-agency-widget--project .cdl-project__scope .cdl-project__choices--services .cdl-project__choice-copy{min-width:0;overflow-wrap:anywhere}
+.sf-agency-widget--project .cdl-project__scope .cdl-project__package-price{font-size:11px;line-height:1.35;max-width:124px;text-align:right;color:#b6b0bf;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.sf-agency-widget--project .cdl-project__scope input:checked+span>.cdl-project__package-price{color:#d3a480}
+.sf-agency-widget--project .cdl-project__scope-extras{display:grid;gap:9px}
+.sf-agency-widget--project .cdl-project__extras-label{font-size:11px;letter-spacing:.07em;color:#928c9c}
+.sf-agency-widget--project .cdl-project__scope-chips .cdl-project__choice>span{display:flex;align-items:center;gap:6px;min-height:38px;padding:7px 12px;font-size:12px;overflow-wrap:anywhere}
+.sf-agency-widget--project .cdl-project__chip-mark::before{content:"+";color:#d3a480}
+.sf-agency-widget--project .cdl-project__scope-chips input:checked+span .cdl-project__chip-mark::before{content:"✓"}
+.sf-agency-widget--project .cdl-project__scope-footer{display:grid;gap:10px}
+.sf-agency-widget--project .cdl-project__scope-price{padding:10px 0 0;border-top:1px solid #ffffff17;align-items:flex-start}
+.sf-agency-widget--project [data-scope-total]{display:grid;gap:3px;text-align:right;max-width:100%}
+.sf-agency-widget--project [data-scope-total]>span{display:block}
+@media(max-width:375px){.sf-agency-widget--project .cdl-project__scope .cdl-project__choices--services .cdl-project__choice>span{grid-template-columns:auto minmax(0,1fr)}.sf-agency-widget--project .cdl-project__scope .cdl-project__package-price{grid-column:2;max-width:none;text-align:left}}
