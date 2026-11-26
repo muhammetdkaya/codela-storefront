@@ -198,6 +198,15 @@ function codela_sf_quote_markup( string $service, array $data ): string {
     </details>
     <?php return (string) ob_get_clean();
 }
+/** One delivery contract for both project entry points. Existing installations
+ * without the plugin record API keep their original mail-only behavior. */
+function codela_sf_quote_deliver( string $name, string $contact, string $to, string $subject, string $body, array $headers, string $record_body ): bool {
+    $stored = function_exists( '\\Codela\\ClientPortal\\store_public_quote' )
+        ? \\Codela\\ClientPortal\\store_public_quote( $name, $contact, $record_body ) : 0;
+    $sent = is_email( $to ) && wp_mail( $to, $subject, $body, $headers );
+    // A persisted request is accepted even when the notification transport fails.
+    return $stored > 0 || $sent;
+}
 function codela_sf_quote_submit(): void {
     $source = codela_sf_agency_submitted_source( 'agency-detail' );
     if ( ! $source || 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) || ! codela_sf_ready() ) { wp_die( 'Geçersiz teklif kaynağı.', '', [ 'response' => 400 ] ); }
@@ -234,7 +243,8 @@ function codela_sf_quote_submit(): void {
     $estimate = codela_sf_quote_estimate( $rules, $package, $extras );
     $label = 'custom' === $package ? 'İhtiyaca özel' : $rules['packages'][(int) $package]['label'];
     $body = "Ücretsiz teklif talebi (bağlayıcı değil)\nHizmet: " . codela_sf_quote_services()[$service] . "\nPaket: $label\nEk kapsam: " . implode( ', ', $extra_labels ) . "\nTahmin: " . ( $estimate ? codela_sf_quote_money( $estimate ) : 'Kapsam görüşmesinde belirlenecek' ) . "\nAd / Marka: $name\nE-posta: $email\nNot: $note";
-    if ( ! is_email( $to ) || ! wp_mail( $to, '[Codela] Ücretsiz teklif talebi', $body, [ 'Content-Type: text/plain; charset=UTF-8', 'Reply-To: ' . $email ] ) ) { $redirect( 'failed' ); }
+    $record_body = "Hizmet: " . codela_sf_quote_services()[$service] . "\nPaket: $label\nEk kapsam: " . implode( ', ', $extra_labels ) . "\nTahmin: " . ( $estimate ? codela_sf_quote_money( $estimate ) : 'Görüşmede belirlenecek' ) . "\nNot: $note";
+    if ( ! codela_sf_quote_deliver( $name, $email, $to, '[Codela] Ücretsiz teklif talebi', $body, [ 'Content-Type: text/plain; charset=UTF-8', 'Reply-To: ' . $email ], $record_body ) ) { $redirect( 'failed' ); }
     set_transient( $throttle, 1, MINUTE_IN_SECONDS );
     $receipt = bin2hex( random_bytes( 16 ) );
     set_transient( 'codela_sf_quote_receipt_' . $receipt, [ (int) $_POST['agency_source_page'], $source['component'] ], 5 * MINUTE_IN_SECONDS );

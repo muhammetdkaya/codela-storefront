@@ -3,12 +3,13 @@
     "wordpress": "6.5",
     "php": "8.0",
     "woocommerce": "9.0",
-    "codela": "1.2.33"
+    "codela": "1.2.34"
   },
   "changes": [
     "Proje Başlat ve teklif akışı ortak dört adımlı formda birleşir; mevcut cam bileşenler, iletişim alanları ve takvim korunur.",
     "Hizmet bazında fiyat aralığı, yazılım başlangıç fiyatı ve aylık bakım tahmini; mevcut fiyat ve kapasite kayıtları korunur.",
-    "Fiyat ve kapasite ayarları ortak Codela yönetim paneli bileşenleriyle düzenlenir; paketler ihtiyaç kadar eklenir."
+    "Fiyat ve kapasite ayarları ortak Codela yönetim paneli bileşenleriyle düzenlenir; paketler ihtiyaç kadar eklenir.",
+    "Teklifler Codela Müşteri Paneli → Talepler'de saklanır; e-posta bildirimi korunur."
   ],
   "woocommerce_optional": true
 }

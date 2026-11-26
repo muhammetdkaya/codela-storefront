@@ -432,16 +432,17 @@ function codela_sf_agency_project_submit(): void {
     $throttle = 'codela_sf_project_' . hash_hmac( 'sha256', $remote, wp_salt( 'auth' ) );
     if ( get_transient( $throttle ) ) { $redirect( 'wait' ); }
     $to = sanitize_email( (string) get_option( 'admin_email' ) );
-    if ( ! is_email( $to ) ) { $redirect( 'failed' ); }
     $headers = [ 'Content-Type: text/plain; charset=UTF-8' ];
     if ( $is_email ) { $headers[] = 'Reply-To: ' . sanitize_email( $contact ); }
     $body = "Yeni Codela Proje Başlat Talebi\n\n"
         . "Hizmet: $service\nBaşlangıç tercihi: $time\n" . ( $scale ? "Mevcut durum / ölçek: $scale\n" : '' )
         . "Kapsam ve bağlayıcı olmayan tahminler:\n" . implode( "\n", $quote_lines ) . "\n" . "Ad Soyad / Marka: $name\nİletişim: $contact\n"
         . "Kısa not:\n" . ( $note ?: 'Belirtilmedi' ) . "\n";
-    if ( ! wp_mail( $to, '[Codela] Yeni proje başlat talebi', $body, $headers ) ) { $redirect( 'failed' ); }
+    $record_body = "Hizmet: $service\nBaşlangıç tercihi: $time\n" . ( $scale ? "Mevcut durum / ölçek: $scale\n" : '' )
+        . "Kapsam ve bağlayıcı olmayan tahminler:\n" . implode( "\n", $quote_lines ) . "\nKısa not:\n" . ( $note ?: 'Belirtilmedi' );
+    if ( ! codela_sf_quote_deliver( $name, $contact, $to, '[Codela] Yeni proje başlat talebi', $body, $headers, $record_body ) ) { $redirect( 'failed' ); }
     set_transient( $throttle, 1, MINUTE_IN_SECONDS );
-    // Only a genuinely accepted WordPress mail submission can create the receipt.
+    // Only a stored request or accepted mail submission can create the receipt.
     // The receipt makes a manually typed ?codela_status=sent insufficient.
     $receipt = bin2hex( random_bytes( 16 ) );
     $summary = array_map( static fn($service) => 'Optimizasyon / Destek' === $service ? 'Bakım & Geliştirme' : $service, $services );
