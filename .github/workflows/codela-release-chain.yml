@@ -1,0 +1,51 @@
+name: Codela authorized release chain
+on:
+  issue_comment:
+    types: [created]
+  workflow_run:
+    workflows:
+      - Deploy Codela Storefront
+      - Agency reference visual QA (no deployment)
+      - Scoped deploy preflight (no FTP)
+      - Smart Account Auth Regression
+      - Native cart page design check (no deployment)
+      - Storefront performance budget unit checks
+      - Product purchase flow (no deployment)
+      - Quick login security checks (no deployment)
+      - Showcase refinement regression (no deployment)
+      - Starter media candidate QA
+      - Publish Storefront GitHub release
+    types: [completed]
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+  issues: read
+concurrency:
+  group: codela-authorized-release
+  cancel-in-progress: false
+jobs:
+  advance:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issue_comment' &&
+       github.event.issue.pull_request &&
+       github.event.comment.user.login == github.repository_owner &&
+       (startsWith(github.event.comment.body, '/codela-publish ') ||
+        github.event.comment.body == '/codela-cancel')) ||
+      (github.event_name == 'workflow_run' &&
+       (github.event.workflow_run.event == 'pull_request' ||
+        github.event.workflow_run.head_branch == 'main'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      # Never checkout a PR, its artifacts or its executable content in this privileged job.
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Advance only an owner-authorized immutable release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/codela-release-chain.py
