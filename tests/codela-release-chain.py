@@ -62,6 +62,24 @@ class ChainTests(unittest.TestCase):
             steps[0]["conclusion"]="success"
             self.assertTrue(c.deploy_passed(run))
 
+    def test_merge_source_tree_binding(self):
+        merged={"parents":[{"sha":B}],"tree":{"sha":"tree"}}
+        approved={"tree":{"sha":"tree"}}
+        with patch.object(c,"repo_api",side_effect=[merged,approved]):
+            c.verify_merge_source("c"*40,H,B)
+        with patch.object(c,"repo_api",side_effect=[merged,{"tree":{"sha":"other"}}]):
+            with self.assertRaises(RuntimeError): c.verify_merge_source("c"*40,H,B)
+
+    def test_atomic_manifest_ref_update(self):
+        from unittest.mock import call
+        responses=[{"tree":{"sha":"oldtree"}},{"sha":"newtree"},{"sha":"c"*40},{}]
+        with patch.object(c,"repo_api",side_effect=responses) as api, patch.object(c,"main_sha",side_effect=[B,"c"*40]):
+            self.assertEqual(c.commit_manifest(B,"0.1.432","{}"),"c"*40)
+            self.assertEqual(api.call_args_list[-1],call("git/refs/heads/main",method="PATCH",data={"sha":"c"*40,"force":False}))
+        with patch.object(c,"repo_api",side_effect=responses[:3]) as api, patch.object(c,"main_sha",return_value=H):
+            with self.assertRaises(RuntimeError): c.commit_manifest(B,"0.1.432","{}")
+            self.assertEqual(api.call_count,3)
+
     def test_no_release_downgrade(self):
         self.assertGreater(c.ver("0.1.432"),c.ver("0.1.430"))
         with self.assertRaises(RuntimeError): c.ver("latest")

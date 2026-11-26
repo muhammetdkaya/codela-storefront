@@ -183,8 +183,12 @@ def check_pr(p, approval):
     if p["state"] != "open" or p["draft"] or p["head"]["sha"] != head or p["base"]["sha"] != base or main_sha() != base:
         print("PR", number, "has moved, is draft or no longer open; new explicit authorization required.")
         return False
-    files = [x["filename"] for x in pages("pulls/" + str(number) + "/files?per_page=100")]
-    require(len(files) == p["changed_files"], "PR file list incomplete")
+    changed = pages("pulls/" + str(number) + "/files?per_page=100")
+    require(len(changed) == p["changed_files"], "PR file list incomplete")
+    files = [f for item in changed for f in (item["filename"], item.get("previous_filename")) if f]
+    comparison = repo_api("compare/" + base + "..." + head)
+    require(comparison["status"] == "ahead" and comparison["merge_base_commit"]["sha"] == base,
+            "Candidate must be based on the approved current main; rebase and retest")
     # Release policy and workflow changes require review outside this automatic path.
     require(not any(f.startswith(".github/workflows/") or f.endswith("codela-release-chain.py")
                     or f.startswith(".releases/") for f in files), "Release infrastructure change requires manual merge")
@@ -206,6 +210,7 @@ def check_pr(p, approval):
     require(state != "failed", "An authorized PR validation failed; fix it and reauthorize the new revision")
     if state != "success" or p.get("mergeable") is not True:
         return False
+    check_dependency(head)
     # Re-read source, approval and main immediately before the SHA-guarded merge.
     fresh = repo_api("pulls/" + str(number))
     if approved_pr(fresh) != approval or fresh["head"]["sha"] != head or fresh["base"]["sha"] != base or main_sha() != base:
@@ -216,10 +221,20 @@ def check_pr(p, approval):
     require(merged["merged"], "GitHub rejected merge")
     source = merged["sha"]
     require(SHA.fullmatch(source), "Unexpected merged SHA")
-    require(repo_api("git/commits/" + source)["parents"][0]["sha"] == base,
-            "Base changed during merge; automatic deployment blocked")
-    print("Merged", number, source)
+    verify_merge_source(source, head, base)
+    require(main_sha() == source, "Main changed during merge; deployment blocked")
+    # Do not rely on the eventually consistent closed-PR list or a suppressed push event.
+    dispatch(DEPLOY, {"source_sha": source})
+    print("Merged", number, source, "and dispatched exact production deployment")
     return True
+
+
+def verify_merge_source(source, head, base):
+    merged = repo_api("git/commits/" + source)
+    approved = repo_api("git/commits/" + head)
+    require(len(merged["parents"]) == 1 and merged["parents"][0]["sha"] == base,
+            "Merged base does not match authorization")
+    require(merged["tree"]["sha"] == approved["tree"]["sha"], "Merged source tree differs from tested head")
 
 
 def dispatch(workflow, inputs=None):
@@ -292,7 +307,7 @@ def advance_merged(p, approval):
     if p["head"]["sha"] != head or not SHA.fullmatch(source or ""):
         return
     current = main_sha()
-    manifest_bytes, manifest_blob = file_at(MANIFEST, current)
+    manifest_bytes, _ = file_at(MANIFEST, current)
     manifest = json.loads(manifest_bytes)
     matching_manifest = manifest.get("source_sha") == source and manifest.get("version") == version
     # The only allowed successor is the release-request commit itself.
@@ -302,7 +317,7 @@ def advance_merged(p, approval):
         commit = repo_api("commits/" + current)
         if len(commit["parents"]) != 1 or commit["parents"][0]["sha"] != source or {f["filename"] for f in commit["files"]} != {MANIFEST}:
             return
-    require(repo_api("git/commits/" + source)["parents"][0]["sha"] == base, "Merged base does not match authorization")
+    verify_merge_source(source, head, base)
     require(version_at(source) == version, "Merged version mismatch")
     check_dependency(source)
     runs = workflow_runs(DEPLOY, source, "workflow_dispatch") + workflow_runs(DEPLOY, source, "push")
@@ -330,19 +345,32 @@ def advance_merged(p, approval):
         if verify_release(source, version):
             return
         require(main_sha() == current, "Main moved before publication")
-        dispatch(RELEASE)
+        dispatch(RELEASE, {"expected_manifest_sha": current})
         print("Release publication dispatched")
         return
     require(ver(version) > ver(repo_api("releases/latest")["tag_name"].removeprefix("v")), "Refusing to overwrite or downgrade release")
     require(main_sha() == source, "Main moved before release request")
     body = json.dumps(release_manifest(source, version), indent=2, ensure_ascii=False) + "\n"
-    result = repo_api("contents/" + MANIFEST, method="PUT", data={
-        "message": "Publish verified " + version + " stable release",
-        "content": base64.b64encode(body.encode()).decode(), "sha": manifest_blob, "branch": "main"})
-    require(result["commit"]["parents"][0]["sha"] == source, "Concurrent main change during release request")
-    # GITHUB_TOKEN pushes do not start another workflow. Dispatch explicitly.
-    dispatch(RELEASE)
+    manifest_commit = commit_manifest(source, version, body)
+    # GITHUB_TOKEN pushes do not start another workflow. Dispatch explicitly, pinning the manifest commit.
+    dispatch(RELEASE, {"expected_manifest_sha": manifest_commit})
     print("Verified FTP; dispatched release", version)
+
+
+def commit_manifest(source, version, body):
+    # A non-forced ref update is an atomic fast-forward check. A concurrent main
+    # commit cannot inherit a stale manifest or be overwritten by this release.
+    parent_tree = repo_api("git/commits/" + source)["tree"]["sha"]
+    tree = repo_api("git/trees", method="POST", data={"base_tree": parent_tree, "tree": [
+        {"path": MANIFEST, "mode": "100644", "type": "blob", "content": body}
+    ]})["sha"]
+    commit = repo_api("git/commits", method="POST", data={
+        "message": "Publish verified " + version + " stable release", "tree": tree, "parents": [source]
+    })["sha"]
+    require(main_sha() == source, "Main moved before release request")
+    repo_api("git/refs/heads/main", method="PATCH", data={"sha": commit, "force": False})
+    require(main_sha() == commit, "Main moved before release dispatch")
+    return commit
 
 
 def main():
@@ -350,9 +378,8 @@ def main():
     # Scan current candidates on every relevant completion; dropped/concurrent events do not strand another stage.
     for p in pages("pulls?state=open&base=main&per_page=100"):
         approval = approved_pr(p)
-        if approval:
-            check_pr(repo_api("pulls/" + str(p["number"])), approval)
-            break
+        if approval and check_pr(repo_api("pulls/" + str(p["number"])), approval):
+            return
     current = main_sha()
     manifest = json.loads(file_at(MANIFEST, current)[0])
     sources = {current, manifest.get("source_sha")}

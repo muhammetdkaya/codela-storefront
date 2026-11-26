@@ -5,6 +5,12 @@ on:
     paths: ['.releases/storefront.json']
   # Manual fallback when GitHub App/API-authored pushes do not initiate Actions.
   workflow_dispatch:
+    inputs:
+      expected_manifest_sha:
+        description: 'Exact authorized manifest commit (automatic release chain)'
+        required: false
+        type: string
+        default: ''
 permissions:
   contents: write
   actions: read
@@ -17,6 +23,13 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+      - name: Verify authorized manifest revision
+        if: inputs.expected_manifest_sha != ''
+        env:
+          EXPECTED_MANIFEST: ${{ inputs.expected_manifest_sha }}
+        run: |
+          test "$GITHUB_REF" = refs/heads/main
+          test "$EXPECTED_MANIFEST" = "$GITHUB_SHA"
       - name: Read explicit stable release request
         id: request
         run: |
