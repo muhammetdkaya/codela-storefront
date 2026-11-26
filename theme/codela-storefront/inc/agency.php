@@ -567,3 +567,12 @@ add_action('wp_head', static function() {
     codela_sf_print_first_entry();
 }, -1000);
 // Minimum entry time overlaps document loading; reveal after the minimum and DOM paint opportunity.
+
+// Logged-in project forms contain customer defaults; do not cache those documents.
+add_action( 'template_redirect', static function(): void {
+    if ( ! is_user_logged_in() || ! is_singular( 'page' ) ) { return; }
+    $components = codela_sf_agency_components( get_post( get_queried_object_id() ) );
+    if ( empty( $components['agency-project'] ) ) { return; }
+    if ( ! defined( 'DONOTCACHEPAGE' ) ) { define( 'DONOTCACHEPAGE', true ); }
+    nocache_headers();
+}, 2 );
