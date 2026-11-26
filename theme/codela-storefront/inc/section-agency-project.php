@@ -30,6 +30,10 @@ function codela_sf_section_agency_project( array $data, string $type = '' ): str
     $quote_rules = codela_sf_quote_rules();
     $direct_scope = isset( $_GET['teklif'] ) && '1' === $_GET['teklif'] && isset( $_GET['hizmetler'] ) && is_string( $_GET['hizmetler'] ) && in_array( $_GET['hizmetler'], $services, true );
     $policy = function_exists( 'get_privacy_policy_url' ) ? (string) get_privacy_policy_url() : '';
+    $customer = function_exists( 'is_user_logged_in' ) && is_user_logged_in() && function_exists( 'wp_get_current_user' ) ? wp_get_current_user() : null;
+    $customer_name = $customer ? trim( (string) $customer->first_name . ' ' . (string) $customer->last_name ) : '';
+    if ( $customer && ! $customer_name ) { $customer_name = (string) $customer->display_name; }
+    $customer_contact = $customer ? (string) $customer->user_email : '';
     ob_start();
     ?>
     <div class="sf-agency-widget sf-agency-widget--project" data-agency-widget="project">
@@ -48,7 +52,8 @@ function codela_sf_section_agency_project( array $data, string $type = '' ): str
                 <?php if ( is_array( $receipt_data ) && ! empty( $receipt_data['summary'] ) && is_array( $receipt_data['summary'] ) ) : ?>
                   <div class="cdl-project__summary"><span data-project-summary><?php foreach ( $receipt_data['summary'] as $tag ) : ?><span><?php echo esc_html( $tag ); ?></span><?php endforeach; ?></span></div>
                 <?php endif; ?>
-                <a href="<?php echo esc_url( codela_sf_agency_project_link() ); ?>" class="cdl-project__button">Yeni Talep Oluştur <span aria-hidden="true">→</span></a>
+                <?php $portal_url = '\\Codela\\ClientPortal\\url'; $portal_enabled = '\\Codela\\ClientPortal\\enabled'; $return_url = $customer && function_exists( $portal_url ) && function_exists( $portal_enabled ) && $portal_enabled() ? $portal_url() : ''; ?>
+                <a href="<?php echo esc_url( $return_url ?: codela_sf_agency_project_link() ); ?>" class="cdl-project__button"><?php echo $return_url ? 'Projelerime Dön' : 'Yeni Talep Oluştur'; ?> <span aria-hidden="true">→</span></a>
               </div>
             <?php else : ?>
               <?php if ( in_array( $status, [ 'failed', 'invalid', 'wait' ], true ) ) : ?>
@@ -129,11 +134,11 @@ function codela_sf_section_agency_project( array $data, string $type = '' ): str
                   <div class="cdl-project__fields">
                     <label><span class="cdl-project__field-label">Ad soyad / marka</span>
                       <input type="text" name="agency_project_name" autocomplete="name" maxlength="120"
-                             placeholder="Adın veya markan" minlength="2" required />
+                             placeholder="Adın veya markan" value="<?php echo esc_attr( $customer_name ); ?>" minlength="2" required />
                     </label>
                     <label><span class="cdl-project__field-label">E-posta veya WhatsApp</span>
                       <input type="text" name="agency_project_contact" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="180"
-                             placeholder="E-posta adresin veya numaran" required />
+                             placeholder="E-posta adresin veya numaran" value="<?php echo esc_attr( $customer_contact ); ?>" required />
                     </label>
                     <label><span class="cdl-project__field-label">Kısa not <small>İsteğe bağlı</small></span>
                       <textarea name="agency_project_note" rows="2" maxlength="2000"

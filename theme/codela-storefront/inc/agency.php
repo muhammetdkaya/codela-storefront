@@ -440,7 +440,7 @@ function codela_sf_agency_project_submit(): void {
         . "Kısa not:\n" . ( $note ?: 'Belirtilmedi' ) . "\n";
     $record_body = "Hizmet: $service\nBaşlangıç tercihi: $time\n" . ( $scale ? "Mevcut durum / ölçek: $scale\n" : '' )
         . "Kapsam ve bağlayıcı olmayan tahminler:\n" . implode( "\n", $quote_lines ) . "\nKısa not:\n" . ( $note ?: 'Belirtilmedi' );
-    if ( ! codela_sf_quote_deliver( $name, $contact, $to, '[Codela] Yeni proje başlat talebi', $body, $headers, $record_body ) ) { $redirect( 'failed' ); }
+    if ( ! codela_sf_quote_deliver( $name, $contact, $to, '[Codela] Yeni proje başlat talebi', $body, $headers, $record_body, true ) ) { $redirect( 'failed' ); }
     set_transient( $throttle, 1, MINUTE_IN_SECONDS );
     // Only a stored request or accepted mail submission can create the receipt.
     // The receipt makes a manually typed ?codela_status=sent insufficient.
