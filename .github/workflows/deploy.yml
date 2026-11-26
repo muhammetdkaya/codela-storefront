@@ -43,7 +43,9 @@ jobs:
           test "$GITHUB_REF" = refs/heads/main
           test "$EXPECTED_SOURCE" = "$GITHUB_SHA"
       - name: Validate release-chain contracts
-        run: python3 tests/codela-release-chain.py
+        run: |
+          python3 tests/codela-release-chain.py
+          python3 tests/codela-ci-feedback.py
       - name: Classify safe scoped changes
         id: tier
         shell: bash

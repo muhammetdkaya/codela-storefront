@@ -1,0 +1,39 @@
+name: Codela CI failure feedback
+on:
+  workflow_run:
+    workflows:
+      - Deploy Codela Storefront
+      - Agency reference visual QA (no deployment)
+      - Scoped deploy preflight (no FTP)
+      - Smart Account Auth Regression
+      - Native cart page design check (no deployment)
+      - Storefront performance budget unit checks
+      - Product purchase flow (no deployment)
+      - Quick login security checks (no deployment)
+      - Showcase refinement regression (no deployment)
+      - Starter media candidate QA
+      - Publish Storefront GitHub release
+      - Codela authorized release chain
+    types: [completed]
+permissions:
+  contents: read
+  issues: write
+  actions: write
+  pull-requests: read
+concurrency:
+  group: codela-ci-feedback-${{ github.event.workflow_run.id }}
+  cancel-in-progress: false
+jobs:
+  report:
+    if: github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Report or resolve the exact failed run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/codela-ci-feedback.py
