@@ -7,8 +7,10 @@ const {execFileSync}=require('node:child_process');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const root=path.resolve(__dirname,'..');
 const html=execFileSync(process.env.PHP_BIN||'php',['tests/agency-pages.php','--render=project'],{cwd:root,encoding:'utf8'});
+const adminHtml=execFileSync(process.env.PHP_BIN||'php',['tests/agency-pages.php','--render=quote-admin'],{cwd:root,encoding:'utf8'});
 const server=http.createServer((req,res)=>{
  const loc=new URL(req.url,'http://localhost').pathname;
+ if(loc==='/admin'){res.setHeader('Content-Type','text/html; charset=utf-8');return res.end(adminHtml);}
  if(loc==='/'){res.setHeader('Content-Type','text/html; charset=utf-8');return res.end(html);}
  const f=path.resolve(root,'.'+loc);
  if(!f.startsWith(root+path.sep)||!fs.existsSync(f)||!fs.statSync(f).isFile()){res.statusCode=404;return res.end();}
@@ -127,6 +129,39 @@ const server=http.createServer((req,res)=>{
    await page.screenshot({path:path.join(root,'qa','agency-project-'+width+'.png'),fullPage:true});
    await page.close();
   }
+  const admin=await browser.newPage({viewport:{width:390,height:844}});
+  const adminErrors=[];admin.on('pageerror',e=>adminErrors.push(e.message));
+  await admin.goto('http://127.0.0.1:'+server.address().port+'/admin');
+  const webAdmin=admin.locator('[data-quote-service="web"]');
+  const ecomAdmin=admin.locator('[data-quote-service="commerce"]');
+  assert(await webAdmin.isVisible()&&!(await ecomAdmin.isVisible()));
+  const group=webAdmin.locator('[data-quote-group][data-kind="packages"]');
+  assert((await group.locator('[data-quote-price]').first().textContent()).includes('12.000'));
+  await group.locator('[data-quote-add]').click();
+  const added=group.locator('[data-quote-row]').last();
+  assert(await added.locator('[data-quote-field="label"]').isVisible());
+  await added.locator('[data-quote-field="label"]').fill('Yeni paket');
+  await added.locator('[data-quote-field="description"]').fill('Kısa açıklama');
+  await added.locator('[data-quote-field="min"]').fill('25000');
+  await added.locator('[data-quote-fixed]').click();
+  assert.equal(await added.locator('[data-quote-field="max"]').inputValue(),'25000');
+  assert((await added.locator('[data-quote-price]').textContent()).includes('25.000 TL'));
+  await admin.locator('[data-quote-tab="commerce"]').click();
+  assert(await ecomAdmin.isVisible()&&!(await webAdmin.isVisible()));
+  assert.equal(await admin.locator('#codela-quote-rules form').evaluate(el=>new FormData(el).get('quote[web][packages][2][label]')),'Yeni paket');
+  await admin.locator('[data-quote-tab="web"]').click();
+  await added.locator('[data-quote-unknown]').click();
+  assert.equal(await added.locator('[data-quote-field="min"]').inputValue(),'');
+  await added.locator('[data-quote-field="min"]').fill('30000');
+  await admin.locator('[data-quote-tab="commerce"]').click();
+  await admin.locator('#codela-quote-rules form button[type="submit"]').click();
+  assert(await webAdmin.isVisible(),'Invalid range returns to correct service');
+  assert(await added.locator('[data-quote-field="max"]').isVisible(),'Invalid editor opens');
+  await added.locator('[data-quote-fixed]').click();
+  await admin.locator('[data-quote-tab="commerce"]').click();
+  assert.equal(await admin.locator('#codela-quote-rules form').evaluate(el=>new FormData(el).get('quote_editor_complete')),'1');
+  assert.deepEqual(adminErrors,[]);
+  await admin.close();
   console.log('MONA Project Start: five viewports, four steps, back/edit, selection, secure native form passed');
  } finally {await browser.close();await new Promise(done=>server.close(done));}
 })().catch(error=>{console.error(error);server.close();process.exitCode=1;});

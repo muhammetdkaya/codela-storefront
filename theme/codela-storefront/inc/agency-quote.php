@@ -103,7 +103,7 @@ function codela_sf_quote_admin_row( string $service, string $kind, string $index
     echo '<details class="cdl-theme-row cdl-quote-editor" data-quote-row data-index="' . esc_attr( $index ) . '"><summary><span data-quote-name>' . esc_html( $row['label'] ?? 'Yeni kayıt' ) . '</span><small data-quote-price>' . esc_html( $price ?: 'Fiyat belirlenmedi' ) . '</small></summary><div class="cdl-theme-fields">';
     foreach ( [ 'label' => 'Paket / kapsam adı', 'description' => 'Kısa açıklama (isteğe bağlı)' ] as $key => $label ) {
         $id = 'cdl-q-' . $service . '-' . $kind . '-' . $index . '-' . $key;
-        echo '<div class="cdl-theme-field"><div class="cdl-theme-field-copy"><label for="' . esc_attr( $id ) . '">' . esc_html( $label ) . '</label></div><div class="cdl-theme-control"><input class="regular-text" id="' . esc_attr( $id ) . '" data-quote-field="' . esc_attr( $key ) . '" name="' . esc_attr( $prefix . '[' . $key . ']' ) . '" value="' . esc_attr( $row[$key] ?? '' ) . '" type="text" maxlength="' . ( 'label' === $key ? '60' : '180' ) . '"></div></div>';
+        echo '<div class="cdl-theme-field"><div class="cdl-theme-field-copy"><label for="' . esc_attr( $id ) . '">' . esc_html( $label ) . '</label></div><div class="cdl-theme-control"><input class="regular-text" id="' . esc_attr( $id ) . '" data-quote-field="' . esc_attr( $key ) . '" name="' . esc_attr( $prefix . '[' . $key . ']' ) . '" value="' . esc_attr( $row[$key] ?? '' ) . '" type="text" maxlength="' . ( 'label' === $key ? '120' : '180' ) . '"></div></div>';
     }
     echo '<div class="cdl-quote-amounts">';
     foreach ( [ 'min' => 'En az (TL)', 'max' => 'En çok (TL)' ] as $key => $label ) {
@@ -132,7 +132,7 @@ function codela_sf_quote_render_settings(): void {
         foreach ( [ 'packages' => 'Paketler', 'extras' => 'Ek kapsamlar' ] as $kind => $heading ) {
             echo '<div data-quote-group data-kind="' . esc_attr( $kind ) . '"><div class="cdl-quote-group-head"><strong>' . esc_html( $heading ) . '</strong><button type="button" class="cdl-btn-secondary" data-quote-add>+ ' . ( 'packages' === $kind ? 'Paket' : 'Ek kapsam' ) . '</button></div><input type="hidden" name="quote[' . esc_attr( $service ) . '][' . esc_attr( $kind ) . '][_present]" value="1"><div data-quote-rows>';
             foreach ( $rules[$service][$kind] as $index => $row ) { codela_sf_quote_admin_row( $service, $kind, (string) $index, $row ); }
-            echo '</div><p class="description" data-quote-empty>Henüz kayıt yok.</p><template>';
+            echo '</div><p class="description" data-quote-empty' . ( $rules[$service][$kind] ? ' hidden' : '' ) . '>Henüz kayıt yok.</p><template>';
             codela_sf_quote_admin_row( $service, $kind, '__INDEX__', [] );
             echo '</template></div>';
         }

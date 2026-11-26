@@ -175,6 +175,16 @@ if ( in_array( '--render=detail', $argv, true ) ) {
 
 
 agency_page_check( str_contains(codela_sf_agency_404_markup(),'data-404-stage') && str_contains(codela_sf_agency_404_markup(),'Işığın dışına çıktın.') && str_contains(codela_sf_agency_404_markup(),esc_url(home_url('/'))), 'Agency 404 has a real home link and accessible heading' );
+if ( in_array('--render=quote-admin',$argv,true) ) {
+    function current_user_can($cap) { return 'manage_options' === $cap; }
+    function selected($value,$expected,$echo=true) { $s=$value===$expected?' selected="selected"':''; if($echo)echo $s; return $s; }
+    $GLOBALS['quote_fixture']=codela_sf_quote_defaults();
+    $GLOBALS['quote_fixture']['web']['packages'][0]=['label'=>'WordPress web sitesi','description'=>'Mevcut açıklama','min'=>12000,'max'=>18000];
+    echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>';
+    codela_sf_quote_render_settings();
+    echo '</body></html>';
+    exit;
+}
 $project_data = [
     'id' => 'agency-project-start', 'enabled'=>true,'variant'=>'flow',
     'title'=>'Neye odaklanıyoruz?','description'=>'',
