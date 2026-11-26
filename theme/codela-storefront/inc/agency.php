@@ -140,6 +140,55 @@ function codela_sf_agency_nonce_input( string $action, string $field ): void {
     echo '<input type="hidden" name="' . esc_attr( $field ) . '" value="' . esc_attr( wp_create_nonce( $action ) ) . '">';
 }
 
+/** The plugin owns validation and preview/meta selection. */
+function codela_sf_agency_components( $post ): array {
+    if ( ! $post || ! function_exists( 'parse_blocks' ) || ! function_exists( 'codela_sections_validate_root' ) || ! function_exists( 'codela_sections_page_content' ) ) { return []; }
+    $components = [];
+    foreach ( parse_blocks( codela_sections_page_content( $post ) ) as $root ) {
+        if ( 'codela/page-layout' !== ( $root['blockName'] ?? '' ) || is_wp_error( codela_sections_validate_root( $root ) ) ) { continue; }
+        foreach ( $root['innerBlocks'] as $child ) {
+            $name = (string) ( $child['blockName'] ?? '' );
+            if ( ! str_starts_with( $name, 'codela/section-agency-' ) ) { continue; }
+            $type = substr( $name, strlen( 'codela/section-' ) );
+            $data = codela_sections_clean( $type, $child['attrs']['data'] ?? [] );
+            if ( ! is_wp_error( $data ) && ! empty( $data['enabled'] ) ) { $components[$type][] = $data; }
+        }
+    }
+    return $components;
+}
+
+/** A source is a public page containing the requested enabled native component,
+ * not a caller-supplied return URL. No private/password-protected page is accepted.
+ */
+function codela_sf_agency_form_source( int $id, string $type, string $component ): string {
+    if ( $id < 1 || ! preg_match( '/^[a-zA-Z0-9-]{1,64}$/D', $component ) ) { return ''; }
+    $post = get_post( $id );
+    if ( ! $post || 'page' !== $post->post_type || 'publish' !== $post->post_status || ! empty( $post->post_password ) ) { return ''; }
+    foreach ( codela_sf_agency_components( $post )[$type] ?? [] as $data ) {
+        if ( $component === $data['id'] ) { return (string) get_permalink( $post ); }
+    }
+    return '';
+}
+function codela_sf_agency_form_context( string $type, array $data ): array {
+    $id = function_exists( 'get_queried_object_id' ) ? (int) get_queried_object_id() : 0;
+    $component = (string) ( $data['id'] ?? '' );
+    return codela_sf_agency_form_source( $id, $type, $component ) ? [ $id, $component ] : [ 0, '' ];
+}
+function codela_sf_agency_form_context_input( array $context ): void {
+    if ( ! $context[0] ) { return; }
+    echo '<input type="hidden" name="agency_source_page" value="' . esc_attr( $context[0] ) . '"><input type="hidden" name="agency_source_component" value="' . esc_attr( $context[1] ) . '">';
+    codela_sf_agency_nonce_input( 'codela_sf_source_' . $context[0] . '_' . $context[1], 'agency_source_nonce' );
+}
+function codela_sf_agency_submitted_source( string $type ): array {
+    $id = $_POST['agency_source_page'] ?? '';
+    $component = $_POST['agency_source_component'] ?? '';
+    $nonce = $_POST['agency_source_nonce'] ?? '';
+    if ( ! is_string( $id ) || ! ctype_digit( $id ) || ! is_string( $component ) || ! is_string( $nonce )
+        || ! wp_verify_nonce( wp_unslash( $nonce ), 'codela_sf_source_' . (int) $id . '_' . $component ) ) { return []; }
+    $url = codela_sf_agency_form_source( (int) $id, $type, $component );
+    return $url ? [ 'url' => $url, 'component' => $component ] : [];
+}
+
 /** Load visual assets only for a page that actually contains agency modules. */
 function codela_sf_agency_asset_flags(): array {
     $flags = [ 'pattern' => false, 'widgets' => false, 'project' => false, 'about' => false, 'studio' => false, 'visuals' => false ];
@@ -148,6 +197,21 @@ function codela_sf_agency_asset_flags(): array {
     $post = $id ? get_post( $id ) : null;
     if ( ! $post || 'page' !== $post->post_type || post_password_required( $post ) ) { return $flags; }
     $content = (string) $post->post_content;
+    if ( function_exists( 'get_queried_object' ) ) {
+        $preview = get_queried_object();
+        if ( $preview instanceof WP_Post && (int) $preview->ID === $id ) { $post = $preview; $content = (string) $post->post_content; }
+    }
+    if ( function_exists( 'codela_sections_page_content' ) && function_exists( 'parse_blocks' ) && function_exists( 'codela_sections_validate_root' ) ) {
+        $types = codela_sf_agency_components( $post );
+        $flags['pattern'] = str_contains( $content, 'codela-storefront/agency-' );
+        $flags['widgets'] = (bool) $types;
+        $flags['project'] = isset( $types['agency-project'] );
+        $flags['studio'] = isset( $types['agency-studio'] );
+        $flags['about'] = isset( $types['agency-about'] ) || str_contains( $content, 'codela-storefront/agency-about' );
+        $flags['visuals'] = isset( $types['agency-bento'] ) || isset( $types['agency-detail'] ) || isset( $types['agency-process'] )
+            || str_contains( $content, 'codela-storefront/agency-process' ) || str_contains( $content, 'codela-storefront/agency-home' );
+        return $flags;
+    }
     if ( function_exists( 'get_post_meta' ) ) {
         $layout = get_post_meta( $id, '_codela_page_layout', true );
         if ( is_string( $layout ) ) { $content .= $layout; }
@@ -231,12 +295,15 @@ add_filter( 'document_title_parts', static function( array $parts ): array {
 
 /** Native admin-post action: nonce, honeypot, throttling and sanitized plain text. */
 function codela_sf_agency_contact_submit(): void {
-    $base = codela_sf_agency_contact_link();
-    $redirect = static function( string $status ) use ( $base ): void {
-        wp_safe_redirect( add_query_arg( 'codela_status', $status, $base ) );
+    $source = codela_sf_agency_submitted_source( 'agency-contact-bento' );
+    $base = $source['url'] ?? codela_sf_agency_contact_link();
+    $redirect = static function( string $status ) use ( $base, $source ): void {
+        $args = [ 'codela_status' => $status ];
+        if ( $source ) { $args['codela_component'] = $source['component']; }
+        wp_safe_redirect( add_query_arg( $args, $base ) );
         exit;
     };
-    if ( ! codela_sf_ready() ) { $redirect( 'invalid' ); }
+    if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) || ! codela_sf_ready() || ( isset( $_POST['agency_source_page'] ) && ! $source ) ) { $redirect( 'invalid' ); }
     $field = static function( string $key ): string {
         $value = $_POST[ $key ] ?? '';
         return is_string( $value ) ? trim( sanitize_text_field( wp_unslash( $value ) ) ) : '';
@@ -275,12 +342,15 @@ add_action( 'admin_post_codela_sf_agency_contact', 'codela_sf_agency_contact_sub
  * JS-only success animation. Uses the existing agency mail destination.
  */
 function codela_sf_agency_project_submit(): void {
-    $base = codela_sf_agency_project_link();
-    $redirect = static function( string $status ) use ( $base ): void {
-        wp_safe_redirect( add_query_arg( 'codela_status', $status, $base ) );
+    $source = codela_sf_agency_submitted_source( 'agency-project' );
+    $base = $source['url'] ?? codela_sf_agency_project_link();
+    $redirect = static function( string $status ) use ( $base, $source ): void {
+        $args = [ 'codela_status' => $status ];
+        if ( $source ) { $args['codela_component'] = $source['component']; }
+        wp_safe_redirect( add_query_arg( $args, $base ) );
         exit;
     };
-    if ( ! codela_sf_ready() || ! codela_sf_agency_project_url() ) { $redirect( 'invalid' ); }
+    if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) || ! codela_sf_ready() || ( isset( $_POST['agency_source_page'] ) && ! $source ) || ( ! $source && ! codela_sf_agency_project_url() ) ) { $redirect( 'invalid' ); }
     $field = static function( string $key ): string {
         $value = $_POST[ $key ] ?? '';
         return is_string( $value ) ? trim( sanitize_text_field( wp_unslash( $value ) ) ) : '';
@@ -341,8 +411,10 @@ function codela_sf_agency_project_submit(): void {
     $receipt = bin2hex( random_bytes( 16 ) );
     $summary = array_map( static fn($service) => 'Optimizasyon / Destek' === $service ? 'Bakım & Geliştirme' : $service, $services );
     $summary[] = $time;
-    set_transient( 'codela_sf_project_receipt_' . $receipt, [ 'summary' => $summary ], 5 * MINUTE_IN_SECONDS );
-    wp_safe_redirect( add_query_arg( [ 'codela_status' => 'sent', 'codela_receipt' => $receipt ], $base ) );
+    set_transient( 'codela_sf_project_receipt_' . $receipt, [ 'summary' => $summary, 'component' => $source['component'] ?? '' ], 5 * MINUTE_IN_SECONDS );
+    $args = [ 'codela_status' => 'sent', 'codela_receipt' => $receipt ];
+    if ( $source ) { $args['codela_component'] = $source['component']; }
+    wp_safe_redirect( add_query_arg( $args, $base ) );
     exit;
 }
 add_action( 'admin_post_codela_sf_agency_project', 'codela_sf_agency_project_submit' );

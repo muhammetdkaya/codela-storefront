@@ -9,6 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 function codela_sf_section_agency_project( array $data, string $type = '' ): string {
     $id = codela_sf_agency_dom_id( 'cdl-project-' . sanitize_html_class( (string) ( $data['id'] ?? 'start' ) ) );
     $form_id = codela_sf_agency_dom_id( 'sf-agency-project-form' );
+    $source = codela_sf_agency_form_context( 'agency-project', $data );
     $slots = codela_sf_project_availability();
     $first = '';
     foreach ( $slots as $key => $slot ) { if ( (int) $slot['free'] > 0 ) { $first = $key; break; } }
@@ -18,7 +19,9 @@ function codela_sf_section_agency_project( array $data, string $type = '' ): str
         ? sanitize_key( wp_unslash( $_GET['codela_receipt'] ) ) : '';
     $receipt_data = 'sent' === $status && preg_match( '/^[a-f0-9]{32}$/D', $receipt )
         ? get_transient( 'codela_sf_project_receipt_' . $receipt ) : false;
-    $confirmed = (bool) $receipt_data;
+    $target = isset( $_GET['codela_component'] ) && is_string( $_GET['codela_component'] ) ? wp_unslash( $_GET['codela_component'] ) : '';
+    if ( $source[0] && ( $target ? $target !== $source[1] : 'sf-agency-project-form' !== $form_id ) ) { $status = ''; $receipt_data = false; }
+    $confirmed = (bool) $receipt_data && ( empty( $receipt_data['component'] ) || $receipt_data['component'] === $source[1] );
     $chosen = isset( $_GET['hizmetler'] ) && is_string( $_GET['hizmetler'] )
         ? sanitize_text_field( wp_unslash( $_GET['hizmetler'] ) ) : '';
     $services = [ 'Web Tasarım', 'E-Ticaret', 'Özel Yazılım', 'Optimizasyon / Destek' ];
@@ -56,7 +59,7 @@ function codela_sf_section_agency_project( array $data, string $type = '' ): str
               <form id="<?php echo esc_attr( $form_id ); ?>" class="cdl-project__form"
                     action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" data-project-form>
                 <input type="hidden" name="action" value="codela_sf_agency_project"/>
-                <?php codela_sf_agency_nonce_input( 'codela_sf_agency_project', 'agency_project_nonce' ); ?>
+                <?php codela_sf_agency_nonce_input( 'codela_sf_agency_project', 'agency_project_nonce' ); codela_sf_agency_form_context_input( $source ); ?>
                 <div class="cdl-project__step" data-project-step="1">
                   <div class="cdl-project__heading"><h1 id="<?php echo esc_attr( $id ); ?>">Hangi alanda <span class="cdl-project__title-muted">çalışmak istersin?</span></h1></div>
                   <fieldset class="cdl-project__fieldset">

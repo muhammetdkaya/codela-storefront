@@ -15,11 +15,14 @@ function codela_sf_section_agency_contact_bento( array $data, string $type = '' 
     $studio = 'Codela Stüdyo';
     $project = codela_sf_agency_project_url();
     $form_id = codela_sf_agency_dom_id( 'sf-agency-contact-form' );
+    $source = codela_sf_agency_form_context( 'agency-contact-bento', $data );
     $form_title_id = codela_sf_agency_dom_id( 'cdl-contact-form-title' );
     $project_href = $project ?: '#' . $form_id;
     $policy = function_exists( 'get_privacy_policy_url' ) ? (string) get_privacy_policy_url() : '';
     $status = isset( $_GET['codela_status'] ) && is_string( $_GET['codela_status'] )
         ? sanitize_key( wp_unslash( $_GET['codela_status'] ) ) : '';
+    $target = isset( $_GET['codela_component'] ) && is_string( $_GET['codela_component'] ) ? wp_unslash( $_GET['codela_component'] ) : '';
+    if ( $target ? $target !== $source[1] : 'sf-agency-contact-form' !== $form_id ) { $status = ''; }
     $selected = isset( $_GET['hizmetler'] ) && is_string( $_GET['hizmetler'] )
         ? sanitize_text_field( wp_unslash( $_GET['hizmetler'] ) ) : '';
     $selected = function_exists( 'mb_substr' ) ? mb_substr( $selected, 0, 450 ) : substr( $selected, 0, 450 );
@@ -68,7 +71,7 @@ function codela_sf_section_agency_contact_bento( array $data, string $type = '' 
                 <span class="cdl-contact__action-left"><span class="cdl-contact__num">01</span><span class="cdl-contact__action-copy"><strong>Proje Başlat</strong><small>Hedefini anlat, kapsam ve yol haritasını birlikte çıkaralım.</small></span></span>
                 <span class="cdl-contact__row-arrow" aria-hidden="true">→</span>
               </a>
-              <details id="<?php echo esc_attr( $form_id ); ?>" data-contact-disclosure class="cdl-contact__form-toggle"<?php echo ( 'sf-agency-contact-form' === $form_id && ( $status || $selected ) ) ? ' open' : ''; ?>>
+              <details id="<?php echo esc_attr( $form_id ); ?>" data-contact-disclosure class="cdl-contact__form-toggle"<?php echo ( $status || ( 'sf-agency-contact-form' === $form_id && $selected ) ) ? ' open' : ''; ?>>
                 <summary class="cdl-contact__action">
                   <span class="cdl-contact__action-left"><span class="cdl-contact__num">02</span><span class="cdl-contact__action-copy"><strong>Mesaj Gönder</strong><small>Kısa bir soru veya ön bilgi bırak, sana dönüş yapalım.</small></span></span>
                   <span class="cdl-contact__row-arrow" aria-hidden="true">↗</span>
@@ -89,7 +92,7 @@ function codela_sf_section_agency_contact_bento( array $data, string $type = '' 
             <form class="cdl-contact__form" data-agency-contact-form method="post"
                   action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
               <input type="hidden" name="action" value="codela_sf_agency_contact">
-              <?php codela_sf_agency_nonce_input( 'codela_sf_agency_contact', 'agency_contact_nonce' ); ?>
+              <?php codela_sf_agency_nonce_input( 'codela_sf_agency_contact', 'agency_contact_nonce' ); codela_sf_agency_form_context_input( $source ); ?>
               <div class="cdl-contact__form-row">
                 <label>Ad Soyad<input name="agency_name" type="text" maxlength="120"
                        autocomplete="name" required placeholder="Adınız Soyadınız"></label>
