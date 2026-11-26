@@ -46,6 +46,7 @@ jobs:
         run: |
           python3 tests/codela-release-chain.py
           python3 tests/codela-ci-feedback.py
+          python3 tests/ci-playwright.py
       - name: Classify safe scoped changes
         id: tier
         shell: bash
@@ -187,19 +188,14 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: codela-webkit-chromium-${{ runner.os }}-playwright-1.62.1
+      - name: Prepare pinned Chromium and WebKit
+        if: steps.tier.outputs.quick != 'true'
+        run: |
+          npm ci --ignore-scripts
+          python3 scripts/ci-playwright.py chromium webkit
       - name: Core browser smoke (native Menu, Agency, Account, Checkout)
         if: steps.tier.outputs.quick != 'true'
         run: |
-          # Engine binaries are cached between runs; use locked test packages.
-          npm ci --ignore-scripts
-          if [ "${{ steps.playwright-cache.outputs.cache-hit }}" != 'true' ]; then
-            npx playwright install --with-deps chromium webkit
-          else
-            # Cached browser binaries do not include Ubuntu shared libraries.
-            # Always install the matching WebKit/Chromium OS dependencies.
-            npx playwright install-deps chromium webkit
-            npx playwright install chromium webkit
-          fi
           node tests/native-shell.cjs
           node tests/menu-dismiss-browser.cjs
           TEST_WEBKIT=1 node tests/menu-dismiss-browser.cjs

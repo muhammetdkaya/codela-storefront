@@ -1653,3 +1653,5 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 - CI hatalarında `Codela CI failure feedback` tarafından oluşturulan `[Codela CI]` Issue kaydını ve Actions loglarını incele. Test veya güvenlik kontrollerini atlama; yalnız kullanıcı tarafından yetkilendirilmiş kapsamda düzelt, yeni SHA için yeniden yayın komutu ver. FTP/release hatasında mevcut dağıtım ve checksum durumunu doğrulamadan tekrar yayınlama. Aynı run için ayrı Issue oluşturma.
 
 - Özel Codela depo sürüm sorgusundaki HTTP 404 için yetkiyi genişletme veya depoyu açma. Storefront'ta mevcut stable kaynak/digest eşleşmesi yalnız daha önce yayınlanmış eklenti minimumunu karşılar; yükseltilmiş minimum için read-only `CODELA_DEPENDENCY_READ_TOKEN` veya bağımsız doğrulanmış manuel yayın gerekir.
+
+- Playwright CI hazırlığında `scripts/ci-playwright.py` kullan: kilitli motorları önbellekten kullan, gerçek launch probe başarılıysa apt çalıştırma; Ubuntu runner'da gerekirse imzalı Ubuntu kaynaklarıyla sınırlı geçici apt yapılandırması kullan. Browser smoke testlerini veya apt imza denetimini atlama.
