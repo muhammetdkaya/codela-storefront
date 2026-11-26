@@ -302,3 +302,17 @@ body:not(.home) .sf-agency-widget--project .cdl-project__shell{
     font-size:clamp(36px,3.4vw,46px);
   }
 }
+
+/* Quote scope uses the existing project typography, underlines and glass actions. */
+.sf-agency-widget--project .cdl-project__progress-track>span{width:25%}
+.sf-agency-widget--project .cdl-project__scope[hidden]{display:none!important}
+.sf-agency-widget--project .cdl-project__scope{display:grid;gap:12px;border-bottom:1px solid #ffffff17;padding-bottom:16px!important}
+.sf-agency-widget--project .cdl-project__scope legend{color:inherit;font-weight:600;font-size:15px}
+.sf-agency-widget--project .cdl-project__scope-custom,.sf-agency-widget--project .cdl-project__scope-options label{display:flex;align-items:center;gap:10px;font-size:13px;line-height:1.45;padding:8px 0}
+.sf-agency-widget--project .cdl-project__scope input{accent-color:#d3a480;flex:none}
+.sf-agency-widget--project .cdl-project__scope-select{display:grid;gap:6px;font-size:12px;color:#b6b0bf}
+.sf-agency-widget--project .cdl-project__scope select{width:100%;max-width:100%;min-height:44px;font:inherit;font-size:14px;color:#f8f7fa;background:#09090c;border:0;border-bottom:1px solid #ffffff24;border-radius:0}
+.sf-agency-widget--project .cdl-project__scope-extras summary{cursor:pointer;color:#b6b0bf;font-size:13px;padding:8px 0}
+.sf-agency-widget--project .cdl-project__scope-estimate{color:#d3a480;font-size:14px;font-weight:600;margin:0!important}
+.sf-agency-widget--project .cdl-project__scope-footer{position:sticky;bottom:env(safe-area-inset-bottom,0px);z-index:3;background:#09090c;padding-block:8px;display:grid;gap:8px}
+.sf-agency-widget--project .cdl-project__scope-summary{font-size:12px;color:#b6b0bf;line-height:1.5}

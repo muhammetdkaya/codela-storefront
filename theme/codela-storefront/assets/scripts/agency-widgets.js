@@ -31,23 +31,47 @@
       const progress=widget.querySelector('[data-project-progress-bar]');
       const indicator=widget.querySelector('[data-project-progress-label]');
       const summary=widget.querySelector('[data-project-summary]');
-      if(form && steps.length===3 && progress && indicator && summary){
+      if(form && steps.length===4 && progress && indicator && summary){
         let active=0;
         const services=[...form.querySelectorAll('input[name="agency_project_service[]"]')];
+        const scopes=[...form.querySelectorAll('[data-project-scope]')];
+        const scopeSummary=form.querySelector('[data-project-scope-summary]');
+        const format=new Intl.NumberFormat('tr-TR');
+        const scopeLabels=()=>scopes.filter(x=>!x.hidden).map(x=>x.querySelector('legend').textContent+': '+x.querySelector('[data-scope-estimate]').textContent);
+        const updateScopes=()=>{
+          for(const scope of scopes){
+            const visible=services.some(x=>x.checked&&x.value===scope.dataset.projectScope);
+            scope.hidden=!visible;scope.disabled=!visible;
+            const custom=scope.querySelector('[data-scope-custom]')?.checked;
+            const packages=[...scope.querySelectorAll('[data-scope-package]')];
+            const extras=[...scope.querySelectorAll('[data-scope-extra]')];
+            [...packages,...extras].forEach(x=>x.disabled=!!custom);
+            const selected=packages.flatMap(x=>x.tagName==='SELECT'?(x.value?[x.selectedOptions[0]]:[]):(x.checked?[x]:[]));
+            const rows=[...selected,...extras.filter(x=>x.checked)];
+            const known=!custom&&selected.length&&rows.every(x=>/^\d+$/.test(x.dataset.min||'')&&/^\d+$/.test(x.dataset.max||''));
+            const min=known?rows.reduce((sum,x)=>sum+Number(x.dataset.min),0):0;
+            const max=known?rows.reduce((sum,x)=>sum+Number(x.dataset.max),0):0;
+            const range=format.format(min)+(min===max?'':' – '+format.format(max))+' TL';
+            scope.querySelector('[data-scope-estimate]').textContent=known?(scope.dataset.pricingMode==='starting'?format.format(min)+' TL itibarıyla':range+(scope.dataset.pricingMode==='monthly'?' / ay':'')):'Görüşmede belirlenecek';
+          }
+          if(scopeSummary)scopeSummary.textContent=scopeLabels().join(' · ');
+        };
+        form.addEventListener('change',updateScopes);
         const show=(index,focus=true)=>{
+          updateScopes();
           active=index;
           steps.forEach((step,n)=>{step.hidden=n!==index;});
-          progress.style.width=((index+1)/3*100)+'%';
-          indicator.textContent='0'+(index+1)+' / 03';
-          if(index===2){
-            summary.replaceChildren(...[...services.filter(x=>x.checked).map(x=>x.value==='Optimizasyon / Destek'?'Bakım & Geliştirme':x.value),form.querySelector('input[name="agency_project_month"]:checked')?.dataset.monthLabel].filter(Boolean).map(value=>{
+          progress.style.width=((index+1)/steps.length*100)+'%';
+          indicator.textContent='0'+(index+1)+' / 04';
+          if(index===3){
+            summary.replaceChildren(...[...services.filter(x=>x.checked).map(x=>x.value==='Optimizasyon / Destek'?'Bakım & Geliştirme':x.value),form.querySelector('input[name="agency_project_month"]:checked')?.dataset.monthLabel,...scopeLabels()].filter(Boolean).map(value=>{
               const tag=document.createElement('span');tag.textContent=value;return tag;
             }));
           }
           if(focus){const h=steps[index].querySelector('h1,h2');if(h){h.tabIndex=-1;h.focus({preventScroll:true});}}
         };
         services.forEach(input=>input.addEventListener('change',()=>{if(!services.some(x=>x.checked))input.checked=true;}));
-        widget.querySelectorAll('[data-project-next]').forEach(next=>next.addEventListener('click',()=>{if(active<2)show(active+1);}));
+        widget.querySelectorAll('[data-project-next]').forEach(next=>next.addEventListener('click',()=>{if(active<steps.length-1)show(active+1);}));
         widget.querySelectorAll('[data-project-back]').forEach(back=>back.addEventListener('click',()=>{if(active>0)show(active-1);}));
         const contact=form.querySelector('[name="agency_project_contact"]');
         const validateContact=()=>{
@@ -59,14 +83,14 @@
         };
         contact?.addEventListener('input',validateContact);
         form.addEventListener('submit',event=>{
-          if(active!==2){event.preventDefault();show(active+1);return;}
+          if(active!==steps.length-1){event.preventDefault();show(active+1);return;}
           if(!services.some(x=>x.checked)){event.preventDefault();show(0);return;}
           validateContact();
           if(!form.checkValidity()){event.preventDefault();form.reportValidity();return;}
           const submit=form.querySelector('[data-project-submit]');
           if(submit){submit.disabled=true;submit.setAttribute('aria-busy','true');submit.firstChild.textContent='Gönderiliyor ';}
         });
-        show(/(?:[?&])codela_status=(?:invalid|failed|wait)(?:&|$)/.test(location.search)?2:0,false);
+        show(/(?:[?&])codela_status=(?:invalid|failed|wait)(?:&|$)/.test(location.search)?3:(form.hasAttribute('data-project-start-scope')?1:0),false);
       }
     }
 
