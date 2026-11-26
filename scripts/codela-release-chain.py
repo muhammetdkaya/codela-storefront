@@ -255,13 +255,49 @@ def deploy_passed(run):
     return steps.get(DEPLOY_STEP) == "success" and (not LIVE_STEP or steps.get(LIVE_STEP) == "success")
 
 
+def stable_dependency_verified(required):
+    # A repository-scoped token cannot read a different private repository.
+    # For unchanged/lower minimums, accept the already published stable baseline
+    # only after binding its source, release asset digest and source configuration.
+    stable = json.loads(file_at("manifest.json", "stable")[0])
+    version = stable["version"]
+    source = stable["source_sha"]
+    require(stable.get("theme") == "codela-storefront" and SHA.fullmatch(source), "Invalid stable baseline")
+    release = repo_api("releases/latest")
+    require(release["tag_name"] == "v" + version and not release.get("draft") and not release.get("prerelease"), "Stable baseline release mismatch")
+    ref = repo_api("git/ref/tags/v" + version)["object"]
+    if ref["type"] == "tag":
+        ref = repo_api("git/tags/" + ref["sha"])["object"]
+    require(ref["type"] == "commit" and ref["sha"] == source, "Stable baseline source mismatch")
+    asset_name = "codela-storefront-" + version + ".zip"
+    digest = stable["sha256"]
+    require(re.fullmatch(r"[0-9a-f]{64}", digest), "Invalid stable checksum")
+    require(any(a["name"] == asset_name and a.get("digest") == "sha256:" + digest for a in release["assets"]), "Stable baseline asset checksum mismatch")
+    config = json.loads(file_at("theme/codela-storefront/config/release.json", source)[0])
+    pinned = config["requires"].get("codela")
+    require(pinned == stable["requires"].get("codela"), "Stable baseline dependency mismatch")
+    return bool(pinned and ver(pinned) >= ver(required))
+
+
 def check_dependency(source):
-    if THEME:
-        config = json.loads(file_at("theme/codela-storefront/config/release.json", source)[0])
-        required = config["requires"].get("codela")
-        if required:
-            latest = api("repos/" + OWNER + "/codela/releases/latest")["tag_name"].removeprefix("v")
-            require(ver(latest) >= ver(required), "Required Codela plugin release is not available")
+    if not THEME:
+        return
+    config = json.loads(file_at("theme/codela-storefront/config/release.json", source)[0])
+    required = config["requires"].get("codela")
+    if not required:
+        return
+    token = os.environ.get("CODELA_DEPENDENCY_READ_TOKEN", "")
+    if token:
+        # Dedicated read-only token used solely for the private plugin release lookup.
+        env = dict(os.environ, GH_TOKEN=token)
+        output = subprocess.check_output(["gh", "api", "repos/" + OWNER + "/codela/releases/latest"], env=env)
+        release = json.loads(output)
+        latest = release["tag_name"].removeprefix("v")
+        require(ver(latest) >= ver(required) and not release.get("draft") and not release.get("prerelease"), "Required Codela plugin release is not available")
+        return
+    require(stable_dependency_verified(required),
+            "New Codela minimum requires a read-only CODELA_DEPENDENCY_READ_TOKEN or an independently verified manual release")
+    print("Dependency unchanged or covered by verified stable baseline:", required)
 
 
 def release_manifest(source, version):

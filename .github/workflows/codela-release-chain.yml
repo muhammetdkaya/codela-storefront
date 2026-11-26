@@ -48,4 +48,5 @@ jobs:
       - name: Advance only an owner-authorized immutable release
         env:
           GH_TOKEN: ${{ github.token }}
+          CODELA_DEPENDENCY_READ_TOKEN: ${{ secrets.CODELA_DEPENDENCY_READ_TOKEN }}
         run: python3 scripts/codela-release-chain.py

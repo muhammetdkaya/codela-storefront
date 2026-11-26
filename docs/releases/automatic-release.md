@@ -17,3 +17,7 @@ Ek güvenlik: aday head, onaylanan main commit'ini içermelidir; squash sonrası
 ## Hata geri bildirimi
 
 `Codela CI failure feedback` iş akışı başarısız olan yetkili/aynı depodaki sahip PR kontrolleri ve güncel main işlemleri için Actions run kimliğine bağlı tek Issue açar; aynı run sonraki denemede başarılı olursa kapatır. Issue içinde commit, workflow, PR, varsa sürüm, başarısız iş/adım numarası ve tam log bağlantısı vardır; log metni ve sırlar kopyalanmaz. Yalnızca yetkili PR'ın ilk runner/checkout kurulum hatasında bir otomatik yeniden deneme yapılır. Kod/test, FTP ve release hataları otomatik tekrar edilmez. Fork ve eski revizyonlar, iptal edilmiş kontroller dışarıda kalır. Saatlik ChatGPT görevinde yalnızca açık `[Codela CI]` kayıtları ve yetkili yayınlar incelenir.
+
+### Özel eklenti deposu bağımlılığı
+
+Storefront GITHUB_TOKEN başka bir özel depoyu okuyamaz. Değişmeyen/daha düşük eklenti minimumu için mevcut stable manifest, release tag kaynağı, ZIP digest ve kaynak konfigürasyonu eşleşmesi kullanılır. Yeni/yükseltilmiş minimumda eklenti deposuna yalnız Contents: read yetkisi olan ayrı `CODELA_DEPENDENCY_READ_TOKEN` Actions secret'ı veya bağımsız doğrulanmış manuel yayın gerekir; sır eklenmediyse yeni minimum otomatik geçmez. Test ve FTP kontrolleri değişmez.

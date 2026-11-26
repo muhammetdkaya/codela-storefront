@@ -80,6 +80,28 @@ class ChainTests(unittest.TestCase):
             with self.assertRaises(RuntimeError): c.commit_manifest(B,"0.1.432","{}")
             self.assertEqual(api.call_count,3)
 
+    def test_private_dependency_stable_baseline(self):
+        import json
+        source = "c"*40
+        digest = "d"*64
+        stable = {"theme":"codela-storefront","version":"0.1.432","source_sha":source,"sha256":digest,"requires":{"codela":"1.2.34"}}
+        config = {"requires":{"codela":"1.2.34"}}
+        release = {"tag_name":"v0.1.432","assets":[{"name":"codela-storefront-0.1.432.zip","digest":"sha256:"+digest}]}
+        tag = {"object":{"type":"commit","sha":source}}
+        def file_at(path, ref):
+            return json.dumps(stable if path=="manifest.json" else config).encode(), "blob"
+        with patch.object(c,"file_at",side_effect=file_at), patch.object(c,"repo_api",side_effect=[release,tag]):
+            self.assertTrue(c.stable_dependency_verified("1.2.34"))
+        with patch.object(c,"file_at",side_effect=file_at), patch.object(c,"repo_api",side_effect=[release,tag]):
+            self.assertFalse(c.stable_dependency_verified("1.2.35"))
+        with patch.object(c,"file_at",side_effect=file_at), patch.object(c,"repo_api",side_effect=[{**release,"assets":[]},tag]):
+            with self.assertRaises(RuntimeError): c.stable_dependency_verified("1.2.34")
+        with patch.object(c,"file_at",side_effect=file_at), patch.object(c,"repo_api",side_effect=[release,{"object":{"type":"commit","sha":H}}]):
+            with self.assertRaises(RuntimeError): c.stable_dependency_verified("1.2.34")
+        with patch.object(c,"THEME",True), patch.object(c,"file_at",return_value=(json.dumps(config).encode(),"blob")), patch.dict(os.environ,{"CODELA_DEPENDENCY_READ_TOKEN":""}), patch.object(c,"stable_dependency_verified",return_value=True) as baseline:
+            c.check_dependency(H)
+            baseline.assert_called_once_with("1.2.34")
+
     def test_no_release_downgrade(self):
         self.assertGreater(c.ver("0.1.432"),c.ver("0.1.430"))
         with self.assertRaises(RuntimeError): c.ver("latest")
