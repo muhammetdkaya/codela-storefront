@@ -8,6 +8,23 @@
     if (widget.dataset.agencyWidgetInitialized === 'true') return;
     widget.dataset.agencyWidgetInitialized = 'true';
 
+
+    const quoteForm = widget.querySelector('[data-quote-form]');
+    if (quoteForm && !quoteForm.dataset.quoteReady) {
+      quoteForm.dataset.quoteReady = '1';
+      const estimate = quoteForm.querySelector('[data-quote-estimate]');
+      const update = () => {
+        const selected = [quoteForm.querySelector('select[name="quote_package"]')?.selectedOptions[0], ...quoteForm.querySelectorAll('input[name="quote_extra[]"]:checked')];
+        if (selected.some(x => !x || !/^\d+$/.test(x.dataset.min || '') || !/^\d+$/.test(x.dataset.max || ''))) { estimate.hidden = true; estimate.textContent = ''; return; }
+        const low = selected.reduce((sum,x)=>sum+Number(x.dataset.min),0);
+        const high = selected.reduce((sum,x)=>sum+Number(x.dataset.max),0);
+        const format = new Intl.NumberFormat('tr-TR');
+        estimate.textContent = 'Tahmini: '+format.format(low)+(low===high?'':' – '+format.format(high))+' TL';
+        estimate.hidden = false;
+      };
+      quoteForm.addEventListener('change',update);update();
+    }
+
     if (widget.dataset.agencyWidget === 'project') {
       const form = widget.querySelector('[data-project-form]');
       const steps=[...widget.querySelectorAll('[data-project-step]')];

@@ -2976,3 +2976,22 @@ body.home:has(.sf-shell) .sf-agency-widget--process .sf-agency-process{
   .sf-agency-widget--studio .codela-studio-hero__visual-foot{left:12px;right:12px;gap:8px}
   .sf-agency-widget--studio .codela-studio-hero__visual-foot>span{font-size:9px}
 }
+
+/* A quote is an inline disclosure, not a separate sales page. */
+.cdl-quote{margin:0 0 26px;border-block:1px solid #ffffff24}
+.cdl-quote>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;list-style:none;padding:16px 2px;color:#f8f7fa}
+.cdl-quote>summary::-webkit-details-marker{display:none}
+.cdl-quote>summary>span:first-child{display:grid;gap:5px}
+.cdl-quote>summary strong{font-size:17px;font-weight:600}
+.cdl-quote>summary small,.cdl-quote__note{font-size:12px;color:#b6b0bf;line-height:1.5}
+.cdl-quote>summary>span:last-child{color:#d3a480}
+.cdl-quote__form{display:grid;gap:16px;padding:0 2px 20px}
+.cdl-quote__form label:not(.cdl-quote__check):not([hidden]){display:grid;gap:6px;font-size:13px;color:#b6b0bf}
+.cdl-quote__form :is(input:not([type=checkbox]):not([type=hidden]),textarea,select){box-sizing:border-box;width:100%;min-width:0;max-width:100%;min-height:44px;border:1px solid #ffffff24;border-radius:12px;background:#15151b;color:#f8f7fa;font:inherit;padding:10px 12px}
+.cdl-quote__form fieldset{border:0;padding:0;margin:0;min-width:0}
+.cdl-quote__form legend{font-size:13px;color:#b6b0bf;margin-bottom:8px}
+.cdl-quote__check{display:flex;align-items:flex-start;gap:9px;font-size:13px;line-height:1.5;color:#b6b0bf}
+.cdl-quote__check input{accent-color:#d3a480;flex:none;margin-top:3px}
+.cdl-quote__estimate{color:#d3a480;font-size:18px;font-weight:600;margin:0}
+.cdl-quote__form button{justify-self:start;cursor:pointer}
+.cdl-quote :focus-visible{outline:2px solid #d3a480;outline-offset:3px}

@@ -1,6 +1,7 @@
 <?php
 /** Codela agency mode: isolated WordPress-native pages, forms and theme assets. */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+require_once __DIR__ . '/agency-quote.php';
 
 /**
  * Agency layouts are ordinary WordPress pages and widgets. Site identity is
