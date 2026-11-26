@@ -290,3 +290,15 @@ body:not(.home) .sf-agency-widget--project .cdl-project__shell{
   body:not(.home) .sf-agency-widget--project .cdl-project__choices--services .cdl-project__choice>span{padding-block:20px}
   body:not(.home) .sf-agency-widget--project .cdl-project__fields{gap:24px}
 }
+
+
+/* A focused wizard should not stretch input fields across a 4K display.
+   Use available desktop height while preserving the shared reading width. */
+@media(min-width:1100px){
+  body:not(.sf-agency-mixed) .sf-agency-widget--project .cdl-project{
+    padding-block-start:clamp(28px,7svh,72px);
+  }
+  body:not(.sf-agency-mixed) .sf-agency-widget--project .cdl-project__heading :is(h1,h2){
+    font-size:clamp(36px,3.4vw,46px);
+  }
+}

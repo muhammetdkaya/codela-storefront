@@ -3008,3 +3008,31 @@ body.sf-agency-mixed .sf-agency-widget :is(.codela-studio-hero,.cdl-bento,.sf-ag
 body.sf-agency-mixed .sf-agency-widget--studio .codela-studio-hero__visual{min-height:260px}
 body.sf-agency-mixed .sf-agency-widget--about{background:#06060a}
 body.sf-agency-mixed .sf-agency-widget--bento .cdl-bento__grid{min-height:0}
+
+
+/* Desktop service and contact pages use the same editorial grid as the home.
+   The mobile sequence and typography remain intact. */
+@media(min-width:1100px){
+  body:not(.sf-agency-mixed) .sf-agency-widget--detail .cdl-service-detail__shell{
+    flex:0 1 1120px;width:min(100%,1120px);max-width:1120px;
+  }
+  body:not(.sf-agency-mixed) .sf-agency-widget--detail .cdl-service-detail__body{
+    display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    column-gap:clamp(28px,5vw,72px);align-items:start;
+  }
+  body:not(.sf-agency-mixed) .sf-agency-widget--detail :is(.cdl-service-detail__eyebrow,.cdl-service-detail__copy,.cdl-service-detail__manifesto){grid-column:1/-1}
+  body:not(.sf-agency-mixed) .sf-agency-widget--detail .cdl-service-detail__copy>h1{font-size:clamp(44px,4vw,58px)}
+  body:not(.sf-agency-mixed) .sf-agency-widget--detail .cdl-service-detail__copy>p{max-width:66ch;font-size:16px}
+  body:not(.sf-agency-mixed) .sf-agency-widget--detail .cdl-service-detail__manifesto{max-width:78ch}
+  body:not(.sf-agency-mixed) .sf-agency-widget--detail .cdl-service-detail__scope{grid-column:1}
+  body:not(.sf-agency-mixed) .sf-agency-widget--detail .cdl-service-detail__faq{grid-column:2}
+  body:not(.sf-agency-mixed) .sf-agency-widget--detail .cdl-quote{grid-column:1/-1}
+  body:not(.sf-agency-mixed) .sf-agency-widget--detail .cdl-quote__form{max-width:696px}
+  body:not(.sf-agency-mixed) .sf-agency-widget--detail .cdl-service-detail__bottom{grid-column:1/-1}
+  body:not(.sf-agency-mixed) .sf-agency-widget--contact-bento .cdl-contact__inner{width:min(100%,1120px);gap:30px}
+  body:not(.sf-agency-mixed) .sf-agency-widget--contact-bento .cdl-contact__editorial{
+    display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,.88fr);gap:clamp(24px,4vw,64px);align-items:center;
+  }
+  body:not(.sf-agency-mixed) .sf-agency-widget--contact-bento .cdl-contact__map-frame{height:clamp(280px,48svh,460px)}
+  body:not(.sf-agency-mixed) .sf-agency-widget--contact-bento .cdl-contact__header h1{font-size:clamp(44px,4vw,58px)}
+}

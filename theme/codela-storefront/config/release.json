@@ -3,13 +3,12 @@
     "wordpress": "6.5",
     "php": "8.0",
     "woocommerce": "9.0",
-    "codela": "1.2.32"
+    "codela": "1.2.33"
   },
   "changes": [
-    "Tek WooCommerce hesap sağlayıcısı; içerik sitesi WooCommerce olmadan çalışabilir.",
-    "İlk açılış göstergesi yüklemeyle eş zamanlı ilerler.",
-    "Ortak ayar grupları ve Genel bölümünde proje müsaitliği; eski Codela sürümlerinde Bağlantılar uyumluluğu korunur.",
-    "Ajans ışık sahnesi bağımsız sayfalarda da kullanılır."
+    "Ajans bileşenleri farklı sayfalarda ve birden fazla örnekte bağımsız kullanılabilir; form ve kaynak yükleme doğrulanmış sayfa içeriğini takip eder.",
+    "Mobil tasarım korunarak masaüstü karşılama, hizmetler, iletişim, hakkımızda ve proje ekranları ölçeklendirilir.",
+    "Hizmet detaylarına ücretsiz, bağlayıcı olmayan teklif talebi eklenir. Paket ve ek kapsam fiyatları Genel ayarlarda yönetilir; yapılandırılmamış fiyatlar gösterilmez."
   ],
   "woocommerce_optional": true
 }

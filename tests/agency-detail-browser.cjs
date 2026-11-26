@@ -25,7 +25,7 @@ const server=http.createServer((req,res)=>{
  const browser=await chromium.launch({executablePath:process.env.CHROMIUM_BIN||undefined});
  try{
    fs.mkdirSync(path.join(root,'qa'),{recursive:true});
-   for(const [width,height] of [[320,667],[390,844],[402,874],[768,1024],[1440,900]]){
+   for(const [width,height] of [[320,667],[390,844],[402,874],[768,1024],[1280,720],[1440,900],[1920,1080],[2560,1440]]){
      const page=await browser.newPage({viewport:{width,height},reducedMotion:'reduce'});
      const errors=[];page.on('pageerror',e=>errors.push(e.message));
      await page.goto('http://127.0.0.1:'+server.address().port+'/');
@@ -66,7 +66,8 @@ const server=http.createServer((req,res)=>{
      assert(Math.abs(s.viewX)<=1&&Math.abs(s.viewW-width)<=1,'Full-bleed stage '+width);
      assert(s.buttonHeight>=44,'Touch-safe CTA '+width);
      assert(s.buttonWidth<s.bottom,'Compact CTA, not full-width');
-     assert(s.shellWidth<=697,'Shared editorial width');
+     assert(s.shellWidth<=(width>=1100?1121:697),'Responsive editorial width');
+     if(width>=1100)assert(s.shellWidth>=1000,'Desktop detail uses the wider two-column composition');
      assert.equal(s.manifesto,'1px');
      assert.equal(s.faqLine,'1');
      assert(s.stageHeight>=s.viewportHeight-1,'Detail stage fills the viewport '+width);
