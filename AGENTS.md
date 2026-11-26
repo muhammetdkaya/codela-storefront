@@ -1,3 +1,8 @@
+## 26 Kasım 2026 — Storefront 0.1.435 sürüm adayı
+
+- Proje Başlat iletişim adımında 16px form metni, sade cümle biçimli etiketler, kehribar alt çizgi focus (Glass V2 kutu outline yok), koyu autofill, kısa placeholder ve opsiyonel not etiketi. Native pinch zoom ve otomatik doldurma korunur. VisualViewport küçüldüğünde yalnız odaklı alan görünür bölgenin dışına çıkmışsa kaydırma düzeltmesi yapılır. Sunucu formu ve doğrulama değişmedi.
+- 0.1.434 FTP ve canlı kontrolleri geçti; stable yayın isteği 294c5bcb9f8a329e71d8d14835a1ae09c17a052b. 0.1.435 için mobil/masaüstü focus regresyonları eklendi; fiziksel iOS Safari kabulü ayrıca gerekli.
+
 ## 26 Kasım 2026 — Storefront 0.1.434 sürüm adayı
 
 - Proje kapsamı: özel teklif satırındaki ikinci metin kaldırıldı; sabit Tahmini bütçe etiketi ile mevcut hizmetin fiyatı aynı satırda. Seçim yapılmadığında —, fiyat hesaplanamadığında Teklif hazırlanacak. İletişim özetinde hizmet bazlı fiyatlar korunur; başlangıç, aylık ve tek seferlik tutarlar yanlış biçimde toplanmaz. Fiyat kuralları ve backend değişmedi.

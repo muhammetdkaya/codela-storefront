@@ -156,6 +156,39 @@
         services.forEach(input=>input.addEventListener('change',()=>{if(!services.some(x=>x.checked))input.checked=true;}));
         widget.querySelectorAll('[data-project-next]').forEach(next=>next.addEventListener('click',nextStep));
         widget.querySelectorAll('[data-project-back]').forEach(back=>back.addEventListener('click',backStep));
+        // Native Safari zoom is prevented by the 16px field font, not by
+        // disabling pinch zoom. Keep the focused control within the actual
+        // keyboard-reduced visual viewport when Safari has not already done so.
+        const fields=form.querySelector('.cdl-project__fields');
+        const viewport=window.visualViewport;
+        if(fields&&viewport){
+          let field=null,frame=0;
+          const reveal=()=>{
+            cancelAnimationFrame(frame);
+            frame=requestAnimationFrame(()=>{
+              if(!field||!field.isConnected||document.activeElement!==field||viewport.scale>1.01)return;
+              if(document.documentElement.clientHeight-viewport.height<100)return;
+              const rect=field.getBoundingClientRect();
+              const bottom=viewport.offsetTop+viewport.height-16;
+              const top=viewport.offsetTop+16;
+              if(rect.bottom>bottom)window.scrollBy(0,Math.ceil(rect.bottom-bottom));
+              else if(rect.top<top)window.scrollBy(0,Math.floor(rect.top-top));
+            });
+          };
+          const detach=()=>{
+            viewport.removeEventListener('resize',reveal);
+            cancelAnimationFrame(frame);
+            field=null;
+          };
+          fields.addEventListener('focusin',event=>{
+            if(!event.target.matches('input,textarea'))return;
+            detach();
+            field=event.target;
+            viewport.addEventListener('resize',reveal);
+            reveal();
+          });
+          fields.addEventListener('focusout',detach);
+        }
         const contact=form.querySelector('[name="agency_project_contact"]');
         const validateContact=()=>{
           if(!contact)return true;

@@ -127,17 +127,17 @@ function codela_sf_section_agency_project( array $data, string $type = '' ): str
                     <span data-project-summary></span>
                   </div>
                   <div class="cdl-project__fields">
-                    <label>Ad Soyad / Marka
+                    <label><span class="cdl-project__field-label">Ad soyad / marka</span>
                       <input type="text" name="agency_project_name" autocomplete="name" maxlength="120"
-                             placeholder="Adın veya marka adın" minlength="2" required />
+                             placeholder="Adın veya markan" minlength="2" required />
                     </label>
-                    <label>E-posta veya WhatsApp
-                      <input type="text" name="agency_project_contact" autocomplete="off" maxlength="180"
-                             placeholder="ad@markaniz.com veya 05XX..." required />
+                    <label><span class="cdl-project__field-label">E-posta veya WhatsApp</span>
+                      <input type="text" name="agency_project_contact" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="180"
+                             placeholder="E-posta adresin veya numaran" required />
                     </label>
-                    <label>Kısa Not (İsteğe bağlı)
-                      <textarea name="agency_project_note" rows="1" maxlength="2000"
-                                placeholder="Hedefinden kısaca bahsedebilirsin"></textarea>
+                    <label><span class="cdl-project__field-label">Kısa not <small>İsteğe bağlı</small></span>
+                      <textarea name="agency_project_note" rows="2" maxlength="2000"
+                                placeholder="Projen hakkında kısa bir not"></textarea>
                     </label>
                   </div>
                   <div class="cdl-project__honey" aria-hidden="true">
