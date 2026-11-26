@@ -6,9 +6,9 @@
     "codela": "1.2.33"
   },
   "changes": [
-    "Ajans bileşenleri farklı sayfalarda ve birden fazla örnekte bağımsız kullanılabilir; form ve kaynak yükleme doğrulanmış sayfa içeriğini takip eder.",
-    "Mobil tasarım korunarak masaüstü karşılama, hizmetler, iletişim, hakkımızda ve proje ekranları ölçeklendirilir.",
-    "Hizmet detaylarına ücretsiz, bağlayıcı olmayan teklif talebi eklenir. Paket ve ek kapsam fiyatları Genel ayarlarda yönetilir; yapılandırılmamış fiyatlar gösterilmez."
+    "Proje Başlat ve teklif akışı ortak dört adımlı formda birleşir; mevcut cam bileşenler, iletişim alanları ve takvim korunur.",
+    "Hizmet bazında fiyat aralığı, yazılım başlangıç fiyatı ve aylık bakım tahmini; mevcut fiyat ve kapasite kayıtları korunur.",
+    "Fiyat ve kapasite ayarları ortak Codela yönetim paneli bileşenleriyle düzenlenir; paketler ihtiyaç kadar eklenir."
   ],
   "woocommerce_optional": true
 }

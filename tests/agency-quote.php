@@ -36,4 +36,15 @@ check_quote($project['web']['estimate']==='13.500 – 20.000 TL','Project price 
 check_quote($project['support']['estimate']==='Görüşmede belirlenecek','Unconfigured recurring scope never priced');
 check_quote(codela_sf_project_quote_calculate(['Web Tasarım'],['web'=>['packages'=>['23']]])===null,'Forged scope rejected');
 check_quote(codela_sf_project_quote_calculate(['Web Tasarım'],['web'=>['packages'=>['']]])['web']['estimate']==='Görüşmede belirlenecek','Unselected package accepted');
+$more=$clean;
+$more['web']['packages'][12]=['label'=>'Yeni paket','min'=>22000,'max'=>26000];
+$more['software']['packages'][0]=['label'=>'Modül 1','min'=>10000,'max'=>12000];
+$more['software']['packages'][1]=['label'=>'Modül 2','min'=>4000,'max'=>5000];
+$more['support']['packages'][0]=['label'=>'Aylık bakım','min'=>3000,'max'=>4000];
+check_quote(codela_sf_quote_clean($more)!==null,'Dynamic row IDs beyond six accepted');
+$GLOBALS['options']['codela_sf_quote_rules']=$more;
+$models=codela_sf_project_quote_calculate(['Web Tasarım','Özel Yazılım','Optimizasyon / Destek'],['web'=>['packages'=>['12']],'software'=>['packages'=>['0','1']],'support'=>['packages'=>['0']]]);
+check_quote($models['web']['estimate']==='22.000 – 26.000 TL','Web range');
+check_quote($models['software']['estimate']==='14.000 TL itibarıyla','Software starting model');
+check_quote($models['support']['estimate']==='3.000 – 4.000 TL / ay','Maintenance recurring model');
 echo "Agency quote rules, ranges and no-price fallback passed.\n";

@@ -36,8 +36,8 @@ const server=http.createServer((req,res)=>{
      assert(Math.abs(spacing.left-expected)<.1&&Math.abs(spacing.right-expected)<.1,'Responsive optical form gutters');
      assert.equal(spacing.top,26,'Shared inner header inset');
    }
-   const one=widget.locator('[data-project-step="1"]'),two=widget.locator('[data-project-step="2"]'),three=widget.locator('[data-project-step="3"]');
-   assert(await one.isVisible() && !(await two.isVisible()) && !(await three.isVisible()));
+   const one=widget.locator('[data-project-step="1"]'),scope=widget.locator('[data-project-step="2"]'),two=widget.locator('[data-project-step="3"]'),three=widget.locator('[data-project-step="4"]');
+   assert(await one.isVisible() && !(await scope.isVisible()) && !(await two.isVisible()) && !(await three.isVisible()));
    assert.equal(await one.locator('input[type="checkbox"]').count(),4);
    assert.equal(await one.locator('h1').textContent(),'Hangi alanda çalışmak istersin?');
    assert.equal(await widget.locator('.cdl-project__progress h1,.cdl-project__progress h2').count(),0,'No duplicate heading');
@@ -57,6 +57,10 @@ const server=http.createServer((req,res)=>{
    await one.locator('input[value="E-Ticaret"]').locator('..').click();
    assert.equal(await one.locator('input:checked').count(),2,'Multiple services retained');
    await one.locator('[data-project-next]').click();
+   assert(await scope.isVisible());
+   assert.equal(await scope.locator('[data-project-scope]:visible').count(),2,'Only selected services show scope');
+   assert.equal(await scope.locator('input[data-scope-extra]:checked').count(),0,'No automatically selected paid extras');
+   await scope.locator('[data-project-next]').click();
    assert(await two.isVisible());
    assert.equal(await two.locator('input[name="agency_project_month"]').count(),4);
    assert.equal(await two.locator('input[name="agency_project_month"]:disabled').count(),2);
@@ -75,12 +79,17 @@ const server=http.createServer((req,res)=>{
    assert(await contact.evaluate(el=>el.checkValidity()),'Email accepted');
    const field=await three.locator('[name="agency_project_name"]').evaluate(el=>{const c=getComputedStyle(el);return [c.backgroundColor,c.borderTopWidth,c.borderLeftWidth,c.borderBottomWidth,c.borderRadius];});
    assert.deepEqual(field,['rgba(0, 0, 0, 0)','0px','0px','1px','0px'],'Underline-only field with Glass V2');
-   assert.equal(await widget.locator('[data-project-progress-label]').textContent(),'03 / 03');
-   assert.equal(await widget.locator('[data-project-summary]>span').count(),3);
+   assert.equal(await widget.locator('[data-project-progress-label]').textContent(),'04 / 04');
+   assert.equal(await widget.locator('[data-project-summary]>span').count(),5);
    await three.locator('[data-project-back]').click();
    await two.locator('[data-project-back]').click();
+   await scope.locator('[data-project-back]').click();
    assert.equal(await one.locator('input:checked').count(),2);
    await one.locator('[data-project-next]').click();
+   assert(await scope.isVisible());
+   assert.equal(await scope.locator('[data-project-scope]:visible').count(),2,'Only selected services show scope');
+   assert.equal(await scope.locator('input[data-scope-extra]:checked').count(),0,'No automatically selected paid extras');
+   await scope.locator('[data-project-next]').click();
    assert(await two.locator('input[value="flexible"]').isChecked());
    await two.locator('[data-project-next]').click();
    const geometry=await widget.evaluate(el=>({overflow:document.documentElement.scrollWidth-innerWidth,
@@ -95,6 +104,6 @@ const server=http.createServer((req,res)=>{
    await page.screenshot({path:path.join(root,'qa','agency-project-'+width+'.png'),fullPage:true});
    await page.close();
   }
-  console.log('MONA Project Start: five viewports, three steps, back/edit, selection, secure native form passed');
+  console.log('MONA Project Start: five viewports, four steps, back/edit, selection, secure native form passed');
  } finally {await browser.close();await new Promise(done=>server.close(done));}
 })().catch(error=>{console.error(error);server.close();process.exitCode=1;});

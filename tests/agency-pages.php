@@ -184,7 +184,7 @@ agency_page_check( str_contains($project_html,'data-agency-widget="project"') &&
     substr_count($project_html,'name="agency_project_month"')===4 &&
     str_contains($project_html,'2 yeni proje için müsait') &&
     str_contains($project_html,'Kapasite henüz belirtilmedi') &&
-    substr_count($project_html,'data-project-step=')===3,
+    substr_count($project_html,'data-project-step=')===4,
     'Project Start preserves four services and configurable months in three steps' );
 agency_page_check( str_contains($project_html,'agency_project_nonce') &&
     str_contains($project_html,'agency_project_consent') &&
