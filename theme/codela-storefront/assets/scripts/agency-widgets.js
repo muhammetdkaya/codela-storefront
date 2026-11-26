@@ -35,44 +35,55 @@
         let active=0;
         const services=[...form.querySelectorAll('input[name="agency_project_service[]"]')];
         const scopes=[...form.querySelectorAll('[data-project-scope]')];
-        const tabs=[...form.querySelectorAll('[data-scope-tab]')];
-        const tablist=form.querySelector('[data-scope-tabs]');
+        const nextLabel=form.querySelector('[data-scope-next-label]');
+        const budgetLabel=form.querySelector('[data-scope-budget-label]');
+        const scopeError=form.querySelector('[data-scope-error]');
         const total=form.querySelector('[data-scope-total]');
         let activeScope='';
         const format=new Intl.NumberFormat('tr-TR');
         const selectedScopes=()=>scopes.filter(x=>services.some(s=>s.checked&&s.value===x.dataset.projectScope));
-        const scopeLabels=()=>selectedScopes().map(x=>x.querySelector('legend').textContent+': '+x.querySelector('[data-scope-estimate]').textContent);
+        const serviceName=scope=>scope?.querySelector('legend')?.textContent||'';
+        const scopeLabels=()=>selectedScopes().map(x=>serviceName(x)+': '+x.querySelector('[data-scope-estimate]').textContent);
+        const hasChoice=scope=>!!scope?.querySelector('[data-scope-package]:checked,[data-scope-custom]:checked');
+        const currentScope=()=>selectedScopes().find(x=>x.dataset.projectScope===activeScope);
+        const setError=visible=>{if(scopeError)scopeError.hidden=!visible;};
         const money=(min,max)=>format.format(min)+(min===max?'':' – '+format.format(max))+' TL';
         const updateScopes=()=>{
           const chosen=selectedScopes();
           if(!chosen.some(x=>x.dataset.projectScope===activeScope))activeScope=chosen[0]?.dataset.projectScope||'';
-          if(tablist)tablist.hidden=chosen.length<2;
-          tabs.forEach(tab=>{
-            tab.hidden=!chosen.some(x=>x.dataset.projectScope===tab.dataset.scopeTab);
-            tab.setAttribute('aria-pressed',String(tab.dataset.scopeTab===activeScope));
-          });
+          const current=chosen.findIndex(x=>x.dataset.projectScope===activeScope);
+          const last=current===chosen.length-1;
+          // Each selected scope is a full wizard step. Recalculate even on step 1.
+          const count=chosen.length+3;
+          const stepNumber=active===0?1:active===1?current+2:chosen.length+active;
+          const label=n=>String(n).padStart(2,'0');
+          progress.style.width=(stepNumber/count*100)+'%';
+          indicator.textContent=label(stepNumber)+' / '+label(count);
+          if(nextLabel)nextLabel.textContent=last?'Devam Et: Takvim':'Devam Et: '+serviceName(chosen[current+1]);
+          if(budgetLabel)budgetLabel.textContent=chosen.length>1?(last?'Toplam tahmini bütçe':'Bu hizmetin tahmini bütçesi'):'Tahmini bütçe';
           const totals={range:[0,0,0],starting:[0,0,0],monthly:[0,0,0]};
           let unknown=0;
           for(const scope of scopes){
             const included=chosen.includes(scope);
             scope.hidden=!included||scope.dataset.projectScope!==activeScope;
-            // A selected service on an inactive tab must still be submitted.
+            // Completed or upcoming selected services remain in the native form.
             scope.disabled=!included;
             const custom=scope.querySelector('[data-scope-custom]')?.checked;
             const packages=[...scope.querySelectorAll('[data-scope-package]')];
             const extras=[...scope.querySelectorAll('[data-scope-extra]')];
             packages.forEach(x=>x.disabled=!!custom&&x.type==='checkbox');
-            extras.forEach(x=>x.disabled=!!custom);
-            const extraGroup=scope.querySelector('[data-scope-extras]');
-            if(extraGroup)extraGroup.hidden=!!custom;
             const selected=packages.filter(x=>x.checked);
+            const extrasEnabled=!custom&&selected.length>0;
+            extras.forEach(x=>{x.disabled=!extrasEnabled;if(!extrasEnabled)x.checked=false;});
+            const extraGroup=scope.querySelector('[data-scope-extras]');
+            if(extraGroup)extraGroup.hidden=!extrasEnabled;
             const rows=[...selected,...extras.filter(x=>x.checked)];
             const known=!custom&&selected.length&&rows.every(x=>/^\d+$/.test(x.dataset.min||'')&&/^\d+$/.test(x.dataset.max||''));
             const min=known?rows.reduce((sum,x)=>sum+Number(x.dataset.min),0):0;
             const max=known?rows.reduce((sum,x)=>sum+Number(x.dataset.max),0):0;
             const mode=scope.dataset.pricingMode;
             scope.querySelector('[data-scope-estimate]').textContent=known?(mode==='starting'?format.format(min)+' TL itibarıyla':money(min,max)+(mode==='monthly'?' / ay':'')):'Görüşmede belirlenecek';
-            if(included){if(known){const bucket=totals[mode]||totals.range;bucket[0]+=min;bucket[1]+=max;bucket[2]++;}else unknown++;}
+            if(included&&(last||scope.dataset.projectScope===activeScope)){if(known){const bucket=totals[mode]||totals.range;bucket[0]+=min;bucket[1]+=max;bucket[2]++;}else unknown++;}
           }
           if(total){
             const lines=[];
@@ -83,31 +94,76 @@
             total.replaceChildren(...lines.map(value=>{const span=document.createElement('span');span.textContent=value;return span;}));
           }
         };
-        tabs.forEach(tab=>tab.addEventListener('click',()=>{activeScope=tab.dataset.scopeTab;updateScopes();}));
+        // No free-jumping tabs: every selected service gets an explicit choice before the calendar.
+        const focusStep=(index)=>{
+          const h=steps[index].querySelector('h1,h2');
+          if(h){h.tabIndex=-1;h.focus({preventScroll:true});}
+          const panel=widget.querySelector('.cdl-project__panel');
+          const header=document.querySelector('.sf-shell .sf-header');
+          const clearance=header&&header.getBoundingClientRect().bottom>0?header.getBoundingClientRect().bottom+12:12;
+          // Reset only if the progress/heading is above the visible header, not on every input change.
+          if(panel&&panel.getBoundingClientRect().top<clearance-1){
+            panel.scrollIntoView({block:'start',behavior:'instant'});
+          }
+        };
         form.addEventListener('change',event=>{
           const target=event.target;
           const scope=target.closest('[data-project-scope]');
           if(scope&&target.matches('[data-scope-custom]')&&target.checked){
             scope.querySelectorAll('input[data-scope-package]:checked,input[data-scope-extra]:checked').forEach(x=>x.checked=false);
           }
+          if(scope&&hasChoice(scope))setError(false);
           updateScopes();
         });
         const show=(index,focus=true)=>{
-          updateScopes();
           active=index;
+          updateScopes();
+          setError(false);
           steps.forEach((step,n)=>{step.hidden=n!==index;});
-          progress.style.width=((index+1)/steps.length*100)+'%';
-          indicator.textContent='0'+(index+1)+' / 04';
           if(index===3){
             summary.replaceChildren(...[...services.filter(x=>x.checked).map(x=>x.value==='Optimizasyon / Destek'?'Bakım & Geliştirme':x.value),form.querySelector('input[name="agency_project_month"]:checked')?.dataset.monthLabel,...scopeLabels()].filter(Boolean).map(value=>{
               const tag=document.createElement('span');tag.textContent=value;return tag;
             }));
           }
-          if(focus){const h=steps[index].querySelector('h1,h2');if(h){h.tabIndex=-1;h.focus({preventScroll:true});}}
+          if(focus)focusStep(index);
+        };
+        const switchScope=scope=>{
+          activeScope=scope.dataset.projectScope;
+          setError(false);
+          updateScopes();
+          focusStep(1);
+        };
+        const nextStep=()=>{
+          if(active===0){
+            activeScope=selectedScopes()[0]?.dataset.projectScope||'';
+            show(1);
+          }else if(active===1){
+            const chosen=selectedScopes(),current=currentScope();
+            if(!hasChoice(current)){
+              setError(true);
+              current?.querySelector('[data-scope-package],[data-scope-custom]')?.focus();
+              return;
+            }
+            const next=chosen[chosen.indexOf(current)+1];
+            if(next){switchScope(next);return;}
+            const missing=chosen.find(x=>!hasChoice(x));
+            if(missing){switchScope(missing);setError(true);return;}
+            show(2);
+          }else if(active<steps.length-1){show(active+1);}
+        };
+        const backStep=()=>{
+          if(active===1){
+            const chosen=selectedScopes(),i=chosen.indexOf(currentScope());
+            if(i>0){switchScope(chosen[i-1]);return;}
+            show(0);
+          }else if(active===2){
+            activeScope=selectedScopes().slice(-1)[0]?.dataset.projectScope||'';
+            show(1);
+          }else if(active>0){show(active-1);}
         };
         services.forEach(input=>input.addEventListener('change',()=>{if(!services.some(x=>x.checked))input.checked=true;}));
-        widget.querySelectorAll('[data-project-next]').forEach(next=>next.addEventListener('click',()=>{if(active<steps.length-1)show(active+1);}));
-        widget.querySelectorAll('[data-project-back]').forEach(back=>back.addEventListener('click',()=>{if(active>0)show(active-1);}));
+        widget.querySelectorAll('[data-project-next]').forEach(next=>next.addEventListener('click',nextStep));
+        widget.querySelectorAll('[data-project-back]').forEach(back=>back.addEventListener('click',backStep));
         const contact=form.querySelector('[name="agency_project_contact"]');
         const validateContact=()=>{
           if(!contact)return true;
@@ -118,14 +174,16 @@
         };
         contact?.addEventListener('input',validateContact);
         form.addEventListener('submit',event=>{
-          if(active!==steps.length-1){event.preventDefault();show(active+1);return;}
+          if(active!==steps.length-1){event.preventDefault();nextStep();return;}
           if(!services.some(x=>x.checked)){event.preventDefault();show(0);return;}
+          const missing=selectedScopes().find(x=>!hasChoice(x));
+          if(missing){event.preventDefault();activeScope=missing.dataset.projectScope;show(1);setError(true);return;}
           validateContact();
           if(!form.checkValidity()){event.preventDefault();form.reportValidity();return;}
           const submit=form.querySelector('[data-project-submit]');
           if(submit){submit.disabled=true;submit.setAttribute('aria-busy','true');submit.firstChild.textContent='Gönderiliyor ';}
         });
-        show(/(?:[?&])codela_status=(?:invalid|failed|wait)(?:&|$)/.test(location.search)?3:(form.hasAttribute('data-project-start-scope')?1:0),false);
+        show(form.hasAttribute('data-project-start-scope')?1:0,false);
       }
     }
 
