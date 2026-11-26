@@ -8,6 +8,14 @@ on:
       - 'theme/codela-storefront/config/agency-media.json'
       - 'theme/codela-storefront/assets/media/**'
       - '.github/workflows/starter-media-qa.yml'
+  pull_request:
+    paths:
+      - 'demos/**'
+      - 'scripts/build-starter-media.py'
+      - 'tests/starter-media.py'
+      - 'theme/codela-storefront/config/agency-media.json'
+      - 'theme/codela-storefront/assets/media/**'
+      - '.github/workflows/starter-media-qa.yml'
   workflow_dispatch:
 permissions:
   contents: read

@@ -1643,3 +1643,9 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 
 
 
+
+## Olay tabanlı yayın kuralı — 26 Kasım 2026
+
+- Kullanıcı geliştirmeyi ve yayını yetkilendirdiğinde testlerin bitmesini sohbet içinde beklemek yerine yeni sürümü normal, güncel main tabanlı PR'a kaydet. PR'ın tam head SHA'sını, mevcut main SHA'sını ve artırılan sürüm numarasını doğrula; depo sahibi hesabıyla PR'a tek satır `/codela-publish HEAD_SHA BASE_SHA VERSION` yaz. Bu yayın komutu yalnızca yetkilendirilmiş çalışma içindir; kod incelemesi, taslak ve eski PR'ları yayınlama.
+- Olay tabanlı `Codela authorized release chain` workflow'u gereken kontrollerden sonra merge, exact-source FTP dağıtımı, GitHub release ve güncelleme doğrulamasını yürütür. Tekrar onay isteme; başarısız kontrolde gerçek nedeni düzelt ve yeni head/base için yetki satırını güncelle. Ana dal değişmişse güvenli rebase ve yeni test gereklidir.
+- CI/yayın güvenlik altyapısı değişiklikleri otomatik yayınlanmaz; ayrı kontrol ve manuel birleştirme gerektirir. WordPress.org yayın yetkisi ayrıdır. Zincirin kullanım belgesi: `docs/releases/automatic-release.md`.
