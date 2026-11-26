@@ -43,6 +43,8 @@ $more['software']['packages'][1]=['label'=>'Modül 2','min'=>4000,'max'=>5000];
 $more['support']['packages'][0]=['label'=>'Aylık bakım','min'=>3000,'max'=>4000];
 check_quote(codela_sf_quote_clean($more)!==null,'Dynamic row IDs beyond six accepted');
 $GLOBALS['options']['codela_sf_quote_rules']=$more;
+check_quote(codela_sf_quote_pricing_mode('support',$more['support'])==='range','Existing configured support amount remains one-time until administrator selects recurring');
+$GLOBALS['options']['codela_sf_quote_models']=['software'=>'starting','support'=>'monthly'];
 $models=codela_sf_project_quote_calculate(['Web Tasarım','Özel Yazılım','Optimizasyon / Destek'],['web'=>['packages'=>['12']],'software'=>['packages'=>['0','1']],'support'=>['packages'=>['0']]]);
 check_quote($models['web']['estimate']==='22.000 – 26.000 TL','Web range');
 check_quote($models['software']['estimate']==='14.000 TL itibarıyla','Software starting model');

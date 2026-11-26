@@ -81,7 +81,7 @@ function codela_sf_section_agency_project( array $data, string $type = '' ): str
                 <div class="cdl-project__step" data-project-step="2">
                   <div class="cdl-project__heading"><h2>Proje kapsamını <span class="cdl-project__title-muted">netleştirelim.</span></h2><p>Seçimler isteğe bağlıdır. Kesin fiyat görüşmede belirlenir.</p></div>
                   <?php foreach ( $services as $service ) : $key = codela_sf_project_quote_key( $service ); $rules = $quote_rules[$key]; ?>
-                    <fieldset class="cdl-project__fieldset cdl-project__scope" data-project-scope="<?php echo esc_attr( $service ); ?>" data-pricing-mode="<?php echo 'support' === $key ? 'monthly' : ( 'software' === $key ? 'starting' : 'range' ); ?>">
+                    <fieldset class="cdl-project__fieldset cdl-project__scope" data-project-scope="<?php echo esc_attr( $service ); ?>" data-pricing-mode="<?php echo esc_attr( codela_sf_quote_pricing_mode( $key, $rules ) ); ?>">
                       <legend><?php echo esc_html( codela_sf_quote_services()[$key] ); ?></legend>
                       <?php if ( $rules['packages'] ) : ?>
                       <?php if ( 'software' === $key ) : ?><div class="cdl-project__scope-options"><?php foreach ( $rules['packages'] as $id => $row ) : ?>
