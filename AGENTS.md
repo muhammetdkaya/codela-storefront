@@ -1,3 +1,8 @@
+## 26 Kasım 2026 — Storefront 0.1.434 sürüm adayı
+
+- Proje kapsamı: özel teklif satırındaki ikinci metin kaldırıldı; sabit Tahmini bütçe etiketi ile mevcut hizmetin fiyatı aynı satırda. Seçim yapılmadığında —, fiyat hesaplanamadığında Teklif hazırlanacak. İletişim özetinde hizmet bazlı fiyatlar korunur; başlangıç, aylık ve tek seferlik tutarlar yanlış biçimde toplanmaz. Fiyat kuralları ve backend değişmedi.
+- 0.1.433 GitHub release ve stable manifest doğrulandı. Browser bootstrap altyapısı ayrı PR #261 ile geçti; bu ürün değişikliğinde CI altyapısı değiştirilmedi.
+
 ## 26 Kasım 2026 — Storefront 0.1.433 sürüm adayı
 
 - Seçili hizmetlerin kapsamı sekmesiz, dinamik sayılan ana adımlarda tamamlanır. Her hizmet için paket/modül veya özel teklif seçimi açıkça yapılır. Geri dönüşte seçimler korunur; son hizmetten sonra takvim açılır. İkinci ilerleme göstergesi yoktur; ilk seçim ekranından itibaren ana sayaç 4–7 adım arasında güncellenir.

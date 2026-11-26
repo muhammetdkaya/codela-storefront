@@ -316,9 +316,9 @@ body:not(.home) .sf-agency-widget--project .cdl-project__shell{
 .sf-agency-widget--project .cdl-project__scope-extras summary span{margin-left:auto;color:#928c9c;font-size:11px}
 .sf-agency-widget--project .cdl-project__scope-extras summary::after{content:"+";color:#d3a480;font-size:18px;line-height:1;width:18px;text-align:center}
 .sf-agency-widget--project .cdl-project__scope-extras[open] summary::after{content:"−"}
-.sf-agency-widget--project .cdl-project__scope-price{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px 16px;padding:8px 0}
-.sf-agency-widget--project .cdl-project__scope-price>span{color:#928c9c;font-size:11px;letter-spacing:.10em;text-transform:uppercase}
-.sf-agency-widget--project .cdl-project__scope-estimate{color:#d3a480;font:inherit;font-size:16px;font-weight:600;letter-spacing:-.015em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.sf-agency-widget--project .cdl-project__scope-price{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:baseline;gap:8px 12px;padding:0}
+.sf-agency-widget--project .cdl-project__scope-price>span{color:#928c9c;font-size:11px;letter-spacing:.04em;white-space:nowrap}
+.sf-agency-widget--project .cdl-project__scope-estimate{color:#d3a480;font:inherit;font-size:clamp(12px,3.5vw,16px);font-weight:600;letter-spacing:-.015em;font-variant-numeric:tabular-nums;overflow-wrap:normal}
 .sf-agency-widget--project [data-project-step="2"] .cdl-project__reservation-note{margin:0;font-size:11.5px}
 .sf-agency-widget--project [data-project-step="2"]{gap:20px}
 .sf-agency-widget--project .cdl-project__scope-footer{position:relative;padding-block:0}
@@ -336,9 +336,8 @@ body:not(.home) .sf-agency-widget--project .cdl-project__shell{
 .sf-agency-widget--project .cdl-project__chip-mark::before{content:"+";color:#d3a480}
 .sf-agency-widget--project .cdl-project__scope-chips input:checked+span .cdl-project__chip-mark::before{content:"✓"}
 .sf-agency-widget--project .cdl-project__scope-footer{display:grid;gap:10px}
-.sf-agency-widget--project .cdl-project__scope-price{padding:0;border:0;align-items:flex-start}
-.sf-agency-widget--project [data-scope-total]{display:grid;gap:3px;text-align:right;max-width:100%}
-.sf-agency-widget--project [data-scope-total]>span{display:block}
+.sf-agency-widget--project .cdl-project__scope-price{border:0}
+.sf-agency-widget--project [data-scope-total]{display:block;text-align:right;min-width:0;max-width:100%;overflow-wrap:anywhere}
 @media(max-width:375px){.sf-agency-widget--project .cdl-project__scope .cdl-project__choices--services .cdl-project__choice>span{grid-template-columns:auto minmax(0,1fr)}.sf-agency-widget--project .cdl-project__scope .cdl-project__package-price{grid-column:2;max-width:none;text-align:left}}
 
 /* Guided service sequence: the choice list owns its bottom divider. */
@@ -346,6 +345,4 @@ body:not(.home) .sf-agency-widget--project .cdl-project__shell{
 .sf-agency-widget--project .cdl-project__selection-hint{color:#928c9c;font-size:11.5px;line-height:1.45;margin:-10px 0 0}
 .sf-agency-widget--project .cdl-project__scope-error{color:#d3a480;font-size:12px;line-height:1.4;margin:0}
 .sf-agency-widget--project .cdl-project__button>[data-scope-next-label]{color:inherit;min-width:0;text-align:center;overflow-wrap:anywhere}
-.sf-agency-widget--project .cdl-project__scope-price>span{flex:0 1 auto}
-.sf-agency-widget--project [data-scope-total]{flex:1 1 auto;min-width:0}
-@media(max-width:375px){.sf-agency-widget--project .cdl-project__scope-price{display:grid;gap:5px}.sf-agency-widget--project [data-scope-total]{text-align:left}}
+

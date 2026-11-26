@@ -73,6 +73,10 @@ const server=http.createServer((req,res)=>{
    const web=scope.locator('[data-project-scope="Web Tasarım"]');
    assert.equal(await web.locator('input[data-scope-package]:checked').count(),0,'No priced default');
    assert(!(await web.locator('input[data-scope-custom]').isChecked()),'No implicit custom choice');
+   assert.equal(await web.locator('[data-scope-custom]+span small').count(),0,'No redundant custom subtitle');
+   const budget=scope.locator('[data-scope-total]');
+   assert.equal(await budget.textContent(),'—','No price before selection');
+   assert.equal(await scope.locator('[data-scope-budget-label]').textContent(),'Tahmini bütçe');
    await scope.locator('[data-project-next]').click();
    assert(await scope.locator('[data-scope-error]').isVisible(),'Cannot skip first service');
    assert.equal(await widget.locator('[data-project-progress-label]').textContent(),'02 / 05');
@@ -84,7 +88,13 @@ const server=http.createServer((req,res)=>{
    assert((await web.locator('.cdl-project__package-price').first().textContent()).includes('12.000'));
    assert(await web.getByText('Örnek açıklama').isVisible());
    await web.locator('input[data-scope-extra]').first().locator('..').click();
-   assert((await scope.locator('[data-scope-total]').textContent()).includes('13.500'));
+   assert((await budget.textContent()).includes('13.500'));
+   const row=await scope.locator('.cdl-project__scope-price').evaluate(el=>{
+     const label=el.firstElementChild.getBoundingClientRect(), amount=el.lastElementChild.getBoundingClientRect();
+     return {top:Math.abs(label.top-amount.top), height:amount.height,lineHeight:parseFloat(getComputedStyle(el.lastElementChild).lineHeight),width:el.scrollWidth,available:el.clientWidth};
+   });
+   assert(row.top<10&&row.width<=row.available+1,'Budget remains a single aligned row at every viewport');
+   if(Number.isFinite(row.lineHeight))assert(row.height<=row.lineHeight+1,'Price fits on one line');
    await scope.locator('[data-project-next]').click();
    assert.equal(await widget.locator('[data-project-progress-label]').textContent(),'03 / 05');
    assert.equal(await scope.locator('[data-scope-next-label]').textContent(),'Devam Et: Takvim');
@@ -98,11 +108,15 @@ const server=http.createServer((req,res)=>{
    assert(await web.locator('input[data-scope-extra]').first().isChecked());
    assert.equal(await scope.locator('[data-project-scope-summary]').count(),0,'No duplicate price summary');
    await web.locator('input[data-scope-custom]').locator('..').click();
+   assert.equal(await budget.textContent(),'Teklif hazırlanacak');
    assert.equal(await web.locator('input[data-scope-package]:checked').count(),0);
    await scope.locator('[data-project-next]').click();
    const commerce=scope.locator('[data-project-scope="E-Ticaret"]');
    assert(await commerce.isVisible());
+   assert.equal(await budget.textContent(),'—','Last service shows its own estimate, not mixed totals');
+   assert.equal(await scope.locator('[data-scope-budget-label]').textContent(),'Tahmini bütçe');
    await commerce.locator('[data-scope-custom]').locator('..').click();
+   assert.equal(await budget.textContent(),'Teklif hazırlanacak');
    await scope.locator('[data-project-next]').click();
    assert(await two.isVisible());
    assert.equal(await widget.locator('[data-project-progress-label]').textContent(),'04 / 05');
