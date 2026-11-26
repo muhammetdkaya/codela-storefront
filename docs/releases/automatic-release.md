@@ -13,3 +13,7 @@ Yalnızca depo sahibinin yorumları ve aynı depodaki main hedefli normal PR'lar
 Codela authorized release chain Actions ekranı aşamaları gösterir; olaylar tamamlandıkça ilerler. Aynı zinciri manuel olarak yeniden tetiklemek gerekiyorsa Actions > Codela authorized release chain > Run workflow; mevcut yetkilendirme olmadan hiçbir PR yayınlanmaz. Bir hata düzeltmesi yeni SHA ve yeni yetki satırı gerektirir. Yeni workflow filtresi eklendiğinde zincirin workflow_run listesini de güncelleyin; offline sözleşme testi eksik olayı yakalar.
 
 Ek güvenlik: aday head, onaylanan main commit'ini içermelidir; squash sonrasında dosya ağacı test edilen head ile birebir eşleşir. Manifest yazımı non-force fast-forward kontrolüyle yapılır ve yayın dispatch'i tam manifest commit'ine bağlıdır. İki depo birlikte değişecekse gerekli eklenti sürümü önce GitHub'da yayınlanmalıdır.
+
+## Hata geri bildirimi
+
+`Codela CI failure feedback` iş akışı başarısız olan yetkili/aynı depodaki sahip PR kontrolleri ve güncel main işlemleri için Actions run kimliğine bağlı tek Issue açar; aynı run sonraki denemede başarılı olursa kapatır. Issue içinde commit, workflow, PR, varsa sürüm, başarısız iş/adım numarası ve tam log bağlantısı vardır; log metni ve sırlar kopyalanmaz. Yalnızca yetkili PR'ın ilk runner/checkout kurulum hatasında bir otomatik yeniden deneme yapılır. Kod/test, FTP ve release hataları otomatik tekrar edilmez. Fork ve eski revizyonlar, iptal edilmiş kontroller dışarıda kalır. Saatlik ChatGPT görevinde yalnızca açık `[Codela CI]` kayıtları ve yetkili yayınlar incelenir.
