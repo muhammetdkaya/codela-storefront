@@ -10,13 +10,6 @@ spec = importlib.util.spec_from_file_location("ci_playwright", Path("scripts/ci-
 m = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(m)
 
-SOURCES = """Types: deb
-URIs: http://azure.archive.ubuntu.com/ubuntu/
-Suites: noble noble-updates noble-backports
-Components: main universe
-Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
-"""
-
 class BootstrapTests(unittest.TestCase):
     def test_valid_browser_avoids_apt(self):
         with patch.object(m, "run") as run, patch.object(m, "probe", return_value=True) as probe, patch.object(m, "install_system_dependencies") as apt:
@@ -41,11 +34,12 @@ class BootstrapTests(unittest.TestCase):
             probe.assert_not_called()
 
     def test_apt_uses_only_signed_ubuntu_sources(self):
-        self.assertEqual(m.checked_ubuntu_sources(SOURCES),SOURCES)
-        for bad in [SOURCES+"URIs: https://packages.microsoft.com/ubuntu/24.04/prod\n",
-                    SOURCES+"Trusted: yes\n", "Types: deb\n"]:
-            with self.assertRaises(RuntimeError):
-                m.checked_ubuntu_sources(bad)
+        sources=m.UBUNTU_SOURCES
+        self.assertIn("URIs: https://archive.ubuntu.com/ubuntu/",sources)
+        self.assertIn("URIs: https://security.ubuntu.com/ubuntu/",sources)
+        self.assertEqual(sources.count("Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg"),2)
+        self.assertNotIn("Trusted: yes",sources)
+        self.assertNotIn("packages.microsoft.com",sources)
 
     def test_temporary_apt_config_removed_even_on_failure(self):
         calls=[]
@@ -62,10 +56,8 @@ class BootstrapTests(unittest.TestCase):
         def read(path,*args,**kwargs):
             if path==Path("/etc/os-release"):
                 return 'ID=ubuntu\nVERSION_ID="24.04"\n'
-            if path==m.UBUNTU_SOURCES:
-                return SOURCES
             return original_read(path,*args,**kwargs)
-        with patch.dict(m.os.environ,{"GITHUB_ACTIONS":"true","RUNNER_OS":"Linux"}), patch.object(Path,"read_text",read), patch.object(m,"run",side_effect=run):
+        with patch.dict(m.os.environ,{"GITHUB_ACTIONS":"true","RUNNER_OS":"Linux"}), patch.object(Path,"read_text",read), patch.object(Path,"is_file",return_value=True), patch.object(m,"run",side_effect=run):
             with self.assertRaises(subprocess.CalledProcessError):
                 m.install_system_dependencies(["webkit"])
         self.assertEqual(calls[-1],["sudo","rm","-f",calls[0][-1]])

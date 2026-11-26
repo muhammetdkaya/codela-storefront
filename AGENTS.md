@@ -1654,4 +1654,4 @@ Bu kural tema ve eklentinin gerçek sürüm yükseltmeleri için geçerlidir; ku
 
 - Özel Codela depo sürüm sorgusundaki HTTP 404 için yetkiyi genişletme veya depoyu açma. Storefront'ta mevcut stable kaynak/digest eşleşmesi yalnız daha önce yayınlanmış eklenti minimumunu karşılar; yükseltilmiş minimum için read-only `CODELA_DEPENDENCY_READ_TOKEN` veya bağımsız doğrulanmış manuel yayın gerekir.
 
-- Playwright CI hazırlığında `scripts/ci-playwright.py` kullan: kilitli motorları önbellekten kullan, gerçek launch probe başarılıysa apt çalıştırma; Ubuntu runner'da gerekirse imzalı Ubuntu kaynaklarıyla sınırlı geçici apt yapılandırması kullan. Browser smoke testlerini veya apt imza denetimini atlama.
+- Playwright CI hazırlığında `scripts/ci-playwright.py` kullan: kilitli motorları önbellekten kullan, gerçek launch probe başarılıysa apt çalıştırma; Ubuntu runner'da gerekirse resmî imzalı Ubuntu arşiv ve güvenlik kaynaklarıyla sınırlı geçici apt yapılandırması kullan. Browser smoke testlerini veya apt imza denetimini atlama.

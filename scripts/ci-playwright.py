@@ -10,11 +10,22 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
-from urllib.parse import urlsplit
 
 CLI = ["node", "node_modules/playwright/cli.js"]
 ENGINES = {"chromium", "webkit", "firefox"}
-UBUNTU_SOURCES = Path("/etc/apt/sources.list.d/ubuntu.sources")
+UBUNTU_KEYRING = Path("/usr/share/keyrings/ubuntu-archive-keyring.gpg")
+UBUNTU_SOURCES = """Types: deb
+URIs: https://archive.ubuntu.com/ubuntu/
+Suites: noble noble-updates noble-backports
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
+Types: deb
+URIs: https://security.ubuntu.com/ubuntu/
+Suites: noble-security
+Components: main restricted universe multiverse
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+"""
 PROBE = r"""
 const {chromium, webkit, firefox} = require('playwright');
 const engines = {chromium, webkit, firefox};
@@ -46,41 +57,22 @@ def probe(engines):
     return subprocess.run(["node", "-e", PROBE, *engines], check=False).returncode == 0
 
 
-def checked_ubuntu_sources(text):
-    """Allow only runner-provided Ubuntu archive/security endpoints."""
-    uris = []
-    for line in text.splitlines():
-        if line.startswith("URIs:"):
-            uris.extend(line.split(":", 1)[1].split())
-        if line.startswith(("Trusted:", "Allow-Insecure:", "Allow-Weak:", "Allow-Downgrade-To-Insecure:")):
-            if line.split(":", 1)[1].strip().lower() in {"yes", "true", "1"}:
-                raise RuntimeError("Unsafe apt source configuration")
-    if not uris:
-        raise RuntimeError("Ubuntu apt sources not found")
-    for uri in uris:
-        host = urlsplit(uri).hostname or ""
-        if urlsplit(uri).scheme not in {"http", "https"} or not (
-            host in {"archive.ubuntu.com", "security.ubuntu.com", "ports.ubuntu.com"}
-            or host.endswith(".archive.ubuntu.com")
-        ):
-            raise RuntimeError("Unexpected Ubuntu apt source; refusing dependency installation")
-    return text
-
-
 def install_system_dependencies(engines):
     if os.environ.get("GITHUB_ACTIONS") != "true" or os.environ.get("RUNNER_OS") != "Linux":
         raise RuntimeError("OS dependency fallback is restricted to GitHub Ubuntu runners")
     os_release = Path("/etc/os-release").read_text()
     if 'VERSION_ID="24.04"' not in os_release or "\nID=ubuntu\n" not in "\n" + os_release:
         raise RuntimeError("Unexpected runner OS for dependency fallback")
-    sources = checked_ubuntu_sources(UBUNTU_SOURCES.read_text())
+    if not UBUNTU_KEYRING.is_file():
+        raise RuntimeError("Ubuntu archive keyring is missing")
+    sources = UBUNTU_SOURCES
     with tempfile.TemporaryDirectory(prefix="codela-playwright-") as name:
         tmp = Path(name)
         tmp.chmod(0o755)
         source_dir = tmp / "sources"
         source_dir.mkdir(mode=0o755)
         (source_dir / "ubuntu.sources").write_text(sources)
-        # Limit only this apt invocation window to the runner's signed Ubuntu
+        # Limit only this apt invocation window to the official signed Ubuntu
         # repositories. Playwright invokes apt via sudo, so use a temporary apt
         # config file rather than an environment variable that sudo may drop.
         config = tmp / "apt.conf"
