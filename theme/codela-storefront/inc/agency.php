@@ -419,6 +419,10 @@ function codela_sf_agency_project_submit(): void {
         || ! $contact || $length( $contact ) > 180
         || $length( $note ) > 2000
         || '1' !== $field( 'agency_project_consent' ) ) { $redirect( 'invalid' ); }
+    $quote = codela_sf_project_quote_calculate( $services, isset( $_POST['project_quote'] ) ? wp_unslash( $_POST['project_quote'] ) : [] );
+    if ( null === $quote ) { $redirect( 'invalid' ); }
+    $quote_lines = [];
+    foreach ( $quote as $row ) { $quote_lines[] = $row['service'] . ': ' . ( $row['scope'] ? implode( ', ', $row['scope'] ) : 'İhtiyaca özel' ) . ' — ' . $row['estimate']; }
     $is_email = is_email( $contact );
     $digits = preg_replace( '/\D+/', '', $contact );
     $is_phone = preg_match( '/^\+?[0-9 ()-]{10,30}$/D', $contact )
@@ -428,20 +432,22 @@ function codela_sf_agency_project_submit(): void {
     $throttle = 'codela_sf_project_' . hash_hmac( 'sha256', $remote, wp_salt( 'auth' ) );
     if ( get_transient( $throttle ) ) { $redirect( 'wait' ); }
     $to = sanitize_email( (string) get_option( 'admin_email' ) );
-    if ( ! is_email( $to ) ) { $redirect( 'failed' ); }
     $headers = [ 'Content-Type: text/plain; charset=UTF-8' ];
     if ( $is_email ) { $headers[] = 'Reply-To: ' . sanitize_email( $contact ); }
     $body = "Yeni Codela Proje Başlat Talebi\n\n"
         . "Hizmet: $service\nBaşlangıç tercihi: $time\n" . ( $scale ? "Mevcut durum / ölçek: $scale\n" : '' )
-        . "Ad Soyad / Marka: $name\nİletişim: $contact\n"
+        . "Kapsam ve bağlayıcı olmayan tahminler:\n" . implode( "\n", $quote_lines ) . "\n" . "Ad Soyad / Marka: $name\nİletişim: $contact\n"
         . "Kısa not:\n" . ( $note ?: 'Belirtilmedi' ) . "\n";
-    if ( ! wp_mail( $to, '[Codela] Yeni proje başlat talebi', $body, $headers ) ) { $redirect( 'failed' ); }
+    $record_body = "Hizmet: $service\nBaşlangıç tercihi: $time\n" . ( $scale ? "Mevcut durum / ölçek: $scale\n" : '' )
+        . "Kapsam ve bağlayıcı olmayan tahminler:\n" . implode( "\n", $quote_lines ) . "\nKısa not:\n" . ( $note ?: 'Belirtilmedi' );
+    if ( ! codela_sf_quote_deliver( $name, $contact, $to, '[Codela] Yeni proje başlat talebi', $body, $headers, $record_body ) ) { $redirect( 'failed' ); }
     set_transient( $throttle, 1, MINUTE_IN_SECONDS );
-    // Only a genuinely accepted WordPress mail submission can create the receipt.
+    // Only a stored request or accepted mail submission can create the receipt.
     // The receipt makes a manually typed ?codela_status=sent insufficient.
     $receipt = bin2hex( random_bytes( 16 ) );
     $summary = array_map( static fn($service) => 'Optimizasyon / Destek' === $service ? 'Bakım & Geliştirme' : $service, $services );
     $summary[] = $time;
+    foreach ( $quote_lines as $line ) { $summary[] = $line; }
     set_transient( 'codela_sf_project_receipt_' . $receipt, [ 'summary' => $summary, 'component' => $source['component'] ?? '' ], 5 * MINUTE_IN_SECONDS );
     $args = [ 'codela_status' => 'sent', 'codela_receipt' => $receipt ];
     if ( $source ) { $args['codela_component'] = $source['component']; }
@@ -488,12 +494,13 @@ function codela_sf_project_availability(): array {
 /** Use General in the new settings hub, with an older-plugin fallback. */
 add_action( function_exists( 'codela_theme_render_general' ) ? 'codela_theme_settings_general' : 'codela_theme_settings_integrations', static function() {
     if ( ! current_user_can( 'manage_options' ) ) { return; }
-    echo '<section id="codela-project-capacity"><h2>Codela Proje Müsaitliği</h2><p>Önümüzdeki üç ay için kalan proje kapasitesi. Boş alan = henüz belirlenmedi; 0 = dolu. Talepler rezervasyon değildir.</p><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="codela_sf_save_capacity">';
+    echo '<section id="codela-project-capacity" class="cdl-theme-appearance-panel" aria-label="Proje müsaitliği"><form class="cdl-theme-appearance" method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="codela_sf_save_capacity">';
     wp_nonce_field( 'codela_sf_save_capacity' );
+    echo '<div class="cdl-theme-sections"><div class="cdl-theme-section"><h4>Proje müsaitliği</h4><p class="description">Boş: belirsiz · 0: dolu. Talepler rezervasyon değildir.</p><div class="cdl-theme-fields">';
     foreach ( codela_sf_project_availability() as $month => $slot ) {
-        echo '<p><label for="cdl-cap-' . esc_attr($month) . '">' . esc_html($slot['label']) . '</label> <input id="cdl-cap-' . esc_attr($month) . '" type="number" min="0" max="12" name="capacity[' . esc_attr($month) . ']" value="' . esc_attr($slot['free'] ?? '') . '"></p>';
+        echo '<div class="cdl-theme-field"><div class="cdl-theme-field-copy"><label for="cdl-cap-' . esc_attr($month) . '">' . esc_html($slot['label']) . '</label></div><div class="cdl-theme-control"><input class="regular-text" id="cdl-cap-' . esc_attr($month) . '" type="number" min="0" max="12" name="capacity[' . esc_attr($month) . ']" value="' . esc_attr($slot['free'] ?? '') . '"></div></div>';
     }
-    submit_button( 'Kapasiteyi kaydet' ); echo '</form></section>';
+    echo '</div></div></div><div class="cdl-theme-save-row"><button class="codela-btn codela-btn--save" type="submit">Kaydet</button></div></form></section>';
 } );
 add_action( 'admin_post_codela_sf_save_capacity', static function() {
     if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) || ! current_user_can( 'manage_options' ) || ! function_exists( 'codela_theme_admin_url' ) ) { wp_die( 'Yetkisiz işlem.', '', [ 'response' => 403 ] ); }
