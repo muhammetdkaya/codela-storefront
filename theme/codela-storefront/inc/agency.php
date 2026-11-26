@@ -440,7 +440,7 @@ function codela_sf_agency_project_submit(): void {
         . "Kısa not:\n" . ( $note ?: 'Belirtilmedi' ) . "\n";
     $record_body = "Hizmet: $service\nBaşlangıç tercihi: $time\n" . ( $scale ? "Mevcut durum / ölçek: $scale\n" : '' )
         . "Kapsam ve bağlayıcı olmayan tahminler:\n" . implode( "\n", $quote_lines ) . "\nKısa not:\n" . ( $note ?: 'Belirtilmedi' );
-    if ( ! codela_sf_quote_deliver( $name, $contact, $to, '[Codela] Yeni proje başlat talebi', $body, $headers, $record_body ) ) { $redirect( 'failed' ); }
+    if ( ! codela_sf_quote_deliver( $name, $contact, $to, '[Codela] Yeni proje başlat talebi', $body, $headers, $record_body, true ) ) { $redirect( 'failed' ); }
     set_transient( $throttle, 1, MINUTE_IN_SECONDS );
     // Only a stored request or accepted mail submission can create the receipt.
     // The receipt makes a manually typed ?codela_status=sent insufficient.
@@ -567,3 +567,12 @@ add_action('wp_head', static function() {
     codela_sf_print_first_entry();
 }, -1000);
 // Minimum entry time overlaps document loading; reveal after the minimum and DOM paint opportunity.
+
+// Logged-in project forms contain customer defaults; do not cache those documents.
+add_action( 'template_redirect', static function(): void {
+    if ( ! is_user_logged_in() || ! is_singular( 'page' ) ) { return; }
+    $components = codela_sf_agency_components( get_post( get_queried_object_id() ) );
+    if ( empty( $components['agency-project'] ) ) { return; }
+    if ( ! defined( 'DONOTCACHEPAGE' ) ) { define( 'DONOTCACHEPAGE', true ); }
+    nocache_headers();
+}, 2 );

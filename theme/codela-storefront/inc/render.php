@@ -111,7 +111,6 @@ function codela_sf_header(): string {
         && ! ( function_exists( 'is_product' ) && is_product() )
         && ! ( function_exists( 'is_checkout' ) && codela_sf_is_checkout_context() )
         && ! ( function_exists( 'is_cart' ) && codela_sf_is_cart_context() )
-        && ! ( codela_sf_is_account_context() )
         && ! ( function_exists( 'codela_sf_is_catalog_archive' ) && codela_sf_is_catalog_archive() );
     $show_mobile_dock = ( $commerce_available || $account_available ) && ! $checkout_page && ! in_array( $settings['mobile_dock_enabled'] ?? true, [ false, 0, '0', '' ], true );
     // Checkout is a full page without the mobile dock, but uses the same
@@ -326,7 +325,7 @@ function codela_sf_footer(): string {
     $terms_id = absint( get_option( 'woocommerce_terms_page_id', 0 ) );
     $terms_url = 'agency' !== ( $settings['site_experience'] ?? 'commerce' ) && $terms_id && 'publish' === get_post_status( $terms_id ) ? get_permalink( $terms_id ) : '';
 
-    $html = '<footer class="sf-footer' . ( $hide_on_mobile ? ' sf-footer--mobile-hidden' : '' ) . '"><div class="sf-footer-inner"><div class="sf-footer-copy">';
+    $html = '<footer class="sf-footer' . ( 'agency' === ( $settings['site_experience'] ?? 'commerce' ) ? ' sf-footer--agency' : '' ) . ( $hide_on_mobile ? ' sf-footer--mobile-hidden' : '' ) . '"><div class="sf-footer-inner"><div class="sf-footer-copy">';
     $html .= '<span class="sf-footer-copyright">© ' . esc_html( wp_date( 'Y' ) ) . '</span>';
     $html .= '<a class="sf-footer-brand" href="' . esc_url( home_url( '/' ) ) . '">' . esc_html( $brand ) . '</a>';
     if ( '' !== $note ) {

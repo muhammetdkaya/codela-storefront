@@ -3,9 +3,10 @@
     "wordpress": "6.5",
     "php": "8.0",
     "woocommerce": "9.0",
-    "codela": "1.2.34"
+    "codela": "1.2.35"
   },
   "changes": [
+    "Ajans hesabı ortak header ve footer kullanır; proje başlatma tek formdan yürütülür ve oturum sahibi müşteri başvuruları portalda görünür.",
     "Proje Başlat iletişim formunda 16 px giriş metni, sade etiketler, ince kehribar odak çizgisi ve klavye açıldığında görünür alan desteği; Safari yakınlaştırması için viewport kısıtlaması kullanılmaz.",
     "Proje kapsamındaki özel teklif açıklaması kaldırılır; tek satırlı Tahmini bütçe ve hizmete özel tutar kullanılır. Fiyatı kesinleşmemiş seçimde Teklif hazırlanacak gösterilir.",
     "Her seçili hizmet bağımsız ana adım olarak sayılır; tek üst ilerleme çubuğu seçim sayısına göre 4–7 adım gösterir. Çift alt çizgi kaldırılır ve adım geçişlerinde header hizası korunur.",

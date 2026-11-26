@@ -763,3 +763,8 @@ body.woocommerce-account:not(.codela-my-account-layout) .sf-content .wc-block-co
 .sf-purchase-status:empty{display:none}
 body:not(.codela-my-account-layout) .sf-content a.sf-ui-icon-button.sf-cart-feedback[data-sf-cart-state="success"]::after{content:'✓'!important;position:absolute;inset:0;display:grid;place-items:center;margin:0}
 a.sf-ui-icon-button.sf-cart-feedback[data-sf-cart-state="success"] .sf-icon{visibility:hidden}
+
+/* Agency shares the dark footer on every document, including the account. */
+.sf-footer.sf-footer--agency{background:#09090c;border-top-color:rgba(255,255,255,.1);color:#aaa49e}
+.sf-footer.sf-footer--agency :is(a,.sf-footer-copyright,.sf-footer-note){color:#b0abb7}
+.sf-footer.sf-footer--agency a:hover{color:#f7f5f8}

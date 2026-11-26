@@ -246,9 +246,13 @@ function codela_sf_quote_markup( string $service, array $data ): string {
 }
 /** One delivery contract for both project entry points. Existing installations
  * without the plugin record API keep their original mail-only behavior. */
-function codela_sf_quote_deliver( string $name, string $contact, string $to, string $subject, string $body, array $headers, string $record_body ): bool {
-    $store = '\\Codela\\ClientPortal\\store_public_quote';
+function codela_sf_quote_deliver( string $name, string $contact, string $to, string $subject, string $body, array $headers, string $record_body, bool $project = false ): bool {
+    $project_store = '\\Codela\\ClientPortal\\store_project_quote';
+    $portal_enabled = '\\Codela\\ClientPortal\\enabled';
+    $store = $project && function_exists( $project_store ) ? $project_store : '\\Codela\\ClientPortal\\store_public_quote';
     $stored = function_exists( $store ) ? $store( $name, $contact, $record_body ) : 0;
+    // A signed-in portal request must have a durable customer-owned record.
+    if ( $store === $project_store && function_exists( 'is_user_logged_in' ) && is_user_logged_in() && function_exists( $portal_enabled ) && $portal_enabled() && ! $stored ) { return false; }
     $sent = is_email( $to ) && wp_mail( $to, $subject, $body, $headers );
     // A persisted request is accepted even when the notification transport fails.
     return $stored > 0 || $sent;
