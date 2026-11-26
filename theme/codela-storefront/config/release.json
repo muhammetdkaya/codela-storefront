@@ -6,6 +6,7 @@
     "codela": "1.2.34"
   },
   "changes": [
+    "Proje kapsamındaki özel teklif açıklaması kaldırılır; tek satırlı Tahmini bütçe ve hizmete özel tutar kullanılır. Fiyatı kesinleşmemiş seçimde Teklif hazırlanacak gösterilir.",
     "Her seçili hizmet bağımsız ana adım olarak sayılır; tek üst ilerleme çubuğu seçim sayısına göre 4–7 adım gösterir. Çift alt çizgi kaldırılır ve adım geçişlerinde header hizası korunur.",
     "Hizmet sekmeleri, paket açıklama ve fiyatları, ek kapsam kapsülleri ve tek/aylık bütçeleri ayıran ortak özet; kompakt paket düzenleyici.",
     "Proje kapsamı seçimi ortak çizgili hizmet satırlarına ve kehribar seçim işaretlerine uyarlanır; fiyat bir kez gösterilir.",

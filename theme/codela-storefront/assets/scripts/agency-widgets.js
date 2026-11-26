@@ -36,7 +36,6 @@
         const services=[...form.querySelectorAll('input[name="agency_project_service[]"]')];
         const scopes=[...form.querySelectorAll('[data-project-scope]')];
         const nextLabel=form.querySelector('[data-scope-next-label]');
-        const budgetLabel=form.querySelector('[data-scope-budget-label]');
         const scopeError=form.querySelector('[data-scope-error]');
         const total=form.querySelector('[data-scope-total]');
         let activeScope='';
@@ -60,9 +59,7 @@
           progress.style.width=(stepNumber/count*100)+'%';
           indicator.textContent=label(stepNumber)+' / '+label(count);
           if(nextLabel)nextLabel.textContent=last?'Devam Et: Takvim':'Devam Et: '+serviceName(chosen[current+1]);
-          if(budgetLabel)budgetLabel.textContent=chosen.length>1?(last?'Toplam tahmini bütçe':'Bu hizmetin tahmini bütçesi'):'Tahmini bütçe';
-          const totals={range:[0,0,0],starting:[0,0,0],monthly:[0,0,0]};
-          let unknown=0;
+
           for(const scope of scopes){
             const included=chosen.includes(scope);
             scope.hidden=!included||scope.dataset.projectScope!==activeScope;
@@ -82,17 +79,12 @@
             const min=known?rows.reduce((sum,x)=>sum+Number(x.dataset.min),0):0;
             const max=known?rows.reduce((sum,x)=>sum+Number(x.dataset.max),0):0;
             const mode=scope.dataset.pricingMode;
-            scope.querySelector('[data-scope-estimate]').textContent=known?(mode==='starting'?format.format(min)+' TL itibarıyla':money(min,max)+(mode==='monthly'?' / ay':'')):'Görüşmede belirlenecek';
-            if(included&&(last||scope.dataset.projectScope===activeScope)){if(known){const bucket=totals[mode]||totals.range;bucket[0]+=min;bucket[1]+=max;bucket[2]++;}else unknown++;}
+            scope.querySelector('[data-scope-estimate]').textContent=known?(mode==='starting'?format.format(min)+' TL itibarıyla':money(min,max)+(mode==='monthly'?' / ay':'')):(hasChoice(scope)?'Teklif hazırlanacak':'—');
           }
-          if(total){
-            const lines=[];
-            if(totals.range[2])lines.push(money(totals.range[0],totals.range[1]));
-            if(totals.starting[2])lines.push(format.format(totals.starting[0])+' TL itibarıyla');
-            if(totals.monthly[2])lines.push(money(totals.monthly[0],totals.monthly[1])+' / ay');
-            if(unknown)lines.push(lines.length?unknown+' hizmet ayrıca fiyatlandırılacak':'Görüşmede belirlenecek');
-            total.replaceChildren(...lines.map(value=>{const span=document.createElement('span');span.textContent=value;return span;}));
-          }
+          // Keep the active service estimate on one row, even on the final
+          // scope. The contact summary retains each selected service's amount;
+          // do not combine starting prices, ranges and monthly subscriptions.
+          if(total)total.textContent=currentScope()?.querySelector('[data-scope-estimate]')?.textContent||'—';
         };
         // No free-jumping tabs: every selected service gets an explicit choice before the calendar.
         const focusStep=(index)=>{
