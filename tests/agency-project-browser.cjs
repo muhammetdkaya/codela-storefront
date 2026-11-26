@@ -20,7 +20,7 @@ const server=http.createServer((req,res)=>{
  const browser=await chromium.launch({executablePath:process.env.CHROMIUM_BIN||undefined});
  try{
   fs.mkdirSync(path.join(root,'qa'),{recursive:true});
-  for(const [width,height] of [[320,667],[390,844],[402,874],[768,1024],[1440,900]]){
+  for(const [width,height] of [[320,667],[390,844],[402,874],[768,1024],[1280,720],[1440,900],[1920,1080],[2560,1440]]){
    const page=await browser.newPage({viewport:{width,height},reducedMotion:'reduce'});
    const errors=[];page.on('pageerror',e=>errors.push(e.message));
    await page.goto('http://127.0.0.1:'+server.address().port+'/');

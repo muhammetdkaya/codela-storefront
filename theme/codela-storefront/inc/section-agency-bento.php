@@ -10,13 +10,14 @@
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 function codela_sf_section_agency_bento( array $data, string $type = '' ): string {
-    $id = 'codela-bento-' . sanitize_html_class( (string) ( $data['id'] ?? 'services' ) );
+    $id = codela_sf_agency_dom_id( 'codela-bento-' . sanitize_html_class( (string) ( $data['id'] ?? 'services' ) ) );
     $all = $data['items'] ?? [];
     if ( ! is_array( $all ) || ! $all ) { return ''; }
     $items = array_values( array_filter( array_slice( $all, 0, 4 ), static function ( $row ): bool {
         return is_array( $row ) && ( $row['enabled'] ?? true ) && '' !== trim( (string) ( $row['title'] ?? '' ) );
     } ) );
     if ( ! $items ) { return ''; }
+    $anchor = codela_sf_agency_dom_id( 'sf-agency-services' );
     $title = trim( (string) ( $data['title'] ?? '' ) ) ?: 'Uzmanlık Alanları';
     // On the standalone page all three card photos are in/near the first viewport.
     // The lower homepage stage retains lazy loading.
@@ -51,7 +52,7 @@ function codela_sf_section_agency_bento( array $data, string $type = '' ): strin
     ob_start();
     ?>
     <div class="sf-agency-widget sf-agency-widget--bento" data-agency-widget="bento">
-      <section class="cdl-bento" id="sf-agency-services" aria-labelledby="<?php echo esc_attr( $id ); ?>">
+      <section class="cdl-bento" id="<?php echo esc_attr( $anchor ); ?>" aria-labelledby="<?php echo esc_attr( $id ); ?>">
         <div class="cdl-bento__inner">
           <header class="cdl-bento__heading cdl-bento__reveal" style="--cdl-bento-order:0">
             <div>

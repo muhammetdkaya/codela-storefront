@@ -70,6 +70,7 @@ jobs:
           php tests/agency.php
           node tests/agency-entry.cjs
           php tests/agency-pages.php
+          php tests/agency-quote.php
           python3 -m py_compile scripts/check-agency-live.py
           find theme/codela-storefront/patterns/agency-*.php -type f -print0 | xargs -0 -n1 php -l
           node --check theme/codela-storefront/assets/scripts/agency.js

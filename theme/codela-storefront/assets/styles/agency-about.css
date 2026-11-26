@@ -3,9 +3,9 @@
  * One page canvas; no decorative lines, grids, radial backgrounds or duplicate
  * navigation. Every surface uses the same existing Codela Glass material.
  */
-body:has(.sf-agency-widget--about),
-body:has(.sf-agency-widget--about) .sf-content,
-body:has(.sf-agency-widget--about) .wp-site-blocks {
+body:not(.sf-agency-mixed):has(.sf-agency-widget--about),
+body:not(.sf-agency-mixed):has(.sf-agency-widget--about) .sf-content,
+body:not(.sf-agency-mixed):has(.sf-agency-widget--about) .wp-site-blocks {
   background:#06060a;
 }
 .sf-agency-widget--about {
@@ -111,12 +111,25 @@ body:has(.sf-agency-widget--about) .wp-site-blocks {
 .sf-agency-widget--about .sf-about-location{font-size:12.5px;color:#928c9c;}
 
 /* Shared page rhythm is owned by agency.css; About uses the same shell inset. */
-body:not(.home):has(.sf-shell) .sf-agency-widget--about .sf-about-layout{
+body:not(.sf-agency-mixed):not(.home):has(.sf-shell) .sf-agency-widget--about .sf-about-layout{
   width:min(696px,calc(100% - 2 * var(--sf-agency-inner-gutter,20px)));
   padding-block-start:var(--sf-agency-inner-top,28px);
 }
-body:not(.home):has(.sf-shell) .sf-agency-widget--about .sf-about-eyebrow{
+body:not(.sf-agency-mixed):not(.home):has(.sf-shell) .sf-agency-widget--about .sf-about-eyebrow{
   display:flex;align-items:center;gap:8px;margin:0 0 10px!important;
   font-size:11px;line-height:1.45;letter-spacing:.22em;font-weight:600;color:var(--sf-agency-inner-eyebrow,#928c9c);
 }
-body:not(.home):has(.sf-shell) .sf-agency-widget--about .sf-about-eyebrow::before{margin:0;flex:none}
+body:not(.sf-agency-mixed):not(.home):has(.sf-shell) .sf-agency-widget--about .sf-about-eyebrow::before{margin:0;flex:none}
+
+
+@media(min-width:1100px){
+  body:not(.sf-agency-mixed) .sf-agency-widget--about .sf-about-layout,
+  body:not(.sf-agency-mixed):not(.home):has(.sf-shell) .sf-agency-widget--about .sf-about-layout{
+    width:min(1120px,calc(100% - 2 * var(--sf-agency-inner-gutter,20px)));
+  }
+  body:not(.sf-agency-mixed) .sf-agency-widget--about .sf-about-hero h1{font-size:clamp(44px,4vw,58px)}
+  body:not(.sf-agency-mixed) .sf-agency-widget--about .sf-about-hero-bottom p{max-width:66ch;font-size:16px}
+  body:not(.sf-agency-mixed) .sf-agency-widget--about .sf-about-approach{padding-top:clamp(30px,6svh,64px)}
+  body:not(.sf-agency-mixed) .sf-agency-widget--about .sf-about-principles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(18px,3vw,40px)}
+  body:not(.sf-agency-mixed) .sf-agency-widget--about .sf-about-manifesto{max-width:78ch}
+}

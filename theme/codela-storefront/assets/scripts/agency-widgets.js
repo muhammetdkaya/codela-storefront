@@ -8,6 +8,23 @@
     if (widget.dataset.agencyWidgetInitialized === 'true') return;
     widget.dataset.agencyWidgetInitialized = 'true';
 
+
+    const quoteForm = widget.querySelector('[data-quote-form]');
+    if (quoteForm && !quoteForm.dataset.quoteReady) {
+      quoteForm.dataset.quoteReady = '1';
+      const estimate = quoteForm.querySelector('[data-quote-estimate]');
+      const update = () => {
+        const selected = [quoteForm.querySelector('select[name="quote_package"]')?.selectedOptions[0], ...quoteForm.querySelectorAll('input[name="quote_extra[]"]:checked')];
+        if (selected.some(x => !x || !/^\d+$/.test(x.dataset.min || '') || !/^\d+$/.test(x.dataset.max || ''))) { estimate.hidden = true; estimate.textContent = ''; return; }
+        const low = selected.reduce((sum,x)=>sum+Number(x.dataset.min),0);
+        const high = selected.reduce((sum,x)=>sum+Number(x.dataset.max),0);
+        const format = new Intl.NumberFormat('tr-TR');
+        estimate.textContent = 'Tahmini: '+format.format(low)+(low===high?'':' – '+format.format(high))+' TL';
+        estimate.hidden = false;
+      };
+      quoteForm.addEventListener('change',update);update();
+    }
+
     if (widget.dataset.agencyWidget === 'project') {
       const form = widget.querySelector('[data-project-form]');
       const steps=[...widget.querySelectorAll('[data-project-step]')];
@@ -112,13 +129,13 @@
           }
         });
       }
-      const disclosure = widget.querySelector('details#sf-agency-contact-form');
+      const disclosure = widget.querySelector('details[data-contact-disclosure]');
       const summary = disclosure?.querySelector('summary');
       const panel = disclosure?.querySelector('.cdl-contact-form-section');
       if (disclosure && summary && panel && typeof HTMLDialogElement !== 'undefined' && typeof HTMLDialogElement.prototype.showModal === 'function') {
         const dialog = document.createElement('dialog');
         dialog.className = 'cdl-contact__sheet';
-        dialog.setAttribute('aria-labelledby','cdl-contact-form-title');
+        dialog.setAttribute('aria-labelledby',panel.getAttribute('aria-labelledby'));
         const initiallyOpen = disclosure.open;
         disclosure.open = false;
         dialog.appendChild(panel);
@@ -135,12 +152,12 @@
         dialog.querySelector('[data-contact-close]')?.addEventListener('click',()=>dialog.close());
         dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});
         dialog.addEventListener('close',()=>{summary.setAttribute('aria-expanded','false');summary.focus({preventScroll:true});});
-        widget.querySelectorAll('a[href="#sf-agency-contact-form"]').forEach(link=>link.addEventListener('click',event=>{event.preventDefault();open();}));
-        const anchor = () => {if(window.location.hash==='#sf-agency-contact-form')open();};
+        widget.querySelectorAll('a[href^="#"]').forEach(link=>{if(link.getAttribute('href')==='#'+disclosure.id)link.addEventListener('click',event=>{event.preventDefault();open();});});
+        const anchor = () => {if(window.location.hash==='#'+disclosure.id)open();};
         window.addEventListener('hashchange',anchor);
         if(initiallyOpen)open();else anchor();
       } else if (disclosure) {
-        const anchor=()=>{if(window.location.hash==='#sf-agency-contact-form')disclosure.open=true;};
+        const anchor=()=>{if(window.location.hash==='#'+disclosure.id)disclosure.open=true;};
         window.addEventListener('hashchange',anchor);anchor();
         panel?.querySelector('[data-contact-close]')?.addEventListener('click',()=>{disclosure.open=false;});
       }

@@ -33,7 +33,7 @@ const server = http.createServer((req, res) => {
     page = await browser.newPage();
     page.on('pageerror', e => errors.push(e.message));
     fs.mkdirSync(path.join(root,'qa'),{recursive:true});
-    for (const [width,height] of [[320,740],[390,844],[768,1024],[1440,900]]) {
+    for (const [width,height] of [[320,740],[390,844],[768,1024],[1280,720],[1440,900],[1920,1080],[2560,1440]]) {
       await page.setViewportSize({width,height});
       await page.goto('http://127.0.0.1:'+port+'/?page=services');
       assert.equal(await page.locator('.cdl-bento__heading h2').count(),1,

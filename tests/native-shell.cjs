@@ -38,11 +38,11 @@ assert.match(agencyCSS,/\.sf-agency-widget--services \.sf-agency-glass-info/);
 
 // Agency pages share an actual document canvas; the viewport contract follows
 // the native header/dock mode and never forces scroll snapping.
-assert.match(agencyCSS,/html:has\(body \.sf-content :is\(/,'Agency canvas colors html overscroll');
-assert.match(agencyCSS,/body:has\(\.sf-content :is\(/,'Agency canvas is conditional on real widgets');
+assert.match(agencyCSS,/html:has\(body:not\(\.sf-agency-mixed\) \.sf-content :is\(/,'Agency canvas colors html overscroll');
+assert.match(agencyCSS,/body:not\(\.sf-agency-mixed\):has\(\.sf-content :is\(/,'Agency canvas is conditional on real widgets');
 assert.match(agencyCSS,/--sf-agency-screen-block:calc\(100dvh/,'Stages use the dynamic usable screen');
 assert.match(agencyCSS,/\.sf-shell\.has-mobile-dock/,'Only enabled dock reserves bottom clearance');
-assert.match(agencyCSS,/body:has\(\.sf-content :is\([\s\S]*?\)\)\{padding-bottom:0!important\}/,'No generic dock body-strip on Agency');
+assert.match(agencyCSS,/body:not\(\.sf-agency-mixed\):has\(\.sf-content :is\([\s\S]*?\)\)\{padding-bottom:0!important\}/,'No generic dock body-strip on Agency');
 assert.match(agencyCSS,/@media\(max-width:739px\) and \(max-height:700px\)/,'Short phones can scroll tall Studio content');
 assert.doesNotMatch(agencyCSS,/scroll-snap-type:\s*y\s+mandatory/,'Agency never traps vertical page scroll');
 
