@@ -201,8 +201,8 @@ function codela_sf_quote_markup( string $service, array $data ): string {
 /** One delivery contract for both project entry points. Existing installations
  * without the plugin record API keep their original mail-only behavior. */
 function codela_sf_quote_deliver( string $name, string $contact, string $to, string $subject, string $body, array $headers, string $record_body ): bool {
-    $stored = function_exists( '\\Codela\\ClientPortal\\store_public_quote' )
-        ? \\Codela\\ClientPortal\\store_public_quote( $name, $contact, $record_body ) : 0;
+    $store = '\\Codela\\ClientPortal\\store_public_quote';
+    $stored = function_exists( $store ) ? $store( $name, $contact, $record_body ) : 0;
     $sent = is_email( $to ) && wp_mail( $to, $subject, $body, $headers );
     // A persisted request is accepted even when the notification transport fails.
     return $stored > 0 || $sent;
