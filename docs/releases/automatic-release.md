@@ -21,3 +21,7 @@ Ek güvenlik: aday head, onaylanan main commit'ini içermelidir; squash sonrası
 ### Özel eklenti deposu bağımlılığı
 
 Storefront GITHUB_TOKEN başka bir özel depoyu okuyamaz. Değişmeyen/daha düşük eklenti minimumu için mevcut stable manifest, release tag kaynağı, ZIP digest ve kaynak konfigürasyonu eşleşmesi kullanılır. Yeni/yükseltilmiş minimumda eklenti deposuna yalnız Contents: read yetkisi olan ayrı `CODELA_DEPENDENCY_READ_TOKEN` Actions secret'ı veya bağımsız doğrulanmış manuel yayın gerekir; sır eklenmediyse yeni minimum otomatik geçmez. Test ve FTP kontrolleri değişmez.
+
+### Tarayıcı CI bağımlılıkları
+
+Ana dağıtım ve Agency fallback'i `scripts/ci-playwright.py` ile sabit npm Playwright sürümünün tarayıcılarını hazırlar. Önce gerçek Chromium/WebKit launch ve HTML yükleme denetimi yapılır; başarılıysa apt çalışmaz. Sistem kütüphanesi gerekiyorsa yalnızca geçici Ubuntu 24.04 GitHub runner'ında resmî imzalı Ubuntu arşiv ve güvenlik kaynaklarına sınırlı apt konfigürasyonu kullanılır; Microsoft gibi ilgisiz kaynaklar bu kurulum penceresine dahil edilmez. Konfigürasyon başarıda ve hatada kaldırılır. Kurulumdan sonra gerçek browser probe tekrar zorunludur; testler ve dağıtım kapıları değişmemiştir. Bağımlılık kurulumu ürün tarayıcı testlerinden ayrı CI adımıdır.

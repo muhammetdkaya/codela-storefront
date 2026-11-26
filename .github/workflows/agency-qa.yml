@@ -23,6 +23,8 @@ on:
       - 'theme/codela-storefront/inc/agency-media.php'
       - 'theme/codela-storefront/assets/media/**'
       - 'tests/agency*-browser.cjs'
+      - 'scripts/ci-playwright.py'
+      - 'tests/ci-playwright.py'
       - '.github/workflows/agency-qa.yml'
   workflow_dispatch:
 permissions:
@@ -52,7 +54,7 @@ jobs:
           if command -v google-chrome >/dev/null; then
             echo "CHROMIUM_BIN=$(command -v google-chrome)" >> "$GITHUB_ENV"
           else
-            npx playwright install --with-deps chromium
+            python3 scripts/ci-playwright.py chromium
           fi
       - name: Validate agency source and native block pattern
         run: |
