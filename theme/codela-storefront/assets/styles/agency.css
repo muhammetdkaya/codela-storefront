@@ -2126,7 +2126,7 @@ body:not(.sf-agency-mixed):has(.codela-page-layout>.sf-agency-widget--contact-be
    full-height colored islands above the white storefront canvas.
    Only the current obsidian Agency widgets qualify; legacy light Agency
    layouts and every WooCommerce/store page retain their existing palette. */
-html:has(body .sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)),
+html:has(body:not(.sf-agency-mixed) .sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)),
 body:not(.sf-agency-mixed):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)){
   background:#09090c;
 }
