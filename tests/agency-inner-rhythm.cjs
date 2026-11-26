@@ -15,11 +15,11 @@ assert(css.includes('body:not(.home) .sf-agency-widget--bento[data-bento-ready="
 assert(php.includes("$image_loading = $standalone ? 'eager' : 'lazy';"));
 assert(css.includes('--sf-agency-home-top:calc(var(--sf-agency-home-header) + var(--sf-agency-inner-top,28px))'));
 assert(css.includes('--sf-agency-home-header:68px')&&css.includes('--sf-agency-home-header:76px'));
-assert(css.includes('body.home:has(.sf-shell) .sf-agency-widget--studio .codela-studio-hero__intro{padding-inline:0}'));
+assert(css.includes('body:not(.sf-agency-mixed).home:has(.sf-shell) .sf-agency-widget--studio .codela-studio-hero__intro{padding-inline:0}'));
 assert(css.includes('.sf-agency-widget--contact-bento,.sf-agency-widget--project)){--sf-agency-inner-top:26px;--sf-agency-inner-gutter:18px}') || css.includes('.sf-agency-widget--contact-bento,.sf-agency-widget--project)),'));
 assert(project.includes('padding-inline:var(--sf-agency-inner-gutter,20px)')&&project.includes('padding-inline:clamp(var(--sf-agency-inner-gutter,18px),'));
 assert(project.includes('padding-block-start:var(--sf-agency-inner-top,26px)'));
 assert(project.includes('width:100%;max-width:100%;margin-inline:0')&&project.includes('flex:0 1 696px;width:min(100%,696px);max-width:696px'));
-assert(css.includes('body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer{'));
-assert(css.includes('body:has(.sf-content .sf-agency-widget--about) .sf-footer{background:#06060a}'));
+assert(css.includes('body:not(.sf-agency-mixed):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer{'));
+assert(css.includes('body:not(.sf-agency-mixed):has(.sf-content .sf-agency-widget--about) .sf-footer{background:#06060a}'));
 console.log('Shared Agency heading rhythm, homepage clearance, project gutters, About footer and stable standalone Bento passed.');

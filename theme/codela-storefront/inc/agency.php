@@ -164,7 +164,7 @@ function codela_sf_agency_components( $post ): array {
 function codela_sf_agency_form_source( int $id, string $type, string $component ): string {
     if ( $id < 1 || ! preg_match( '/^[a-zA-Z0-9-]{1,64}$/D', $component ) ) { return ''; }
     $post = get_post( $id );
-    if ( ! $post || 'page' !== $post->post_type || 'publish' !== $post->post_status || ! empty( $post->post_password ) ) { return ''; }
+    if ( ! $post || 'page' !== $post->post_type || 'publish' !== ( $post->post_status ?? '' ) || ! empty( $post->post_password ) ) { return ''; }
     foreach ( codela_sf_agency_components( $post )[$type] ?? [] as $data ) {
         if ( $component === $data['id'] ) { return (string) get_permalink( $post ); }
     }
@@ -189,6 +189,31 @@ function codela_sf_agency_submitted_source( string $type ): array {
     $url = codela_sf_agency_form_source( (int) $id, $type, $component );
     return $url ? [ 'url' => $url, 'component' => $component ] : [];
 }
+
+/** A mixed editor page must retain its own shell, native blocks and normal scrolling. */
+function codela_sf_agency_exclusive_page( $post ): bool {
+    if ( ! $post || ! function_exists( 'codela_sections_page_content' ) || ! function_exists( 'parse_blocks' ) ) { return true; }
+    $seen = false;
+    foreach ( parse_blocks( codela_sections_page_content( $post ) ) as $root ) {
+        $name = $root['blockName'] ?? '';
+        if ( ! $name && '' === trim( $root['innerHTML'] ?? '' ) ) { continue; }
+        if ( 'core/pattern' === $name && str_starts_with( (string) ( $root['attrs']['slug'] ?? '' ), 'codela-storefront/agency-' ) ) { $seen = true; continue; }
+        if ( 'codela/page-layout' !== $name || is_wp_error( codela_sections_validate_root( $root ) ) ) { return false; }
+        foreach ( $root['innerBlocks'] as $child ) {
+            $data = $child['attrs']['data'] ?? [];
+            if ( false === ( $data['enabled'] ?? true ) ) { continue; }
+            if ( ! str_starts_with( (string) ( $child['blockName'] ?? '' ), 'codela/section-agency-' ) ) { return false; }
+            $seen = true;
+        }
+    }
+    return $seen;
+}
+add_filter( 'body_class', static function( array $classes ): array {
+    if ( ! function_exists( 'get_queried_object' ) || ! function_exists( 'is_singular' ) || ! is_singular( 'page' ) ) { return $classes; }
+    $post = get_queried_object();
+    if ( $post instanceof WP_Post && codela_sf_agency_components( $post ) && ! codela_sf_agency_exclusive_page( $post ) ) { $classes[] = 'sf-agency-mixed'; }
+    return $classes;
+} );
 
 /** Load visual assets only for a page that actually contains agency modules. */
 function codela_sf_agency_asset_flags(): array {
@@ -267,11 +292,16 @@ add_action( 'wp_enqueue_scripts', static function() {
             get_template_directory_uri() . '/assets/scripts/agency-reference-light.js',
             [ 'codela-storefront-agency-widgets' ], wp_get_theme()->get( 'Version' ), true );
     }
-    if ( $flags['widgets'] && function_exists( 'is_front_page' ) && is_front_page() ) {
+    if ( $flags['widgets'] && function_exists( 'is_front_page' ) && is_front_page() && ( ! function_exists( 'get_queried_object' ) || codela_sf_agency_exclusive_page( get_queried_object() ) ) ) {
         wp_enqueue_script( 'codela-storefront-agency-stage-scroll', get_template_directory_uri() . '/assets/scripts/agency-stage-scroll.js', [], wp_get_theme()->get( 'Version' ), true );
     }
 }, 30 );
-add_action( 'enqueue_block_editor_assets', 'codela_sf_agency_styles' );
+add_action( 'enqueue_block_editor_assets', static function() {
+    codela_sf_agency_styles();
+    foreach ( [ 'agency-about', 'agency-project', 'agency-light-scene', 'agency-reference-light' ] as $style ) {
+        wp_enqueue_style( 'codela-storefront-' . $style, get_template_directory_uri() . '/assets/styles/' . $style . '.css', [ 'codela-storefront-agency' ], wp_get_theme()->get( 'Version' ) );
+    }
+} );
 
 /** Fix the generic WooCommerce tab title only on the verified Codela Agency homepage. */
 add_filter( 'document_title_parts', static function( array $parts ): array {

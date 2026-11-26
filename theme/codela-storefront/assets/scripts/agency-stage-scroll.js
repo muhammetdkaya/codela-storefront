@@ -3,7 +3,7 @@
    the navigation scroll has settled. Taller content keeps native scrolling. */
 (() => {
   'use strict';
-  if (!document.body.classList.contains('home')) return;
+  if (!document.body.classList.contains('home') || document.body.classList.contains('sf-agency-mixed')) return;
   const root=document.querySelector('.sf-content .codela-page-layout');
   if(!root)return;
   const stages=Array.from(root.children).filter(el=>

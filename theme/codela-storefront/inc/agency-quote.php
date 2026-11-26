@@ -24,9 +24,11 @@ function codela_sf_quote_clean( $raw ): ?array {
     if ( ! is_array( $raw ) ) { return null; }
     $out = [];
     foreach ( codela_sf_quote_services() as $service => $title ) {
+        if ( ! isset( $raw[$service] ) || ! is_array( $raw[$service] ) ) { return null; }
         $out[$service] = [ 'packages' => [], 'extras' => [] ];
         foreach ( [ 'packages', 'extras' ] as $kind ) {
-            $rows = $raw[$service][$kind] ?? [];
+            if ( ! array_key_exists( $kind, $raw[$service] ) ) { return null; }
+            $rows = $raw[$service][$kind];
             if ( ! is_array( $rows ) || count( $rows ) > 6 ) { return null; }
             foreach ( $rows as $i => $row ) {
                 if ( ! is_int( $i ) || $i < 0 || $i > 5 || ! is_array( $row ) ) { return null; }
@@ -128,7 +130,7 @@ function codela_sf_quote_markup( string $service, array $data ): string {
     $start = $priced ? min( array_column( $priced, 'min' ) ) : null;
     ob_start(); ?>
     <details class="cdl-quote" id="<?php echo esc_attr( $id ); ?>"<?php echo $status ? ' open' : ''; ?>>
-      <summary><span><strong>Ücretsiz Teklif Al</strong><small><?php echo null !== $start ? esc_html( codela_sf_quote_money( [ $start, $start ] ) . ' başlangıç tahmini' ) : 'İhtiyacına göre kapsamı netleştirelim.'; ?></small></span><span aria-hidden="true">↗</span></summary>
+      <summary><span><strong>Ücretsiz Teklif Al</strong><small><?php echo null !== $start ? esc_html( codela_sf_quote_money( [ $start, $start ] ) . ' itibarıyla tahmini' ) : 'İhtiyacına göre kapsamı netleştirelim.'; ?></small></span><span aria-hidden="true">↗</span></summary>
       <?php if ( 'sent' === $status ) : ?><p role="status">Talebin alındı. Kapsamı inceleyip sana dönüş yapacağız.</p>
       <?php else : ?>
         <?php if ( in_array( $status, [ 'invalid', 'failed', 'wait' ], true ) ) : ?><p role="alert"><?php echo esc_html( 'wait' === $status ? 'Kısa süre önce talep gönderdin. Bir dakika sonra tekrar dene.' : 'Talep iletilemedi. Bilgilerini kontrol edip tekrar dene.' ); ?></p><?php endif; ?>
@@ -160,7 +162,7 @@ function codela_sf_quote_submit(): void {
     $redirect = static function( string $status, string $receipt = '' ) use ( $source ): void {
         $args = [ 'codela_quote_status' => $status, 'codela_component' => $source['component'] ];
         if ( $receipt ) { $args['codela_quote_receipt'] = $receipt; }
-        wp_safe_redirect( add_query_arg( $args, $source['url'] ) ); exit;
+        wp_safe_redirect( add_query_arg( $args, $source['url'] ) . '#cdl-quote-' . sanitize_html_class( $source['component'] ) ); exit;
     };
     $field = static function( string $key ): string { $v = $_POST[$key] ?? ''; return is_string( $v ) ? trim( sanitize_text_field( wp_unslash( $v ) ) ) : ''; };
     if ( ! wp_verify_nonce( $field( 'quote_nonce' ), 'codela_sf_agency_quote' ) || $field( 'quote_webpage' ) !== '' || '1' !== $field( 'quote_consent' ) ) { $redirect( 'invalid' ); }

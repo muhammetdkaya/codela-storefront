@@ -148,7 +148,7 @@
 .sf-agency-poster-actions :is(button,a){font-size:11px;padding:10px 12px}
 .sf-agency-service-dialog{padding:23px}
 .sf-agency-contact{padding-block:70px 110px}
-body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf-ui-bottom-bar-height,58px) + env(safe-area-inset-bottom,0px))}
+body:not(.sf-agency-mixed):has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf-ui-bottom-bar-height,58px) + env(safe-area-inset-bottom,0px))}
 }
 @media(max-width:360px){.sf-agency-wrap{width:calc(100% - 32px)}.sf-agency-hero-grid{gap:40px}.sf-agency-title{font-size:39px}.sf-agency-swap-tab{font-size:9px;padding-inline:7px}.sf-agency-swap-stage{height:350px}.sf-agency-swap-body h2{font-size:21px}.sf-agency-poster{flex-basis:84vw;padding:20px}}
 @media(prefers-reduced-motion:reduce){.sf-agency *{scroll-behavior:auto!important;transition:none!important;animation:none!important}.sf-agency-poster:hover{transform:none}}
@@ -1661,16 +1661,16 @@ body:has(.sf-shell.has-mobile-dock) .sf-agency-hero{padding-bottom:calc(var(--sf
 /* Keep the native page shell/footnote in the same obsidian palette.
  * No global color changes outside a page actually containing Service Detail.
  */
-body:has(.codela-page-layout>.sf-agency-widget--detail){background:#09090c}
-body:has(.codela-page-layout>.sf-agency-widget--detail) .sf-content{
+body:not(.sf-agency-mixed):has(.codela-page-layout>.sf-agency-widget--detail){background:#09090c}
+body:not(.sf-agency-mixed):has(.codela-page-layout>.sf-agency-widget--detail) .sf-content{
   padding:0!important;background:#09090c
 }
-body:has(.codela-page-layout>.sf-agency-widget--detail) .sf-footer{
+body:not(.sf-agency-mixed):has(.codela-page-layout>.sf-agency-widget--detail) .sf-footer{
   margin-top:0;background:#09090c;border-top-color:rgba(255,255,255,.1);
   color:#a9a4b1
 }
-body:has(.codela-page-layout>.sf-agency-widget--detail) .sf-footer a{color:#d6d2dc}
-body:has(.codela-page-layout>.sf-agency-widget--detail) .sf-footer-copyright{color:#96929e}
+body:not(.sf-agency-mixed):has(.codela-page-layout>.sf-agency-widget--detail) .sf-footer a{color:#d6d2dc}
+body:not(.sf-agency-mixed):has(.codela-page-layout>.sf-agency-widget--detail) .sf-footer-copyright{color:#96929e}
 
 
 /* MONA stage 4 contact: the approved dark/amber 1+2+1 Bento screen.
@@ -1912,15 +1912,15 @@ body:has(.codela-page-layout>.sf-agency-widget--detail) .sf-footer-copyright{col
 .sf-agency-widget--contact-bento .cdl-contact__notice--success{
   border-color:rgba(102,188,139,.45);background:rgba(102,188,139,.08)
 }
-body:has(.codela-page-layout>.sf-agency-widget--contact-bento){background:#09090c}
-body:has(.codela-page-layout>.sf-agency-widget--contact-bento) .sf-content{
+body:not(.sf-agency-mixed):has(.codela-page-layout>.sf-agency-widget--contact-bento){background:#09090c}
+body:not(.sf-agency-mixed):has(.codela-page-layout>.sf-agency-widget--contact-bento) .sf-content{
   padding:0!important;background:#09090c
 }
-body:has(.codela-page-layout>.sf-agency-widget--contact-bento) .sf-footer{
+body:not(.sf-agency-mixed):has(.codela-page-layout>.sf-agency-widget--contact-bento) .sf-footer{
   margin-top:0;background:#09090c;color:#aaa5af;
   border-top-color:rgba(255,255,255,.1)
 }
-body:has(.codela-page-layout>.sf-agency-widget--contact-bento) .sf-footer a{color:#d8d4df}
+body:not(.sf-agency-mixed):has(.codela-page-layout>.sf-agency-widget--contact-bento) .sf-footer a{color:#d8d4df}
 @media(min-width:740px){
   .sf-agency-widget--contact-bento .cdl-contact__grid{
     min-height:555px;max-height:680px
@@ -2127,34 +2127,34 @@ body:has(.codela-page-layout>.sf-agency-widget--contact-bento) .sf-footer a{colo
    Only the current obsidian Agency widgets qualify; legacy light Agency
    layouts and every WooCommerce/store page retain their existing palette. */
 html:has(body .sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)),
-body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)){
+body:not(.sf-agency-mixed):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)){
   background:#09090c;
 }
-body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)){
+body:not(.sf-agency-mixed):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)){
   --sf-agency-header-clearance:0px;
   --sf-agency-dock-clearance:0px;
   --sf-agency-screen-block:calc(100dvh - var(--sf-agency-header-clearance) - var(--sf-agency-dock-clearance));
 }
-body:not(.home):has(.sf-shell):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)){
+body:not(.sf-agency-mixed):not(.home):has(.sf-shell):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)){
   --sf-agency-header-clearance:76px;
 }
-body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)) .sf-content,
-body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)) .codela-page-layout{
+body:not(.sf-agency-mixed):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)) .sf-content,
+body:not(.sf-agency-mixed):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)) .codela-page-layout{
   background:#09090c;
 }
-body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)) .sf-content{padding:0!important}
-body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer{
+body:not(.sf-agency-mixed):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)) .sf-content{padding:0!important}
+body:not(.sf-agency-mixed):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer{
   margin-top:0;background:#09090c;border-top-color:rgba(255,255,255,.10);
   color:#aaa5af;
 }
-body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer a,
-body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer-brand{color:#d8d4df}
-body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer-copyright,
-body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer-note{color:#96929e}
-body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer a:hover{color:#f8f7fa}
+body:not(.sf-agency-mixed):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer a,
+body:not(.sf-agency-mixed):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer-brand{color:#d8d4df}
+body:not(.sf-agency-mixed):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer-copyright,
+body:not(.sf-agency-mixed):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer-note{color:#96929e}
+body:not(.sf-agency-mixed):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer a:hover{color:#f8f7fa}
 /* About uses its own slightly darker editorial canvas. */
-body:has(.sf-content .sf-agency-widget--about) .sf-footer{background:#06060a}
-body:has(.sf-content .sf-agency-widget--about){--sf-agency-dock-clearance:0px}
+body:not(.sf-agency-mixed):has(.sf-content .sf-agency-widget--about) .sf-footer{background:#06060a}
+body:not(.sf-agency-mixed):has(.sf-content .sf-agency-widget--about){--sf-agency-dock-clearance:0px}
 
 /* A stage fits the *usable* viewport. Its content may still make it taller;
    never clip the long service, process, contact, or project forms. */
@@ -2167,18 +2167,18 @@ body:has(.sf-content .sf-agency-widget--about){--sf-agency-dock-clearance:0px}
   min-height:var(--sf-agency-screen-block,100svh);
 }
 @media(max-width:700px){
-  body:not(.home):has(.sf-shell):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)){
+  body:not(.sf-agency-mixed):not(.home):has(.sf-shell):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project)){
     --sf-agency-header-clearance:68px;
   }
   /* The PHP shell adds has-mobile-dock only when the setting is enabled.
      Do not reserve navigation space on pages where no dock was rendered. */
-  body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)):has(.sf-shell.has-mobile-dock){
+  body:not(.sf-agency-mixed):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)):has(.sf-shell.has-mobile-dock){
     --sf-agency-dock-clearance:calc(var(--sf-ui-bottom-bar-height,58px) + var(--sf-ui-bottom-bar-gap,4px) + 8px + env(safe-area-inset-bottom,0px));
   }
   /* The storefront's generic dock padding creates a blank strip after the
      footer. The Agency footer now owns its own conditional clearance. */
-  body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)){padding-bottom:0!important}
-  body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer{
+  body:not(.sf-agency-mixed):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)){padding-bottom:0!important}
+  body:not(.sf-agency-mixed):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project,.sf-agency-widget--about)) .sf-footer{
     padding-bottom:calc(18px + var(--sf-agency-dock-clearance));
   }
 }
@@ -2201,12 +2201,12 @@ body:has(.sf-content .sf-agency-widget--about){--sf-agency-dock-clearance:0px}
    each stage, so the Studio photo ended far above Services and the process
    card pushed its footer below the phone screen.
    Preserve native document scrolling and let content overflow naturally. */
-body:has(.sf-content .sf-agency-widget--studio),
-body:has(.sf-content .sf-agency-widget--bento),
-body:has(.sf-content .sf-agency-widget--detail),
-body:has(.sf-content .sf-agency-widget--contact-bento),
-body:has(.sf-content .sf-agency-widget--process),
-body:has(.sf-content .sf-agency-widget--project){
+body:not(.sf-agency-mixed):has(.sf-content .sf-agency-widget--studio),
+body:not(.sf-agency-mixed):has(.sf-content .sf-agency-widget--bento),
+body:not(.sf-agency-mixed):has(.sf-content .sf-agency-widget--detail),
+body:not(.sf-agency-mixed):has(.sf-content .sf-agency-widget--contact-bento),
+body:not(.sf-agency-mixed):has(.sf-content .sf-agency-widget--process),
+body:not(.sf-agency-mixed):has(.sf-content .sf-agency-widget--project){
   /* svh stays stable when the iOS Safari bottom toolbar expands/collapses.
      Fixed navigation changes CONTENT clearance, not section background height. */
   --sf-agency-screen-block:100svh;
@@ -2215,13 +2215,13 @@ body:has(.sf-content .sf-agency-widget--project){
 }
 /* Keep the legacy light Agency stages' optical overlap untouched. Only
    the current dark Studio → Bento handoff should have no parent margin. */
-body.home .codela-page-layout > .sf-agency-widget--studio + .sf-agency-widget--bento{
+body.home:not(.sf-agency-mixed) .codela-page-layout > .sf-agency-widget--studio + .sf-agency-widget--bento{
   margin-block-start:0!important;
 }
 
 /* The native Codela header already reserves 68/76px on inner pages.
    Subtract that once for the first stage; do not pay twice via padding. */
-body:not(.home):has(.sf-shell) .codela-page-layout > :is(
+body:not(.sf-agency-mixed):not(.home):has(.sf-shell) .codela-page-layout > :is(
   .sf-agency-widget--studio,.sf-agency-widget--bento,
   .sf-agency-widget--process,.sf-agency-widget--detail,
   .sf-agency-widget--contact-bento,.sf-agency-widget--project
@@ -2234,15 +2234,15 @@ body:not(.home):has(.sf-shell) .codela-page-layout > :is(
 /* Proximity snapping is a gentle assist only for successive HOME sections.
    Not mandatory, no wheel/touch interception, and no snap on long forms. */
 @supports (scroll-snap-type:y proximity){
-  html:has(body.home .codela-page-layout > .sf-agency-widget--studio + .sf-agency-widget--bento){
+  html:has(body.home:not(.sf-agency-mixed) .codela-page-layout > .sf-agency-widget--studio + .sf-agency-widget--bento){
     scroll-snap-type:y proximity;
   }
-  body.home .codela-page-layout > :is(
+  body.home:not(.sf-agency-mixed) .codela-page-layout > :is(
     .sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process
   ){scroll-snap-align:start;scroll-snap-stop:normal}
 }
 @media(prefers-reduced-motion:reduce){
-  html:has(body.home .codela-page-layout > .sf-agency-widget--studio + .sf-agency-widget--bento){
+  html:has(body.home:not(.sf-agency-mixed) .codela-page-layout > .sf-agency-widget--studio + .sf-agency-widget--bento){
     scroll-snap-type:none;
   }
 }
@@ -2306,7 +2306,7 @@ body:not(.home):has(.sf-shell) .codela-page-layout > :is(
   .sf-agency-widget--process .sf-agency-process-stage-visual{height:165px}
 }
 @media(max-width:700px){
-  body:not(.home):has(.sf-shell):has(.sf-content :is(
+  body:not(.sf-agency-mixed):not(.home):has(.sf-shell):has(.sf-content :is(
     .sf-agency-widget--studio,.sf-agency-widget--bento,
     .sf-agency-widget--process,.sf-agency-widget--detail,
     .sf-agency-widget--contact-bento,.sf-agency-widget--project
@@ -2315,14 +2315,14 @@ body:not(.home):has(.sf-shell) .codela-page-layout > :is(
   }
   /* The dock is an overlay: reserve only its real content clearance.
      It does not shorten the stage/background or create trailing whitespace. */
-  body:has(.sf-shell.has-mobile-dock):has(.sf-content :is(
+  body:not(.sf-agency-mixed):has(.sf-shell.has-mobile-dock):has(.sf-content :is(
     .sf-agency-widget--studio,.sf-agency-widget--bento,
     .sf-agency-widget--process,.sf-agency-widget--detail,
     .sf-agency-widget--contact-bento,.sf-agency-widget--project
   )){
     --sf-agency-stage-bottom:calc(18px + var(--sf-agency-dock-clearance,0px));
   }
-  body:not(.home):has(.sf-shell) .codela-page-layout > :is(
+  body:not(.sf-agency-mixed):not(.home):has(.sf-shell) .codela-page-layout > :is(
     .sf-agency-widget--studio,.sf-agency-widget--bento,
     .sf-agency-widget--process,.sf-agency-widget--detail,
     .sf-agency-widget--contact-bento,.sf-agency-widget--project
@@ -2398,7 +2398,7 @@ body:not(.home):has(.sf-shell) .codela-page-layout > :is(
     padding:var(--sf-process-top) 16px var(--sf-process-bottom);
     align-items:stretch;
   }
-  body:not(.home):has(.sf-shell) .codela-page-layout > .sf-agency-widget--process:first-child > .sf-agency-process{
+  body:not(.sf-agency-mixed):not(.home):has(.sf-shell) .codela-page-layout > .sf-agency-widget--process:first-child > .sf-agency-process{
     --sf-process-height:calc(100dvh - var(--sf-agency-header-clearance,68px));
     --sf-process-top:20px;
     min-height:var(--sf-process-height);
@@ -2439,7 +2439,7 @@ body:not(.home):has(.sf-shell) .codela-page-layout > :is(
 /* Dark Agency navigation uses an actual white wordmark. A wide uploaded
    logo is cropped to its emblem rather than filtering the entire image. */
 .sf-agency-header-wordmark{display:none}
-body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project))
+body:not(.sf-agency-mixed):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project))
 .sf-shell .sf-header .sf-brand > .sf-agency-header-wordmark{
   display:block;
   color:#f8f7fa;
@@ -2449,11 +2449,11 @@ body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-
   white-space:nowrap;
   line-height:1;
 }
-body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project))
+body:not(.sf-agency-mixed):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project))
 .sf-shell .sf-header .sf-brand:has(.sf-agency-header-wordmark){
   gap:7px;
 }
-body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project))
+body:not(.sf-agency-mixed):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project))
 .sf-shell .sf-header .sf-brand .custom-logo-link{
   display:block;
   flex:0 0 36px;
@@ -2462,7 +2462,7 @@ body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-
   overflow:hidden;
   text-align:left;
 }
-body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project))
+body:not(.sf-agency-mixed):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project))
 .sf-shell .sf-header .sf-brand .custom-logo-link .custom-logo{
   display:block;
   width:auto!important;
@@ -2474,7 +2474,7 @@ body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-
   object-position:left center;
   filter:none;
 }
-body:has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project))
+body:not(.sf-agency-mixed):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process,.sf-agency-widget--detail,.sf-agency-widget--contact-bento,.sf-agency-widget--project))
 .sf-shell .sf-header .sf-brand > a:not(.custom-logo-link){
   color:#f8f7fa!important;
 }
@@ -2642,7 +2642,7 @@ body:not(.home):has(.sf-shell) .codela-page-layout > .sf-agency-widget--detail:f
     padding:var(--sf-process-top) 16px var(--sf-process-bottom);
     min-height:100svh;align-items:stretch;
   }
-  body:not(.home):has(.sf-shell) .codela-page-layout > .sf-agency-widget--process:first-child > .sf-agency-process{
+  body:not(.sf-agency-mixed):not(.home):has(.sf-shell) .codela-page-layout > .sf-agency-widget--process:first-child > .sf-agency-process{
     --sf-process-top:20px;min-height:calc(100svh - var(--sf-agency-header-clearance,76px));
   }
   .sf-agency-widget--process .sf-agency-process > .sf-agency-wrap{
@@ -2836,8 +2836,8 @@ body:not(.home):has(.sf-shell) .codela-page-layout > .sf-agency-widget--detail:f
 }
 @media(max-width:359px){.sf-agency-widget--detail .cdl-service-detail__bottom{gap:8px;flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){.sf-agency-widget--detail .cdl-service-detail__faq details::before,.sf-agency-widget--detail .cdl-service-detail__faq details::details-content,.sf-agency-widget--detail .cdl-service-detail__faq summary span,.sf-agency-widget--detail .cdl-service-detail__tabs a{transition:none}}
-body:has(.sf-agency-widget--detail) .sf-footer,body:has(.sf-404-agency) .sf-footer{display:none!important}
-body:has(.sf-404-agency){background:#09090c}
+body:not(.sf-agency-mixed):has(.sf-agency-widget--detail) .sf-footer,body:not(.sf-agency-mixed):has(.sf-404-agency) .sf-footer{display:none!important}
+body:not(.sf-agency-mixed):has(.sf-404-agency){background:#09090c}
 .sf-404-agency{background:#09090c!important;color:#f8f7fa!important;padding:24px 20px!important}
 .sf-agency-404{width:min(100%,696px);margin:auto}
 .cdl-404-stage{--lx:50%;--ly:46%;position:relative;isolation:isolate;min-height:clamp(340px,65svh,470px);border:1px solid #ffffff17;border-radius:28px;overflow:hidden;background:#040407;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px}
@@ -2858,35 +2858,35 @@ html.sf-agency-stage-nav:has(body.home .sf-agency-widget--studio){
   overscroll-behavior-y:none;
   scroll-behavior:auto;
 }
-html.sf-agency-stage-nav body.home:has(.sf-agency-widget--studio){
+html.sf-agency-stage-nav body:not(.sf-agency-mixed).home:has(.sf-agency-widget--studio){
   overscroll-behavior-y:none;
 }
 
 /* 0.1.422 — shared inner-page header rhythm. The shell already reserves the
    fixed header height. Do not add the homepage stage offset on top of it. */
-body:not(.home):has(.sf-shell):has(.sf-content :is(.sf-agency-widget--bento,.sf-agency-widget--about,.sf-agency-widget--contact-bento,.sf-agency-widget--project)),
-body.home:has(.sf-shell):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process)){
+body:not(.sf-agency-mixed):not(.home):has(.sf-shell):has(.sf-content :is(.sf-agency-widget--bento,.sf-agency-widget--about,.sf-agency-widget--contact-bento,.sf-agency-widget--project)),
+body:not(.sf-agency-mixed).home:has(.sf-shell):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process)){
   --sf-agency-inner-top:28px;
   --sf-agency-inner-gutter:20px;
   --sf-agency-inner-eyebrow:#928c9c;
 }
-body:not(.home):has(.sf-shell):has(.sf-content .sf-agency-widget--about) .sf-content{padding:0!important}
-body:not(.home):has(.sf-shell) .sf-agency-widget--bento .cdl-bento,
-body:not(.home):has(.sf-shell) .sf-agency-widget--contact-bento .cdl-contact{
+body:not(.sf-agency-mixed):not(.home):has(.sf-shell):has(.sf-content .sf-agency-widget--about) .sf-content{padding:0!important}
+body:not(.sf-agency-mixed):not(.home):has(.sf-shell) .sf-agency-widget--bento .cdl-bento,
+body:not(.sf-agency-mixed):not(.home):has(.sf-shell) .sf-agency-widget--contact-bento .cdl-contact{
   padding-block-start:var(--sf-agency-inner-top,28px);
   padding-inline:var(--sf-agency-inner-gutter,20px);
   align-items:flex-start;
 }
-body:not(.home):has(.sf-shell) .sf-agency-widget--bento .cdl-bento__heading{padding:0}
-body:not(.home):has(.sf-shell) .sf-agency-widget--bento .cdl-bento__inner{flex:0 1 auto;width:min(100%,920px)}
+body:not(.sf-agency-mixed):not(.home):has(.sf-shell) .sf-agency-widget--bento .cdl-bento__heading{padding:0}
+body:not(.sf-agency-mixed):not(.home):has(.sf-shell) .sf-agency-widget--bento .cdl-bento__inner{flex:0 1 auto;width:min(100%,920px)}
 .sf-agency-widget--bento .cdl-bento__eyebrow,
-body:not(.home):has(.sf-shell) .sf-agency-widget--contact-bento .cdl-contact__eyebrow{
+body:not(.sf-agency-mixed):not(.home):has(.sf-shell) .sf-agency-widget--contact-bento .cdl-contact__eyebrow{
   display:flex;align-items:center;gap:8px;
 }
 .sf-agency-widget--bento .cdl-bento__eyebrow::before{
   content:"";display:block;width:6px;height:6px;border-radius:50%;background:#d3a480;flex:none;
 }
-body:not(.home):has(.sf-shell) :is(.sf-agency-widget--bento .cdl-bento__eyebrow,.sf-agency-widget--contact-bento .cdl-contact__eyebrow){
+body:not(.sf-agency-mixed):not(.home):has(.sf-shell) :is(.sf-agency-widget--bento .cdl-bento__eyebrow,.sf-agency-widget--contact-bento .cdl-contact__eyebrow){
   margin:0 0 10px!important;font-size:11px!important;line-height:1.45;letter-spacing:.22em;font-weight:600;color:var(--sf-agency-inner-eyebrow,#928c9c);
 }
 /* A standalone services document is visible at first paint and stays visible.
@@ -2897,45 +2897,45 @@ body:not(.home) .sf-agency-widget--bento[data-bento-ready="1"] .cdl-bento__revea
 }
 body:not(.home) .sf-agency-widget--bento .cdl-bento__card:hover{transform:translateY(-2px)}
 @media(max-width:739px){
-  body:not(.home):has(.sf-shell):has(.sf-content :is(.sf-agency-widget--bento,.sf-agency-widget--about,.sf-agency-widget--contact-bento,.sf-agency-widget--project)),
-  body.home:has(.sf-shell):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process)){--sf-agency-inner-top:26px;--sf-agency-inner-gutter:18px}
-  body:not(.home):has(.sf-shell) .sf-agency-widget--bento .cdl-bento__inner{width:100%;flex:1 1 auto}
-  body:not(.home):has(.sf-shell) .sf-agency-widget--bento .cdl-bento__heading h2{font-size:30px;line-height:1.08}
+  body:not(.sf-agency-mixed):not(.home):has(.sf-shell):has(.sf-content :is(.sf-agency-widget--bento,.sf-agency-widget--about,.sf-agency-widget--contact-bento,.sf-agency-widget--project)),
+  body:not(.sf-agency-mixed).home:has(.sf-shell):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process)){--sf-agency-inner-top:26px;--sf-agency-inner-gutter:18px}
+  body:not(.sf-agency-mixed):not(.home):has(.sf-shell) .sf-agency-widget--bento .cdl-bento__inner{width:100%;flex:1 1 auto}
+  body:not(.sf-agency-mixed):not(.home):has(.sf-shell) .sf-agency-widget--bento .cdl-bento__heading h2{font-size:30px;line-height:1.08}
 }
 
 /* 0.1.424 — the homepage shell overlays its header rather than reserving it.
    Apply exactly the same content inset after the native header, without
    changing stage heights or the staged scroll controller. */
-body.home:has(.sf-shell):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process)){
+body:not(.sf-agency-mixed).home:has(.sf-shell):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process)){
   --sf-agency-home-header:76px;
   --sf-agency-home-top:calc(var(--sf-agency-home-header) + var(--sf-agency-inner-top,28px));
 }
-body.home:has(.sf-shell) .sf-agency-widget--studio .codela-studio-hero{
+body:not(.sf-agency-mixed).home:has(.sf-shell) .sf-agency-widget--studio .codela-studio-hero{
   padding-block-start:var(--sf-agency-home-top);
   align-items:flex-start;
 }
-body.home:has(.sf-shell) .sf-agency-widget--studio .codela-studio-hero__inner{
+body:not(.sf-agency-mixed).home:has(.sf-shell) .sf-agency-widget--studio .codela-studio-hero__inner{
   align-items:start;
 }
-body.home:has(.sf-shell) .sf-agency-widget--bento .cdl-bento{
+body:not(.sf-agency-mixed).home:has(.sf-shell) .sf-agency-widget--bento .cdl-bento{
   padding-block-start:var(--sf-agency-home-top);
 }
-body.home:has(.sf-shell) .sf-agency-widget--process .sf-agency-process{
+body:not(.sf-agency-mixed).home:has(.sf-shell) .sf-agency-widget--process .sf-agency-process{
   --sf-process-top:var(--sf-agency-home-top);
   padding-block-start:var(--sf-agency-home-top);
 }
 @media(max-width:700px){
-  body.home:has(.sf-shell):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process)){--sf-agency-home-header:68px}
+  body:not(.sf-agency-mixed).home:has(.sf-shell):has(.sf-content :is(.sf-agency-widget--studio,.sf-agency-widget--bento,.sf-agency-widget--process)){--sf-agency-home-header:68px}
 }
 @media(max-width:739px){
-  body.home:has(.sf-shell) .sf-agency-widget--studio .codela-studio-hero{
+  body:not(.sf-agency-mixed).home:has(.sf-shell) .sf-agency-widget--studio .codela-studio-hero{
     padding-inline:var(--sf-agency-inner-gutter,18px);
     align-items:stretch;
   }
-  body.home:has(.sf-shell) .sf-agency-widget--studio .codela-studio-hero__inner{align-items:stretch}
-  body.home:has(.sf-shell) .sf-agency-widget--studio .codela-studio-hero__intro{padding-inline:0}
-  body.home:has(.sf-shell) .sf-agency-widget--bento .cdl-bento{padding-inline:var(--sf-agency-inner-gutter,18px)}
-  body.home:has(.sf-shell) .sf-agency-widget--bento .cdl-bento__heading{padding-inline:0}
+  body:not(.sf-agency-mixed).home:has(.sf-shell) .sf-agency-widget--studio .codela-studio-hero__inner{align-items:stretch}
+  body:not(.sf-agency-mixed).home:has(.sf-shell) .sf-agency-widget--studio .codela-studio-hero__intro{padding-inline:0}
+  body:not(.sf-agency-mixed).home:has(.sf-shell) .sf-agency-widget--bento .cdl-bento{padding-inline:var(--sf-agency-inner-gutter,18px)}
+  body:not(.sf-agency-mixed).home:has(.sf-shell) .sf-agency-widget--bento .cdl-bento__heading{padding-inline:0}
 }
 
 
@@ -2958,12 +2958,12 @@ body.home:has(.sf-shell) .sf-agency-widget--process .sf-agency-process{
   .sf-agency-widget--studio .codela-studio-hero__visual{
     width:100%;height:clamp(260px,calc(100svh - 200px),640px);aspect-ratio:auto;
   }
-  body.home:has(.sf-shell) .sf-agency-widget--studio .codela-studio-hero__inner{align-items:center}
+  body:not(.sf-agency-mixed).home:has(.sf-shell) .sf-agency-widget--studio .codela-studio-hero__inner{align-items:center}
   .sf-agency-widget--bento .cdl-bento{
     padding-block:clamp(84px,10svh,130px) clamp(24px,5svh,56px);
   }
   .sf-agency-widget--bento .cdl-bento__inner,
-  body:not(.home):has(.sf-shell) .sf-agency-widget--bento .cdl-bento__inner{
+  body:not(.sf-agency-mixed):not(.home):has(.sf-shell) .sf-agency-widget--bento .cdl-bento__inner{
     width:min(100%,clamp(920px,74vw,1360px));min-width:0;
   }
   .sf-agency-widget--bento .cdl-bento__grid{
@@ -2995,3 +2995,16 @@ body.home:has(.sf-shell) .sf-agency-widget--process .sf-agency-process{
 .cdl-quote__estimate{color:#d3a480;font-size:18px;font-weight:600;margin:0}
 .cdl-quote__form button{justify-self:start;cursor:pointer}
 .cdl-quote :focus-visible{outline:2px solid #d3a480;outline-offset:3px}
+
+
+/* Embedded widgets remain dark components, not a global page theme. */
+body.sf-agency-mixed .sf-agency-widget{
+  --sf-agency-screen-block:auto;--sf-agency-dock-clearance:0px;min-width:0;
+}
+body.sf-agency-mixed .sf-agency-widget :is(.codela-studio-hero,.cdl-bento,.sf-agency-process,.cdl-service-detail,.cdl-contact,.cdl-project){
+  width:100%;max-width:100%;margin-inline:0!important;min-height:0;height:auto;
+  padding-block:clamp(24px,5svh,56px);
+}
+body.sf-agency-mixed .sf-agency-widget--studio .codela-studio-hero__visual{min-height:260px}
+body.sf-agency-mixed .sf-agency-widget--about{background:#06060a}
+body.sf-agency-mixed .sf-agency-widget--bento .cdl-bento__grid{min-height:0}
