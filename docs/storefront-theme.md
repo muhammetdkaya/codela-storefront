@@ -1,3 +1,9 @@
+## 26 Kasım 2026 — Storefront 0.1.433 sürüm adayı
+
+- Seçili hizmetlerin kapsamı sekmesiz, dinamik sayılan ana adımlarda tamamlanır. Her hizmet için paket/modül veya özel teklif seçimi açıkça yapılır. Geri dönüşte seçimler korunur; son hizmetten sonra takvim açılır. İkinci ilerleme göstergesi yoktur; ilk seçim ekranından itibaren ana sayaç 4–7 adım arasında güncellenir.
+- Alt bütçe alanında yinelenen border ve yapışkan alan kaldırıldı. Başlık/ilerleme üstte kesilmişse adım geçişinde header altına döndürülür. Fiyat verileri, iletişim ve sunucu hesapları değiştirilmedi.
+- Önceki 0.1.432: release, stable manifest, FTP ve canlı otomatik kontroller doğrulandı. 0.1.433 için tarayıcı regresyonları güncellendi; exact CI ve yayın sonuçları yeni olay tabanlı zincirde doğrulanacak. Eklenti sürümü değişmedi; fiziksel Safari kabulü ayrıca gerekli.
+
 ## 21 Kasım 2026 — 0.1.380 yayını tamamlandı / mobil Çalışma Süreci
 
 **Kod:** [bfc477b](https://github.com/muhammetdkaya/codela-storefront/commit/bfc477b15ec7657f8dc066867df63bbbaf4bae01) mobil `100dvh` ve esnek görsel/kart yerleşimini, [c8a3750](https://github.com/muhammetdkaya/codela-storefront/commit/c8a37507863093a7360f16d13eb7ab592a03f5e4) son viewport kabul testi uyumunu içerir. İkisi de `main` dalındadır. Mobil 390×844 → 390×650 → 430×932 → 320×568 yeniden boyutlandırma beklentileri testlere kaydedildi. Uzun metin ve büyütülmüş yazı doğal belge yüksekliğinde kalır; görsel için 120px alt sınır vardır. Eklenti değişmedi.
