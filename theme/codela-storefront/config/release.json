@@ -6,6 +6,7 @@
     "codela": "1.2.34"
   },
   "changes": [
+    "Proje kapsamı seçimi ortak çizgili hizmet satırlarına ve kehribar seçim işaretlerine uyarlanır; fiyat bir kez gösterilir.",
     "Proje Başlat ve teklif akışı ortak dört adımlı formda birleşir; mevcut cam bileşenler, iletişim alanları ve takvim korunur.",
     "Hizmet bazında fiyat aralığı, yazılım başlangıç fiyatı ve aylık bakım tahmini; mevcut fiyat ve kapasite kayıtları korunur.",
     "Fiyat ve kapasite ayarları ortak Codela yönetim paneli bileşenleriyle düzenlenir; paketler ihtiyaç kadar eklenir.",

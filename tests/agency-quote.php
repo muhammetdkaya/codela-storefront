@@ -49,4 +49,6 @@ $models=codela_sf_project_quote_calculate(['Web Tasarım','Özel Yazılım','Opt
 check_quote($models['web']['estimate']==='22.000 – 26.000 TL','Web range');
 check_quote($models['software']['estimate']==='14.000 TL itibarıyla','Software starting model');
 check_quote($models['support']['estimate']==='3.000 – 4.000 TL / ay','Maintenance recurring model');
+$custom=codela_sf_project_quote_calculate(['Web Tasarım'],['web'=>['packages'=>['custom']]]);
+check_quote($custom['web']['scope']===['İhtiyaca özel'] && $custom['web']['estimate']==='Görüşmede belirlenecek','Native custom radio maps to unpriced scope');
 echo "Agency quote rules, ranges and no-price fallback passed.\n";

@@ -35,7 +35,6 @@
         let active=0;
         const services=[...form.querySelectorAll('input[name="agency_project_service[]"]')];
         const scopes=[...form.querySelectorAll('[data-project-scope]')];
-        const scopeSummary=form.querySelector('[data-project-scope-summary]');
         const format=new Intl.NumberFormat('tr-TR');
         const scopeLabels=()=>scopes.filter(x=>!x.hidden).map(x=>x.querySelector('legend').textContent+': '+x.querySelector('[data-scope-estimate]').textContent);
         const updateScopes=()=>{
@@ -45,7 +44,10 @@
             const custom=scope.querySelector('[data-scope-custom]')?.checked;
             const packages=[...scope.querySelectorAll('[data-scope-package]')];
             const extras=[...scope.querySelectorAll('[data-scope-extra]')];
-            [...packages,...extras].forEach(x=>x.disabled=!!custom);
+            packages.forEach(x=>x.disabled=!!custom&&x.type==='checkbox');
+            extras.forEach(x=>x.disabled=!!custom);
+            const extraGroup=scope.querySelector('[data-scope-extras]');
+            if(extraGroup){extraGroup.hidden=!!custom;if(custom)extraGroup.open=false;}
             const selected=packages.flatMap(x=>x.tagName==='SELECT'?(x.value?[x.selectedOptions[0]]:[]):(x.checked?[x]:[]));
             const rows=[...selected,...extras.filter(x=>x.checked)];
             const known=!custom&&selected.length&&rows.every(x=>/^\d+$/.test(x.dataset.min||'')&&/^\d+$/.test(x.dataset.max||''));
@@ -54,9 +56,15 @@
             const range=format.format(min)+(min===max?'':' – '+format.format(max))+' TL';
             scope.querySelector('[data-scope-estimate]').textContent=known?(scope.dataset.pricingMode==='starting'?format.format(min)+' TL itibarıyla':range+(scope.dataset.pricingMode==='monthly'?' / ay':'')):'Görüşmede belirlenecek';
           }
-          if(scopeSummary)scopeSummary.textContent=scopeLabels().join(' · ');
         };
-        form.addEventListener('change',updateScopes);
+        form.addEventListener('change',event=>{
+          const target=event.target;
+          const scope=target.closest('[data-project-scope]');
+          if(scope&&target.matches('[data-scope-custom]')&&target.checked){
+            scope.querySelectorAll('input[data-scope-package]:checked,input[data-scope-extra]:checked').forEach(x=>x.checked=false);
+          }
+          updateScopes();
+        });
         const show=(index,focus=true)=>{
           updateScopes();
           active=index;

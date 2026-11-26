@@ -169,6 +169,7 @@ function codela_sf_project_quote_calculate( array $services, $raw ): ?array {
         if ( [ '' ] === $packages ) { $packages = []; }
         $extras = $choice['extras'] ?? [];
         $custom = $choice['custom'] ?? '';
+        if ( 'software' !== $key && [ 'custom' ] === $packages ) { $packages = []; $custom = '1'; }
         if ( ! is_array( $packages ) || ! is_array( $extras ) || count( $packages ) > 24 || count( $extras ) > 24 || ( '' !== $custom && '1' !== $custom ) ) { return null; }
         if ( 'software' !== $key && count( $packages ) > 1 ) { return null; }
         $labels = []; $min = $max = 0; $known = (bool) $packages && '1' !== $custom;
