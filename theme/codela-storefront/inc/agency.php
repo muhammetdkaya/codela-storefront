@@ -378,7 +378,7 @@ function codela_sf_agency_project_submit(): void {
     $redirect = static function( string $status ) use ( $base, $source ): void {
         $args = [ 'codela_status' => $status ];
         if ( $source ) { $args['codela_component'] = $source['component']; }
-        wp_safe_redirect( add_query_arg( $args, $base ) );
+        wp_safe_redirect( add_query_arg( $args, $base ), 303 );
         exit;
     };
     if ( 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) || ! codela_sf_ready() || ( isset( $_POST['agency_source_page'] ) && ! $source ) || ( ! $source && ! codela_sf_agency_project_url() ) ) { $redirect( 'invalid' ); }
@@ -451,7 +451,7 @@ function codela_sf_agency_project_submit(): void {
     set_transient( 'codela_sf_project_receipt_' . $receipt, [ 'summary' => $summary, 'component' => $source['component'] ?? '' ], 5 * MINUTE_IN_SECONDS );
     $args = [ 'codela_status' => 'sent', 'codela_receipt' => $receipt ];
     if ( $source ) { $args['codela_component'] = $source['component']; }
-    wp_safe_redirect( add_query_arg( $args, $base ) );
+    wp_safe_redirect( add_query_arg( $args, $base ), 303 );
     exit;
 }
 add_action( 'admin_post_codela_sf_agency_project', 'codela_sf_agency_project_submit' );

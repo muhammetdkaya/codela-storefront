@@ -63,6 +63,8 @@ require_once get_template_directory() . '/inc/presentation.php';
 add_filter( 'body_class', static function( $classes ) {
     if ( 'editorial' === codela_sf_presentation( 'account' ) ) { $classes[] = 'sf-account-editorial'; }
     if ( codela_sf_glass_v2_enabled() ) { $classes[] = 'sf-glass-v2'; }
+    $settings = function_exists( 'codela_theme_settings' ) ? codela_theme_settings() : [];
+    if ( 'agency' === ( $settings['site_experience'] ?? 'commerce' ) ) { $classes[] = 'sf-site-agency'; }
     return $classes;
 } );
 
@@ -614,11 +616,13 @@ add_action( 'wp_enqueue_scripts', static function() {
     // opted-in pages receive glass on their real buttons, cards and forms.
     if ( function_exists( 'codela_sf_agency_asset_flags' ) ) {
         $agency_flags = codela_sf_agency_asset_flags();
-        if ( ! empty( $agency_flags['pattern'] ) || ! empty( $agency_flags['widgets'] ) ) {
+        $settings = codela_theme_settings();
+        $agency_account = 'agency' === ( $settings['site_experience'] ?? 'commerce' ) && codela_sf_is_account_context();
+        if ( ! empty( $agency_flags['pattern'] ) || ! empty( $agency_flags['widgets'] ) || $agency_account ) {
             wp_enqueue_style(
                 'codela-storefront-agency-glass',
                 get_template_directory_uri() . '/assets/styles/agency-glass.css',
-                [ 'codela-storefront-glass-v2', 'codela-storefront-agency' ],
+                $agency_account && empty( $agency_flags['pattern'] ) && empty( $agency_flags['widgets'] ) ? [ 'codela-storefront-glass-v2' ] : [ 'codela-storefront-glass-v2', 'codela-storefront-agency' ],
                 codela_sf_style_version()
             );
         }

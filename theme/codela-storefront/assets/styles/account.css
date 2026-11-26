@@ -701,3 +701,16 @@ body.woocommerce-account.logged-in:not(.codela-my-account-layout)
  body.woocommerce-account.logged-in:not(.codela-my-account-layout)
   .woocommerce-MyAccount-content .woocommerce-EditAccountForm :is(input.woocommerce-Input,input.input-text,select){transition:none}
 }
+
+/* Agency account endpoints use the same dark canvas and semantic controls. */
+body.sf-site-agency.woocommerce-account.logged-in{
+ --sf-ui-page:#09090d;--sf-ui-ink:#f5f4f7;--sf-ui-control-ink:#f5f4f7;--sf-ui-surface:#18171d;--sf-ui-surface-muted:#121116;--sf-ui-border:rgba(255,255,255,.13);--sf-muted:#aaa5b1;--sf-ui-accent:#d6a676;--sf-accent:#d6a676;--sf-ui-nav-selection:rgba(255,255,255,.08);--sf-ui-action-height:46px;--sf-ui-control-radius:12px;
+ background:var(--sf-ui-page);color:var(--sf-ui-ink);color-scheme:dark;
+}
+body.sf-site-agency.woocommerce-account.logged-in :is(.wp-site-blocks,.sf-content,.woocommerce-MyAccount-content){background:transparent;color:var(--sf-ui-ink)}
+body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content :is(input:not([type=checkbox]):not([type=radio]):not([type=hidden]),select,textarea){background:#121116!important;border-color:var(--sf-ui-border)!important;color:var(--sf-ui-ink)!important;font-size:16px;caret-color:#d6a676}
+body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content :is(input,select,textarea):focus-visible{outline:2px solid #d6a676!important;outline-offset:2px}
+body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content form.woocommerce-EditAccountForm{background:linear-gradient(165deg,#1c1b22,#111116)!important;border:1px solid var(--sf-ui-border)!important;box-shadow:none!important}
+body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content form.woocommerce-EditAccountForm button[name="save_account_details"]{background:#d6a676!important;border-color:#d6a676!important;color:#151113!important;box-shadow:none!important}
+body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content .woocommerce-EditAccountForm :is(.required,.show-password-input){color:#d6a676}
+body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content .woocommerce-EditAccountForm fieldset{background:transparent!important}
