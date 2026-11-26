@@ -60,3 +60,17 @@
 @media(prefers-reduced-transparency:reduce){
  .sf-shell.has-agency-profile #sf-panel.is-account-panel{background:#09090d!important}
 }
+
+/* Keep the actual biometric/PIN controls legible in every interaction state. */
+.sf-shell.has-agency-profile #sf-panel.is-account-panel .sf-quick-method,
+.sf-shell.has-agency-profile #sf-panel.is-account-panel .sf-quick-method{
+ background:rgba(255,255,255,.055)!important;color:#f5f4f7!important;border:1px solid rgba(255,255,255,.12)!important;box-shadow:none!important;
+}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel .sf-quick-method:is(:hover,:active,[aria-expanded="true"],:disabled),
+.sf-shell.has-agency-profile #sf-panel.is-account-panel .sf-quick-method:is(:hover,:active,[aria-expanded="true"],:disabled){background:rgba(255,255,255,.10)!important;color:#f5f4f7!important}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel .sf-quick-method:focus-visible,
+.sf-shell.has-agency-profile #sf-panel.is-account-panel .sf-quick-method:focus-visible{outline:2px solid #d6a676!important;outline-offset:2px}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel .sf-bio-scanline,
+.sf-shell.has-agency-profile #sf-panel.is-account-panel .sf-bio-scanline{stroke:#d6a676}
+.sf-shell.has-agency-profile #sf-panel.is-account-panel :is(.sf-quick-or,.sf-auth-divider)::before,
+.sf-shell.has-agency-profile #sf-panel.is-account-panel :is(.sf-quick-or,.sf-auth-divider)::after{background:rgba(255,255,255,.12)!important}

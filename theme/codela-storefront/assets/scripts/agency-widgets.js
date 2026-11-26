@@ -207,6 +207,7 @@
           if(!form.checkValidity()){event.preventDefault();form.reportValidity();return;}
           const submit=form.querySelector('[data-project-submit]');
           if(submit){submit.disabled=true;submit.setAttribute('aria-busy','true');submit.firstChild.textContent='Gönderiliyor ';}
+          window.addEventListener('pageshow',()=>{if(submit){submit.disabled=false;submit.removeAttribute('aria-busy');submit.firstChild.textContent='Talebi Gönder ';}},{once:true});
         });
         show(form.hasAttribute('data-project-start-scope')?1:0,false);
       }

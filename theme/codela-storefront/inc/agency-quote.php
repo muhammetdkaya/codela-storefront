@@ -253,10 +253,19 @@ function codela_sf_quote_deliver( string $name, string $contact, string $to, str
     $stored = function_exists( $store ) ? $store( $name, $contact, $record_body ) : 0;
     // A signed-in portal request must have a durable customer-owned record.
     if ( $store === $project_store && function_exists( 'is_user_logged_in' ) && is_user_logged_in() && function_exists( $portal_enabled ) && $portal_enabled() && ! $stored ) { return false; }
-    $sent = is_email( $to ) && wp_mail( $to, $subject, $body, $headers );
+    // The record is authoritative; do not hold a customer on admin-post while SMTP responds.
+    if ( $project && $stored > 0 && is_email( $to ) && function_exists( 'wp_schedule_single_event' ) ) {
+        $queued = wp_schedule_single_event( time(), 'codela_sf_project_mail', [ $to, $subject, $body, $headers ] );
+        if ( $queued ) { return true; }
+    }
+    try { $sent = is_email( $to ) && wp_mail( $to, $subject, $body, $headers ); }
+    catch ( \Throwable $error ) { $sent = false; }
     // A persisted request is accepted even when the notification transport fails.
     return $stored > 0 || $sent;
 }
+add_action( 'codela_sf_project_mail', static function( string $to, string $subject, string $body, array $headers ): void {
+    if ( is_email( $to ) ) { wp_mail( $to, $subject, $body, $headers ); }
+}, 10, 4 );
 function codela_sf_quote_submit(): void {
     $source = codela_sf_agency_submitted_source( 'agency-detail' );
     if ( ! $source || 'POST' !== ( $_SERVER['REQUEST_METHOD'] ?? '' ) || ! codela_sf_ready() ) { wp_die( 'Geçersiz teklif kaynağı.', '', [ 'response' => 400 ] ); }
