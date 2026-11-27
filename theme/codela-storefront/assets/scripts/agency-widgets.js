@@ -355,33 +355,6 @@
     }
 
     if (widget.dataset.agencyWidget === 'bento') {
-      // Pointer activation previews one service; the next activation opens its native link.
-      // Keyboard/assistive activation, modifier clicks and no-JS links remain direct.
-      const cards = [...widget.querySelectorAll('a.cdl-bento__card[href]')];
-      if (cards.length) {
-        widget.dataset.bentoSelectReady = '1';
-        let selected = null;
-        const clear = () => {
-          if (selected) selected.classList.remove('is-bento-selected');
-          selected = null;
-        };
-        widget.addEventListener('click', event => {
-          const card = event.target.closest?.('a.cdl-bento__card[href]');
-          if (!cards.includes(card) || event.defaultPrevented || event.button !== 0 ||
-              event.detail === 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-          if (selected === card) return;
-          event.preventDefault();
-          event.stopPropagation();
-          clear();
-          selected = card;
-          card.classList.add('is-bento-selected');
-          card.dispatchEvent(new Event('codela:bento-select'));
-        }, true);
-        widget.addEventListener('keydown', event => {
-          if (event.key === 'Escape' && selected) clear();
-        });
-        window.addEventListener('pageshow', event => { if (event.persisted) clear(); });
-      }
       // The standalone Services page is not an animated homepage stage.
       // Never hide content that the browser may already have painted.
       if (document.body.classList.contains('home') && !reduced.matches && 'IntersectionObserver' in window) {
