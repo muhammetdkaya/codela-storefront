@@ -1,0 +1,29 @@
+name: Storefront public profile performance (read only)
+on:
+  pull_request:
+    paths: ['tools/profile-performance.cjs', '.github/workflows/profile-performance.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  measure:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-1.62.1-ubuntu-24.04
+      - run: npm install --no-save --package-lock=false playwright@1.62.1
+      - run: python3 scripts/ci-playwright.py chromium
+      - run: node --check tools/profile-performance.cjs
+      - run: node tools/profile-performance.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: storefront-profile-performance
+          path: qa/profile-performance/
+          retention-days: 30
