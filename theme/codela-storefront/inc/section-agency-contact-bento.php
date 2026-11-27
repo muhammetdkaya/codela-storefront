@@ -15,7 +15,6 @@ function codela_sf_section_agency_contact_bento( array $data, string $type = '' 
     $email = (string) ( $data['public_email'] ?? '' );
     $studio = 'Codela Stüdyo';
     $public_contact = codela_sf_public_contact();
-    $public_address = codela_sf_contact_address( $public_contact );
     $project = codela_sf_agency_project_url();
     $form_id = codela_sf_agency_dom_id( 'sf-agency-contact-form' );
     $source = codela_sf_agency_form_context( 'agency-contact-bento', $data );
@@ -38,6 +37,7 @@ function codela_sf_section_agency_contact_bento( array $data, string $type = '' 
     $map_bbox = $map_center ? implode( ',', [ max( -180, $map_center[1] - .009 ), max( -85, $map_center[0] - .006 ), min( 180, $map_center[1] + .009 ), min( 85, $map_center[0] + .006 ) ] ) : '28.65,40.85,29.35,41.20';
     $map_url = 'https://www.openstreetmap.org/export/embed.html?bbox=' . rawurlencode( $map_bbox ) . '&layer=mapnik';
     $map_link = 'https://www.openstreetmap.org/#map=11/41.028/28.995';
+    if ( $map_center && ! $map_point ) { $map_link = 'https://www.openstreetmap.org/#map=15/' . implode( '/', $map_center ); }
     if ( $map_point ) {
         $map_url .= '&marker=' . rawurlencode( implode( ',', $map_point ) );
         $map_link = 'https://www.openstreetmap.org/?mlat=' . $map_point[0] . '&mlon=' . $map_point[1] . '#map=15/' . implode( '/', $map_point );
@@ -72,7 +72,7 @@ function codela_sf_section_agency_contact_bento( array $data, string $type = '' 
               <a class="cdl-contact__map-credit" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a>
             </div>
             <div class="cdl-contact__actions">
-              <?php if ( $public_address ) : ?><div class="sf-public-address"><strong><?php echo esc_html( $public_address ); ?></strong><a href="<?php echo esc_url( 'https://www.google.com/maps/search/?api=1&query=' . rawurlencode( $public_address ) ); ?>" target="_blank" rel="noopener noreferrer">Yol tarifi ↗</a></div><?php endif; ?>
+
               <?php foreach ( [ 'phone' => $public_contact['phone'], 'whatsapp' => 'WhatsApp', 'email' => $public_contact['email'] ] as $kind => $label ) : ?>
                 <?php echo codela_sf_contact_link( $kind, $label, $public_contact, 'sf-direct-contact cdl-contact__direct', 'contact' ); ?>
               <?php endforeach; ?>
