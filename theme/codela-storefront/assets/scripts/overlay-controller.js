@@ -176,6 +176,11 @@ export function createOverlayController({
         } else open('menu', event);
     }
     function open(name, event) {
+        // No empty commerce panel or navigation to an unavailable Store URL.
+        if (config().commerce === false && ['cart', 'search', 'filters'].includes(name)) {
+            event?.preventDefault();
+            return;
+        }
         const debugStart=window.codelaSFDebug ? performance.now() : 0;
         window.codelaSFDebug?.mark('overlay.open.begin',{panel:name,from:current||'none',alreadyOpen:!!dialog?.open});
         if (event && (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) return;

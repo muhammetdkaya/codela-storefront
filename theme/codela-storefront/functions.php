@@ -1,6 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 require_once __DIR__ . '/inc/account-contract.php';
+require_once __DIR__ . '/inc/script-modules.php';
 function codela_sf_ready(): bool {
     $core = defined( 'CODELA_VERSION' ) && version_compare( CODELA_VERSION, '1.2.0', '>=' )
         && defined( 'CODELA_THEME_API_VERSION' ) && version_compare( CODELA_THEME_API_VERSION, '1.0.0', '>=' )
@@ -143,22 +144,7 @@ add_action( 'init', function() {
     wp_register_style( 'codela-storefront-catalog', $asset_url . 'styles/catalog.css', [ 'codela-storefront-components' ], codela_sf_style_version() );
     // All statically imported modules are registered in dependency order.
     // Native modules only; no vendor runtime, Node or post-6.5 API is needed.
-    $modules = [
-        'codela-storefront/format'  => [ 'scripts/format.js', [] ],
-        'codela-storefront/search'  => [ 'scripts/search-controller.js', [ 'codela-storefront/format' ] ],
-        'codela-storefront/cart'    => [ 'scripts/cart-controller.js', [ 'codela-storefront/format' ] ],
-        'codela-storefront/panel-motion' => [ 'scripts/panel-motion.js', [] ],
-        'codela-storefront/overlay' => [ 'scripts/overlay-controller.js', [ 'codela-storefront/panel-motion' ] ],
-        'codela-storefront/dock'    => [ 'scripts/dock-controller.js', [] ],
-        'codela-storefront/navigation' => [ 'scripts/navigation-controller.js', [ '@wordpress/interactivity', [ 'id' => '@wordpress/interactivity-router', 'import' => 'dynamic' ] ] ],
-        'codela-storefront'         => [ 'storefront.js', [
-            '@wordpress/interactivity',
-            'codela-storefront/search',
-            'codela-storefront/cart',
-            'codela-storefront/overlay',
-            'codela-storefront/dock',
-        ] ],
-    ];
+    $modules = codela_sf_script_module_graph( codela_sf_commerce_available() );
     foreach ( $modules as $id => [ $file, $deps ] ) {
         wp_register_script_module( $id, $asset_url . $file, $deps, codela_sf_script_module_version( $file ) );
     }

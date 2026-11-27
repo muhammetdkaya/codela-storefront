@@ -102,3 +102,22 @@ for (const record of ['bad json', JSON.stringify({url:'https://store.test/',time
 vm.runInNewContext(continuity.slice(listStart,listEnd)+'\nrestoreListScroll();',{
  scrollRestoreKey:'test',sessionStorage:{getItem(){throw Error('blocked');},removeItem(){throw Error('blocked');}}
 });
+
+// With Woo disabled, the same shell has no commerce runtime or requests.
+const disabled = read(theme+'/assets/scripts/commerce-disabled.js');
+const inactive = vm.runInNewContext(disabled.replace(/export function /g,'function ')+'\n({search:createSearchController(),cart:createCartController()})');
+for(const name of ['bind','cancel','start','retry','restore','syncControls']) inactive.search[name]();
+for(const name of ['bind','refresh','change','invalidate','syncPage','unmountPage','focusPage']) inactive.cart[name]();
+assert.equal(inactive.cart.getData(),null);
+assert.equal(inactive.cart.isPageActive(),false);
+assert.doesNotMatch(disabled,/\b(?:import|fetch|addEventListener|sessionStorage|localStorage|document|window)\b/);
+const unavailableStart=overlay.indexOf('    function open(name, event) {');
+const unavailableEnd=overlay.indexOf('        const debugStart',unavailableStart);
+assert(unavailableStart>=0&&unavailableEnd>unavailableStart);
+for(const name of ['cart','search','filters']) {
+ let prevented=0;
+ vm.runInNewContext(overlay.slice(unavailableStart,unavailableEnd)+'\nthrow Error("Commerce panel must not open");\n}\nopen(name,event);',{
+   name,config:()=>({commerce:false}),event:{preventDefault(){prevented++;}}
+ });
+ assert.equal(prevented,1);
+}

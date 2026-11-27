@@ -6,6 +6,7 @@
     "codela": "1.2.35"
   },
   "changes": [
+    "WooCommerce kapalı Ajans: ortak native menü ve hesap kabuğu korunurken ürün arama, sepet ve biçimlendirme modülleri yüklenmez; ticaret açıkken yerel WooCommerce akışı aynen korunur.",
     "Ortak gezinme: bozuk oturum kayıtları menü ve hesap başlatmayı engellemez; Ajans sayfalarında görünmeyen sepet için başlangıç REST isteği ertelenir; mağaza ve ödeme davranışı korunur.",
     "Yayın doğrulaması: dört yapılandırılmış iletişim eylemi veya eksiksiz güvenli yedek form kabul edilir; mevcut tasarım ve eklenti sözleşmeleri korunur.",
     "İletişim haritası: kayıtlı ofis noktasına yakın ölçek, belirgin kehribar konum işareti ve yedek haritada işaret; açık adres yayınlanmaz.",
