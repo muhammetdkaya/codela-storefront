@@ -32,84 +32,55 @@ const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/
     document.querySelector('#sf-menu').hidden=false;
    });
    const nav=page.locator('#sf-menu>nav[aria-label]');
-   const aside=page.locator('.sf-editorial-menu-aside');
    assert(await nav.isVisible(),'Native menu remains visible');
-   assert(await aside.isVisible(),'Single contact destination is visible');
-   assert.equal(await aside.locator('p,.sf-editorial-menu-eyebrow').count(),0,'No redundant agency description or heading');
-   assert.equal(await aside.locator('a').count(),1,'Exactly one Agency contact-page destination');
-   const contact=aside.locator('a.sf-editorial-menu-contact');
-   assert.equal(await contact.getAttribute('href'),'https://store.test/iletisim/');
-   assert.equal(await aside.locator('[data-codela-contact],.sf-editorial-menu-account').count(),0,'No duplicated contact channels or account action');
+   assert.equal(await page.locator('#sf-menu .sf-editorial-menu-aside,#sf-menu .sf-editorial-menu-contact,#sf-menu .sf-editorial-menu-account,#sf-menu [data-codela-contact]').count(),0,'Agency menu renders no utility card or duplicate contact actions');
    assert.equal(await page.locator('.sf-header [data-codela-contact="phone"]').getAttribute('href'),'tel:+905551234567','Header phone remains available');
-   const utility=await aside.evaluate(el=>({height:el.getBoundingClientRect().height,link:el.querySelector('a').getBoundingClientRect().height,overflow:el.scrollWidth-el.clientWidth}));
-   assert(utility.height<=76&&utility.link>=44&&utility.overflow<=1,'Single row stays compact with accessible hit target: '+JSON.stringify(utility));
    assert.equal(await page.locator('.sf-menu-list a[aria-current="page"]').count(),1,'Native current page semantics preserved');
    const menu=await page.evaluate(()=>{
-    const dialog=document.querySelector('#sf-panel'),aside=document.querySelector('.sf-editorial-menu-aside');
-    const card=aside.getBoundingClientRect(),close=document.querySelector('#sf-panel .sf-close').getBoundingClientRect();
+    const dialog=document.querySelector('#sf-panel'),body=document.querySelector('#sf-menu'),nav=body.querySelector('nav');
+    const close=document.querySelector('#sf-panel .sf-close').getBoundingClientRect();
+    const content=body.getBoundingClientRect(),bounds=nav.getBoundingClientRect(),style=getComputedStyle(body);
     return {background:getComputedStyle(dialog).backgroundColor,
       scheme:getComputedStyle(dialog).colorScheme,
-      viewport:innerWidth,scrollWidth:document.documentElement.scrollWidth,
-      cardLeft:card.left,cardRight:card.right,closeWidth:close.width,closeHeight:close.height,
-      asideLayers:getComputedStyle(aside).backgroundImage,
+      scrollWidth:document.documentElement.scrollWidth,
+      closeWidth:close.width,closeHeight:close.height,
       menuLights:getComputedStyle(dialog).backgroundImage,
       activeLabel:getComputedStyle(document.querySelector('.sf-menu-list>li.current-menu-item'),'::after').content,
       navFont:parseFloat(getComputedStyle(document.querySelector('.sf-menu-list>li>a')).fontSize),
       navRows:[...document.querySelectorAll('.sf-menu-list>li')].map(el=>el.getBoundingClientRect().height),
-      content:document.querySelector('#sf-menu').getBoundingClientRect().toJSON(),
-      nav:document.querySelector('#sf-menu>nav[aria-label]').getBoundingClientRect().toJSON(),
-      aside:aside.getBoundingClientRect().toJSON(),
-      paddingTop:parseFloat(getComputedStyle(document.querySelector('#sf-menu')).paddingTop),
-      paddingBottom:parseFloat(getComputedStyle(document.querySelector('#sf-menu')).paddingBottom)};
+      content:content.toJSON(),nav:bounds.toJSON(),
+      paddingTop:parseFloat(style.paddingTop),paddingBottom:parseFloat(style.paddingBottom),
+      paddingLeft:parseFloat(style.paddingLeft),paddingRight:parseFloat(style.paddingRight)};
    });
    assert.equal(menu.scheme,'dark','Original dark reference wins over Agency and Commerce defaults');
    assert.equal(menu.background,'rgb(6, 6, 10)','Menu canvas stays #06060a');
-   assert(menu.menuLights.includes('rgba(183, 125, 70'),
-      'Menu replaces the violet light with a warm amber accent');
-   assert(!menu.menuLights.includes('rgba(130, 96, 210'),
-      'No violet ambient glow survives in editorial Menu');
+   assert(menu.menuLights.includes('rgba(183, 125, 70'),'Menu retains a warm amber accent');
+   assert(!menu.menuLights.includes('rgba(130, 96, 210'),'No violet ambient glow survives in editorial Menu');
    assert(menu.activeLabel.includes('Aktif'),'Current WordPress item displays the reference Active label');
-   assert.equal((menu.asideLayers.match(/linear-gradient\(/g)||[]).length,1,'Studio card has one restrained highlight');
-   assert.equal(await page.locator('.sf-editorial-menu-brand').count(),0,
-    'Editorial Menu has no duplicate Codela logo capsule in rendered DOM');
+   assert.equal(await page.locator('.sf-editorial-menu-brand').count(),0,'No duplicate Codela logo capsule');
    assert(menu.closeWidth>=44&&menu.closeHeight>=44,'Native close retains 44px hit target');
-   assert(menu.navFont<= (width<=820?24:30),'Editorial links are compact, not oversized: '+menu.navFont);
+   assert(menu.navFont<=(width<=820?24:30),'Editorial links are compact');
    assert(menu.navRows.every(height=>height>=44),'Every menu row remains a >=44px touch target');
-   const groupTop=Math.min(menu.nav.top,menu.aside.top),groupBottom=Math.max(menu.nav.bottom,menu.aside.bottom);
+   assert(Math.abs(menu.nav.left-menu.content.left-menu.paddingLeft)<=1,'Menu starts at its safe left gutter');
+   assert(Math.abs(menu.nav.right-menu.content.right+menu.paddingRight)<=1,'No empty utility-card column');
    const availableTop=menu.content.top+menu.paddingTop,availableBottom=menu.content.bottom-menu.paddingBottom;
    if(width<=820){
      assert(Math.abs(menu.nav.top-availableTop)<=1,'Mobile links start below the close bar');
-     assert(menu.aside.top>=menu.nav.bottom+23,'Contact card never overlaps long navigation');
-     if(menu.aside.bottom<=availableBottom+1) assert(Math.abs(menu.aside.bottom-availableBottom)<=1,'Contact card anchors to the bottom when it fits');
-   } else if(groupBottom-groupTop<availableBottom-availableTop-20){
-     const centerOffset=Math.abs((groupTop+groupBottom-availableTop-availableBottom)/2);
-     assert(centerOffset<=20,'Compact Menu content should be vertically centered: '+centerOffset);
-   } else {
-     assert(groupTop>=menu.content.top-1,'Long Menu remains safely scrollable on short screens');
+   }else if(menu.nav.height<availableBottom-availableTop-20){
+     assert(Math.abs((menu.nav.top+menu.nav.bottom-availableTop-availableBottom)/2)<=20,'Compact desktop menu remains centered');
+   }else{
+     assert(menu.nav.top>=menu.content.top-1,'Long menu remains safely scrollable');
    }
-   assert(menu.cardLeft>=-1&&menu.cardRight<=width+1,'Aside fits horizontally');
-   if(width<=700){
-    const insets=await page.evaluate(()=>{
-      const active=document.querySelector('.sf-menu-list>li.current-menu-item').getBoundingClientRect();
-      const aside=document.querySelector('.sf-editorial-menu-aside').getBoundingClientRect();
-      return {activeLeft:active.left,activeRight:innerWidth-active.right,
-        asideLeft:aside.left,asideRight:innerWidth-aside.right};
-    });
-    for(const [side,inset] of Object.entries(insets))
-      assert(inset>=18,side+' needs a real 20px mobile safe gutter, got '+inset);
-   }
+   assert(menu.nav.left>=18&&menu.nav.right<=width-18,'Menu preserves safe gutters');
    assert(menu.scrollWidth<=width+1,'Menu does not overflow horizontally');
-   // The real Agency has four links: verify bottom anchoring separately from the long-menu fixture.
    if(width<=820){
      await page.locator('.sf-menu-list>li').evaluateAll(items=>items.slice(4).forEach(item=>item.remove()));
      const compact=await page.evaluate(()=>{
-       const body=document.querySelector('#sf-menu'),nav=body.querySelector('nav'),card=body.querySelector('.sf-editorial-menu-aside');
-       return {navTop:nav.getBoundingClientRect().top,top:body.getBoundingClientRect().top+parseFloat(getComputedStyle(body).paddingTop),
-         cardBottom:card.getBoundingClientRect().bottom,bottom:body.getBoundingClientRect().bottom-parseFloat(getComputedStyle(body).paddingBottom),
-         overflow:body.scrollHeight>body.clientHeight+1};
+       const body=document.querySelector('#sf-menu'),nav=body.querySelector('nav');
+       return {navTop:nav.getBoundingClientRect().top,top:body.getBoundingClientRect().top+parseFloat(getComputedStyle(body).paddingTop)};
      });
-     assert(Math.abs(compact.navTop-compact.top)<=1,'Four-link menu starts at the top');
-     if(!compact.overflow) assert(Math.abs(compact.cardBottom-compact.bottom)<=1,'Four-link Studio card is at the bottom');
+     assert(Math.abs(compact.navTop-compact.top)<=1,'Four-link menu starts at the top without a bottom card');
+     assert.equal(await page.locator('#sf-menu .sf-editorial-menu-aside').count(),0,'Short menu also has no utility card');
    }
    fs.mkdirSync('qa',{recursive:true});
    await page.screenshot({path:`qa/agency-editorial-menu-${width}-${height}-${engine}.png`});

@@ -18,7 +18,10 @@ function codela_sf_contact_icon( string $kind, string $placement = '' ): string 
         'email' => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
     ];
     if ( 'phone' === $kind && 'header' === $placement ) { $paths['phone'] = '<path d="M5.8 3.5 8 3.2c.6-.1 1.1.3 1.3.9l1 3.4c.2.6 0 1.1-.5 1.5l-1.5 1.1a13 13 0 0 0 5.6 5.6l1.1-1.5c.4-.5.9-.7 1.5-.5l3.4 1c.6.2 1 .7.9 1.3l-.3 2.2c-.2 1.4-1.4 2.4-2.8 2.3C10.1 20.1 3.9 13.9 3.5 6.3c-.1-1.4.9-2.6 2.3-2.8Z"/>'; }
-    return isset( $paths[$kind] ) ? '<svg aria-hidden="true" focusable="false" class="sf-contact-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">' . $paths[$kind] . '</svg>' : '';
+    $header_phone = 'phone' === $kind && 'header' === $placement;
+    $size = $header_phone ? 24 : 22;
+    $stroke = $header_phone ? '1.8' : '1.6';
+    return isset( $paths[$kind] ) ? '<svg aria-hidden="true" focusable="false" class="sf-contact-icon" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' . $stroke . '" stroke-linecap="round" stroke-linejoin="round">' . $paths[$kind] . '</svg>' : '';
 }
 function codela_sf_contact_link( string $kind, string $label, array $contact, string $class = '', string $placement = '' ): string {
     $url = codela_sf_contact_href( $kind, $contact );

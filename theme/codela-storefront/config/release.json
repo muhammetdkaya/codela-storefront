@@ -6,6 +6,7 @@
     "codela": "1.2.35"
   },
   "changes": [
+    "Ajans menüsündeki alt Studio/İletişim kutusu tamamen kaldırıldı; yerel menü, üst telefon ve hesap erişimi korunur. Header ikonları ortak 24 px ölçüye ve dengeli çizim alanına getirildi; 44 px dokunma hedefleri ve cam yüzey korunur.",
     "Ajans menüsünde Studio alanı tek, sade İletişim sayfası bağlantısına indirildi. Üst ikonlar, doğrudan arama ve iletişim sayfasındaki kanallar korunur.",
     "Ajans header: telefon, hesap ve menü ikonları aynı optik ölçüye uyarlanır; 44 px dokunma alanları korunur. Ortak Ajans cam butonlarının üst ve alt beyaz yansımaları azaltılır. Ticaret akışları değişmez.",
     "Ajans hizmet kartları: ilk dokunuş yalnızca seçer, kehribar çerçeveyi ve yönlendirmeyi gösterir; ikinci dokunuş hizmet sayfasını açar. Klavye ve JavaScript kapalıyken bağlantılar doğrudan çalışır. Canlı yayın kontrolü ayraçsız header tasarımını doğrular.",

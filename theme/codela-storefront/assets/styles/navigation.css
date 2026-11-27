@@ -575,19 +575,17 @@ body.admin-bar{--sf-header-offset:32px}
 .sf-editorial-menu-actions .sf-direct-contact{display:flex;align-items:center;gap:9px;color:#f4f3f7!important}
 .sf-editorial-menu-actions .sf-direct-contact .sf-contact-icon{width:19px;height:19px;color:#d6a676}
 
-/* Agency header glyphs: one 22px optical grid, independent 44px hit targets. */
-.sf-shell.has-agency-header .sf-header .sf-agency-header-tools :is(.sf-agency-account-icon,.sf-agency-phone .sf-contact-icon){
-  width:22px;height:22px;flex:none;
-}
-.sf-shell.has-agency-header .sf-header .sf-agency-header-tools .sf-menu-trigger .sf-menu-mark{
-  width:22px;height:22px;
+/* Agency header glyphs: shared 24px icon token and a balanced 18–20px
+ * visible silhouette. Keep the existing 44px interactive surface. */
+.sf-shell.has-agency-header .sf-header .sf-agency-header-tools :is(.sf-agency-account-icon,.sf-agency-phone .sf-contact-icon,.sf-menu-trigger .sf-menu-mark){
+  width:var(--sf-ui-icon,24px);height:var(--sf-ui-icon,24px);flex:none;
 }
 .sf-shell.has-agency-header .sf-header .sf-agency-header-tools .sf-menu-trigger .sf-menu-mark>span{
-  left:4px;top:10px;width:14px;height:1.5px;
+  left:3px;top:11px;width:18px;height:1.8px;
 }
 .sf-shell.has-agency-header .sf-header .sf-agency-header-tools .sf-menu-trigger:not([aria-expanded="true"]) .sf-menu-mark>span:first-child{
-  transform:translateY(-3.2px);
+  transform:translateY(-4px);
 }
 .sf-shell.has-agency-header .sf-header .sf-agency-header-tools .sf-menu-trigger:not([aria-expanded="true"]) .sf-menu-mark>span:last-child{
-  left:7.8px;width:10.2px;transform:translateY(3.2px);
+  left:7px;width:14px;transform:translateY(4px);
 }
