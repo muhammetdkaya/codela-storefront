@@ -43,6 +43,10 @@
     function load() {
         if (loading) return loading;
         state = 'loading';
+        // Move native markup into the live DOM before controllers initialize.
+        // Until actual account intent, the template is not a document heading or form.
+        const template = section.querySelector('template[data-sf-auth-template]');
+        if (template) { template.replaceWith(template.content); }
         loading = Promise.all([
             ...config.styles.map(assetLink),
             loadScripts(config.scripts),

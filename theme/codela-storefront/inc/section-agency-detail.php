@@ -5,7 +5,7 @@ function codela_sf_section_agency_detail( array $data, string $type = '', bool $
     $settings = [
       'web'=>[
         'label'=>'Web','slug'=>'web-tasarimi','title'=>'Web Tasarım','service'=>'Web Tasarım','number'=>'01','subtitle'=>'hızlı, sade ve yönetilebilir.',
-        'sub'=>'Hazır şablonlar yerine markanın duruşuna özel tasarlanmış, mobilde akıcı kurumsal web siteleri.',
+        'sub'=>'Markanın duruşuna özel tasarlanmış, mobil uyumlu ve WordPress üzerinden kolay yönetilebilen kurumsal web siteleri.',
         'quote'=>'İlk beş saniyede güven vermeyen bir site müşteriyi kaybeder.','soft'=>'Gereksiz kalabalığı temizleyip markanı en net haliyle sunan, ekibinin kolayca güncelleyebildiği sistemler kuruyoruz.','duration'=>'3–5 hafta',
         'items'=>[
           ['Özel arayüz ve tasarım dili','Markanın karakterine uygun tipografi, renk dengesi ve mobil öncelikli ekranlar.'],
@@ -19,7 +19,7 @@ function codela_sf_section_agency_detail( array $data, string $type = '', bool $
       ],
       'commerce'=>[
         'label'=>'E-Ticaret','slug'=>'e-ticaret','title'=>'E-Ticaret','service'=>'E-Ticaret','number'=>'02','subtitle'=>'sürtünmesiz alışveriş deneyimi.',
-        'sub'=>'Ödeme, kargo ve stok akışı sorunsuz çalışan, özellikle mobilde satın almayı kolaylaştıran online mağazalar.',
+        'sub'=>'WooCommerce altyapısıyla ödeme, kargo ve stok yönetimini bir araya getiren, mobil odaklı online mağazalar.',
         'quote'=>'İyi bir mağaza müşteriyi yormadan sepete taşır.','soft'=>'Hızlı ürün sayfaları, net varyant seçimi ve güven veren tek adımlı ödeme akışıyla dönüşümü doğrudan destekliyoruz.','duration'=>'5–8 hafta',
         'items'=>[
           ['Dönüşüm odaklı vitrin ve ürün sayfası','Hızlı görsel geçişleri, net fiyat/beden seçimi ve mobilde tek elle kullanılan sepet.'],
@@ -33,7 +33,7 @@ function codela_sf_section_agency_detail( array $data, string $type = '', bool $
       ],
       'software'=>[
         'label'=>'Yazılım','slug'=>'ozel-yazilim','title'=>'Özel Yazılım','service'=>'Özel Yazılım','number'=>'03','subtitle'=>'iş akışına birebir oturan araçlar.',
-        'sub'=>'Hazır paketlerin yetişmediği yerde ekibinin günlük operasyonunu hızlandıran paneller ve entegrasyonlar.',
+        'sub'=>'İş süreçlerine özel yönetim panelleri, WordPress eklentileri ve API entegrasyonlarıyla ekibinin günlük operasyonunu kolaylaştıran yazılımlar.',
         'quote'=>'Ekibini yazılıma uydurmak yerine, yazılımı işine uyduruyoruz.','soft'=>'Sadece gerçekten kullandığın ekranlardan oluşan, mevcut sistemlerinle konuşan uzun ömürlü yapılar geliştiriyoruz.','duration'=>'6–12 hafta',
         'items'=>[
           ['İhtiyaca özel yönetim panelleri','Karmaşık menüler yerine ekibinin günlük işini tek ekranda çözen net arayüzler.'],
@@ -47,7 +47,7 @@ function codela_sf_section_agency_detail( array $data, string $type = '', bool $
       ],
       'support'=>[
         'label'=>'Bakım','slug'=>'gelistirme-destek','title'=>'Bakım & Geliştirme','service'=>'Optimizasyon / Destek','number'=>'04','subtitle'=>'yayın sonrası da aynı özen.',
-        'sub'=>'Mevcut sitenin veya yazılımın hızını, güvenliğini ve yeni özellik ihtiyaçlarını düzenli olarak üstleniyoruz.',
+        'sub'=>'WordPress ve WooCommerce sitelerinin hızını, güvenliğini, güncellemelerini ve yeni özellik ihtiyaçlarını düzenli olarak üstleniyoruz.',
         'quote'=>'Dijital ürün yayına alındığı gün değil, yaşadıkça değer kazanır.','soft'=>'Teknik aksaklıkları çözen, yeni sayfa ve iyileştirmeleri hayata geçiren sürekli stüdyo desteği.','duration'=>'Aylık plan',
         'items'=>[
           ['Performans ve güvenlik takibi','Düzenli yedekleme, güncelleme ve hız kontrolleriyle güvenilir çalışma.'],

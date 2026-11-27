@@ -26,4 +26,7 @@ assert(lazy.includes('script.async = false'), 'Dependency-safe simultaneous down
 assert(lazy.includes("section.dispatchEvent(new Event('codela:account-open'))"), 'Replay when ready');
 assert(lazy.includes('showFailure()'), 'Failure is actionable');
 assert(lazy.includes("document.addEventListener('pointerover'"), 'Low priority intent warming');
-console.log('Guest lazy auth asset contracts OK');
+const render = file('inc/render.php');
+assert(render.includes('<template data-sf-auth-template>'), 'Agency guest login is inert until requested');
+assert(lazy.indexOf('template.replaceWith(template.content)') < lazy.indexOf('loading = Promise.all(['), 'Mount native form before auth controllers');
+console.log('Guest lazy auth asset and SEO document contracts OK');
