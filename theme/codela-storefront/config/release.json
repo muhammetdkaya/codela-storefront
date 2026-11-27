@@ -6,6 +6,7 @@
     "codela": "1.2.35"
   },
   "changes": [
+    "İletişim haritası: kayıtlı ofis noktasına yakın ölçek, belirgin kehribar konum işareti ve yedek haritada işaret; açık adres yayınlanmaz.",
     "İletişim: 01–04 ortak eylem listesi, WhatsApp konu ve hazır mesaj seçimi, gerçek telefon/e-posta bağlantıları, harita konumu korunur.",
     "Tüm şablonlar: yayın öncesi gizli anahtar taraması, görsel ve performans regresyon kontrolleri; ajans mobil LCP/CLS canlı bütçesi.",
     "Ajans ortak iletişim bilgileri: header arama, menü WhatsApp, hizmet ve iletişim bağlantıları, mevcut haritanın yeni konuma odaklanması.",

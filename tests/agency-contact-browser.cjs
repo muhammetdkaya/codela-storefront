@@ -64,6 +64,8 @@ const server=http.createServer((req,res)=>{
    assert(await app.locator('[name="agency_name"]').isVisible(),'Fallback project anchor opens the form');
    await page.screenshot({path:path.join(root,'qa','agency-contact-'+width+'.png'),fullPage:true});
    await page.goto('http://127.0.0.1:'+server.address().port+'/configured');
+   assert.equal(await app.locator('[data-contact-map]').getAttribute('data-map-office'),'true','Configured office point');
+   assert((await app.locator('.cdl-contact__map-fallback').getAttribute('src')).includes('marker=41.1%2C28.8'),'Fallback map displays marker');
    const rows=app.locator('.cdl-contact__action');
    assert.equal(await rows.count(),4,'Four parallel real contact actions');
    assert.deepEqual(await rows.locator('.cdl-contact__num').allTextContents(),['01','02','03','04']);
