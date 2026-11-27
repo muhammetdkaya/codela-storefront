@@ -24,6 +24,7 @@ for(const profile of ['commerce','agency']){
    assert(!html.includes('data-dock-view="cart"'));
    assert(!html.includes('class="sf-menu-tools'));
    assert(html.includes('sf-account-link'));
+   assert(actions.includes('sf-agency-account-icon'),'Agency header uses new optical account glyph');
    assert(html.includes('sf-agency-header-tools'),'Agency uses unified native tools capsule');
    assert(!html.includes('sf-agency-header-divider'),'Agency controls have no vertical separators');
    assert(html.includes('sf-agency-brand-link'),'Agency exposes a linked Codela wordmark');
@@ -35,6 +36,7 @@ for(const profile of ['commerce','agency']){
    }else assert(!html.includes('sf-mobile-dock'));
   }else{
    assert(actions.includes('data-panel="search"'));
+   assert(!actions.includes('sf-agency-account-icon'),'Commerce retains its account glyph');
    assert(actions.includes('data-panel="cart"'));
    if(dock){
     assert(html.includes('data-dock-view="search"'));
@@ -43,6 +45,14 @@ for(const profile of ['commerce','agency']){
   }
  }
 }
+const contactHeader=execFileSync(process.env.PHP_BIN||'php',['tests/render-header.php'],{
+ cwd:root,encoding:'utf8',env:{...process.env,FIXTURE_EXPERIENCE:'agency',FIXTURE_DOCK:'0',FIXTURE_PUBLIC_CONTACT:'1'}
+});
+assert(contactHeader.includes('M5.8 3.5 8 3.2'),'Agency direct-call header uses refined telephone glyph');
+assert(contactHeader.includes('data-contact-placement="header"'),'Header preserves native direct-call contract');
+const material=fs.readFileSync(path.join(assets,'styles/agency-glass.css'),'utf8');
+assert(material.includes('rgba(255,255,255,0.13) 0%,rgba(255,255,255,0.10) 32%'),'Quiet navigation rim');
+assert(material.includes('rgba(255,255,255,0.17) 0%,rgba(255,255,255,0.13) 32%'),'Quiet primary action rim');
 const css=['styles/tokens.css','storefront.css','styles/components.css',
  'styles/navigation.css','styles/overlay.css','styles/glass-v2.css','styles/agency-auth.css']
  .map(p=>fs.readFileSync(path.join(assets,p),'utf8')).join('\n');
@@ -114,6 +124,8 @@ const moduleInit=[
    assert(brandGeometry.image>=27,'Original C emblem remains visible');
    assert(headerLayout.accountSize>=44&&headerLayout.menuSize>=44,'Both actions keep 44px touch targets');
    assert.equal(headerLayout.divider,0,'Agency tools have no divider elements');
+   const glyph=await page.locator('.sf-agency-header-tools .sf-menu-mark').evaluate(el=>Array.from(el.children,s=>({width:s.getBoundingClientRect().width,height:s.getBoundingClientRect().height})));
+   assert(glyph[0].width>glyph[1].width&&glyph.every(g=>g.height<=2),'Agency menu uses asymmetric fine strokes');
    assert(headerLayout.overflow<=1,'No mobile/desktop horizontal overflow');
    if(width>=701){
     await page.locator('.sf-agency-brand-link').hover();
