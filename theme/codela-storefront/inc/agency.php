@@ -1,6 +1,7 @@
 <?php
 /** Codela agency mode: isolated WordPress-native pages, forms and theme assets. */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+require_once __DIR__ . '/page-analysis.php';
 require_once __DIR__ . '/agency-quote.php';
 
 /**
@@ -145,7 +146,7 @@ function codela_sf_agency_nonce_input( string $action, string $field ): void {
 function codela_sf_agency_components( $post ): array {
     if ( ! $post || ! function_exists( 'parse_blocks' ) || ! function_exists( 'codela_sections_validate_root' ) || ! function_exists( 'codela_sections_page_content' ) ) { return []; }
     $components = [];
-    foreach ( parse_blocks( codela_sections_page_content( $post ) ) as $root ) {
+    foreach ( codela_sf_parse_page_blocks( (string) codela_sections_page_content( $post ) ) as $root ) {
         if ( 'codela/page-layout' !== ( $root['blockName'] ?? '' ) || is_wp_error( codela_sections_validate_root( $root ) ) ) { continue; }
         foreach ( $root['innerBlocks'] as $child ) {
             $name = (string) ( $child['blockName'] ?? '' );
@@ -194,7 +195,7 @@ function codela_sf_agency_submitted_source( string $type ): array {
 function codela_sf_agency_exclusive_page( $post ): bool {
     if ( ! $post || ! function_exists( 'codela_sections_page_content' ) || ! function_exists( 'parse_blocks' ) ) { return true; }
     $seen = false;
-    foreach ( parse_blocks( codela_sections_page_content( $post ) ) as $root ) {
+    foreach ( codela_sf_parse_page_blocks( (string) codela_sections_page_content( $post ) ) as $root ) {
         $name = $root['blockName'] ?? '';
         if ( ! $name && '' === trim( $root['innerHTML'] ?? '' ) ) { continue; }
         if ( 'core/pattern' === $name && str_starts_with( (string) ( $root['attrs']['slug'] ?? '' ), 'codela-storefront/agency-' ) ) { $seen = true; continue; }
