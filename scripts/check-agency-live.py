@@ -113,7 +113,57 @@ def check_agency_404() -> None:
     raise AssertionError("Unknown route did not return HTTP 404")
 
 
+def contact_contract_missing(html: str) -> list[str]:
+    """Both the configured four-action view and the secure fallback are valid."""
+    fallback = ("cdl-contact__form-toggle", "cdl-contact__form", "admin-post.php",
+                "agency_contact_nonce", "agency_webpage", "agency_consent",
+                "data-agency-contact-services")
+    if "cdl-contact__form-toggle" in html or "data-agency-contact-form" in html:
+        return [marker for marker in fallback if marker not in html]
+    # A form may be intentionally absent only when all four real channels
+    # exist. Scope the links to the contact section, not header/footer links.
+    found = set()
+    for anchor in re.findall(r'<a\b[^>]*>', html, flags=re.I):
+        attrs = dict(re.findall(r'([\w-]+)="([^"]*)"', anchor))
+        href = unescape(attrs.get("href", ""))
+        target = urlparse(urljoin(BASE, href))
+        if ("cdl-contact__card--primary" in attrs.get("class", "").split()
+                and href and not href.startswith("#")
+                and target.scheme == "https" and target.netloc == urlparse(BASE).netloc
+                and (target.path.rstrip("/") or target.query)):
+            found.add("project")
+        if attrs.get("data-contact-placement") != "contact":
+            continue
+        channel = attrs.get("data-codela-contact")
+        if channel == "whatsapp" and target.scheme == "https" and target.netloc == "wa.me" and re.fullmatch(r"/\d+", target.path):
+            found.add(channel)
+        elif channel == "phone" and re.fullmatch(r"tel:\+?[\d -]{6,}", href):
+            found.add(channel)
+        elif channel == "email" and re.fullmatch(r"mailto:[^\s@]+@[^\s@]+", href):
+            found.add(channel)
+    return ["valid contact " + item for item in ("project", "whatsapp", "phone", "email") if item not in found]
+
+
+def check_contact_contract_fixture() -> None:
+    configured = (
+        '<a class="cdl-contact__card--primary" href="/proje-baslat/"></a>'
+        '<a data-contact-placement="contact" data-codela-contact="whatsapp" href="https://wa.me/905551234567?text=hello"></a>'
+        '<a data-contact-placement="contact" data-codela-contact="phone" href="tel:+905551234567"></a>'
+        '<a data-contact-placement="contact" data-codela-contact="email" href="mailto:hello@example.test"></a>'
+    )
+    fallback = ("cdl-contact__form-toggle cdl-contact__form admin-post.php agency_contact_nonce "
+                "agency_webpage agency_consent data-agency-contact-services")
+    assert not contact_contract_missing(configured)
+    assert not contact_contract_missing(fallback)
+    assert contact_contract_missing(configured.replace('tel:+905551234567', '#')) == ["valid contact phone"]
+    assert contact_contract_missing(configured.replace('/proje-baslat/', '#form')) == ["valid contact project"]
+    assert contact_contract_missing(configured.replace('data-contact-placement="contact"', 'data-contact-placement="header"'))
+    assert contact_contract_missing(fallback.replace("agency_contact_nonce", "")) == ["agency_contact_nonce"]
+    assert contact_contract_missing("")
+
+
 def check() -> None:
+    check_contact_contract_fixture()
     style = fetch("/wp-content/themes/codela-storefront/style.css")
     version = re.search(r"(?m)^Version:\s*(\S+)", style)
     expected_version = release_version()
@@ -136,7 +186,7 @@ def check() -> None:
         "/": [],  # Dedicated native Agency starter checked separately below
         "/hizmetler/": ["sf-agency-widget--bento", "cdl-bento__grid", "cdl-bento__card--web", "cdl-bento__card--commerce", "cdl-bento__card--software", "cdl-bento__card--support"],
         "/hakkimizda/": ["sf-agency-widget--about", "sf-about-hero", "sf-about-principles", "sf-about-principle", "sf-about-contact"],
-        "/iletisim/": ["sf-agency-widget--contact-bento", "cdl-contact__grid", "cdl-contact__card--map", "cdl-contact__card--primary", "cdl-contact__form-toggle", "cdl-contact__form", "admin-post.php", "agency_contact_nonce", "agency_webpage", "agency_consent", "data-agency-contact-services"],
+        "/iletisim/": ["sf-agency-widget--contact-bento", "cdl-contact__grid", "cdl-contact__card--map", "cdl-contact__card--primary"],
     }
     for attempt in range(3):
         errors = []
@@ -161,6 +211,8 @@ def check() -> None:
                     ]
                 else:
                     missing = [marker for marker in markers if marker not in html]
+                if path == "/iletisim/":
+                    missing.extend(contact_contract_missing(html))
                 if path == "/hizmetler/" and "sf-agency-module-grid" in html:
                     missing.append("legacy service module grid still present")
                 if path == "/hakkimizda/" and ("sf-agency-about-intro" in html or "data-agency-widget-step=" in html):

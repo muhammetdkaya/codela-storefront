@@ -7,6 +7,7 @@ import { escape, decode, safeURL, money } from 'codela-storefront/format';
 export function createCartController({ $, config, t, getCurrent, getDialog, openCart }) {
     let cartNonce = '', cartData = null, cartPending = null, mutating = false, cartRevision = 0;
     let dirty = false, externalRevision = 0, readAbort = null, bound = false, refreshScheduled = false;
+    let eagerReads = true;
     let wooStore = null, wooSnapshot = '', wooRefresh = null, wooRefreshDirty = false;
     let renderedCart = '', mutationKey = '';
     const disabledBeforeMutation = new Map();
@@ -287,7 +288,7 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
         $('#sf-cart').setAttribute('aria-busy', 'true');
     }
     function scheduleRefresh() {
-        if (refreshScheduled || mutating) return;
+        if (refreshScheduled || mutating || (!eagerReads && !cartData && !cartVisible())) return;
         refreshScheduled = true;
         queueMicrotask(() => {
             refreshScheduled = false;
@@ -528,9 +529,10 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
         }
     }
 
-    function bind() {
+    function bind({eager = true} = {}) {
         if (bound) return;
         bound = true;
+        eagerReads = eager;
         // The ONE cart element is reparented between popup and /sepet/.
         // Handle controls on that persistent element in the capture phase:
         // external Woo handlers and delegated document listeners can no longer
@@ -563,8 +565,8 @@ export function createCartController({ $, config, t, getCurrent, getDialog, open
         window.addEventListener('pageshow',event => {
             if (event.persisted) invalidate();
         });
-        // Fetch session-specific cart count on every Storefront page, not from cached HTML.
-        refreshCart();
+        // Visible commerce badges still fetch live state; pure Agency waits.
+        if (eagerReads || pageActive()) refreshCart();
     }
 
     return {

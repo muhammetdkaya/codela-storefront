@@ -129,9 +129,9 @@ function codela_sf_script_module_version( string $relative_file ): string {
     static $versions = [];
     if ( ! isset( $versions[ $relative_file ] ) ) {
         $path = get_template_directory() . '/assets/' . $relative_file;
-        $versions[ $relative_file ] = is_file( $path )
-            ? substr( hash_file( 'sha256', $path ), 0, 20 )
-            : 'missing';
+        // Optional unreadable assets must not produce a fatal TypeError.
+        $hash = is_file( $path ) && is_readable( $path ) ? hash_file( 'sha256', $path ) : false;
+        $versions[ $relative_file ] = is_string( $hash ) ? substr( $hash, 0, 20 ) : 'missing';
     }
     return $versions[ $relative_file ];
 }
@@ -378,7 +378,10 @@ add_action( 'wp_enqueue_scripts', function() {
         wp_dequeue_script( 'wc-cart-fragments' );
         wp_dequeue_script( 'wc-add-to-cart' );
     }
-    if ( codela_sf_commerce_available() && codela_sf_document_continuity_allowed() ) {
+    $continuity_allowed = codela_sf_document_continuity_allowed();
+    if ( codela_sf_commerce_available() && $continuity_allowed ) {
+        $permalinks = wc_get_permalink_structure();
+        $account_items = wc_get_account_menu_items();
         wp_enqueue_style( 'codela-storefront-document-continuity', $root_uri . ( $debug_assets ? 'styles/document-continuity.css' : 'styles/document-navigation.css' ), [ 'codela-storefront-components' ], $style_version );
         wp_register_style( 'codela-storefront-navigation-feedback', $debug_assets ? $root_uri . 'styles/navigation-feedback.css' : false, [ 'codela-storefront-document-continuity' ], $style_version );
         wp_enqueue_style( 'codela-storefront-navigation-feedback' );
@@ -387,12 +390,13 @@ add_action( 'wp_enqueue_scripts', function() {
         // Managed public Agency home can defer the browsing bundle; its
         // entry overlay is already inline and Agency snapshots are not needed.
         // All commerce/account and other documents keep the original strategy.
-        if ( codela_sf_agency_first_paint_assets() ) {
+        $agency_first_paint = codela_sf_agency_first_paint_assets();
+        if ( $agency_first_paint ) {
             wp_script_add_data( 'codela-storefront-navigation-feedback', 'strategy', 'defer' );
         }
         wp_register_script( 'codela-storefront-document-continuity', $debug_assets ? $root_uri . 'scripts/document-continuity.js' : false, [ 'codela-storefront-navigation-feedback' ], codela_sf_script_module_version( 'scripts/document-continuity.js' ), false );
         wp_enqueue_script( 'codela-storefront-document-continuity' );
-        if ( codela_sf_agency_first_paint_assets() ) {
+        if ( $agency_first_paint ) {
             wp_script_add_data( 'codela-storefront-document-continuity', 'strategy', 'defer' );
         }
         wp_add_inline_script( 'codela-storefront-navigation-feedback', 'window.codelaSFDocument=' . wp_json_encode( [
@@ -400,8 +404,8 @@ add_action( 'wp_enqueue_scripts', function() {
             'agencyRoutes' => function_exists( 'codela_sf_agency_navigation_routes' ) ? codela_sf_agency_navigation_routes() : [],
             'shop' => codela_sf_shop_url(),
             // Use the store's configured permalink bases, including translated slugs.
-            'productBase' => home_url( '/' . trim( explode( '%', wc_get_permalink_structure()['product_rewrite_slug'] )[0], '/' ) . '/' ),
-            'catalogBases' => [ home_url( '/' . wc_get_permalink_structure()['category_rewrite_slug'] . '/' ), home_url( '/' . wc_get_permalink_structure()['tag_rewrite_slug'] . '/' ) ],
+            'productBase' => home_url( '/' . trim( explode( '%', $permalinks['product_rewrite_slug'] )[0], '/' ) . '/' ),
+            'catalogBases' => [ home_url( '/' . $permalinks['category_rewrite_slug'] . '/' ), home_url( '/' . $permalinks['tag_rewrite_slug'] . '/' ) ],
             'account' => codela_sf_account_url(),
             'cart' => codela_sf_cart_url(),
             'checkout' => codela_sf_checkout_url(),
@@ -428,8 +432,8 @@ add_action( 'wp_enqueue_scripts', function() {
             'accountIcon' => codela_sf_transition_icon( 'user-round' ),
             'shopLabel' => __( 'Shop', 'woocommerce' ),
             'accountParents' => [
-                [ 'url' => wc_get_account_endpoint_url( 'view-order' ), 'back' => wc_get_account_endpoint_url( 'orders' ), 'label' => wc_get_account_menu_items()['orders'] ?? __( 'My account', 'codela-storefront' ) ],
-                [ 'url' => wc_get_account_endpoint_url( 'edit-address' ), 'back' => wc_get_account_endpoint_url( 'edit-address' ), 'label' => wc_get_account_menu_items()['edit-address'] ?? __( 'My account', 'codela-storefront' ), 'childOnly' => true ],
+                [ 'url' => wc_get_account_endpoint_url( 'view-order' ), 'back' => wc_get_account_endpoint_url( 'orders' ), 'label' => $account_items['orders'] ?? __( 'My account', 'codela-storefront' ) ],
+                [ 'url' => wc_get_account_endpoint_url( 'edit-address' ), 'back' => wc_get_account_endpoint_url( 'edit-address' ), 'label' => $account_items['edit-address'] ?? __( 'My account', 'codela-storefront' ), 'childOnly' => true ],
             ],
             'excluded' => [ codela_sf_cart_url(), codela_sf_checkout_url(), wc_get_account_endpoint_url( 'customer-logout' ) ],
         ] ) . ';', 'before' );
@@ -439,7 +443,7 @@ add_action( 'wp_enqueue_scripts', function() {
     // Their lightweight click bridge shares the existing feedback renderer;
     // it never initializes Core Router or intercepts a payment POST.
     if ( ( function_exists( 'is_cart' ) && is_cart() || codela_sf_checkout_skeleton_allowed() )
-        && ! codela_sf_document_continuity_allowed() ) {
+        && ! $continuity_allowed ) {
         wp_enqueue_style( 'codela-storefront-commerce-navigation-feedback',
             $root_uri . 'styles/navigation-feedback.css', [ 'codela-storefront-components' ], $style_version );
         wp_enqueue_script( 'codela-storefront-commerce-navigation-feedback',

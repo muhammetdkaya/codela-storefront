@@ -56,29 +56,43 @@ function init() {
     const dialog = $('#sf-panel'); if (!dialog) return;
     overlay.bind(dialog);
     dock.init(dialog);
-    if (config().commerce !== false && !document.querySelector('.sf-shell.has-agency-profile')) searchFeature.bind();
-    if (config().commerce !== false) cartFeature.bind();
+    const agencyProfile = !!document.querySelector('.sf-shell.has-agency-profile');
+    if (config().commerce !== false && !agencyProfile) searchFeature.bind();
+    if (config().commerce !== false) {
+        // Preserve native purchase listeners, but do not hydrate an invisible
+        // cart on a pure Agency page until actual cart intent.
+        const commerceSurface = document.querySelector('[data-panel="cart"], form.cart, .woocommerce-cart-form, .wp-block-woocommerce-cart, .wc-block-cart, form.checkout, .wp-block-woocommerce-checkout, .wc-block-checkout, .ajax_add_to_cart');
+        if (agencyProfile && !commerceSurface) cartFeature.bind({eager: false});
+        else cartFeature.bind();
+    }
     // The Back link from a product entered through Search navigates to the
     // original document and carries a one-shot Search return intent.
     // Apply only on that exact same-tab, same-origin source, never on arbitrary
     // page visits or browser history from an external website.
     function restoreSearchReturn() {
         const key = 'sf-search-return-state';
-        // An Agency has no product search: discard any stale Woo search return
-        // left by a previous Commerce session after the setting changes.
-        if (document.querySelector('.sf-shell.has-agency-profile')) {
-            sessionStorage.removeItem(key);
+        // Optional session continuity must never prevent the shared shell from
+        // binding menu, dock or account controls (blocked storage, private
+        // browsing, malformed records or a previous profile's saved state).
+        const clear = () => {
+            try { sessionStorage.removeItem(key); } catch {}
+        };
+        if (document.querySelector('.sf-shell.has-agency-profile') || config().commerce === false) {
+            clear();
             return;
         }
         let saved;
         try { saved = JSON.parse(sessionStorage.getItem(key) || 'null'); }
-        catch { sessionStorage.removeItem(key); return; }
-        if (!saved || !saved.url || Date.now() - saved.time > 120000) {
-            if (saved) sessionStorage.removeItem(key);
+        catch { clear(); return; }
+        const age = Date.now() - (saved?.time ?? NaN);
+        if (!saved || typeof saved.url !== 'string' || !saved.url ||
+            !Number.isFinite(age) || age < 0 || age > 120000) {
+            if (saved !== null) clear();
             return;
         }
         const canonical = value => {
             const url = new URL(value, location.href);
+            if (url.origin !== location.origin) return null;
             url.hash = '';
             if (url.pathname !== '/') url.pathname = url.pathname.replace(/\/+$/, '');
             for (const key of [...url.searchParams.keys()]) {
@@ -87,8 +101,12 @@ function init() {
             url.searchParams.sort();
             return url.origin + url.pathname + url.search;
         };
-        if (canonical(saved.url) !== canonical(location.href)) return;
-        sessionStorage.removeItem(key);
+        let target;
+        try { target = canonical(saved.url); }
+        catch { clear(); return; }
+        if (!target) { clear(); return; }
+        if (target !== canonical(location.href)) return;
+        clear();
         if (!window.matchMedia('(max-width:700px)').matches) return;
         if (Number.isFinite(saved.pageScroll)) window.scrollTo(0, Math.max(0, saved.pageScroll));
         overlay.open('search');

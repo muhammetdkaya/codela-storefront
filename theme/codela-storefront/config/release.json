@@ -6,6 +6,8 @@
     "codela": "1.2.35"
   },
   "changes": [
+    "Ortak gezinme: bozuk oturum kayıtları menü ve hesap başlatmayı engellemez; Ajans sayfalarında görünmeyen sepet için başlangıç REST isteği ertelenir; mağaza ve ödeme davranışı korunur.",
+    "Yayın doğrulaması: dört yapılandırılmış iletişim eylemi veya eksiksiz güvenli yedek form kabul edilir; mevcut tasarım ve eklenti sözleşmeleri korunur.",
     "İletişim haritası: kayıtlı ofis noktasına yakın ölçek, belirgin kehribar konum işareti ve yedek haritada işaret; açık adres yayınlanmaz.",
     "İletişim: 01–04 ortak eylem listesi, WhatsApp konu ve hazır mesaj seçimi, gerçek telefon/e-posta bağlantıları, harita konumu korunur.",
     "Tüm şablonlar: yayın öncesi gizli anahtar taraması, görsel ve performans regresyon kontrolleri; ajans mobil LCP/CLS canlı bütçesi.",

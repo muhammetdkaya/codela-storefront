@@ -58,6 +58,19 @@ if (require.main === module) (async()=>{
  assert.doesNotMatch(empty,/<a\b|<button\b|Continue shopping/,'Empty panel has no continue-shopping CTA');
  assert.equal(x.nodes['.sf-cart-bottom'].hidden,true,'Empty cart never shows checkout totals');
  }
+ // Pure Agency defers the invisible cart but preserves live cart intent.
+ {
+ let current=null;
+ const x=setup(()=>{},()=>current);x.controller.bind({eager:false});await tick();
+ assert.equal(x.requests.length,0);
+ assert.equal(x.listeners['wc-blocks_added_to_cart']?.length,1);
+ x.controller.invalidate();await tick();assert.equal(x.requests.length,0);
+ current='cart';const opening=x.controller.refresh();await tick();
+ assert.equal(x.requests.length,1);
+ x.answer(0,snapshot(0));await opening;
+ x.controller.invalidate();await tick();assert.equal(x.requests.length,2);
+ x.answer(1,snapshot(1));await tick();
+ }
  // Closed cart: 20 items keep live state/badge without creating hidden images.
  {
  let current=null;
