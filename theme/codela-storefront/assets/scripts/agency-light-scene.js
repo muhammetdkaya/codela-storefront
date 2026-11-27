@@ -301,6 +301,33 @@
         ctx.fillStyle = beamGrad;
         ctx.fillRect(mTL.x - 2, mTR.y - 2, mTR.x - mTL.x + 4, mBR.y - mTR.y + 4);
 
+        // Tonal relief: only the existing moving beam reveals the shallow edges.
+        ctx.save();
+        const signature = 'codela';
+        const size = stage.sw * 0.037;
+        const sx = stage.ox + stage.sw * 0.615;
+        const sy = stage.oy + stage.sh * 0.53;
+        const relief = Math.max(0.35, size * 0.035);
+        const edgeGradient = (rgb, strength) => {
+          const g = ctx.createLinearGradient(bCx - dx, bCy - dy, bCx + dx, bCy + dy);
+          [0, 0, 0.32, 1, 0.32, 0, 0].forEach((v, i) => {
+            g.addColorStop([0, .2, .37, .5, .63, .8, 1][i], `rgba(${rgb}, ${v * strength * k})`);
+          });
+          return g;
+        };
+        const shadow = edgeGradient('10, 9, 9', .18);
+        const highlight = edgeGradient('255, 239, 215', .15);
+        ctx.translate(sx, sy);
+        ctx.rotate(-Math.PI / 2);
+        ctx.font = `500 ${size}px system-ui, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = shadow;
+        ctx.fillText(signature, -relief, relief);
+        ctx.fillStyle = highlight;
+        ctx.fillText(signature, relief, -relief);
+        ctx.restore();
+
         // Warm floor bounce along lower monolith edge
         const bounceGrad = ctx.createLinearGradient(0, mBR.y - stage.sh * 0.22, 0, mBR.y);
         bounceGrad.addColorStop(0, 'rgba(0, 0, 0, 0)');
