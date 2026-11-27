@@ -47,3 +47,40 @@ assert.match(agencyCSS,/@media\(max-width:739px\) and \(max-height:700px\)/,'Sho
 assert.doesNotMatch(agencyCSS,/scroll-snap-type:\s*y\s+mandatory/,'Agency never traps vertical page scroll');
 
 console.log('Native Codela shell, no Glisse runtime and mobile Agency compositor contracts passed');
+
+
+ // Optional search restoration must never abort the shared shell startup.
+const entry=read(theme+'/assets/storefront.js');
+const restoreStart=entry.indexOf('    function restoreSearchReturn() {');
+const restoreEnd=entry.indexOf('    restoreSearchReturn();',restoreStart);
+assert(restoreStart>=0&&restoreEnd>restoreStart);
+const vm=require('node:vm');
+function restoreCase({record=null,blocked=false,agency=false,commerce=true,mobile=true}={}){
+  let cleared=0,opened=0,restored=0;
+  const sandbox={
+    URL,Date,location:new URL('https://store.test/shop/?a=1'),
+    config:()=>({commerce}),
+    document:{querySelector:()=>agency?{}:null},
+    window:{matchMedia:()=>({matches:mobile}),scrollTo(){}},
+    sessionStorage:{getItem(){if(blocked)throw Error('blocked');return record;},
+      removeItem(){if(blocked)throw Error('blocked');cleared++;}},
+    overlay:{open(){opened++;}},searchFeature:{restore(){restored++;}}
+  };
+  vm.runInNewContext(entry.slice(restoreStart,restoreEnd)+'\nrestoreSearchReturn();',sandbox);
+  return {cleared,opened,restored};
+}
+const valid=JSON.stringify({url:'https://store.test/shop/?utm_source=test&a=1',time:Date.now(),pageScroll:0});
+assert.deepEqual(restoreCase({record:valid}),{cleared:1,opened:1,restored:1});
+for(const options of [
+  {blocked:true},{blocked:true,agency:true},{record:'bad json'},
+  {record:JSON.stringify({url:'http://[',time:Date.now()})},
+  {record:JSON.stringify({url:'https://other.test/shop/?a=1',time:Date.now()})},
+  {record:JSON.stringify({url:'https://store.test/shop/?a=1'})},
+  {record:JSON.stringify({url:'https://store.test/shop/?a=1',time:Date.now()+60000})},
+  {record:valid,agency:true},{record:valid,commerce:false},{record:valid,mobile:false}
+]){
+  const result=restoreCase(options);
+  assert.equal(result.opened,0,JSON.stringify(options));
+  assert.equal(result.restored,0,JSON.stringify(options));
+}
+assert.deepEqual(restoreCase({record:JSON.stringify({url:'https://store.test/other/',time:Date.now()})}),{cleared:0,opened:0,restored:0});
