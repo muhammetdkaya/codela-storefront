@@ -24,6 +24,7 @@ function absint( $n ) { return abs((int)$n); }
 function get_nav_menu_locations() { return []; }
 function get_template_directory_uri() { return 'https://store.test/theme'; }
 function home_url( $s ) { return 'https://store.test'.$s; }
+function codela_sf_agency_contact_link(): string { return home_url('/iletisim/'); }
 function wc_get_page_permalink( $s ) { return home_url('/'.$s.'/'); }
 function wc_get_cart_url() { return home_url('/cart/'); }
 function wc_get_checkout_url() { return home_url('/checkout/'); }

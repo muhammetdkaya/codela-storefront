@@ -252,28 +252,27 @@ body.sf-glass-v2 .sf-shell.has-editorial-menu #sf-panel.is-menu-panel .sf-editor
   }
 }
 
-/* Agency's quiet utility card: no duplicated Studio brand or paragraph.
- * Keep the existing glass shell, generous hit targets and independent URLs. */
+/* Agency has exactly one destination, not a second contact page.
+ * Keep the existing restrained shell; the entire row is the link. */
 .sf-shell.has-agency-profile.has-editorial-menu #sf-panel.is-menu-panel .sf-editorial-menu-aside--compact{
-  padding:14px;gap:8px;border-radius:20px;
+  padding:0;gap:0;border-radius:20px;
 }
-.sf-shell.has-agency-profile.has-editorial-menu #sf-panel.is-menu-panel .sf-editorial-menu-aside--compact .sf-editorial-menu-eyebrow{
-  padding-inline:4px;color:#b8b2aa;font-size:12px;font-weight:550;letter-spacing:.015em;text-transform:none;
+.sf-shell.has-agency-profile.has-editorial-menu #sf-panel.is-menu-panel .sf-editorial-menu-aside--compact>a{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  min-height:56px;min-width:0;padding:14px 18px;border-radius:inherit;
+  color:#f8f7fa;text-decoration:none;font-size:15px;font-weight:500;line-height:1.4;
+  overflow-wrap:anywhere;
 }
-.sf-shell.has-agency-profile.has-editorial-menu #sf-panel.is-menu-panel .sf-editorial-menu-aside--compact .sf-editorial-menu-actions{
-  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:0;border:0;
+.sf-shell.has-agency-profile.has-editorial-menu #sf-panel.is-menu-panel .sf-editorial-menu-aside--compact>a>span{
+  flex:none;color:#d3a480;font-size:19px;line-height:1;
 }
-.sf-shell.has-agency-profile.has-editorial-menu #sf-panel.is-menu-panel .sf-editorial-menu-aside--compact .sf-editorial-menu-actions>a{
-  min-width:0;min-height:44px;padding:8px 10px;justify-content:flex-start;gap:8px;
-  border:1px solid rgba(255,255,255,.07);border-radius:13px;background:rgba(255,255,255,.025);
-  box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;font-size:13px;line-height:1.25;overflow-wrap:anywhere;
+.sf-shell.has-agency-profile.has-editorial-menu #sf-panel.is-menu-panel .sf-editorial-menu-aside--compact>a:is(:hover,:focus-visible){
+  background:rgba(211,164,128,.06);
 }
-.sf-shell.has-agency-profile.has-editorial-menu #sf-panel.is-menu-panel .sf-editorial-menu-aside--compact .sf-editorial-menu-actions>a:is(:hover,:focus-visible){
-  background:rgba(211,164,128,.08);border-color:rgba(211,164,128,.28);
+.sf-shell.has-agency-profile.has-editorial-menu #sf-panel.is-menu-panel .sf-editorial-menu-aside--compact>a:focus-visible{
+  outline:2px solid #d3a480;outline-offset:3px;
 }
-.sf-shell.has-agency-profile.has-editorial-menu #sf-panel.is-menu-panel .sf-editorial-menu-aside--compact :is(.sf-contact-icon,.sf-icon){
-  width:18px;height:18px;flex:none;color:#d3a480;
-}
-.sf-shell.has-agency-profile.has-editorial-menu #sf-panel.is-menu-panel .sf-editorial-menu-aside--compact .sf-icon{
-  filter:brightness(0) invert(1);
+@media(forced-colors:active){
+  .sf-shell.has-agency-profile.has-editorial-menu #sf-panel.is-menu-panel .sf-editorial-menu-aside--compact>a,
+  .sf-shell.has-agency-profile.has-editorial-menu #sf-panel.is-menu-panel .sf-editorial-menu-aside--compact>a>span{color:LinkText}
 }

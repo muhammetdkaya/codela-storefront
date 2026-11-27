@@ -19,10 +19,10 @@ body.sf-glass-v2{
      Keep the three existing CSS paint layers and native blur. */
   --cdl-agency-glass-back:linear-gradient(180deg,rgba(255,255,255,0.02) 0%,rgba(255,255,255,0) 100%);
   --cdl-agency-glass-body:rgba(34,34,36,0.72);
-  --cdl-agency-glass-rim:linear-gradient(180deg,rgba(255,255,255,0.34) 0%,rgba(255,255,255,0.09) 32%,rgba(255,255,255,0.07) 68%,rgba(255,255,255,0.22) 100%);
-  --cdl-agency-glass-main:linear-gradient(180deg,rgba(255,255,255,0.04) 0%,rgba(255,255,255,0) 100%);
+  --cdl-agency-glass-rim:linear-gradient(180deg,rgba(255,255,255,0.13) 0%,rgba(255,255,255,0.10) 32%,rgba(255,255,255,0.10) 68%,rgba(255,255,255,0.12) 100%);
+  --cdl-agency-glass-main:linear-gradient(180deg,rgba(255,255,255,0.02) 0%,rgba(255,255,255,0) 100%);
   --cdl-agency-glass-body-main:rgba(44,44,48,0.78);
-  --cdl-agency-glass-rim-main:linear-gradient(180deg,rgba(255,255,255,0.46) 0%,rgba(255,255,255,0.12) 32%,rgba(255,255,255,0.09) 68%,rgba(255,255,255,0.30) 100%);
+  --cdl-agency-glass-rim-main:linear-gradient(180deg,rgba(255,255,255,0.17) 0%,rgba(255,255,255,0.13) 32%,rgba(255,255,255,0.13) 68%,rgba(255,255,255,0.15) 100%);
   --cdl-agency-glass-filter:blur(20px) saturate(160%) brightness(0.92);
   --cdl-agency-glass-shadow:0 6px 18px -6px rgba(0,0,0,0.24);
   --cdl-agency-glass-shadow-main:0 8px 22px -6px rgba(0,0,0,0.30);
@@ -160,7 +160,7 @@ body.sf-glass-v2 .sf-agency-widget .sf-agency-process-step[aria-pressed="true"]{
 body.sf-glass-v2 .sf-agency-widget.sf-agency-widget--project .cdl-project__button{
  background:linear-gradient(180deg,rgba(255,255,255,.023),transparent) padding-box,
    linear-gradient(rgba(34,34,36,.72),rgba(34,34,36,.72)) padding-box,
-   linear-gradient(180deg,rgba(255,255,255,.20),rgba(255,255,255,.075)) border-box!important;
+   linear-gradient(180deg,rgba(255,255,255,.13),rgba(255,255,255,.10)) border-box!important;
  box-shadow:0 5px 14px -8px rgba(0,0,0,.45)!important;
  -webkit-backdrop-filter:blur(16px) saturate(115%)!important;
  backdrop-filter:blur(16px) saturate(115%)!important;
