@@ -6,6 +6,7 @@
     "codela": "1.2.35"
   },
   "changes": [
+    "SEO: giriş formu açılana kadar inert HTML template; ajans hizmet metinlerinde doğal arama niyeti, ortak Codela SEO modülü ile uyum.",
     "Ajans hesabında ortak cam header ve koyu hesap ayarları; biyometrik kontrol kontrastı ve proje formunda hızlı sunucu dönüşü.",
     "Ajans hesabı ortak header ve footer kullanır; proje başlatma tek formdan yürütülür ve oturum sahibi müşteri başvuruları portalda görünür.",
     "Proje Başlat iletişim formunda 16 px giriş metni, sade etiketler, ince kehribar odak çizgisi ve klavye açıldığında görünür alan desteği; Safari yakınlaştırması için viewport kısıtlaması kullanılmaz.",

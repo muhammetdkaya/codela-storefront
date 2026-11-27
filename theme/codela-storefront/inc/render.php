@@ -256,7 +256,11 @@ function codela_sf_header(): string {
                 <?php endif; ?><div class="sf-menu-secondary"><?php if ( get_privacy_policy_url() ) { ?><a href="<?php echo esc_url( get_privacy_policy_url() ); ?>"><?php esc_html_e( 'Privacy', 'codela-storefront' ); ?></a><?php } ?></div></section>
             <?php if ( $guest_overlay ) : ?>
             <section class="sf-panel-body sf-account-body" id="sf-account" hidden>
-                <?php echo codela_sf_account_overlay_form(); ?>
+                <?php if ( $agency_navigation && function_exists( 'codela_sf_guest_auth_lazy_allowed' ) && codela_sf_guest_auth_lazy_allowed() ) : ?>
+                    <template data-sf-auth-template><?php echo codela_sf_account_overlay_form(); ?></template>
+                <?php else : ?>
+                    <?php echo codela_sf_account_overlay_form(); ?>
+                <?php endif; ?>
             </section>
             <?php endif; ?>
             <section class="sf-panel-body sf-search-body" id="sf-search" hidden>
