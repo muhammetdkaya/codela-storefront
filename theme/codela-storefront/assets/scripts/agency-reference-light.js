@@ -173,7 +173,6 @@
       if (grid && !grid.querySelector('.cdl-light-focused')) grid.classList.remove('cdl-light-has-focus');
     });
     card.addEventListener('focusin',()=>illuminate(svg,kind));
-    card.addEventListener('codela:bento-select',()=>illuminate(svg,kind));
     let pointerFrame=0;
     card.addEventListener('pointermove',event=>{
       if (event.pointerType!=='mouse' || pointerFrame) return;
