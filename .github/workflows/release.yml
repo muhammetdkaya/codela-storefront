@@ -48,7 +48,12 @@ jobs:
         with:
           ref: ${{ steps.request.outputs.source }}
       - name: Verify native Codela shell contracts (no vendor build)
-        run: node tests/native-shell.cjs
+        run: |
+          python3 scripts/production-secret-scan.py
+          node tools/performance-budget-test.cjs
+          php tests/media-optimization.php
+          php tests/media.php
+          node tests/native-shell.cjs
       # A GitHub-only release must not depend on the FTP deployment workflow.
       # Validate the immutable source revision here, without touching the live site.
       - name: Verify release candidate without FTP deployment

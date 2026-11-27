@@ -47,6 +47,11 @@ jobs:
           python3 tests/codela-release-chain.py
           python3 tests/codela-ci-feedback.py
           python3 tests/ci-playwright.py
+          python3 scripts/production-secret-scan.py --self-test
+          python3 scripts/production-secret-scan.py
+          node tools/performance-budget-test.cjs
+          php tests/media-optimization.php
+          php tests/media.php
       - name: Classify safe scoped changes
         id: tier
         shell: bash
