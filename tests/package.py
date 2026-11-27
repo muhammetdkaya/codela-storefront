@@ -128,15 +128,12 @@ class Tests(unittest.TestCase):
         self.assertIn("align-content:safe center",menu)
         self.assertIn("font-size:clamp(20px,5.35vw,24px)",menu)
         self.assertNotIn("sf-editorial-menu-brand",render+menu)
-        # Agency Studio is a single Contact destination, not a duplicate contact directory.
-        compact = render.split('<aside class="sf-editorial-menu-aside sf-editorial-menu-aside--compact"', 1)[1].split('</aside>', 1)[0]
-        self.assertEqual(compact.count('<a '), 1)
-        self.assertIn('sf-editorial-menu-contact', compact)
-        self.assertIn('esc_url( $contact_destination )', compact)
+        # Only non-Agency editorial menus retain the commerce account card.
+        self.assertIn("if ( $editorial_menu && ! $agency_navigation )", render)
+        self.assertNotIn("sf-editorial-menu-aside--compact", render+menu)
+        self.assertNotIn("$contact_destination", render)
         self.assertIn("codela_sf_agency_contact_link()", render)
-        for duplicate in ("mailto:", "tel:", "wa.me", "info@codela.dev", "sf-editorial-menu-account"):
-            self.assertNotIn(duplicate, compact)
-        self.assertIn("sf-editorial-menu-account", render.split('</aside>', 1)[1])
+        self.assertIn("sf-editorial-menu-account", render.split("if ( $editorial_menu && ! $agency_navigation )", 1)[1])
         self.assertNotIn("--sf-ui-page:var(--wp--preset--color--base",menu+account+shell)
         self.assertIn(".woocommerce-account:not(.logged-in)",account)
         self.assertNotIn("addEventListener",menu+account)

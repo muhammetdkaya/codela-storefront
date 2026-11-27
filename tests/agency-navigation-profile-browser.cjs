@@ -76,7 +76,7 @@ const moduleInit=[
  const browser=await chromium.launch({executablePath:process.env.CHROMIUM_BIN||undefined});
  try{
   for(const dock of [false,true])for(const width of [390,1280]){
-   const header=render('agency',dock);
+   const header=execFileSync(process.env.PHP_BIN||'php',['tests/render-header.php'],{cwd:root,encoding:'utf8',env:{...process.env,FIXTURE_EXPERIENCE:'agency',FIXTURE_DOCK:dock?'1':'0',FIXTURE_PUBLIC_CONTACT:'1'}});
    const page=await browser.newPage({viewport:{width,height:844}});
    const errors=[];page.on('pageerror',e=>errors.push(e.message));
    await page.route('https://nav.test/**',route=>{
@@ -125,7 +125,20 @@ const moduleInit=[
    assert(headerLayout.accountSize>=44&&headerLayout.menuSize>=44,'Both actions keep 44px touch targets');
    assert.equal(headerLayout.divider,0,'Agency tools have no divider elements');
    const glyph=await page.locator('.sf-agency-header-tools .sf-menu-mark').evaluate(el=>Array.from(el.children,s=>({width:s.getBoundingClientRect().width,height:s.getBoundingClientRect().height})));
-   assert(glyph[0].width>glyph[1].width&&glyph.every(g=>g.height<=2),'Agency menu uses asymmetric fine strokes');
+   assert(Math.abs(glyph[0].width-18)<.3&&Math.abs(glyph[1].width-14)<.3&&glyph.every(g=>g.height<=2),'Menu strokes have balanced visible widths');
+   const optical=await page.evaluate(()=>{
+    const group=document.querySelector('.sf-agency-header-tools');
+    return [...group.querySelectorAll('.sf-agency-account-icon,.sf-agency-phone .sf-contact-icon,.sf-menu-mark')].map(el=>{
+     const r=el.getBoundingClientRect(),hit=el.closest('a,button').getBoundingClientRect();
+     return {width:r.width,height:r.height,hitWidth:hit.width,hitHeight:hit.height,
+      dx:Math.abs((r.left+r.right-hit.left-hit.right)/2),
+      dy:Math.abs((r.top+r.bottom-hit.top-hit.bottom)/2),
+      visible:el instanceof SVGElement?el.getBBox().width:null};
+    });
+   });
+   assert.equal(optical.length,3,'Configured phone, account, menu all measured');
+   assert(optical.every(g=>Math.abs(g.width-24)<.3&&Math.abs(g.height-24)<.3&&g.hitWidth>=44&&g.hitHeight>=44&&g.dx<1&&g.dy<1),'Shared icon grid, centered hit areas: '+JSON.stringify(optical));
+   assert(optical.filter(g=>g.visible!==null).every(g=>g.visible>=16&&g.visible<=20),'SVG visible geometry stays balanced');
    assert(headerLayout.overflow<=1,'No mobile/desktop horizontal overflow');
    if(width>=701){
     await page.locator('.sf-agency-brand-link').hover();
