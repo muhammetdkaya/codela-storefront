@@ -83,6 +83,34 @@ const server=http.createServer((req,res)=>{
    assert.deepEqual(errors,[],'Configured contact has no exceptions');
    await page.close();
   }
-  console.log('MONA Contact Bento: 5 viewports, secure form, native anchors passed.');
+  // Real widget code, deterministic Leaflet boundary: validate native tile
+  // contract, completion/error fallback, persistent credit and office marker.
+  const mapPage=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:3,reducedMotion:'reduce'});
+  await mapPage.route('https://www.openstreetmap.org/**',r=>r.fulfill({contentType:'text/html',body:'<html>Map fallback</html>'}));
+  await mapPage.addInitScript(()=>{
+    const events={};window.mapFixture={events};
+    const map={setView(center,zoom){window.mapFixture.recenter={center,zoom};},invalidateSize(){}};
+    window.L={map(host,options){window.mapFixture.options=options;return map;},
+      tileLayer(url,options){window.mapFixture.tiles={url,options};return {on(name,fn){events[name]=fn;return this;},addTo(){events.loading();events.tileload();return this;}};},
+      divIcon(options){return options;},marker(center,options){window.mapFixture.marker={center,options};return {addTo(){}};}};
+  });
+  await mapPage.goto('http://127.0.0.1:'+server.address().port+'/configured');
+  await mapPage.waitForFunction(()=>window.mapFixture?.tiles);
+  const mapContract=await mapPage.evaluate(()=>({tiles:window.mapFixture.tiles,options:window.mapFixture.options,marker:window.mapFixture.marker}));
+  assert.equal(mapContract.tiles.url,'https://tile.openstreetmap.org/{z}/{x}/{y}.png');
+  assert.equal(mapContract.tiles.options.detectRetina,true);
+  assert(mapContract.tiles.options.maxNativeZoom>=mapContract.options.zoom+1);
+  assert.equal(mapContract.options.zoom,16);
+  assert.deepEqual(mapContract.marker.center,[41.1,28.8]);
+  const frame=mapPage.locator('[data-contact-map]');
+  assert.notEqual(await frame.getAttribute('data-map-ready'),'true','One tile cannot hide fallback');
+  await mapPage.evaluate(()=>window.mapFixture.events.load());
+  assert.equal(await frame.getAttribute('data-map-ready'),'true');
+  assert(await frame.locator('.cdl-contact__map-credit').isVisible(),'Map license credit stays visible');
+  await mapPage.evaluate(()=>{window.mapFixture.events.loading();window.mapFixture.events.tileload();window.mapFixture.events.tileerror();window.mapFixture.events.load();});
+  assert.equal(await frame.getAttribute('data-map-ready'),'false','Tile failure restores fallback');
+  assert(await frame.locator('.cdl-contact__map-fallback').isVisible());
+  await mapPage.close();
+  console.log('Contact Bento: responsive layouts, native form, Retina map contract and fallback passed.');
  }finally{await browser.close();await new Promise(done=>server.close(done))}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1});

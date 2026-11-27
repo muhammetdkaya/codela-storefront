@@ -7,7 +7,7 @@ const {chromium,webkit}=require('playwright');
 const engine=process.env.TEST_WEBKIT?'webkit':'chromium';
 const theme='theme/codela-storefront/assets/';
 const shell=execFileSync(process.env.PHP_BIN||'php',['tests/render-header.php'],{
- encoding:'utf8',env:{...process.env,FIXTURE_EXPERIENCE:'agency',FIXTURE_MENU:'1',FIXTURE_DOCK:'0'}
+ encoding:'utf8',env:{...process.env,FIXTURE_EXPERIENCE:'agency',FIXTURE_MENU:'1',FIXTURE_DOCK:'0',FIXTURE_PUBLIC_CONTACT:'1'}
 });
 const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/navigation.css',
  'styles/components.css','styles/account.css','styles/account-overlay.css','styles/auth-smart.css','styles/quick-login.css',
@@ -35,6 +35,15 @@ const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/
    const aside=page.locator('.sf-editorial-menu-aside');
    assert(await nav.isVisible(),'Native menu remains visible');
    assert(await aside.isVisible(),'Editorial contact/account aside is visible');
+   assert.equal(await aside.locator('p').count(),0,'No redundant agency description');
+   assert.equal(await aside.locator('.sf-editorial-menu-eyebrow').textContent(),'Contact');
+   assert.equal(await aside.locator('.sf-editorial-menu-actions>a').count(),4,'Four configured quick actions');
+   assert.equal(await aside.locator('[data-codela-contact="phone"]').getAttribute('href'),'tel:+905551234567');
+   assert.equal(await aside.locator('[data-codela-contact="whatsapp"]').getAttribute('href'),'https://wa.me/905551234567');
+   assert.equal(await aside.locator('[data-codela-contact="email"]').getAttribute('href'),'mailto:hello@example.test');
+   const utility=await aside.evaluate(el=>({height:el.getBoundingClientRect().height,items:[...el.querySelectorAll('.sf-editorial-menu-actions>a')].map(a=>({height:a.getBoundingClientRect().height,overflow:a.scrollWidth-a.clientWidth}))}));
+   assert(utility.height<=156,'Compact contact card remains within two action rows: '+JSON.stringify(utility));
+   assert(utility.items.every(x=>x.height>=44&&x.overflow<=1),'All utility actions retain touch targets and fit');
    assert.equal(await page.locator('.sf-editorial-menu-account').getAttribute('href'),
     'https://store.test/myaccount/','Account CTA retains real Woo URL');
    assert.equal(await page.locator('.sf-menu-list a[aria-current="page"]').count(),1,'Native current page semantics preserved');

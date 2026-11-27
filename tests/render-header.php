@@ -7,6 +7,7 @@ class Walker_Nav_Menu {
         $output .= '<li class="'.esc_attr(implode(' ',$item->classes)).'"><a class="sf-ui-pressable" href="'.esc_url($item->url).'"'.(in_array('current-menu-item',$item->classes,true)?' aria-current="page"':'').'>'.esc_html($item->title).'</a>';
     }
 }
+function codela_public_contact() { return getenv('FIXTURE_PUBLIC_CONTACT') === '1' ? ['phone'=>'+905551234567','whatsapp'=>'+905551234567','email'=>'hello@example.test'] : []; }
 function codela_sf_ready() { return true; }
 function codela_theme_settings() { return ['menu_id'=>0, 'brand'=>'CODELA'] + (getenv('FIXTURE_DOCK') === false ? [] : ['mobile_dock_enabled'=>getenv('FIXTURE_DOCK')]) + (getenv('FIXTURE_EXPERIENCE') === false ? [] : ['site_experience'=>getenv('FIXTURE_EXPERIENCE')]); }
 function __( $s, ...$args ) { return $s; }
