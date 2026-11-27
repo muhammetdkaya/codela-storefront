@@ -32,6 +32,8 @@ const server=http.createServer((req,res)=>{
      const detail=page.locator('.sf-agency-widget--detail');
      assert.equal(await detail.count(),1,'Only one detail section');
      assert.equal(await detail.locator('h1').count(),1,'One page headline');
+     assert.equal(await detail.locator('.cdl-service-detail__tabs,.sf-service-direct').count(),0,'No redundant service navigation or contact block');
+     assert.equal(await detail.locator('.cdl-service-detail__cta').count(),1,'Single service CTA');
      assert.equal(await detail.locator('.cdl-service-detail__title-muted').textContent(),'hızlı, sade ve yönetilebilir.');
      assert.equal(await detail.locator('.cdl-service-detail__manifesto').count(),1);
      assert.equal(await detail.locator('.cdl-service-detail__scope h3').count(),3);

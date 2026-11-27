@@ -76,7 +76,7 @@ def check_service_detail_pages() -> None:
         visited.add(parsed.path)
         html = fetch(parsed.path)
         required = [
-            "sf-agency-widget--detail", "cdl-service-detail__tabs",
+            "sf-agency-widget--detail", "Ücretsiz Teklif Al", "teklif=1",
             "cdl-service-detail__scope", "cdl-service-detail__cta",
             "cdl-service-detail__meta", "cdl-service-detail__faq", "cdl-service-detail__manifesto", "hizmetler=",
         ]
@@ -92,6 +92,8 @@ def check_service_detail_pages() -> None:
         scope_count = len(re.findall(r'<li\b', scope.group(1))) if scope else 0
         if "cdl-service-detail__header" in html or "cdl-service-detail__back" in html:
             raise AssertionError("Duplicate service detail header remains; native theme header must own navigation")
+        if re.search(r'class="[^"]*\b(?:cdl-service-detail__tabs|sf-service-direct)\b[^"]*"', html) or 'data-contact-placement="service"' in html:
+            raise AssertionError("Redundant service navigation or direct contact remains")
         if missing or heading_text != title or scope_count not in (3, 4):
             raise AssertionError(
                 f"Live detail {title}: heading={heading_text!r}, "
