@@ -5,6 +5,7 @@
  * Native Woo product, cart, account and checkout keep full-document navigation.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+require_once __DIR__ . '/page-analysis.php';
 
 function codela_sf_seamless_core_supported(): bool {
     return function_exists( 'wp_interactivity' )
@@ -41,7 +42,7 @@ function codela_sf_seamless_page_allowed( int $id ): bool {
             }
             return true;
         };
-        if ( ! $check( parse_blocks( $content ) ) ) { return false; }
+        if ( ! $check( codela_sf_parse_page_blocks( $content ) ) ) { return false; }
     }
     return true;
 }
@@ -69,8 +70,8 @@ add_action( 'wp', function() {
     }
 } );
 add_filter( 'render_block', function( string $html, array $block ): string {
-    if ( ! codela_sf_seamless_allowed() || 'core/group' !== ( $block['blockName'] ?? '' )
-        || 'sf-content' !== ( $block['attrs']['anchor'] ?? '' ) ) { return $html; }
+    if ( 'core/group' !== ( $block['blockName'] ?? '' )
+        || 'sf-content' !== ( $block['attrs']['anchor'] ?? '' ) || ! codela_sf_seamless_allowed() ) { return $html; }
     $tags = new WP_HTML_Tag_Processor( $html );
     if ( $tags->next_tag( 'main' ) && 'sf-content' === $tags->get_attribute( 'id' ) ) {
         $tags->set_attribute( 'data-wp-interactive', 'codela/storefront' );
@@ -84,8 +85,8 @@ add_filter( 'render_block', function( string $html, array $block ): string {
 add_filter( 'nav_menu_link_attributes', function( array $attrs, $item ) {
     if ( 'product' === ( $item->object ?? '' ) ) { $attrs['data-sf-skeleton'] = 'product'; }
     if ( in_array( $item->object ?? '', [ 'product_cat', 'product_tag' ], true ) ) { $attrs['data-sf-skeleton'] = 'catalog'; }
-    if ( ! codela_sf_seamless_allowed() || empty( $item->object_id )
-        || 'page' !== ( $item->object ?? '' ) || 'post_type' !== ( $item->type ?? '' ) ) {
+    if ( empty( $item->object_id ) || 'page' !== ( $item->object ?? '' )
+        || 'post_type' !== ( $item->type ?? '' ) || ! codela_sf_seamless_allowed() ) {
         return $attrs;
     }
     if ( codela_sf_seamless_page_allowed( (int) $item->object_id ) ) {

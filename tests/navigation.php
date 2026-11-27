@@ -4,7 +4,7 @@ define( 'ABSPATH', __DIR__ );
 $GLOBALS['actions'] = []; $GLOBALS['filters'] = []; $GLOBALS['front'] = true; $GLOBALS['page'] = false; $GLOBALS['supported'] = true;
 function add_action($name,$callback,$priority=10){$GLOBALS['actions'][$name][]=$callback;}
 function add_filter($name,$callback,$priority=10,$args=1){$GLOBALS['filters'][$name][]=$callback;}
-function wp_interactivity(){return $GLOBALS['supported'] ? new class{function add_client_navigation_support_to_script_module($id){}} : new stdClass();}
+function wp_interactivity(){$GLOBALS['router_probes']=($GLOBALS['router_probes']??0)+1;return $GLOBALS['supported'] ? new class{function add_client_navigation_support_to_script_module($id){}} : new stdClass();}
 function wp_interactivity_config($namespace,$config){$GLOBALS['router_config']=$config;}
 function codela_sf_home_mode(){return $GLOBALS['home_mode']??'legacy';}
 function is_front_page(){return $GLOBALS['front'];}
@@ -13,7 +13,8 @@ function get_option($key){return ['show_on_front'=>'posts','page_on_front'=>1][$
 function get_post($id){return $GLOBALS['posts'][$id]??null;}
 function get_queried_object_id(){return $GLOBALS['queried']??2;}
 function wc_get_page_id($type){return ['cart'=>3,'checkout'=>4,'myaccount'=>5][$type]??0;}
-function parse_blocks($content){if(str_contains($content,'wp:custom'))return [['blockName'=>'custom/block','innerBlocks'=>[]]];return [['blockName'=>'core/paragraph','innerBlocks'=>[]]];}
+function has_filter($name){return $name==='block_parser_class' && !empty($GLOBALS['custom_parser']);}
+function parse_blocks($content){$GLOBALS['parses']=($GLOBALS['parses']??0)+1;if(str_contains($content,'wp:custom'))return [['blockName'=>'custom/block','innerBlocks'=>[]]];return [['blockName'=>'core/paragraph','innerBlocks'=>[]]];}
 function check($condition,$message){if(!$condition)throw new RuntimeException($message);}
 class WP_HTML_Tag_Processor {
     private $html;
@@ -55,3 +56,36 @@ check(!empty($GLOBALS['router_config']['clientNavigationDisabled']),'Core router
 $GLOBALS['supported']=false;$GLOBALS['front']=true;
 check(!codela_sf_seamless_allowed(),'Older WordPress safely stays native');
 echo "Safe route eligibility, shell markup and full-document fallback passed.\n";
+
+$GLOBALS['supported']=true;
+$GLOBALS['front']=false;
+$GLOBALS['page']=true;
+$GLOBALS['queried']=2;
+$probes=$GLOBALS['router_probes'];
+for($i=0;$i<30;$i++) {
+    check($render('<p>Text</p>',['blockName'=>'core/paragraph'])==='<p>Text</p>','Non-region block unchanged');
+    $link([], (object)['object'=>'product','type'=>'post_type','object_id'=>99]);
+}
+check($GLOBALS['router_probes']===$probes,'Unrelated blocks and links do not probe route eligibility');
+$before=$GLOBALS['parses'];
+$original='<!-- wp:paragraph -->new content<!-- /wp:paragraph -->';
+$tree=codela_sf_parse_page_blocks($original);
+$tree[0]['blockName']='changed';
+check(codela_sf_parse_page_blocks($original)[0]['blockName']==='core/paragraph','Cached tree is isolated from caller mutation');
+check($GLOBALS['parses']===$before+1,'Exact content parsed once');
+check(codela_sf_parse_page_blocks('<!-- wp:custom new /-->')[0]['blockName']==='custom/block','Edited content is reparsed');
+check($GLOBALS['parses']===$before+2,'Changed content parsed separately');
+$GLOBALS['custom_parser']=true;
+codela_sf_parse_page_blocks($original);
+codela_sf_parse_page_blocks($original);
+check($GLOBALS['parses']===$before+4,'Custom parser always runs');
+$GLOBALS['custom_parser']=false;
+$large=str_repeat('a',262145);
+codela_sf_parse_page_blocks($large);
+codela_sf_parse_page_blocks($large);
+check($GLOBALS['parses']===$before+6,'Oversized documents do not enter request cache');
+for($i=0;$i<8;$i++) codela_sf_parse_page_blocks('cache-entry-'.$i);
+$before=$GLOBALS['parses'];
+codela_sf_parse_page_blocks($original);
+check($GLOBALS['parses']===$before+1,'Cache is bounded');
+echo "Shared request-local parsing and early navigation guards passed.\n";

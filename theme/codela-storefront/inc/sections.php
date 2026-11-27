@@ -1,6 +1,7 @@
 <?php
 /** Theme presentation registry. Page data and editor stay in the Codela plugin. */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+require_once __DIR__ . '/page-analysis.php';
 /** Declarative theme-owned layouts; the plugin validates the public registry contract. */
 add_filter( 'codela_page_section_variants', static function( $defaults ) {
     static $loaded = false, $variants = null;
@@ -37,7 +38,7 @@ function codela_sf_sections_capabilities(): array {
     if ( ! $post instanceof WP_Post || (int) $post->ID !== get_queried_object_id() ) { $post = get_post( get_queried_object_id() ); }
     $content = $post ? ( function_exists( 'codela_sections_page_content' ) ? codela_sections_page_content( $post ) : $post->post_content ) : '';
     if ( $post && has_block( 'codela/page-layout', $content ) ) {
-        $blocks = parse_blocks( $content );
+        $blocks = codela_sf_parse_page_blocks( (string) $content );
         $managed = true;
         foreach ( $blocks as $root ) {
             if ( 'codela/page-layout' !== ( $root['blockName'] ?? '' ) || is_wp_error( codela_sections_validate_root( $root ) ) ) {
@@ -121,6 +122,8 @@ function codela_sf_contact_page_layout( int $post_id ): string {
         || has_block( 'codela/page-layout', $post ) || post_password_required( $post_id ) ) { return ''; }
     $raw = get_post_meta( $post_id, '_codela_page_layout', true );
     if ( ! is_string( $raw ) || '' === $raw || is_wp_error( codela_sections_validate_meta( $raw ) ) ) { return ''; }
+    // This validated override is a security-sensitive render path; always
+    // consume its current parser output, not the presentation analysis cache.
     foreach ( parse_blocks( $raw ) as $root ) {
         if ( 'codela/page-layout' !== ( $root['blockName'] ?? '' ) ) { continue; }
         foreach ( $root['innerBlocks'] ?? [] as $child ) {
