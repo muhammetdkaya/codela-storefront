@@ -3,6 +3,8 @@ on:
   push:
     branches: [main]
     paths: ['tools/agency-first-load.cjs','.github/workflows/agency-first-load.yml']
+  schedule:
+    - cron: '16 4 * * *'
   workflow_dispatch:
   workflow_run:
     workflows: ['Deploy Codela Storefront']
