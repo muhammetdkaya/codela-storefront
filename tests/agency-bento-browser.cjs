@@ -97,6 +97,26 @@ const server=http.createServer((req,res)=>{
       assert.equal(result.transform,'none','No independent overlay zoom');
     }
     await hover.close();
+    const preview=await browser.newPage({viewport:{width:390,height:844},hasTouch:true,isMobile:true,reducedMotion:'reduce'});
+    await preview.goto('http://127.0.0.1:'+server.address().port+'/');
+    const cards=preview.locator('.cdl-bento__card');
+    await preview.waitForFunction(()=>document.querySelector('[data-bento-select-ready="1"]'));
+    assert.equal(await cards.nth(0).locator('.cdl-bento__circle-arrow').isVisible(),false,'Arrow hidden at rest');
+    await preview.evaluate(()=>{window.nativeServiceClicks=0;document.addEventListener('click',e=>{if(e.target.closest('.cdl-bento__card')){window.nativeServiceClicks++;e.preventDefault();}});});
+    await cards.nth(0).tap();
+    assert(await cards.nth(0).evaluate(el=>el.classList.contains('is-bento-selected')));
+    assert(await cards.nth(0).locator('.cdl-bento__circle-arrow').isVisible());
+    assert.equal(await preview.evaluate(()=>window.nativeServiceClicks),0,'First tap does not navigate');
+    await cards.nth(1).tap();
+    assert.equal(await preview.locator('.is-bento-selected').count(),1,'Single selected card');
+    assert(await cards.nth(1).locator('.cdl-bento__minor-arrow').isVisible());
+    assert.equal(await cards.nth(0).locator('.cdl-bento__circle-arrow').isVisible(),false);
+    await cards.nth(1).tap();
+    assert.equal(await preview.evaluate(()=>window.nativeServiceClicks),1,'Second tap reaches native navigation');
+    await cards.nth(2).focus();
+    await cards.nth(2).press('Enter');
+    assert.equal(await preview.evaluate(()=>window.nativeServiceClicks),2,'Keyboard activation remains direct');
+    await preview.close();
     console.log('MONA Services Bento: three photographic visuals, an image-free support strip, links and seven responsive widths passed.');
   }finally{
     await browser.close();
