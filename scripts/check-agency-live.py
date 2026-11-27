@@ -268,9 +268,12 @@ def check() -> None:
             # available inside the established overlay for keyboard/mobile.
             for token in ("has-agency-header", "sf-agency-brand-link",
                           "/assets/icons/codela-brand-mark.svg", "sf-agency-header-tools",
-                          "sf-agency-header-divider", "sf-account-link", "sf-menu-trigger"):
+                          "sf-account-link", "sf-menu-trigger"):
                 if token not in home:
                     errors.append("New Agency header missing: " + token)
+            # The approved 0.1.446+ capsule deliberately has no dividers.
+            if re.search(r'class=["\'][^"\']*\bsf-agency-header-divider\b', home):
+                errors.append("Retired Agency header divider still present")
             if 'id="sf-desktop-menu"' in home:
                 errors.append("Legacy centered desktop navigation still visible")
             menu = re.search(

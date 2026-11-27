@@ -6,6 +6,7 @@
     "codela": "1.2.35"
   },
   "changes": [
+    "Ajans hizmet kartları: ilk dokunuş yalnızca seçer, kehribar çerçeveyi ve yönlendirmeyi gösterir; ikinci dokunuş hizmet sayfasını açar. Klavye ve JavaScript kapalıyken bağlantılar doğrudan çalışır. Canlı yayın kontrolü ayraçsız header tasarımını doğrular.",
     "Ajans: üst sağ ikon ayraçları kaldırıldı; menüdeki Studio alanı kompakt iletişim eylemlerine dönüştü; harita gerçek yüksek detaylı Retina döşemeleri, görünür atıf ve hata durumunda mevcut yedek haritayı kullanır.",
     "Sayfa analizi: aynı blok içeriği istek içinde bir kez ayrıştırılır; önizleme, özel ayrıştırıcılar ve doğrulama kuralları korunur. İlgisiz blok ve menü bağlantılarında yönlendirme denetimi yapılmaz.",
     "WooCommerce kapalı Ajans: ortak native menü ve hesap kabuğu korunurken ürün arama, sepet ve biçimlendirme modülleri yüklenmez; ticaret açıkken yerel WooCommerce akışı aynen korunur.",
