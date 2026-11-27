@@ -271,6 +271,7 @@ if ( in_array( '--render=contact-configured', $argv, true ) ) {
     $contact_bento_html = codela_sf_section_agency_contact_bento($contact_bento);
     agency_page_check(substr_count($contact_bento_html,'cdl-contact__num')===4 && str_contains($contact_bento_html,'https://wa.me/905551234567?text=') && str_contains($contact_bento_html,'tel:+905551234567') && str_contains($contact_bento_html,'mailto:hello@example.test'),'Four configured contact actions use real links');
     agency_page_check(!str_contains($contact_bento_html,'data-contact-disclosure') && !str_contains($contact_bento_html,'streetAddress'),'No redundant form or street address');
+    agency_page_check(str_contains($contact_bento_html,'data-map-office="true"') && str_contains($contact_bento_html,'&amp;marker=41.1%2C28.8') && str_contains($contact_bento_html,'#map=16/41.1/28.8'),'Configured office pin is present even in the no-JS map');
 }
 if ( in_array( '--render=contact-bento', $argv, true ) || in_array( '--render=contact-configured', $argv, true ) ) {
     echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';

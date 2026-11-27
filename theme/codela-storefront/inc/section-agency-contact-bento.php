@@ -44,15 +44,15 @@ function codela_sf_section_agency_contact_bento( array $data, string $type = '' 
     // Public map configuration is explicit page metadata, never visitor location
     // or a private WooCommerce billing/store address.
     $map_point = codela_sf_contact_map_point( function_exists( 'get_queried_object_id' ) && function_exists( 'get_post_meta' ) ? get_post_meta( get_queried_object_id(), 'codela_contact_map_coordinates', true ) : '' );
+    // Explicit page coordinates override the shared public contact point.
     $area_point = codela_sf_contact_map_point( $public_contact['area_lat'] . ',' . $public_contact['area_lon'] );
     $map_center = $map_point ?: $area_point;
-    $map_bbox = $map_center ? implode( ',', [ max( -180, $map_center[1] - .009 ), max( -85, $map_center[0] - .006 ), min( 180, $map_center[1] + .009 ), min( 85, $map_center[0] + .006 ) ] ) : '28.65,40.85,29.35,41.20';
+    $map_bbox = $map_center ? implode( ',', [ max( -180, $map_center[1] - .003 ), max( -85, $map_center[0] - .002 ), min( 180, $map_center[1] + .003 ), min( 85, $map_center[0] + .002 ) ] ) : '28.65,40.85,29.35,41.20';
     $map_url = 'https://www.openstreetmap.org/export/embed.html?bbox=' . rawurlencode( $map_bbox ) . '&layer=mapnik';
     $map_link = 'https://www.openstreetmap.org/#map=11/41.028/28.995';
-    if ( $map_center && ! $map_point ) { $map_link = 'https://www.openstreetmap.org/#map=15/' . implode( '/', $map_center ); }
-    if ( $map_point ) {
-        $map_url .= '&marker=' . rawurlencode( implode( ',', $map_point ) );
-        $map_link = 'https://www.openstreetmap.org/?mlat=' . $map_point[0] . '&mlon=' . $map_point[1] . '#map=15/' . implode( '/', $map_point );
+    if ( $map_center ) {
+        $map_url .= '&marker=' . rawurlencode( implode( ',', $map_center ) );
+        $map_link = 'https://www.openstreetmap.org/?mlat=' . $map_center[0] . '&mlon=' . $map_center[1] . '#map=16/' . implode( '/', $map_center );
     }
     ob_start();
     ?>
@@ -70,14 +70,14 @@ function codela_sf_section_agency_contact_bento( array $data, string $type = '' 
             <div class="cdl-contact__card--map cdl-contact__map-frame" data-contact-map
                  data-map-lat="<?php echo esc_attr( $map_center ? (string) $map_center[0] : '41.028' ); ?>"
                  data-map-lon="<?php echo esc_attr( $map_center ? (string) $map_center[1] : '28.995' ); ?>"
-                 data-map-office="<?php echo $map_point ? 'true' : 'false'; ?>" data-map-area="<?php echo $area_point ? 'true' : 'false'; ?>">
+                 data-map-office="<?php echo $map_center ? 'true' : 'false'; ?>" data-map-area="<?php echo $area_point ? 'true' : 'false'; ?>">
               <iframe class="cdl-contact__map-fallback" title="İstanbul haritası" src="<?php echo esc_url( $map_url ); ?>" loading="lazy" referrerpolicy="no-referrer" tabindex="-1"></iframe>
               <div class="cdl-contact__map-live" data-contact-map-live aria-label="İstanbul haritası"></div>
               <div class="cdl-contact__map-scrim" aria-hidden="true"></div>
               <div class="cdl-contact__map-overlay">
                 <span class="cdl-contact__map-chip">İSTANBUL · GMT+3</span>
                 <div class="cdl-contact__map-bottom">
-                  <span><strong><i aria-hidden="true"></i><?php echo esc_html( $studio ); ?></strong><small><?php echo $map_point ? 'Ofis konumu' : ( $area_point ? ( $public_contact['district'] ?: 'İstanbul' ) . ' · Online ve yüz yüze çalışma' : 'İstanbul · Online çalışma' ); ?></small></span>
+                  <span><strong><i aria-hidden="true"></i><?php echo esc_html( $studio ); ?></strong><small><?php echo $map_center ? ( $public_contact['district'] ?: 'İstanbul' ) . ' · Ofis konumu' : 'İstanbul · Online çalışma'; ?></small></span>
                   <a href="<?php echo esc_url( $map_link ); ?>" data-contact-map-center target="_blank" rel="noopener noreferrer" class="cdl-contact__map-center">Merkezle</a>
                 </div>
               </div>
