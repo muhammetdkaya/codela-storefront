@@ -5,6 +5,7 @@ require_once __DIR__ . '/account-contract.php';
 require_once __DIR__ . '/ui.php';
 require_once __DIR__ . '/public-contact.php';
 function codela_sf_icon( string $name ): string {
+    if ( 'agency-account' === $name ) { return '<svg class="sf-icon sf-agency-account-icon" aria-hidden="true" focusable="false" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7.3" r="3.6"/><path d="M4.5 20v-1.5c0-3.1 3.3-5.3 7.5-5.3s7.5 2.2 7.5 5.3V20"/></svg>'; }
     if ( ! in_array( $name, [ 'download', 'sliders-horizontal', 'search', 'shopping-bag', 'shopping-cart-plus', 'menu', 'x', 'arrow-left', 'chevron-left', 'arrow-right', 'plus', 'minus', 'house', 'user-round', 'map-pin', 'log-out', 'account-orders', 'account-address', 'account-security', 'account-preferences', 'account-profile', 'account-sign-out' ], true ) ) { return ''; }
     static $versions = [];
     $versions[ $name ] ??= hash_file( 'crc32b', __DIR__ . '/../assets/icons/' . $name . '.svg' );
@@ -182,7 +183,7 @@ function codela_sf_header(): string {
                 <?php echo codela_sf_ui_icon_button( 'search', __( 'Search', 'codela-storefront' ), [ 'href' => add_query_arg( [ 's' => '', 'post_type' => 'product' ], home_url( '/' ) ), 'attributes' => [ 'data-wp-on--click' => 'actions.search', 'data-panel' => 'search', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] ] ); ?>
                 <?php echo codela_sf_ui_icon_button( 'shopping-bag', __( 'Your cart', 'codela-storefront' ), [ 'variant' => $product_page ? 'soft' : 'bare', 'href' => codela_sf_cart_url(), 'class' => 'sf-cart-trigger', 'attributes' => [ 'data-wp-on--click' => 'actions.cart', 'data-panel' => 'cart', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] ], '<span class="sf-badge" aria-hidden="true"></span>' ); ?>
                 <?php endif; ?>
-                <?php if ( $account_available ) { echo codela_sf_ui_icon_button( 'user-round', __( 'My account', 'codela-storefront' ), [
+                <?php if ( $account_available ) { echo codela_sf_ui_icon_button( $agency_header ? 'agency-account' : 'user-round', __( 'My account', 'codela-storefront' ), [
     'href' => codela_sf_account_url(), 'class' => 'sf-account-link',
     'attributes' => $guest_overlay ? [ 'data-wp-on--click' => 'actions.account', 'data-panel' => 'account', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] : [],
 ] ); } ?>
