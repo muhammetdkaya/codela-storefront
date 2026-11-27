@@ -6,6 +6,7 @@
     "codela": "1.2.35"
   },
   "changes": [
+    "Ajans karşılama sahnesinde mevcut ışıkla ortaya çıkan düşük kontrastlı dikey Codela kabartması eklendi.",
     "Ajans hizmet detaylarında üst hizmet sekmeleri ve alt telefon/WhatsApp satırı kaldırıldı. Hizmete özel tek teklif eylemi koyu yüzey ve ince kehribar çerçeveyle korunur; ortak proje akışı ve eski kurulumların teklif formu çalışmaya devam eder.",
     "Ajans menüsündeki alt Studio/İletişim kutusu tamamen kaldırıldı; yerel menü, üst telefon ve hesap erişimi korunur. Header ikonları ortak 24 px ölçüye ve dengeli çizim alanına getirildi; 44 px dokunma hedefleri ve cam yüzey korunur.",
     "Ajans menüsünde Studio alanı tek, sade İletişim sayfası bağlantısına indirildi. Üst ikonlar, doğrudan arama ve iletişim sayfasındaki kanallar korunur.",
