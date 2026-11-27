@@ -64,21 +64,28 @@ function init() {
     // page visits or browser history from an external website.
     function restoreSearchReturn() {
         const key = 'sf-search-return-state';
-        // An Agency has no product search: discard any stale Woo search return
-        // left by a previous Commerce session after the setting changes.
-        if (document.querySelector('.sf-shell.has-agency-profile')) {
-            sessionStorage.removeItem(key);
+        // Optional session continuity must never prevent the shared shell from
+        // binding menu, dock or account controls (blocked storage, private
+        // browsing, malformed records or a previous profile's saved state).
+        const clear = () => {
+            try { sessionStorage.removeItem(key); } catch {}
+        };
+        if (document.querySelector('.sf-shell.has-agency-profile') || config().commerce === false) {
+            clear();
             return;
         }
         let saved;
         try { saved = JSON.parse(sessionStorage.getItem(key) || 'null'); }
-        catch { sessionStorage.removeItem(key); return; }
-        if (!saved || !saved.url || Date.now() - saved.time > 120000) {
-            if (saved) sessionStorage.removeItem(key);
+        catch { clear(); return; }
+        const age = Date.now() - (saved?.time ?? NaN);
+        if (!saved || typeof saved.url !== 'string' || !saved.url ||
+            !Number.isFinite(age) || age < 0 || age > 120000) {
+            if (saved !== null) clear();
             return;
         }
         const canonical = value => {
             const url = new URL(value, location.href);
+            if (url.origin !== location.origin) return null;
             url.hash = '';
             if (url.pathname !== '/') url.pathname = url.pathname.replace(/\/+$/, '');
             for (const key of [...url.searchParams.keys()]) {
@@ -87,8 +94,12 @@ function init() {
             url.searchParams.sort();
             return url.origin + url.pathname + url.search;
         };
-        if (canonical(saved.url) !== canonical(location.href)) return;
-        sessionStorage.removeItem(key);
+        let target;
+        try { target = canonical(saved.url); }
+        catch { clear(); return; }
+        if (!target) { clear(); return; }
+        if (target !== canonical(location.href)) return;
+        clear();
         if (!window.matchMedia('(max-width:700px)').matches) return;
         if (Number.isFinite(saved.pageScroll)) window.scrollTo(0, Math.max(0, saved.pageScroll));
         overlay.open('search');
