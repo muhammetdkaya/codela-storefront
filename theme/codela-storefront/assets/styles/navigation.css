@@ -570,3 +570,11 @@ body.admin-bar{--sf-header-offset:32px}
     -webkit-backdrop-filter:none;backdrop-filter:none;
   }
 }
+
+/* Public direct contact joins the real agency header capsule. */
+.sf-shell.has-agency-header .sf-header .sf-agency-phone{flex:0 0 44px;color:#f8f8fa!important}
+.sf-agency-phone>span{position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden;white-space:nowrap}
+.sf-shell.has-agency-header .sf-agency-header-tools .sf-agency-phone:is(:hover,:focus-visible){background:rgba(255,255,255,.08)!important}
+.sf-contact-icon{display:block;flex:none;color:currentColor}
+.sf-editorial-menu-actions .sf-direct-contact{display:flex;align-items:center;gap:9px;color:#f4f3f7!important}
+.sf-editorial-menu-actions .sf-direct-contact .sf-contact-icon{width:19px;height:19px;color:#d6a676}

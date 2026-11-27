@@ -3,6 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 require_once __DIR__ . '/presentation.php';
 require_once __DIR__ . '/account-contract.php';
 require_once __DIR__ . '/ui.php';
+require_once __DIR__ . '/public-contact.php';
 function codela_sf_icon( string $name ): string {
     if ( ! in_array( $name, [ 'download', 'sliders-horizontal', 'search', 'shopping-bag', 'shopping-cart-plus', 'menu', 'x', 'arrow-left', 'chevron-left', 'arrow-right', 'plus', 'minus', 'house', 'user-round', 'map-pin', 'log-out', 'account-orders', 'account-address', 'account-security', 'account-preferences', 'account-profile', 'account-sign-out' ], true ) ) { return ''; }
     static $versions = [];
@@ -103,6 +104,7 @@ function codela_sf_header(): string {
     // Navigation experience is independent of installed demo templates.
     // Commerce remains the backward-compatible default for existing shops.
     $agency_navigation = 'agency' === ( $settings['site_experience'] ?? 'commerce' );
+    $public_contact = $agency_navigation ? codela_sf_public_contact() : [];
     $editorial_menu = 'editorial' === codela_sf_presentation( 'menu', $settings );
     $editorial_account = 'editorial' === codela_sf_presentation( 'account', $settings );
     // Keep native Woo document controls; editorial Agency pages use a single
@@ -169,7 +171,11 @@ function codela_sf_header(): string {
             <?php if ( $desktop_menu && ! $agency_header && ! $editorial_menu ) : ?><nav class="sf-desktop-navigation sf-ui-surface" aria-label="<?php esc_attr_e( 'Main menu', 'codela-storefront' ); ?>"><?php echo $desktop_menu; ?></nav><?php endif; ?>
             <div class="sf-header-search sf-ui-surface" hidden></div>
             <?php if ( $agency_header ) : ?>
-            <div class="sf-agency-header-tools sf-ui-surface" role="group" aria-label="<?php esc_attr_e( 'Account and menu', 'codela-storefront' ); ?>">
+            <div class="sf-agency-header-tools sf-ui-surface" role="group" aria-label="<?php esc_attr_e( 'Contact, account and menu', 'codela-storefront' ); ?>">
+            <?php if ( ! empty( $public_contact['phone'] ) ) : ?>
+                <?php echo codela_sf_contact_link( 'phone', 'Hemen Ara', $public_contact, 'sf-ui-icon-button sf-agency-phone', 'header' ); ?>
+                <span class="sf-agency-header-divider" aria-hidden="true"></span>
+            <?php endif; ?>
             <?php endif; ?>
             <nav class="sf-actions<?php echo $agency_header ? ' sf-agency-header-account' : ' sf-ui-surface'; ?><?php echo $product_page || ( $catalog_page && $show_mobile_dock ) ? ' sf-ui-icon-group--single-mobile' : ''; ?>" aria-label="<?php esc_attr_e( 'Store tools', 'codela-storefront' ); ?>">
                 <?php if ( $catalog_page && ! $agency_navigation ) { $filter_count = count( codela_sf_catalog_active_filters() ); echo codela_sf_ui_icon_button( 'sliders-horizontal', __( 'Filters', 'codela-storefront' ) . ( $filter_count ? ' (' . $filter_count . ')' : '' ), [ 'variant' => $show_mobile_dock ? 'soft' : 'bare', 'class' => 'sf-filter-trigger', 'href' => '#sf-filters', 'attributes' => [ 'data-wp-on--click' => 'actions.filters', 'data-panel' => 'filters', 'aria-haspopup' => 'dialog', 'aria-controls' => 'sf-panel', 'aria-expanded' => 'false' ] ], $filter_count ? '<span class="sf-filter-count" aria-hidden="true">' . (int) $filter_count . '</span>' : '' ); } ?>
@@ -245,6 +251,11 @@ function codela_sf_header(): string {
                             && 'codela.dev' === parse_url( home_url( '/' ), PHP_URL_HOST )
                             ? 'info@codela.dev' : '';
                         ?>
+                        <?php if ( $agency_navigation ) : ?>
+                            <?php echo codela_sf_contact_link( 'phone', $public_contact['phone'] ?: 'Hemen Ara', $public_contact, 'sf-editorial-menu-contact sf-direct-contact', 'menu' ); ?>
+                            <?php echo codela_sf_contact_link( 'whatsapp', 'WhatsApp', $public_contact, 'sf-editorial-menu-contact sf-direct-contact', 'menu' ); ?>
+                            <?php $editorial_public_email = $public_contact['email'] ?: $editorial_public_email; ?>
+                        <?php endif; ?>
                         <?php if ( $editorial_public_email ) : ?>
                             <a class="sf-editorial-menu-mail" href="<?php echo esc_url( 'mailto:' . $editorial_public_email ); ?>"><?php echo esc_html( $editorial_public_email ); ?></a>
                         <?php elseif ( $agency_navigation ) : ?>
