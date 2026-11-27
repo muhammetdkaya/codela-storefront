@@ -3036,3 +3036,12 @@ body.sf-agency-mixed .sf-agency-widget--bento .cdl-bento__grid{min-height:0}
   body:not(.sf-agency-mixed) .sf-agency-widget--contact-bento .cdl-contact__map-frame{height:clamp(280px,48svh,460px)}
   body:not(.sf-agency-mixed) .sf-agency-widget--contact-bento .cdl-contact__header h1{font-size:clamp(44px,4vw,58px)}
 }
+
+/* Shared direct contact actions retain existing graphite/amber visual language. */
+.sf-agency-widget .sf-direct-contact{display:flex;align-items:center;gap:12px;color:#f8f7fa;text-decoration:none!important;min-height:44px;font-size:14px;overflow-wrap:anywhere}
+.sf-agency-widget .sf-direct-contact .sf-contact-icon{color:#d6a676;width:21px;height:21px}
+.sf-agency-widget .cdl-contact__direct{padding:13px 4px;border-bottom:1px solid #ffffff17}
+.sf-agency-widget .cdl-contact__direct::after{content:"↗";margin-left:auto;color:#d6a676}
+.sf-agency-widget .sf-service-direct{display:flex;align-items:center;flex-wrap:wrap;gap:10px 18px}
+.sf-agency-widget .sf-service-direct .sf-direct-contact{padding:5px 0}
+.sf-agency-widget .sf-direct-contact:focus-visible{outline:2px solid #d6a676;outline-offset:3px}

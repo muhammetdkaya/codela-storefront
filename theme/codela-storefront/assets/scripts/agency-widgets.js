@@ -323,13 +323,15 @@
         const startMap=()=>loadLeaflet().then(L=>{
           const center=[Number(frame.dataset.mapLat),Number(frame.dataset.mapLon)];
           const office=frame.dataset.mapOffice==='true';
-          const zoom=office?14:11;
+          const area=frame.dataset.mapArea==='true';
+          const zoom=office?14:area?14:11;
           const map=L.map(host,{center,zoom,zoomControl:false,scrollWheelZoom:false,doubleClickZoom:false,attributionControl:true,dragging:window.matchMedia('(pointer:fine)').matches,touchZoom:false});
           const tiles=L.tileLayer('https://server.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{minZoom:5,maxZoom:15,attribution:'Tiles © Esri — Esri, HERE, Garmin, OpenStreetMap contributors'});
           tiles.once('tileload',()=>{frame.dataset.mapReady='true';});
           tiles.addTo(map);
           const icon=L.divIcon({className:'cdl-contact__beacon',html:'<i></i><b></b>',iconSize:[24,24],iconAnchor:[12,12]});
-          L.marker(office?center:[41.0082,28.9784],{icon,interactive:false}).addTo(map);
+          if(office) L.marker(center,{icon,interactive:false}).addTo(map);
+          else if(!area) L.marker([41.0082,28.9784],{icon,interactive:false}).addTo(map);
           frame.querySelector('[data-contact-map-center]')?.addEventListener('click',event=>{
             if(frame.dataset.mapReady!=='true')return;
             event.preventDefault();map.setView(center,zoom,{animate:!reduced.matches});

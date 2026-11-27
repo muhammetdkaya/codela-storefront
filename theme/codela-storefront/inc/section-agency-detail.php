@@ -1,6 +1,7 @@
 <?php
 /** Editorial service detail — approved four-service reference, native WordPress links. */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+require_once __DIR__ . '/public-contact.php';
 function codela_sf_section_agency_detail( array $data, string $type = '', bool $primary = false ): string {
     $settings = [
       'web'=>[
@@ -96,6 +97,7 @@ function codela_sf_section_agency_detail( array $data, string $type = '', bool $
             <div class="cdl-service-detail__scope"><h2>Neler Dahil?</h2><ol><?php foreach($deliverables as $index=>$row): ?><li><span><?php echo esc_html(sprintf('%02d',$index+1)); ?></span><div><h3><?php echo esc_html($row[0]); ?></h3><p><?php echo esc_html($row[1]); ?></p></div></li><?php endforeach; ?></ol></div>
             <div class="cdl-service-detail__faq"><h2>Sık Sorulanlar</h2><?php foreach($info['faq'] as $index=>$qa): ?><details<?php echo $index===0?' open':''; ?>><summary><?php echo esc_html($qa[0]); ?><span aria-hidden="true">+</span></summary><p><?php echo esc_html($qa[1]); ?></p></details><?php endforeach; ?></div>
             <?php if ( ! $quote_url ) { echo codela_sf_quote_markup( $variant, $data ); } ?>
+            <?php $public_contact = codela_sf_public_contact(); if ( $public_contact['phone'] || $public_contact['whatsapp'] ) : ?><div class="sf-service-direct"><?php echo codela_sf_contact_link( 'phone', 'Hemen Ara', $public_contact, 'sf-direct-contact', 'service' ); ?><?php echo codela_sf_contact_link( 'whatsapp', 'WhatsApp', $public_contact, 'sf-direct-contact', 'service' ); ?></div><?php endif; ?>
             <div class="cdl-service-detail__bottom"><span class="cdl-service-detail__meta"><i aria-hidden="true"></i><strong><?php echo esc_html($info['duration']); ?></strong><?php if('support'!==$variant): ?> · Ortalama<?php endif; ?></span><a class="cdl-service-detail__cta" href="<?php echo esc_url($quote_url ?: $cta); ?>"><?php echo $quote_url ? 'Ücretsiz Teklif Al' : 'Proje Başlat'; ?> <span aria-hidden="true">→</span></a></div>
           </div>
         </div></div>
