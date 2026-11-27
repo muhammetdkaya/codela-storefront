@@ -144,7 +144,11 @@ foreach ( $detail_reference as $variant => $source ) {
         'description'=>$source['description'],'items'=>array_map(
             static fn($i, $label)=>['id'=>'scope-'.$i,'enabled'=>true,'title'=>$label,'body'=>''],
             array_keys($source['labels']),$source['labels'] ) ];
+    $GLOBALS['public_contact_fixture'] = ['phone'=>'+905551234567','whatsapp'=>'+905551234567'];
     $markup = codela_sf_section_agency_detail( $data );
+    unset($GLOBALS['public_contact_fixture']);
+    agency_page_check( !str_contains($markup,'cdl-service-detail__tabs') && !str_contains($markup,'sf-service-direct') && !str_contains($markup,'tel:') && !str_contains($markup,'wa.me'), 'Service detail has no secondary navigation or direct contact channels: '.$variant );
+    agency_page_check( substr_count($markup,'class="cdl-service-detail__cta"')===1, 'Only one service action: '.$variant );
     agency_page_check( str_contains($markup,'<h1') && str_contains($markup,esc_html($variant==='support'?'Bakım & Geliştirme':$source['title'])),
         'Service detail has accessible original page heading: '.$variant );
     agency_page_check( str_contains($markup,'cdl-service-detail__meta') && str_contains($markup,'cdl-service-detail__faq') && str_contains($markup,'cdl-service-detail__manifesto') && str_contains($markup,'cdl-service-detail__title-muted') &&
@@ -154,6 +158,17 @@ foreach ( $detail_reference as $variant => $source ) {
         str_contains($markup,'Proje Başlat') && !str_contains($markup,'data:image'),
         'Service CTA sends source service to existing contact form: '.$variant );
 }
+// An installed project page owns the shared quote flow; preserve source service.
+$GLOBALS['pages']['proje-baslat'] = (object) ['ID'=>72,'post_type'=>'page','post_name'=>'proje-baslat','post_status'=>'publish'];
+$GLOBALS['agency_state'] = ['done'=>true,'pages'=>['home'=>71]];
+$GLOBALS['layout'] = 'codela-agency-starter:1:home';
+$GLOBALS['project_ids_fixture'] = [72];
+foreach ($detail_reference as $variant => $source) {
+    $quote_detail = codela_sf_section_agency_detail(['variant'=>$variant,'title'=>$source['title']]);
+    agency_page_check(str_contains($quote_detail,'/proje-baslat/?hizmetler=') && str_contains($quote_detail,'teklif=1') && str_contains($quote_detail,'Ücretsiz Teklif Al') && !str_contains($quote_detail,'cdl-quote__form'), 'Single shared quote link: '.$variant);
+}
+unset($GLOBALS['pages']['proje-baslat'],$GLOBALS['agency_state'],$GLOBALS['project_ids_fixture']);
+$GLOBALS['layout'] = '';
 $custom_detail = codela_sf_section_agency_detail(['variant'=>'web','title'=>'Özel başlık','description'=>'Özel açıklama','items'=>[['title'=>'Özel kapsam','body'=>'Özel kapsam açıklaması']]]);
 agency_page_check(str_contains($custom_detail,'Özel açıklama') && str_contains($custom_detail,'Özel kapsam açıklaması'),'Editor custom description and scope remain intact');
 if ( in_array( '--render=detail', $argv, true ) ) {

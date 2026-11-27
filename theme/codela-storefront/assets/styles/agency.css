@@ -2788,10 +2788,6 @@ body:not(.home):has(.sf-shell) .codela-page-layout > .sf-agency-widget--detail:f
 .sf-agency-widget--detail .cdl-service-detail{align-items:flex-start;padding:clamp(22px,4svh,42px) 20px 52px}
 .sf-agency-widget--detail .cdl-service-detail__shell{flex:0 1 696px;width:min(100%,696px);max-width:696px;margin:0 auto}
 .sf-agency-widget--detail .cdl-service-detail__editorial{width:100%;display:block}
-.sf-agency-widget--detail .cdl-service-detail__tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-bottom:28px}
-.sf-agency-widget--detail .cdl-service-detail__tabs:empty{display:none}
-.sf-agency-widget--detail .cdl-service-detail__tabs a{display:block;min-width:0;min-height:36px;padding:9px 2px 0;border:0;border-top:2px solid #ffffff1f;border-radius:0;background:none;box-shadow:none;text-align:left;color:#928c9c;font-size:11.5px;line-height:1.4;text-decoration:none!important;transition:border-color .24s,color .24s}
-.sf-agency-widget--detail .cdl-service-detail__tabs a[aria-current]{border-top-color:#d3a480;color:#f8f7fa;font-weight:600}
 .sf-agency-widget--detail .cdl-service-detail__eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#928c9c;font-weight:600;margin-bottom:12px}
 .sf-agency-widget--detail .cdl-service-detail__eyebrow::before,.sf-agency-widget--detail .cdl-service-detail__meta i{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#d3a480;flex:none}
 .sf-agency-widget--detail .cdl-service-detail__eyebrow::before{margin-right:8px;vertical-align:2px}
@@ -2827,7 +2823,10 @@ body:not(.home):has(.sf-shell) .codela-page-layout > .sf-agency-widget--detail:f
 .sf-agency-widget--detail .cdl-service-detail__meta{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:#928c9c}
 .sf-agency-widget--detail .cdl-service-detail__meta strong{color:#b6b0bf;font-weight:500}
 .sf-agency-widget--detail .cdl-service-detail__cta{display:inline-flex;width:auto;min-height:44px;padding:0 18px;font-size:13.5px;font-weight:500;gap:8px;white-space:nowrap;flex:none;background:#2c2c30;color:#f8f7fa!important;border:1px solid #ffffff30;transition:filter .2s,transform .2s}
+.sf-agency-widget--detail .cdl-service-detail__bottom .cdl-service-detail__cta{background:rgba(214,166,118,.07);border-color:rgba(214,166,118,.34)}
+.sf-agency-widget--detail .cdl-service-detail__bottom .cdl-service-detail__cta span{color:#d6a676}
 .sf-agency-widget--detail .cdl-service-detail__cta:hover{background:#2c2c30;filter:brightness(1.12);transform:none}
+.sf-agency-widget--detail .cdl-service-detail__bottom .cdl-service-detail__cta:hover{background:rgba(214,166,118,.13)}
 .sf-agency-widget--detail .cdl-service-detail__cta:active{transform:scale(.97)}
 @media(max-width:739px){
  .sf-agency-widget--detail .cdl-service-detail{padding-inline:18px}
@@ -2835,7 +2834,7 @@ body:not(.home):has(.sf-shell) .codela-page-layout > .sf-agency-widget--detail:f
  .sf-agency-widget--detail .cdl-service-detail__manifesto{font-size:17px;padding-left:15px;margin-bottom:30px}
 }
 @media(max-width:359px){.sf-agency-widget--detail .cdl-service-detail__bottom{gap:8px;flex-wrap:wrap}}
-@media(prefers-reduced-motion:reduce){.sf-agency-widget--detail .cdl-service-detail__faq details::before,.sf-agency-widget--detail .cdl-service-detail__faq details::details-content,.sf-agency-widget--detail .cdl-service-detail__faq summary span,.sf-agency-widget--detail .cdl-service-detail__tabs a{transition:none}}
+@media(prefers-reduced-motion:reduce){.sf-agency-widget--detail .cdl-service-detail__faq details::before,.sf-agency-widget--detail .cdl-service-detail__faq details::details-content,.sf-agency-widget--detail .cdl-service-detail__faq summary span{transition:none}}
 body:not(.sf-agency-mixed):has(.sf-agency-widget--detail) .sf-footer,body:not(.sf-agency-mixed):has(.sf-404-agency) .sf-footer{display:none!important}
 body:not(.sf-agency-mixed):has(.sf-404-agency){background:#09090c}
 .sf-404-agency{background:#09090c!important;color:#f8f7fa!important;padding:24px 20px!important}
@@ -2849,7 +2848,7 @@ body:not(.sf-agency-mixed):has(.sf-404-agency){background:#09090c}
 .cdl-404-stage h1{position:relative;font-size:19px;color:#f8f7fa;margin:12px 0 7px}
 .cdl-404-stage p{position:relative;font-size:13px;color:#b6b0bf;max-width:250px;margin:0 0 22px;line-height:1.5}
 .cdl-404-home{position:relative;display:inline-flex;align-items:center;gap:12px;min-height:44px;padding:0 18px;border-radius:999px;border:1px solid #ffffff30;background:#242426;color:#fff;text-decoration:none!important;font-size:13px}
-.cdl-404-home:focus-visible,.cdl-service-detail__tabs a:focus-visible,.cdl-service-detail__faq summary:focus-visible{outline:2px solid #d3a480;outline-offset:3px}
+.cdl-404-home:focus-visible,.cdl-service-detail__faq summary:focus-visible{outline:2px solid #d3a480;outline-offset:3px}
 
 /* 0.1.410: one scroll owner and a stable top boundary on the staged home.
    Explicit smooth scrollTo remains animated; the default is not animated.
@@ -3042,8 +3041,6 @@ body.sf-agency-mixed .sf-agency-widget--bento .cdl-bento__grid{min-height:0}
 .sf-agency-widget .sf-direct-contact .sf-contact-icon{color:#d6a676;width:21px;height:21px}
 .sf-agency-widget .cdl-contact__direct{padding:13px 4px;border-bottom:1px solid #ffffff17}
 .sf-agency-widget .cdl-contact__direct::after{content:"↗";margin-left:auto;color:#d6a676}
-.sf-agency-widget .sf-service-direct{display:flex;align-items:center;flex-wrap:wrap;gap:10px 18px}
-.sf-agency-widget .sf-service-direct .sf-direct-contact{padding:5px 0}
 .sf-agency-widget .sf-direct-contact:focus-visible{outline:2px solid #d6a676;outline-offset:3px}
 
 
