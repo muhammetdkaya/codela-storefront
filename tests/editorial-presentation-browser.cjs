@@ -34,18 +34,15 @@ const styles=['styles/tokens.css','storefront.css','styles/overlay.css','styles/
    const nav=page.locator('#sf-menu>nav[aria-label]');
    const aside=page.locator('.sf-editorial-menu-aside');
    assert(await nav.isVisible(),'Native menu remains visible');
-   assert(await aside.isVisible(),'Editorial contact/account aside is visible');
-   assert.equal(await aside.locator('p').count(),0,'No redundant agency description');
-   assert.equal(await aside.locator('.sf-editorial-menu-eyebrow').textContent(),'Contact');
-   assert.equal(await aside.locator('.sf-editorial-menu-actions>a').count(),4,'Four configured quick actions');
-   assert.equal(await aside.locator('[data-codela-contact="phone"]').getAttribute('href'),'tel:+905551234567');
-   assert.equal(await aside.locator('[data-codela-contact="whatsapp"]').getAttribute('href'),'https://wa.me/905551234567');
-   assert.equal(await aside.locator('[data-codela-contact="email"]').getAttribute('href'),'mailto:hello@example.test');
-   const utility=await aside.evaluate(el=>({height:el.getBoundingClientRect().height,items:[...el.querySelectorAll('.sf-editorial-menu-actions>a')].map(a=>({height:a.getBoundingClientRect().height,overflow:a.scrollWidth-a.clientWidth}))}));
-   assert(utility.height<=156,'Compact contact card remains within two action rows: '+JSON.stringify(utility));
-   assert(utility.items.every(x=>x.height>=44&&x.overflow<=1),'All utility actions retain touch targets and fit');
-   assert.equal(await page.locator('.sf-editorial-menu-account').getAttribute('href'),
-    'https://store.test/myaccount/','Account CTA retains real Woo URL');
+   assert(await aside.isVisible(),'Single contact destination is visible');
+   assert.equal(await aside.locator('p,.sf-editorial-menu-eyebrow').count(),0,'No redundant agency description or heading');
+   assert.equal(await aside.locator('a').count(),1,'Exactly one Agency contact-page destination');
+   const contact=aside.locator('a.sf-editorial-menu-contact');
+   assert.equal(await contact.getAttribute('href'),'https://store.test/iletisim/');
+   assert.equal(await aside.locator('[data-codela-contact],.sf-editorial-menu-account').count(),0,'No duplicated contact channels or account action');
+   assert.equal(await page.locator('.sf-header [data-codela-contact="phone"]').getAttribute('href'),'tel:+905551234567','Header phone remains available');
+   const utility=await aside.evaluate(el=>({height:el.getBoundingClientRect().height,link:el.querySelector('a').getBoundingClientRect().height,overflow:el.scrollWidth-el.clientWidth}));
+   assert(utility.height<=76&&utility.link>=44&&utility.overflow<=1,'Single row stays compact with accessible hit target: '+JSON.stringify(utility));
    assert.equal(await page.locator('.sf-menu-list a[aria-current="page"]').count(),1,'Native current page semantics preserved');
    const menu=await page.evaluate(()=>{
     const dialog=document.querySelector('#sf-panel'),aside=document.querySelector('.sf-editorial-menu-aside');
