@@ -85,7 +85,7 @@ for(const options of [
 }
 assert.deepEqual(restoreCase({record:JSON.stringify({url:'https://store.test/other/',time:Date.now()})}),{cleared:0,opened:0,restored:0});
 
-assert.match(entry,/cartFeature\.bind\(\{eager: !agencyProfile \|\| !!commerceSurface\}\)/);
+assert.match(entry,/if \(agencyProfile && !commerceSurface\) cartFeature\.bind\(\{eager: false\}\);\s*else cartFeature\.bind\(\);/);
 const continuity=read(theme+'/assets/scripts/document-continuity.js');
 const listStart=continuity.indexOf('    function restoreListScroll() {');
 const listEnd=continuity.indexOf("    document.addEventListener('DOMContentLoaded', updateBackLink);",listStart);

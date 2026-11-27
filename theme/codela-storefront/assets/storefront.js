@@ -62,7 +62,8 @@ function init() {
         // Preserve native purchase listeners, but do not hydrate an invisible
         // cart on a pure Agency page until actual cart intent.
         const commerceSurface = document.querySelector('[data-panel="cart"], form.cart, .woocommerce-cart-form, .wp-block-woocommerce-cart, .wc-block-cart, form.checkout, .wp-block-woocommerce-checkout, .wc-block-checkout, .ajax_add_to_cart');
-        cartFeature.bind({eager: !agencyProfile || !!commerceSurface});
+        if (agencyProfile && !commerceSurface) cartFeature.bind({eager: false});
+        else cartFeature.bind();
     }
     // The Back link from a product entered through Search navigates to the
     // original document and carries a one-shot Search return intent.
