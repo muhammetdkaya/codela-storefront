@@ -7,9 +7,10 @@ const {execFileSync}=require('node:child_process');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const root=path.resolve(__dirname,'..');
 const html=execFileSync(process.env.PHP_BIN||'php',['tests/agency-pages.php','--render=contact-bento'],{cwd:root,encoding:'utf8'});
+const configured=execFileSync(process.env.PHP_BIN||'php',['tests/agency-pages.php','--render=contact-configured'],{cwd:root,encoding:'utf8'});
 const server=http.createServer((req,res)=>{
  const u=new URL(req.url,'http://localhost').pathname;
- if(u==='/'){res.setHeader('Content-Type','text/html; charset=utf-8');return res.end(html)}
+ if(u==='/'||u==='/configured'){res.setHeader('Content-Type','text/html; charset=utf-8');return res.end(u==='/'?html:configured)}
  const f=path.resolve(root,'.'+u);
  if(!f.startsWith(root+path.sep)||!fs.existsSync(f)||!fs.statSync(f).isFile()){res.statusCode=404;return res.end()}
  res.setHeader('Content-Type',f.endsWith('.css')?'text/css':f.endsWith('.js')?'text/javascript':'text/plain');
@@ -62,6 +63,22 @@ const server=http.createServer((req,res)=>{
    await app.locator('.cdl-contact__card--primary').click();
    assert(await app.locator('[name="agency_name"]').isVisible(),'Fallback project anchor opens the form');
    await page.screenshot({path:path.join(root,'qa','agency-contact-'+width+'.png'),fullPage:true});
+   await page.goto('http://127.0.0.1:'+server.address().port+'/configured');
+   const rows=app.locator('.cdl-contact__action');
+   assert.equal(await rows.count(),4,'Four parallel real contact actions');
+   assert.deepEqual(await rows.locator('.cdl-contact__num').allTextContents(),['01','02','03','04']);
+   assert.equal(await app.locator('[data-codela-contact="phone"]').getAttribute('href'),'tel:+905551234567');
+   assert.equal(await app.locator('[data-codela-contact="email"]').getAttribute('href'),'mailto:hello@example.test');
+   await app.locator('[data-contact-whatsapp] summary').click();
+   await app.locator('.cdl-contact__wa-topic').nth(1).click();
+   const message=await app.locator('[data-wa-preview]').textContent();
+   assert(message.includes('e-ticaret mağazamız'));
+   const link=await app.locator('[data-wa-launch]').getAttribute('href');
+   assert(decodeURIComponent(link).includes('e-ticaret mağazamız'));
+   assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No configured contact overflow');
+   await app.locator('[data-contact-whatsapp] summary').click();
+   assert.equal(await app.locator('[data-wa-launch]').isVisible(),false);
+   assert.deepEqual(errors,[],'Configured contact has no exceptions');
    await page.close();
   }
   console.log('MONA Contact Bento: 5 viewports, secure form, native anchors passed.');

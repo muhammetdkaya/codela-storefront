@@ -16,6 +16,8 @@ $GLOBALS['actions'] = [];
 function add_action( $name, $callback, $priority = 10 ) { $GLOBALS['actions'][$name][] = $callback; }
 function add_filter( ...$args ) {}
 function codela_sf_ready() { return true; }
+function codela_public_contact() { return $GLOBALS['public_contact_fixture'] ?? []; }
+function get_posts( $args ) { return $GLOBALS['project_ids_fixture'] ?? []; }
 function is_front_page() { return true; }
 function get_queried_object_id() { return $GLOBALS['query']->ID; }
 function get_post( $id ) {
@@ -261,7 +263,16 @@ $contact_bento_real_html = codela_sf_section_agency_contact_bento( $contact_bent
 agency_page_check( str_contains( $contact_bento_real_html, 'data-agency-copy-email' ) &&
     ! str_contains( $contact_bento_real_html, 'wa.me/' ),
     'Configured email is retained in the message sheet; no extra WhatsApp row' );
-if ( in_array( '--render=contact-bento', $argv, true ) ) {
+if ( in_array( '--render=contact-configured', $argv, true ) ) {
+    $GLOBALS['public_contact_fixture'] = ['phone'=>'+905551234567','whatsapp'=>'+905551234567','email'=>'hello@example.test','area_lat'=>'41.1','area_lon'=>'28.8','district'=>'Başakşehir'];
+    $GLOBALS['agency_state'] = ['done'=>true,'pages'=>['home'=>2]];
+    $GLOBALS['layout'] = 'codela-agency-starter:1:home';
+    $GLOBALS['project_ids_fixture'] = [3];
+    $contact_bento_html = codela_sf_section_agency_contact_bento($contact_bento);
+    agency_page_check(substr_count($contact_bento_html,'cdl-contact__num')===4 && str_contains($contact_bento_html,'https://wa.me/905551234567?text=') && str_contains($contact_bento_html,'tel:+905551234567') && str_contains($contact_bento_html,'mailto:hello@example.test'),'Four configured contact actions use real links');
+    agency_page_check(!str_contains($contact_bento_html,'data-contact-disclosure') && !str_contains($contact_bento_html,'streetAddress'),'No redundant form or street address');
+}
+if ( in_array( '--render=contact-bento', $argv, true ) || in_array( '--render=contact-configured', $argv, true ) ) {
     echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
     echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/storefront-base.css">';
     echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/agency.css">';

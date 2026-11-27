@@ -272,6 +272,12 @@
           }
         });
       }
+      const wa = widget.querySelector('[data-contact-whatsapp]');
+      if (wa) {
+        const preview=wa.querySelector('[data-wa-preview]'), launch=wa.querySelector('[data-wa-launch]');
+        const sync=()=>{const topic=wa.querySelector('input[type="radio"]:checked');if(!topic||!launch||!preview)return;preview.textContent='“'+topic.value+'”';launch.href=launch.dataset.waUrl+'?text='+encodeURIComponent(topic.value);};
+        wa.addEventListener('change',sync);sync();
+      }
       const disclosure = widget.querySelector('details[data-contact-disclosure]');
       const summary = disclosure?.querySelector('summary');
       const panel = disclosure?.querySelector('.cdl-contact-form-section');

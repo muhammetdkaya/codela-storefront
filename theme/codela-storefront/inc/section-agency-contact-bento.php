@@ -1,7 +1,7 @@
 <?php
 /**
- * Editorial contact: Istanbul map, two action rows, with a native
- * disclosure for the existing secure WordPress enquiry form.
+ * Editorial contact: map and four parallel actions with optional WhatsApp topics.
+ * Preserve the secure enquiry form as fallback when channels are not configured.
  * No prototype device/status bars, unverified WhatsApp number, fake email or
  * fictitious "available now" status may reach the public website.
  */
@@ -20,6 +20,18 @@ function codela_sf_section_agency_contact_bento( array $data, string $type = '' 
     $source = codela_sf_agency_form_context( 'agency-contact-bento', $data );
     $form_title_id = codela_sf_agency_dom_id( 'cdl-contact-form-title' );
     $project_href = $project ?: '#' . $form_id;
+    $phone_url = codela_sf_contact_href( 'phone', $public_contact );
+    $wa_url = codela_sf_contact_href( 'whatsapp', $public_contact );
+    $mail_url = codela_sf_contact_href( 'email', $public_contact );
+    $phone_display = preg_replace( '/^(\+90)(\d{3})(\d{3})(\d{2})(\d{2})$/D', '$1 $2 $3 $4 $5', $public_contact['phone'] );
+    $wa_topics = [
+        'Web Tasarım' => 'Merhaba, markamız için yeni bir web sitesi planlıyoruz. Kapsam ve takvim hakkında kısa bilgi alabilir miyim?',
+        'E-Ticaret' => 'Merhaba, e-ticaret mağazamız için tasarım ve geliştirme desteği arıyoruz. Uygun olduğunuzda görüşebilir miyiz?',
+        'Özel Yazılım' => 'Merhaba, ekibimiz için özel bir panel ve entegrasyon fikrimiz var. Detayları paylaşabilirim.',
+    ];
+    $wa_first = reset( $wa_topics );
+    $wa_id = codela_sf_agency_dom_id( 'cdl-contact-wa' );
+    $row = 1;
     $policy = function_exists( 'get_privacy_policy_url' ) ? (string) get_privacy_policy_url() : '';
     $status = isset( $_GET['codela_status'] ) && is_string( $_GET['codela_status'] )
         ? sanitize_key( wp_unslash( $_GET['codela_status'] ) ) : '';
@@ -65,24 +77,49 @@ function codela_sf_section_agency_contact_bento( array $data, string $type = '' 
               <div class="cdl-contact__map-overlay">
                 <span class="cdl-contact__map-chip">İSTANBUL · GMT+3</span>
                 <div class="cdl-contact__map-bottom">
-                  <span><strong><i aria-hidden="true"></i><?php echo esc_html( $studio ); ?></strong><small><?php echo $map_point ? 'Ofis konumu' : ( $area_point ? 'Başakşehir · Adres çevresi' : 'İstanbul · Online çalışma' ); ?></small></span>
+                  <span><strong><i aria-hidden="true"></i><?php echo esc_html( $studio ); ?></strong><small><?php echo $map_point ? 'Ofis konumu' : ( $area_point ? ( $public_contact['district'] ?: 'İstanbul' ) . ' · Online ve yüz yüze çalışma' : 'İstanbul · Online çalışma' ); ?></small></span>
                   <a href="<?php echo esc_url( $map_link ); ?>" data-contact-map-center target="_blank" rel="noopener noreferrer" class="cdl-contact__map-center">Merkezle</a>
                 </div>
               </div>
               <a class="cdl-contact__map-credit" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a>
             </div>
-            <div class="cdl-contact__actions">
-
-              <?php foreach ( [ 'phone' => $public_contact['phone'], 'whatsapp' => 'WhatsApp', 'email' => $public_contact['email'] ] as $kind => $label ) : ?>
-                <?php echo codela_sf_contact_link( $kind, $label, $public_contact, 'sf-direct-contact cdl-contact__direct', 'contact' ); ?>
-              <?php endforeach; ?>
+            <div class="cdl-contact__actions cdl-contact__actions--editorial">
               <a class="cdl-contact__action cdl-contact__card--primary" href="<?php echo esc_url( $project_href ); ?>">
-                <span class="cdl-contact__action-left"><span class="cdl-contact__num">01</span><span class="cdl-contact__action-copy"><strong>Proje Başlat</strong><small>Hedefini anlat, kapsam ve yol haritasını birlikte çıkaralım.</small></span></span>
+                <span class="cdl-contact__action-left"><span class="cdl-contact__num">01</span><span class="cdl-contact__action-copy"><strong>Proje Başlat</strong><small>Kapsam ve tahmini bütçeyi birlikte netleştirelim.</small></span></span>
                 <span class="cdl-contact__row-arrow" aria-hidden="true">→</span>
               </a>
+              <?php if ( $wa_url ) : ?>
+              <details class="cdl-contact__wa" data-contact-whatsapp>
+                <summary class="cdl-contact__action">
+                  <span class="cdl-contact__action-left"><span class="cdl-contact__num"><?php echo esc_html( sprintf('%02d', ++$row) ); ?></span><span class="cdl-contact__action-copy"><strong>WhatsApp'tan Yaz</strong><small>Konunu seç, hazır mesajla sohbeti başlat.</small></span></span>
+                  <span class="cdl-contact__row-arrow" aria-hidden="true">+</span>
+                </summary>
+                <div class="cdl-contact__wa-drawer">
+                  <fieldset class="cdl-contact__wa-topics">
+                    <legend class="screen-reader-text">Görüşme konusu</legend>
+                    <?php $first = true; foreach ( $wa_topics as $topic => $message ) : ?>
+                      <label class="cdl-contact__wa-topic"><input type="radio" name="<?php echo esc_attr( $wa_id ); ?>" value="<?php echo esc_attr( $message ); ?>"<?php echo $first ? ' checked' : ''; ?>><span><?php echo esc_html( $topic ); ?></span></label>
+                    <?php $first = false; endforeach; ?>
+                  </fieldset>
+                  <p class="cdl-contact__wa-preview" data-wa-preview aria-live="polite">“<?php echo esc_html( $wa_first ); ?>”</p>
+                  <a class="cdl-contact__wa-go" data-wa-launch data-wa-url="<?php echo esc_url( $wa_url ); ?>" data-codela-contact="whatsapp" data-contact-placement="contact" href="<?php echo esc_url( $wa_url . '?text=' . rawurlencode( $wa_first ) ); ?>" target="_blank" rel="noopener noreferrer">WhatsApp'ı Aç <span aria-hidden="true">↗</span></a>
+                </div>
+              </details>
+              <?php endif; ?>
+              <?php if ( $phone_url ) : ?>
+              <a class="cdl-contact__action cdl-contact__action--compact" href="<?php echo esc_url( $phone_url ); ?>" data-codela-contact="phone" data-contact-placement="contact">
+                <span class="cdl-contact__action-left"><span class="cdl-contact__num"><?php echo esc_html( sprintf('%02d', ++$row) ); ?></span><span class="cdl-contact__action-copy"><strong>Bizi Ara</strong><small><?php echo esc_html( $phone_display ); ?></small></span></span><span class="cdl-contact__row-arrow" aria-hidden="true">↗</span>
+              </a>
+              <?php endif; ?>
+              <?php if ( $mail_url ) : ?>
+              <a class="cdl-contact__action cdl-contact__action--compact" href="<?php echo esc_url( $mail_url ); ?>" data-codela-contact="email" data-contact-placement="contact">
+                <span class="cdl-contact__action-left"><span class="cdl-contact__num"><?php echo esc_html( sprintf('%02d', ++$row) ); ?></span><span class="cdl-contact__action-copy"><strong>Mail Gönder</strong><small><?php echo esc_html( $public_contact['email'] ); ?></small></span></span><span class="cdl-contact__row-arrow" aria-hidden="true">↗</span>
+              </a>
+              <?php endif; ?>
+              <?php if ( ! $project || ! $wa_url || ! $phone_url || ! $mail_url || $status || $selected ) : ?>
               <details id="<?php echo esc_attr( $form_id ); ?>" data-contact-disclosure class="cdl-contact__form-toggle"<?php echo ( $status || ( 'sf-agency-contact-form' === $form_id && $selected ) ) ? ' open' : ''; ?>>
                 <summary class="cdl-contact__action">
-                  <span class="cdl-contact__action-left"><span class="cdl-contact__num">02</span><span class="cdl-contact__action-copy"><strong>Mesaj Gönder</strong><small>Kısa bir soru veya ön bilgi bırak, sana dönüş yapalım.</small></span></span>
+                  <span class="cdl-contact__action-left"><span class="cdl-contact__num"><?php echo esc_html( sprintf('%02d', ++$row) ); ?></span><span class="cdl-contact__action-copy"><strong>Mesaj Gönder</strong><small>Kısa bir soru veya ön bilgi bırak, sana dönüş yapalım.</small></span></span>
                   <span class="cdl-contact__row-arrow" aria-hidden="true">↗</span>
                 </summary>
       <div class="cdl-contact-form-section" aria-labelledby="<?php echo esc_attr( $form_title_id ); ?>">
@@ -129,6 +166,7 @@ function codela_sf_section_agency_contact_bento( array $data, string $type = '' 
         </div>
       </div>
             </details>
+              <?php endif; ?>
             </div>
           </div>
         </div>
