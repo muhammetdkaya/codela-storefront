@@ -200,19 +200,21 @@
         updateBackLink();
     });
     function restoreListScroll() {
+        const clear = () => { try { sessionStorage.removeItem(scrollRestoreKey); } catch {} };
         try {
             const raw = sessionStorage.getItem(scrollRestoreKey);
             if (!raw) return;
             const saved = JSON.parse(raw);
+            const age = Date.now() - (saved?.time ?? NaN);
             if (!saved || saved.url !== normalise(location.href) ||
-                Date.now() - saved.time > 120000) {
-                sessionStorage.removeItem(scrollRestoreKey); return;
+                !Number.isFinite(age) || age < 0 || age > 120000) {
+                clear(); return;
             }
-            sessionStorage.removeItem(scrollRestoreKey);
+            clear();
             if (Number.isFinite(saved.scrollY) && saved.scrollY >= 0) {
                 requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo(0, saved.scrollY)));
             }
-        } catch { sessionStorage.removeItem(scrollRestoreKey); }
+        } catch { clear(); }
     }
     document.addEventListener('DOMContentLoaded', updateBackLink);
     window.addEventListener('pageshow', restoreListScroll);

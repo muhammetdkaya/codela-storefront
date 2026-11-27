@@ -84,3 +84,21 @@ for(const options of [
   assert.equal(result.restored,0,JSON.stringify(options));
 }
 assert.deepEqual(restoreCase({record:JSON.stringify({url:'https://store.test/other/',time:Date.now()})}),{cleared:0,opened:0,restored:0});
+
+assert.match(entry,/cartFeature\.bind\(\{eager: !agencyProfile \|\| !!commerceSurface\}\)/);
+const continuity=read(theme+'/assets/scripts/document-continuity.js');
+const listStart=continuity.indexOf('    function restoreListScroll() {');
+const listEnd=continuity.indexOf("    document.addEventListener('DOMContentLoaded', updateBackLink);",listStart);
+assert(listStart>=0&&listEnd>listStart);
+for (const record of ['bad json', JSON.stringify({url:'https://store.test/',time:Date.now()+60000}),JSON.stringify({url:'https://store.test/'})]) {
+ let cleared=0;
+ vm.runInNewContext(continuity.slice(listStart,listEnd)+'\nrestoreListScroll();',{
+ Date,location:{href:'https://store.test/'},normalise:v=>v,
+ scrollRestoreKey:'test',sessionStorage:{getItem:()=>record,removeItem:()=>cleared++},
+ requestAnimationFrame(){throw Error('Invalid record must not scroll');}
+ });
+ assert.equal(cleared,1);
+}
+vm.runInNewContext(continuity.slice(listStart,listEnd)+'\nrestoreListScroll();',{
+ scrollRestoreKey:'test',sessionStorage:{getItem(){throw Error('blocked');},removeItem(){throw Error('blocked');}}
+});

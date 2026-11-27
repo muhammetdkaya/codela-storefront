@@ -56,8 +56,14 @@ function init() {
     const dialog = $('#sf-panel'); if (!dialog) return;
     overlay.bind(dialog);
     dock.init(dialog);
-    if (config().commerce !== false && !document.querySelector('.sf-shell.has-agency-profile')) searchFeature.bind();
-    if (config().commerce !== false) cartFeature.bind();
+    const agencyProfile = !!document.querySelector('.sf-shell.has-agency-profile');
+    if (config().commerce !== false && !agencyProfile) searchFeature.bind();
+    if (config().commerce !== false) {
+        // Preserve native purchase listeners, but do not hydrate an invisible
+        // cart on a pure Agency page until actual cart intent.
+        const commerceSurface = document.querySelector('[data-panel="cart"], form.cart, .woocommerce-cart-form, .wp-block-woocommerce-cart, .wc-block-cart, form.checkout, .wp-block-woocommerce-checkout, .wc-block-checkout, .ajax_add_to_cart');
+        cartFeature.bind({eager: !agencyProfile || !!commerceSurface});
+    }
     // The Back link from a product entered through Search navigates to the
     // original document and carries a one-shot Search return intent.
     // Apply only on that exact same-tab, same-origin source, never on arbitrary
