@@ -174,7 +174,6 @@ function codela_sf_header(): string {
             <div class="sf-agency-header-tools sf-ui-surface" role="group" aria-label="<?php esc_attr_e( 'Contact, account and menu', 'codela-storefront' ); ?>">
             <?php if ( ! empty( $public_contact['phone'] ) ) : ?>
                 <?php echo codela_sf_contact_link( 'phone', 'Hemen Ara', $public_contact, 'sf-ui-icon-button sf-agency-phone', 'header' ); ?>
-                <span class="sf-agency-header-divider" aria-hidden="true"></span>
             <?php endif; ?>
             <?php endif; ?>
             <nav class="sf-actions<?php echo $agency_header ? ' sf-agency-header-account' : ' sf-ui-surface'; ?><?php echo $product_page || ( $catalog_page && $show_mobile_dock ) ? ' sf-ui-icon-group--single-mobile' : ''; ?>" aria-label="<?php esc_attr_e( 'Store tools', 'codela-storefront' ); ?>">
@@ -189,7 +188,6 @@ function codela_sf_header(): string {
 ] ); } ?>
             </nav>
             <?php if ( $agency_header ) : ?>
-                <span class="sf-agency-header-divider" aria-hidden="true"></span>
                 <nav class="sf-header-menu" aria-label="<?php esc_attr_e( 'Main menu', 'codela-storefront' ); ?>">
                     <?php echo codela_sf_ui_icon_button( 'menu', __( 'Menu', 'codela-storefront' ), [ 'variant' => 'soft', 'class' => 'sf-menu-trigger', 'href' => '#sf-menu-fallback', 'attributes' => [ 'data-wp-on--click' => 'actions.menu', 'data-panel' => 'menu', 'aria-haspopup' => 'dialog', 'aria-controls' => 'sf-panel', 'aria-expanded' => 'false' ] ] ); ?>
                 </nav>
@@ -237,11 +235,9 @@ function codela_sf_header(): string {
                 <?php echo codela_sf_ui_icon_button( 'search', __( 'Search', 'codela-storefront' ), [ 'variant' => 'soft', 'href' => add_query_arg( [ 's' => '', 'post_type' => 'product' ], home_url( '/' ) ), 'attributes' => [ 'data-wp-on--click' => 'actions.search', 'data-panel' => 'search', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] ] ); ?>
                 <?php echo codela_sf_ui_icon_button( 'user-round', __( 'My account', 'codela-storefront' ), [ 'variant' => 'soft', 'href' => codela_sf_account_url(), 'attributes' => $guest_overlay ? [ 'data-wp-on--click' => 'actions.account', 'data-panel' => 'account', 'aria-haspopup' => 'dialog', 'aria-expanded' => 'false' ] : [] ] ); ?>
             </nav><?php endif; ?><button class="sf-back" aria-label="<?php esc_attr_e( 'Back', 'codela-storefront' ); ?>" hidden><?php echo codela_sf_icon( 'arrow-left' ); ?></button><nav aria-label="<?php esc_attr_e( 'Main menu', 'codela-storefront' ); ?>"><?php echo codela_sf_menu(); ?></nav><?php if ( $editorial_menu ) : ?>
-                <aside class="sf-editorial-menu-aside" aria-label="<?php esc_attr_e( 'Contact', 'codela-storefront' ); ?>">
-                    <span class="sf-editorial-menu-eyebrow"><span aria-hidden="true"></span><?php echo esc_html( $agency_navigation ? strtoupper( (string) get_bloginfo( 'name' ) ) . ' STUDIO' : get_bloginfo( 'name' ) ); ?></span>
-                    <p><?php echo esc_html( $agency_navigation
-                        ? __( 'Web tasarım, e-ticaret ve özel yazılım projeleri için bize ulaşın veya müşteri hesabınıza geçin.', 'codela-storefront' )
-                        : __( 'Hesabınızdan siparişlerinizi ve bilgilerinizi yönetin; yeni seçenekleri keşfedin.', 'codela-storefront' ) ); ?></p>
+                <aside class="sf-editorial-menu-aside<?php echo $agency_navigation ? ' sf-editorial-menu-aside--compact' : ''; ?>" aria-label="<?php esc_attr_e( 'Contact', 'codela-storefront' ); ?>">
+                    <span class="sf-editorial-menu-eyebrow"><?php if ( ! $agency_navigation ) : ?><span aria-hidden="true"></span><?php endif; ?><?php echo esc_html( $agency_navigation ? __( 'Contact', 'codela-storefront' ) : get_bloginfo( 'name' ) ); ?></span>
+                    <?php if ( ! $agency_navigation ) : ?><p><?php echo esc_html( __( 'Hesabınızdan siparişlerinizi ve bilgilerinizi yönetin; yeni seçenekleri keşfedin.', 'codela-storefront' ) ); ?></p><?php endif; ?>
                     <div class="sf-editorial-menu-actions">
                         <?php
                         // The original Codela Studio reference has a public email in
@@ -252,16 +248,18 @@ function codela_sf_header(): string {
                             ? 'info@codela.dev' : '';
                         ?>
                         <?php if ( $agency_navigation ) : ?>
-                            <?php echo codela_sf_contact_link( 'phone', $public_contact['phone'] ?: 'Hemen Ara', $public_contact, 'sf-editorial-menu-contact sf-direct-contact', 'menu' ); ?>
+                            <?php echo codela_sf_contact_link( 'phone', 'Ara', $public_contact, 'sf-editorial-menu-contact sf-direct-contact', 'menu' ); ?>
                             <?php echo codela_sf_contact_link( 'whatsapp', 'WhatsApp', $public_contact, 'sf-editorial-menu-contact sf-direct-contact', 'menu' ); ?>
                             <?php $editorial_public_email = $public_contact['email'] ?: $editorial_public_email; ?>
                         <?php endif; ?>
                         <?php if ( $editorial_public_email ) : ?>
-                            <a class="sf-editorial-menu-mail" href="<?php echo esc_url( 'mailto:' . $editorial_public_email ); ?>"><?php echo esc_html( $editorial_public_email ); ?></a>
+                            <?php if ( $agency_navigation ) : ?>
+                                <?php echo codela_sf_contact_link( 'email', 'E-posta', array_merge( $public_contact, [ 'email' => $editorial_public_email ] ), 'sf-editorial-menu-mail sf-direct-contact', 'menu' ); ?>
+                            <?php else : ?><a class="sf-editorial-menu-mail" href="<?php echo esc_url( 'mailto:' . $editorial_public_email ); ?>"><?php echo esc_html( $editorial_public_email ); ?></a><?php endif; ?>
                         <?php elseif ( $agency_navigation ) : ?>
                             <a class="sf-editorial-menu-contact" href="<?php echo esc_url( function_exists( 'codela_sf_agency_contact_link' ) ? codela_sf_agency_contact_link() : home_url( '/' ) ); ?>"><?php esc_html_e( 'Contact', 'codela-storefront' ); ?><span aria-hidden="true">↗</span></a>
                         <?php endif; ?>
-                        <?php if ( $account_available ) : ?><a class="sf-editorial-menu-account" href="<?php echo esc_url( codela_sf_account_url() ); ?>"><?php esc_html_e( 'My account', 'codela-storefront' ); ?><span aria-hidden="true">→</span></a><?php endif; ?>
+                        <?php if ( $account_available ) : ?><a class="sf-editorial-menu-account" href="<?php echo esc_url( codela_sf_account_url() ); ?>"><?php if ( $agency_navigation ) { echo codela_sf_icon( 'user-round' ); } ?><?php esc_html_e( 'My account', 'codela-storefront' ); ?><?php if ( ! $agency_navigation ) : ?><span aria-hidden="true">→</span><?php endif; ?></a><?php endif; ?>
                     </div>
                 </aside>
                 <?php endif; ?><div class="sf-menu-secondary"><?php if ( get_privacy_policy_url() ) { ?><a href="<?php echo esc_url( get_privacy_policy_url() ); ?>"><?php esc_html_e( 'Privacy', 'codela-storefront' ); ?></a><?php } ?></div></section>

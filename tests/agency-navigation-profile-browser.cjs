@@ -25,6 +25,7 @@ for(const profile of ['commerce','agency']){
    assert(!html.includes('class="sf-menu-tools'));
    assert(html.includes('sf-account-link'));
    assert(html.includes('sf-agency-header-tools'),'Agency uses unified native tools capsule');
+   assert(!html.includes('sf-agency-header-divider'),'Agency controls have no vertical separators');
    assert(html.includes('sf-agency-brand-link'),'Agency exposes a linked Codela wordmark');
    assert(html.includes('/assets/icons/codela-brand-mark.svg'),'Agency uses transparent C amblem');
    assert(!html.includes('class="sf-agency-header-wordmark"'),'Agency does not overlay old logo text');
@@ -96,7 +97,7 @@ const moduleInit=[
     const menu=rect('.sf-agency-header-tools .sf-menu-trigger');
     return {brandEnd:a.right,toolsStart:g.left,toolsHeight:g.height,
       accountSize:account.width,menuSize:menu.width,
-      divider:rect('.sf-agency-header-divider').width,
+      divider:document.querySelectorAll('.sf-agency-header-divider').length,
       overflow:document.documentElement.scrollWidth-window.innerWidth,
       imgLoaded:document.querySelector('.sf-agency-brand-mark').complete};
    });
@@ -112,7 +113,7 @@ const moduleInit=[
    assert(Math.abs(brandGeometry.width-44)<=2,'Initial logo is emblem only');
    assert(brandGeometry.image>=27,'Original C emblem remains visible');
    assert(headerLayout.accountSize>=44&&headerLayout.menuSize>=44,'Both actions keep 44px touch targets');
-   assert(headerLayout.divider>=1&&headerLayout.divider<=2,'Subtle divider is one physical CSS pixel');
+   assert.equal(headerLayout.divider,0,'Agency tools have no divider elements');
    assert(headerLayout.overflow<=1,'No mobile/desktop horizontal overflow');
    if(width>=701){
     await page.locator('.sf-agency-brand-link').hover();

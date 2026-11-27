@@ -331,9 +331,15 @@
           const office=frame.dataset.mapOffice==='true';
           const area=frame.dataset.mapArea==='true';
           const zoom=office?16:area?14:11;
-          const map=L.map(host,{center,zoom,zoomControl:false,scrollWheelZoom:false,doubleClickZoom:false,attributionControl:true,dragging:window.matchMedia('(pointer:fine)').matches,touchZoom:false});
-          const tiles=L.tileLayer('https://server.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',{minZoom:5,maxNativeZoom:15,maxZoom:18,attribution:'Tiles © Esri — Esri, HERE, Garmin, OpenStreetMap contributors'});
-          tiles.once('tileload',()=>{frame.dataset.mapReady='true';});
+          const map=L.map(host,{center,zoom,zoomControl:false,scrollWheelZoom:false,doubleClickZoom:false,attributionControl:false,dragging:window.matchMedia('(pointer:fine)').matches,touchZoom:false});
+          // Native z16/17 tiles, not a scaled z15 image. Retina uses a
+          // higher source zoom while keeping the exact office framing.
+          const tiles=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{minZoom:5,maxNativeZoom:19,maxZoom:18,detectRetina:true,referrerPolicy:'strict-origin-when-cross-origin',attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'});
+          let loaded=0,failed=false;
+          tiles.on('loading',()=>{loaded=0;failed=false;});
+          tiles.on('tileload',()=>{loaded++;});
+          tiles.on('tileerror',()=>{failed=true;frame.dataset.mapReady='false';});
+          tiles.on('load',()=>{if(loaded>0&&!failed)frame.dataset.mapReady='true';});
           tiles.addTo(map);
           const icon=L.divIcon({className:'cdl-contact__beacon cdl-contact__beacon--pin',html:'<i></i><b></b><span class="cdl-contact__pin-label">'+(office?'Ofis konumu':'')+'</span>',iconSize:[30,30],iconAnchor:[15,15]});
           if(office) L.marker(center,{icon,interactive:false,zIndexOffset:1000}).addTo(map);
