@@ -204,6 +204,25 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
         assert.equal(await page.locator('.sf-auth-social a[href]').count(),0,'No separate Account navigation');
         const bounds=await page.locator('[data-sf-site-kit-late]').boundingBox();
         assert(bounds.width>=200&&bounds.width<=320&&bounds.height>=44,'Official widget fits the responsive account layout');
+        const frame=await page.locator('[data-sf-site-kit-late] .sf-site-kit-target').evaluate(el=>{
+          const root=el.closest('[data-sf-site-kit-button]');
+          document.documentElement.style.colorScheme='dark';
+          const frame=document.createElement('iframe');
+          frame.style.cssText='width:280px;height:44px;background:white;color-scheme:dark;box-shadow:0 0 2px white;border:0';
+          el.append(frame);
+          const cs=getComputedStyle(frame), rect=frame.getBoundingClientRect();
+          const info={scheme:cs.colorScheme,bg:cs.backgroundColor,shadow:cs.boxShadow,width:rect.width,height:rect.height,
+            parentScheme:getComputedStyle(root).colorScheme,rootScheme:getComputedStyle(document.documentElement).colorScheme};
+          frame.remove();document.documentElement.style.removeProperty('color-scheme');
+          return info;
+        });
+        assert.equal(frame.rootScheme,'dark','Dark page is unaffected by provider override');
+        assert.equal(frame.parentScheme,'light','Only the Google embedding canvas matches the provider color scheme');
+        assert.equal(frame.scheme,'light');
+        assert.equal(frame.bg,'rgba(0, 0, 0, 0)','Official frame has no opaque white background');
+        assert.equal(frame.shadow,'none');
+        assert.equal(frame.width,280,'Do not shrink the actual Google button');
+        assert.equal(frame.height,44,'Do not crop the Google button');
         await page.locator('.sf-auth-social').evaluate(el=>el.remove());
         await page.locator('.woocommerce').evaluate((node,markup)=>node.insertAdjacentHTML('beforeend',markup),unconfiguredGoogle);
         assert.equal(await page.locator('.sf-auth-google').count(),0,'Google option is absent when Site Kit is not connected');
