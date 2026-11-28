@@ -2698,7 +2698,8 @@ body:not(.home):has(.sf-shell) .codela-page-layout > .sf-agency-widget--detail:f
       linear-gradient(0deg,rgba(9,9,12,.24),transparent 28%);
   }
   .sf-agency-widget--bento .cdl-bento__card--commerce,
-  .sf-agency-widget--bento .cdl-bento__card--software{
+  .sf-agency-widget--bento .cdl-bento__card--software,
+  .sf-agency-widget--bento .cdl-bento__card--support{
     background:linear-gradient(115deg,#101015 0%,#151419 62%,#101014 100%);
   }
   .sf-agency-widget--bento .cdl-bento__visual:not(.cdl-bento__visual--support){
