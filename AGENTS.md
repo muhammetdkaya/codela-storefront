@@ -1,3 +1,15 @@
+## Son doğrulanmış devam noktası — 28 Kasım 2026 / Storefront 0.1.459 → 0.1.460
+
+**Biten:** Codela → Tema → Genel ekranında yalnız codela.dev ajans yöneticisine görünen geçici blog aktarma alanı. Tek tık, sırayla 10 özgün Türkçe yazıyı taslak olarak oluşturur; kategori, özet, Codela SEO başlığı/açıklaması, odak kelime ve ayrı WebP kapakları ekler. Her kapak gerçek Ortam kaydı, alt metin ve WordPress alt boyutlarıyla yazıya bağlanır. Tamamlanınca buton sonraki sayfa yüklemelerinde kaybolur; aynı ekranda taslakları inceleme bağlantısı kalır. İçerik yayımlanmaz. Eklenti sürümü değişmedi.
+
+**Sağlamlık:** POST/nonce ve yönetici+yazı+yükleme yetkileri; alan adı ve ajans kapsamı; atomik seçenek kilidi ve sahip kontrollü bırakma; yazı başına istek; kalıcı içerik/görsel kimlikleriyle kesintiden devam. Kullanıcının düzenlediği taslak/SEO korunur; aynı slug ile ilgisiz yazı veya çöpe taşınmış yarım içerik üstüne yazılmaz. İçe aktarma yalnız admin_init içinde yüklenir; ön yüze JS, istek veya bağımlılık eklenmez. Mevcut menü/Okuma ayarları değiştirilmez.
+
+**Doğrulama:** 31 paket testi, importer PHP davranış ve JS ilerleme/yeniden deneme testleri, agency ve agency-pages testleri, asset ve sözdizimi/diff kontrolleri geçti. İzole gerçek WordPress 7.1.5 / PHP 8.3.36 üzerinde 10 taslak + 10 kapak + medium/large/thumbnail/medium_large alt boyutları, SEO, tekrar çağrıda tekilleştirme ve tamamlanan alanın kapanması doğrulandı. Başlangıçtaki Playground alan adı uyuşmazlığı test site-url ayarıyla giderildi; ürün host koruması değiştirilmedi. Görseller AI ile üretilmiş kavramsal kapaklardır (gerçek müşteri ekranı değildir): 1200×800, toplam 221.616 bayt. İçerik+görsel paketi 287.146 bayt; çekirdek ZIP yaklaşık 804 KiB, 2 MiB sınırının altında.
+
+**Yayın:** 0.1.460 hazırlanıyor; PR/CI, FTP ve stable güncelleme sonucu henüz doğrulanmadı. Canlı yazılar kullanıcı düğmeye basana kadar oluşturulmayacak. Yerel tarayıcı kurulum indirmesi 403 ve mevcut Chromium çalıştırıcısının eksik binary'si nedeniyle gerçek tarayıcı görsel kontrolü yapılamadı; mevcut CI tarayıcı kapıları korunur. Eski library-migration için tests/script-modules.php mevcut optional-commerce grafiğinde başarısızdır (format modülü beklentisi); dosya değiştirilmedi, bu işin paket/agency testlerinden ayrı tutuldu.
+
+**Sıradaki:** Normal PR'a exact head/base 0.1.460 yayın komutunu ver; CI/FTP/canlı/stable doğrulamasını kaydet. Kullanıcı Codela → Tema → Genel'de “10 blog yazısını görselleriyle aktar” düğmesine basar, sonra Yazılar → Taslaklar'dan yayımlar. Yeni sürümden sonra kullanıcı isterse yalnız geçici importer ve paketi kaldır; Ortam/yazı kayıtları temadan bağımsız kalır.
+
 ## 26 Kasım 2026 — Storefront 0.1.435 sürüm adayı
 
 - Proje Başlat iletişim adımında 16px form metni, sade cümle biçimli etiketler, kehribar alt çizgi focus (Glass V2 kutu outline yok), koyu autofill, kısa placeholder ve opsiyonel not etiketi. Native pinch zoom ve otomatik doldurma korunur. VisualViewport küçüldüğünde yalnız odaklı alan görünür bölgenin dışına çıkmışsa kaydırma düzeltmesi yapılır. Sunucu formu ve doğrulama değişmedi.

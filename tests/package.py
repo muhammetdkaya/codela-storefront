@@ -1,10 +1,29 @@
-import hashlib,importlib.util,json,os,tempfile,unittest,zipfile
+import hashlib,importlib.util,json,os,subprocess,tempfile,unittest,zipfile
 from pathlib import Path
 from unittest.mock import patch
 def module(name,path):
     spec=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
 build=module("build","scripts/build-package.py");deploy=module("deploy","scripts/deploy.py")
 class Tests(unittest.TestCase):
+    def test_blog_import_behavior(self):
+        subprocess.run(["php", "tests/agency-blog-import.php"], check=True)
+        subprocess.run(["node", "tests/agency-blog-import.cjs"], check=True)
+
+    def test_blog_import_editorial_package(self):
+        folder=build.ROOT/"content/blog-2026"
+        rows=json.loads((folder/"posts.json").read_text())
+        self.assertEqual(len(rows),10)
+        self.assertEqual(len({r["slug"] for r in rows}),10)
+        self.assertEqual(len({r["image"] for r in rows}),10)
+        for row in rows:
+            self.assertGreater(len(row["body_html"].split()),450)
+            self.assertNotIn("<script",row["body_html"])
+            self.assertTrue(row["alt"])
+            data=(folder/row["image"]).read_bytes()
+            self.assertEqual(data[:4],b"RIFF")
+            self.assertEqual(data[8:12],b"WEBP")
+        self.assertLess(sum(p.stat().st_size for p in folder.iterdir()),350_000)
+
     def test_theme_identity(self):
         self.assertFalse(deploy.valid_theme(b"Theme Name: Other\nText Domain: codela-storefront\n"))
         self.assertFalse(deploy.valid_theme(b"Theme Name: Codela Storefront\nText Domain: other\n"))
