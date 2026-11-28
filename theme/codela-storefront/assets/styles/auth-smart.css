@@ -395,3 +395,7 @@ body.sf-auth-chrome-hidden .sf-shell > :is(.sf-header,.sf-mobile-dock){
     flex:0 0 auto;width:100%
   }
 }
+
+/* The official Google iframe controls its own appearance and interaction. */
+.sf-site-kit-button{display:flex;justify-content:center;align-items:center;min-height:44px;max-width:100%;margin:0 auto}
+.sf-site-kit-button .googlesitekit-sign-in-with-google__frontend-output-button{max-width:100%;margin:0 auto}
