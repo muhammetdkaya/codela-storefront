@@ -612,6 +612,13 @@ function codela_sf_agency_journal_heading( string $html, array $block ): string 
 add_filter( 'render_block_core/heading', 'codela_sf_agency_journal_heading', 10, 2 );
 add_filter( 'render_block_core/query-title', 'codela_sf_agency_journal_heading', 10, 2 );
 
+/** Turkish editorial date, independent of global date format. */
+function codela_sf_agency_journal_date( $post ): string {
+    $date = get_post_datetime( $post );
+    if ( ! $date ) { return ''; }
+    $months = [ 'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık' ];
+    return $date->format( 'j' ) . ' ' . $months[(int) $date->format( 'n' ) - 1] . ' ' . $date->format( 'Y' );
+}
 /** A bounded, approximate reading time; never inspect a protected article. */
 function codela_sf_agency_journal_minutes( string $content ): int {
     $content = preg_replace( '~</(?:p|div|li|h[1-6]|blockquote|td|th)>|<br\\s*/?>~i', ' $0 ', $content ) ?? $content;
@@ -625,6 +632,8 @@ add_filter( 'render_block_core/post-date', static function( $html, $block, $inst
     $id = (int) ( $instance->context['postId'] ?? 0 );
     $post = $id ? get_post( $id ) : null;
     if ( ! $post || 'post' !== $post->post_type || 'publish' !== $post->post_status || ! empty( $post->post_password ) ) { return $html; }
+    $date = codela_sf_agency_journal_date( $post );
+    if ( $date ) { $html = preg_replace_callback( '~(<time\\b[^>]*>)[^<]*(</time>)~i', static fn( $m ) => $m[1] . esc_html( $date ) . $m[2], $html, 1 ) ?? $html; }
     $minutes = codela_sf_agency_journal_minutes( $post->post_content );
     return $minutes ? '<div class="sf-journal-date-meta">' . $html . '<span class="sf-journal-reading">' . esc_html( (string) $minutes ) . ' dk okuma</span></div>' : $html;
 }, 10, 3 );
@@ -644,7 +653,7 @@ add_filter( 'render_block_core/group', static function( $html, $block ) {
     $rows = '';
     foreach ( $related as $item ) {
         if ( 'publish' !== $item->post_status || ! empty( $item->post_password ) || (int) $item->ID === $id ) { continue; }
-        $rows .= '<a class="sf-article-related-row" href="' . esc_url( get_permalink( $item ) ) . '"><span><small>' . esc_html( get_the_date( '', $item ) ) . '</small><strong>' . esc_html( get_the_title( $item ) ) . '</strong></span><span aria-hidden="true">↗</span></a>';
+        $rows .= '<a class="sf-article-related-row" href="' . esc_url( get_permalink( $item ) ) . '"><span><small>' . esc_html( codela_sf_agency_journal_date( $item ) ) . '</small><strong>' . esc_html( get_the_title( $item ) ) . '</strong></span><span aria-hidden="true">↗</span></a>';
     }
     if ( $rows ) { $html .= '<section class="sf-article-related"><h2>İlgili yazılar</h2>' . $rows . '</section>'; }
     $project = codela_sf_agency_project_url();

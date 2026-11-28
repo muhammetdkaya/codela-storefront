@@ -19,7 +19,8 @@
         const low = selected.reduce((sum,x)=>sum+Number(x.dataset.min),0);
         const high = selected.reduce((sum,x)=>sum+Number(x.dataset.max),0);
         const format = new Intl.NumberFormat('tr-TR');
-        estimate.textContent = 'Tahmini: '+format.format(low)+(low===high?'':' – '+format.format(high))+' TL';
+        const mode = quoteForm.dataset.pricingMode;
+        estimate.textContent = 'Tahmini: '+format.format(low)+(mode==='starting'||low===high?'':' – '+format.format(high))+' TL'+(mode==='starting'?' itibarıyla':mode==='monthly'?' / ay':'');
         estimate.hidden = false;
       };
       quoteForm.addEventListener('change',update);update();
