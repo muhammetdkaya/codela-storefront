@@ -191,8 +191,6 @@ add_action( 'wp_ajax_codela_sf_blog_import', 'codela_sf_blog_import_ajax' );
 
 function codela_sf_blog_import_render(): void {
     if ( ! codela_sf_blog_import_allowed() || get_option( 'codela_sf_blog_import_20261128_done', false ) ) { return; }
-    wp_enqueue_script( 'codela-blog-import', get_template_directory_uri() . '/assets/scripts/agency-blog-import.js', [],
-        wp_get_theme()->get( 'Version' ), true );
     ?>
     <section class="cdl-theme-appearance-panel" id="codela-blog-import" aria-labelledby="codela-blog-import-title"
         data-url="<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( 'codela_sf_blog_import' ) ); ?>">
@@ -210,5 +208,8 @@ function codela_sf_blog_import_render(): void {
         </div>
     </section>
     <?php
+    // Codela swaps settings tabs over AJAX and executes their inline scripts.
+    // A footer enqueue here would be lost when arriving from another tab.
+    wp_print_inline_script_tag( file_get_contents( get_template_directory() . '/assets/scripts/agency-blog-import.js' ) );
 }
 add_action( function_exists( 'codela_theme_render_general' ) ? 'codela_theme_settings_general' : 'codela_theme_settings_integrations', 'codela_sf_blog_import_render' );

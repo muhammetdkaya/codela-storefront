@@ -76,6 +76,11 @@ function add_action( $name, $callback ) { $GLOBALS['hooks'][$name] = $callback; 
 function check_ajax_referer( ...$args ) { return $GLOBALS['nonce']; }
 function wp_send_json_error( $data, $code ) { $GLOBALS['response'] = [ false, $data, $code ]; }
 function wp_send_json_success( $data ) { $GLOBALS['response'] = [ true, $data ]; }
+function admin_url( $path ) { return 'https://codela.dev/wp-admin/' . $path; }
+function esc_url( $value ) { return htmlspecialchars( $value, ENT_QUOTES ); }
+function esc_attr( $value ) { return htmlspecialchars( $value, ENT_QUOTES ); }
+function wp_create_nonce( $action ) { return 'test-nonce'; }
+function wp_print_inline_script_tag( $code ) { echo '<script>' . $code . '</script>'; }
 require dirname( __DIR__ ) . '/theme/codela-storefront/inc/agency-blog-import.php';
 reset_blog();
 $rows = codela_sf_blog_import_rows();
@@ -132,6 +137,8 @@ check_blog( count( $GLOBALS['posts'] ) === 20, 'Repeated completed requests cann
 ob_start(); codela_sf_blog_import_render(); $html = ob_get_clean();
 check_blog( '' === $html, 'Temporary panel disappears after completion.' );
 reset_blog();
+ob_start(); codela_sf_blog_import_render(); $panel = ob_get_clean();
+check_blog( str_contains( $panel, 'data-import-button' ) && str_contains( $panel, '<script>' ) && str_contains( $panel, "button.addEventListener('click'" ), 'AJAX settings fragments include their initializer without relying on a missing page footer.' );
 $GLOBALS['posts'][400] = [ 'post_type' => 'post', 'post_status' => 'draft', 'post_name' => $rows[0]['slug'] ];
 check_blog( 'collision' === codela_sf_blog_import_step()->get_error_code() && count( $GLOBALS['posts'] ) === 1, 'Unrelated existing posts are never overwritten or duplicated.' );
 reset_blog();

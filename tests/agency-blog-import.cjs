@@ -9,12 +9,12 @@ function fixture(fetch) {
   const review = { hidden: true, focus() { this.focused = true; } };
   const elements = { '[data-import-button]': button, '[data-import-status]': status,
     '[data-import-progress]': progress, '[data-import-review]': review };
-  const panel = { dataset: { url: '/wp-admin/admin-ajax.php', nonce: 'test-nonce' },
+  const panel = { isConnected: true, dataset: { url: '/wp-admin/admin-ajax.php', nonce: 'test-nonce' },
     querySelector: (selector) => elements[selector], setAttribute() {}, removeAttribute() {} };
   const listeners = new Set();
   vm.runInNewContext(source, { document: { getElementById: () => panel }, fetch, URLSearchParams,
     window: { addEventListener(type) { listeners.add(type); }, removeEventListener(type) { listeners.delete(type); } } });
-  return { button, status, progress, review, listeners };
+  return { button, status, progress, review, listeners, panel };
 }
 const success = (count) => ({ ok: true, json: async () => ({ success: true, data: { count, total: 10, done: count === 10 } }) });
 (async () => {
@@ -58,5 +58,15 @@ const success = (count) => ({ ok: true, json: async () => ({ success: true, data
   await malformed.button.click();
   assert.equal(malformed.review.hidden, true);
   assert.equal(malformed.button.disabled, false);
+  let navigationRequests = 0;
+  const navigation = fixture(async () => {
+    navigationRequests++;
+    navigation.panel.isConnected = false;
+    return success(1);
+  });
+  await navigation.button.click();
+  assert.equal(navigationRequests, 1, 'Changing settings tabs stops the old request loop');
+  assert.equal(navigation.review.hidden, true);
+  assert.equal(navigation.listeners.size, 0);
   console.log('Blog import UI: single click, progress, interruption, resume and invalid responses passed.');
 })().catch((error) => { console.error(error); process.exitCode = 1; });

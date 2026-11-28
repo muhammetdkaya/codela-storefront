@@ -23,6 +23,7 @@
     try {
       let done = false;
       while (!done) {
+        if (!panel.isConnected) return;
         const response = await fetch(panel.dataset.url, {
           method: 'POST', credentials: 'same-origin',
           body: new URLSearchParams({ action: 'codela_sf_blog_import', nonce: panel.dataset.nonce }),
