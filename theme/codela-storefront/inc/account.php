@@ -247,7 +247,7 @@ add_action( 'login_init', static function(): void {
  * Do not rewrite the native endpoint while the official provider is connected.
  */
 function codela_sf_site_kit_signin_connected(): bool {
-    if ( ! has_action( 'googlesitekit_render_sign_in_with_google_button' ) ) { return false; }
+    if ( ! function_exists( 'has_action' ) || ! has_action( 'googlesitekit_render_sign_in_with_google_button' ) ) { return false; }
     $settings = get_option( 'googlesitekit_sign-in-with-google_settings', [] );
     return is_ssl() && is_array( $settings ) && ! empty( $settings['clientID'] );
 }

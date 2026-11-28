@@ -104,7 +104,19 @@ function codela_sf_google_reject(): void {
  */
 function codela_sf_google_guard_session( $cookie, $expire, $expiration, $user_id, $scheme, $token ): void {
     $user = get_user_by( 'id', $user_id );
-    if ( codela_sf_public_account_user( $user ) ) { return; }
+    if ( codela_sf_public_account_user( $user ) ) {
+        // An already-linked Site Kit user may bypass its metadata write. Do
+        // not let a conflicting provider link bypass the legacy identity rule.
+        $legacy = (string) get_user_meta( $user_id, '_sf_google_sub', true );
+        if ( '' === $legacy ) { return; }
+        global $wpdb;
+        $option = 'googlesitekitpersistent_siwg_google_user_hid';
+        $links = array_filter( [
+            (string) get_user_meta( $user_id, $option, true ),
+            (string) get_user_meta( $user_id, $wpdb->get_blog_prefix() . $option, true ),
+        ] );
+        if ( $links && ! array_diff( $links, [ md5( $legacy ) ] ) ) { return; }
+    }
     if ( is_string( $token ) && '' !== $token ) {
         WP_Session_Tokens::get_instance( $user_id )->destroy( $token );
     }

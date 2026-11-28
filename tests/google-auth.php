@@ -59,6 +59,11 @@ try{codela_sf_google_guard_link(null,2,'wp_googlesitekitpersistent_siwg_google_u
 catch(RedirectResult $e){check(str_contains($e->url,'google_login=error'),'Link rejected before metadata write');}
 $GLOBALS['meta'][2]['_sf_google_sub']='legacy-sub';
 check(codela_sf_google_guard_link(null,2,'wp_googlesitekitpersistent_siwg_google_user_hid',$hash)===null,'Legacy identity passes official write');
+$GLOBALS['meta'][2]['wp_googlesitekitpersistent_siwg_google_user_hid']=$other;
+try{codela_sf_google_guard_session('',0,0,2,'auth','conflict-token');throw new RuntimeException('Conflicting existing provider mapping must be rejected');}
+catch(RedirectResult $e){check($GLOBALS['destroyed']==='conflict-token','Existing conflicting identity is rejected');}
+$GLOBALS['meta'][2]['wp_googlesitekitpersistent_siwg_google_user_hid']=$hash;
+codela_sf_google_guard_session('',0,0,2,'auth','legacy-token');
 ob_start();codela_sf_google_settings_form();$settings=ob_get_clean();
 check(str_contains($settings,'googlesitekit-settings')&&!str_contains($settings,'Client secret'),'Settings point to official provider only');
 echo "Site Kit presentation, customer session boundary and link policy passed\n";
