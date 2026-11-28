@@ -577,3 +577,92 @@ add_action( 'template_redirect', static function(): void {
     if ( ! defined( 'DONOTCACHEPAGE' ) ) { define( 'DONOTCACHEPAGE', true ); }
     nocache_headers();
 }, 2 );
+
+/** Agency journal enhancements. Native query, permalinks and content remain authoritative. */
+function codela_sf_agency_journal_url(): string {
+    if ( 'posts' === get_option( 'show_on_front' ) ) { return home_url( '/' ); }
+    $id = (int) get_option( 'page_for_posts' );
+    $page = $id ? get_post( $id ) : null;
+    return $page && 'page' === $page->post_type && 'publish' === $page->post_status
+        && empty( $page->post_password ) ? (string) get_permalink( $page ) : '';
+}
+
+function codela_sf_agency_journal_categories(): string {
+    $links = '';
+    $url = codela_sf_agency_journal_url();
+    if ( $url ) {
+        $links .= '<a href="' . esc_url( $url ) . '"' . ( is_home() ? ' aria-current="page"' : '' ) . '>Tümü</a>';
+    }
+    $terms = get_categories( [ 'hide_empty' => true, 'orderby' => 'name', 'number' => 24 ] );
+    foreach ( $terms as $term ) {
+        $url = get_term_link( $term );
+        if ( is_wp_error( $url ) ) { continue; }
+        $links .= '<a href="' . esc_url( $url ) . '"' . ( is_category( $term->term_id ) ? ' aria-current="page"' : '' ) . '>' . esc_html( $term->name ) . '</a>';
+    }
+    return $links ? '<nav class="sf-journal-categories" aria-label="Yazı kategorileri">' . $links . '</nav>' : '';
+}
+
+function codela_sf_agency_journal_heading( string $html, array $block ): string {
+    if ( ! codela_sf_agency_experience() || ! in_array( 'sf-journal-title', explode( ' ', $block['attrs']['className'] ?? '' ), true ) || ! ( is_home() || is_archive() ) ) { return $html; }
+    if ( is_home() ) {
+        $html = '<h1 class="wp-block-heading sf-journal-title">Notlar ve içgörüler.</h1><p class="sf-journal-intro">Tasarım, teknoloji ve dijital dünyaya dair.</p>';
+    }
+    return '<div class="sf-journal-heading"><span class="sf-journal-kicker">Blog</span>' . $html . '</div>' . codela_sf_agency_journal_categories();
+}
+add_filter( 'render_block_core/heading', 'codela_sf_agency_journal_heading', 10, 2 );
+add_filter( 'render_block_core/query-title', 'codela_sf_agency_journal_heading', 10, 2 );
+
+/** A bounded, approximate reading time; never inspect a protected article. */
+function codela_sf_agency_journal_minutes( string $content ): int {
+    $content = preg_replace( '~</(?:p|div|li|h[1-6]|blockquote|td|th)>|<br\\s*/?>~i', ' $0 ', $content ) ?? $content;
+    $text = trim( wp_strip_all_tags( strip_shortcodes( $content ), true ) );
+    if ( '' === $text ) { return 0; }
+    $words = preg_split( '/\\s+/u', $text, -1, PREG_SPLIT_NO_EMPTY );
+    return is_array( $words ) ? max( 1, (int) ceil( count( $words ) / 220 ) ) : 0;
+}
+add_filter( 'render_block_core/post-date', static function( $html, $block, $instance ) {
+    if ( ! codela_sf_agency_experience() || 'sf-journal-reading-date' !== ( $block['attrs']['className'] ?? '' ) || ! ( is_home() || is_archive() || is_singular( 'post' ) ) ) { return $html; }
+    $id = (int) ( $instance->context['postId'] ?? 0 );
+    $post = $id ? get_post( $id ) : null;
+    if ( ! $post || 'post' !== $post->post_type || 'publish' !== $post->post_status || ! empty( $post->post_password ) ) { return $html; }
+    $minutes = codela_sf_agency_journal_minutes( $post->post_content );
+    return $minutes ? '<div class="sf-journal-date-meta">' . $html . '<span class="sf-journal-reading">' . esc_html( (string) $minutes ) . ' dk okuma</span></div>' : $html;
+}, 10, 3 );
+
+/** Extend only the actual article navigation, not arbitrary editor groups. */
+add_filter( 'render_block_core/group', static function( $html, $block ) {
+    if ( ! codela_sf_agency_experience() || ! is_singular( 'post' ) || 'sf-article-navigation' !== ( $block['attrs']['className'] ?? '' ) ) { return $html; }
+    $id = get_queried_object_id();
+    $post = get_post( $id );
+    if ( ! $post || 'publish' !== $post->post_status || ! empty( $post->post_password ) ) { return $html; }
+    $categories = wp_get_post_categories( $id );
+    $related = $categories ? get_posts( [
+        'post_type' => 'post', 'post_status' => 'publish', 'numberposts' => 3,
+        'post__not_in' => [ $id ], 'category__in' => $categories,
+        'has_password' => false, 'suppress_filters' => false,
+    ] ) : [];
+    $rows = '';
+    foreach ( $related as $item ) {
+        if ( 'publish' !== $item->post_status || ! empty( $item->post_password ) || (int) $item->ID === $id ) { continue; }
+        $rows .= '<a class="sf-article-related-row" href="' . esc_url( get_permalink( $item ) ) . '"><span><small>' . esc_html( get_the_date( '', $item ) ) . '</small><strong>' . esc_html( get_the_title( $item ) ) . '</strong></span><span aria-hidden="true">↗</span></a>';
+    }
+    if ( $rows ) { $html .= '<section class="sf-article-related"><h2>İlgili yazılar</h2>' . $rows . '</section>'; }
+    $project = codela_sf_agency_project_url();
+    if ( $project ) {
+        $html .= '<section class="sf-article-cta"><div><h2>Bir projen mi var?</h2><p>Birlikte hayata geçirelim.</p></div><a href="' . esc_url( $project ) . '">Proje başlat <span aria-hidden="true">↗</span></a></section>';
+    }
+    return $html;
+}, 10, 2 );
+
+/** Expose the actual posts page in the Agency primary menu, if not already present.
+ * Never create a guessed URL, change Reading settings or write a menu item. */
+add_filter( 'wp_nav_menu_items', static function( $items, $args ) {
+    if ( ! codela_sf_agency_experience() || 'primary' !== ( $args->theme_location ?? '' ) || 'sf-menu-list' !== ( $args->menu_class ?? '' ) ) { return $items; }
+    $url = codela_sf_agency_journal_url();
+    if ( ! $url || home_url( '/' ) === $url || ! class_exists( 'WP_HTML_Tag_Processor' ) ) { return $items; }
+    $processor = new WP_HTML_Tag_Processor( $items );
+    while ( $processor->next_tag( 'A' ) ) {
+        if ( untrailingslashit( (string) $processor->get_attribute( 'href' ) ) === untrailingslashit( $url ) ) { return $items; }
+    }
+    return $items . '<li class="menu-item' . ( is_home() ? ' current-menu-item' : '' ) . '"><a href="' . esc_url( $url ) . '"' . ( is_home() ? ' aria-current="page"' : '' ) . '>Blog</a></li>';
+}, 20, 2 );

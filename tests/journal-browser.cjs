@@ -24,6 +24,24 @@ const post=`<main class="sf-content sf-article"><article class="wp-block-group s
   }else{assert((await page.locator('.sf-article-content').boundingBox()).width<=760,'Readable text measure');assert(await page.locator('pre').evaluate(el=>el.scrollWidth>el.clientWidth),'Code scrolls inside content');}
   if([390,1440].includes(width))await page.screenshot({path:`qa/storefront-ui-kit-journal-${mode}-${width}.png`,fullPage:true});
  }
+ // Agency-only contrast and mobile editorial hierarchy.
+ for(const width of [320,390,768,1440])for(const mode of ['list','post']){
+  await page.setViewportSize({width,height:900});
+  const agencyList=list.replace('<h1 class="sf-journal-title">Blog</h1>','<div class="sf-journal-heading"><span class="sf-journal-kicker">Blog</span><h1 class="sf-journal-title">Notlar ve içgörüler.</h1><p class="sf-journal-intro">Tasarım, teknoloji ve dijital dünyaya dair.</p></div><nav class="sf-journal-categories"><a aria-current="page" href="#all">Tümü</a><a href="#web">Web tasarım</a></nav>');
+  const agencyPost=post.replace('</article>','<section class="sf-article-related"><h2>İlgili yazılar</h2><a class="sf-article-related-row" href="#related"><span><small>20 Ekim</small><strong>Bir başka yazı</strong></span><span>↗</span></a></section><section class="sf-article-cta"><div><h2>Bir projen mi var?</h2><p>Birlikte hayata geçirelim.</p></div><a href="#project">Proje başlat</a></section></article>');
+  await page.setContent(`<!doctype html><html lang="tr"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:Arial,sans-serif}a{color:inherit}img{max-width:100%}${css}</style><body class="sf-site-agency">${mode==='list'?agencyList:agencyPost}</body></html>`);
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Agency no page overflow '+mode+' '+width);
+  assert.equal(await page.locator('body').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(9, 9, 13)');
+  if(mode==='list'){
+    assert(await page.locator('.sf-journal-card').first().evaluate(el=>getComputedStyle(el).backgroundImage.includes('linear-gradient')),'Leading card uses graphite material');
+    assert.equal(await page.locator('.sf-journal-card').nth(1).evaluate(el=>getComputedStyle(el).flexDirection),width<=700?'row':'column');
+    for(const link of await page.locator('.sf-journal-categories a').all())assert((await link.boundingBox()).height>=44,'Category touch target');
+  }else{
+    assert((await page.locator('.sf-article-content').boundingBox()).width<=760,'Agency reading measure');
+    assert((await page.locator('.sf-article-cta a').boundingBox()).height>=44,'Project touch target');
+  }
+  if([390,1440].includes(width))await page.screenshot({path:`qa/storefront-agency-journal-${mode}-${width}.png`,fullPage:true});
+ }
  console.log('Journal layout: seven widths, leading card, image-free/long titles, reading measure, overflowing code/table and shared button targets passed.');
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1});

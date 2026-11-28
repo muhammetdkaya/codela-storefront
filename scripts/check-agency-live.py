@@ -288,7 +288,7 @@ def check() -> None:
                 anchors = re.findall(r'<a\b[^>]*>(.*?)</a>', menu.group(1), re.S)
                 labels = [" ".join(re.sub(r"<[^>]+>", "", a).split()) for a in anchors]
                 expected_labels = ["Ana Sayfa", "Hizmetler", "Hakkımızda", "İletişim"]
-                if labels != expected_labels:
+                if labels.count('Blog') > 1 or [label for label in labels if label != 'Blog'] != expected_labels:
                     errors.append("Agency menu mismatch: " + repr(labels))
                 else:
                     print("Agency Account/Menu capsule and overlay navigation verified:",

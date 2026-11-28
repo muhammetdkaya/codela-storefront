@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 <!-- wp:post-excerpt {"moreText":"","excerptLength":24} /-->
 <!-- wp:group {"className":"sf-journal-card-footer"} -->
 <div class="wp-block-group sf-journal-card-footer">
-<!-- wp:post-date /-->
+<!-- wp:post-date {"className":"sf-journal-reading-date"} /-->
 <!-- wp:read-more {"className":"sf-ui-button sf-ui-button--secondary"} /-->
 </div><!-- /wp:group -->
 </div><!-- /wp:group -->

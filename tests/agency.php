@@ -11,7 +11,7 @@ function add_action( ...$args ) { $GLOBALS['actions'][$args[0]][] = $args[1]; }
 function add_filter( ...$args ) {}
 function is_front_page() { return $GLOBALS['front']; }
 function codela_sf_ready() { return $GLOBALS['ready']; }
-function get_option( $name ) { return 'show_on_front' === $name ? 'page' : null; }
+function get_option( $name ) { return 'show_on_front' === $name ? 'page' : ( 'page_for_posts' === $name ? ( $GLOBALS['posts_page'] ?? 0 ) : null ); }
 function do_blocks( $content ) { return $content; }
 function get_queried_object_id() { return 7; }
 function get_post( $id ) { return $GLOBALS['page']; }
@@ -89,6 +89,18 @@ agency_check( substr_count( $html, 'class="sf-agency-poster ' ) === 4, 'Four ser
 agency_check( str_contains( $html, 'data-agency-service-track' ), 'Native scrollable service deck.' );
 agency_check( str_contains( $html, '<dialog ' ), 'Service details modal is rendered.' );
 agency_check( ! str_contains( $html, 'cdn.' ) && ! str_contains( $html, '<script' ), 'No third-party runtime in pattern.' );
+function strip_shortcodes( $value ) { return preg_replace( '/\\[[^\\]]+\\]/', '', $value ); }
+function wp_strip_all_tags( $value, $remove_breaks = false ) { return strip_tags( $value ); }
+agency_check( 0 === codela_sf_agency_journal_minutes( '<p></p>' ), 'No reading label for empty article.' );
+agency_check( 1 === codela_sf_agency_journal_minutes( '<p>Kısa bir yazı.</p>' ), 'A short article is one minute.' );
+agency_check( 2 === codela_sf_agency_journal_minutes( str_repeat( '<p>kelime</p>', 221 ) ), 'Reading estimate counts adjacent paragraph words.' );
+agency_check( '' === codela_sf_agency_journal_url(), 'No invented blog route if Reading has no posts page.' );
+$GLOBALS['posts_page'] = 7;
+$GLOBALS['page']->post_status = 'publish';
+agency_check( 'https://example.test/iletisim/' === codela_sf_agency_journal_url(), 'Blog uses the configured native posts-page permalink.' );
+$GLOBALS['page']->post_password = 'private';
+agency_check( '' === codela_sf_agency_journal_url(), 'Protected posts page is not advertised.' );
+$GLOBALS['page']->post_password = '';
 if ( in_array( '--render', $argv, true ) ) {
     echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
     foreach ( [ 'storefront-base.css', 'agency.css' ] as $file ) { echo '<link rel="stylesheet" href="/theme/codela-storefront/assets/styles/' . $file . '">'; }
