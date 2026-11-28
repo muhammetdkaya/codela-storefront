@@ -225,7 +225,7 @@ body:not(.wp-admin) .sf-agency-widget--project .cdl-project__heading > :is(h1,h2
 .sf-agency-widget--project .cdl-project__controls{display:flex;gap:10px;}
 .sf-agency-widget--project .cdl-project__back-button{width:44px;flex:none;padding:0;}
 .sf-agency-widget--project .cdl-project__success{align-items:flex-start;text-align:left;justify-content:flex-start;min-height:0;}
-@media(prefers-reduced-motion:no-preference){.sf-agency-widget--project .cdl-project__step:not([hidden]){animation:cdl-project-editorial-in .3s ease-out;}@keyframes cdl-project-editorial-in{from{opacity:0}to{opacity:1}}}
+@media(prefers-reduced-motion:no-preference){.sf-agency-widget--project .cdl-project__step:not([hidden]){animation:cdl-project-editorial-in .3s ease-out;}@keyframes cdl-project-editorial-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}}
 
 .sf-agency-widget--project .cdl-project__choices--services .cdl-project__choice input{z-index:2;}
 .sf-agency-widget--project .cdl-project__heading>p:last-child{color:#b6b0bf;}
