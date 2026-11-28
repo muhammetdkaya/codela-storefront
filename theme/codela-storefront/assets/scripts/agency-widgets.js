@@ -43,8 +43,7 @@
         const format=new Intl.NumberFormat('tr-TR');
         const selectedScopes=()=>scopes.filter(x=>services.some(s=>s.checked&&s.value===x.dataset.projectScope));
         const serviceName=scope=>scope?.querySelector('legend')?.textContent||'';
-        const scopeLabels=()=>selectedScopes().map(x=>serviceName(x)+': '+x.querySelector('[data-scope-estimate]').textContent);
-        const hasChoice=scope=>!!scope?.querySelector('[data-scope-package]:checked,[data-scope-custom]:checked');
+         const hasChoice=scope=>!!scope?.querySelector('[data-scope-package]:checked,[data-scope-custom]:checked');
         const currentScope=()=>selectedScopes().find(x=>x.dataset.projectScope===activeScope);
         const setError=visible=>{if(scopeError)scopeError.hidden=!visible;};
         const money=(min,max)=>format.format(min)+(min===max?'':' – '+format.format(max))+' TL';
@@ -114,9 +113,46 @@
           setError(false);
           steps.forEach((step,n)=>{step.hidden=n!==index;});
           if(index===3){
-            summary.replaceChildren(...[...services.filter(x=>x.checked).map(x=>x.value==='Optimizasyon / Destek'?'Bakım & Geliştirme':x.value),form.querySelector('input[name="agency_project_month"]:checked')?.dataset.monthLabel,...scopeLabels()].filter(Boolean).map(value=>{
-              const tag=document.createElement('span');tag.textContent=value;return tag;
-            }));
+            const choices=selectedScopes().map(scope=>{
+              const custom=!!scope.querySelector('[data-scope-custom]:checked');
+              const packages=[...scope.querySelectorAll('[data-scope-package]:checked')];
+              const extras=[...scope.querySelectorAll('[data-scope-extra]:checked')];
+              const rows=[...packages,...extras];
+              const known=!custom&&packages.length>0&&rows.every(x=>/^\d+$/.test(x.dataset.min||'')&&/^\d+$/.test(x.dataset.max||''));
+              return {name:serviceName(scope),mode:scope.dataset.pricingMode,custom,packages,extras,rows,known,
+                min:known?rows.reduce((n,x)=>n+Number(x.dataset.min),0):0,
+                max:known?rows.reduce((n,x)=>n+Number(x.dataset.max),0):0};
+            });
+            const itemName=input=>input.closest('label').querySelector('.cdl-project__choice-copy strong')?.textContent.trim()||input.nextElementSibling.textContent.trim();
+            const add=(parent,tag,cls,value)=>{const el=document.createElement(tag);el.className=cls;el.textContent=value;parent.append(el);return el;};
+            summary.querySelector('[data-review-services]').textContent=choices.map(x=>x.name).join(' · ');
+            const pkg=summary.querySelector('[data-review-package]');
+            const extraCount=choices.reduce((n,x)=>n+x.extras.length,0);
+            pkg.textContent=(choices.length===1?(choices[0].custom?'İhtiyaca özel teklif':choices[0].packages.map(itemName).join(' · ')):choices.length+' hizmet')+(extraCount?' · '+extraCount+' ek kapsam':'');
+            const budgets=summary.querySelector('[data-review-budgets]');
+            const list=summary.querySelector('[data-review-list]');
+            budgets.replaceChildren();list.replaceChildren();
+            const groups=[['range','Tek seferlik'],['starting','Başlangıç tutarı'],['monthly','Aylık bakım']];
+            const used=groups.filter(([mode])=>choices.some(x=>x.mode===mode));
+            for(const [mode,label] of used){
+              const group=choices.filter(x=>x.mode===mode);
+              const known=group.every(x=>x.known);
+              const min=group.reduce((n,x)=>n+x.min,0),max=group.reduce((n,x)=>n+x.max,0);
+              const block=add(budgets,'div','cdl-project__review-budget','');
+              if(used.length>1||mode==='monthly')add(block,'small','cdl-project__review-budget-label',label);
+              add(block,'div','cdl-project__review-amount',known?(mode==='starting'?money(min,min)+' itibarıyla':money(min,max)+(mode==='monthly'?' / ay':'')):'Teklif hazırlanacak');
+            }
+            for(const choice of choices){
+              if(choices.length>1)add(list,'div','cdl-project__review-group',choice.name);
+              const row=(name,amount)=>{const el=add(list,'div','cdl-project__review-row','');add(el,'span','',name);add(el,'span','',amount);};
+              if(choice.custom){row('İhtiyaca özel kapsam','Teklif hazırlanacak');continue;}
+              for(const input of choice.rows){
+                const known=/^\d+$/.test(input.dataset.min||'')&&/^\d+$/.test(input.dataset.max||'');
+                const min=Number(input.dataset.min),max=Number(input.dataset.max);
+                row(itemName(input),known?(choice.mode==='starting'?money(min,min)+' itibarıyla':money(min,max)+(choice.mode==='monthly'?' / ay':'')):'Teklif alın');
+              }
+            }
+            summary.querySelector('[data-review-month]').textContent=form.querySelector('input[name="agency_project_month"]:checked')?.dataset.monthLabel||'Esnek takvim';
           }
           if(focus)focusStep(index);
         };

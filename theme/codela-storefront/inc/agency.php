@@ -256,7 +256,7 @@ function codela_sf_agency_asset_flags(): array {
     return $flags;
 }
 function codela_sf_agency_styles(): void {
-    wp_enqueue_style( 'codela-storefront-agency', get_template_directory_uri() . '/assets/styles/agency.css', [], wp_get_theme()->get( 'Version' ) );
+    wp_enqueue_style( 'codela-storefront-agency', get_template_directory_uri() . '/assets/styles/agency.css', [], ( function_exists( 'codela_sf_style_version' ) ? codela_sf_style_version() : wp_get_theme()->get( 'Version' ) ) );
 }
 add_action( 'wp_enqueue_scripts', static function() {
     if ( ! codela_sf_ready() ) { return; }
@@ -264,43 +264,43 @@ add_action( 'wp_enqueue_scripts', static function() {
     if ( ! $flags['pattern'] && ! $flags['widgets'] ) { return; }
     codela_sf_agency_styles();
     if ( $flags['about'] ) {
-        wp_enqueue_style( 'codela-storefront-agency-about', get_template_directory_uri() . '/assets/styles/agency-about.css', [ 'codela-storefront-agency' ], wp_get_theme()->get( 'Version' ) );
+        wp_enqueue_style( 'codela-storefront-agency-about', get_template_directory_uri() . '/assets/styles/agency-about.css', [ 'codela-storefront-agency' ], ( function_exists( 'codela_sf_style_version' ) ? codela_sf_style_version() : wp_get_theme()->get( 'Version' ) ) );
     }
     // Studio owns its visual resources on every page that contains the component.
     if ( $flags['studio'] ) {
         wp_enqueue_style( 'codela-storefront-agency-light-scene',
             get_template_directory_uri() . '/assets/styles/agency-light-scene.css',
-            [ 'codela-storefront-agency' ], wp_get_theme()->get( 'Version' ) );
+            [ 'codela-storefront-agency' ], ( function_exists( 'codela_sf_style_version' ) ? codela_sf_style_version() : wp_get_theme()->get( 'Version' ) ) );
         wp_enqueue_script( 'codela-storefront-agency-light-scene',
             get_template_directory_uri() . '/assets/scripts/agency-light-scene.js',
-            [], wp_get_theme()->get( 'Version' ), true );
+            [], ( function_exists( 'codela_sf_style_version' ) ? codela_sf_style_version() : wp_get_theme()->get( 'Version' ) ), true );
     }
     if ( $flags['project'] ) {
-        wp_enqueue_style( 'codela-storefront-agency-project', get_template_directory_uri() . '/assets/styles/agency-project.css', [ 'codela-storefront-agency' ], wp_get_theme()->get( 'Version' ) );
+        wp_enqueue_style( 'codela-storefront-agency-project', get_template_directory_uri() . '/assets/styles/agency-project.css', [ 'codela-storefront-agency' ], ( function_exists( 'codela_sf_style_version' ) ? codela_sf_style_version() : wp_get_theme()->get( 'Version' ) ) );
     }
     if ( $flags['pattern'] ) {
-        wp_enqueue_script( 'codela-storefront-agency', get_template_directory_uri() . '/assets/scripts/agency.js', [], wp_get_theme()->get( 'Version' ), true );
+        wp_enqueue_script( 'codela-storefront-agency', get_template_directory_uri() . '/assets/scripts/agency.js', [], ( function_exists( 'codela_sf_style_version' ) ? codela_sf_style_version() : wp_get_theme()->get( 'Version' ) ), true );
     }
     if ( $flags['widgets'] || $flags['pattern'] ) {
-        wp_enqueue_script( 'codela-storefront-agency-widgets', get_template_directory_uri() . '/assets/scripts/agency-widgets.js', [], wp_get_theme()->get( 'Version' ), true );
+        wp_enqueue_script( 'codela-storefront-agency-widgets', get_template_directory_uri() . '/assets/scripts/agency-widgets.js', [], ( function_exists( 'codela_sf_style_version' ) ? codela_sf_style_version() : wp_get_theme()->get( 'Version' ) ), true );
     }
     // Geometry-matched light overlays only for Services, Process, and detail pages.
     if ( $flags['visuals'] ) {
         wp_enqueue_style( 'codela-storefront-agency-reference-light',
             get_template_directory_uri() . '/assets/styles/agency-reference-light.css',
-            [ 'codela-storefront-agency' ], wp_get_theme()->get( 'Version' ) );
+            [ 'codela-storefront-agency' ], ( function_exists( 'codela_sf_style_version' ) ? codela_sf_style_version() : wp_get_theme()->get( 'Version' ) ) );
         wp_enqueue_script( 'codela-storefront-agency-reference-light',
             get_template_directory_uri() . '/assets/scripts/agency-reference-light.js',
-            [ 'codela-storefront-agency-widgets' ], wp_get_theme()->get( 'Version' ), true );
+            [ 'codela-storefront-agency-widgets' ], ( function_exists( 'codela_sf_style_version' ) ? codela_sf_style_version() : wp_get_theme()->get( 'Version' ) ), true );
     }
     if ( $flags['widgets'] && function_exists( 'is_front_page' ) && is_front_page() && ( ! function_exists( 'get_queried_object' ) || codela_sf_agency_exclusive_page( get_queried_object() ) ) ) {
-        wp_enqueue_script( 'codela-storefront-agency-stage-scroll', get_template_directory_uri() . '/assets/scripts/agency-stage-scroll.js', [], wp_get_theme()->get( 'Version' ), true );
+        wp_enqueue_script( 'codela-storefront-agency-stage-scroll', get_template_directory_uri() . '/assets/scripts/agency-stage-scroll.js', [], ( function_exists( 'codela_sf_style_version' ) ? codela_sf_style_version() : wp_get_theme()->get( 'Version' ) ), true );
     }
 }, 30 );
 add_action( 'enqueue_block_editor_assets', static function() {
     codela_sf_agency_styles();
     foreach ( [ 'agency-about', 'agency-project', 'agency-light-scene', 'agency-reference-light' ] as $style ) {
-        wp_enqueue_style( 'codela-storefront-' . $style, get_template_directory_uri() . '/assets/styles/' . $style . '.css', [ 'codela-storefront-agency' ], wp_get_theme()->get( 'Version' ) );
+        wp_enqueue_style( 'codela-storefront-' . $style, get_template_directory_uri() . '/assets/styles/' . $style . '.css', [ 'codela-storefront-agency' ], ( function_exists( 'codela_sf_style_version' ) ? codela_sf_style_version() : wp_get_theme()->get( 'Version' ) ) );
     }
 } );
 
@@ -534,7 +534,7 @@ function codela_sf_agency_404_markup(): string {
 add_action('wp_enqueue_scripts', static function() {
     if ( codela_sf_agency_experience() && function_exists('is_404') && is_404() ) {
         codela_sf_agency_styles();
-        wp_enqueue_script('codela-storefront-agency-widgets',get_template_directory_uri().'/assets/scripts/agency-widgets.js',[],wp_get_theme()->get('Version'),true);
+        wp_enqueue_script('codela-storefront-agency-widgets',get_template_directory_uri().'/assets/scripts/agency-widgets.js',[],( function_exists( 'codela_sf_style_version' ) ? codela_sf_style_version() : wp_get_theme()->get( 'Version' ) ),true);
     }
 }, 31);
 /** Optional early HTML feedback, independent of the internal navigation bridge. */

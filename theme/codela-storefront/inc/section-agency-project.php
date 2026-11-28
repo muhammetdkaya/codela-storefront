@@ -128,21 +128,34 @@ function codela_sf_section_agency_project( array $data, string $type = '' ): str
                   <div class="cdl-project__heading">
                     <h2>Sana nasıl <span class="cdl-project__title-muted">ulaşalım?</span></h2>
                   </div>
-                  <div class="cdl-project__summary">
-                    <span data-project-summary></span>
+                  <div class="cdl-project__summary cdl-project__summary--review" data-project-summary>
+                    <div class="cdl-project__review-main">
+                      <div class="cdl-project__review-kicker">Proje özeti</div>
+                      <div class="cdl-project__review-service" data-review-services></div>
+                      <div class="cdl-project__review-package" data-review-package></div>
+                      <div class="cdl-project__review-budgets" data-review-budgets></div>
+                      <div class="cdl-project__review-note">Tahmini bütçe · KDV hariç</div>
+                    </div>
+                    <details class="cdl-project__review-details">
+                      <summary><span data-review-month></span><span class="cdl-project__review-toggle">Kapsamı <span class="cdl-project__review-show">gör</span><span class="cdl-project__review-hide">gizle</span> <i aria-hidden="true"></i></span></summary>
+                      <div class="cdl-project__review-list" data-review-list></div>
+                    </details>
                   </div>
                   <div class="cdl-project__fields">
-                    <label><span class="cdl-project__field-label">Ad soyad / marka</span>
+                    <label class="cdl-floating-field">
                       <input type="text" name="agency_project_name" autocomplete="name" maxlength="120"
-                             placeholder="Adın veya markan" value="<?php echo esc_attr( $customer_name ); ?>" minlength="2" required />
+                             placeholder=" " value="<?php echo esc_attr( $customer_name ); ?>" minlength="2" required />
+                      <span class="cdl-project__field-label cdl-floating-label">Ad soyad / marka</span>
                     </label>
-                    <label><span class="cdl-project__field-label">E-posta veya WhatsApp</span>
+                    <label class="cdl-floating-field">
                       <input type="text" name="agency_project_contact" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="180"
-                             placeholder="E-posta adresin veya numaran" value="<?php echo esc_attr( $customer_contact ); ?>" required />
+                             placeholder=" " value="<?php echo esc_attr( $customer_contact ); ?>" required />
+                      <span class="cdl-project__field-label cdl-floating-label">E-posta veya WhatsApp</span>
                     </label>
-                    <label><span class="cdl-project__field-label">Kısa not <small>İsteğe bağlı</small></span>
+                    <label class="cdl-floating-field">
                       <textarea name="agency_project_note" rows="2" maxlength="2000"
-                                placeholder="Projen hakkında kısa bir not"></textarea>
+                                placeholder=" "></textarea>
+                      <span class="cdl-project__field-label cdl-floating-label">Proje notu <small>İsteğe bağlı</small></span>
                     </label>
                   </div>
                   <div class="cdl-project__honey" aria-hidden="true">

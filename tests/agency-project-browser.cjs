@@ -137,20 +137,30 @@ const server=http.createServer((req,res)=>{
    await contact.fill('test@example.com');
    assert(await contact.evaluate(el=>el.checkValidity()),'Email accepted');
    const field=await three.locator('[name="agency_project_name"]').evaluate(el=>{const c=getComputedStyle(el);return [c.backgroundColor,c.borderTopWidth,c.borderLeftWidth,c.borderBottomWidth,c.borderRadius];});
-   assert.deepEqual(field,['rgba(0, 0, 0, 0)','0px','0px','1px','0px'],'Underline-only field with Glass V2');
+   assert.deepEqual(field,['rgb(21, 21, 24)','1px','1px','1px','12px'],'Recognizable framed field with Glass V2');
    for(const input of await three.locator('.cdl-project__fields :is(input,textarea)').all()){
      await input.focus();
      const focus=await input.evaluate(el=>{const c=getComputedStyle(el);return {size:parseFloat(c.fontSize),outline:c.outlineStyle,border:c.borderBottomColor,shadow:c.boxShadow,label:el.closest('label').querySelector('.cdl-project__field-label')?.textContent,transform:getComputedStyle(el.closest('label')).textTransform};});
      assert(focus.size>=16,'Mobile Safari field zoom threshold');
      assert.equal(focus.outline,'none','No rectangular Glass V2 focus ring on text controls');
      assert.equal(focus.border,'rgb(211, 164, 128)','Amber focus underline');
-     assert(focus.shadow.includes('inset'),'Visible underline focus indicator');
+     assert(focus.shadow!=='none','Visible framed focus indicator');
      assert(focus.label&&focus.transform==='none','Readable sentence-case field label');
    }
    await three.locator('[name="agency_project_note"]').blur();
    assert.equal(await three.locator('[name="agency_project_note"]').getAttribute('required'),null,'Note remains optional');
    assert.equal(await widget.locator('[data-project-progress-label]').textContent(),'05 / 05');
-   assert.equal(await widget.locator('[data-project-summary]>span').count(),5);
+   const review=three.locator('[data-project-summary]');
+   assert.equal(await review.locator('[data-review-services]').textContent(),'Web Tasarım · E-Ticaret');
+   assert.equal(await review.locator('[data-review-budgets] .cdl-project__review-amount').textContent(),'Teklif hazırlanacak');
+   assert.equal(await review.locator('[data-review-month]').textContent(),'Esnek takvim');
+   assert(!(await review.locator('[data-review-list]').isVisible()),'Scope details initially collapsed');
+   await review.locator('summary').click();
+   assert(await review.locator('[data-review-list]').isVisible(),'Native scope disclosure opens');
+   assert.equal(await review.locator('.cdl-project__review-row').count(),2);
+   await review.locator('summary').click();
+   assert.equal(await three.locator('.cdl-floating-field').count(),3);
+   for(const el of await three.locator('.cdl-floating-field :is(input,textarea)').all())assert.equal(await el.getAttribute('placeholder'),' ','One visible label only');
    await three.locator('[data-project-back]').click();
    await two.locator('[data-project-back]').click();
    assert.equal(await widget.locator('[data-project-progress-label]').textContent(),'03 / 05');
