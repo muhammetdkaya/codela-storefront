@@ -24,6 +24,14 @@ class ChainTests(unittest.TestCase):
         self.assertIsNone(c.authorization([self.comment(cmd),self.comment("/codela-cancel",id=2)],"owner"))
         self.assertIsNone(c.authorization([self.comment(cmd+" extra")],"owner"))
 
+    def test_live_only_owner_authorization(self):
+        cmd = "/codela-deploy " + H + " " + B
+        if c.THEME:
+            self.assertEqual(c.authorization([self.comment(cmd)], "owner"), (H,B,"live"))
+        self.assertIsNone(c.authorization([self.comment(cmd,"outsider")], "owner"))
+        self.assertIsNone(c.authorization([self.comment(cmd+" extra")], "owner"))
+        self.assertIsNone(c.authorization([self.comment(cmd),self.comment("/codela-cancel",id=2)],"owner"))
+
     def test_paths_and_required_workflow_names(self):
         self.assertTrue(c.matches(["theme/**/agency-*.php"], "theme/inc/agency-quote.php"))
         self.assertTrue(c.matches(["theme/**/agency-*.php"], "theme/agency-quote.php"))

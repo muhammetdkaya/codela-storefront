@@ -25,6 +25,12 @@ class ClassifierTests(unittest.TestCase):
             "tests/agency-widgets-browser.cjs",
             "tests/menu-dismiss-browser.cjs", S], (True,"agency"))
 
+    def test_unversioned_journal_and_agency_css_are_fast(self):
+        self.scoped(["theme/codela-storefront/assets/styles/journal.css"], (True,"presentation"))
+        self.scoped(["theme/codela-storefront/assets/styles/agency-project.css"], (True,"presentation"))
+        self.scoped(["theme/codela-storefront/inc/agency-quote.php"], (False,"full"))
+        self.scoped(["theme/codela-storefront/assets/styles/agency-auth.css"], (False,"full"))
+
     def test_version_only_increment_is_fast(self):
         self.scoped([S], (True, "version-only"))
 

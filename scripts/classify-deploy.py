@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Classify a Git change for the small, safe Codela Storefront deploy lane.
 
-Unknown, structural, authentication, checkout, deleted, and unversioned changes
+Unknown, structural, authentication, checkout and deleted changes
 always select full validation. Never use commit messages to choose safety.
 """
 import re
@@ -21,7 +21,13 @@ AGENCY_PATTERNS = ("theme/codela-storefront/patterns/agency-*.php",
                    "tests/agency*.php", "tests/agency*.cjs")
 VISUAL_PATTERNS = ("theme/codela-storefront/assets/icons/*.svg",
                    "theme/codela-storefront/assets/styles/footer.css",
-                   "theme/codela-storefront/assets/styles/agency.css")
+                   "theme/codela-storefront/assets/styles/agency.css",
+                   "theme/codela-storefront/assets/styles/agency-about.css",
+                   "theme/codela-storefront/assets/styles/agency-project.css",
+                   "theme/codela-storefront/assets/styles/agency-light-scene.css",
+                   "theme/codela-storefront/assets/styles/agency-reference-light.css",
+                   "theme/codela-storefront/assets/styles/journal.css",
+                   "tests/journal-browser.cjs")
 MAX_FILES = 16
 
 def version_only(before, after):

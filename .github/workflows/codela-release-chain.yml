@@ -33,6 +33,7 @@ jobs:
        github.event.issue.pull_request &&
        github.event.comment.user.login == github.repository_owner &&
        (startsWith(github.event.comment.body, '/codela-publish ') ||
+        startsWith(github.event.comment.body, '/codela-deploy ') ||
         github.event.comment.body == '/codela-cancel')) ||
       (github.event_name == 'workflow_run' &&
        (github.event.workflow_run.event == 'pull_request' ||
