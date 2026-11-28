@@ -330,23 +330,19 @@
           const center=[Number(frame.dataset.mapLat),Number(frame.dataset.mapLon)];
           const office=frame.dataset.mapOffice==='true';
           const area=frame.dataset.mapArea==='true';
-          const zoom=office?16:area?14:11;
-          const map=L.map(host,{center,zoom,zoomControl:false,scrollWheelZoom:false,doubleClickZoom:false,attributionControl:false,dragging:window.matchMedia('(pointer:fine)').matches,touchZoom:false});
-          // Native z16/17 tiles, not a scaled z15 image. Retina uses a
-          // higher source zoom while keeping the exact office framing.
-          const tiles=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{minZoom:5,maxNativeZoom:19,maxZoom:18,detectRetina:true,referrerPolicy:'strict-origin-when-cross-origin',attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'});
+          const zoom=office?15:area?14:11;
+          const map=L.map(host,{center,zoom,zoomControl:false,scrollWheelZoom:false,doubleClickZoom:false,attributionControl:false,dragging:false,touchZoom:false});
+          // Keep the native neighbourhood zoom on all displays: requesting
+          // denser Retina tiles also introduces small POI and building labels.
+          const tiles=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{minZoom:5,maxNativeZoom:19,maxZoom:18,detectRetina:false,referrerPolicy:'strict-origin-when-cross-origin',attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'});
           let loaded=0,failed=false;
           tiles.on('loading',()=>{loaded=0;failed=false;});
           tiles.on('tileload',()=>{loaded++;});
           tiles.on('tileerror',()=>{failed=true;frame.dataset.mapReady='false';});
           tiles.on('load',()=>{if(loaded>0&&!failed)frame.dataset.mapReady='true';});
           tiles.addTo(map);
-          const icon=L.divIcon({className:'cdl-contact__beacon cdl-contact__beacon--pin',html:'<i></i><b></b><span class="cdl-contact__pin-label">'+(office?'Ofis konumu':'')+'</span>',iconSize:[30,30],iconAnchor:[15,15]});
+          const icon=L.divIcon({className:'cdl-contact__beacon cdl-contact__beacon--pin',html:'<i></i><b></b>',iconSize:[22,22],iconAnchor:[11,11]});
           if(office) L.marker(center,{icon,interactive:false,zIndexOffset:1000}).addTo(map);
-          frame.querySelector('[data-contact-map-center]')?.addEventListener('click',event=>{
-            if(frame.dataset.mapReady!=='true')return;
-            event.preventDefault();map.setView(center,zoom,{animate:!reduced.matches});
-          });
           if('ResizeObserver' in window)new ResizeObserver(()=>map.invalidateSize({pan:false})).observe(host);
         }).catch(()=>{});
         if('IntersectionObserver' in window){const observer=new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting)){observer.disconnect();startMap();}},{rootMargin:'200px'});observer.observe(frame);}

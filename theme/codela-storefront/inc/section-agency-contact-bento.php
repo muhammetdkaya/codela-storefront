@@ -47,7 +47,7 @@ function codela_sf_section_agency_contact_bento( array $data, string $type = '' 
     // Explicit page coordinates override the shared public contact point.
     $area_point = codela_sf_contact_map_point( $public_contact['area_lat'] . ',' . $public_contact['area_lon'] );
     $map_center = $map_point ?: $area_point;
-    $map_bbox = $map_center ? implode( ',', [ max( -180, $map_center[1] - .003 ), max( -85, $map_center[0] - .002 ), min( 180, $map_center[1] + .003 ), min( 85, $map_center[0] + .002 ) ] ) : '28.65,40.85,29.35,41.20';
+    $map_bbox = $map_center ? implode( ',', [ max( -180, $map_center[1] - .006 ), max( -85, $map_center[0] - .004 ), min( 180, $map_center[1] + .006 ), min( 85, $map_center[0] + .004 ) ] ) : '28.65,40.85,29.35,41.20';
     $map_url = 'https://www.openstreetmap.org/export/embed.html?bbox=' . rawurlencode( $map_bbox ) . '&layer=mapnik';
     $map_link = 'https://www.openstreetmap.org/#map=11/41.028/28.995';
     if ( $map_center ) {
@@ -75,10 +75,8 @@ function codela_sf_section_agency_contact_bento( array $data, string $type = '' 
               <div class="cdl-contact__map-live" data-contact-map-live aria-label="İstanbul haritası"></div>
               <div class="cdl-contact__map-scrim" aria-hidden="true"></div>
               <div class="cdl-contact__map-overlay">
-                <span class="cdl-contact__map-chip">İSTANBUL · GMT+3</span>
                 <div class="cdl-contact__map-bottom">
-                  <span><strong><i aria-hidden="true"></i><?php echo esc_html( $studio ); ?></strong><small><?php echo $map_center ? ( $public_contact['district'] ?: 'İstanbul' ) . ' · Ofis konumu' : 'İstanbul · Online çalışma'; ?></small></span>
-                  <a href="<?php echo esc_url( $map_link ); ?>" data-contact-map-center target="_blank" rel="noopener noreferrer" class="cdl-contact__map-center">Merkezle</a>
+                  <a href="<?php echo esc_url( $map_link ); ?>" class="cdl-contact__map-location" target="_blank" rel="noopener noreferrer" aria-label="<?php echo esc_attr( $studio . ' — haritada aç' ); ?>"><strong><?php echo esc_html( $studio ); ?></strong><small><?php echo $map_center ? esc_html( $public_contact['district'] ?: 'İstanbul' ) : 'İstanbul · Online çalışma'; ?></small></a>
                 </div>
               </div>
               <a class="cdl-contact__map-credit" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap</a>
