@@ -55,6 +55,32 @@ ${overlay?'</div></div>':''}</body></html>`;
          }
       }
     }
+    // Signed-in Agency settings use dark materials, without affecting Commerce.
+    for (const agency of [true,false]) {
+      await page.setContent(`<body class="woocommerce-account logged-in ${agency?'sf-site-agency':''}"><div class="woocommerce"><main class="woocommerce-MyAccount-content">
+        <section class="sf-pk-settings"><p class="sf-pk-help">Help</p><div class="sf-pk-section"><div class="sf-pk-section-title"><span class="sf-pk-glyph">ID</span><strong>Device login</strong><small>Face ID</small></div><button class="sf-pk-primary">Enable</button>
+          <div class="sf-pk-records"><h3>Keys</h3><div class="sf-pk-record"><span class="sf-pk-record-caption"><strong>Key</strong><small>Active</small></span><button class="sf-pk-toggle">Pause</button><button class="sf-pk-revoke">Remove</button></div></div></div>
+          <p class="sf-quick-role-notice">Admin notice</p></section>
+        <nav class="cdl-cp-account-actions"><h2>Account actions</h2><a class="cdl-cp-account-row"><span class="cdl-cp-account-icon"><img class="sf-icon" alt=""></span></a><a class="cdl-cp-account-row is-logout"><span class="cdl-cp-account-icon"><img class="sf-icon" alt=""></span><span class="cdl-cp-account-copy"><strong>Logout</strong></span></a></nav>
+      </main></div></body>`);
+      await page.addStyleTag({content:cssAccount+'\n'+cssQuick});
+      const styles=await page.evaluate(()=>{
+        const get=(s,p)=>getComputedStyle(document.querySelector(s))[p];
+        return {card:get('.sf-pk-section','backgroundImage'),bg:get('.sf-pk-section','backgroundColor'),ink:get('.sf-pk-settings','color'),primary:get('.sf-pk-primary','backgroundColor'),buttonInk:get('.sf-pk-primary','color'),notice:get('.sf-quick-role-notice','color'),filter:get('.cdl-cp-account-icon img','filter'),heading:get('.cdl-cp-account-actions h2','fontSize')};
+      });
+      if(agency){
+        assert(styles.card.includes('linear-gradient'),'Security card uses dark Agency material');
+        assert.equal(styles.ink,'rgb(245, 244, 247)');
+        assert.equal(styles.primary,'rgb(214, 166, 118)');
+        assert.equal(styles.buttonInk,'rgb(21, 17, 19)');
+        assert.equal(styles.notice,'rgb(170, 165, 177)');
+        assert.notEqual(styles.filter,'none','External icon is recolored on dark canvas');
+        assert.equal(styles.heading,'11px');
+      }else{
+        assert.equal(styles.bg,'rgb(255, 255, 255)','Commerce security card retains its light appearance');
+        assert.equal(styles.filter,'none','Commerce icons are not recolored');
+      }
+    }
     await page.close();
 
     // Reproduce the actual account dialog hierarchy and a natural-sized

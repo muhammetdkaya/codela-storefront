@@ -714,3 +714,27 @@ body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content
 body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content form.woocommerce-EditAccountForm button[name="save_account_details"]{background:#d6a676!important;border-color:#d6a676!important;color:#151113!important;box-shadow:none!important}
 body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content .woocommerce-EditAccountForm :is(.required,.show-password-input){color:#d6a676}
 body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content .woocommerce-EditAccountForm fieldset{background:transparent!important}
+
+/* Signed-in Agency account: keep the native security flow on the same dark
+   surfaces as profile settings. The commerce and guest layouts are unchanged. */
+body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content .sf-pk-settings{color:var(--sf-ui-ink)}
+body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content :is(.sf-pk-help,.sf-pk-section-title small,.sf-pk-record-caption small,.sf-pk-result,.sf-quick-role-notice){color:var(--sf-muted)}
+body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content :is(.sf-pk-section,.sf-pk-legacy,.sf-quick-role-notice){background:linear-gradient(165deg,#1c1b22,#111116);border-color:var(--sf-ui-border);box-shadow:none}
+body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content .sf-pk-section-title .sf-pk-glyph{background:rgba(214,166,118,.12);color:var(--sf-ui-accent)}
+body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content :is(.sf-pk-section-title strong,.sf-pk-record-caption strong,.sf-pk-records h3,.sf-pk-legacy-toggle,.sf-quick-settings h3,.sf-quick-devices h4){color:var(--sf-ui-ink)}
+body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content :is(.sf-pk-records,.sf-pk-record){border-color:var(--sf-ui-border)}
+body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content :is(.sf-pk-primary,.sf-quick-enable){background:var(--sf-ui-accent)!important;color:#151113!important;border-color:transparent!important;box-shadow:none!important}
+body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content :is(.sf-pk-toggle,.sf-pk-revoke,.sf-quick-toggle,.sf-quick-revoke){background:var(--sf-ui-surface-muted);border-color:var(--sf-ui-border);color:var(--sf-ui-ink);min-height:44px}
+body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content :is(.sf-pk-revoke,.sf-quick-revoke){color:#df8585}
+body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content .sf-pk-settings :is(button,input):focus-visible{outline:2px solid var(--sf-ui-accent);outline-offset:3px}
+body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content .sf-pk-legacy-content .sf-quick-settings{background:transparent;color:var(--sf-ui-ink)}
+body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content .sf-pk-result:empty{display:none}
+@media(max-width:360px){
+ body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content .sf-pk-record-caption{flex-basis:100%}
+}
+/* Portal uses theme-provided external SVG images, so inherited color alone
+   cannot change their embedded dark stroke. Scope the recoloring to this list. */
+body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content .cdl-cp-account-icon img.sf-icon{display:block;width:22px;height:22px;filter:brightness(0) invert(.8) sepia(.35) saturate(1.3)}
+body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content .cdl-cp-account-row.is-logout .cdl-cp-account-icon img.sf-icon{filter:brightness(0) invert(.65) sepia(.45) saturate(2.2) hue-rotate(310deg)}
+body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content .cdl-cp-account-actions h2{margin:0 0 8px;color:var(--sf-muted);font-size:11px;font-weight:600;letter-spacing:.12em}
+body.sf-site-agency.woocommerce-account.logged-in .woocommerce-MyAccount-content .cdl-cp-account-row.is-logout .cdl-cp-account-copy strong{color:#df8585}
