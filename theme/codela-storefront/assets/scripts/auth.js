@@ -247,7 +247,83 @@ function preventInitialAccountAutoFocus() {
             });
         }
     }
+    /**
+     * Site Kit initializes Google Identity Services exactly once. Its startup
+     * scan cannot see inert templates and rendered iframes must not be moved
+     * by the remembered-account grouping. Render only visible, final slots.
+     * No credential handling, client configuration or synthetic clicks here.
+     */
+    function initLateSiteKitButtons() {
+        const selector = '[data-sf-site-kit-late]';
+        if (!document.querySelector(selector)) return;
+        const rendered = new WeakSet();
+        const observed = new WeakSet();
+        const account = document.getElementById('sf-account');
+        const isReady = host => {
+            const section = host.closest('#sf-account');
+            return !section || !window.CodelaSFAuthLoader || section.dataset.sfAuthReady === 'true';
+        };
+        function render(host) {
+            if (rendered.has(host) || !host.isConnected || !isReady(host)) return;
+            const target = host.querySelector('.sf-site-kit-target');
+            if (!target || host.closest('[hidden]') || !host.getClientRects().length ||
+                getComputedStyle(host).visibility === 'hidden' || host.clientWidth < 200) return;
+            // The official bundle owns initialize() and its credential callback.
+            // A config-bearing script is emitted by Site Kit, not by the theme.
+            const provider = document.querySelector('script[data-siwg-config]');
+            const gis = window.google?.accounts?.id;
+            const unavailable = host.querySelector('[data-sf-site-kit-unavailable]');
+            if (!provider || typeof gis?.renderButton !== 'function') {
+                if (document.readyState === 'complete' && unavailable) unavailable.hidden = false;
+                return;
+            }
+            const data = target.dataset;
+            const options = {
+                theme: data.googlesitekitSiwgTheme || 'filled_black',
+                shape: data.googlesitekitSiwgShape || 'pill',
+                text: data.googlesitekitSiwgText || 'continue_with',
+                width: Math.floor(Math.min(host.clientWidth, 320)),
+            };
+            try {
+                // An optimization plugin may have rendered this already.
+                if (!target.querySelector('iframe')) gis.renderButton(target, options);
+                rendered.add(host);
+                if (unavailable) unavailable.hidden = true;
+                observer?.unobserve(host);
+            } catch (_) {
+                if (unavailable) unavailable.hidden = false;
+            }
+        }
+        const observer = typeof IntersectionObserver === 'function'
+            ? new IntersectionObserver(entries => entries.forEach(entry => {
+                if (entry.isIntersecting) render(entry.target);
+            })) : null;
+        function scan() {
+            for (const host of document.querySelectorAll(selector)) {
+                if (!isReady(host)) continue;
+                if (!observed.has(host)) {
+                    observed.add(host);
+                    observer?.observe(host);
+                }
+                render(host);
+            }
+        }
+        function afterAccountReady() {
+            Promise.all([window.codelaSFQuickLoginReady, window.codelaSFSmartAuthReady])
+                .then(scan, scan);
+        }
+        // In the lazy flow, the replay occurs after native markup, styles and
+        // remembered cards have settled; eager Account waits for the same work.
+        account?.addEventListener('codela:account-open', afterAccountReady);
+        window.addEventListener('load', afterAccountReady, {once:true});
+        document.addEventListener('load', event => {
+            if (event.target?.matches?.('script[data-siwg-config]')) afterAccountReady();
+        }, true);
+        afterAccountReady();
+    }
+
     function init() {
+        initLateSiteKitButtons();
         preventInitialAccountAutoFocus();
         applyAuthPlaceholders();
         initInstantAccountFreshness();

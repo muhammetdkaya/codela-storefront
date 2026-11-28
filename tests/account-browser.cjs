@@ -200,39 +200,10 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
       assert.equal(background,'rgb(248, 247, 244)','Guest Account uses the normal Storefront page canvas');
       if(type==='login'){
         await page.locator('.woocommerce').evaluate((node,markup)=>node.insertAdjacentHTML('beforeend',markup),nativeGoogleInfo.overlay_button);
-        assert((await page.locator('.sf-auth-google').getAttribute('href')).includes('codela_google=1'),'Google link goes to official Account surface');
-        const social=await page.locator('.sf-auth-google').evaluate(el=>{
-          const style=getComputedStyle(el);
-          return {width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height,
-            background:style.backgroundColor,color:style.color,radius:style.borderRadius,display:style.display,
-            border:style.borderTopWidth,borderColor:style.borderTopColor,
-            textCenter:el.querySelector('.sf-ui-button-label').getBoundingClientRect().left+
-              el.querySelector('.sf-ui-button-label').getBoundingClientRect().width/2,
-            buttonCenter:el.getBoundingClientRect().left+el.getBoundingClientRect().width/2,
-            glyphRight:el.querySelector('.sf-google-glyph').getBoundingClientRect().right,
-            textLeft:el.querySelector('.sf-ui-button-label').getBoundingClientRect().left};
-        });
-        const parent=await page.locator('.sf-auth-social').boundingBox();
-        assert(social.width>=parent.width-2,'Google Button fills same form width');
-        assert(social.height>=54&&social.height<=55,'Google uses theme-standard 54px action height');
-        assert.deepEqual((social.background.match(/\d+/g)||[]).map(Number).every(x=>x<=65),true,
-          'Normal Google sign-in uses the theme dark surface');
-        assert.equal(social.radius,'999px','Google uses standard UI Kit capsule radius');
-        assert.equal(social.color,'rgb(255, 255, 255)','Dark Google action retains white readable text');
-        if(social.border!=='1px')console.error('Secondary Button computed styles',social,await page.locator('.sf-auth-google').evaluate(el=>({
-         classes:el.className, borderStyle:getComputedStyle(el).borderTopStyle,
-         borderToken:getComputedStyle(el).getPropertyValue('--sf-ui-border'),
-         matchingRules:[...document.styleSheets].flatMap(sh=>{try{return [...sh.cssRules]}catch{return []}})
-          .filter(rule=>rule.selectorText&&el.matches(rule.selectorText)&&/border/.test(rule.cssText))
-          .map(rule=>rule.cssText.slice(0,450)).slice(-12)
-        })));
-        assert.equal(social.border,'1px','Google secondary UI Kit Button must retain its visible border');
-        assert.equal(social.borderColor,social.background,'Dark Google CTA has a matching dark border');
-        assert.equal(social.display,'flex','Google uses centered text plus a positioned multicolor icon');
-        assert(Math.abs(social.textCenter-social.buttonCenter)<1,
-          'Google label is centered in the complete Button regardless of glyph width');
-        assert(social.textLeft-social.glyphRight>=12,
-          'The positioned Google mark does not overlap the centered label');
+        assert.equal(await page.locator('[data-sf-site-kit-late] [data-official-button]').count(),1,'Popup uses official late-rendered widget');
+        assert.equal(await page.locator('.sf-auth-social a[href]').count(),0,'No separate Account navigation');
+        const bounds=await page.locator('[data-sf-site-kit-late]').boundingBox();
+        assert(bounds.width>=200&&bounds.width<=320&&bounds.height>=44,'Official widget fits the responsive account layout');
         await page.locator('.sf-auth-social').evaluate(el=>el.remove());
         await page.locator('.woocommerce').evaluate((node,markup)=>node.insertAdjacentHTML('beforeend',markup),unconfiguredGoogle);
         assert.equal(await page.locator('.sf-auth-google').count(),0,'Google option is absent when Site Kit is not connected');
