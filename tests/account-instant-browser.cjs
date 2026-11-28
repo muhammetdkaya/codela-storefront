@@ -18,8 +18,9 @@ const html='<!doctype html><html><head><meta name="viewport" content="width=devi
  +'<input type="hidden" name="woocommerce-register-nonce" value="expired-public-cache"><input name="email">'
  +'<button type="submit">Register</button></form></div></div>'
  +'<a class="sf-auth-register-cta" href="#sf-auth-register">Register with email</a>'
- +'<div class="sf-auth-social"><span>or</span><button class="sf-auth-google">Google</button></div>'
+ +'<div class="sf-auth-social"><span>or</span><div data-sf-site-kit-late style="width:280px;min-height:44px"><div class="sf-site-kit-target"></div></div></div>'
  +'</div></section>'
+ +'<script data-siwg-config="{}">window.googleRenders=0;window.google={accounts:{id:{renderButton:(el,opts)=>{window.googleRenders++;const b=document.createElement("button");b.type="button";b.textContent="Google";b.onclick=()=>window.googleClicked=true;el.append(b);}}}};</script>'
  +'<script src="/auth.js"></script></body></html>';
 async function setup(){
  const server=http.createServer((req,res)=>{
@@ -57,6 +58,10 @@ async function setup(){
   assert.equal(await page.locator('[name="woocommerce-register-nonce"]').inputValue(),'new-register','Both Woo nonces are refreshed');
   assert.equal(await page.locator('.woocommerce-form-login button[type="submit"]').isEnabled(),true);
   assert.equal(await page.evaluate(()=>window.initialDocMarker),'keep','Opening Account preserves current document');
+  await page.locator('[data-sf-site-kit-late] button').click();
+  assert.equal(await page.evaluate(()=>window.googleClicked),true,'Google provider receives the real click directly inside popup');
+  assert.equal(await page.url(),url,'Google action does not navigate to the Account page');
+  assert.equal(await page.evaluate(()=>window.googleRenders),1,'One official render per visible slot');
   await page.evaluate(()=>document.querySelector('#customer_login').dispatchEvent(new CustomEvent('codela:auth-select',{detail:{view:'register'}})));
   assert.equal(await page.locator('.u-column1').isVisible(),false,'Native login tab hidden after switch');
   assert.equal(await page.locator('.u-column2').isVisible(),true,'Native Woo registration tab selected in same panel');

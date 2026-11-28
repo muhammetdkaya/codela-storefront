@@ -18,7 +18,7 @@ function esc_html__($s,$d=''){return htmlspecialchars($s,ENT_QUOTES);}
 function current_user_can($cap){return true;}
 function admin_url($p){return 'https://store.test/wp-admin/'.$p;}
 function add_query_arg($key,$value,$url){return $url.'?'.http_build_query([$key=>$value]);}
-function do_action($name,...$args){if($name==='googlesitekit_render_sign_in_with_google_button'){echo '<div data-official-button="yes"></div>';$GLOBALS['button_args']=$args[0];}}
+function do_action($name,...$args){if($name==='googlesitekit_render_sign_in_with_google_button'){echo '<div class="googlesitekit-sign-in-with-google__frontend-output-button sf-site-kit-target" data-official-button="yes" data-googlesitekit-siwg-theme="filled_black" data-googlesitekit-siwg-shape="pill" data-googlesitekit-siwg-text="continue_with"></div>';$GLOBALS['button_args']=$args[0];}}
 function codela_sf_public_account_user($user){return $user instanceof WP_User && !empty($user->roles) && !array_diff($user->roles,['customer','subscriber']);}
 function get_user_by($key,$id){return $GLOBALS['users'][$id]??false;}
 function get_user_meta($id,$key,$single){return $GLOBALS['meta'][$id][$key]??'';}
@@ -38,7 +38,7 @@ check(str_contains($official_button,'data-official-button="yes"'),'Official Site
 check($GLOBALS['button_args']['theme']==='filled_black','Official widget configuration');
 $GLOBALS['codela_sf_auth_overlay']=true;
 $overlay_button=markup();
-check(str_contains($overlay_button,'codela_google=1')&&!str_contains($overlay_button,'data-official-button="yes"'),'Lazy dialog links to native Google surface');
+check(str_contains($overlay_button,'data-sf-site-kit-late')&&str_contains($overlay_button,'data-official-button="yes"')&&!str_contains($overlay_button,'href='),'Lazy dialog renders official provider directly');
 unset($GLOBALS['codela_sf_auth_overlay']);
 $GLOBALS['connected']=false;$disabled_button=markup();check($disabled_button==='','No fake Google button without Site Kit');$GLOBALS['connected']=true;
 check(codela_sf_google_link_allowed($customer,$hash,'','',false,false),'Verified Gmail match');

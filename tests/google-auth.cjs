@@ -8,13 +8,14 @@ const fixture=JSON.parse(result);
 assert.equal(fixture.passed,true);
 assert.equal(fixture.disabled_button,'');
 assert(fixture.official_button.includes('data-official-button="yes"'));
-assert(fixture.overlay_button.includes('codela_google=1'));
+assert(fixture.overlay_button.includes('data-sf-site-kit-late') && fixture.overlay_button.includes('data-official-button="yes"') && !fixture.overlay_button.includes('href='));
 assert(php.includes('googlesitekit_render_sign_in_with_google_button'));
 assert(php.includes('login_form_googlesitekit_auth') && php.includes('set_auth_cookie'));
 assert(php.includes('data-sf-site-kit-social') && php.includes('template.content'));
 assert(!php.includes('wp_remote_post')&&!php.includes('wp_set_auth_cookie(')&&!php.includes('codela_sf_google_client_secret'),'No theme authentication engine or client secret');
 assert(!php.includes('admin_post_nopriv_codela_sf_google'),'No legacy OAuth endpoints');
-for(const name of ['quick-login.js','passkeys.js']){
- assert(fs.readFileSync(base+'assets/scripts/'+name,'utf8').includes("has('codela_google')"),'Explicit provider selection bypasses remembered view');
-}
+const auth=fs.readFileSync(base+'assets/scripts/auth.js','utf8');
+assert(auth.includes('gis.renderButton(target, options)') && auth.includes('codelaSFQuickLoginReady') && auth.includes('data-siwg-config'));
+assert(!auth.includes('gis.initialize(') && !php.includes('codela_google'));
+assert(fs.readFileSync(base+'inc/quick-login.php','utf8').includes('codela_sf_google_widget( true )'));
 console.log('Site Kit presentation, customer session boundary and link policy passed');

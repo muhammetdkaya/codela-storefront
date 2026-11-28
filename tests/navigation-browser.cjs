@@ -7,7 +7,7 @@ const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const php = process.env.PHP_BIN || 'php';
 const google=JSON.parse(execFileSync(php,['tests/google-auth.php'],{encoding:'utf8'}));
 assert.equal(google.disabled_button,'','Unconfigured Site Kit does not offer Google authentication');
-assert(google.overlay_button.includes('codela_google=1') && google.official_button.includes('data-official-button="yes"'),'Connected Google delegates to official Account widget');
+assert(google.overlay_button.includes('data-sf-site-kit-late') && google.official_button.includes('data-official-button="yes"') && !google.overlay_button.includes('href='),'Connected Google uses official widget without navigation');
 const header = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8'});
 const noDockHeader = execFileSync(php, ['tests/render-header.php'], {encoding:'utf8',env:{...process.env,FIXTURE_DOCK:'0'}});
 assert(!noDockHeader.includes('class="sf-mobile-dock'), 'Disabled setting omits dock');

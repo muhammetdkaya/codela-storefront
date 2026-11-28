@@ -10,9 +10,21 @@ function codela_sf_google_enabled(): bool {
     return codela_sf_site_kit_signin_connected();
 }
 
-/** The native Google widget needs a real document, not an inert lazy template. */
-function codela_sf_google_auth_url(): string {
-    return add_query_arg( 'codela_google', '1', codela_sf_account_url() );
+/** Both native and delayed surfaces use the same official provider markup.
+ * Late surfaces are rendered by Google's public renderButton API after Site
+ * Kit has initialized its own credential callback; never initialize it again.
+ */
+function codela_sf_google_widget( bool $late = false ): void {
+    ?>
+    <div class="sf-site-kit-button" data-sf-site-kit-button<?php if ( $late ) : ?> data-sf-site-kit-late<?php endif; ?>>
+        <?php do_action( 'googlesitekit_render_sign_in_with_google_button', [
+            'class' => 'sf-site-kit-target',
+            'theme' => 'filled_black', 'shape' => 'pill',
+            'text' => 'continue_with', 'width' => 280,
+        ] ); ?>
+        <?php if ( $late ) : ?><span data-sf-site-kit-unavailable hidden role="status"><?php esc_html_e( 'Google sign-in is currently unavailable', 'codela-storefront' ); ?></span><?php endif; ?>
+    </div>
+    <?php
 }
 
 function codela_sf_google_button(): void {
@@ -21,51 +33,34 @@ function codela_sf_google_button(): void {
     ?>
     <div class="sf-shell sf-auth-social" data-sf-site-kit-social>
         <div class="sf-auth-divider"><span><?php esc_html_e( 'or', 'codela-storefront' ); ?></span></div>
-        <?php if ( ! empty( $GLOBALS['codela_sf_auth_overlay'] ) ) : ?>
-            <a class="sf-auth-google sf-ui-button sf-ui-button--secondary" href="<?php echo esc_url( codela_sf_google_auth_url() ); ?>">
-                <span class="sf-google-glyph" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="24" height="24" focusable="false" aria-hidden="true">
-                    <path fill="#4285F4" d="M21.8 12.2c0-.7-.06-1.4-.18-2.08H12v3.94h5.5a4.7 4.7 0 0 1-2.04 3.08v2.56h3.3c1.93-1.78 3.04-4.39 3.04-7.5z"/>
-                    <path fill="#34A853" d="M12 22c2.75 0 5.07-.91 6.76-2.46l-3.3-2.56c-.92.62-2.1.98-3.46.98-2.66 0-4.91-1.8-5.72-4.22H2.87v2.64A10 10 0 0 0 12 22z"/>
-                    <path fill="#FBBC05" d="M6.28 13.74a6 6 0 0 1 0-3.48V7.62H2.87a10 10 0 0 0 0 8.76l3.41-2.64z"/>
-                    <path fill="#EA4335" d="M12 6.04c1.5 0 2.84.52 3.9 1.54l2.93-2.93A9.95 9.95 0 0 0 12 2a10 10 0 0 0-9.13 5.62l3.41 2.64C7.09 7.84 9.34 6.04 12 6.04z"/>
-                </svg>
-            </span>
-                <span class="sf-ui-button-label"><?php esc_html_e( 'Continue with Google', 'codela-storefront' ); ?></span>
-            </a>
-        <?php else : ?>
-            <div class="sf-site-kit-button" data-sf-site-kit-button>
-                <?php
-                // Supported Site Kit rendering hook; Google's iframe and click
-                // handling remain entirely owned by Google Identity Services.
-                do_action( 'googlesitekit_render_sign_in_with_google_button', [
-                    'theme' => 'filled_black', 'shape' => 'pill',
-                    'text' => 'continue_with', 'width' => 280,
-                ] );
-                ?>
-            </div>
-        <?php endif; ?>
+        <?php codela_sf_google_widget( ! empty( $GLOBALS['codela_sf_auth_overlay'] ) ); ?>
     </div>
     <?php
 }
 add_action( 'woocommerce_after_customer_login_form', 'codela_sf_google_button', 15 );
 
-/** Site Kit also inserts its default placeholder inside Woo's native form.
- * Remove only that duplicate within our own managed form before Site Kit's
- * footer script initializes. Leave checkout and other plugins' buttons alone.
- * The lazy overlay keeps its ordinary link; no third-party iframe in a template.
+/** Keep Site Kit's standard initialization and direct-page rendering.
+ * Suppress only duplicate default Woo placeholders in Codela's managed
+ * forms and defer our popup/remembered widgets until their final DOM position.
+ * Neither other provider buttons nor One Tap are changed.
  */
 add_action( 'wp_footer', static function(): void {
     if ( ! codela_sf_google_enabled() || is_user_logged_in() ) { return; }
     wp_print_inline_script_tag( <<<'JS'
 (() => {
+    const official = 'googlesitekit-sign-in-with-google__frontend-output-button';
     const clean = scope => {
         for (const social of scope.querySelectorAll('[data-sf-site-kit-social]')) {
             const host = social.closest('.woocommerce');
             if (!host) continue;
-            for (const button of host.querySelectorAll('form.woocommerce-form-login .googlesitekit-sign-in-with-google__frontend-output-button')) {
+            for (const button of host.querySelectorAll('form.woocommerce-form-login .' + official)) {
                 if (button.closest('.woocommerce') === host) button.remove();
             }
+        }
+        for (const target of scope.querySelectorAll('[data-sf-site-kit-late] .sf-site-kit-target')) {
+            // Site Kit discovers buttons by this class on initial document load.
+            // Keep the official data attributes; render late via the same GIS.
+            target.classList.remove(official);
         }
     };
     clean(document);

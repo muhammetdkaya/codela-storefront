@@ -374,10 +374,9 @@ function codela_sf_quick_guest_markup(): void {
                 <button type="button" class="sf-quick-native-alt"><span class="sf-alt-login-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M12 3h5a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4h-5"/></svg></span><?php esc_html_e( 'Sign in with email or Google', 'codela-storefront' ); ?></button>
                 <?php $google_available = function_exists( 'codela_sf_google_enabled' ) && codela_sf_google_enabled(); ?>
                 <?php if ( $google_available ) : ?>
-                    <a class="sf-quick-google" href="<?php echo esc_url( codela_sf_google_auth_url() ); ?>">
+                    <div class="sf-quick-site-kit"><?php codela_sf_google_widget( true ); ?></div>
                 <?php else : ?>
                     <button type="button" class="sf-quick-google" disabled aria-label="<?php esc_attr_e( 'Google sign-in is currently unavailable', 'codela-storefront' ); ?>">
-                <?php endif; ?>
                         <span class="sf-quick-action-icon" aria-hidden="true">
                             <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
                                 <path fill="#4285F4" d="M21.8 12.2c0-.7-.06-1.4-.18-2.08H12v3.94h5.5a4.7 4.7 0 0 1-2.04 3.08v2.56h3.3c1.93-1.78 3.04-4.39 3.04-7.5z"/>
@@ -388,7 +387,8 @@ function codela_sf_quick_guest_markup(): void {
                         </span>
                         <span class="sf-quick-action-divider" aria-hidden="true"></span>
                         <span class="sf-quick-action-label"><?php esc_html_e( 'Continue with Google', 'codela-storefront' ); ?></span>
-                    <?php if ( $google_available ) : ?></a><?php else : ?></button><?php endif; ?>
+                    </button>
+                <?php endif; ?>
                 <button type="button" class="sf-quick-switch sf-quick-email-login">
                     <span class="sf-quick-action-icon" aria-hidden="true">
                         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
