@@ -256,6 +256,7 @@ agency_page_check( str_contains( $contact_bento_html, 'cdl-contact__card--map' )
     && str_contains( $contact_bento_html, '<details id="sf-agency-contact-form"' ) && !str_contains( $contact_bento_html, 'HİZMETLER' )
     && !str_contains( $contact_bento_html, 'Hangi hizmetler?' ) && !str_contains( $contact_bento_html, '&amp;marker=' ),
     'Contact renders editorial map and project row, with a collapsed form and no invented office marker or services card' );
+agency_page_check( !str_contains( $contact_bento_html, 'cdl-contact__map-chip' ) && !str_contains( $contact_bento_html, 'data-contact-map-center' ) && str_contains( $contact_bento_html, 'cdl-contact__map-location' ) && str_contains( $contact_bento_html, 'OpenStreetMap' ), 'Contact map retains the location link and credit without redundant overlays' );
 agency_page_check( codela_sf_contact_map_point( '41.12, 29.34' ) === [ 41.12, 29.34 ]
     && codela_sf_contact_map_point( '91,29' ) === [] && codela_sf_contact_map_point( 'bad' ) === [],
     'Explicit public office coordinates are validated' );

@@ -98,19 +98,23 @@ const server=http.createServer((req,res)=>{
   await mapPage.waitForFunction(()=>window.mapFixture?.tiles);
   const mapContract=await mapPage.evaluate(()=>({tiles:window.mapFixture.tiles,options:window.mapFixture.options,marker:window.mapFixture.marker}));
   assert.equal(mapContract.tiles.url,'https://tile.openstreetmap.org/{z}/{x}/{y}.png');
-  assert.equal(mapContract.tiles.options.detectRetina,true);
+  assert.equal(mapContract.tiles.options.detectRetina,false);
   assert(mapContract.tiles.options.maxNativeZoom>=mapContract.options.zoom+1);
-  assert.equal(mapContract.options.zoom,16);
+  assert.equal(mapContract.options.zoom,15);
+  assert.equal(mapContract.options.dragging,false);
+  assert.equal(mapContract.marker.options.icon.html,'<i></i><b></b>');
   assert.deepEqual(mapContract.marker.center,[41.1,28.8]);
   const frame=mapPage.locator('[data-contact-map]');
   assert.notEqual(await frame.getAttribute('data-map-ready'),'true','One tile cannot hide fallback');
   await mapPage.evaluate(()=>window.mapFixture.events.load());
   assert.equal(await frame.getAttribute('data-map-ready'),'true');
   assert(await frame.locator('.cdl-contact__map-credit').isVisible(),'Map license credit stays visible');
+  assert.equal(await frame.locator('.cdl-contact__map-chip,.cdl-contact__map-center,.cdl-contact__pin-label').count(),0,'No redundant map overlays');
+  assert((await frame.locator('.cdl-contact__map-location').getAttribute('href')).includes('mlat=41.1&mlon=28.8'),'Exact external location remains available');
   await mapPage.evaluate(()=>{window.mapFixture.events.loading();window.mapFixture.events.tileload();window.mapFixture.events.tileerror();window.mapFixture.events.load();});
   assert.equal(await frame.getAttribute('data-map-ready'),'false','Tile failure restores fallback');
   assert(await frame.locator('.cdl-contact__map-fallback').isVisible());
   await mapPage.close();
-  console.log('Contact Bento: responsive layouts, native form, Retina map contract and fallback passed.');
+  console.log('Contact Bento: responsive layouts, native form, quiet map contract and fallback passed.');
  }finally{await browser.close();await new Promise(done=>server.close(done))}
 })().catch(e=>{console.error(e);server.close();process.exitCode=1});
