@@ -3106,5 +3106,5 @@ body.sf-agency-mixed .sf-agency-widget--bento .cdl-bento__grid{min-height:0}
 .sf-agency-widget :is(.cdl-project__consent,.cdl-contact__consent) input[type="checkbox"]:checked{background:#d3a480;border-color:#d3a480}
 .sf-agency-widget :is(.cdl-project__consent,.cdl-contact__consent) input[type="checkbox"]:checked::after{content:"✓";font-size:13px;font-weight:700;color:#211810}
 .sf-agency-widget :is(.cdl-project__consent,.cdl-contact__consent) input[type="checkbox"]:focus-visible{outline:2px solid #d3a480;outline-offset:3px}
-@media(prefers-reduced-motion:reduce){.sf-agency-widget label.cdl-floating-field :is(input,textarea,.cdl-floating-label){transition:none}}
+@media(prefers-reduced-motion:reduce){.sf-agency-widget label.cdl-floating-field :is(input,textarea,.cdl-floating-label){transition:none!important}}
 @media(forced-colors:active){.sf-agency-widget label.cdl-floating-field :is(input,textarea):focus{outline:2px solid Highlight!important;outline-offset:2px!important}.sf-agency-widget :is(.cdl-project__consent,.cdl-contact__consent) input[type="checkbox"]{appearance:auto}.sf-agency-widget :is(.cdl-project__consent,.cdl-contact__consent) input[type="checkbox"]::after{display:none}}

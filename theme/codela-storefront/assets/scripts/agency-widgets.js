@@ -95,7 +95,7 @@
           const clearance=header&&header.getBoundingClientRect().bottom>0?header.getBoundingClientRect().bottom+12:12;
           // Reset only if the progress/heading is above the visible header, not on every input change.
           if(panel&&panel.getBoundingClientRect().top<clearance-1){
-            panel.scrollIntoView({block:'start',behavior:'instant'});
+            panel.scrollIntoView({block:'start',inline:'nearest',behavior:'instant'});
           }
         };
         form.addEventListener('change',event=>{

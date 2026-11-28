@@ -1,7 +1,7 @@
 /**
  * Codela Agency Glass V2 — CSS material from the user-supplied
  * "Codela — Dijital Tasarım & Yazılım Stüdyosu" reference.
- * Enqueued ONLY on Agency pages with Glass V2 enabled.
+ * Shared across Agency editorial routes with Glass V2 enabled, independent of content.
  *
  * Material roles:
  *   ios-glass         = quiet, translucent graphite navigation
@@ -81,7 +81,8 @@ body.sf-glass-v2 .sf-agency-widget :is(
   .cdl-contact__submit,
   .cdl-project__button,
   .sf-agency-services-cta,.sf-agency-process-next
-){
+),
+body.sf-glass-v2.sf-site-agency :is(.cdl-404-home,.sf-article-cta a,.sf-journal .sf-ui-button--secondary:not(.sf-journal-card-footer .sf-ui-button)){
   color:#fff!important;
   text-shadow:none!important;
   border:1px solid transparent!important;
@@ -175,8 +176,8 @@ body.sf-glass-v2 .sf-agency-widget :is(
 }
 /* Reference codela-input, preserve live WordPress form IDs, nonce and labels. */
 body.sf-glass-v2 .sf-agency-widget :is(
-  .cdl-contact__form input:not([type="checkbox"]):not([type="hidden"]),
-  .cdl-contact__form textarea
+  .cdl-contact__form input:not([type="checkbox"]):not([type="hidden"]):not(.cdl-floating-field input),
+  .cdl-contact__form textarea:not(.cdl-floating-field textarea)
 ){
   border:1px solid rgba(255,255,255,.10)!important;
   background:rgba(255,255,255,.035)!important;
@@ -184,8 +185,8 @@ body.sf-glass-v2 .sf-agency-widget :is(
   box-shadow:none!important;
 }
 body.sf-glass-v2 .sf-agency-widget :is(
-  .cdl-contact__form input:not([type="checkbox"]):not([type="hidden"]),
-  .cdl-contact__form textarea
+  .cdl-contact__form input:not([type="checkbox"]):not([type="hidden"]):not(.cdl-floating-field input),
+  .cdl-contact__form textarea:not(.cdl-floating-field textarea)
 ):focus{
   border-color:rgba(214,166,118,.60)!important;
   background:rgba(255,255,255,.055)!important;
@@ -247,3 +248,8 @@ body.sf-glass-v2 .sf-shell.has-agency-header .sf-header
   box-shadow:none!important;
   -webkit-backdrop-filter:none!important;backdrop-filter:none!important;
 }
+
+/* All editorial calls to action share the same material and focus semantics. */
+body.sf-glass-v2.sf-site-agency :is(.cdl-404-home,.sf-article-cta a,.sf-journal .sf-ui-button--secondary):focus-visible{outline:2px solid #d3a480;outline-offset:3px}
+@media(hover:hover){body.sf-glass-v2.sf-site-agency :is(.cdl-404-home,.sf-article-cta a):hover{filter:brightness(1.08)}}
+@media(prefers-reduced-transparency:reduce){body.sf-glass-v2.sf-site-agency :is(.cdl-404-home,.sf-article-cta a){background:#25242d!important;border-color:#ffffff40!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}}

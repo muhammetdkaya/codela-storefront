@@ -605,17 +605,20 @@ add_action( 'wp_enqueue_scripts', static function() {
         [ 'codela-storefront-components' ],
         codela_sf_style_version()
     );
-    // Agency reference material loads after native Agency/Project CSS so only
-    // opted-in pages receive glass on their real buttons, cards and forms.
+    // Shared Agency shell material must exist on all editorial routes, even
+    // when a new page, post, archive or error template has no Agency widget.
+    // Keep the heavier content CSS conditional and preserve native commerce.
     if ( function_exists( 'codela_sf_agency_asset_flags' ) ) {
         $agency_flags = codela_sf_agency_asset_flags();
         $settings = codela_theme_settings();
-        $agency_account = 'agency' === ( $settings['site_experience'] ?? 'commerce' ) && codela_sf_is_account_context();
-        if ( ! empty( $agency_flags['pattern'] ) || ! empty( $agency_flags['widgets'] ) || $agency_account ) {
+        $agency_content = ! empty( $agency_flags['pattern'] ) || ! empty( $agency_flags['widgets'] );
+        if ( codela_sf_uses_agency_header( $settings ) || $agency_content ) {
+            $dependencies = [ 'codela-storefront-glass-v2' ];
+            if ( wp_style_is( 'codela-storefront-agency', 'enqueued' ) ) { $dependencies[] = 'codela-storefront-agency'; }
             wp_enqueue_style(
                 'codela-storefront-agency-glass',
                 get_template_directory_uri() . '/assets/styles/agency-glass.css',
-                $agency_account && empty( $agency_flags['pattern'] ) && empty( $agency_flags['widgets'] ) ? [ 'codela-storefront-glass-v2' ] : [ 'codela-storefront-glass-v2', 'codela-storefront-agency' ],
+                $dependencies,
                 codela_sf_style_version()
             );
         }

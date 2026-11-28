@@ -3,8 +3,8 @@
 .codela-page-layout>.sf-agency-widget--project,.sf-agency-widget--project{margin:0!important;max-width:none!important;width:100%}
 .sf-agency-widget--project .cdl-project,.sf-agency-widget--project .cdl-project *{box-sizing:border-box}
 .sf-agency-widget--project .cdl-project{
-  width:100vw;max-width:100vw;min-height:100svh;position:relative;
-  margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);
+  width:100%;max-width:100%;min-height:100svh;position:relative;
+  margin-inline:0;
   color:#f7f5f8;background:#09090c;
   padding:clamp(104px,12svh,142px) clamp(16px,4vw,56px) calc(110px + env(safe-area-inset-bottom,0px));
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif
@@ -225,7 +225,7 @@ body:not(.wp-admin) .sf-agency-widget--project .cdl-project__heading > :is(h1,h2
 .sf-agency-widget--project .cdl-project__controls{display:flex;gap:10px;}
 .sf-agency-widget--project .cdl-project__back-button{width:44px;flex:none;padding:0;}
 .sf-agency-widget--project .cdl-project__success{align-items:flex-start;text-align:left;justify-content:flex-start;min-height:0;}
-@media(prefers-reduced-motion:no-preference){.sf-agency-widget--project .cdl-project__step:not([hidden]){animation:cdl-project-editorial-in .3s ease-out;}@keyframes cdl-project-editorial-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}}
+@media(prefers-reduced-motion:no-preference){.sf-agency-widget--project .cdl-project__step:not([hidden]){animation:cdl-project-editorial-in .3s ease-out;}@keyframes cdl-project-editorial-in{from{opacity:0}to{opacity:1}}}
 
 .sf-agency-widget--project .cdl-project__choices--services .cdl-project__choice input{z-index:2;}
 .sf-agency-widget--project .cdl-project__heading>p:last-child{color:#b6b0bf;}
@@ -380,3 +380,12 @@ body:not(.home) .sf-agency-widget--project .cdl-project__shell{
 .sf-agency-widget--project .cdl-project__review-row span:last-child{color:#dbc0aa;text-align:right;flex-shrink:0;max-width:55%}
 .sf-agency-widget--project .cdl-project__review-group{font-size:12px;font-weight:550;color:#e5c3a7;padding:10px 0 5px}
 .sf-agency-widget--project [data-project-step="4"] .cdl-project__fields{gap:11px}
+
+/* A wizard is one fixed-width document, not a horizontal pager.
+   Clip inline overflow without making a second vertical scroll container.
+   Pan-y and pinch-zoom retain vertical scrolling and native accessibility. */
+html:has(.sf-agency-widget--project){overscroll-behavior-x:none;overflow-x:clip}
+body:has(.sf-agency-widget--project){overscroll-behavior-x:none;overflow-x:clip}
+.sf-agency-widget--project,.sf-agency-widget--project :is(.cdl-project,.cdl-project__shell,.cdl-project__panel,.cdl-project__form,.cdl-project__step){min-width:0;max-width:100%;overscroll-behavior-x:none}
+.sf-agency-widget--project .cdl-project{touch-action:pan-y pinch-zoom;overflow-x:clip}
+.sf-agency-widget--project .cdl-project__fields label.cdl-floating-field :is(input,textarea){touch-action:auto}

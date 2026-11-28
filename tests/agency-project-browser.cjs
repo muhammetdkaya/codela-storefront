@@ -143,7 +143,7 @@ const server=http.createServer((req,res)=>{
      const focus=await input.evaluate(el=>{const c=getComputedStyle(el);return {size:parseFloat(c.fontSize),outline:c.outlineStyle,border:c.borderBottomColor,shadow:c.boxShadow,label:el.closest('label').querySelector('.cdl-project__field-label')?.textContent,transform:getComputedStyle(el.closest('label')).textTransform};});
      assert(focus.size>=16,'Mobile Safari field zoom threshold');
      assert.equal(focus.outline,'none','No rectangular Glass V2 focus ring on text controls');
-     assert.equal(focus.border,'rgb(211, 164, 128)','Amber focus underline');
+     assert.equal(focus.border,'rgb(211, 164, 128)','Amber focus border');
      assert(focus.shadow!=='none','Visible framed focus indicator');
      assert(focus.label&&focus.transform==='none','Readable sentence-case field label');
    }
@@ -184,6 +184,9 @@ const server=http.createServer((req,res)=>{
       form:el.querySelector('form').getAttribute('action'),method:el.querySelector('form').method,
       secure:['agency_project_nonce','agency_project_webpage','agency_project_consent'].every(name=>el.querySelector('[name="'+name+'"]'))}));
    assert(geometry.overflow<=1&&geometry.width<=697);
+   assert.equal(await widget.locator('.cdl-project').evaluate(el=>getComputedStyle(el).overflowX),'clip');
+   assert.equal(await widget.locator('.cdl-project').evaluate(el=>getComputedStyle(el).touchAction),'pan-y pinch-zoom');
+   assert.equal(await page.evaluate(()=>window.scrollX),0,'Wizard stays on the horizontal origin');
    assert.equal(geometry.panel,'none');
    assert(geometry.form.includes('admin-post.php')&&geometry.method==='post'&&geometry.secure);
    assert.deepEqual(errors,[]);
