@@ -195,7 +195,7 @@ agency_page_check( str_contains(codela_sf_agency_404_markup(),'data-404-stage') 
 if ( in_array('--render=quote-admin',$argv,true) ) {
     function current_user_can($cap) { return 'manage_options' === $cap; }
     function selected($value,$expected,$echo=true) { $s=$value===$expected?' selected="selected"':''; if($echo)echo $s; return $s; }
-    $GLOBALS['quote_fixture']=codela_sf_quote_defaults();
+    $GLOBALS['quote_fixture']=codela_sf_quote_legacy_defaults();
     $GLOBALS['quote_fixture']['web']['packages'][0]=['label'=>'WordPress web sitesi','description'=>'Mevcut açıklama','min'=>12000,'max'=>18000];
     echo '<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>';
     codela_sf_quote_render_settings();
@@ -233,7 +233,7 @@ agency_page_check( str_contains($confirmed,'Talebin <span class="cdl-project__ti
     'Server-confirmed-only success screen does not expose active form' );
 $_GET=$original_query;
 if ( in_array('--render=project',$argv,true) ) {
-    $GLOBALS['quote_fixture']=codela_sf_quote_defaults();
+    $GLOBALS['quote_fixture']=codela_sf_quote_legacy_defaults();
     $GLOBALS['quote_fixture']['web']['packages'][0]=['label'=>'WordPress web sitesi','description'=>'Örnek açıklama','min'=>12000,'max'=>18000];
     $GLOBALS['quote_fixture']['web']['extras'][0]=['label'=>'Ek sayfa','min'=>1500,'max'=>2000];
     $local=codela_sf_section_agency_project($project_data);

@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 function codela_sf_quote_services(): array {
     return [ 'web' => 'Web Tasarım', 'commerce' => 'E-Ticaret', 'software' => 'Özel Yazılım', 'support' => 'Bakım & Geliştirme' ];
 }
-function codela_sf_quote_defaults(): array {
+function codela_sf_quote_legacy_defaults(): array {
     $names = [
         'web' => [ 'WordPress web sitesi', 'Özel web sitesi' ],
         'commerce' => [ 'WooCommerce mağazası', 'Özel e-ticaret altyapısı' ],
@@ -18,6 +18,55 @@ function codela_sf_quote_defaults(): array {
         foreach ( $labels as $i => $label ) { $out[$service]['packages'][$i] = [ 'label' => $label, 'min' => null, 'max' => null ]; }
     }
     return $out;
+}
+/** Approved launch prices, whole TL excluding VAT. */
+function codela_sf_quote_defaults(): array {
+    $web_extras = [
+        [ 'Çoklu dil desteği', 2500, 5000, 'Ek dil için teknik kurulum.' ],
+        [ 'İçerik hazırlama', 2500, 5000, 'Temel sayfa metinlerinin hazırlanması.' ],
+        [ 'Gelişmiş SEO kurulumu', 3000, 5000, 'Teknik ve sayfa içi SEO kurulumu.' ],
+    ];
+    $catalog = [
+        'web' => [ 'packages' => [
+            [ 'Tek Sayfa Web Sitesi', 7500, 10000, 'Tanıtım, kampanya ve kişisel marka siteleri.' ],
+            [ 'Kurumsal Web Sitesi', 12500, 20000, 'Firma, hizmet sayfaları, blog ve yönetim paneli.' ],
+            [ 'Özel Tasarım Web Sitesi', 25000, 40000, 'Markaya özgü arayüz ve gelişmiş işlevler.' ],
+        ], 'extras' => $web_extras ],
+        'commerce' => [ 'packages' => [
+            [ 'Online Mağaza', 17500, 25000, 'WooCommerce, ürün, ödeme ve kargo kurulumu.' ],
+            [ 'Gelişmiş E-Ticaret', 30000, 45000, 'Gelişmiş mağaza deneyimi ve satış araçları.' ],
+            [ 'Özel E-Ticaret', 50000, 80000, 'İşletmeye özel işlevler ve entegrasyonlar.' ],
+        ], 'extras' => array_merge( $web_extras, [
+            [ 'Pazaryeri entegrasyonu', 5000, 10000, 'Pazaryeri bağlantısının kurulumu.' ],
+            [ 'ERP entegrasyonu', 10000, 20000, 'İşletme sistemleriyle veri bağlantısı.' ],
+        ] ) ],
+        'software' => [ 'packages' => [
+            [ 'WordPress Eklentisi', 7500, 7500, 'İhtiyaca özel WordPress işlevleri.' ],
+            [ 'Sistem Entegrasyonu', 10000, 10000, 'API ve sistem bağlantıları.' ],
+            [ 'Özel Yönetim Paneli', 20000, 20000, 'İş akışlarına uygun yönetim arayüzü.' ],
+            [ 'Web Uygulaması', 35000, 35000, 'İhtiyaca özel web uygulaması.' ],
+        ], 'extras' => [] ],
+        'support' => [ 'packages' => [
+            [ 'Teknik Bakım', 1250, 1250, 'Güncelleme, güvenlik ve yedekleme.' ],
+            [ 'Bakım ve Destek', 2500, 2500, 'Teknik bakım ve planlı destek.' ],
+            [ 'Sürekli Geliştirme', 5000, 5000, 'Bakım ve belirlenen kapsamda geliştirme.' ],
+        ], 'extras' => [] ],
+    ];
+    $out = [];
+    foreach ( $catalog as $service => $groups ) {
+        foreach ( $groups as $kind => $rows ) {
+            $out[$service][$kind] = [];
+            foreach ( $rows as $id => $row ) {
+                $out[$service][$kind][$id] = array_combine( [ 'label', 'min', 'max', 'description' ], $row );
+            }
+        }
+    }
+    return $out;
+}
+/** Only an untouched legacy catalog can adopt launch defaults automatically. */
+function codela_sf_quote_uses_defaults(): bool {
+    $stored = get_option( 'codela_sf_quote_rules', null );
+    return null === $stored || codela_sf_quote_clean( $stored ) === codela_sf_quote_clean( codela_sf_quote_legacy_defaults() );
 }
 /** Validate whole-TL ranges together; never manufacture a price for blank fields. */
 function codela_sf_quote_clean( $raw ): ?array {
@@ -58,7 +107,7 @@ function codela_sf_quote_clean( $raw ): ?array {
 }
 function codela_sf_quote_rules(): array {
     $stored = get_option( 'codela_sf_quote_rules', null );
-    return null === $stored ? codela_sf_quote_defaults() : ( codela_sf_quote_clean( $stored ) ?? codela_sf_quote_defaults() );
+    return codela_sf_quote_uses_defaults() ? codela_sf_quote_defaults() : ( codela_sf_quote_clean( $stored ) ?? codela_sf_quote_legacy_defaults() );
 }
 function codela_sf_quote_estimate( array $rules, string $package, array $extras ): ?array {
     if ( 'custom' === $package ) { return null; }
@@ -79,8 +128,11 @@ function codela_sf_quote_money( array $range ): string {
     $min = number_format( $range[0], 0, ',', '.' ); $max = number_format( $range[1], 0, ',', '.' );
     return $min . ( $min === $max ? '' : ' – ' . $max ) . ' TL';
 }
-function codela_sf_quote_row_price( array $row ): string {
-    return null === $row['min'] || null === $row['max'] ? '' : codela_sf_quote_money( [ $row['min'], $row['max'] ] );
+function codela_sf_quote_mode_money( array $range, string $mode ): string {
+    return 'starting' === $mode ? codela_sf_quote_money( [ $range[0], $range[0] ] ) . ' itibarıyla' : codela_sf_quote_money( $range ) . ( 'monthly' === $mode ? ' / ay' : '' );
+}
+function codela_sf_quote_row_price( array $row, string $mode = 'range' ): string {
+    return null === $row['min'] || null === $row['max'] ? '' : codela_sf_quote_mode_money( [ $row['min'], $row['max'] ], $mode );
 }
 /** Explicit models avoid reinterpreting previously entered one-off prices as subscriptions. */
 function codela_sf_quote_pricing_mode( string $service, array $rules ): string {
@@ -89,6 +141,7 @@ function codela_sf_quote_pricing_mode( string $service, array $rules ): string {
     $stored = get_option( 'codela_sf_quote_models', [] );
     $mode = is_array( $stored ) ? ( $stored[$service] ?? '' ) : '';
     if ( in_array( $mode, $choices, true ) ) { return $mode; }
+    if ( codela_sf_quote_uses_defaults() ) { return $choices[0]; }
     foreach ( [ 'packages', 'extras' ] as $kind ) {
         foreach ( $rules[$kind] ?? [] as $row ) {
             if ( null !== $row['min'] || null !== $row['max'] ) { return 'range'; }
@@ -198,7 +251,7 @@ function codela_sf_project_quote_calculate( array $services, $raw ): ?array {
             }
         }
         $mode = codela_sf_quote_pricing_mode( $key, $rules[$key] );
-        $label = $known ? ( 'starting' === $mode ? codela_sf_quote_money( [ $min, $min ] ) . ' itibarıyla' : codela_sf_quote_money( [ $min, $max ] ) . ( 'monthly' === $mode ? ' / ay' : '' ) ) : 'Görüşmede belirlenecek';
+        $label = $known ? codela_sf_quote_mode_money( [ $min, $max ], $mode ) : 'Görüşmede belirlenecek';
         $out[$key] = [ 'service' => codela_sf_quote_services()[$key], 'scope' => '1' === $custom ? [ 'İhtiyaca özel' ] : $labels, 'estimate' => $label ];
     }
     return $out;
@@ -207,6 +260,7 @@ function codela_sf_quote_markup( string $service, array $data ): string {
     $context = codela_sf_agency_form_context( 'agency-detail', $data );
     if ( ! $context[0] || ! isset( codela_sf_quote_services()[$service] ) ) { return ''; }
     $rules = codela_sf_quote_rules()[$service];
+    $mode = codela_sf_quote_pricing_mode( $service, $rules );
     $id = codela_sf_agency_dom_id( 'cdl-quote-' . sanitize_html_class( $context[1] ) );
     $status = isset( $_GET['codela_quote_status'], $_GET['codela_component'] ) && is_string( $_GET['codela_quote_status'] ) && is_string( $_GET['codela_component'] ) && $_GET['codela_component'] === $context[1] ? sanitize_key( $_GET['codela_quote_status'] ) : '';
     if ( 'sent' === $status ) {
@@ -218,21 +272,21 @@ function codela_sf_quote_markup( string $service, array $data ): string {
     $start = $priced ? min( array_column( $priced, 'min' ) ) : null;
     ob_start(); ?>
     <details class="cdl-quote" id="<?php echo esc_attr( $id ); ?>"<?php echo $status ? ' open' : ''; ?>>
-      <summary><span><strong>Ücretsiz Teklif Al</strong><small><?php echo null !== $start ? esc_html( codela_sf_quote_money( [ $start, $start ] ) . ' itibarıyla tahmini' ) : 'İhtiyacına göre kapsamı netleştirelim.'; ?></small></span><span aria-hidden="true">↗</span></summary>
+      <summary><span><strong>Ücretsiz Teklif Al</strong><small><?php echo null !== $start ? esc_html( ( 'monthly' === $mode ? codela_sf_quote_mode_money( [ $start, $start ], $mode ) . ' itibarıyla' : codela_sf_quote_money( [ $start, $start ] ) . ' itibarıyla tahmini' ) ) : 'İhtiyacına göre kapsamı netleştirelim.'; ?></small></span><span aria-hidden="true">↗</span></summary>
       <?php if ( 'sent' === $status ) : ?><p role="status">Talebin alındı. Kapsamı inceleyip sana dönüş yapacağız.</p>
       <?php else : ?>
         <?php if ( in_array( $status, [ 'invalid', 'failed', 'wait' ], true ) ) : ?><p role="alert"><?php echo esc_html( 'wait' === $status ? 'Kısa süre önce talep gönderdin. Bir dakika sonra tekrar dene.' : 'Talep iletilemedi. Bilgilerini kontrol edip tekrar dene.' ); ?></p><?php endif; ?>
-        <form class="cdl-quote__form" data-quote-form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post">
+        <form class="cdl-quote__form" data-quote-form data-pricing-mode="<?php echo esc_attr( $mode ); ?>" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post">
           <input type="hidden" name="action" value="codela_sf_agency_quote">
           <input type="hidden" name="quote_service" value="<?php echo esc_attr( $service ); ?>">
           <?php codela_sf_agency_nonce_input( 'codela_sf_agency_quote', 'quote_nonce' ); codela_sf_agency_form_context_input( $context ); ?>
           <label>Paket<select name="quote_package" required>
             <option value="custom">İhtiyacıma özel teklif</option>
-            <?php foreach ( $rules['packages'] as $key => $row ) : ?><option value="<?php echo esc_attr( $key ); ?>" data-min="<?php echo esc_attr( $row['min'] ?? '' ); ?>" data-max="<?php echo esc_attr( $row['max'] ?? '' ); ?>"><?php echo esc_html( $row['label'] . ( codela_sf_quote_row_price( $row ) ? ' · ' . codela_sf_quote_row_price( $row ) : '' ) ); ?></option><?php endforeach; ?>
+            <?php foreach ( $rules['packages'] as $key => $row ) : ?><option value="<?php echo esc_attr( $key ); ?>" data-min="<?php echo esc_attr( $row['min'] ?? '' ); ?>" data-max="<?php echo esc_attr( $row['max'] ?? '' ); ?>"><?php echo esc_html( $row['label'] . ( codela_sf_quote_row_price( $row, $mode ) ? ' · ' . codela_sf_quote_row_price( $row, $mode ) : '' ) ); ?></option><?php endforeach; ?>
           </select></label>
-          <?php if ( $rules['extras'] ) : ?><fieldset><legend>Ek kapsam</legend><?php foreach ( $rules['extras'] as $key => $row ) : ?><label class="cdl-quote__check"><input type="checkbox" name="quote_extra[]" value="<?php echo esc_attr( $key ); ?>" data-min="<?php echo esc_attr( $row['min'] ?? '' ); ?>" data-max="<?php echo esc_attr( $row['max'] ?? '' ); ?>"><span><?php echo esc_html( $row['label'] . ( codela_sf_quote_row_price( $row ) ? ' · ' . codela_sf_quote_row_price( $row ) : '' ) ); ?></span></label><?php endforeach; ?></fieldset><?php endif; ?>
+          <?php if ( $rules['extras'] ) : ?><fieldset><legend>Ek kapsam</legend><?php foreach ( $rules['extras'] as $key => $row ) : ?><label class="cdl-quote__check"><input type="checkbox" name="quote_extra[]" value="<?php echo esc_attr( $key ); ?>" data-min="<?php echo esc_attr( $row['min'] ?? '' ); ?>" data-max="<?php echo esc_attr( $row['max'] ?? '' ); ?>"><span><?php echo esc_html( $row['label'] . ( codela_sf_quote_row_price( $row, $mode ) ? ' · ' . codela_sf_quote_row_price( $row, $mode ) : '' ) ); ?></span></label><?php endforeach; ?></fieldset><?php endif; ?>
           <p class="cdl-quote__estimate" data-quote-estimate aria-live="polite" hidden></p>
-          <p class="cdl-quote__note">Ücretsiz, bağlayıcı olmayan ön teklif. Nihai kapsam, KDV ve koşullar görüşmede netleşir; ödeme veya rezervasyon oluşturulmaz.</p>
+          <p class="cdl-quote__note">KDV hariç, bağlayıcı olmayan ön teklif. Alan adı, hosting, ücretli lisanslar ve kapsam dışı işler ayrıca fiyatlandırılır.</p>
           <label>Ad Soyad / Marka<input type="text" name="quote_name" autocomplete="name" minlength="2" maxlength="120" required></label>
           <label>E-posta<input type="email" name="quote_email" autocomplete="email" maxlength="180" required></label>
           <label>Proje hakkında<textarea name="quote_note" rows="3" maxlength="2000" placeholder="Sayfa sayısı, entegrasyonlar veya hedefin"></textarea></label>
@@ -301,8 +355,8 @@ function codela_sf_quote_submit(): void {
     $to = sanitize_email( (string) get_option( 'admin_email' ) );
     $estimate = codela_sf_quote_estimate( $rules, $package, $extras );
     $label = 'custom' === $package ? 'İhtiyaca özel' : $rules['packages'][(int) $package]['label'];
-    $body = "Ücretsiz teklif talebi (bağlayıcı değil)\nHizmet: " . codela_sf_quote_services()[$service] . "\nPaket: $label\nEk kapsam: " . implode( ', ', $extra_labels ) . "\nTahmin: " . ( $estimate ? codela_sf_quote_money( $estimate ) : 'Kapsam görüşmesinde belirlenecek' ) . "\nAd / Marka: $name\nE-posta: $email\nNot: $note";
-    $record_body = "Hizmet: " . codela_sf_quote_services()[$service] . "\nPaket: $label\nEk kapsam: " . implode( ', ', $extra_labels ) . "\nTahmin: " . ( $estimate ? codela_sf_quote_money( $estimate ) : 'Görüşmede belirlenecek' ) . "\nNot: $note";
+    $body = "Ücretsiz teklif talebi (bağlayıcı değil)\nHizmet: " . codela_sf_quote_services()[$service] . "\nPaket: $label\nEk kapsam: " . implode( ', ', $extra_labels ) . "\nTahmin: " . ( $estimate ? codela_sf_quote_mode_money( $estimate, codela_sf_quote_pricing_mode( $service, $rules ) ) : 'Kapsam görüşmesinde belirlenecek' ) . "\nAd / Marka: $name\nE-posta: $email\nNot: $note";
+    $record_body = "Hizmet: " . codela_sf_quote_services()[$service] . "\nPaket: $label\nEk kapsam: " . implode( ', ', $extra_labels ) . "\nTahmin: " . ( $estimate ? codela_sf_quote_mode_money( $estimate, codela_sf_quote_pricing_mode( $service, $rules ) ) : 'Görüşmede belirlenecek' ) . "\nNot: $note";
     if ( ! codela_sf_quote_deliver( $name, $email, $to, '[Codela] Ücretsiz teklif talebi', $body, [ 'Content-Type: text/plain; charset=UTF-8', 'Reply-To: ' . $email ], $record_body ) ) { $redirect( 'failed' ); }
     set_transient( $throttle, 1, MINUTE_IN_SECONDS );
     $receipt = bin2hex( random_bytes( 16 ) );

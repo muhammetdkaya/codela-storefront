@@ -29,7 +29,7 @@ agency_real_expect( ! codela_sf_agency_exclusive_page( get_post( $mixed ) ) && c
 agency_real_expect( codela_sf_agency_form_source( $mixed, 'agency-detail', 'quote-web' ) === get_permalink( $mixed ), 'Native page source resolves actual URL' );
 foreach ( [ $disabled, $draft, $private ] as $id ) { agency_real_expect( ! codela_sf_agency_form_source( $id, 'agency-detail', 'quote-web' ), 'Disabled, draft and password pages cannot submit' ); }
 agency_real_expect( ! codela_sf_agency_form_source( $mixed, 'agency-project', 'quote-web' ), 'Cross-type component rejected' );
-$rules = codela_sf_quote_defaults();
+$rules = codela_sf_quote_legacy_defaults();
 $rules['web']['packages'][0] = [ 'label' => 'WordPress acceptance', 'min' => 12000, 'max' => 18000 ];
 $rules['web']['extras'][0] = [ 'label' => 'Ek sayfa acceptance', 'min' => 1500, 'max' => 2000 ];
 $rules['web']['extras'][1] = [ 'label' => 'Kapsamı belirlenecek', 'min' => null, 'max' => null ];
