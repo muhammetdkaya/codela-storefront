@@ -351,9 +351,10 @@
     }
 
     if (widget.dataset.agencyWidget === 'bento') {
-      // Pointer activation previews a service, then opens its original href.
+      // Pointer activation previews a photographic service, then opens its original href.
+      // The support strip has an always-visible action and opens directly.
       // Keyboard, assistive activation, modifiers and no-JS navigation stay native.
-      const cards = [...widget.querySelectorAll('a.cdl-bento__card[href]')];
+      const cards = [...widget.querySelectorAll('a.cdl-bento__card[href]:not(.cdl-bento__card--support)')];
       if (cards.length) {
         let selected = null;
         const clear = () => {

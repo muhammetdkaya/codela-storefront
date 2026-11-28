@@ -6,6 +6,7 @@
     "codela": "1.2.35"
   },
   "changes": [
+    "Ajans hizmetleri: bakım ve geliştirme kartının sıcak renkli ışık katmanı kaldırıldı; ortak koyu kart yüzeyi ve sürekli görünür İncele eylemiyle tek dokunuşta detay açılır.",
     "Ajans blog ve yazı detayları: koyu editoryal tasarım, kategori gezinmesi, tahmini okuma süresi, ilgili yazılar ve proje bağlantısı; WordPress sorguları ve e-ticaret görünümü korunur.",
     "Ajans Hesabım: güvenlik ve hızlı giriş kartları koyu yüzey, okunabilir metin ve kehribar eylem; proje özetindeki hesap ikonları ve başlığı ortak tasarım diline uyarlanır.",
     "Koyu temada Google giriş düğmesinin etrafındaki beyaz iframe zemini için renk şeması ve şeffaf taşıyıcı düzeltildi; orijinal Google kapsülü, genişliği, kişiselleştirilmiş hesap seçimi ve giriş davranışı korunur.",

@@ -95,7 +95,6 @@ function codela_sf_section_agency_bento( array $data, string $type = '' ): strin
                     <span><?php echo esc_html( $tag ); ?></span>
                   </span>
                 <?php elseif ( 3 === $index ) : ?>
-                  <span class="cdl-bento__light cdl-bento__light--right" aria-hidden="true"></span>
                   <span class="cdl-bento__support-text">
                     <strong><?php echo esc_html( $display ); ?></strong>
                     <span><?php echo esc_html( $tag ); ?></span>

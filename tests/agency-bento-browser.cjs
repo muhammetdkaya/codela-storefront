@@ -76,6 +76,10 @@ const server=http.createServer((req,res)=>{
       assert(snapshot.cards.every(card=>card.height>=70&&card.width>=100&&card.href&&card.href.includes('hizmetler')),'Every bento service has a usable destination');
       assert.equal(snapshot.phoneChrome,0,'No fake prototype phone chrome or duplicated native dock');
       assert.equal(snapshot.tagCount,1,'One reference support CTA');
+      const support=hero.locator('.cdl-bento__card--support');
+      assert(await support.locator('.cdl-bento__support-action').isVisible(),'Support CTA visible at rest at '+width);
+      assert.equal(await support.locator('.cdl-bento__light--right').count(),0,'No warm glow layer');
+      assert.equal(await support.evaluate(el=>getComputedStyle(el).backgroundImage),await hero.locator('.cdl-bento__card--software').evaluate(el=>getComputedStyle(el).backgroundImage),'Support uses shared card material');
       assert.deepEqual(errors,[],'No browser exceptions');
       await page.screenshot({path:path.join(root,'qa','agency-bento-'+width+'.png'),fullPage:true});
       await page.close();
@@ -126,8 +130,10 @@ const server=http.createServer((req,res)=>{
     await cards.nth(2).focus();
     await cards.nth(2).press('Enter');
     assert.equal(await preview.evaluate(()=>window.nativeServiceClicks),2,'Keyboard activation remains direct');
+    assert(await cards.nth(3).locator('.cdl-bento__support-action').isVisible(),'Support action visible before interaction');
     await cards.nth(3).tap();
-    assert(await cards.nth(3).locator('.cdl-bento__support-action').isVisible(),'Support action only after selection');
+    assert.equal(await preview.evaluate(()=>window.nativeServiceClicks),3,'Support opens directly on first tap');
+    assert.equal(await cards.nth(3).evaluate(el=>el.classList.contains('is-bento-selected')),false,'Support does not require selection');
     await cards.nth(3).press('Escape');
     assert.equal(await preview.locator('.is-bento-selected').count(),0,'Escape clears selection');
     await preview.close();
