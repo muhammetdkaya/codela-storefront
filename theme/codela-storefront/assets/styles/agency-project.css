@@ -3,8 +3,8 @@
 .codela-page-layout>.sf-agency-widget--project,.sf-agency-widget--project{margin:0!important;max-width:none!important;width:100%}
 .sf-agency-widget--project .cdl-project,.sf-agency-widget--project .cdl-project *{box-sizing:border-box}
 .sf-agency-widget--project .cdl-project{
-  width:100vw;max-width:100vw;min-height:100svh;position:relative;
-  margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);
+  width:100%;max-width:100%;min-height:100svh;position:relative;
+  margin-inline:0;
   color:#f7f5f8;background:#09090c;
   padding:clamp(104px,12svh,142px) clamp(16px,4vw,56px) calc(110px + env(safe-area-inset-bottom,0px));
   font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif
@@ -353,3 +353,39 @@ body:not(.home) .sf-agency-widget--project .cdl-project__shell{
 .sf-agency-widget--project .cdl-project__scope-error{color:#d3a480;font-size:12px;line-height:1.4;margin:0}
 .sf-agency-widget--project .cdl-project__button>[data-scope-next-label]{color:inherit;min-width:0;text-align:center;overflow-wrap:anywhere}
 
+
+/* Final contact step: compact quote review; native submission stays unchanged. */
+.sf-agency-widget--project .cdl-project__summary.cdl-project__summary--review{display:block;padding:0;border:1px solid #393237;border-radius:18px;background:linear-gradient(145deg,#201d20,#151417);overflow:hidden;min-width:0}
+.sf-agency-widget--project [data-project-summary].cdl-project__summary--review{display:block}
+.sf-agency-widget--project .cdl-project__review-main{padding:16px}
+.sf-agency-widget--project .cdl-project__review-kicker{font-size:10px;letter-spacing:.17em;text-transform:uppercase;color:#a69da9}
+.sf-agency-widget--project .cdl-project__review-service{font-size:15px;font-weight:550;margin:10px 0 4px;overflow-wrap:anywhere}
+.sf-agency-widget--project .cdl-project__review-package,.sf-agency-widget--project .cdl-project__review-note{font-size:11px;line-height:1.5;color:#aaa1ae;overflow-wrap:anywhere}
+.sf-agency-widget--project .cdl-project__review-budgets{display:grid;gap:12px;margin:14px 0 4px}
+.sf-agency-widget--project .cdl-project__review-budget-label{display:block;color:#aaa1ae;font-size:11px;margin-bottom:3px}
+.sf-agency-widget--project .cdl-project__review-amount{font-size:clamp(20px,5.8vw,27px);font-weight:550;color:#e5c3a7;line-height:1.25;letter-spacing:-.035em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.sf-agency-widget--project .cdl-project__review-details{border-top:1px solid #ffffff12}
+.sf-agency-widget--project .cdl-project__review-details summary{display:flex;align-items:center;justify-content:space-between;gap:10px;list-style:none;min-height:48px;padding:4px 16px;cursor:pointer}
+.sf-agency-widget--project .cdl-project__review-details summary::-webkit-details-marker{display:none}
+.sf-agency-widget--project .cdl-project__review-details summary:focus-visible{outline:2px solid #d3a480;outline-offset:-3px}
+.sf-agency-widget--project .cdl-project__review-details summary :is(.cdl-project__review-toggle,.cdl-project__review-show,.cdl-project__review-hide){color:#d3a480}
+.sf-agency-widget--project .cdl-project__review-toggle{white-space:nowrap}
+.sf-agency-widget--project .cdl-project__review-toggle i{display:inline-block;width:7px;height:7px;border:solid currentColor;border-width:0 1px 1px 0;transform:rotate(45deg);vertical-align:3px;margin-left:5px}
+.sf-agency-widget--project .cdl-project__review-details[open] .cdl-project__review-toggle i{transform:rotate(225deg);vertical-align:0}
+.sf-agency-widget--project .cdl-project__review-hide,.sf-agency-widget--project .cdl-project__review-details[open] .cdl-project__review-show{display:none}
+.sf-agency-widget--project .cdl-project__review-details[open] .cdl-project__review-hide{display:inline}
+.sf-agency-widget--project .cdl-project__review-list{padding:0 16px 10px}
+.sf-agency-widget--project .cdl-project__review-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;border-top:1px solid #ffffff10;padding:10px 0}
+.sf-agency-widget--project .cdl-project__review-row span{font-size:11px;line-height:1.45;color:#bcb4c1}
+.sf-agency-widget--project .cdl-project__review-row span:last-child{color:#dbc0aa;text-align:right;flex-shrink:0;max-width:55%}
+.sf-agency-widget--project .cdl-project__review-group{font-size:12px;font-weight:550;color:#e5c3a7;padding:10px 0 5px}
+.sf-agency-widget--project [data-project-step="4"] .cdl-project__fields{gap:11px}
+
+/* A wizard is one fixed-width document, not a horizontal pager.
+   Clip inline overflow without making a second vertical scroll container.
+   Pan-y and pinch-zoom retain vertical scrolling and native accessibility. */
+html:has(.sf-agency-widget--project){overscroll-behavior-x:none;overflow-x:clip}
+body:has(.sf-agency-widget--project){overscroll-behavior-x:none;overflow-x:clip}
+.sf-agency-widget--project,.sf-agency-widget--project :is(.cdl-project,.cdl-project__shell,.cdl-project__panel,.cdl-project__form,.cdl-project__step){min-width:0;max-width:100%;overscroll-behavior-x:none}
+.sf-agency-widget--project .cdl-project{touch-action:pan-y pinch-zoom;overflow-x:clip}
+.sf-agency-widget--project .cdl-project__fields label.cdl-floating-field :is(input,textarea){touch-action:auto}

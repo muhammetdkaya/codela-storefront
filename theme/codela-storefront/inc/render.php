@@ -88,6 +88,15 @@ function codela_sf_header_context(): array {
     return [];
 }
 
+/** The shared editorial shell is selected by site profile, not page content. */
+function codela_sf_uses_agency_header( array $settings ): bool {
+    return 'agency' === ( $settings['site_experience'] ?? 'commerce' )
+        && ! ( function_exists( 'is_product' ) && is_product() )
+        && ! ( function_exists( 'is_checkout' ) && codela_sf_is_checkout_context() )
+        && ! ( function_exists( 'is_cart' ) && codela_sf_is_cart_context() )
+        && ! ( function_exists( 'codela_sf_is_catalog_archive' ) && codela_sf_is_catalog_archive() );
+}
+
 function codela_sf_header(): string {
     if ( ! codela_sf_ready() ) { return ''; }
     $settings = codela_theme_settings();
@@ -110,11 +119,7 @@ function codela_sf_header(): string {
     $editorial_account = 'editorial' === codela_sf_presentation( 'account', $settings );
     // Keep native Woo document controls; editorial Agency pages use a single
     // approved Codela mark and Account/Menu header composition.
-    $agency_header = $agency_navigation
-        && ! ( function_exists( 'is_product' ) && is_product() )
-        && ! ( function_exists( 'is_checkout' ) && codela_sf_is_checkout_context() )
-        && ! ( function_exists( 'is_cart' ) && codela_sf_is_cart_context() )
-        && ! ( function_exists( 'codela_sf_is_catalog_archive' ) && codela_sf_is_catalog_archive() );
+    $agency_header = codela_sf_uses_agency_header( $settings );
     $show_mobile_dock = ( $commerce_available || $account_available ) && ! $checkout_page && ! in_array( $settings['mobile_dock_enabled'] ?? true, [ false, 0, '0', '' ], true );
     // Checkout is a full page without the mobile dock, but uses the same
     // compact mobile header layout as pages with the dock enabled.

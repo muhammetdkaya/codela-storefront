@@ -7,6 +7,8 @@ const glass=fs.readFileSync('theme/codela-storefront/assets/styles/glass-v2.css'
 const agency=fs.readFileSync('theme/codela-storefront/assets/styles/agency.css','utf8');
 const project=fs.readFileSync('theme/codela-storefront/assets/styles/agency-project.css','utf8');
 const material=fs.readFileSync('theme/codela-storefront/assets/styles/agency-glass.css','utf8');
+ const enqueue=fs.readFileSync('theme/codela-storefront/functions.php','utf8');
+ assert(enqueue.includes('codela_sf_uses_agency_header( $settings ) || $agency_content'),'Shared glass includes every editorial route, including journal and 404');
 function html(enabled){
  const agencyMarkup=`<div class="sf-agency-widget sf-agency-widget--studio"><section class="codela-studio-hero"><div class="codela-studio-hero__visual-foot"><a href="#">Hizmetler</a></div></section></div>
  <div class="sf-agency-widget sf-agency-widget--bento"><a class="cdl-bento__card" href="#"><span class="cdl-bento__pill">Öne Çıkan</span><span class="cdl-bento__support-action">İncele</span></a></div>

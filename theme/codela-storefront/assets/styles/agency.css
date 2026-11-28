@@ -3092,3 +3092,19 @@ body.sf-agency-mixed .sf-agency-widget--bento .cdl-bento__grid{min-height:0}
 @media(prefers-reduced-motion:reduce){
   .sf-agency-widget--bento[data-bento-select-ready="1"] .cdl-bento__card :is(.cdl-bento__circle-arrow,.cdl-bento__minor-arrow){transition:none}
 }
+
+/* Shared Agency input language: one floating label, recognizable inset surface. */
+.sf-agency-widget :is(.cdl-project__fields,.cdl-contact__form) label.cdl-floating-field{position:relative;display:block;min-width:0;gap:0;text-transform:none;letter-spacing:0}
+.sf-agency-widget :is(.cdl-project__fields,.cdl-contact__form) label.cdl-floating-field :is(input,textarea){display:block;width:100%;min-width:0;min-height:62px;margin:0;box-sizing:border-box;border:1px solid #36343a!important;border-radius:12px!important;background:#151518!important;color:#f2f0f3!important;caret-color:#d3a480;padding:25px 15px 9px!important;font-size:16px!important;font-weight:400;line-height:1.45;box-shadow:none!important;outline:0!important;transition:border-color .17s,background-color .17s;scroll-margin-block:20px}
+.sf-agency-widget :is(.cdl-project__fields,.cdl-contact__form) label.cdl-floating-field textarea{height:auto;min-height:92px;resize:vertical}
+.sf-agency-widget :is(.cdl-project__fields,.cdl-contact__form) label.cdl-floating-field .cdl-floating-label{position:absolute;display:block;top:31px;left:15px;right:12px;transform:translateY(-50%);color:#b1aab9;font-size:14px;font-weight:400;line-height:1.4;pointer-events:none;transition:top .17s,transform .17s,font-size .17s,color .17s}
+.sf-agency-widget :is(.cdl-project__fields,.cdl-contact__form) label.cdl-floating-field .cdl-floating-label small{float:right;font-size:10px;color:#99919f;font-weight:400}
+.sf-agency-widget :is(.cdl-project__fields,.cdl-contact__form) label.cdl-floating-field:focus-within :is(input,textarea){border-color:#d3a480!important;background:#1a181b!important;box-shadow:0 0 0 2px #d3a48016!important}
+.sf-agency-widget :is(.cdl-project__fields,.cdl-contact__form) label.cdl-floating-field :is(input,textarea):not(:placeholder-shown)+.cdl-floating-label,.sf-agency-widget :is(.cdl-project__fields,.cdl-contact__form) label.cdl-floating-field:focus-within .cdl-floating-label{top:9px;transform:none;font-size:11px;color:#c7a48b}
+.sf-agency-widget :is(.cdl-project__fields,.cdl-contact__form) label.cdl-floating-field :is(input,textarea):-webkit-autofill{-webkit-text-fill-color:#f2f0f3!important;box-shadow:0 0 0 1000px #151518 inset!important}
+.sf-agency-widget :is(.cdl-project__consent,.cdl-contact__consent) input[type="checkbox"]{appearance:none;display:grid;place-items:center;width:19px;height:19px;flex-shrink:0;margin:1px 0 0;border:1px solid #70615a;border-radius:5px;background:#171619;cursor:pointer}
+.sf-agency-widget :is(.cdl-project__consent,.cdl-contact__consent) input[type="checkbox"]:checked{background:#d3a480;border-color:#d3a480}
+.sf-agency-widget :is(.cdl-project__consent,.cdl-contact__consent) input[type="checkbox"]:checked::after{content:"✓";font-size:13px;font-weight:700;color:#211810}
+.sf-agency-widget :is(.cdl-project__consent,.cdl-contact__consent) input[type="checkbox"]:focus-visible{outline:2px solid #d3a480;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.sf-agency-widget label.cdl-floating-field :is(input,textarea,.cdl-floating-label){transition:none!important}}
+@media(forced-colors:active){.sf-agency-widget label.cdl-floating-field :is(input,textarea):focus{outline:2px solid Highlight!important;outline-offset:2px!important}.sf-agency-widget :is(.cdl-project__consent,.cdl-contact__consent) input[type="checkbox"]{appearance:auto}.sf-agency-widget :is(.cdl-project__consent,.cdl-contact__consent) input[type="checkbox"]::after{display:none}}

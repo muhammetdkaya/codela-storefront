@@ -138,15 +138,15 @@ function codela_sf_section_agency_contact_bento( array $data, string $type = '' 
               <input type="hidden" name="action" value="codela_sf_agency_contact">
               <?php codela_sf_agency_nonce_input( 'codela_sf_agency_contact', 'agency_contact_nonce' ); codela_sf_agency_form_context_input( $source ); ?>
               <div class="cdl-contact__form-row">
-                <label>Ad Soyad<input name="agency_name" type="text" maxlength="120"
-                       autocomplete="name" required placeholder="Adınız Soyadınız"></label>
-                <label>E-posta<input name="agency_email" type="email" maxlength="180"
-                       autocomplete="email" required placeholder="ornek@firma.com"></label>
+                <label class="cdl-floating-field"><input name="agency_name" type="text" maxlength="120"
+                       autocomplete="name" required placeholder=" "><span class="cdl-floating-label">Ad soyad</span></label>
+                <label class="cdl-floating-field"><input name="agency_email" type="email" maxlength="180"
+                       autocomplete="email" required placeholder=" "><span class="cdl-floating-label">E-posta</span></label>
               </div>
               <input type="hidden" name="agency_services" data-agency-contact-services value="<?php echo esc_attr( $selected ); ?>">
-              <label>Mesaj
+              <label class="cdl-floating-field">
                 <textarea name="agency_message" rows="4" minlength="10" maxlength="4000"
-                          required placeholder="Nasıl yardımcı olabiliriz?"></textarea></label>
+                          required placeholder=" "></textarea><span class="cdl-floating-label">Mesaj</span></label>
               <div class="cdl-contact__honey" aria-hidden="true">
                 <label>Bu alan boş kalmalı<input type="text" name="agency_webpage" tabindex="-1" autocomplete="off"></label>
               </div>
