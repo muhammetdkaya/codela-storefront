@@ -199,10 +199,8 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
       const background=await page.locator('.sf-account-intro').evaluate(el=>getComputedStyle(document.body).backgroundColor);
       assert.equal(background,'rgb(248, 247, 244)','Guest Account uses the normal Storefront page canvas');
       if(type==='login'){
-        await page.locator('.woocommerce').evaluate(node=>node.insertAdjacentHTML('beforeend',
-          '<div class="sf-shell sf-auth-social"><div class="sf-auth-divider"><span>or</span></div>'+
-          '<a class="sf-auth-google sf-ui-button sf-ui-button--secondary" href="/wp-admin/admin-post.php?action=codela_sf_google_start">'+
-          '<span class="sf-google-glyph" aria-hidden="true">G</span><span class="sf-ui-button-label">Continue with Google</span></a></div>'));
+        await page.locator('.woocommerce').evaluate((node,markup)=>node.insertAdjacentHTML('beforeend',markup),nativeGoogleInfo.overlay_button);
+        assert((await page.locator('.sf-auth-google').getAttribute('href')).includes('codela_google=1'),'Google link goes to official Account surface');
         const social=await page.locator('.sf-auth-google').evaluate(el=>{
           const style=getComputedStyle(el);
           return {width:el.getBoundingClientRect().width,height:el.getBoundingClientRect().height,
@@ -237,9 +235,11 @@ const logged='<div class="woocommerce">'+signed+'<nav class="woocommerce-MyAccou
           'The positioned Google mark does not overlap the centered label');
         await page.locator('.sf-auth-social').evaluate(el=>el.remove());
         await page.locator('.woocommerce').evaluate((node,markup)=>node.insertAdjacentHTML('beforeend',markup),unconfiguredGoogle);
-        assert.equal(await page.locator('.sf-auth-google').count(),1,'Google option stays visible when not configured');
-        assert.equal(await page.locator('.sf-auth-google').isDisabled(),true,'Unconfigured Google cannot start OAuth');
-        assert.equal(await page.locator('.sf-auth-google[href]').count(),0,'Disabled Google has no authentication redirect');
+        assert.equal(await page.locator('.sf-auth-google').count(),0,'Google option is absent when Site Kit is not connected');
+        assert.equal(await page.locator('.sf-auth-google[href]').count(),0,'Disconnected Site Kit has no authentication redirect');
+        await page.locator('.woocommerce').evaluate((node,markup)=>node.insertAdjacentHTML('beforeend',markup),nativeGoogleInfo.official_button);
+        assert.equal(await page.locator('[data-sf-site-kit-button] [data-official-button]').count(),1,'Official provider owns the full-page button');
+        assert.equal(await page.locator('.sf-auth-google[href]').count(),0,'Full account uses the official widget, not a legacy link');
 
       }
       if(type==='register'){

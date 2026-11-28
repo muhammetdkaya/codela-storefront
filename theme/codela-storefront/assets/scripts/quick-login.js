@@ -738,7 +738,7 @@
         email:typeof identity.email==='string'?identity.email.trim():signedInPin.email
       });
     }
-    if(!identity){
+    if(!identity && !new URLSearchParams(window.location.search).has('codela_google')){
       const guests=renderGuestAccountGroups();
       // All guest options exist before the passkey script initializes.
       // PIN options must prove the browser key on the server; passkey-only

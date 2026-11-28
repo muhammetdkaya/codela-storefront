@@ -195,7 +195,7 @@
   }
   function initGuest(section) {
     const host=section.closest('.sf-overlay-auth')||section.closest('.woocommerce');
-    if(!host||!available)return;
+    if(!host||!available||new URLSearchParams(window.location.search).has('codela_google'))return;
     const hints=getHints().filter(h=>!h.paused);
     if(!hints.length)return;
 

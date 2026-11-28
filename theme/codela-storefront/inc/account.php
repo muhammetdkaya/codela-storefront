@@ -242,8 +242,17 @@ add_action( 'login_init', static function(): void {
 /** Native front-end login/register links resolve to My Account. Admin login
  * URLs are deliberately left alone, including WP-CLI and password reset flows.
  */
+/** Site Kit derives its credential POST endpoint and cookie path from wp_login_url().
+ * Human GET requests still pass through login_init and reach the Codela account.
+ * Do not rewrite the native endpoint while the official provider is connected.
+ */
+function codela_sf_site_kit_signin_connected(): bool {
+    if ( ! function_exists( 'has_action' ) || ! has_action( 'googlesitekit_render_sign_in_with_google_button' ) ) { return false; }
+    $settings = get_option( 'googlesitekit_sign-in-with-google_settings', [] );
+    return is_ssl() && is_array( $settings ) && ! empty( $settings['clientID'] );
+}
 add_filter( 'login_url', static function( $url, $redirect, $force_reauth ) {
-    if ( is_admin() || $force_reauth || codela_sf_login_is_admin_destination( $redirect ) ) { return $url; }
+    if ( codela_sf_site_kit_signin_connected() || is_admin() || $force_reauth || codela_sf_login_is_admin_destination( $redirect ) ) { return $url; }
     $account = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'myaccount' ) : '';
     return $account ?: $url;
 }, 20, 3 );
