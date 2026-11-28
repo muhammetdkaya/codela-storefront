@@ -4,7 +4,11 @@ const {execFileSync}=require('node:child_process');
 const base='theme/codela-storefront/';
 const php=fs.readFileSync(base+'inc/google-auth.php','utf8');
 const result=execFileSync(process.env.PHP_BIN||'php',['tests/google-auth.php'],{encoding:'utf8'});
-assert(result.includes('Site Kit presentation, customer session boundary and link policy passed'));
+const fixture=JSON.parse(result);
+assert.equal(fixture.passed,true);
+assert.equal(fixture.disabled_button,'');
+assert(fixture.official_button.includes('data-official-button="yes"'));
+assert(fixture.overlay_button.includes('codela_google=1'));
 assert(php.includes('googlesitekit_render_sign_in_with_google_button'));
 assert(php.includes('login_form_googlesitekit_auth') && php.includes('set_auth_cookie'));
 assert(php.includes('data-sf-site-kit-social') && php.includes('template.content'));
@@ -13,4 +17,4 @@ assert(!php.includes('admin_post_nopriv_codela_sf_google'),'No legacy OAuth endp
 for(const name of ['quick-login.js','passkeys.js']){
  assert(fs.readFileSync(base+'assets/scripts/'+name,'utf8').includes("has('codela_google')"),'Explicit provider selection bypasses remembered view');
 }
-console.log(result.trim());
+console.log('Site Kit presentation, customer session boundary and link policy passed');
