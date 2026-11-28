@@ -245,6 +245,16 @@ const server=http.createServer((req,res)=>{
   await added.locator('[data-quote-fixed]').click();
   await admin.locator('[data-quote-tab="commerce"]').click();
   assert.equal(await admin.locator('#codela-quote-rules form').evaluate(el=>new FormData(el).get('quote_editor_complete')),'1');
+  admin.once('dialog', dialog=>dialog.accept());
+  await admin.locator('[data-quote-restore]').click();
+  const restored=await admin.locator('#codela-quote-rules form').evaluate(el=>Object.fromEntries(new FormData(el)));
+  assert.equal(restored['quote[web][packages][0][label]'],'Tek Sayfa Web Sitesi');
+  assert.equal(restored['quote[web][packages][0][min]'],'7500');
+  assert.equal(restored['quote[commerce][packages][0][min]'],'17500');
+  assert.equal(restored['quote[web][extras][0][min]'],'2500');
+  assert.equal(restored['quote_model[software]'],'starting');
+  assert.equal(restored['quote_model[support]'],'monthly');
+  assert(await admin.locator('[data-quote-dirty]').isVisible(),'Restoration is staged until Save');
   assert.deepEqual(adminErrors,[]);
   await admin.close();
   console.log('MONA Project Start: five viewports, four steps, back/edit, selection, secure native form passed');

@@ -18,6 +18,7 @@ VERSION_FILE = "theme/codela-storefront/style.css" if THEME else "codela-commerc
 SHA = re.compile(r"[0-9a-f]{40}")
 VERSION = re.compile(r"\d+\.\d+\.\d+")
 COMMAND = re.compile(r"/codela-publish ([0-9a-f]{40}) ([0-9a-f]{40}) (\d+\.\d+\.\d+)")
+LIVE_COMMAND = re.compile(r"/codela-deploy ([0-9a-f]{40}) ([0-9a-f]{40})")
 DEPLOY_STEP = "Deploy Storefront only" if THEME else "Verify public mapping, then deploy only the authorized Codela directory"
 LIVE_STEP = "Verify live agency pages (no writes)" if THEME else None
 
@@ -81,6 +82,9 @@ def authorization(comments, owner):
         body = c["body"].strip()
         if body == "/codela-cancel":
             return None
+        if body.startswith("/codela-deploy"):
+            match = LIVE_COMMAND.fullmatch(body)
+            return (*match.groups(), "live") if match and THEME else None
         if body.startswith("/codela-publish"):
             match = COMMAND.fullmatch(body)
             return match.groups() if match else None
@@ -192,9 +196,15 @@ def check_pr(p, approval):
     # Release policy and workflow changes require review outside this automatic path.
     require(not any(f.startswith(".github/workflows/") or f.endswith("codela-release-chain.py")
                     or f.startswith(".releases/") for f in files), "Release infrastructure change requires manual merge")
-    require(version_at(head) == version, "Approved version does not match the candidate")
     latest = repo_api("releases/latest")["tag_name"].removeprefix("v")
-    require(ver(version) > ver(latest), "Release version is not newer than current release")
+    if version == "live":
+        require(THEME, "Live-only lane is Storefront-only")
+        require(version_at(base) == latest == version_at(head), "Finish the preceding stable release; live-only deployment must keep its version")
+        require(file_at(VERSION_FILE, head)[0] == file_at(VERSION_FILE, base)[0], "Live-only deployment cannot change the theme header")
+        require(not any(f.startswith("scripts/") or f.startswith(".github/") or f == "theme/codela-storefront/config/release.json" for f in files), "Deployment and release infrastructure require separate review")
+    else:
+        require(version_at(head) == version, "Approved version does not match the candidate")
+        require(ver(version) > ver(latest), "Release version is not newer than current release")
     required = expected_workflows(files, pr_specs())
     require(DEPLOY in required, "No deploy-validation workflow for this change")
     if not THEME:
@@ -217,7 +227,7 @@ def check_pr(p, approval):
         return False
     merged = repo_api("pulls/" + str(number) + "/merge", method="PUT",
                       data={"sha": head, "merge_method": "squash",
-                            "commit_title": "Release " + version + " (authorized PR #" + str(number) + ")"})
+                            "commit_title": ("Live-only deployment" if version == "live" else "Release " + version) + " (authorized PR #" + str(number) + ")"})
     require(merged["merged"], "GitHub rejected merge")
     source = merged["sha"]
     require(SHA.fullmatch(source), "Unexpected merged SHA")
@@ -343,6 +353,24 @@ def advance_merged(p, approval):
     if p["head"]["sha"] != head or not SHA.fullmatch(source or ""):
         return
     current = main_sha()
+    if version == "live":
+        if current != source:
+            return
+        verify_merge_source(source, head, base)
+        require(version_at(source) == version_at(base), "Live-only version changed")
+        runs = workflow_runs(DEPLOY, source, "workflow_dispatch") + workflow_runs(DEPLOY, source, "push")
+        runs = sorted(runs, key=lambda x: (x["id"], x.get("run_attempt", 1)), reverse=True)
+        run = next((x for x in runs if x["head_branch"] == "main"), None)
+        if not run:
+            require(main_sha() == source, "Cannot dispatch stale source")
+            dispatch(DEPLOY, {"source_sha": source})
+            return
+        if run["status"] != "completed":
+            print("Live-only deployment running", run["id"])
+            return
+        require(deploy_passed(run), "Live-only FTP or live verification failed")
+        print("LIVE-ONLY DEPLOYMENT COMPLETE:", source, "stable package unchanged")
+        return True
     manifest_bytes, _ = file_at(MANIFEST, current)
     manifest = json.loads(manifest_bytes)
     matching_manifest = manifest.get("source_sha") == source and manifest.get("version") == version
@@ -412,10 +440,6 @@ def commit_manifest(source, version, body):
 def main():
     require(REPO in {"muhammetdkaya/codela", "muhammetdkaya/codela-storefront"}, "Unexpected repository")
     # Scan current candidates on every relevant completion; dropped/concurrent events do not strand another stage.
-    for p in pages("pulls?state=open&base=main&per_page=100"):
-        approval = approved_pr(p)
-        if approval and check_pr(repo_api("pulls/" + str(p["number"])), approval):
-            return
     current = main_sha()
     manifest = json.loads(file_at(MANIFEST, current)[0])
     sources = {current, manifest.get("source_sha")}
@@ -425,8 +449,17 @@ def main():
             full = repo_api("pulls/" + str(p["number"]))
             approval = approved_pr(full)
             if approval:
-                advance_merged(full, approval)
+                done = advance_merged(full, approval)
+                if approval[2] == "live" and current == full.get("merge_commit_sha") and not done:
+                    return
                 break
+    # Re-read current state; never merge over a pending immutable release.
+    if version_at(main_sha()) != repo_api("releases/latest")["tag_name"].removeprefix("v"):
+        return
+    for p in pages("pulls?state=open&base=main&per_page=100"):
+        approval = approved_pr(p)
+        if approval and check_pr(repo_api("pulls/" + str(p["number"])), approval):
+            return
 
 
 if __name__ == "__main__":

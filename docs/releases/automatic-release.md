@@ -25,3 +25,7 @@ Storefront GITHUB_TOKEN başka bir özel depoyu okuyamaz. Değişmeyen/daha dü�
 ### Tarayıcı CI bağımlılıkları
 
 Ana dağıtım ve Agency fallback'i `scripts/ci-playwright.py` ile sabit npm Playwright sürümünün tarayıcılarını hazırlar. Önce gerçek Chromium/WebKit launch ve HTML yükleme denetimi yapılır; başarılıysa apt çalışmaz. Sistem kütüphanesi gerekiyorsa yalnızca geçici Ubuntu 24.04 GitHub runner'ında resmî imzalı Ubuntu arşiv ve güvenlik kaynaklarına sınırlı apt konfigürasyonu kullanılır; Microsoft gibi ilgisiz kaynaklar bu kurulum penceresine dahil edilmez. Konfigürasyon başarıda ve hatada kaldırılır. Kurulumdan sonra gerçek browser probe tekrar zorunludur; testler ve dağıtım kapıları değişmemiştir. Bağımlılık kurulumu ürün tarayıcı testlerinden ayrı CI adımıdır.
+
+## Codela.dev için sürümsüz küçük dağıtım
+
+Küçük değişikliklerde style.css sürümünü ve release config'i değiştirmeyin. Aynı depoda güncel main tabanlı PR açın; depo sahibi `/codela-deploy HEAD_SHA BASE_SHA` komutuyla yalnızca Codela.dev FTPS dağıtımını yetkilendirir. Mevcut resmi sürüm önce tamamlanmış olmalıdır. Aynı SHA'ya bağlı CI kontrolleri geçince PR birleştirilir ve yalnız dağıtım tetiklenir. Hash tabanlı mevcut FTP delta motoru yalnız değişen tema dosyalarını gönderir; geri alma ve canlı kontrol korunur. Release/ZIP/stable manifest değişmez. Hesap, ödeme, güvenlik ve fiyat hesaplama gibi kritik dosyalar kapsamlı doğrulamada kalır. Görsel CSS değişiklikleri hızlı kapsamda değerlendirilir. Diğer sitelerin WordPress güncellemeleri ancak sonraki resmi sürümle gelir.
