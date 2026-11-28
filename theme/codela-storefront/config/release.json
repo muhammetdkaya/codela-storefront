@@ -6,6 +6,7 @@
     "codela": "1.2.35"
   },
   "changes": [
+    "Ajans karşılama sahnesinde Codela metal imzası yüzde 15 küçültüldü, sağ kenara yaklaştırıldı ve yalnızca hareketli ışık altında görünen ince gravür kenarlarına dönüştürüldü.",
     "Ajans iletişim haritası: gereksiz etiket ve merkezleme kontrolü kaldırıldı; daha sakin mahalle ölçeği, ince konum işareti ve doğrudan haritada açma bağlantısı. Ofis koordinatı ve kaynak atfı korunur.",
     "Ajans karşılama sahnesinde mevcut ışıkla ortaya çıkan düşük kontrastlı dikey Codela kabartması eklendi.",
     "Ajans hizmet detaylarında üst hizmet sekmeleri ve alt telefon/WhatsApp satırı kaldırıldı. Hizmete özel tek teklif eylemi koyu yüzey ve ince kehribar çerçeveyle korunur; ortak proje akışı ve eski kurulumların teklif formu çalışmaya devam eder.",

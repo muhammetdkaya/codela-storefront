@@ -304,10 +304,10 @@
         // Tonal relief: only the existing moving beam reveals the shallow edges.
         ctx.save();
         const signature = 'codela';
-        const size = stage.sw * 0.037;
-        const sx = stage.ox + stage.sw * 0.615;
+        const size = stage.sw * 0.03145;
+        const sx = stage.ox + stage.sw * 0.635;
         const sy = stage.oy + stage.sh * 0.53;
-        const relief = Math.max(0.35, size * 0.035);
+        const relief = Math.max(0.28, Math.min(0.6, size * 0.024));
         const edgeGradient = (rgb, strength) => {
           const g = ctx.createLinearGradient(bCx - dx, bCy - dy, bCx + dx, bCy + dy);
           [0, 0, 0.32, 1, 0.32, 0, 0].forEach((v, i) => {
@@ -315,17 +315,24 @@
           });
           return g;
         };
-        const shadow = edgeGradient('10, 9, 9', .18);
-        const highlight = edgeGradient('255, 239, 215', .15);
+        const shadow = edgeGradient('10, 9, 9', .16);
+        const highlight = edgeGradient('255, 239, 215', .13);
+        const recess = edgeGradient('10, 9, 9', .035);
         ctx.translate(sx, sy);
         ctx.rotate(-Math.PI / 2);
-        ctx.font = `500 ${size}px system-ui, sans-serif`;
+        ctx.font = `400 ${size}px system-ui, sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillStyle = shadow;
-        ctx.fillText(signature, -relief, relief);
-        ctx.fillStyle = highlight;
-        ctx.fillText(signature, relief, -relief);
+        // Fine opposed bevel edges, not two overlapping solid wordmarks.
+        // Keep the interior almost transparent so the original metal survives.
+        ctx.lineWidth = Math.max(0.45, Math.min(0.8, size * 0.045));
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = shadow;
+        ctx.strokeText(signature, -relief, relief);
+        ctx.strokeStyle = highlight;
+        ctx.strokeText(signature, relief, -relief);
+        ctx.fillStyle = recess;
+        ctx.fillText(signature, 0, 0);
         ctx.restore();
 
         // Warm floor bounce along lower monolith edge
