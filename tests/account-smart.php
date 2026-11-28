@@ -11,7 +11,12 @@ function esc_html__($s,$d=''){return htmlspecialchars($s,ENT_QUOTES);}
 function esc_attr($s){return htmlspecialchars((string)$s,ENT_QUOTES);}
 function is_account_page(){return true;}
 function is_user_logged_in(){return $GLOBALS['auth'];}
+function has_action($name){return $name==='googlesitekit_render_sign_in_with_google_button' && !empty($GLOBALS['sitekit_hook']);}
+function is_ssl(){return $GLOBALS['https']??true;}
+function is_admin(){return false;}
+function wc_get_page_permalink($page){return 'https://store.test/my-account/';}
 function get_option($name,$default=''){
+  if($name==='googlesitekit_sign-in-with-google_settings')return $GLOBALS['sitekit_settings']??$default;
   return $name==='woocommerce_enable_myaccount_registration'
     ? ($GLOBALS['register_open']?'yes':'no'):$default;
 }
@@ -75,3 +80,20 @@ check(($GLOBALS['users'][71]['first_name']??'')==='Ada','First name persisted wi
 check(($GLOBALS['users'][71]['last_name']??'')==='Yılmaz','Last name persisted with Woo-created user');
 check($GLOBALS['no_cache']??false,'Availability response is never cached');
 echo "Progressive WooCommerce email lookup, limits, and profile fields passed\n";
+
+// Site Kit needs a real WordPress login URL for credential POSTs and its nonce cookie path.
+$native='https://store.test/wp-login.php';
+$account='https://store.test/my-account/';
+$filter=$GLOBALS['filters']['login_url'][0];
+check($filter($native,'',false)===$account,'Existing storefront login routing remains unchanged');
+$GLOBALS['sitekit_hook']=true;
+check($filter($native,'',false)===$account,'A disconnected Site Kit does not change login routing');
+$GLOBALS['sitekit_settings']=['clientID'=>'test.apps.googleusercontent.com'];
+check($filter($native,'',false)===$native,'Connected Site Kit uses native callback endpoint');
+check(codela_sf_public_login_destination([], 'GET')===$account,'Human native GET still redirects to account');
+check(codela_sf_public_login_destination(['action'=>'googlesitekit_auth'], 'POST')==='','Site Kit credential POST is not redirected');
+check(codela_sf_public_login_destination(['action'=>'lostpassword'], 'GET')==='','Native password recovery is untouched');
+check(codela_sf_public_login_destination(['redirect_to'=>'https://store.test/wp-admin/'],'GET')==='','Administrative recovery remains reachable');
+$GLOBALS['https']=false;
+check($filter($native,'',false)===$account,'Insecure Site Kit configuration does not select provider');
+echo "Official Site Kit credential route compatibility passed\\n";
