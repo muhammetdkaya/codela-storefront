@@ -399,5 +399,17 @@ body.sf-auth-chrome-hidden .sf-shell > :is(.sf-header,.sf-mobile-dock){
 /* The official Google iframe controls its own appearance and interaction. */
 .sf-site-kit-button{display:flex;justify-content:center;align-items:center;min-height:44px;width:100%;max-width:320px;margin:0 auto;flex-direction:column}
 .sf-site-kit-button .sf-site-kit-target{max-width:100%;margin:0 auto}
+/* GIS uses a light, transparent embedded canvas even for its filled_black
+   button. Match the embedding color scheme so the browser does not paint an
+   opaque white rectangle around the cross-origin frame on dark pages.
+   Keep the provider's dimensions, capsule, account identity and hit area. */
+.sf-site-kit-button,
+.sf-site-kit-button .sf-site-kit-target,
+.sf-site-kit-button .sf-site-kit-target iframe{
+  color-scheme:light!important;
+  background-color:transparent!important;
+  background-image:none!important;
+  box-shadow:none!important;
+}
 .sf-site-kit-button [data-sf-site-kit-unavailable]{font-size:12px;text-align:center;color:inherit}
 .sf-site-kit-button [data-sf-site-kit-unavailable][hidden]{display:none!important}
